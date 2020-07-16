@@ -52,6 +52,12 @@ inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
+    enum class Status {
+        Invalid = 0,
+        Valid = 1,
+        Active = 2,
+    };
+
     HotcueControl(QString group, int hotcueNumber);
     ~HotcueControl() override;
 
@@ -64,7 +70,8 @@ class HotcueControl : public QObject {
     void setPosition(double position);
     void setEndPosition(double endPosition);
     void setType(mixxx::CueType type);
-    void setStatus(mixxx::CueStatus status);
+    void setStatus(HotcueControl::Status status);
+    HotcueControl::Status getStatus();
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
@@ -229,7 +236,7 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
-    void setCurrentSavedLoop(CuePointer pCue);
+    void setCurrentSavedLoopControl(HotcueControl* pControl);
     void loadCuesFromTrack();
     double quantizeCuePoint(double position);
     double getQuantizedCurrentPosition();
@@ -303,7 +310,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
-    CuePointer m_pCurrentSavedLoop;
+    HotcueControl* m_pCurrentSavedLoopControl;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

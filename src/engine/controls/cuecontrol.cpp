@@ -43,6 +43,13 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
     return mixxx::RgbColor::optional(colorCode);
 }
 
+inline HotcueControl::Status hotcueControlStatusFromCue(CuePointer pCue) {
+    if (pCue && pCue->getType() != mixxx::CueType::Invalid) {
+        return HotcueControl::Status::Valid;
+    }
+    return HotcueControl::Status::Invalid;
+}
+
 } // namespace
 
 CueControl::CueControl(QString group,
@@ -57,6 +64,7 @@ CueControl::CueControl(QString group,
           m_bypassCueSetByPlay(false),
           m_iNumHotCues(NUM_HOT_CUES),
           m_pLoadedTrack(),
+          m_pCurrentSavedLoopControl(nullptr),
           m_mutex(QMutex::Recursive) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
@@ -73,7 +81,6 @@ CueControl::CueControl(QString group,
     m_pLoopStartPosition = make_parented<ControlProxy>(group, "loop_start_position", this);
     m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position", this);
     m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled", this);
-    m_pLoopToggle = make_parented<ControlProxy>(group, "loop_toggle", this);
     m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate", this);
 
     m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));
@@ -564,7 +571,7 @@ void CueControl::loadCuesFromTrack() {
                 pControl->setEndPosition(pCue->getEndPosition());
                 pControl->setColor(pCue->getColor());
                 pControl->setType(pCue->getType());
-                pControl->setStatus(pCue->getStatus());
+                pControl->setStatus(hotcueControlStatusFromCue(pCue));
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -765,7 +772,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     }
 
     if (cueType == mixxx::CueType::Loop) {
-        setCurrentSavedLoop(pCue);
+        setCurrentSavedLoopControl(pControl);
     }
 
     // If quantize is enabled and we are not playing, jump to the cue point
@@ -884,7 +891,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
 
     if (pCue->getType() == mixxx::CueType::Loop) {
         hotcueGoto(pControl, v);
-        setCurrentSavedLoop(pCue);
+        setCurrentSavedLoopControl(pControl);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
         hotcueGoto(pControl, v);
         setBeatLoop(pCue->getPosition(), true);
@@ -924,16 +931,15 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
 
     switch (pCue->getType()) {
     case mixxx::CueType::Loop: {
-        bool enabled;
-        if (m_pCurrentSavedLoop != pCue) {
-            setCurrentSavedLoop(pCue);
+        if (m_pCurrentSavedLoopControl != pControl) {
+            setCurrentSavedLoopControl(pControl);
         } else {
-            enabled = !pCue->isActive();
-            setLoop(pCue->getPosition(), pCue->getEndPosition(), enabled);
+            bool loopActive = !(pControl->getStatus() == HotcueControl::Status::Active);
+            setLoop(pCue->getPosition(), pCue->getEndPosition(), loopActive);
         }
     } break;
     case mixxx::CueType::HotCue: {
-        setCurrentSavedLoop(CuePointer());
+        setCurrentSavedLoopControl(nullptr);
         double startPosition = pCue->getPosition();
         bool enabled = startPosition != m_pLoopStartPosition->get() ||
                 !m_pLoopEnabled->get();
@@ -1018,7 +1024,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             pControl->setPreviewingType(pCue->getType());
             pControl->setPreviewingPosition(position);
             if (pCue->getType() == mixxx::CueType::Loop) {
-                setCurrentSavedLoop(pCue);
+                setCurrentSavedLoopControl(pControl);
             }
 
             // Need to unlock before emitting any signals to prevent deadlock.
@@ -2049,60 +2055,76 @@ void CueControl::hotcueFocusColorNext(double v) {
     pCue->setColor(colorPalette.nextColor(*color));
 }
 
-void CueControl::setCurrentSavedLoop(CuePointer pCue) {
-    if (m_pCurrentSavedLoop != pCue) {
-        if (m_pCurrentSavedLoop) {
-            m_pCurrentSavedLoop->deactivate();
-        }
+void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
+    if (m_pCurrentSavedLoopControl && m_pCurrentSavedLoopControl != pControl) {
+        // Disable previous saved loop
+        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Valid);
+        m_pCurrentSavedLoopControl = nullptr;
+    }
 
-        if (!pCue) {
-            m_pCurrentSavedLoop.reset();
+    // Set new control as active
+    if (pControl) {
+        QMutexLocker lock(&m_mutex);
+        if (!m_pLoadedTrack) {
             return;
         }
 
-        VERIFY_OR_DEBUG_ASSERT(pCue->getType() == mixxx::CueType::Loop &&
+        CuePointer pCue(pControl->getCue());
+
+        // Need to unlock before emitting any signals to prevent deadlock.
+        lock.unlock();
+
+        VERIFY_OR_DEBUG_ASSERT(pCue &&
+                pCue->getType() == mixxx::CueType::Loop &&
                 pCue->getEndPosition() != Cue::kNoPosition) {
             return;
         }
 
-        m_pCurrentSavedLoop = pCue;
-    }
-
-    if (m_pCurrentSavedLoop) {
+        m_pCurrentSavedLoopControl = pControl;
         qDebug() << "CueControl::setLoop" << pCue->getPosition()
                  << pCue->getEndPosition();
         setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
-        pCue->activate();
+        pControl->setStatus(HotcueControl::Status::Active);
     }
 }
 
 void CueControl::slotLoopReset() {
-    setCurrentSavedLoop(CuePointer());
+    setCurrentSavedLoopControl(nullptr);
 }
 
 void CueControl::slotLoopToggled(bool enabled) {
-    if (!m_pCurrentSavedLoop) {
+    if (!m_pCurrentSavedLoopControl) {
         return;
     }
 
     if (enabled) {
-        m_pCurrentSavedLoop->activate();
+        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Active);
     } else {
-        m_pCurrentSavedLoop->deactivate();
+        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Valid);
     }
 }
 
 void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
-    if (!m_pCurrentSavedLoop) {
+    if (!m_pCurrentSavedLoopControl) {
         return;
     }
+
+    QMutexLocker lock(&m_mutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    CuePointer pCue(m_pCurrentSavedLoopControl->getCue());
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
 
     DEBUG_ASSERT(startPosition != Cue::kNoPosition);
     DEBUG_ASSERT(endPosition != Cue::kNoPosition);
     DEBUG_ASSERT(startPosition < endPosition);
 
-    m_pCurrentSavedLoop->setStartPosition(startPosition);
-    m_pCurrentSavedLoop->setEndPosition(endPosition);
+    pCue->setStartPosition(startPosition);
+    pCue->setEndPosition(endPosition);
 }
 
 ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
@@ -2337,7 +2359,7 @@ void HotcueControl::setCue(CuePointer pCue) {
     setPosition(pCue->getPosition());
     setEndPosition(pCue->getEndPosition());
     setColor(pCue->getColor());
-    setStatus(pCue->getStatus());
+    setStatus(hotcueControlStatusFromCue(pCue));
     setType(pCue->getType());
     // set pCue only if all other data is in place
     // because we have a null check for valid data else where in the code
@@ -2359,7 +2381,7 @@ void HotcueControl::resetCue() {
     setPosition(Cue::kNoPosition);
     setEndPosition(Cue::kNoPosition);
     setType(mixxx::CueType::Invalid);
-    setStatus(mixxx::CueStatus::Invalid);
+    setStatus(Status::Invalid);
 }
 
 void HotcueControl::setPosition(double position) {
@@ -2374,6 +2396,10 @@ void HotcueControl::setType(mixxx::CueType type) {
     m_hotcueType->forceSet(static_cast<double>(type));
 }
 
-void HotcueControl::setStatus(mixxx::CueStatus status) {
+void HotcueControl::setStatus(HotcueControl::Status status) {
     m_hotcueEnabled->forceSet(static_cast<double>(status));
+}
+
+HotcueControl::Status HotcueControl::getStatus() {
+    return static_cast<Status>(m_hotcueEnabled->get());
 }

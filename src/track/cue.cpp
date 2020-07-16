@@ -49,7 +49,6 @@ void CuePointer::deleteLater(Cue* pCue) {
 
 Cue::Cue()
         : m_bDirty(false),
-          m_bActive(false),
           m_iId(-1),
           m_type(mixxx::CueType::Invalid),
           m_sampleStartPosition(Cue::kNoPosition),
@@ -68,7 +67,6 @@ Cue::Cue(
         QString label,
         mixxx::RgbColor color)
         : m_bDirty(false),
-          m_bActive(false),
           m_iId(id),
           m_trackId(trackId),
           m_type(type),
@@ -168,53 +166,6 @@ void Cue::setType(mixxx::CueType type) {
     m_bDirty = true;
     lock.unlock();
     emit updated();
-}
-
-mixxx::CueStatus Cue::getStatus() const {
-    mixxx::CueStatus status = mixxx::CueStatus::Invalid;
-    switch(getType()) {
-    case mixxx::CueType::Loop:
-        if (getPosition() != Cue::kNoPosition && getLength() > 0) {
-            status = mixxx::CueStatus::Valid;
-        }
-        break;
-    default:
-        if (getPosition() != Cue::kNoPosition) {
-            status = mixxx::CueStatus::Valid;
-        }
-        break;
-    }
-
-    if (status == mixxx::CueStatus::Valid && isActive()) {
-        status = mixxx::CueStatus::Active;
-    }
-
-    return status;
-}
-
-bool Cue::isActive() const {
-    QMutexLocker lock(&m_mutex);
-    return m_bActive;
-}
-
-void Cue::activate() {
-    QMutexLocker lock(&m_mutex);
-    bool changed = !m_bActive;
-    m_bActive = true;
-    lock.unlock();
-    if (changed) {
-        emit(updated());
-    }
-}
-
-void Cue::deactivate() {
-    QMutexLocker lock(&m_mutex);
-    bool changed = m_bActive;
-    m_bActive = false;
-    lock.unlock();
-    if (changed) {
-        emit(updated());
-    }
 }
 
 double Cue::getPosition() const {

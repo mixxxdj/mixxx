@@ -45,11 +45,6 @@ class Cue : public QObject {
     mixxx::CueType getType() const;
     void setType(mixxx::CueType type);
 
-    mixxx::CueStatus getStatus() const;
-    bool isActive() const;
-    void activate();
-    void deactivate();
-
     double getPosition() const;
     void setStartPosition(
             double samplePosition = kNoPosition);
@@ -87,7 +82,6 @@ class Cue : public QObject {
     mutable QMutex m_mutex;
 
     bool m_bDirty;
-    bool m_bActive;
     int m_iId;
     TrackId m_trackId;
     mixxx::CueType m_type;

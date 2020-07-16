@@ -8,12 +8,6 @@
 
 namespace mixxx {
 
-enum class CueStatus {
-    Invalid = 0,
-    Valid = 1,
-    Active = 2,
-};
-
 enum class CueType {
     Invalid = 0,
     HotCue = 1,
