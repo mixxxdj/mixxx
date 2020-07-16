@@ -680,12 +680,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wcoverartmenu.cpp
   src/widget/wcuemenupopup.cpp
   src/widget/wdisplay.cpp
-  src/widget/weffect.cpp
   src/widget/weffectbuttonparametername.cpp
   src/widget/weffectchain.cpp
   src/widget/weffectchainpresetbutton.cpp
   src/widget/weffectchainpresetselector.cpp
   src/widget/weffectknobparametername.cpp
+  src/widget/weffectname.cpp
   src/widget/weffectparameterknob.cpp
   src/widget/weffectparameterknobcomposed.cpp
   src/widget/weffectparameternamebase.cpp

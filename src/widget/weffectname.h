@@ -1,5 +1,4 @@
-#ifndef WEFFECT_H
-#define WEFFECT_H
+#pragma once
 
 #include <QDomNode>
 
@@ -9,10 +8,10 @@
 
 class EffectsManager;
 
-class WEffect : public WLabel {
+class WEffectName : public WLabel {
     Q_OBJECT
   public:
-    WEffect(QWidget* pParent, EffectsManager* pEffectsManager);
+    WEffectName(QWidget* pParent, EffectsManager* pEffectsManager);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -20,12 +19,8 @@ class WEffect : public WLabel {
     void effectUpdated();
 
   private:
-    // Set the EffectSlot that should be monitored by this WEffect.
     void setEffectSlot(EffectSlotPointer pEffectSlot);
 
     EffectsManager* m_pEffectsManager;
     EffectSlotPointer m_pEffectSlot;
 };
-
-
-#endif /* WEFFECT_H */

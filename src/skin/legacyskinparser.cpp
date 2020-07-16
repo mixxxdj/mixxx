@@ -38,12 +38,12 @@
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
 #include "widget/wdisplay.h"
-#include "widget/weffect.h"
 #include "widget/weffectbuttonparametername.h"
 #include "widget/weffectchain.h"
 #include "widget/weffectchainpresetbutton.h"
 #include "widget/weffectchainpresetselector.h"
 #include "widget/weffectknobparametername.h"
+#include "widget/weffectname.h"
 #include "widget/weffectparameterknob.h"
 #include "widget/weffectparameterknobcomposed.h"
 #include "widget/weffectpushbutton.h"
@@ -1596,7 +1596,7 @@ QWidget* LegacySkinParser::parseEffectChainPresetSelector(const QDomElement& nod
 }
 
 QWidget* LegacySkinParser::parseEffectName(const QDomElement& node) {
-    WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
+    WEffectName* pEffect = new WEffectName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
 }
