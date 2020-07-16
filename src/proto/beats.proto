@@ -13,8 +13,15 @@ enum Source {
 
 enum SectionType {
   INTRO = 0;
-  INNER = 1;
-  OUTRO = 2;
+  OUTRO = 1;
+  OTHER = 2;
+}
+
+// Setting grey as the default color
+message Color {
+  optional int32 red = 1 [ default = 100 ];
+  optional int32 green = 2 [ default = 100 ];
+  optional int32 blue = 3 [ default = 100 ];
 }
 
 message TimeSignature {
@@ -33,7 +40,8 @@ message PhraseMarker {
 
 message Section {
   optional string name = 1 [ default = "UNNAMED"];
-  optional SectionType type = 2 [ default = INNER ];
+  optional SectionType type = 2 [ default = OTHER ];
+  optional Color color = 3;
 }
 
 message SectionMarker {
