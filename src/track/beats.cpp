@@ -318,7 +318,7 @@ BeatsInternal::BeatsInternal()
 BeatsInternal::BeatsInternal(const QByteArray& byteArray) {
     track::io::Beats beatsProto;
     if (!beatsProto.ParseFromArray(byteArray.constData(), byteArray.size())) {
-        qDebug() << "ERROR: Could not parse kBeatMap from QByteArray of size"
+        qDebug() << "ERROR: Could not parse Beats from QByteArray of size"
                  << byteArray.size();
     }
     for (int i = 0; i < beatsProto.beat_size(); ++i) {
