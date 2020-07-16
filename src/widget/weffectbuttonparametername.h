@@ -2,9 +2,9 @@
 
 #include <QDomNode>
 
-#include "widget/wlabel.h"
-#include "widget/weffectparameternamebase.h"
 #include "skin/skincontext.h"
+#include "widget/weffectparameternamebase.h"
+#include "widget/wlabel.h"
 
 class EffectsManager;
 
