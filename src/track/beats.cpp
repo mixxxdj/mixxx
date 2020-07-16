@@ -27,13 +27,18 @@ inline FrameDiff_t getBeatLengthFrames(Bpm bpm, double sampleRate) {
 }
 } // namespace
 
-Beats::Beats(const Track* track, const QVector<FramePos>& beats)
+Beats::Beats(const Track* track,
+        const QVector<FramePos>& beats,
+        const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers,
+        const QVector<track::io::PhraseMarker>& phraseMarkers,
+        const QVector<track::io::SectionMarker>& sectionMarkers)
         : Beats(track) {
     if (beats.size() > 0) {
         // This causes BeatsInternal constructor to be called twice.
         // But it can't be included in ctor initializer list since
         // we already have a delegating constructor.
-        m_beatsInternal = BeatsInternal(beats);
+        m_beatsInternal = BeatsInternal(
+                beats, timeSignatureMarkers, phraseMarkers, sectionMarkers);
     }
     slotTrackBeatsUpdated();
 }
@@ -330,7 +335,8 @@ BeatsInternal::BeatsInternal(const QByteArray& byteArray) {
         // This marker will get the default values from the protobuf definitions,
         // beatIndex = 0 and timeSignature = 4/4.
         track::io::TimeSignatureMarker generatedTimeSignatureMarker;
-        beatsProto.add_time_signature_markers()->CopyFrom(generatedTimeSignatureMarker);
+        beatsProto.add_time_signature_markers()->CopyFrom(
+                generatedTimeSignatureMarker);
     }
     for (int i = 0; i < beatsProto.time_signature_markers_size(); ++i) {
         const track::io::TimeSignatureMarker& timeSignatureMarker =
@@ -340,12 +346,17 @@ BeatsInternal::BeatsInternal(const QByteArray& byteArray) {
     updateBpm();
 }
 
-BeatsInternal::BeatsInternal(const QVector<FramePos>& beats) {
+BeatsInternal::BeatsInternal(const QVector<FramePos>& beats,
+        const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers,
+        const QVector<track::io::PhraseMarker>& phraseMarkers,
+        const QVector<track::io::SectionMarker>& sectionMarkers) {
+    Q_UNUSED(phraseMarkers);
+    Q_UNUSED(sectionMarkers);
     FramePos previousBeatPos = kInvalidFramePos;
     track::io::Beat protoBeat;
 
     for (const auto& beat : beats) {
-        VERIFY_OR_DEBUG_ASSERT(beat <= previousBeatPos || beat < FramePos(0)) {
+        VERIFY_OR_DEBUG_ASSERT(beat > previousBeatPos && beat >= FramePos(0)) {
             qDebug() << "Beats not in increasing order or negative, discarding beat" << beat;
         }
         else {
@@ -355,9 +366,15 @@ BeatsInternal::BeatsInternal(const QVector<FramePos>& beats) {
         }
     }
 
-    // Since the analyzer is only sending the beats data,
-    // for the time being, we set the time signature as 4/4 for the whole track.
-    setSignature(TimeSignature(), 0);
+    VERIFY_OR_DEBUG_ASSERT(timeSignatureMarkers.size() > 0) {
+        // If the analyzer does not send time signature information, just assume 4/4
+        // for the whole track and the first beat as downbeat.
+        setSignature(TimeSignature(), 0);
+    }
+    else {
+        m_timeSignatureMarkers = timeSignatureMarkers;
+    }
+
     updateBpm();
 }
 

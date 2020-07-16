@@ -33,7 +33,10 @@ class BeatsInternal {
   public:
     BeatsInternal();
     BeatsInternal(const QByteArray& byteArray);
-    BeatsInternal(const QVector<FramePos>& beats);
+    BeatsInternal(const QVector<FramePos>& beats,
+            const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers,
+            const QVector<track::io::PhraseMarker>& phraseMarkers,
+            const QVector<track::io::SectionMarker>& sectionMarkers);
 
     enum BPMScale {
         DOUBLE,
@@ -73,12 +76,10 @@ class BeatsInternal {
             FramePos* pNextBeatFrame) const;
     void setGrid(Bpm dBpm, FramePos firstBeatFrame = FramePos());
     FramePos findClosestBeat(FramePos frame) const;
-    std::unique_ptr<BeatsInternal::iterator> findBeats(FramePos startFrame,
-            FramePos stopFrame) const;
-    bool hasBeatInRange(FramePos startFrame,
-            FramePos stopFrame) const;
-    double getBpmRange(FramePos startFrame,
-            FramePos stopFrame) const;
+    std::unique_ptr<BeatsInternal::iterator> findBeats(
+            FramePos startFrame, FramePos stopFrame) const;
+    bool hasBeatInRange(FramePos startFrame, FramePos stopFrame) const;
+    double getBpmRange(FramePos startFrame, FramePos stopFrame) const;
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
     TimeSignature getSignature(int beatIndex) const;
     void setSignature(const TimeSignature& signature, int beatIndex);
@@ -106,7 +107,7 @@ class BeatsInternal {
     QString m_subVersion;
     Bpm m_bpm;
     BeatList m_beats;
-    QList<track::io::TimeSignatureMarker> m_timeSignatureMarkers;
+    QVector<track::io::TimeSignatureMarker> m_timeSignatureMarkers;
     int m_iSampleRate;
     double m_dDurationSeconds;
     friend QDebug operator<<(QDebug dbg, const BeatsInternal& arg);
@@ -125,7 +126,15 @@ class Beats final : public QObject {
     Beats(const Track* track, const QByteArray& byteArray);
     /// A list of beat locations in audio frames may be provided.
     /// The source of this data is the analyzer.
-    Beats(const Track* track, const QVector<FramePos>& beats);
+    Beats(const Track* track,
+            const QVector<FramePos>& beats,
+            const QVector<track::io::TimeSignatureMarker>&
+                    timeSignatureMarkers =
+                            QVector<track::io::TimeSignatureMarker>(),
+            const QVector<track::io::PhraseMarker>& phraseMarkers =
+                    QVector<track::io::PhraseMarker>(),
+            const QVector<track::io::SectionMarker>& sectionMarkers =
+                    QVector<track::io::SectionMarker>());
     ~Beats() override = default;
 
     using iterator = BeatIterator;
