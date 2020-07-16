@@ -468,6 +468,18 @@ void EffectSlot::showParameter(EffectParameterPointer pParameter) {
     emit parametersChanged();
 }
 
+void EffectSlot::swapParameters(EffectParameterType type, int index1, int index2) {
+    VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index1) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index2) {
+        return;
+    }
+    m_loadedParameters[type].swapItemsAt(index1, index2);
+    loadParameters();
+    emit parametersChanged();
+}
+
 void EffectSlot::slotPrevEffect(double v) {
     if (v > 0) {
         loadEffectWithDefaults(m_pVisibleEffects->previous(m_pManifest));

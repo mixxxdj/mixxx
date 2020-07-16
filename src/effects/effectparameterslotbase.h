@@ -44,6 +44,10 @@ class EffectParameterSlotBase : public QObject {
         return m_pManifestParameter != nullptr;
     }
 
+    int slotNumber() const {
+        return m_iParameterSlotNumber;
+    }
+
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
