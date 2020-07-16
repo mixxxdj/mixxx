@@ -1,17 +1,17 @@
 #include <QtDebug>
 
-#include "widget/weffect.h"
+#include "widget/weffectname.h"
 
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 
-WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
+WEffectName::WEffectName(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
           m_pEffectsManager(pEffectsManager) {
     effectUpdated();
 }
 
-void WEffect::setup(const QDomNode& node, const SkinContext& context) {
+void WEffectName::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
@@ -26,7 +26,7 @@ void WEffect::setup(const QDomNode& node, const SkinContext& context) {
     }
 }
 
-void WEffect::setEffectSlot(EffectSlotPointer pEffectSlot) {
+void WEffectName::setEffectSlot(EffectSlotPointer pEffectSlot) {
     if (pEffectSlot) {
         m_pEffectSlot = pEffectSlot;
         connect(pEffectSlot.data(), SIGNAL(effectChanged()),
@@ -35,7 +35,7 @@ void WEffect::setEffectSlot(EffectSlotPointer pEffectSlot) {
     }
 }
 
-void WEffect::effectUpdated() {
+void WEffectName::effectUpdated() {
     QString name;
     QString description;
     if (m_pEffectSlot && m_pEffectSlot->isLoaded()) {
