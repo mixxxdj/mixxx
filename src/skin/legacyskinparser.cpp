@@ -1648,13 +1648,16 @@ QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(const QDomElement& node) {
-    WEffectParameterNameBase* pEffectParameter = new WEffectKnobParameterName(m_pParent, m_pEffectsManager);
+    WEffectParameterNameBase* pEffectParameter =
+            new WEffectKnobParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectParameter);
     return pEffectParameter;
 }
 
-QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& node) {
-    WEffectParameterNameBase* pEffectButtonParameter = new WEffectButtonParameterName(m_pParent, m_pEffectsManager);
+QWidget* LegacySkinParser::parseEffectButtonParameterName(
+        const QDomElement& node) {
+    WEffectParameterNameBase* pEffectButtonParameter =
+            new WEffectButtonParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectButtonParameter);
     return pEffectButtonParameter;
 }

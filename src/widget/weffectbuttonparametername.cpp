@@ -4,7 +4,8 @@
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 
-WEffectButtonParameterName::WEffectButtonParameterName(QWidget* pParent, EffectsManager* pEffectsManager)
+WEffectButtonParameterName::WEffectButtonParameterName(
+        QWidget* pParent, EffectsManager* pEffectsManager)
         : WEffectParameterNameBase(pParent, pEffectsManager) {
 }
 

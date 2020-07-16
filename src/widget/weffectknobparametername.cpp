@@ -4,7 +4,8 @@
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 
-WEffectKnobParameterName::WEffectKnobParameterName(QWidget* pParent, EffectsManager* pEffectsManager)
+WEffectKnobParameterName::WEffectKnobParameterName(
+        QWidget* pParent, EffectsManager* pEffectsManager)
         : WEffectParameterNameBase(pParent, pEffectsManager) {
 }
 
