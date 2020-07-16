@@ -268,7 +268,10 @@ class Track : public QObject {
     CuePointer findCueById(int id) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
-    QList<CuePointer> getCuePoints() const;
+    QList<CuePointer> getCuePoints() const {
+        // Copying implicitly shared collections is thread-safe
+        return m_cuePoints;
+    }
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
 

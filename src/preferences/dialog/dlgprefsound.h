@@ -96,6 +96,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
+    bool eventFilter(QObject* object, QEvent* event) override;
 
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
