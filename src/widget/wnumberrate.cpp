@@ -9,7 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-    
+
 #include "widget/wnumberrate.h"
 
 #include "control/controlobject.h"
@@ -33,10 +33,8 @@ void WNumberRate::setValue(double dValue) {
     double vsign = dValue - 1;
 
     char sign = '+';
-    if (vsign < 0) {
+    if (vsign < -0.00000001) {
         sign = '-';
-    } else if(dValue == 0) {
-        sign = '';
     }
 
     setText(QString(m_skinText).append(sign)
