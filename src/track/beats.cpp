@@ -326,7 +326,12 @@ BeatsInternal::BeatsInternal(const QByteArray& byteArray) {
         m_beats.append(beat);
     }
 
-    DEBUG_ASSERT(beatsProto.time_signature_markers_size() > 0);
+    VERIFY_OR_DEBUG_ASSERT(beatsProto.time_signature_markers_size() > 0) {
+        // This marker will get the default values from the protobuf definitions,
+        // beatIndex = 0 and timeSignature = 4/4.
+        track::io::TimeSignatureMarker generatedTimeSignatureMarker;
+        beatsProto.add_time_signature_markers()->CopyFrom(generatedTimeSignatureMarker);
+    }
     for (int i = 0; i < beatsProto.time_signature_markers_size(); ++i) {
         const track::io::TimeSignatureMarker& timeSignatureMarker =
                 beatsProto.time_signature_markers(i);
@@ -339,12 +344,11 @@ BeatsInternal::BeatsInternal(const QVector<FramePos>& beats) {
     FramePos previousBeatPos = kInvalidFramePos;
     track::io::Beat protoBeat;
 
-    for (auto beat : beats) {
-        if (beat <= previousBeatPos || beat < FramePos(0)) {
-            qDebug() << "kBeatMap::createFromVector: beats not in increasing "
-                        "order or negative";
-            qDebug() << "discarding beat " << beat;
-        } else {
+    for (const auto& beat : beats) {
+        VERIFY_OR_DEBUG_ASSERT(beat <= previousBeatPos || beat < FramePos(0)) {
+            qDebug() << "Beats not in increasing order or negative, discarding beat" << beat;
+        }
+        else {
             protoBeat.set_frame_position(beat.getValue());
             m_beats.append(protoBeat);
             previousBeatPos = beat;
@@ -380,13 +384,13 @@ QByteArray BeatsInternal::toProtobuf() const {
     // items in adjacent memory locations.
     track::io::Beats beatsProto;
 
-    for (const auto& m_beat : m_beats) {
-        beatsProto.add_beat()->CopyFrom(m_beat);
+    for (const auto& beat : m_beats) {
+        beatsProto.add_beat()->CopyFrom(beat);
     }
 
-    for (const auto& m_timeSignatureMarker : m_timeSignatureMarkers) {
+    for (const auto& timeSignatureMarker : m_timeSignatureMarkers) {
         beatsProto.add_time_signature_markers()->CopyFrom(
-                m_timeSignatureMarker);
+                timeSignatureMarker);
     }
 
     std::string output;
