@@ -2359,6 +2359,7 @@ void HotcueControl::setCue(CuePointer pCue) {
     setEndPosition(pCue->getEndPosition());
     setColor(pCue->getColor());
     setStatus(pCue->getStatus());
+    setType(pCue->getType());
     // set pCue only if all other data is in place
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
