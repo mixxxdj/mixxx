@@ -1500,6 +1500,36 @@ if(ENGINEPRIME)
   endif()
 endif()
 
+# Spleeterpp
+find_package(Spleeter)
+if(Spleeter_Found)
+  message(STATUS "Linking dynamically to existing installation of spleeter")
+  target_include_directories(mixxx-lib PUBLIC ${Spleeter_INCLUDE_DIRS})
+  target_link_libraries(mixxx-lib PUBLIC spleeter::Split)
+else()
+    # Fetch spleeter sources from GitHub and build them statically.
+    message(STATUS "Linking statically to spleeter fetched from GitHub")
+    set(SPLEETER_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/spleeter-install")
+    ExternalProject_Add(spleeter
+      GIT_REPOSITORY git@github.com:gvne/spleeterpp.git
+      GIT_TAG tags/v0.2.1
+      GIT_SHALLOW TRUE
+      INSTALL_DIR ${SPLEETER_INSTALL_DIR}
+      CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      EXCLUDE_FROM_ALL TRUE
+    )
+
+    # Assemble a library based on the external project.
+    add_library(mixxx-spleeter STATIC IMPORTED)
+    add_dependencies(mixxx-spleeter spleeter)
+    set(SPLEETER_INCLUDE_DIR "${SPLEETER_INSTALL_DIR}/include")
+    set(SPLEETER_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}spleeter${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(SPLEETER_LIBRARY_DIR "${SPLEETER_INSTALL_DIR}/${SPLEETER_LIBRARY}")
+    set_target_properties(mixxx-spleeter PROPERTIES IMPORTED_LOCATION "${SPLEETER_LIBRARY_DIR}")
+    target_include_directories(mixxx-lib PUBLIC ${SPLEETER_INCLUDE_DIR})
+    target_link_libraries(mixxx-lib PUBLIC mixxx-spleeter)
+endif()
+
 # Ebur128
 find_package(Ebur128)
 cmake_dependent_option(EBUR128_STATIC "Link libebur128 statically" OFF "Ebur128_FOUND" ON)
