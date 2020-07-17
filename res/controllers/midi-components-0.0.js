@@ -818,20 +818,19 @@
             this.setCurrentUnit(this.unitNumbers[index]);
         };
 
-        if (unitNumbers !== undefined) {
-            if (Array.isArray(unitNumbers)) {
-                this.unitNumbers = unitNumbers;
-                this.setCurrentUnit(unitNumbers[0]);
-            } else if (typeof unitNumbers === "number" &&
-                      Math.floor(unitNumbers) === unitNumbers &&
-                      isFinite(unitNumbers)) {
-                this.unitNumbers = [unitNumbers];
-                this.setCurrentUnit(unitNumbers);
-            }
+        if (Array.isArray(unitNumbers)) {
+            this.unitNumbers = unitNumbers;
+        } else if (typeof unitNumbers === "number" &&
+                  Math.floor(unitNumbers) === unitNumbers &&
+                  isFinite(unitNumbers)) {
+            this.unitNumbers = [unitNumbers];
         } else {
             print("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
+
+        this.group = "[EffectRack1_EffectUnit" + this.unitNumbers[0] + "]";
+        this.setCurrentUnit(this.unitNumbers[0]);
 
         this.dryWetKnob = new Pot({
             group: this.group,
