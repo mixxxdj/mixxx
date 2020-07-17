@@ -818,9 +818,9 @@
             this.setCurrentUnit(this.unitNumbers[index]);
         };
 
-        if (Array.isArray(unitNumbers)) {
+        if (unitNumbers !== undefined && Array.isArray(unitNumbers)) {
             this.unitNumbers = unitNumbers;
-        } else if (typeof unitNumbers === "number" &&
+        } else if (unitNumbers !== undefined && typeof unitNumbers === "number" &&
                   Math.floor(unitNumbers) === unitNumbers &&
                   isFinite(unitNumbers)) {
             this.unitNumbers = [unitNumbers];
