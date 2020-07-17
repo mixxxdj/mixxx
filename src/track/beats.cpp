@@ -14,7 +14,7 @@ namespace {
 inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
-inline bool TimeSignatureMarkerLessThan(
+inline bool TimeSignatureMarkerEarlier(
         const track::io::TimeSignatureMarker& marker1,
         const track::io::TimeSignatureMarker& marker2) {
     return marker1.beat_index() < marker2.beat_index();
@@ -845,7 +845,7 @@ void BeatsInternal::setSignature(
             std::lower_bound(m_timeSignatureMarkers.begin(),
                     m_timeSignatureMarkers.end(),
                     markerToInsert,
-                    TimeSignatureMarkerLessThan);
+                    TimeSignatureMarkerEarlier);
     m_timeSignatureMarkers.insert(prevTimeSignatureMarker, markerToInsert);
 }
 
@@ -875,7 +875,7 @@ bool BeatsInternal::hasTimeSignatureMarkerBefore(int beatIndex) {
             std::lower_bound(m_timeSignatureMarkers.cbegin(),
                     m_timeSignatureMarkers.cend(),
                     searchBeforeMarker,
-                    TimeSignatureMarkerLessThan);
+                    TimeSignatureMarkerEarlier);
     return prevTimeSignatureMarker != m_timeSignatureMarkers.cend();
 }
 
