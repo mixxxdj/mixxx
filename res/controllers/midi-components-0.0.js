@@ -664,22 +664,19 @@
     };
 
     var Deck = function(deckNumbers) {
-        if (deckNumbers !== undefined) {
-            if (Array.isArray(deckNumbers)) {
-                // These must be unique to each instance,
-                // so they cannot be in the prototype.
-                this.currentDeck = "[Channel" + deckNumbers[0] + "]";
-                this.deckNumbers = deckNumbers;
-            } else if (typeof deckNumbers === "number" &&
-                      Math.floor(deckNumbers) === deckNumbers &&
-                      isFinite(deckNumbers)) {
-                this.currentDeck = "[Channel" + deckNumbers + "]";
-                this.deckNumbers = [deckNumbers];
-            }
+        if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
+            // These must be unique to each instance,
+            // so they cannot be in the prototype.
+            this.deckNumbers = deckNumbers;
+        } else if (deckNumbers !== undefined && typeof deckNumbers === "number" &&
+                Math.floor(deckNumbers) === deckNumbers &&
+                isFinite(deckNumbers)) {
+            this.deckNumbers = [deckNumbers];
         } else {
             print("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
+        this.currentDeck = "[Channel" + deckNumbers[0] + "]";
     };
     Deck.prototype = new ComponentContainer({
         setCurrentDeck: function(newGroup) {
