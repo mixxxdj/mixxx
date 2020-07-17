@@ -541,6 +541,11 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+
+    // We need to call reset *before* constructing a new MockAutoDJProcessor,
+    // because otherwise the new object will try to create COs that already
+    // exist because they were created by the previous instance.
+    pProcessor.reset();
     pProcessor.reset(new MockAutoDJProcessor(
             nullptr, config(), pPlayerManager.data(),
             trackCollections(), m_iAutoDJPlaylistId));

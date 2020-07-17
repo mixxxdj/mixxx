@@ -19,8 +19,7 @@ class ConstControllerPresetVisitor;
 class ControllerPreset {
   public:
     ControllerPreset()
-            : m_bDirty(false),
-              m_iControllerEngineVersion(0) {
+            : m_bDirty(false) {
     }
     virtual ~ControllerPreset() = default;
 
@@ -56,6 +55,14 @@ class ControllerPreset {
 
     const QList<ScriptFileInfo>& getScriptFiles() const {
         return m_scripts;
+    }
+
+    void setModuleFileInfo(QFileInfo fileInfo) {
+        m_moduleFileInfo = fileInfo;
+    }
+
+    QFileInfo moduleFileInfo() const {
+        return m_moduleFileInfo;
     }
 
     inline void setDirty(bool bDirty) {
@@ -177,9 +184,9 @@ class ControllerPreset {
     QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
-    int m_iControllerEngineVersion;
 
     QList<ScriptFileInfo> m_scripts;
+    QFileInfo m_moduleFileInfo;
 };
 
 typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;

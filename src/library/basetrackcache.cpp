@@ -409,11 +409,16 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
-            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+    } else if (
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column ||
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
-        // the cover hash.
-        trackValue.setValue(pTrack->getCoverHash());
+        // the cover digest.
+        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) == column) {
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color));
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) == column) {
+        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {

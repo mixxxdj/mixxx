@@ -801,8 +801,3 @@ TrackPointer BaseTrackTableModel::getTrackByRef(
         const TrackRef& trackRef) const {
     return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
 }
-
-bool BaseTrackTableModel::hasCapabilities(
-        TrackModel::Capabilities caps) const {
-    return (getCapabilities() & caps) == caps;
-}

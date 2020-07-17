@@ -341,13 +341,13 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
                     doubleClickActionConfigValue);
 
     auto trackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return;
+    }
+
     if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::LoadToDeck)) {
-        VERIFY_OR_DEBUG_ASSERT(trackModel) {
-            return;
-        }
-
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             emit loadTrack(pTrack);
@@ -837,6 +837,18 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     // TODO(XXX): Care whether the append succeeded.
     m_pTrackCollectionManager->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
+}
+
+void WTrackTableView::slotAddToAutoDJBottom() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
+}
+
+void WTrackTableView::slotAddToAutoDJTop() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
+}
+
+void WTrackTableView::slotAddToAutoDJReplace() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {

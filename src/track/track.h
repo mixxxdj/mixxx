@@ -271,7 +271,10 @@ class Track : public QObject {
     CuePointer findCueById(int id) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
-    QList<CuePointer> getCuePoints() const;
+    QList<CuePointer> getCuePoints() const {
+        // Copying implicitly shared collections is thread-safe
+        return m_cuePoints;
+    }
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
@@ -313,10 +316,8 @@ class Track : public QObject {
     // If the corresponding image has already been loaded it
     // could be provided as a parameter to avoid reloading
     // if actually needed.
-    bool refreshCoverImageHash(
+    bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
-
-    quint16 getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
     void importMetadata(
