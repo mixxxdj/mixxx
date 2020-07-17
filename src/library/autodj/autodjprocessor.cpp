@@ -1245,33 +1245,21 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // If only the outro or intro length is marked but not both, use the one
         // that is marked for the transition time. If neither is marked, fall
         // back to the transition time from the spinbox.
-        if (outroLength > 0 && introLength > 0) {
-            if (outroLength > introLength) {
-                pFromDeck->fadeBeginPos = outroEnd - introLength;
-                pFromDeck->fadeEndPos = outroEnd;
-                pToDeck->startPos = introStart;
-            } else {
-                pFromDeck->fadeBeginPos = outroStart;
-                pFromDeck->fadeEndPos = outroEnd;
-                pToDeck->startPos = introStart;
+        if (outroLength > 0) {
+            if (introLength <= 0 || introLength > outroLength) {
+                // no intro defined, use outro lengh.
+                introLength = outroLength;
             }
-        } else if (outroLength > 0 && introLength <= 0) {
-            if (outroLength + introStart < pToDeck->fadeBeginPos) {
-                pFromDeck->fadeBeginPos = outroStart;
-            } else {
-                // This happens if the toDeck track has no intro set and the
-                // outro of the fromDeck track is longer than the whole toDeck
-                // track
-                outroLength = pToDeck->fadeBeginPos - introStart;
-                VERIFY_OR_DEBUG_ASSERT(outroLength > 0) {
+        }
+        if (introLength > 0) {
+            if (introStart + introLength > pToDeck->fadeBeginPos) {
+                // End intro before next outro starts
+                introLength = pToDeck->fadeBeginPos - introStart;
+                VERIFY_OR_DEBUG_ASSERT(introLength > 0) {
                     // We seek to intro start above in this case so this never happens
-                    outroLength = 1;
+                    introLength = 1;
                 }
-                pFromDeck->fadeBeginPos = outroEnd - outroLength;
             }
-            pFromDeck->fadeEndPos = outroEnd;
-            pToDeck->startPos = introStart;
-        } else if (introLength > 0 && outroLength <= 0) {
             pFromDeck->fadeBeginPos = outroEnd - introLength;
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
