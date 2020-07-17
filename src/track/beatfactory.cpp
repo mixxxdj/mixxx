@@ -119,10 +119,12 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         pGrid->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
+
         auto fixedBeats = BeatUtils::FixBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
-        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, fixedBeats);
-        pBeatMap->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
+        return mixxx::BeatsPointer(
+                new mixxx::BeatMap(track, iSampleRate, fixedBeats, subVersion),
+                &BeatFactory::deleteBeats);
+        
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
         return mixxx::BeatsPointer();

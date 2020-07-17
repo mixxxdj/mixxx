@@ -17,7 +17,7 @@
 
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
 // from the correct one
-constexpr double kBpmError = 0.05;
+constexpr double kMaxBpmError = 0.05;
 constexpr double kMaxSecsPhaseError = 0.025; //25ms
 
 // the raw beatgrid is divided into blocks of size N from which the local bpm is
@@ -32,7 +32,7 @@ const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
 
 QMap<int, double> BeatUtils::findTempoChanges(
-    QMap<double, int> tempoFrequency, QList<double> tempoList) {
+        QMap<double, int> tempoFrequency, QList<double> tempoList) {
 
     auto sortedTempoList = tempoList;
     std::sort(sortedTempoList.begin(), sortedTempoList.end());
@@ -48,33 +48,35 @@ QMap<int, double> BeatUtils::findTempoChanges(
     MovingMedian filterTempo(5); // 5 is the lenght our window
     int currentBeat = -1;
     int lastBeatChange = 0;
-    QMap<int, double> stableTemposAndPositions;
-    stableTemposAndPositions[lastBeatChange] = median;
+    QMap<int, double> stableTemposByPosition;
+    stableTemposByPosition[lastBeatChange] = median;
     // Here we are going to track the tempo changes over the track
     for (double tempo : tempoList) {
         currentBeat += 1;
         double newStableTempo = filterTempo(tempo);
-        // The analyzer has some jitter that causes a steady beat to fluctuate around
-        // the correct value so we don't consider tempos +-1 from that as changes
-        if (newStableTempo == stableTemposAndPositions.last()) {
+        // The analyzer has some jitter that causes a steady beat to fluctuate around the correct
+        // value so we don't consider changes to a neighboor value in the ordered tempoFrequency table
+        if (newStableTempo == stableTemposByPosition.last()) {
             continue;
-        } else if (stableTemposAndPositions.last() != tempoFrequency.lastKey() and
-                newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) + 1).key()) {
+        // Here we check if the new tempo is the right neighboor of the previous tempo
+        } else if (stableTemposByPosition.last() != tempoFrequency.lastKey() and
+                newStableTempo == (tempoFrequency.find(stableTemposByPosition.last()) + 1).key()) {
             continue;
-        } else if (stableTemposAndPositions.last() != tempoFrequency.firstKey() and
-                newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) - 1).key()) {
+        // Here we check if the new tempo is the left neighboor of the previous tempo
+        } else if (stableTemposByPosition.last() != tempoFrequency.firstKey() and
+                newStableTempo == (tempoFrequency.find(stableTemposByPosition.last()) - 1).key()) {
             continue;
         } else {
-            // this may not be case when our median window is even, we can't use it
-            // because find will return an iterator pointing to end that we will *
+            // This may not be case when our median window is even, we can't use it
+            // Because find will return an iterator pointing to end that we will *
             if (tempoFrequency.contains(newStableTempo)) {
                 lastBeatChange = currentBeat - filterTempo.lag();
-                stableTemposAndPositions[lastBeatChange] = newStableTempo;
+                stableTemposByPosition[lastBeatChange] = newStableTempo;
             }
         }
     }
-    stableTemposAndPositions[tempoList.count()] = median;
-    return stableTemposAndPositions;
+    stableTemposByPosition[tempoList.count()] = median;
+    return stableTemposByPosition;
 }
 
 
@@ -84,11 +86,11 @@ QVector<double> BeatUtils::FixBeatmap(
     QMap<double, int> tempoFrequency;
     QList<double> tempoList = computeWindowedBpmsAndFrequencyHistogram(
             rawBeats, 2, 1, sampleRate, &tempoFrequency);
-    QMap<int, double> stableTemposAndPositions = BeatUtils::findTempoChanges(
+    QMap<int, double> stableTemposByPosition = BeatUtils::findTempoChanges(
         tempoFrequency, tempoList);
     QVector<double> fixedBeats;
     // We only care about where the changes happened
-    auto tempoChanges = stableTemposAndPositions.keys();    
+    auto tempoChanges = stableTemposByPosition.keys();    
     for (int lastTempoChage = 0; 
                 lastTempoChage < tempoChanges.count() -1;
                 lastTempoChage++) {
@@ -102,7 +104,7 @@ QVector<double> BeatUtils::FixBeatmap(
     }
     // When correcting the phase of the beats we might have accidentally
     // computed the beats at the edges two times so now we fix that
-    auto tempoValues = stableTemposAndPositions.values();
+    auto tempoValues = stableTemposByPosition.values();
     std::sort(tempoValues.begin(), tempoValues.end());
     auto highestTempo = tempoValues.last();
     // Since highestTempo was filtered and not avaraged let's add a 5% margin
@@ -420,7 +422,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
          //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
          if (!foundFirstCorrectBeat &&
              filtered_bpm_frequency_table.contains(local_bpm) &&
-             fabs(local_bpm - filterWeightedAverageBpm) < kBpmError) {
+             fabs(local_bpm - filterWeightedAverageBpm) < kMaxBpmError) {
              firstCorrectBeatSample = beat_start;
              foundFirstCorrectBeat = true;
              if (sDebug) {
@@ -438,7 +440,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
              double time2 = (beat_end - firstCorrectBeatSample) / SampleRate;
              double correctedBpm = 60 * counter / time2;
 
-             if (fabs(correctedBpm - filterWeightedAverageBpm) <= kBpmError) {
+             if (fabs(correctedBpm - filterWeightedAverageBpm) <= kMaxBpmError) {
                  perfect_bpm += correctedBpm;
                  ++perfectBeats;
                  if (sDebug) {
@@ -456,7 +458,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
      // Round values that are within BPM_ERROR of a whole number.
      const double rounded_bpm = floor(perfectAverageBpm + 0.5);
      const double bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
-     bool perform_rounding = (bpm_diff <= kBpmError);
+     bool perform_rounding = (bpm_diff <= kMaxBpmError);
 
      // Finally, restrict the BPM to be within min_bpm and max_bpm.
      const double maybeRoundedBpm = perform_rounding ? rounded_bpm : perfectAverageBpm;
