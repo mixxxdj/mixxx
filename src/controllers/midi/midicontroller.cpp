@@ -202,6 +202,17 @@ void MidiController::commitTemporaryInputMappings() {
 
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value, mixxx::Duration timestamp) {
+    QByteArray byteArray;
+    byteArray.append(status);
+    byteArray.append(control);
+    byteArray.append(value);
+
+    ControllerEngine* pEngine = getEngine();
+    // pEngine is nullptr in tests.
+    if (pEngine) {
+        pEngine->handleInput(byteArray, timestamp);
+    }
+    // legacy stuff below
 
     // The rest of this function is for legacy mappings
     unsigned char channel = MidiUtils::channelFromStatus(status);
@@ -471,6 +482,8 @@ double MidiController::computeValue(
 
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
+    getEngine()->handleInput(data, timestamp);
+    // legacy stuff below
 
     MidiKey mappingKey(data.at(0), 0xFF);
 

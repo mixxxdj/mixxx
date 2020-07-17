@@ -102,7 +102,7 @@ ControlObject* controlFromConfigKey(const ConfigKey& key, bool bPersist,
     }
     // Don't warn if the control doesn't exist. Skins use this to create
     // controls.
-    ControlObject* pControl = ControlObject::getControl(key, false);
+    ControlObject* pControl = ControlObject::getControl(key, ControlFlag::NoWarnIfMissing);
 
     if (pControl) {
         if (pCreated) {

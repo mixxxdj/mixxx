@@ -205,16 +205,16 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
             if (effectiveEffectEnableState == EffectEnableState::Disabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade out (fade to dry signal)
-                SampleUtil::copy2WithRampingGain(pOutput,
-                        pInput, 0.0, 1.0,
-                        pOutput, 1.0, 0.0,
+                SampleUtil::linearCrossfadeBuffersOut(
+                        pOutput,
+                        pInput,
                         numSamples);
             } else if (effectiveEffectEnableState == EffectEnableState::Enabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade in (fade to wet signal)
-                SampleUtil::copy2WithRampingGain(pOutput,
-                        pInput, 1.0, 0.0,
-                        pOutput, 0.0, 1.0,
+                SampleUtil::linearCrossfadeBuffersIn(
+                        pOutput,
+                        pInput,
                         numSamples);
             }
         }

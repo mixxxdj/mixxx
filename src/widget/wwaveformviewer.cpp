@@ -13,7 +13,6 @@
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/math.h"
-#include "util/widgethelper.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 
@@ -31,16 +30,16 @@ WWaveformViewer::WWaveformViewer(
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
     setAcceptDrops(true);
-    m_pZoom = new ControlProxy(group, "waveform_zoom", this);
+    m_pZoom = new ControlProxy(group, "waveform_zoom", this, ControlFlag::NoAssertIfMissing);
     m_pZoom->connectValueChanged(this, &WWaveformViewer::onZoomChange);
 
     m_pScratchPositionEnable = new ControlProxy(
-            group, "scratch_position_enable", this);
+            group, "scratch_position_enable", this, ControlFlag::NoAssertIfMissing);
     m_pScratchPosition = new ControlProxy(
-            group, "scratch_position", this);
+            group, "scratch_position", this, ControlFlag::NoAssertIfMissing);
     m_pWheel = new ControlProxy(
-            group, "wheel", this);
-    m_pPlayEnabled = new ControlProxy(group, "play", this);
+            group, "wheel", this, ControlFlag::NoAssertIfMissing);
+    m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
@@ -88,11 +87,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
-                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
-                        *this,
-                        event->globalPos(),
-                        m_pCueMenuPopup->size());
-                m_pCueMenuPopup->popup(cueMenuTopLeft);
+                m_pCueMenuPopup->popup(event->globalPos());
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't

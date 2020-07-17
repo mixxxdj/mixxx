@@ -3,10 +3,12 @@
 #include <QMenu>
 #include <QModelIndex>
 #include <QPointer>
+#include <memory>
 
 #include "library/dao/playlistdao.h"
+#include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/trackref.h"
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -97,8 +99,8 @@ class WTrackMenu : public QMenu {
     // Info and metadata
     void slotShowTrackInfo();
     void slotShowDlgTagFetcher();
-    void slotImportTrackMetadataFromFileTags();
-    void slotExportTrackMetadataIntoFileTags();
+    void slotImportMetadataFromFileTags();
+    void slotExportMetadataIntoFileTags();
     void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
 
     // Playlist and crate
@@ -112,7 +114,7 @@ class WTrackMenu : public QMenu {
     void slotAddToAutoDJReplace();
 
     // Cover
-    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
+    void slotCoverInfoSelected(CoverInfoRelative coverInfo);
     void slotReloadCoverArt();
 
     // Library management
@@ -124,14 +126,20 @@ class WTrackMenu : public QMenu {
   private:
     // This getter verifies that m_pTrackModel is set when
     // invoked.
-    QModelIndexList getTrackIndices() const;
+    const QModelIndexList& getTrackIndices() const;
 
     TrackIdList getTrackIds() const;
+    QList<TrackRef> getTrackRefs() const;
 
-    // TODO: This function desperately needs to be replaced
-    // by an iterator pattern that loads (and drops) tracks
-    // lazily one-by-one during the traversal!!
-    TrackPointerList getTrackPointers(int maxSize = -1) const;
+    TrackPointer getFirstTrackPointer() const;
+
+    std::unique_ptr<mixxx::TrackPointerIterator> newTrackPointerIterator() const;
+
+    int applyTrackPointerOperation(
+            const QString& progressLabelText,
+            const mixxx::TrackPointerOperation* pTrackPointerOperation,
+            mixxx::ModalTrackBatchOperationProcessor::Mode operationMode =
+                    mixxx::ModalTrackBatchOperationProcessor::Mode::Apply) const;
 
     bool isEmpty() const {
         return getTrackCount() == 0;

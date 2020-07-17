@@ -90,6 +90,11 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_45);
 
+    LeadinTime1->setSuffix(" s");
+    LeadinTime2->setSuffix(" s");
+    LeadinTime3->setSuffix(" s");
+    LeadinTime4->setSuffix(" s");
+
     TroubleshootingLink->setText(QString("<a href='%1%2'>Troubleshooting</a>")
                                          .arg(MIXXX_MANUAL_URL)
                                          .arg("/chapters/vinyl_control.html#troubleshooting"));
@@ -136,19 +141,19 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 }
 
 void DlgPrefVinyl::slotVinylType1Changed(QString text) {
-    LeadinTime1->setText(QString("%1").arg(getDefaultLeadIn(text)));
+    LeadinTime1->setValue(getDefaultLeadIn(text));
 }
 
 void DlgPrefVinyl::slotVinylType2Changed(QString text) {
-    LeadinTime2->setText(QString("%1").arg(getDefaultLeadIn(text)));
+    LeadinTime2->setValue(getDefaultLeadIn(text));
 }
 
 void DlgPrefVinyl::slotVinylType3Changed(QString text) {
-    LeadinTime3->setText(QString("%1").arg(getDefaultLeadIn(text)));
+    LeadinTime3->setValue(getDefaultLeadIn(text));
 }
 
 void DlgPrefVinyl::slotVinylType4Changed(QString text) {
-    LeadinTime4->setText(QString("%1").arg(getDefaultLeadIn(text)));
+    LeadinTime4->setValue(getDefaultLeadIn(text));
 }
 
 /** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
@@ -185,10 +190,11 @@ void DlgPrefVinyl::slotResetToDefaults() {
     ComboBoxVinylSpeed2->setCurrentIndex(0);
     ComboBoxVinylSpeed3->setCurrentIndex(0);
     ComboBoxVinylSpeed4->setCurrentIndex(0);
-    LeadinTime1->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime2->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime3->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime4->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+
+    LeadinTime1->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
+    LeadinTime2->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
+    LeadinTime3->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
+    LeadinTime4->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
     SignalQualityEnable->setChecked(true);
     VinylGain->setValue(0);
     slotUpdateVinylGain();
@@ -246,14 +252,10 @@ void DlgPrefVinyl::slotUpdate() {
         ComboBoxVinylSpeed4->setCurrentIndex(combo_index);
 
     // set lead-in time
-    LeadinTime1->setText(config->getValue(
-            ConfigKey("[Channel1]", "vinylcontrol_lead_in_time"), "0"));
-    LeadinTime2->setText(config->getValue(
-            ConfigKey("[Channel2]", "vinylcontrol_lead_in_time"), "0"));
-    LeadinTime3->setText(config->getValue(
-            ConfigKey("[Channel3]", "vinylcontrol_lead_in_time"), "0"));
-    LeadinTime4->setText(config->getValue(
-            ConfigKey("[Channel4]", "vinylcontrol_lead_in_time"), "0"));
+    LeadinTime1->setValue((config->getValue(ConfigKey("[Channel1]", "vinylcontrol_lead_in_time"), "0")).toInt());
+    LeadinTime2->setValue((config->getValue(ConfigKey("[Channel2]", "vinylcontrol_lead_in_time"), "0")).toInt());
+    LeadinTime3->setValue((config->getValue(ConfigKey("[Channel3]", "vinylcontrol_lead_in_time"), "0")).toInt());
+    LeadinTime4->setValue((config->getValue(ConfigKey("[Channel4]", "vinylcontrol_lead_in_time"), "0")).toInt());
 
     SignalQualityEnable->setChecked(
             (bool)config->getValue<bool>(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")));
@@ -269,7 +271,7 @@ void DlgPrefVinyl::slotUpdate() {
     }
 }
 
-void DlgPrefVinyl::verifyAndSaveLeadInTime(QLineEdit* widget, QString group, QString vinyl_type) {
+void DlgPrefVinyl::verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QString vinyl_type) {
     QString strLeadIn = widget->text();
     bool isInteger;
     strLeadIn.toInt(&isInteger);
@@ -424,9 +426,7 @@ void DlgPrefVinyl::setDeck1WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 0) {
             m_signalWidgets[0]->show();
         }
-        LeadinLabel1->show();
         LeadinTime1->show();
-        SecondsLabel1->show();
     } else {
         VinylLabel1->hide();
         ComboBoxVinylType1->hide();
@@ -434,9 +434,7 @@ void DlgPrefVinyl::setDeck1WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 0) {
             m_signalWidgets[0]->hide();
         }
-        LeadinLabel1->hide();
         LeadinTime1->hide();
-        SecondsLabel1->hide();
     }
 }
 
@@ -448,9 +446,7 @@ void DlgPrefVinyl::setDeck2WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 1) {
             m_signalWidgets[1]->show();
         }
-        LeadinLabel2->show();
         LeadinTime2->show();
-        SecondsLabel2->show();
     } else {
         VinylLabel2->hide();
         ComboBoxVinylType2->hide();
@@ -458,9 +454,7 @@ void DlgPrefVinyl::setDeck2WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 1) {
             m_signalWidgets[1]->hide();
         }
-        LeadinLabel2->hide();
         LeadinTime2->hide();
-        SecondsLabel2->hide();
     }
 }
 
@@ -472,9 +466,7 @@ void DlgPrefVinyl::setDeck3WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 2) {
             m_signalWidgets[2]->show();
         }
-        LeadinLabel3->show();
         LeadinTime3->show();
-        SecondsLabel3->show();
     } else {
         VinylLabel3->hide();
         ComboBoxVinylType3->hide();
@@ -482,9 +474,7 @@ void DlgPrefVinyl::setDeck3WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 2) {
             m_signalWidgets[2]->hide();
         }
-        LeadinLabel3->hide();
         LeadinTime3->hide();
-        SecondsLabel3->hide();
     }
 }
 
@@ -496,9 +486,7 @@ void DlgPrefVinyl::setDeck4WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 3) {
             m_signalWidgets[3]->show();
         }
-        LeadinLabel4->show();
         LeadinTime4->show();
-        SecondsLabel4->show();
     } else {
         VinylLabel4->hide();
         ComboBoxVinylType4->hide();
@@ -506,8 +494,6 @@ void DlgPrefVinyl::setDeck4WidgetsVisible(bool visible) {
         if (m_signalWidgets.length() > 3) {
             m_signalWidgets[3]->hide();
         }
-        LeadinLabel4->hide();
         LeadinTime4->hide();
-        SecondsLabel4->hide();
     }
 }

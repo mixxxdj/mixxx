@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg10"
+   version="1.1"
+   height="19"
+   width="19">
+  <metadata
+     id="metadata16">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Mixxx 1.12+ iconset</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs14" />
+  <title
+     id="title2">Mixxx 1.12+ iconset</title>
+  <g
+     style="fill:#4097ba;fill-opacity:1"
+     id="g8"
+     transform="translate(0,-13)">
+    <g
+       style="fill:#4097ba;fill-opacity:1"
+       id="g6"
+       transform="matrix(.4151 0 0 .4151 -1.6604 19.547)">
+      <path
+         style="fill:#4097ba;fill-opacity:1"
+         id="path4"
+         stroke-width="0"
+         fill="#b3b3b3"
+         color="#000001"
+         d="m26.886-7.3406c-7.2888 0-14.454 7.1656-14.454 14.454 0 7.2888 7.1656 14.454 14.454 14.454 7.2888 0 14.454-7.1656 14.454-14.454 0-7.2888-7.1656-14.454-14.454-14.454zm-5.8398 6.5497c.52783 0 1.0474.20857 1.4519.61302l4.3879 4.3879 4.3879-4.3879c.8089-.8089 2.0949-.8089 2.9038 0 .8089.8089.8089 2.0949 0 2.9038l-4.3879 4.3879 4.3879 4.3879c.8089.8089.8089 2.0949 0 2.9038-.8089.8089-2.0949.8089-2.9038 0l-4.3879-4.3879-4.3879 4.3879c-.8089.8089-2.0949.8089-2.9038 0-.8089-.8089-.8089-2.0949 0-2.9038l4.3879-4.3879-4.3879-4.3879c-.8089-.8089-.8089-2.0949 0-2.9038.40445-.40445.92406-.61302 1.4519-.61302z" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,50 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob.
+  Variables:
+    group
+    control: The control to connect to
+    label
+    Size
+    TooltipId
+    PotiMinAngle
+    PotiMaxAngle
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <ObjectName>KnobCentered</ObjectName>
+        <Children>
+
+          <KnobComposed>
+            <TooltipId><Variable name="TooltipId"/></TooltipId>
+            <Size><Variable name="Size"/></Size>
+            <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="Color"/>.svg</Knob>
+            <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <ArcColor>#ff8800</ArcColor>
+            <ArcBgColor>#fff</ArcBgColor>
+            <ArcThickness>5</ArcThickness>
+            <ArcBgThickness>3</ArcBgThickness>
+            <KnobCenterYOffset>1.602</KnobCenterYOffset>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,<Variable name="Control"/></ConfigKey>
+            </Connection>
+          </KnobComposed>
+        </Children>
+      </WidgetGroup>
+
+      <Label>
+        <ObjectName>KnobLabel</ObjectName>
+        <Text><Variable name="Label"/></Text>
+      </Label>
+
+    </Children>
+  </WidgetGroup>
+</Template>

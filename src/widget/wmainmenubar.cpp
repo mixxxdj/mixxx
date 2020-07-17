@@ -679,7 +679,6 @@ VisibilityControlConnection::VisibilityControlConnection(
         : QObject(pParent),
           m_key(key),
           m_pAction(pAction) {
-    slotReconnectControl();
     connect(m_pAction, SIGNAL(triggered(bool)),
             this, SLOT(slotActionToggled(bool)));
 }
@@ -690,8 +689,7 @@ void VisibilityControlConnection::slotClearControl() {
 }
 
 void VisibilityControlConnection::slotReconnectControl() {
-    m_pControl.reset(new ControlProxy(this));
-    m_pControl->initialize(m_key, false);
+    m_pControl.reset(new ControlProxy(m_key, this, ControlFlag::NoAssertIfMissing));
     m_pControl->connectValueChanged(this, &VisibilityControlConnection::slotControlChanged);
     m_pAction->setEnabled(m_pControl->valid());
     slotControlChanged();

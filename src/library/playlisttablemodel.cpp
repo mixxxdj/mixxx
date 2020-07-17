@@ -78,8 +78,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
-            // the same value as the cover hash.
-            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
+            // the same value as the cover digest.
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
 
     QString queryString = QString(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
