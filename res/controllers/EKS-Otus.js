@@ -27,7 +27,7 @@ function EKSOtusController() {
         var name = undefined;
         var offset = 0;
 
-        packet = new HIDPacket("control", 0, undefined, [0x35]);
+        packet = new HIDPacket("control", 0, undefined, [0x0, 0x35]);
         packet.addControl("hid","wheel_position",2,"H");
         packet.addControl("hid","wheel_speed",4,"h");
         packet.addControl("hid","timestamp",6,"I");
