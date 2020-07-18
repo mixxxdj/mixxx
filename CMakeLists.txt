@@ -1522,6 +1522,7 @@ else()
     # Assemble a library based on the external project.
     add_library(mixxx-spleeter STATIC IMPORTED)
     add_dependencies(mixxx-spleeter spleeter)
+    set(Dspleeter_enable_tests "OFF")
     set(SPLEETER_INCLUDE_DIR "${SPLEETER_INSTALL_DIR}/include")
     set(SPLEETER_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}spleeter${CMAKE_STATIC_LIBRARY_SUFFIX}")
     set(SPLEETER_LIBRARY_DIR "${SPLEETER_INSTALL_DIR}/${SPLEETER_LIBRARY}")
