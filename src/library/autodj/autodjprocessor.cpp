@@ -1247,7 +1247,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // back to the transition time from the spinbox.
         if (outroLength > 0) {
             if (introLength <= 0 || introLength > outroLength) {
-                // no intro defined, use outro lengh.
+                // Use outro length when the intro is not defined or longer
+                // than the outro.
                 introLength = outroLength;
             }
         }
