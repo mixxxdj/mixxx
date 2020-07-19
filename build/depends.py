@@ -959,6 +959,7 @@ class MixxxCore(Feature):
                    "src/widget/wlabel.cpp",
                    "src/widget/wtracktext.cpp",
                    "src/widget/wnumber.cpp",
+                   "src/widget/wratedisplay.cpp",
                    "src/widget/wbeatspinbox.cpp",
                    "src/widget/wnumberdb.cpp",
                    "src/widget/wnumberpos.cpp",
