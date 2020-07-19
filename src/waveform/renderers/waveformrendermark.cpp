@@ -75,17 +75,16 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                     if (sampleEndPosition != Cue::kNoPosition) {
                         DEBUG_ASSERT(samplePosition < sampleEndPosition);
                         double currentMarkEndPoint =
-                                m_waveformRenderer
-                                        ->transformSamplePositionInRendererWorld(
-                                                sampleEndPosition);
+                                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                                        sampleEndPosition);
+                        QColor color = pMark->fillColor();
+                        color.setAlphaF(0.5);
                         painter->fillRect(
-                                QRect(QPoint(currentMarkPoint,
-                                              m_waveformRenderer->getHeight() -
-                                                      5),
+                                QRect(QPoint(currentMarkPoint, 0),
                                         QPoint(currentMarkEndPoint,
                                                 m_waveformRenderer
                                                         ->getHeight())),
-                                pMark->fillColor());
+                                QBrush(color, Qt::BDiagPattern));
                     }
                     marksOnScreen[pMark] = drawOffset;
                 }
@@ -103,10 +102,13 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                 m_waveformRenderer
                                         ->transformSamplePositionInRendererWorld(
                                                 sampleEndPosition);
-                        painter->fillRect(QRect(
-                                    QPoint(m_waveformRenderer->getWidth() - 5, currentMarkPoint),
-                                    QPoint(m_waveformRenderer->getWidth(), currentMarkEndPoint)),
-                                pMark->fillColor());
+                        QColor color = pMark->fillColor();
+                        color.setAlphaF(0.5);
+                        painter->fillRect(
+                                QRect(QPoint(0, currentMarkPoint),
+                                        QPoint(m_waveformRenderer->getWidth(),
+                                                currentMarkEndPoint)),
+                                QBrush(color, Qt::BDiagPattern));
                     }
                     marksOnScreen[pMark] = drawOffset;
                 }
