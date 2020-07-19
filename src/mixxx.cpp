@@ -702,12 +702,7 @@ void MixxxMainWindow::finalize() {
     }
 
     // Delete Controls created by skins
-    for (ControlObject* pControl : m_skinCreatedControls) {
-        VERIFY_OR_DEBUG_ASSERT(pControl) {
-            continue;
-        }
-        delete pControl;
-    }
+    qDeleteAll(m_skinCreatedControls);
     m_skinCreatedControls.clear();
 
     // TODO() Verify if this comment still applies:
