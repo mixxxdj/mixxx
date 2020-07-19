@@ -74,7 +74,11 @@ bool Controller::applyPreset(bool initializeScripts) {
         m_pEngine->initializeScripts(scriptFiles);
     }
 
-    if (initializeScripts) {
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    if (initializeScripts && !pPreset->moduleFileInfo().filePath().isEmpty()) {
         m_pEngine->loadModule(pPreset->moduleFileInfo());
     }
     return success;
