@@ -2069,29 +2069,31 @@ void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
     }
 
     // Set new control as active
-    if (pControl) {
-        QMutexLocker lock(&m_mutex);
-        if (!m_pLoadedTrack) {
-            return;
-        }
-
-        CuePointer pCue(pControl->getCue());
-
-        // Need to unlock before emitting any signals to prevent deadlock.
-        lock.unlock();
-
-        VERIFY_OR_DEBUG_ASSERT(pCue &&
-                pCue->getType() == mixxx::CueType::Loop &&
-                pCue->getEndPosition() != Cue::kNoPosition) {
-            return;
-        }
-
-        m_pCurrentSavedLoopControl = pControl;
-        qDebug() << "CueControl::setLoop" << pCue->getPosition()
-                 << pCue->getEndPosition();
-        setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
-        pControl->setStatus(HotcueControl::Status::Active);
+    if (!pControl) {
+        return;
     }
+
+    QMutexLocker lock(&m_mutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    CuePointer pCue(pControl->getCue());
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
+    VERIFY_OR_DEBUG_ASSERT(pCue &&
+            pCue->getType() == mixxx::CueType::Loop &&
+            pCue->getEndPosition() != Cue::kNoPosition) {
+        return;
+    }
+
+    m_pCurrentSavedLoopControl = pControl;
+    qDebug() << "CueControl::setLoop" << pCue->getPosition()
+             << pCue->getEndPosition();
+    setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
+    pControl->setStatus(HotcueControl::Status::Active);
 }
 
 void CueControl::slotLoopReset() {
