@@ -208,7 +208,7 @@ MC7000.init = function() {
     };
 
     // Activate Timer for Softtakeover to avoid conflicts with ControllerStatusSysex
-    engine.beginTimer(2000, "MC7000.delayedSoftTakeover", true);
+    engine.beginTimer(2000, MC7000.delayedSoftTakeover, true);
 };
 
 // Activate Softtakeover for Pitch Faders
