@@ -101,8 +101,8 @@
                     <TooltipId>rate_range_display</TooltipId>
                     <ObjectName>RateDisplayTop</ObjectName>
                     <Channel><Variable name="ChanNum" /></Channel>
-                    <NumberOfDigits>1</NumberOfDigits>
                     <Position>Top</Position>
+                    <Display>prefix</Display>
                   </RateDisplay>
                   <WidgetGroup>
                     <ObjectName></ObjectName>
@@ -113,8 +113,8 @@
                     <TooltipId>rate_range_display</TooltipId>
                     <ObjectName>RateDisplayBottom</ObjectName>
                     <Channel><Variable name="ChanNum" /></Channel>
-                    <NumberOfDigits>1</NumberOfDigits>
                     <Position>Bottom</Position>
+                    <Display>prefix</Display>
                   </RateDisplay>
                 </Children>
               </WidgetGroup>
@@ -150,6 +150,33 @@
                       <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
                     </Connection>
                   </SliderComposed>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <RateDisplay>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTop</ObjectName>
+                    <Channel><Variable name="ChanNum" /></Channel>
+                    <Position>Top</Position>
+                    <Display>range</Display>
+                  </RateDisplay>
+                  <WidgetGroup>
+                    <ObjectName></ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Layout>vertical</Layout>
+                  </WidgetGroup>
+                  <RateDisplay>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottom</ObjectName>
+                    <Channel><Variable name="ChanNum" /></Channel>
+                    <Position>Bottom</Position>
+                    <Display>range</Display>
+                  </RateDisplay>
                 </Children>
               </WidgetGroup>
 

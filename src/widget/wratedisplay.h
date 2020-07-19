@@ -9,6 +9,12 @@ enum class VerticalPosition {
     Bottom
 };
 
+enum class DisplayType {
+    Default,
+    Prefix,
+    Range
+};
+
 class WRateDisplay : public WNumber {
     Q_OBJECT
   public:
@@ -23,4 +29,6 @@ class WRateDisplay : public WNumber {
     ControlProxy* m_pRateRangeControl;
     ControlProxy* m_pRateDirControl;
     VerticalPosition m_nodePosition;
+    DisplayType m_nodeDisplay;
+    QString m_nodeText;
 };
