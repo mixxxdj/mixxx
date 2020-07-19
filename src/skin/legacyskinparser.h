@@ -134,9 +134,12 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QString lookupNodeGroup(const QDomElement& node);
     static QString getSharedGroupString(const QString& channelStr);
+    ControlObject* controlFromConfigKey(const ConfigKey& element,
+            bool bPersist,
+            bool* pCreated = nullptr);
     ControlObject* controlFromConfigNode(const QDomElement& element,
-                                         const QString& nodeName,
-                                         bool* created);
+            const QString& nodeName,
+            bool* pCreated = nullptr);
 
     QString parseLaunchImageStyle(const QDomNode& node);
     void parseChildren(const QDomElement& node, WWidgetGroup* pGroup);

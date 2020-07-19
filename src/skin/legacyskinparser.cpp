@@ -95,8 +95,8 @@ QSet<QString> LegacySkinParser::s_sharedGroupStrings;
 
 static bool sDebug = false;
 
-ControlObject* controlFromConfigKey(const ConfigKey& key, bool bPersist,
-                                    bool* pCreated) {
+ControlObject* LegacySkinParser::controlFromConfigKey(
+        const ConfigKey& key, bool bPersist, bool* pCreated) {
     if (key.isEmpty()) {
         return nullptr;
     }
@@ -121,15 +121,28 @@ ControlObject* controlFromConfigKey(const ConfigKey& key, bool bPersist,
     // button, actually make it a push button and set it to toggle.
     ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
     controlButton->setButtonMode(ControlPushButton::TOGGLE);
+
     if (pCreated) {
         *pCreated = true;
     }
+
+    // If we created this control, add it to the set of skin-created
+    // controls, so that it can be deleted when the MixxxMainWindow is
+    // destroyed.
+    VERIFY_OR_DEBUG_ASSERT(m_pSkinCreatedControls) {
+        qWarning() << "Can't add skin-created control" << key << "to set, control will be leaked!";
+        return controlButton;
+    }
+    DEBUG_ASSERT(!m_pSkinCreatedControls->contains(controlButton));
+
+    m_pSkinCreatedControls->insert(controlButton);
+
     return controlButton;
 }
 
 ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& element,
-                                                       const QString& nodeName,
-                                                       bool* created) {
+        const QString& nodeName,
+        bool* pCreated) {
     QDomElement keyElement = m_pContext->selectElement(element, nodeName);
     if (keyElement.isNull()) {
         return nullptr;
@@ -140,7 +153,7 @@ ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& elemen
 
     bool bPersist = m_pContext->selectAttributeBool(keyElement, "persist", false);
 
-    return controlFromConfigKey(key, bPersist, created);
+    return controlFromConfigKey(key, bPersist, pCreated);
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
@@ -363,10 +376,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         }
 
         if (created) {
-            // If we created this control, add it to the set of skin-created
-            // controls, so that it can be deleted when the MixxxMainWindow is
-            // destroyed.
-            m_pSkinCreatedControls->insert(pControl);
             if (!attribute.persist()) {
                 // Only set the value if the control wasn't set up through
                 // the persist logic.  Skin attributes are always
@@ -668,31 +677,26 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
-    bool createdNext = false;
-    ControlObject* pNextControl = controlFromConfigNode(
-            node.toElement(), "NextControl", &createdNext);
+    ControlObject* pNextControl = controlFromConfigNode(node.toElement(), "NextControl");
+    ;
     ConfigKey nextConfigKey;
     if (pNextControl != nullptr) {
         nextConfigKey = pNextControl->getKey();
     }
 
-    bool createdPrev = false;
-    ControlObject* pPrevControl = controlFromConfigNode(
-            node.toElement(), "PrevControl", &createdPrev);
+    ControlObject* pPrevControl = controlFromConfigNode(node.toElement(), "PrevControl");
     ConfigKey prevConfigKey;
     if (pPrevControl != nullptr) {
         prevConfigKey = pPrevControl->getKey();
     }
 
-    bool createdCurrentPage = false;
     ControlObject* pCurrentPageControl = NULL;
     ConfigKey currentPageConfigKey;
     QString currentpage_co = node.attribute("currentpage");
     if (currentpage_co.length() > 0) {
         ConfigKey configKey = ConfigKey::parseCommaSeparated(currentpage_co);
         bool persist = m_pContext->selectAttributeBool(node, "persist", false);
-        pCurrentPageControl = controlFromConfigKey(configKey, persist,
-                                                   &createdCurrentPage);
+        pCurrentPageControl = controlFromConfigKey(configKey, persist);
         if (pCurrentPageControl != nullptr) {
             currentPageConfigKey = pCurrentPageControl->getKey();
         }
@@ -703,27 +707,6 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     commonWidgetSetup(node, pStack);
-
-    if (createdNext && pNextControl) {
-        // If we created this control, add it to the set of skin-created
-        // controls, so that it can be deleted when the MixxxMainWindow is
-        // destroyed.
-        m_pSkinCreatedControls->insert(pNextControl);
-    }
-
-    if (createdPrev && pPrevControl) {
-        // If we created this control, add it to the set of skin-created
-        // controls, so that it can be deleted when the MixxxMainWindow is
-        // destroyed.
-        m_pSkinCreatedControls->insert(pPrevControl);
-    }
-
-    if (createdCurrentPage && pCurrentPageControl) {
-        // If we created this control, add it to the set of skin-created
-        // controls, so that it can be deleted when the MixxxMainWindow is
-        // destroyed.
-        m_pSkinCreatedControls->insert(pCurrentPageControl);
-    }
 
     QWidget* pOldParent = m_pParent;
     m_pParent = pStack;
@@ -764,14 +747,7 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
             QString trigger_configkey = element.attribute("trigger");
             if (trigger_configkey.length() > 0) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
-                bool created;
-                pControl = controlFromConfigKey(configKey, false, &created);
-                if (pControl && created) {
-                    // If we created this control, add it to the set of skin-created
-                    // controls, so that it can be deleted when the MixxxMainWindow is
-                    // destroyed.
-                    m_pSkinCreatedControls->insert(pControl);
-                }
+                pControl = controlFromConfigKey(configKey, false);
             }
             int on_hide_select = -1;
             QString on_hide_attr = element.attribute("on_hide_select");
@@ -1127,8 +1103,7 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseBeatSpinBox(const QDomElement& node) {
-    bool createdValueControl = false;
-    ControlObject* valueControl = controlFromConfigNode(node.toElement(), "Value", &createdValueControl);
+    ControlObject* valueControl = controlFromConfigNode(node.toElement(), "Value");
 
     ConfigKey configKey;
     if (valueControl != nullptr) {
@@ -1138,13 +1113,6 @@ QWidget* LegacySkinParser::parseBeatSpinBox(const QDomElement& node) {
     WBeatSpinBox* pSpinbox = new WBeatSpinBox(m_pParent, configKey);
     commonWidgetSetup(node, pSpinbox);
     pSpinbox->setup(node, *m_pContext);
-
-    if (createdValueControl && valueControl) {
-        // If we created this control, add it to the set of skin-created
-        // controls, so that it can be deleted when the MixxxMainWindow is
-        // destroyed.
-        m_pSkinCreatedControls->insert(valueControl);
-    }
 
     return pSpinbox;
 }
@@ -1996,9 +1964,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             !con.isNull();
             con = con.nextSibling()) {
         // Check that the control exists
-        bool created = false;
-        ControlObject* control = controlFromConfigNode(
-                con.toElement(), "ConfigKey", &created);
+        ControlObject* control = controlFromConfigNode(con.toElement(), "ConfigKey");
 
         if (control == nullptr) {
             continue;
@@ -2018,13 +1984,6 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     new ControlWidgetPropertyConnection(pWidget, control->getKey(),
                                                         pTransformer, property);
             pWidget->addPropertyConnection(pConnection);
-
-            // If we created this control, add it to the set of skin-created
-            // controls, so that it can be deleted when the MixxxMainWindow is
-            // destroyed.
-            if (created) {
-                m_pSkinCreatedControls->insert(control);
-            }
         } else {
             bool nodeValue;
             Qt::MouseButton state = parseButtonState(con, *m_pContext);
@@ -2087,13 +2046,6 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     pWidget, control->getKey(), pTransformer,
                     static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
                     static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
-
-            // If we created this control, add it to the set of skin-created
-            // controls, so that it can be deleted when the MixxxMainWindow is
-            // destroyed.
-            if (created) {
-                m_pSkinCreatedControls->insert(control);
-            }
 
             switch (state) {
             case Qt::NoButton:
