@@ -374,11 +374,17 @@ void CueControl::detachCue(HotcueControl* pControl) {
     VERIFY_OR_DEBUG_ASSERT(pControl) {
         return;
     }
+
     CuePointer pCue(pControl->getCue());
     if (!pCue) {
         return;
     }
+
     disconnect(pCue.get(), 0, this, 0);
+
+    if (m_pCurrentSavedLoopControl == pControl) {
+        m_pCurrentSavedLoopControl = nullptr;
+    }
     pControl->resetCue();
 }
 
