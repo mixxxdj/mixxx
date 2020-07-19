@@ -52,9 +52,17 @@ inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
+    /// Describes the current status of the hotcue
     enum class Status {
+        /// Hotuce not set
         Invalid = 0,
+        /// Hotcue is set and can be used
         Valid = 1,
+        /// Hotcue is currently active (this only applies to Saved Loop cues
+        /// while their loop is enabled). This status can be used by skins or
+        /// controller mappings  to highlight a currently active saved loop,
+        /// because resizing or moving the loop will make persistent changed to
+        /// the cue.
         Active = 2,
     };
 
