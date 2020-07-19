@@ -1099,14 +1099,8 @@ QWidget* LegacySkinParser::parseRateDisplay(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    QColor c(255,255,255);
-    QString cStr;
-    if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
-    }
-
     QPalette palette;
-    //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
+
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
     WNumberRate* p = new WNumberRate(group, m_pParent);
