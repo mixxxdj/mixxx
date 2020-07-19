@@ -1086,13 +1086,8 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseRateDisplay(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    QColor c(255,255,255);
-    QString cStr;
-    if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
-    }
-
     QPalette palette;
+
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
     WRateDisplay* p = new WRateDisplay(group, m_pParent);
