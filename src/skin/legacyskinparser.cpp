@@ -145,25 +145,28 @@ ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& elemen
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_pKeyboard(NULL),
-          m_pPlayerManager(NULL),
-          m_pControllerManager(NULL),
-          m_pLibrary(NULL),
-          m_pVCManager(NULL),
-          m_pEffectsManager(NULL),
-          m_pRecordingManager(NULL),
-          m_pParent(NULL) {
+          m_pSkinCreatedControls(nullptr),
+          m_pKeyboard(nullptr),
+          m_pPlayerManager(nullptr),
+          m_pControllerManager(nullptr),
+          m_pLibrary(nullptr),
+          m_pVCManager(nullptr),
+          m_pEffectsManager(nullptr),
+          m_pRecordingManager(nullptr),
+          m_pParent(nullptr) {
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
-                                   KeyboardEventFilter* pKeyboard,
-                                   PlayerManager* pPlayerManager,
-                                   ControllerManager* pControllerManager,
-                                   Library* pLibrary,
-                                   VinylControlManager* pVCMan,
-                                   EffectsManager* pEffectsManager,
-                                   RecordingManager* pRecordingManager)
+        QSet<ControlObject*>* pSkinCreatedControls,
+        KeyboardEventFilter* pKeyboard,
+        PlayerManager* pPlayerManager,
+        ControllerManager* pControllerManager,
+        Library* pLibrary,
+        VinylControlManager* pVCMan,
+        EffectsManager* pEffectsManager,
+        RecordingManager* pRecordingManager)
         : m_pConfig(pConfig),
+          m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
           m_pControllerManager(pControllerManager),
@@ -172,6 +175,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pEffectsManager(pEffectsManager),
           m_pRecordingManager(pRecordingManager),
           m_pParent(NULL) {
+    DEBUG_ASSERT(m_pSkinCreatedControls);
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -320,8 +324,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
     SkinManifest manifest = getSkinManifest(skinDocument);
 
-    // Keep track of created attribute controls so we can parent them.
-    QList<ControlObject*> created_attributes;
     // Apply SkinManifest attributes by looping through the proto.
     for (int i = 0; i < manifest.attribute_size(); ++i) {
         const SkinManifest::Attribute& attribute = manifest.attribute(i);
@@ -361,7 +363,10 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         }
 
         if (created) {
-            created_attributes.append(pControl);
+            // If we created this control, add it to the set of skin-created
+            // controls, so that it can be deleted when the MixxxMainWindow is
+            // destroyed.
+            m_pSkinCreatedControls->insert(pControl);
             if (!attribute.persist()) {
                 // Only set the value if the control wasn't set up through
                 // the persist logic.  Skin attributes are always
@@ -392,12 +397,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         return NULL;
     } else if (widgets.size() > 1) {
         SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced more than 1 widget!";
-    }
-    // Because the config is destroyed before MixxxMainWindow, we need to
-    // parent the attributes to some other widget.  Otherwise they won't
-    // be able to persist because the config will have already been deleted.
-    foreach(ControlObject* pControl, created_attributes) {
-        pControl->setParent(widgets[0]);
     }
     return widgets[0];
 }
@@ -706,15 +705,24 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     commonWidgetSetup(node, pStack);
 
     if (createdNext && pNextControl) {
-        pNextControl->setParent(pStack);
+        // If we created this control, add it to the set of skin-created
+        // controls, so that it can be deleted when the MixxxMainWindow is
+        // destroyed.
+        m_pSkinCreatedControls->insert(pNextControl);
     }
 
     if (createdPrev && pPrevControl) {
-        pPrevControl->setParent(pStack);
+        // If we created this control, add it to the set of skin-created
+        // controls, so that it can be deleted when the MixxxMainWindow is
+        // destroyed.
+        m_pSkinCreatedControls->insert(pPrevControl);
     }
 
-    if (pCurrentPageControl != nullptr && createdCurrentPage) {
-        pCurrentPageControl->setParent(pStack);
+    if (createdCurrentPage && pCurrentPageControl) {
+        // If we created this control, add it to the set of skin-created
+        // controls, so that it can be deleted when the MixxxMainWindow is
+        // destroyed.
+        m_pSkinCreatedControls->insert(pCurrentPageControl);
     }
 
     QWidget* pOldParent = m_pParent;
@@ -758,10 +766,11 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
                 pControl = controlFromConfigKey(configKey, false, &created);
-                if (pControl != nullptr && created) {
-                    // If we created the control, parent it to the child widget so
-                    // it doesn't leak.
-                    pControl->setParent(pChild);
+                if (pControl && created) {
+                    // If we created this control, add it to the set of skin-created
+                    // controls, so that it can be deleted when the MixxxMainWindow is
+                    // destroyed.
+                    m_pSkinCreatedControls->insert(pControl);
                 }
             }
             int on_hide_select = -1;
@@ -1130,8 +1139,11 @@ QWidget* LegacySkinParser::parseBeatSpinBox(const QDomElement& node) {
     commonWidgetSetup(node, pSpinbox);
     pSpinbox->setup(node, *m_pContext);
 
-    if (createdValueControl && valueControl != nullptr) {
-        valueControl->setParent(pSpinbox);
+    if (createdValueControl && valueControl) {
+        // If we created this control, add it to the set of skin-created
+        // controls, so that it can be deleted when the MixxxMainWindow is
+        // destroyed.
+        m_pSkinCreatedControls->insert(valueControl);
     }
 
     return pSpinbox;
@@ -2007,11 +2019,11 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                                                         pTransformer, property);
             pWidget->addPropertyConnection(pConnection);
 
-            // If we created this control, bind it to the
-            // ControlWidgetConnection so that it is deleted when the connection
-            // is deleted.
+            // If we created this control, add it to the set of skin-created
+            // controls, so that it can be deleted when the MixxxMainWindow is
+            // destroyed.
             if (created) {
-                control->setParent(pConnection);
+                m_pSkinCreatedControls->insert(control);
             }
         } else {
             bool nodeValue;
@@ -2076,11 +2088,11 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
                     static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
 
-            // If we created this control, bind it to the
-            // ControlWidgetConnection so that it is deleted when the connection
-            // is deleted.
+            // If we created this control, add it to the set of skin-created
+            // controls, so that it can be deleted when the MixxxMainWindow is
+            // destroyed.
             if (created) {
-                control->setParent(pConnection);
+                m_pSkinCreatedControls->insert(control);
             }
 
             switch (state) {
