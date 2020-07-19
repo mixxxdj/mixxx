@@ -61,7 +61,7 @@ class HotcueControl : public QObject {
         /// Hotcue is currently active (this only applies to Saved Loop cues
         /// while their loop is enabled). This status can be used by skins or
         /// controller mappings to highlight a currently active saved loop,
-        /// because resizing or moving the loop will make persistent changed to
+        /// because resizing or moving the loop will make persistent changes to
         /// the cue.
         Active = 2,
     };
