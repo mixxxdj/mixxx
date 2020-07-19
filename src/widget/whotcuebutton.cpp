@@ -70,7 +70,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 void WHotcueButton::mousePressEvent(QMouseEvent* e) {
     const bool rightClick = e->button() == Qt::RightButton;
     if (rightClick) {
-        if (readDisplayValue() == 1) {
+        if (readDisplayValue()) {
             // hot cue is set
             TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(m_group);
             if (!pTrack) {
