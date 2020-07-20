@@ -23,6 +23,13 @@ env:
     # Render analyzer waveform tests to an offscreen buffer
     - QT_QPA_PLATFORM=offscreen
 
+    # Code signing secrets:
+    - MACOS_CODESIGN_CERTIFICATE=build/certificates/macos_developer_id_codesign_certificate.p12
+    # MACOS_CODESIGN_CERTIFICATE_PASSWORD:
+    - secure: MnQzTJBkeHsRkNov7yoNIlEM5Exo6JvdmRS+z6OPQFuJn+yc8WyeUrW2JhVtVsGFO/fCqcIyymIOSFIEz78eoRj1PL0w2tj3ptBqUAJWupP2mmobKcPY3NYTOhOmOsv8rqlJbPdLxop1pyLaLBFWyGKOgI2xJz8LPHGN5ZINfCY=
+    # MACOS_CODESIGN_OPENSSL_PASSWORD:
+    - secure: NJegC0Dag0V8hotFB7u3rSPGnGQzp0JQpRTH1qL8bveUmrTOL26viPeX4vLXwn/RJKZkuUsDBxDSFy/sfVvfaLdAgd5USOV9QLF7lc3z1+t4BWbZ4xDBXCYOWuaQlgqE1k5W7s9wl1DgDFNxBSc46X04h9BZNonz1z0A9IAhn+k=
+
 jobs:
   include:
     - name: Ubuntu/gcc/SCons build
@@ -146,6 +153,15 @@ jobs:
         CMAKE_BUILD_PARALLEL_LEVEL=4
         CTEST_PARALLEL_LEVEL=1
       before_install:
+        # Create a temporary keychain for the certificate and import it.
+        - |
+          if [ "$TRAVIS_REPO_SLUG" = "mixxxdj/mixxx" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+            openssl enc -aes-256-cbc -d -md sha512 -k ${MACOS_CODESIGN_OPENSSL_PASSWORD} -in ${MACOS_CODESIGN_CERTIFICATE}.enc -out ${MACOS_CODESIGN_CERTIFICATE};
+            security create-keychain -p mixxx Mixxx.keychain;
+            security unlock-keychain -p mixxx Mixxx.keychain;
+            security import ${MACOS_CODESIGN_CERTIFICATE} -k Mixxx.keychain -P ${MACOS_CODESIGN_CERTIFICATE_PASSWORD};
+            export CPACKFLAGS="-DCPACK_BUNDLE_APPLE_CERT_APP=\"Developer ID Application: RJ Skerry-Ryan (FLYL4D545V)\"";
+          fi
         # Print some information about CMake and ccache
         - cmake --version
         - ccache -s
@@ -163,7 +179,7 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} ..
         - cmake --build .
-        - cpack -G Bundle
+        - cpack -G Bundle $CPACKFLAGS
       script:
         # Run tests and benchmarks
         - ctest --timeout 45
