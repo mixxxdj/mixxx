@@ -289,7 +289,7 @@
       <!-- ToDo ronso0 :: Unfortunately, variables are not considered here, yet ;)
           because the launch screen appears while the skin is parsed.
       image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
-      image: url(skin:/classic/style/mixxx_logo.svg);
+      image: url(skin:/palemoon/style/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
@@ -299,7 +299,7 @@
       max-height: 40px;
     }
     QProgressBar {
-      background: url(skin:/classic/style/progressbar_bg.svg);
+      background: url(skin:/palemoon/style/progressbar_bg.svg);
       border: none;
       min-width: 164px;
       min-height: 5px;
@@ -307,7 +307,7 @@
       max-height: 5px;
     }
     QProgressBar::chunk {
-      background: url(skin:/classic/style/progressbar.svg);
+      background: url(skin:/palemoon/style/progressbar.svg);
     }
   </LaunchImageStyle>
 
