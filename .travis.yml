@@ -22,6 +22,8 @@ env:
     - CTEST_OUTPUT_ON_FAILURE=1
     # Render analyzer waveform tests to an offscreen buffer
     - QT_QPA_PLATFORM=offscreen
+    # DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD for deploys.
+    - secure: aS40s8gx1mM01oRj2pskFqR+rBID1nnTY7hwSqkT1bgJT+JF0tMZt/SkMjR08bp+3soNbBtqJgZKAhQ6Tts2DtkWQGbUiXgU5QpowUcecTxge/jqxZeWdJWThpB+qWs70Fm0QhzZXIyBPM8EGljWbLum5ncR7AUBEasRboNZ0P8=
 
 jobs:
   include:
@@ -224,3 +226,12 @@ addons:
 notifications:
   webhooks:
     - https://mixxx.zulipchat.com/api/v1/external/travis?stream=travis&topic=build-status&api_key=$ZULIP_API_KEY
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  # Deploy is executed from cmake_build.
+  script: ../build/travis/deploy.sh
+  on:
+    all_branches: true
+    condition: "\"${TRAVIS_JOB_NAME}\" =~ CMake"
