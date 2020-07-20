@@ -736,7 +736,8 @@ void Tooltips::addStandardTooltips() {
     add("track_time")
             << tr("Track Time")
             << tr("Displays the elapsed and/or remaining time of the track loaded.")
-            << tr("Click to toggle between time elapsed/remaining time/both.");
+            << tr("Click to toggle between time elapsed/remaining time/both.")
+            << tr("Hint: Change the time format in Preferences -> Decks.");
 
     add("track_duration")
             << tr("Track Duration")
