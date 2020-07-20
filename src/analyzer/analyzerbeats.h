@@ -42,6 +42,7 @@ class AnalyzerBeats : public Analyzer {
     const bool m_enforceBpmDetection;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
+    bool m_bPreferencesReanalyzeImported;
     bool m_bPreferencesFixedTempo;
     bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;

@@ -8,6 +8,7 @@
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
+#include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/beatutils.h"
@@ -32,6 +33,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
         : m_bpmSettings(pConfig),
           m_enforceBpmDetection(enforceBpmDetection),
           m_bPreferencesReanalyzeOldBpm(false),
+          m_bPreferencesReanalyzeImported(false),
           m_bPreferencesFixedTempo(true),
           m_bPreferencesOffsetCorrection(false),
           m_bPreferencesFastAnalysis(false),
@@ -67,6 +69,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesFixedTempo = m_bpmSettings.getFixedTempoAssumption();
     m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
+    m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
     if (availablePlugins().size() > 0) {
@@ -180,6 +183,9 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
             iMinBpm,
             iMaxBpm,
             extraVersionInfo);
+    if (subVersion == mixxx::rekordboxconstants::beatsSubversion) {
+        return m_bPreferencesReanalyzeImported;
+    }
     if (version == newVersion && subVersion == newSubVersion) {
         // If the version and settings have not changed then if the world is
         // sane, re-analyzing will do nothing.

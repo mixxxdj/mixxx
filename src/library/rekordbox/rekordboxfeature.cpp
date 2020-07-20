@@ -19,6 +19,7 @@
 #include "library/queryutil.h"
 #include "library/rekordbox/rekordbox_anlz.h"
 #include "library/rekordbox/rekordbox_pdb.h"
+#include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
@@ -857,7 +858,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
             QHash<QString, QString> extraVersionInfo;
 
             auto pBeats = new mixxx::BeatMap(*track, sampleRate, beats);
-            pBeats->setSubVersion(QStringLiteral("Rekordbox"));
+            pBeats->setSubVersion(mixxx::rekordboxconstants::beatsSubversion);
             track->setBeats(mixxx::BeatsPointer(pBeats));
         } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {

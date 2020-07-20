@@ -17,6 +17,7 @@
 #define BPM_FIXED_TEMPO_ASSUMPTION "BeatDetectionFixedTempoAssumption"
 #define BPM_FIXED_TEMPO_OFFSET_CORRECTION "FixedTempoOffsetCorrection"
 #define BPM_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
+#define BPM_REANALYZE_IMPORTED "ReanalyzeImported"
 #define BPM_FAST_ANALYSIS_ENABLED "FastAnalysisEnabled"
 
 #define BPM_RANGE_START "BPMRangeStart"
@@ -41,6 +42,8 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(ReanalyzeWhenSettingsChange, bool,
                               BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE, false);
+
+    DEFINE_PREFERENCE_HELPERS(ReanalyzeImported, bool, BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE, false);
 
     DEFINE_PREFERENCE_HELPERS(FastAnalysis, bool,
                               BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED, false);
