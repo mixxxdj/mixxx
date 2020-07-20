@@ -291,8 +291,14 @@ WSearchLineEdit {
 }
 
 #BpmRateTapContainer:hover,
-#PlayPositionText:hover {
+#PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
+  border-radius: 1px;
+}
+
+#TitleText[highlight="1"]:hover, #TitleTextSmall[highlight="1"]:hover,
+#ArtistText[highlight="1"]:hover, #ArtistTextSmall[highlight="1"]:hover {
+  background-color: #171719;
   border-radius: 1px;
 }
 
