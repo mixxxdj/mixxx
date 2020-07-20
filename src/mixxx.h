@@ -184,6 +184,8 @@ class MixxxMainWindow : public QMainWindow {
     ControlPushButton* m_pTouchShift;
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
 
+    QSet<ControlObject*> m_skinCreatedControls;
+
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;
 };
