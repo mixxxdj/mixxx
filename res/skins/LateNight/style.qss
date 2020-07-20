@@ -320,10 +320,9 @@ WSpinny { /*
 
 #RateDisplayTop, #RateDisplayBottom {
   qproperty-alignment: 'AlignRight';
-  color: rgba(255, 255, 255, 0.5);
+  color: #888;
   font-size: 12px;
-  position: relative;
-  margin-right: -25px;
+  line-height: 10px;
 }
 
 #BpmText,
