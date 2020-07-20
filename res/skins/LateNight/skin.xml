@@ -419,7 +419,7 @@
                 This view needs to be set up first because it instantiates
                 the mini deck Singletons we need in maximized library view. -->
                 <Splitter>
-                  <ObjectName>HorizontalSplitter</ObjectName>
+                  <ObjectName>WaveformSplitter</ObjectName>
                   <Orientation>vertical</Orientation>
                   <SizePolicy>me,min</SizePolicy>
                   <SplitSizes>100,550</SplitSizes>

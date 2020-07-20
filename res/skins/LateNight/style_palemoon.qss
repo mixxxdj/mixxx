@@ -69,11 +69,14 @@
 #FxUnitHeaderCollapsed,
 #FxUnitHeaderExpanded,
 #SamplerExpandBox,
-#VerticalSplitter::handle,
 #SearchLineBox,
 #LibExpandBox,
 #SidebarBox,
 #PreviewDeck,
+#SidebarCoverSplitter,
+#SidebarCoverSplitter:handle,
+#LibrarySplitter,
+#LibrarySplitter::handle,
 WLibrary, QAbstractScrollArea::corner {
   border-top: 1px solid #212123;
   border-right: 1px solid #111;
@@ -92,6 +95,10 @@ WLibrary, QAbstractScrollArea::corner {
     border-radius: 0px;
   }
 
+  #SidebarSearchPreviewContainer {
+    background-color: #0f0f0f;
+  }
+
   WLibrary,
   #SidebarBox {
     padding: 2px 0px 0px 2px;
@@ -103,24 +110,34 @@ WLibrary, QAbstractScrollArea::corner {
       border-top-left-radius: 0px;
     }
   WLibrary,
-  #VerticalSplitter::handle {
+  #SidebarCoverSplitter,
+  #SidebarCoverSplitter::handle,
+  #LibrarySplitter,
+  #LibrarySplitter::handle {
     border-radius: 0px;
     }
-    #VerticalSplitter::handle {
+    #SidebarCoverSplitter,
+    #SidebarCoverSplitter::handle {
+      border-width: 0px;
+    }
+    #LibrarySplitter {
+      border-width: 0px;
+      }
+      #LibrarySplitter::handle {
+        border-width: 1px 0px 0px 0px;
+      }
+    WLibrary {
       border-width: 1px 0px 0px 0px;
     }
-  WLibrary {
-    border-width: 1px 0px 0px 0px;
-  }
-  QAbstractScrollArea::corner {
-    border: 0px;
-  }
   #LibraryContainer QScrollBar::handle:horizontal,
   #LibraryContainer QScrollBar::handle:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
     background-color: #333338;
-  }
+    }
+    QAbstractScrollArea::corner {
+      border: 0px;
+    }
 
 /* recessed regions */
 #WaveformBox1,
@@ -2520,34 +2537,41 @@ WSearchLineEdit {
   splits
   - Waveforms / Decks/FX/etc
   - Library sidebar / Lib Coverart */
-#HorizontalSplitter {
+#WaveformSplitter,
+#SidebarCoverSplitter {
   padding: 0px;
   margin: 0px;
   }
-  #HorizontalSplitter::handle {
-      image: url(skin:/palemoon/style/splitter_handle_horizontal_unchecked.png);
+  #WaveformSplitter::handle,
+  #SidebarCoverSplitter::handle {
+      image: url(skin:/palemoon/style/splitter_handle_horizontal.svg);
       height: 9px;
     }
-    #HorizontalSplitter::handle:pressed,
-    /* doesn't catch hover state */
-    #HorizontalSplitter::handle:hover {
-      image: url(skin:/palemoon/style/splitter_handle_horizontal_checked.png);
+    #WaveformSplitter::handle:pressed,
+    #SidebarCoverSplitter::handle:pressed
+    /* doesn't catch hover state
+    #HorizontalSplitter::handle:hover,
+    #HorizontalSplitter::handle[hover="true"] */ {
+      image: url(skin:/palemoon/style/splitter_handle_horizontal_checked.svg);
     }
 
 /* VerticalSplitter (the splitter itself is vertical)
   splits
   * Library sidebar / Tracks table */
-#VerticalSplitter {
+#LibrarySplitter {
+  padding: 0px;
+  margin: 0px;
   }
-  #VerticalSplitter::handle {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_unchecked.png);
+  #LibrarySplitter::handle {
+    image: url(skin:/palemoon/style/splitter_handle_vertical.svg);
+    padding: 0px;
+    margin: 0px;
     /* 'height' works although it's actually the width of the handle */
     height: 6px;
   }
-  #VerticalSplitter::handle:pressed,
-    /* doesn't catch hover state */
-  #VerticalSplitter::handle:hover {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_checked.png);
+  #LibrarySplitter::handle:pressed,
+  #LibrarySplitter::handle:hover {
+    image: url(skin:/palemoon/style/splitter_handle_vertical_checked.svg);
   }
 /************ splitters ***********************/
 

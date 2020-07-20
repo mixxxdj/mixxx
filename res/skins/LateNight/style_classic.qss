@@ -2150,41 +2150,46 @@ WSearchLineEdit {
   Used to split
   - Waveforms & Decks/FX/etc
   - Library feature & Coverart */
-#HorizontalSplitter {
+#WaveformSplitter,
+#SidebarCoverSplitter {
   padding: 0px;
   margin: 0px;
 }
 
-#HorizontalSplitter::handle {
+#WaveformSplitter::handle,
+#SidebarCoverSplitter::handle {
     image: url(skin:/classic/style/splitter_handle_horizontal_unchecked.png); /*
     border-top: 1px solid #000; */
   }
-  #HorizontalSplitter::handle:pressed,
-  #HorizontalSplitter::handle:hover {
+  #WaveformSplitter::handle:pressed,
+  #WaveformSplitter::handle:hover,
+  #SidebarCoverSplitter::handle:pressed,
+  #SidebarCoverSplitter::handle:hover {
     image: url(skin:/classic/style/splitter_handle_horizontal_checked.png);
   }
-#HorizontalSplitter::handle:vertical {
+  #WaveformSplitter::handle:vertical,
+  #SidebarCoverSplitter::handle:vertical {
   height: 9px;
 }
 
-/* VerticalSplitter
+/* LibrarySplitter
   (the splitter itself is vertical)
   Used to split Library sidebar & Tracks table */
-#VerticalSplitter {
+#LibrarySplitter {
   border-top: 1px solid #333333;
 }
-#VerticalSplitter::handle { /*
+#LibrarySplitter::handle { /*
   background-image: url(skin:/classic/style/library_splitter_handle_unchecked.svg);
   background-position: center top;
   background-repeat: no-repeat;  */
   image: url(skin:/classic/style/splitter_handle_vertical_unchecked.png);
   background-color: #1e1e1e;
 }
-#VerticalSplitter::handle:pressed,
-#VerticalSplitter::handle:hover {
+#LibrarySplitter::handle:pressed,
+#LibrarySplitter::handle:hover {
   image: url(skin:/classic/style/splitter_handle_vertical_checked.png);
 }
-#VerticalSplitter::handle:vertical {
+#LibrarySplitter::handle:vertical {
   /* 'height' works although it's actually the width of the handle */
   height: 6px;
 }
