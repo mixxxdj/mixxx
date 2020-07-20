@@ -27,6 +27,7 @@ QList<QString>& Tooltips::add(QString id) {
 void Tooltips::addStandardTooltips() {
     QString dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
     QString dragItem = tr("Drag this item to other decks/samplers, to crates and playlist or to external file manager.");
+    QString trackMenu = tr("Right-click to open the track context menu.");
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
@@ -747,19 +748,24 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the artist of the loaded track.")
             << trackTags
             << dropTracksHere
-            << dragItem;
+            << dragItem
+            << trackMenu;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
             << trackTags
             << dropTracksHere
-            << dragItem;
+            << dragItem
+            << trackMenu;
 
     add("track_album")
             << tr("Track Album")
             << tr("Displays the album name of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere
+            << dragItem
+            << trackMenu;
 
     add("track_key")
             //: The musical key of a track
