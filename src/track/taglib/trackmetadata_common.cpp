@@ -142,6 +142,29 @@ bool parseAlbumPeak(
 }
 #endif // __EXTRA_METADATA__
 
+bool parseSeratoBeatGrid(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& data,
+        FileType fileType) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseBeatGrid(data, fileType);
+    if (isValid) {
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
+    }
+    return isValid;
+}
+
+bool parseSeratoBeatGrid(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& data,
+        FileType fileType) {
+    const TagLib::ByteVector byteVec =
+            data.data(TagLib::String::UTF8);
+    return parseSeratoBeatGrid(pTrackMetadata, toQByteArrayRaw(byteVec), fileType);
+}
+
 bool parseSeratoMarkers(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data,
@@ -186,6 +209,16 @@ bool parseSeratoMarkers2(
     const TagLib::ByteVector byteVec =
             data.data(TagLib::String::UTF8);
     return parseSeratoMarkers2(pTrackMetadata, toQByteArrayRaw(byteVec), fileType);
+}
+
+TagLib::String dumpSeratoBeatGrid(
+        const TrackMetadata& trackMetadata,
+        FileType fileType) {
+    const QByteArray utf8Data =
+            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(fileType);
+    return TagLib::String(
+            utf8Data.constData(),
+            TagLib::String::UTF8);
 }
 
 TagLib::String dumpSeratoMarkers(
