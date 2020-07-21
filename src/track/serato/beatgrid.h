@@ -13,51 +13,22 @@
 
 namespace mixxx {
 
-class SeratoBeatGridEntry;
+class SeratoBeatGridNonTerminalMarker;
+class SeratoBeatGridTerminalMarker;
 
-typedef std::shared_ptr<SeratoBeatGridEntry> SeratoBeatGridEntryPointer;
+typedef std::shared_ptr<SeratoBeatGridNonTerminalMarker> SeratoBeatGridNonTerminalMarkerPointer;
+typedef std::shared_ptr<SeratoBeatGridTerminalMarker> SeratoBeatGridTerminalMarkerPointer;
 
-class SeratoBeatGridEntry {
+class SeratoBeatGridNonTerminalMarker {
   public:
-    enum class Type {
-        NonTerminal,
-        Terminal,
-    };
-
-    SeratoBeatGridEntry(Type type)
-            : m_type(type) {
-    }
-    ~SeratoBeatGridEntry() = default;
-
-    virtual QByteArray dumpID3() const = 0;
-
-    Type type() const {
-        return m_type;
-    }
-
-  private:
-    Type m_type;
-};
-
-inline bool operator==(const SeratoBeatGridEntry& lhs, const SeratoBeatGridEntry& rhs) {
-    return (lhs.type() == rhs.type() && lhs.dumpID3() == rhs.dumpID3());
-}
-
-inline bool operator!=(const SeratoBeatGridEntry& lhs, const SeratoBeatGridEntry& rhs) {
-    return !(lhs == rhs);
-}
-
-class SeratoBeatGridNonTerminalEntry : public SeratoBeatGridEntry {
-  public:
-    SeratoBeatGridNonTerminalEntry(float positionMillis, quint32 beatsTillNextMarker)
-            : SeratoBeatGridEntry(SeratoBeatGridEntry::Type::NonTerminal),
-              m_positionMillis(positionMillis),
+    SeratoBeatGridNonTerminalMarker(float positionMillis, quint32 beatsTillNextMarker)
+            : m_positionMillis(positionMillis),
               m_beatTillNextMarker(beatsTillNextMarker) {
     }
-    ~SeratoBeatGridNonTerminalEntry() = default;
+    ~SeratoBeatGridNonTerminalMarker() = default;
 
-    virtual QByteArray dumpID3() const;
-    static SeratoBeatGridEntryPointer parseID3(const QByteArray&);
+    QByteArray dumpID3() const;
+    static SeratoBeatGridNonTerminalMarkerPointer parseID3(const QByteArray&);
 
     float positionMillis() const {
         return m_positionMillis;
@@ -72,23 +43,22 @@ class SeratoBeatGridNonTerminalEntry : public SeratoBeatGridEntry {
     quint32 m_beatTillNextMarker;
 };
 
-inline QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalEntry& arg) {
-    return dbg << "SeratoBeatGridNonTerminalEntry"
+inline QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg) {
+    return dbg << "SeratoBeatGridNonTerminalMarker"
                << "PositionMillis =" << arg.positionMillis()
                << "BeatTillNextMarker = " << arg.beatsTillNextMarker();
 }
 
-class SeratoBeatGridTerminalEntry : public SeratoBeatGridEntry {
+class SeratoBeatGridTerminalMarker {
   public:
-    SeratoBeatGridTerminalEntry(float positionMillis, float bpm)
-            : SeratoBeatGridEntry(SeratoBeatGridEntry::Type::Terminal),
-              m_positionMillis(positionMillis),
+    SeratoBeatGridTerminalMarker(float positionMillis, float bpm)
+            : m_positionMillis(positionMillis),
               m_bpm(bpm) {
     }
-    ~SeratoBeatGridTerminalEntry() = default;
+    ~SeratoBeatGridTerminalMarker() = default;
 
-    virtual QByteArray dumpID3() const;
-    static mixxx::SeratoBeatGridEntryPointer parseID3(const QByteArray&);
+    QByteArray dumpID3() const;
+    static mixxx::SeratoBeatGridTerminalMarkerPointer parseID3(const QByteArray&);
 
     float positionMillis() const {
         return m_positionMillis;
@@ -103,22 +73,10 @@ class SeratoBeatGridTerminalEntry : public SeratoBeatGridEntry {
     float m_bpm;
 };
 
-inline QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalEntry& arg) {
-    return dbg << "SeratoBeatGridTerminalEntry"
+inline QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
+    return dbg << "SeratoBeatGridTerminalMarker"
                << "PositionMillis =" << arg.positionMillis()
                << "BPM =" << arg.bpm();
-}
-
-inline QDebug operator<<(QDebug dbg, const SeratoBeatGridEntry& arg) {
-    switch (arg.type()) {
-    case SeratoBeatGridEntry::Type::NonTerminal:
-        return dbg << static_cast<const SeratoBeatGridNonTerminalEntry&>(arg);
-    case SeratoBeatGridEntry::Type::Terminal:
-        return dbg << static_cast<const SeratoBeatGridTerminalEntry&>(arg);
-    default:
-        DEBUG_ASSERT(!"Invalid SeratoBeatGridEntry type!");
-        return dbg;
-    }
 }
 
 // DTO for storing information from the SeratoBeatGrid tags used by the Serato
@@ -133,8 +91,11 @@ inline QDebug operator<<(QDebug dbg, const SeratoBeatGridEntry& arg) {
 class SeratoBeatGrid final {
   public:
     SeratoBeatGrid() = default;
-    explicit SeratoBeatGrid(QList<SeratoBeatGridEntryPointer> entries)
-            : m_entries(std::move(entries)),
+    explicit SeratoBeatGrid(
+            SeratoBeatGridTerminalMarkerPointer pTerminalMarker,
+            QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers)
+            : m_pTerminalMarker(pTerminalMarker),
+              m_nonTerminalMarkers(std::move(nonTerminalMarkers)),
               m_footer(0) {
     }
 
@@ -150,14 +111,21 @@ class SeratoBeatGrid final {
     QByteArray dumpID3() const;
 
     bool isEmpty() const {
-        return m_entries.isEmpty();
+        return !m_pTerminalMarker && m_nonTerminalMarkers.isEmpty();
     }
 
-    const QList<SeratoBeatGridEntryPointer>& getEntries() const {
-        return m_entries;
+    const QList<SeratoBeatGridNonTerminalMarkerPointer>& nonTerminalMarkers() const {
+        return m_nonTerminalMarkers;
     }
-    void setEntries(QList<SeratoBeatGridEntryPointer> entries) {
-        m_entries = entries;
+    void setNonTerminalMarkers(QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers) {
+        m_nonTerminalMarkers = nonTerminalMarkers;
+    }
+
+    const SeratoBeatGridTerminalMarkerPointer terminalMarker() const {
+        return m_pTerminalMarker;
+    }
+    void setTerminalMarker(SeratoBeatGridTerminalMarkerPointer pTerminalMarker) {
+        m_pTerminalMarker = pTerminalMarker;
     }
 
     quint8 footer() const {
@@ -168,12 +136,14 @@ class SeratoBeatGrid final {
     }
 
   private:
-    QList<SeratoBeatGridEntryPointer> m_entries;
+    SeratoBeatGridTerminalMarkerPointer m_pTerminalMarker;
+    QList<SeratoBeatGridNonTerminalMarkerPointer> m_nonTerminalMarkers;
     quint8 m_footer;
 };
 
 inline bool operator==(const SeratoBeatGrid& lhs, const SeratoBeatGrid& rhs) {
-    return (lhs.getEntries() == rhs.getEntries());
+    return (lhs.terminalMarker() == rhs.terminalMarker() &&
+            lhs.nonTerminalMarkers() == rhs.nonTerminalMarkers());
 }
 
 inline bool operator!=(const SeratoBeatGrid& lhs, const SeratoBeatGrid& rhs) {
@@ -181,7 +151,10 @@ inline bool operator!=(const SeratoBeatGrid& lhs, const SeratoBeatGrid& rhs) {
 }
 
 inline QDebug operator<<(QDebug dbg, const SeratoBeatGrid& arg) {
-    return dbg << "entries =" << arg.getEntries().length();
+    // TODO: Improve debug output
+    return dbg << "number of markers ="
+               << (arg.nonTerminalMarkers().length() +
+                          (arg.terminalMarker() ? 1 : 0));
 }
 
 } // namespace mixxx

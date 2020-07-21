@@ -8,15 +8,15 @@ namespace {
 
 mixxx::Logger kLogger("SeratoBeatGrid");
 constexpr quint16 kVersion = 0x0100;
-constexpr int kEntrySizeID3 = 8;
+constexpr int kMarkerSizeID3 = 8;
 
 } // namespace
 
 namespace mixxx {
 
-QByteArray SeratoBeatGridNonTerminalEntry::dumpID3() const {
+QByteArray SeratoBeatGridNonTerminalMarker::dumpID3() const {
     QByteArray data;
-    data.resize(kEntrySizeID3);
+    data.resize(kMarkerSizeID3);
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -26,10 +26,12 @@ QByteArray SeratoBeatGridNonTerminalEntry::dumpID3() const {
     return data;
 }
 
-SeratoBeatGridEntryPointer SeratoBeatGridNonTerminalEntry::parseID3(const QByteArray& data) {
-    if (data.length() != kEntrySizeID3) {
-        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalEntry failed:"
-                          << "Length" << data.length() << "!=" << kEntrySizeID3;
+SeratoBeatGridNonTerminalMarkerPointer
+SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
+    if (data.length() != kMarkerSizeID3) {
+        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalMarker failed:"
+                          << "Length" << data.length()
+                          << "!=" << kMarkerSizeID3;
         return nullptr;
     }
 
@@ -42,47 +44,49 @@ SeratoBeatGridEntryPointer SeratoBeatGridNonTerminalEntry::parseID3(const QByteA
     stream >> positionMillis >> beatsTillNextMarker;
 
     if (positionMillis < 0) {
-        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalEntry failed:"
-                          << "Position value" << positionMillis << "is negative";
+        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalMarker failed:"
+                          << "Position value" << positionMillis
+                          << "is negative";
         return nullptr;
     }
 
     if (stream.status() != QDataStream::Status::Ok) {
-        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalEntry failed:"
-                          << "Stream read failed with status" << stream.status();
+        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalMarker failed:"
+                          << "Stream read failed with status"
+                          << stream.status();
         return nullptr;
     }
 
     if (!stream.atEnd()) {
-        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalEntry failed:"
+        kLogger.warning() << "Parsing SeratoBeatGridNonTerminalMarker failed:"
                           << "Unexpected trailing data";
         return nullptr;
     }
 
-    SeratoBeatGridEntryPointer pEntry =
-            SeratoBeatGridEntryPointer(new SeratoBeatGridNonTerminalEntry(
-                    positionMillis,
-                    beatsTillNextMarker));
-    kLogger.trace() << "SeratoBeatGridNonTerminalEntry" << *pEntry;
-    return pEntry;
+    SeratoBeatGridNonTerminalMarkerPointer pMarker =
+            std::make_shared<SeratoBeatGridNonTerminalMarker>(
+                    positionMillis, beatsTillNextMarker);
+    kLogger.trace() << "SeratoBeatGridNonTerminalMarker" << *pMarker;
+    return pMarker;
 }
 
-QByteArray SeratoBeatGridTerminalEntry::dumpID3() const {
+QByteArray SeratoBeatGridTerminalMarker::dumpID3() const {
     QByteArray data;
-    data.resize(kEntrySizeID3);
+    data.resize(kMarkerSizeID3);
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-    stream << m_positionMillis
-           << m_bpm;
+    stream << m_positionMillis << m_bpm;
     return data;
 }
 
-SeratoBeatGridEntryPointer SeratoBeatGridTerminalEntry::parseID3(const QByteArray& data) {
-    if (data.length() != kEntrySizeID3) {
-        kLogger.warning() << "Parsing SeratoBeatGridTerminalEntry failed:"
-                          << "Length" << data.length() << "!=" << kEntrySizeID3;
+SeratoBeatGridTerminalMarkerPointer SeratoBeatGridTerminalMarker::parseID3(
+        const QByteArray& data) {
+    if (data.length() != kMarkerSizeID3) {
+        kLogger.warning() << "Parsing SeratoBeatGridTerminalMarker failed:"
+                          << "Length" << data.length()
+                          << "!=" << kMarkerSizeID3;
         return nullptr;
     }
 
@@ -95,40 +99,41 @@ SeratoBeatGridEntryPointer SeratoBeatGridTerminalEntry::parseID3(const QByteArra
     stream >> positionMillis >> bpm;
 
     if (positionMillis < 0) {
-        kLogger.warning() << "Parsing SeratoBeatGridTerminalEntry failed:"
-                          << "Position value" << positionMillis << "is negative";
+        kLogger.warning() << "Parsing SeratoBeatGridTerminalMarker failed:"
+                          << "Position value" << positionMillis
+                          << "is negative";
         return nullptr;
     }
 
     if (bpm < 0) {
-        kLogger.warning() << "Parsing SeratoBeatGridTerminalEntry failed:"
+        kLogger.warning() << "Parsing SeratoBeatGridTerminalMarker failed:"
                           << "BPM value" << bpm << "is negative";
         return nullptr;
     }
 
     if (stream.status() != QDataStream::Status::Ok) {
-        kLogger.warning() << "Parsing SeratoBeatGridTerminalEntry failed:"
-                          << "Stream read failed with status" << stream.status();
+        kLogger.warning() << "Parsing SeratoBeatGridTerminalMarker failed:"
+                          << "Stream read failed with status"
+                          << stream.status();
         return nullptr;
     }
 
     if (!stream.atEnd()) {
-        kLogger.warning() << "Parsing SeratoBeatGridTerminalEntry failed:"
+        kLogger.warning() << "Parsing SeratoBeatGridTerminalMarker failed:"
                           << "Unexpected trailing data";
         return nullptr;
     }
 
-    SeratoBeatGridEntryPointer pEntry =
-            SeratoBeatGridEntryPointer(new SeratoBeatGridTerminalEntry(
-                    positionMillis,
-                    bpm));
-    kLogger.trace() << "SeratoBeatGridTerminalEntry" << *pEntry;
-    return pEntry;
+    SeratoBeatGridTerminalMarkerPointer pMarker =
+            std::make_shared<SeratoBeatGridTerminalMarker>(positionMillis, bpm);
+    kLogger.trace() << "SeratoBeatGridTerminalMarker" << *pMarker;
+    return pMarker;
 }
 
 // static
-bool SeratoBeatGrid::parse(
-        SeratoBeatGrid* seratoBeatGrid, const QByteArray& data, taglib::FileType fileType) {
+bool SeratoBeatGrid::parse(SeratoBeatGrid* seratoBeatGrid,
+        const QByteArray& data,
+        taglib::FileType fileType) {
     VERIFY_OR_DEBUG_ASSERT(seratoBeatGrid) {
         return false;
     }
@@ -157,54 +162,53 @@ bool SeratoBeatGrid::parseID3(
         return false;
     }
 
-    quint32 numEntries;
-    stream >> numEntries;
+    quint32 numMarkers;
+    stream >> numMarkers;
 
-    if (numEntries <= 0) {
+    if (numMarkers <= 0) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                          << "Expected at leat one entry, but found"
-                          << numEntries;
+                          << "Expected at leat one marker, but found"
+                          << numMarkers;
         return false;
     }
 
-    char buffer[kEntrySizeID3];
-    QList<SeratoBeatGridEntryPointer> entries;
+    char buffer[kMarkerSizeID3];
+    QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers;
 
     // Read non-terminal beatgrid markers
-    for (quint32 i = 0; i < numEntries - 1; i++) {
+    for (quint32 i = 0; i < numMarkers - 1; i++) {
         if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
             kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                              << "unable to read entry data";
+                              << "unable to read non-terminal marker data";
             return false;
         }
 
-        QByteArray entryData = QByteArray(buffer, kEntrySizeID3);
-        SeratoBeatGridEntryPointer pEntry =
-                SeratoBeatGridEntryPointer(SeratoBeatGridNonTerminalEntry::parseID3(entryData));
-        if (!pEntry) {
+        QByteArray markerData = QByteArray(buffer, kMarkerSizeID3);
+        SeratoBeatGridNonTerminalMarkerPointer pNonTerminalMarker =
+                SeratoBeatGridNonTerminalMarker::parseID3(markerData);
+        if (!pNonTerminalMarker) {
             kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                              << "Unable to parse entry!";
+                              << "Unable to parse non-terminal marker!";
             return false;
         }
-        entries.append(pEntry);
+        nonTerminalMarkers.append(pNonTerminalMarker);
     }
 
-    // Read last (terminal) beatgrid entry
+    // Read last (terminal) beatgrid marker
     if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                          << "unable to read entry data";
+                          << "unable to read terminal marker data";
         return false;
     }
 
-    QByteArray entryData = QByteArray(buffer, kEntrySizeID3);
-    SeratoBeatGridEntryPointer pEntry =
-            SeratoBeatGridEntryPointer(SeratoBeatGridTerminalEntry::parseID3(entryData));
-    if (!pEntry) {
+    QByteArray markerData = QByteArray(buffer, kMarkerSizeID3);
+    SeratoBeatGridTerminalMarkerPointer pTerminalMarker =
+            SeratoBeatGridTerminalMarker::parseID3(markerData);
+    if (!pTerminalMarker) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                          << "Unable to parse entry!";
+                          << "Unable to parse terminal marker!";
         return false;
     }
-    entries.append(pEntry);
 
     // Read footer
     //
@@ -228,7 +232,8 @@ bool SeratoBeatGrid::parseID3(
                           << "Unexpected trailing data";
         return false;
     }
-    seratoBeatGrid->setEntries(std::move(entries));
+    seratoBeatGrid->setNonTerminalMarkers(std::move(nonTerminalMarkers));
+    seratoBeatGrid->setTerminalMarker(pTerminalMarker);
     seratoBeatGrid->setFooter(footer);
 
     return true;
@@ -247,21 +252,23 @@ QByteArray SeratoBeatGrid::dump(taglib::FileType fileType) const {
 
 QByteArray SeratoBeatGrid::dumpID3() const {
     QByteArray data;
-    if (isEmpty()) {
+    if (isEmpty() || !m_pTerminalMarker) {
         // Return empty QByteArray
         return data;
     }
 
+    quint32 numMarkers = m_nonTerminalMarkers.size() + 1;
     data.resize(sizeof(quint16) + sizeof(quint32) + sizeof(quint8) +
-            kEntrySizeID3 * m_entries.size());
+            kMarkerSizeID3 * numMarkers);
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-    stream << kVersion << m_entries.size();
-    for (const SeratoBeatGridEntryPointer pEntry : m_entries) {
-        stream.writeRawData(pEntry->dumpID3(), kEntrySizeID3);
+    stream << kVersion << numMarkers;
+    for (const SeratoBeatGridNonTerminalMarkerPointer pMarker : m_nonTerminalMarkers) {
+        stream.writeRawData(pMarker->dumpID3(), kMarkerSizeID3);
     }
+    stream.writeRawData(m_pTerminalMarker->dumpID3(), kMarkerSizeID3);
     stream << m_footer;
     return data;
 }
