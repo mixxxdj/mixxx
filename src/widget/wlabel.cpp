@@ -155,6 +155,9 @@ int WLabel::getHighlight() const {
 }
 
 void WLabel::setHighlight(int highlight) {
+    if (m_highlight == highlight) {
+        return;
+    }
     m_highlight = highlight;
     emit highlightChanged(m_highlight);
 }
