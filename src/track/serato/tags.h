@@ -2,6 +2,7 @@
 
 #include "audio/signalinfo.h"
 #include "track/cueinfoimporter.h"
+#include "track/serato/beatgrid.h"
 #include "track/serato/markers.h"
 #include "track/serato/markers2.h"
 
@@ -24,7 +25,12 @@ class SeratoTags final {
             const QString& filePath, const audio::SignalInfo& signalInfo);
 
     bool isEmpty() const {
-        return m_seratoMarkers.isEmpty() && m_seratoMarkers2.isEmpty();
+        return m_seratoBeatGrid.isEmpty() && m_seratoMarkers.isEmpty() &&
+                m_seratoMarkers2.isEmpty();
+    }
+
+    bool parseBeatGrid(const QByteArray& data, taglib::FileType fileType) {
+        return SeratoBeatGrid::parse(&m_seratoBeatGrid, data, fileType);
     }
 
     bool parseMarkers(const QByteArray& data, taglib::FileType fileType) {
@@ -33,6 +39,10 @@ class SeratoTags final {
 
     bool parseMarkers2(const QByteArray& data, taglib::FileType fileType) {
         return SeratoMarkers2::parse(&m_seratoMarkers2, data, fileType);
+    }
+
+    QByteArray dumpBeatGrid(taglib::FileType fileType) const {
+        return m_seratoBeatGrid.dump(fileType);
     }
 
     QByteArray dumpMarkers(taglib::FileType fileType) const {
@@ -49,13 +59,16 @@ class SeratoTags final {
     bool isBpmLocked() const;
 
   private:
+    SeratoBeatGrid m_seratoBeatGrid;
     SeratoMarkers m_seratoMarkers;
     SeratoMarkers2 m_seratoMarkers2;
 };
 
 inline bool operator==(const SeratoTags& lhs, const SeratoTags& rhs) {
     // FIXME: Find a more efficient way to do this
-    return (lhs.dumpMarkers(taglib::FileType::MP3) ==
+    return (lhs.dumpBeatGrid(taglib::FileType::MP3) ==
+                    rhs.dumpBeatGrid(taglib::FileType::MP3) &&
+            lhs.dumpMarkers(taglib::FileType::MP3) ==
                     rhs.dumpMarkers(taglib::FileType::MP3) &&
             lhs.dumpMarkers2(taglib::FileType::MP3) ==
                     rhs.dumpMarkers2(taglib::FileType::MP3));
