@@ -258,8 +258,12 @@ QByteArray SeratoBeatGrid::dumpID3() const {
     }
 
     quint32 numMarkers = m_nonTerminalMarkers.size() + 1;
-    data.resize(sizeof(quint16) + sizeof(quint32) + sizeof(quint8) +
-            kMarkerSizeID3 * numMarkers);
+    data.resize(
+            sizeof(quint16) + // Version
+            sizeof(quint32) + // Number of Markers
+            (kMarkerSizeID3 * numMarkers) +
+            sizeof(quint8) // Footer
+    );
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
