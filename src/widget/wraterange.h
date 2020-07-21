@@ -15,10 +15,10 @@ enum class DisplayType {
     Range
 };
 
-class WRateDisplay : public WNumber {
+class WRateRange : public WNumber {
     Q_OBJECT
   public:
-    explicit WRateDisplay(const QString& group, QWidget* parent = nullptr);
+    explicit WRateRange(const QString& group, QWidget* parent = nullptr);
     
     void setup(const QDomNode& node, const SkinContext& context) override;
 

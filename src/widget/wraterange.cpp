@@ -1,26 +1,28 @@
-#include "widget/wratedisplay.h"
+#include "widget/wraterange.h"
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
 
-WRateDisplay::WRateDisplay(const QString& group, QWidget* parent)
+WRateRange::WRateRange(const QString& group, QWidget* parent)
         : WNumber(parent) {
     m_pRateRangeControl = new ControlProxy(group, "rateRange", this, ControlFlag::NoAssertIfMissing);
-    m_pRateRangeControl->connectValueChanged(this, &WRateDisplay::setValue);
+    m_pRateRangeControl->connectValueChanged(this, &WRateRange::setValue);
     m_pRateDirControl = new ControlProxy(group, "rate_dir", this, ControlFlag::NoAssertIfMissing);
-    m_pRateDirControl->connectValueChanged(this, &WRateDisplay::setValue);
+    m_pRateDirControl->connectValueChanged(this, &WRateRange::setValue);
 }
 
-void WRateDisplay::setup(const QDomNode& node, const SkinContext& context) {
+void WRateRange::setup(const QDomNode& node, const SkinContext& context) {
     WNumber::setup(node, context);
 
-    QDomElement rateDisplayPosition = context.selectElement(node, "Position");
-    QDomElement rateDisplayType = context.selectElement(node, "Display");
-    m_nodePosition = rateDisplayPosition.text() == "Top" ? VerticalPosition::Top : VerticalPosition::Bottom;
-    if (rateDisplayType.text() == "prefix") {
+    QDomElement RateRangePosition = context.selectElement(node, "Position");
+    QDomElement RateRangeType = context.selectElement(node, "Display");
+    m_nodePosition = RateRangePosition.text() == "Top"
+            ? VerticalPosition::Top
+            : VerticalPosition::Bottom;
+    if (RateRangeType.text() == "prefix") {
         m_nodeDisplay = DisplayType::Prefix;
-    } else if (rateDisplayType.text() == "range") {
+    } else if (RateRangeType.text() == "range") {
         m_nodeDisplay = DisplayType::Range;
     } else {
         m_nodeDisplay = DisplayType::Default;
@@ -30,7 +32,7 @@ void WRateDisplay::setup(const QDomNode& node, const SkinContext& context) {
     setValue();
 }
 
-void WRateDisplay::setValue() {
+void WRateRange::setValue() {
     double range = m_pRateRangeControl->get();
     double direction = m_pRateDirControl->get();
 

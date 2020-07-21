@@ -15,26 +15,21 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "mixer/playermanager.h"
-#include "mixer/basetrackplayer.h"
-#include "library/library.h"
-#include "util/xml.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
-
-#include "skin/colorschemeparser.h"
-#include "skin/skincontext.h"
-#include "skin/launchimage.h"
-
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
-
+#include "library/library.h"
+#include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
-
+#include "skin/colorschemeparser.h"
+#include "skin/launchimage.h"
+#include "skin/skincontext.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
+#include "util/xml.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -63,12 +58,12 @@
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/wratedisplay.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewrgb.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wpushbutton.h"
+#include "widget/wraterange.h"
 #include "widget/wrecordingduration.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wsingletoncontainer.h"
@@ -529,8 +524,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseBeatSpinBox(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
-    } else if (nodeName == "RateDisplay") {
-        result = wrapWidget(parseRateDisplay(node));
+    } else if (nodeName == "RateRange") {
+        result = wrapWidget(parseRateRange(node));
     } else if (nodeName == "NumberPos") {
         result = wrapWidget(parseNumberPos(node));
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
@@ -1082,15 +1077,13 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     return p;
 }
 
-
-
-QWidget* LegacySkinParser::parseRateDisplay(const QDomElement& node) {
+QWidget* LegacySkinParser::parseRateRange(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     QPalette palette;
 
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
-    WRateDisplay* p = new WRateDisplay(group, m_pParent);
+    WRateRange* p = new WRateRange(group, m_pParent);
     setupLabelWidget(node, p);
     p->setPalette(palette);
 

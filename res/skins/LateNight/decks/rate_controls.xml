@@ -97,25 +97,25 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <RateDisplay>
+                  <RateRange>
                     <TooltipId>rate_range_display</TooltipId>
-                    <ObjectName>RateDisplayTop</ObjectName>
+                    <ObjectName>RateRangeTop</ObjectName>
                     <Channel><Variable name="ChanNum" /></Channel>
                     <Position>Top</Position>
                     <Display>prefix</Display>
-                  </RateDisplay>
+                  </RateRange>
                   <WidgetGroup>
                     <ObjectName></ObjectName>
                     <SizePolicy>min,me</SizePolicy>
                     <Layout>vertical</Layout>
                   </WidgetGroup>
-                  <RateDisplay>
+                  <RateRange>
                     <TooltipId>rate_range_display</TooltipId>
-                    <ObjectName>RateDisplayBottom</ObjectName>
+                    <ObjectName>RateRangeBottom</ObjectName>
                     <Channel><Variable name="ChanNum" /></Channel>
                     <Position>Bottom</Position>
                     <Display>prefix</Display>
-                  </RateDisplay>
+                  </RateRange>
                 </Children>
               </WidgetGroup>
               <WidgetGroup>
@@ -158,25 +158,25 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <RateDisplay>
+                  <RateRange>
                     <TooltipId>rate_range_display</TooltipId>
-                    <ObjectName>RateDisplayTop</ObjectName>
+                    <ObjectName>RateRangeTop</ObjectName>
                     <Channel><Variable name="ChanNum" /></Channel>
                     <Position>Top</Position>
                     <Display>range</Display>
-                  </RateDisplay>
+                  </RateRange>
                   <WidgetGroup>
                     <ObjectName></ObjectName>
                     <SizePolicy>min,me</SizePolicy>
                     <Layout>vertical</Layout>
                   </WidgetGroup>
-                  <RateDisplay>
+                  <RateRange>
                     <TooltipId>rate_range_display</TooltipId>
-                    <ObjectName>RateDisplayBottom</ObjectName>
+                    <ObjectName>RateRangeBottom</ObjectName>
                     <Channel><Variable name="ChanNum" /></Channel>
                     <Position>Bottom</Position>
                     <Display>range</Display>
-                  </RateDisplay>
+                  </RateRange>
                 </Children>
               </WidgetGroup>
 
