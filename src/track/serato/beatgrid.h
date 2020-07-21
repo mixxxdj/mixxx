@@ -135,6 +135,8 @@ class SeratoBeatGrid final {
         m_footer = footer;
     }
 
+    QList<double> getBeatPositionsMillis(double trackLengthMillis, double timingOffsetMillis) const;
+
   private:
     SeratoBeatGridTerminalMarkerPointer m_pTerminalMarker;
     QList<SeratoBeatGridNonTerminalMarkerPointer> m_nonTerminalMarkers;
