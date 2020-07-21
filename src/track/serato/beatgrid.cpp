@@ -173,9 +173,10 @@ bool SeratoBeatGrid::parseID3(
     }
 
     char buffer[kMarkerSizeID3];
-    QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers;
+    double previousBeatPositionMillis = -1;
 
     // Read non-terminal beatgrid markers
+    QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers;
     for (quint32 i = 0; i < numMarkers - 1; i++) {
         if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
             kLogger.warning() << "Parsing SeratoBeatGrid failed:"
@@ -191,6 +192,33 @@ bool SeratoBeatGrid::parseID3(
                               << "Unable to parse non-terminal marker!";
             return false;
         }
+
+        if (pNonTerminalMarker->beatsTillNextMarker() <= 0) {
+            kLogger.warning() << "Parsing SeratoBeatGrid failed:"
+                              << "Non-terminal marker's beatsTillNextMarker"
+                              << pNonTerminalMarker->beatsTillNextMarker()
+                              << "must be greater than 0";
+            return false;
+        }
+
+        if (pNonTerminalMarker->positionMillis() < 0) {
+            kLogger.warning() << "Parsing SeratoBeatGrid failed:"
+                              << "Non-terminal marker has invalid position"
+                              << pNonTerminalMarker->positionMillis()
+                              << "< 0";
+            return false;
+        }
+
+        if (pNonTerminalMarker->positionMillis() <= previousBeatPositionMillis) {
+            kLogger.warning() << "Parsing SeratoBeatGrid failed:"
+                              << "Non-terminal marker's position"
+                              << pNonTerminalMarker->positionMillis()
+                              << "must be greater than the previous marker's position"
+                              << previousBeatPositionMillis;
+            return false;
+        }
+        previousBeatPositionMillis = pNonTerminalMarker->positionMillis();
+
         nonTerminalMarkers.append(pNonTerminalMarker);
     }
 
@@ -207,6 +235,31 @@ bool SeratoBeatGrid::parseID3(
     if (!pTerminalMarker) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
                           << "Unable to parse terminal marker!";
+        return false;
+    }
+
+    if (pTerminalMarker->bpm() <= 0) {
+        kLogger.warning() << "Parsing SeratoBeatGrid failed:"
+                          << "Terminal marker's BPM"
+                          << pTerminalMarker->bpm()
+                          << "must be greater than 0";
+        return false;
+    }
+
+    if (pTerminalMarker->positionMillis() < 0) {
+        kLogger.warning() << "Parsing SeratoBeatGrid failed:"
+                          << "Non-terminal marker has invalid position"
+                          << pTerminalMarker->positionMillis()
+                          << "< 0";
+        return false;
+    }
+
+    if (pTerminalMarker->positionMillis() <= previousBeatPositionMillis) {
+        kLogger.warning() << "Parsing SeratoBeatGrid failed:"
+                          << "Terminal marker's position"
+                          << pTerminalMarker->positionMillis()
+                          << "must be greater than the previous marker's position"
+                          << previousBeatPositionMillis;
         return false;
     }
 
