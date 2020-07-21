@@ -23,7 +23,7 @@ class SeratoBeatGridNonTerminalMarker {
   public:
     SeratoBeatGridNonTerminalMarker(float positionMillis, quint32 beatsTillNextMarker)
             : m_positionMillis(positionMillis),
-              m_beatTillNextMarker(beatsTillNextMarker) {
+              m_beatsTillNextMarker(beatsTillNextMarker) {
     }
     ~SeratoBeatGridNonTerminalMarker() = default;
 
@@ -35,12 +35,12 @@ class SeratoBeatGridNonTerminalMarker {
     }
 
     float beatsTillNextMarker() const {
-        return m_beatTillNextMarker;
+        return m_beatsTillNextMarker;
     }
 
   private:
     float m_positionMillis;
-    quint32 m_beatTillNextMarker;
+    quint32 m_beatsTillNextMarker;
 };
 
 inline QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg) {

@@ -22,7 +22,7 @@ QByteArray SeratoBeatGridNonTerminalMarker::dumpID3() const {
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
     stream << m_positionMillis
-           << m_beatTillNextMarker;
+           << m_beatsTillNextMarker;
     return data;
 }
 
