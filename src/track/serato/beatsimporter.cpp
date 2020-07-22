@@ -31,19 +31,20 @@ QVector<double> SeratoBeatsImporter::importBeatsWithCorrectTiming(
     double beatLengthMillis;
     // Calculate beat positions for non-terminal markers
     for (int i = 0; i < m_nonTerminalMarkers.size(); ++i) {
-        SeratoBeatGridNonTerminalMarkerPointer pMarker =
-                m_nonTerminalMarkers.at(i);
-        beatPositionMillis = static_cast<double>(pMarker->positionMillis()) +
+        SeratoBeatGridNonTerminalMarkerPointer pMarker = m_nonTerminalMarkers.at(i);
+        beatPositionMillis =
+                static_cast<double>(pMarker->positionSecs()) * 1000 +
                 timingOffsetMillis;
-        VERIFY_OR_DEBUG_ASSERT(
-                pMarker->positionMillis() >= 0 && pMarker->beatsTillNextMarker() > 0) {
+        VERIFY_OR_DEBUG_ASSERT(pMarker->positionSecs() >= 0 &&
+                pMarker->beatsTillNextMarker() > 0) {
             return {};
         }
         double nextBeatPositionMillis =
-                static_cast<double>((i == m_nonTerminalMarkers.size() - 1)
-                                ? m_pTerminalMarker->positionMillis()
-                                : m_nonTerminalMarkers.at(i)
-                                          ->positionMillis()) +
+                static_cast<double>(i == (m_nonTerminalMarkers.size() - 1)
+                                ? m_pTerminalMarker->positionSecs()
+                                : m_nonTerminalMarkers.at(i + 1)
+                                          ->positionSecs()) *
+                        1000 +
                 timingOffsetMillis;
         VERIFY_OR_DEBUG_ASSERT(nextBeatPositionMillis > beatPositionMillis) {
             return {};
@@ -60,10 +61,10 @@ QVector<double> SeratoBeatsImporter::importBeatsWithCorrectTiming(
 
     // Calculate remaining beat positions until track end
     beatPositionMillis =
-            static_cast<double>(m_pTerminalMarker->positionMillis()) +
+            static_cast<double>(m_pTerminalMarker->positionSecs()) * 1000 +
             timingOffsetMillis;
     beatLengthMillis = 60'000.0 / static_cast<double>(m_pTerminalMarker->bpm());
-    VERIFY_OR_DEBUG_ASSERT(m_pTerminalMarker->positionMillis() >= 0 && beatLengthMillis > 0) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTerminalMarker->positionSecs() >= 0 && beatLengthMillis > 0) {
         return {};
     }
     while (beatPositionMillis < streamInfo.getDuration().toDoubleMillis()) {

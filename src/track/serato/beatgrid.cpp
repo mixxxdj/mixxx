@@ -21,7 +21,7 @@ QByteArray SeratoBeatGridNonTerminalMarker::dumpID3() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-    stream << m_positionMillis
+    stream << m_positionSecs
            << m_beatsTillNextMarker;
     return data;
 }
@@ -35,17 +35,17 @@ SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
         return nullptr;
     }
 
-    float positionMillis;
+    float positionSecs;
     uint32_t beatsTillNextMarker;
 
     QDataStream stream(data);
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-    stream >> positionMillis >> beatsTillNextMarker;
+    stream >> positionSecs >> beatsTillNextMarker;
 
-    if (positionMillis < 0) {
+    if (positionSecs < 0) {
         kLogger.warning() << "Parsing SeratoBeatGridNonTerminalMarker failed:"
-                          << "Position value" << positionMillis
+                          << "Position value" << positionSecs
                           << "is negative";
         return nullptr;
     }
@@ -65,7 +65,7 @@ SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
 
     SeratoBeatGridNonTerminalMarkerPointer pMarker =
             std::make_shared<SeratoBeatGridNonTerminalMarker>(
-                    positionMillis, beatsTillNextMarker);
+                    positionSecs, beatsTillNextMarker);
     kLogger.trace() << "SeratoBeatGridNonTerminalMarker" << *pMarker;
     return pMarker;
 }
@@ -77,7 +77,7 @@ QByteArray SeratoBeatGridTerminalMarker::dumpID3() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-    stream << m_positionMillis << m_bpm;
+    stream << m_positionSecs << m_bpm;
     return data;
 }
 
@@ -90,17 +90,17 @@ SeratoBeatGridTerminalMarkerPointer SeratoBeatGridTerminalMarker::parseID3(
         return nullptr;
     }
 
-    float positionMillis;
+    float positionSecs;
     float bpm;
 
     QDataStream stream(data);
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-    stream >> positionMillis >> bpm;
+    stream >> positionSecs >> bpm;
 
-    if (positionMillis < 0) {
+    if (positionSecs < 0) {
         kLogger.warning() << "Parsing SeratoBeatGridTerminalMarker failed:"
-                          << "Position value" << positionMillis
+                          << "Position value" << positionSecs
                           << "is negative";
         return nullptr;
     }
@@ -125,7 +125,7 @@ SeratoBeatGridTerminalMarkerPointer SeratoBeatGridTerminalMarker::parseID3(
     }
 
     SeratoBeatGridTerminalMarkerPointer pMarker =
-            std::make_shared<SeratoBeatGridTerminalMarker>(positionMillis, bpm);
+            std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm);
     kLogger.trace() << "SeratoBeatGridTerminalMarker" << *pMarker;
     return pMarker;
 }
@@ -201,23 +201,23 @@ bool SeratoBeatGrid::parseID3(
             return false;
         }
 
-        if (pNonTerminalMarker->positionMillis() < 0) {
+        if (pNonTerminalMarker->positionSecs() < 0) {
             kLogger.warning() << "Parsing SeratoBeatGrid failed:"
                               << "Non-terminal marker has invalid position"
-                              << pNonTerminalMarker->positionMillis()
+                              << pNonTerminalMarker->positionSecs()
                               << "< 0";
             return false;
         }
 
-        if (pNonTerminalMarker->positionMillis() <= previousBeatPositionMillis) {
+        if (pNonTerminalMarker->positionSecs() <= previousBeatPositionMillis) {
             kLogger.warning() << "Parsing SeratoBeatGrid failed:"
                               << "Non-terminal marker's position"
-                              << pNonTerminalMarker->positionMillis()
+                              << pNonTerminalMarker->positionSecs()
                               << "must be greater than the previous marker's position"
                               << previousBeatPositionMillis;
             return false;
         }
-        previousBeatPositionMillis = pNonTerminalMarker->positionMillis();
+        previousBeatPositionMillis = pNonTerminalMarker->positionSecs();
 
         nonTerminalMarkers.append(pNonTerminalMarker);
     }
@@ -246,18 +246,18 @@ bool SeratoBeatGrid::parseID3(
         return false;
     }
 
-    if (pTerminalMarker->positionMillis() < 0) {
+    if (pTerminalMarker->positionSecs() < 0) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
                           << "Non-terminal marker has invalid position"
-                          << pTerminalMarker->positionMillis()
+                          << pTerminalMarker->positionSecs()
                           << "< 0";
         return false;
     }
 
-    if (pTerminalMarker->positionMillis() <= previousBeatPositionMillis) {
+    if (pTerminalMarker->positionSecs() <= previousBeatPositionMillis) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
                           << "Terminal marker's position"
-                          << pTerminalMarker->positionMillis()
+                          << pTerminalMarker->positionSecs()
                           << "must be greater than the previous marker's position"
                           << previousBeatPositionMillis;
         return false;

@@ -21,8 +21,8 @@ typedef std::shared_ptr<SeratoBeatGridTerminalMarker> SeratoBeatGridTerminalMark
 
 class SeratoBeatGridNonTerminalMarker {
   public:
-    SeratoBeatGridNonTerminalMarker(float positionMillis, quint32 beatsTillNextMarker)
-            : m_positionMillis(positionMillis),
+    SeratoBeatGridNonTerminalMarker(float positionSecs, quint32 beatsTillNextMarker)
+            : m_positionSecs(positionSecs),
               m_beatsTillNextMarker(beatsTillNextMarker) {
     }
     ~SeratoBeatGridNonTerminalMarker() = default;
@@ -30,8 +30,8 @@ class SeratoBeatGridNonTerminalMarker {
     QByteArray dumpID3() const;
     static SeratoBeatGridNonTerminalMarkerPointer parseID3(const QByteArray&);
 
-    float positionMillis() const {
-        return m_positionMillis;
+    float positionSecs() const {
+        return m_positionSecs;
     }
 
     float beatsTillNextMarker() const {
@@ -39,20 +39,20 @@ class SeratoBeatGridNonTerminalMarker {
     }
 
   private:
-    float m_positionMillis;
+    float m_positionSecs;
     quint32 m_beatsTillNextMarker;
 };
 
 inline QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg) {
     return dbg << "SeratoBeatGridNonTerminalMarker"
-               << "PositionMillis =" << arg.positionMillis()
+               << "PositionMillis =" << arg.positionSecs()
                << "BeatTillNextMarker = " << arg.beatsTillNextMarker();
 }
 
 class SeratoBeatGridTerminalMarker {
   public:
-    SeratoBeatGridTerminalMarker(float positionMillis, float bpm)
-            : m_positionMillis(positionMillis),
+    SeratoBeatGridTerminalMarker(float positionSecs, float bpm)
+            : m_positionSecs(positionSecs),
               m_bpm(bpm) {
     }
     ~SeratoBeatGridTerminalMarker() = default;
@@ -60,8 +60,8 @@ class SeratoBeatGridTerminalMarker {
     QByteArray dumpID3() const;
     static mixxx::SeratoBeatGridTerminalMarkerPointer parseID3(const QByteArray&);
 
-    float positionMillis() const {
-        return m_positionMillis;
+    float positionSecs() const {
+        return m_positionSecs;
     }
 
     float bpm() const {
@@ -69,13 +69,13 @@ class SeratoBeatGridTerminalMarker {
     }
 
   private:
-    float m_positionMillis;
+    float m_positionSecs;
     float m_bpm;
 };
 
 inline QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
     return dbg << "SeratoBeatGridTerminalMarker"
-               << "PositionMillis =" << arg.positionMillis()
+               << "PositionMillis =" << arg.positionSecs()
                << "BPM =" << arg.bpm();
 }
 
