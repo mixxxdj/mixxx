@@ -13,7 +13,7 @@ MacroRecorder::MacroRecorder()
         : m_COToggleRecording(ConfigKey(kControlsGroup, "recording_toggle")),
           m_CORecStatus(ConfigKey(kControlsGroup, "recording_status")),
           m_activeChannel(nullptr),
-          m_macroRecordingState(MacroRecordingState::Disabled),
+          m_macroRecordingState(State::Disabled),
           m_pStartRecordingTimer(this),
           m_recordedMacro() {
     qCDebug(macroLoggingCategory) << "MacroRecorder construct";
@@ -34,7 +34,7 @@ void MacroRecorder::notifyCueJump(
     if (checkOrClaimRecording(channel)) {
         m_recordedMacro.appendJump(sourceFramePos, destFramePos);
         qCDebug(macroLoggingCategory) << "Recorded jump in channel" << channel->handle();
-        setState(MacroRecordingState::Armed);
+        setState(State::Armed);
     }
 }
 
@@ -50,8 +50,8 @@ bool MacroRecorder::checkOrClaimRecording(ChannelHandle* channel) {
 }
 
 bool MacroRecorder::claimRecording() {
-    auto armed = MacroRecordingState::Armed;
-    return m_macroRecordingState.compare_exchange_weak(armed, MacroRecordingState::Recording);
+    auto armed = State::Armed;
+    return m_macroRecordingState.compare_exchange_weak(armed, State::Recording);
 }
 
 void MacroRecorder::pollRecordingStart() {
@@ -59,31 +59,31 @@ void MacroRecorder::pollRecordingStart() {
     if (getActiveChannel() == nullptr) {
         return;
     }
-    if (getState() != MacroRecordingState::Disabled) {
-        m_CORecStatus.set(2);
+    if (getState() != State::Disabled) {
+        m_CORecStatus.set(Status::Recording);
     }
     m_pStartRecordingTimer.stop();
 }
 
 void MacroRecorder::startRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording armed";
-    m_CORecStatus.set(1);
+    m_CORecStatus.set(Status::Armed);
     m_recordedMacro.clear();
-    setState(MacroRecordingState::Armed);
+    setState(State::Armed);
     m_pStartRecordingTimer.start(300);
 }
 
 void MacroRecorder::stopRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording stop";
     // TODO(xerus) add concurrency test
-    auto armed = MacroRecordingState::Armed;
-    while (!m_macroRecordingState.compare_exchange_strong(armed, MacroRecordingState::Disabled)) {
+    auto armed = State::Armed;
+    while (!m_macroRecordingState.compare_exchange_strong(armed, State::Disabled)) {
         QThread::yieldCurrentThread();
-        if (getState() == MacroRecordingState::Disabled) {
+        if (getState() == State::Disabled) {
             return;
         }
     }
-    m_CORecStatus.set(0);
+    m_CORecStatus.set(Status::Disabled);
     if (m_activeChannel == nullptr) {
         return;
     }
@@ -101,13 +101,13 @@ ChannelHandle* MacroRecorder::getActiveChannel() const {
 }
 
 bool MacroRecorder::isRecordingActive() const {
-    return getState() != MacroRecordingState::Disabled;
+    return getState() != State::Disabled;
 }
 
-MacroRecordingState MacroRecorder::getState() const {
+MacroRecorder::State MacroRecorder::getState() const {
     return m_macroRecordingState.load();
 }
 
-void MacroRecorder::setState(MacroRecordingState state) {
+void MacroRecorder::setState(State state) {
     m_macroRecordingState.store(state);
 }

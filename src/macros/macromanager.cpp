@@ -17,7 +17,7 @@ MacroManager::MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool)
 
 void MacroManager::saveMacro(ChannelHandle channel, Macro macro) {
     qCDebug(macroLoggingCategory) << "Saving Macro for channel" << channel.handle();
-    // TODO(xerus) add test, use proto serialization, obtain track id
+    // TODO(xerus) add test
     macro.dump();
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
@@ -25,8 +25,10 @@ void MacroManager::saveMacro(ChannelHandle channel, Macro macro) {
             "(track_id, state, label, content) "
             "VALUES "
             "(:trackId, :state, :label, :content)"));
+    // TODO(xerus) obtain trackId
     query.bindValue(":trackId", 1);
     query.bindValue(":state", 0);
+    // TODO(xerus) proper labels
     query.bindValue(":label", QString("testch%1").arg(QString::number(channel.handle())));
     query.bindValue(":content", macro.serialize());
     if (!query.exec()) {

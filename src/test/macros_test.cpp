@@ -28,17 +28,27 @@ TEST(MacroRecordingTest, ClaimRecording) {
     EXPECT_EQ(recorder.isRecordingActive(), false);
     recorder.claimRecording();
     EXPECT_EQ(recorder.isRecordingActive(), false);
+    EXPECT_EQ(
+            ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(),
+            MacroRecorder::Status::Disabled);
     recorder.startRecording();
-    EXPECT_EQ(ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(), 1);
+    EXPECT_EQ(
+            ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(),
+            MacroRecorder::Status::Armed);
     recorder.claimRecording();
     EXPECT_EQ(recorder.isRecordingActive(), true);
+    recorder.setState(MacroRecorder::State::Armed);
+    recorder.stopRecording();
+    EXPECT_EQ(
+            ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(),
+            MacroRecorder::Status::Disabled);
 }
 
 TEST(MacroRecordingTest, RecordCueJump) {
     MacroRecorder recorder;
     auto factory = ChannelHandleFactory();
     ChannelHandle handle = factory.getOrCreateHandle("test-one");
-    EXPECT_EQ(recorder.getState(), MacroRecordingState::Disabled);
+    EXPECT_EQ(recorder.getState(), MacroRecorder::State::Disabled);
 
     recorder.notifyCueJump(&handle, 0, 1);
     EXPECT_EQ(recorder.getActiveChannel(), nullptr);
@@ -55,16 +65,21 @@ TEST(MacroRecordingTest, RecordCueJump) {
     EXPECT_EQ(recorder.checkOrClaimRecording(&handle), true);
 
     recorder.pollRecordingStart();
-    EXPECT_EQ(ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(), 2);
+    EXPECT_EQ(
+            ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(),
+            MacroRecorder::Status::Recording);
 }
 
 TEST(MacroRecordingTest, RecordingToggleControl) {
     MacroRecorder recorder;
-    ControlObject::set(ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"), 1);
+    ControlObject::set(
+            ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"), 1);
     EXPECT_EQ(recorder.isRecordingActive(), true);
-    ControlObject::set(ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"), 0);
+    ControlObject::set(
+            ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"), 0);
     EXPECT_EQ(recorder.isRecordingActive(), true);
-    ControlObject::set(ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"), 1);
+    ControlObject::set(
+            ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"), 1);
     EXPECT_EQ(recorder.isRecordingActive(), false);
 }
 
@@ -78,9 +93,12 @@ class MacroRecorderTest : public SignalPathTest {
 };
 
 TEST_F(MacroRecorderTest, RecordSeek) {
-    ControlObject::toggle(ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"));
+    ControlObject::toggle(
+            ConfigKey(MacroRecorder::kControlsGroup, "recording_toggle"));
     ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
-    EXPECT_EQ(ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(), 1);
+    EXPECT_EQ(
+            ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(),
+            MacroRecorder::Status::Armed);
     m_pChannel1->getEngineBuffer()->slotControlSeekExact(50 * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getMacro().getLength(), 0);

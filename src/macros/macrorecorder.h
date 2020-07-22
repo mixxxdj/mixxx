@@ -13,15 +13,6 @@
 
 // TODO(xerus) add enum for recording_status
 
-enum MacroRecordingState : uint8_t {
-    /// Nothing is going on
-    Disabled,
-    /// Recording is active, but nothing currently going on
-    Armed,
-    /// An Action is currently being recorded
-    Recording,
-};
-
 /// The MacroRecorder handles the recording of Macros and the [MacroRecording] controls.
 class MacroRecorder : public RecordingManagerBase {
     Q_OBJECT
@@ -34,18 +25,26 @@ class MacroRecorder : public RecordingManagerBase {
     void stopRecording() override;
     bool isRecordingActive() const override;
 
+    enum Status : uint8_t {
+        /// Nothing is going on
+        Disabled = 0,
+        /// Recording is awaiting assignment to a channel
+        Armed = 1,
+        /// Recording is active
+        Recording = 2,
+    };
+
     /// Tries to append this cue jump to the currently recorded Macro.
     /// Returns true if the currently recorded Macro was changed - so only if
     /// recording is active and the channel handle matches.
-    /// Only called from RT.
+    /// Only called in realtime code.
     void notifyCueJump(ChannelHandle* channel, double sourceFramePos, double destFramePos);
 
     Macro getMacro() const;
-    MacroRecordingState getState() const;
     ChannelHandle* getActiveChannel() const;
 
   signals:
-    void saveMacro(const ChannelHandle channel, const Macro macro);
+    void saveMacro(ChannelHandle channel, Macro macro);
 
   private slots:
     void pollRecordingStart();
@@ -53,6 +52,17 @@ class MacroRecorder : public RecordingManagerBase {
   private:
     FRIEND_TEST(MacroRecordingTest, ClaimRecording);
     FRIEND_TEST(MacroRecordingTest, RecordCueJump);
+
+    enum class State : uint8_t {
+        /// Nothing is going on
+        Disabled,
+        /// Recording is active, but nothing currently going on
+        Armed,
+        /// An Action is currently being recorded
+        Recording,
+    };
+
+    State getState() const;
 
     /// Checks if ths channel is recording, otherwise tries to claim it.
     /// Returns true if this channel is recording.
@@ -63,13 +73,13 @@ class MacroRecorder : public RecordingManagerBase {
     /// Called in realtime code.
     bool claimRecording();
 
-    void setState(MacroRecordingState state);
+    void setState(State state);
 
     ControlPushButton m_COToggleRecording;
     ControlObject m_CORecStatus;
 
     ChannelHandle* m_activeChannel;
-    std::atomic<MacroRecordingState> m_macroRecordingState;
+    std::atomic<State> m_macroRecordingState;
     QTimer m_pStartRecordingTimer;
 
     Macro m_recordedMacro;
