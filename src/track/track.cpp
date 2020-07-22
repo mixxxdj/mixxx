@@ -967,9 +967,9 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate can only be trusted after the audio
     // stream has been opened.
     DEBUG_ASSERT(m_streamInfo);
-    const auto sampleRate = m_streamInfo->getSignalInfo().getSampleRate();
     // The sample rate is supposed to be consistent
-    DEBUG_ASSERT(sampleRate == m_record.getMetadata().getSampleRate());
+    DEBUG_ASSERT(m_streamInfo->getSignalInfo().getSampleRate() ==
+            m_record.getMetadata().getSampleRate());
     mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
             static_cast<SINT>(m_streamInfo->getSignalInfo().getSampleRate()),
             m_pBeatsImporterPending->importBeatsWithCorrectTiming(
