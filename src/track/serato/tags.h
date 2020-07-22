@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/signalinfo.h"
+#include "track/beatsimporter.h"
 #include "track/cueinfoimporter.h"
 #include "track/serato/beatgrid.h"
 #include "track/serato/markers.h"
@@ -54,6 +55,7 @@ class SeratoTags final {
     }
 
     CueInfoImporterPointer importCueInfos() const;
+    BeatsImporterPointer importBeats() const;
 
     RgbColor::optional_t getTrackColor() const;
     bool isBpmLocked() const;

@@ -1240,6 +1240,7 @@ class MixxxCore(Feature):
                    "src/track/serato/markers.cpp",
                    "src/track/serato/markers2.cpp",
                    "src/track/serato/tags.cpp",
+                   "src/track/serato/beatsimporter.cpp",
                    "src/track/serato/cueinfoimporter.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",

@@ -722,6 +722,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/playcounter.cpp
   src/track/replaygain.cpp
   src/track/serato/beatgrid.cpp
+  src/track/serato/beatsimporter.cpp
   src/track/serato/cueinfoimporter.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
