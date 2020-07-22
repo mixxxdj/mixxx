@@ -1286,6 +1286,10 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     // Serato tags
     writeGeneralEncapsulatedObjectFrame(
             pTag,
+            kFrameDescriptionSeratoBeatGrid,
+            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+    writeGeneralEncapsulatedObjectFrame(
+            pTag,
             kFrameDescriptionSeratoMarkers,
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
     writeGeneralEncapsulatedObjectFrame(
