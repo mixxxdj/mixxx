@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="56"/>
         <source>Analyze</source>
-        <translation>Analiza</translation>
+        <translation>Analyze</translation>
     </message>
 </context>
 <context>
@@ -21,12 +21,12 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="73"/>
         <source>Crates</source>
-        <translation>Cesta</translation>
+        <translation>Crates</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
         <source>Remove Crate as Track Source</source>
-        <translation>Aggiunge Cesta come Fonte delle Tracce</translation>
+        <translation>Remove Crate as Track Source</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="110"/>
@@ -83,17 +83,17 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="35"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Add to Auto DJ Queue (replace)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="41"/>
         <source>Import Playlist</source>
-        <translation>Importa Playlist</translation>
+        <translation>Import Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="119"/>
         <source>Playlist Creation Failed</source>
-        <translation>Creazione della Playlist Fallita</translation>
+        <translation>Playlist Creation Failed</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="120"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="293"/>
         <source>New Playlist</source>
-        <translation>Nuova Playlist</translation>
+        <translation>New Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
@@ -117,7 +117,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="37"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="290"/>
         <source>Create New Playlist</source>
-        <translation>Creare Nuova Playlist</translation>
+        <translation>Create New Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="69"/>
@@ -127,7 +127,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="53"/>
         <source>Remove</source>
-        <translation>Rimuovi</translation>
+        <translation>Remove</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="43"/>
@@ -137,38 +137,38 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="58"/>
         <source>Lock</source>
-        <translation>Blocca</translation>
+        <translation>Lock</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Duplicate</source>
-        <translation>Duplica</translation>
+        <translation>Duplicate</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="86"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="91"/>
         <source>Import Playlist</source>
-        <translation>Importa Playlist</translation>
+        <translation>Import Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="101"/>
         <source>Export Track Files</source>
-        <translation>Esporta Track Files</translation>
+        <translation>Esport Track Files</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="80"/>
         <source>Analyze entire Playlist</source>
-        <translation>Analiza intera Playlist</translation>
+        <translation>Analyze entire Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="196"/>
         <source>Enter new name for playlist:</source>
-        <translation>Digitare Nuovo Nome della Playlist:</translation>
+        <translation>Enter new name for playlist:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="237"/>
         <source>Duplicate Playlist</source>
-        <translation>Duplicare Playlist</translation>
+        <translation>Duplicate Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="238"/>
@@ -185,7 +185,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="74"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Add to Auto DJ Queue (replace)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
@@ -277,12 +277,12 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="128"/>
         <source>Album Artist</source>
-        <translation>Artista Album</translation>
+        <translation>Album Artist</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="132"/>
         <source>Artist</source>
-        <translation>Artista</translation>
+        <translation>Artist</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="136"/>
@@ -302,7 +302,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="148"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Color</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="152"/>
@@ -312,7 +312,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="156"/>
         <source>Composer</source>
-        <translation>Compositore</translation>
+        <translation>Composer</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="160"/>
@@ -327,17 +327,17 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="168"/>
         <source>Duration</source>
-        <translation>Durata</translation>
+        <translation>Duration</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="172"/>
         <source>Type</source>
-        <translation>Tipo</translation>
+        <translation>Type</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="176"/>
         <source>Genre</source>
-        <translation>Genere</translation>
+        <translation>Genre</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="180"/>
@@ -352,7 +352,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="188"/>
         <source>Location</source>
-        <translation>Località</translation>
+        <translation>Location</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="192"/>
@@ -367,12 +367,12 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="200"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Gain</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="204"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Samplerate</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="208"/>
@@ -382,7 +382,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="212"/>
         <source>Title</source>
-        <translation>Titolo</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="216"/>
@@ -392,7 +392,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="220"/>
         <source>Year</source>
-        <translation>Anno</translation>
+        <translation>Year</translation>
     </message>
 </context>
 <context>
@@ -400,7 +400,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="113"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Action failed</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="114"/>
