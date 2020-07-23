@@ -9,6 +9,37 @@ namespace {
 mixxx::Logger kLogger("SeratoBeatGrid");
 constexpr quint16 kVersion = 0x0100;
 constexpr int kMarkerSizeID3 = 8;
+const QByteArray kSeratoBeatGridBase64EncodedPrefix = QByteArray(
+        "application/octet-stream\x00\x00Serato BeatGrid\x00",
+        24 + 2 + 15 + 1);
+
+QByteArray base64encode(const QByteArray& data, bool chopPadding) {
+    QByteArray dataBase64;
+
+    // A newline char is inserted at every 72 bytes of base64-encoded content.
+    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
+    // and base64-encode them one at a time:
+    int offset = 0;
+    while (offset < data.size()) {
+        if (offset > 0) {
+            dataBase64.append('\n');
+        }
+        QByteArray block = data.mid(offset, 54);
+        dataBase64.append(block.toBase64(
+                QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
+        offset += block.size();
+
+        if (chopPadding) {
+            // In case that the last block would require padding, Serato seems to
+            // chop off the last byte of the base64-encoded data
+            if (block.size() % 3) {
+                dataBase64.chop(1);
+            }
+        }
+    }
+
+    return dataBase64;
+}
 
 } // namespace
 
@@ -142,6 +173,8 @@ bool SeratoBeatGrid::parse(SeratoBeatGrid* seratoBeatGrid,
     case taglib::FileType::MP3:
     case taglib::FileType::AIFF:
         return parseID3(seratoBeatGrid, data);
+    case taglib::FileType::FLAC:
+        return parseBase64Encoded(seratoBeatGrid, data);
     default:
         return false;
     }
@@ -292,11 +325,32 @@ bool SeratoBeatGrid::parseID3(
     return true;
 }
 
+bool SeratoBeatGrid::parseBase64Encoded(
+        SeratoBeatGrid* seratoBeatGrid, const QByteArray& base64EncodedData) {
+    const auto decodedData = QByteArray::fromBase64(base64EncodedData);
+    if (!decodedData.startsWith(kSeratoBeatGridBase64EncodedPrefix)) {
+        kLogger.warning() << "Decoding SeratoBeatGrid from base64 failed:"
+                          << "Unexpected prefix";
+        return false;
+    }
+    DEBUG_ASSERT(decodedData.size() >= kSeratoBeatGridBase64EncodedPrefix.size());
+    if (!parseID3(
+                seratoBeatGrid,
+                decodedData.mid(kSeratoBeatGridBase64EncodedPrefix.size()))) {
+        kLogger.warning() << "Parsing base64encoded SeratoBeatGrid failed!";
+        return false;
+    }
+
+    return true;
+}
+
 QByteArray SeratoBeatGrid::dump(taglib::FileType fileType) const {
     switch (fileType) {
     case taglib::FileType::MP3:
     case taglib::FileType::AIFF:
         return dumpID3();
+    case taglib::FileType::FLAC:
+        return dumpBase64Encoded();
     default:
         DEBUG_ASSERT(false);
         return {};
@@ -328,6 +382,18 @@ QByteArray SeratoBeatGrid::dumpID3() const {
     stream.writeRawData(m_pTerminalMarker->dumpID3(), kMarkerSizeID3);
     stream << m_footer;
     return data;
+}
+
+QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
+    if (isEmpty()) {
+        // Return empty QByteArray
+        return {};
+    }
+
+    QByteArray data = kSeratoBeatGridBase64EncodedPrefix;
+    data.append(dumpID3());
+
+    return base64encode(data, false);
 }
 
 } // namespace mixxx

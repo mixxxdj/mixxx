@@ -106,9 +106,13 @@ class SeratoBeatGrid final {
     static bool parseID3(
             SeratoBeatGrid* seratoBeatGrid,
             const QByteArray& data);
+    static bool parseBase64Encoded(
+            SeratoBeatGrid* seratoBeatGrid,
+            const QByteArray& base64EncodedData);
 
     QByteArray dump(taglib::FileType fileType) const;
     QByteArray dumpID3() const;
+    QByteArray dumpBase64Encoded() const;
 
     bool isEmpty() const {
         return !m_pTerminalMarker && m_nonTerminalMarkers.isEmpty();
