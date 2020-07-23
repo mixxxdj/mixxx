@@ -173,6 +173,7 @@ bool SeratoBeatGrid::parse(SeratoBeatGrid* seratoBeatGrid,
     case taglib::FileType::MP3:
     case taglib::FileType::AIFF:
         return parseID3(seratoBeatGrid, data);
+    case taglib::FileType::MP4:
     case taglib::FileType::FLAC:
         return parseBase64Encoded(seratoBeatGrid, data);
     default:
@@ -349,6 +350,7 @@ QByteArray SeratoBeatGrid::dump(taglib::FileType fileType) const {
     case taglib::FileType::MP3:
     case taglib::FileType::AIFF:
         return dumpID3();
+    case taglib::FileType::MP4:
     case taglib::FileType::FLAC:
         return dumpBase64Encoded();
     default:
