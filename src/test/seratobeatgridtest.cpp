@@ -32,10 +32,9 @@ class SeratoBeatGridTest : public testing::Test {
         dir.setFilter(QDir::Files);
         dir.setNameFilters(QStringList() << "*.octet-stream");
 
-        QFileInfoList list = dir.entryInfoList();
-        EXPECT_NE(list.size(), 0);
-        for (int i = 0; i < list.size(); i++) {
-            QFileInfo fileInfo = list.at(i);
+        QFileInfoList fileList = dir.entryInfoList();
+        EXPECT_FALSE(fileList.isEmpty());
+        for (const QFileInfo& fileInfo : fileList) {
             qDebug() << "--- File:" << fileInfo.fileName();
             QFile file(dir.filePath(fileInfo.fileName()));
             bool openOk = file.open(QIODevice::ReadOnly);
