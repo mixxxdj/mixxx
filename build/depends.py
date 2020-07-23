@@ -951,6 +951,7 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproxy.cpp",
 
                    "src/widget/controlwidgetconnection.cpp",
+                   "src/widget/wbeatmenu.cpp",
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
@@ -1162,6 +1163,7 @@ class MixxxCore(Feature):
                    "src/waveform/guitick.cpp",
                    "src/waveform/visualsmanager.cpp",
                    "src/waveform/visualplayposition.cpp",
+                   "src/waveform/renderers/waveformbeat.cpp",
                    "src/waveform/renderers/waveformwidgetrenderer.cpp",
                    "src/waveform/renderers/waveformrendererabstract.cpp",
                    "src/waveform/renderers/waveformrenderbackground.cpp",

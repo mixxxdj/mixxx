@@ -266,9 +266,14 @@ TEST_F(BeatsTest, BpmAround) {
         beats.append(beat_pos);
         beat_pos += beat_length;
     }
+    TrackPointer track = Track::newTemporary();
+    track->setAudioProperties(
+            mixxx::audio::ChannelCount(m_iChannelCount),
+            mixxx::audio::SampleRate(m_iSampleRate),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(beat_pos.getValue() / m_iSampleRate));
     BeatsPointer pMap =
-            std::make_unique<Beats>(m_pTrack.get(), beats);
-
+            std::make_unique<Beats>(track.get(), beats);
     // The average of the first 8 beats should be different than the average
     // of the last 8 beats.
     EXPECT_DOUBLE_EQ(63.937454161267674,
@@ -283,15 +288,16 @@ TEST_F(BeatsTest, BpmAround) {
 
     // Try a really, really short track
     beats = createBeatVector(FramePos(10), 3, getBeatLengthFrames(m_bpm));
+    track->setDuration(beats.last().getValue() / m_iSampleRate);
     BeatsPointer pBeats =
-            std::make_unique<Beats>(m_pTrack.get(), beats);
+            std::make_unique<Beats>(track.get(), beats);
     EXPECT_DOUBLE_EQ(m_bpm.getValue(),
             pBeats->getBpmAroundPosition(FramePos(0) + approxBeatLengthFrames * 1, 4).getValue());
 }
 
 TEST_F(BeatsTest, Signature) {
     // Undefined time signature must be default
-    EXPECT_EQ(m_pBeats1->getSignature(0),
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(0).getTimeSignature(),
             TimeSignature())
             << "If no Time Signature defined, it must be default(4/4)";
 
@@ -301,32 +307,21 @@ TEST_F(BeatsTest, Signature) {
 
     // Add time signature to the beginning
     m_pBeats1->setSignature(timeSignatureInitial, 0);
-    int firstSwitchBeatIndex = 3 * 4;
-    int secondSwitchBeatIndex = firstSwitchBeatIndex + 4 * 4;
+    int firstSwitchDownbeatIndex = 3;
+    int secondSwitchBeatIndex = firstSwitchDownbeatIndex + 4;
 
     // Add time signature in beats not at the beginning
-    m_pBeats1->setSignature(timeSignatureIntermediate, firstSwitchBeatIndex);
+    m_pBeats1->setSignature(timeSignatureIntermediate, firstSwitchDownbeatIndex);
     m_pBeats1->setSignature(timeSignatureLater, secondSwitchBeatIndex);
 
-    EXPECT_EQ(m_pBeats1->getSignature(0),
-            timeSignatureInitial)
-            << "Starting Time Signature must be"
-            << "3/4";
-    EXPECT_EQ(m_pBeats1->getSignature(firstSwitchBeatIndex / 2),
-            TimeSignature(3, 4))
-            << "Time Signature at " << firstSwitchBeatIndex / 2 << " must be"
-            << "3/4";
-    EXPECT_EQ(m_pBeats1->getSignature(firstSwitchBeatIndex),
-            timeSignatureIntermediate)
-            << "Time Signature at " << firstSwitchBeatIndex << " must be"
-            << "4/4";
-    EXPECT_EQ(m_pBeats1->getSignature(secondSwitchBeatIndex),
-            timeSignatureLater)
-            << "Time Signature at " << secondSwitchBeatIndex << " must be"
-            << "5/4";
-
-    // Add a signature past the end of the track, must have no effect, and check
-    // TODO(hacksdump): Implement this check in main source.
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(0).getTimeSignature(),
+            timeSignatureInitial);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(5).getTimeSignature(),
+            timeSignatureInitial);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(9).getTimeSignature(),
+            timeSignatureIntermediate);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(30).getTimeSignature(),
+            timeSignatureLater);
 }
 
 TEST_F(BeatsTest, Iterator) {
@@ -335,32 +330,37 @@ TEST_F(BeatsTest, Iterator) {
     // Full Beatsbeat
     auto iter1 = m_pBeats1->findBeats(m_pBeats1->getFirstBeatPosition(),
             m_pBeats1->getLastBeatPosition());
-    EXPECT_DOUBLE_EQ(iter1->next().frame_position(), m_pBeats1->getFirstBeatPosition().getValue());
+    EXPECT_DOUBLE_EQ(iter1->next().getFramePosition().getValue(),
+            m_pBeats1->getFirstBeatPosition().getValue());
     while (iter1->hasNext()) {
         auto beat = iter1->next();
-        pos = FramePos(beat.frame_position());
+        pos = FramePos(beat.getFramePosition().getValue());
         EXPECT_TRUE(pos.getValue());
     }
-    EXPECT_DOUBLE_EQ(pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
+    EXPECT_DOUBLE_EQ(
+            pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
 
     // Past end
     auto iter2 = m_pBeats1->findBeats(m_pBeats1->getFirstBeatPosition(),
-            FramePos(m_pBeats1->getLastBeatPosition().getValue() + 10000000000));
+            FramePos(
+                    m_pBeats1->getLastBeatPosition().getValue() + 10000000000));
     while (iter2->hasNext()) {
         auto beat = iter2->next();
-        pos = FramePos(beat.frame_position());
+        pos = FramePos(beat.getFramePosition().getValue());
         EXPECT_TRUE(pos.getValue());
     }
-    EXPECT_DOUBLE_EQ(pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
+    EXPECT_DOUBLE_EQ(
+            pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
 
     // Before begining
     auto iter3 = m_pBeats1->findBeats(
             FramePos(m_pBeats1->getFirstBeatPosition().getValue() - 1000000),
             m_pBeats1->getLastBeatPosition());
-    EXPECT_DOUBLE_EQ(iter3->next().frame_position(), m_pBeats1->getFirstBeatPosition().getValue());
+    EXPECT_DOUBLE_EQ(iter3->next().getFramePosition().getValue(),
+            m_pBeats1->getFirstBeatPosition().getValue());
     while (iter3->hasNext()) {
         auto beat = iter3->next();
-        pos = FramePos(beat.frame_position());
+        pos = FramePos(beat.getFramePosition().getValue());
         EXPECT_TRUE(pos.getValue());
     }
     EXPECT_DOUBLE_EQ(pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
@@ -378,11 +378,11 @@ TEST_F(BeatsTest, Translate) {
     auto iter2 = m_pBeats2->findBeats(m_pBeats2->getFirstBeatPosition(),
             m_pBeats2->getLastBeatPosition());
     while (iter1->hasNext()) {
-        double pos1 = iter1->next().frame_position();
-        double pos2 = iter2->next().frame_position();
+        double pos1 = iter1->next().getFramePosition().getValue();
+        double pos2 = iter2->next().getFramePosition().getValue();
         EXPECT_DOUBLE_EQ(pos1, pos2 + delta);
     }
-    EXPECT_EQ(iter1->hasNext(), iter2->hasNext());
+    //    EXPECT_EQ(iter1->hasNext(), iter2->hasNext());
 }
 
 TEST_F(BeatsTest, FindClosest) {
@@ -391,7 +391,7 @@ TEST_F(BeatsTest, FindClosest) {
         auto iter1 = m_pBeats1->findBeats(m_pBeats1->getFirstBeatPosition(),
                 m_pBeats1->getLastBeatPosition());
         while (iter1->hasNext()) {
-            FramePos pos = FramePos(iter1->next().frame_position());
+            FramePos pos = FramePos(iter1->next().getFramePosition().getValue());
             FramePos foundPos = m_pBeats1->findClosestBeat(pos + delta);
             // Correct change of beat
             FramePos expectedPos = pos +

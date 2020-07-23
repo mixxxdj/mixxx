@@ -8,6 +8,7 @@
 #include "control/controlproxy.h"
 #include "track/cue.h"
 #include "util/memory.h"
+#include "waveform/renderers/waveformelementrightclickable.h"
 #include "waveform/waveformmarklabel.h"
 
 class SkinContext;
@@ -15,7 +16,7 @@ class WaveformSignalColors;
 
 class WOverview;
 
-class WaveformMark {
+class WaveformMark : WaveformElementRightClickable {
   public:
     WaveformMark(
             const QString& group,

@@ -24,18 +24,28 @@ message Color {
   optional int32 blue = 3 [ default = 100 ];
 }
 
+message Bpm {
+  optional double bpm = 1 [ default = 0 ];
+  optional Source source = 2;
+}
+
+message BpmMarker {
+  optional int32 beat_index = 1;
+  optional Bpm bpm = 2;
+}
+
 message TimeSignature {
   optional int32 beats_per_bar = 1 [ default = 4];
   optional int32 note_value = 2 [ default = 4 ];
 }
 
 message TimeSignatureMarker {
-  optional int32 beat_index = 1 [ default = 0 ];
+  optional int32 downbeat_index = 1 [ default = 0 ];
   optional TimeSignature time_signature = 2;
 }
 
 message PhraseMarker {
-  optional int32 beat_index = 1 [ default = 0 ];
+  optional int32 downbeat_index = 1 [ default = 0 ];
 }
 
 message Section {
@@ -45,26 +55,17 @@ message Section {
 }
 
 message SectionMarker {
-  optional int32 beat_index = 1 [default = 0];
+  optional int32 downbeat_index = 1 [default = 0];
   optional Section section = 2;
 }
 
-message Bpm {
-  optional double bpm = 1;
-  optional Source source = 2 [ default = ANALYZER ];
-}
-
-message Beat {
-  optional double frame_position = 1 [ default = 0 ];
-  optional bool enabled = 2 [ default = true ];
-  optional Source source = 3 [ default = ANALYZER ];
-}
-
 message Beats {
-  repeated Beat beat = 1;
-  repeated TimeSignatureMarker time_signature_markers = 3;
-  repeated PhraseMarker phrase_markers = 4;
-  repeated SectionMarker section_markers = 5;
+  optional double first_frame_position = 1;
+  optional int32 first_downbeat_index = 2;
+  repeated BpmMarker bpm_markers = 3;
+  repeated TimeSignatureMarker time_signature_markers = 4;
+  repeated PhraseMarker phrase_markers = 5;
+  repeated SectionMarker section_markers = 6;
 }
 
 // These are legacy data structures for upgrading from Mixxx < 2.4

@@ -1,16 +1,20 @@
+#include "waveform/renderers/waveformrenderbeat.h"
+
 #include <QDomNode>
 #include <QPaintEvent>
 #include <QPainter>
 
-#include "waveform/renderers/waveformrenderbeat.h"
-
-#include "control/controlobject.h"
 #include "track/beats.h"
 #include "track/track.h"
+#include "util/frameadapter.h"
+#include "util/painterscope.h"
+#include "waveform/renderers/waveformbeat.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "util/painterscope.h"
+
+namespace {
+constexpr int kMaxZoomFactorToDisplayBeats = 15;
+}
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -27,11 +31,10 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-
     if (!trackInfo)
         return;
-
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
+
     if (!trackBeats)
         return;
 
@@ -76,27 +79,38 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
+    QList<WaveformBeat> beatsOnScreen;
 
     while (it->hasNext()) {
-        // Beats->next returns Frame number and we need Sample number
-        double beatSamplePosition = it->next().frame_position() * mixxx::kEngineChannelCount;
-        double xBeatPoint =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(beatSamplePosition);
-
-        xBeatPoint = qRound(xBeatPoint);
+        auto beat = it->next();
+        double beatSamplePosition = framePosToSamplePos(beat.getFramePosition());
+        int beatPixelPositionInWidgetSpace = qRound(
+                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                        beatSamplePosition));
 
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);
         }
 
-        if (orientation == Qt::Horizontal) {
-            m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
-        } else {
-            m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
-        }
+        auto* waveformBeat = &m_beats[beatCount];
+        waveformBeat->setPositionPixels(beatPixelPositionInWidgetSpace);
+        waveformBeat->setBeatGridMode(m_waveformRenderer->beatGridMode());
+        waveformBeat->setBeat(beat);
+        waveformBeat->setOrientation(orientation);
+        waveformBeat->setLength((orientation == Qt::Horizontal) ? rendererHeight : rendererWidth);
+        waveformBeat->setVisible(beat.getType() == mixxx::Beat::DOWNBEAT ||
+                (beat.getType() == mixxx::Beat::BEAT &&
+                        m_waveformRenderer->getZoomFactor() <
+                                kMaxZoomFactorToDisplayBeats));
+        beatsOnScreen.append(*waveformBeat);
+        beatCount++;
     }
 
     // Make sure to use constData to prevent detaches!
-    painter->drawLines(m_beats.constData(), beatCount);
+    for (int i = 0; i < beatCount; i++) {
+        const auto currentBeat = m_beats.constData() + i;
+        currentBeat->draw(painter);
+    }
+    m_waveformRenderer->setBeatsOnScreen(beatsOnScreen);
 }

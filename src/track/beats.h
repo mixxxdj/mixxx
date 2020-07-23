@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "proto/beats.pb.h"
+#include "track/beat.h"
 #include "track/bpm.h"
 #include "track/frame.h"
 #include "util/types.h"
@@ -18,7 +19,6 @@ namespace mixxx {
 class Beats;
 class BeatIterator;
 using BeatsPointer = std::shared_ptr<Beats>;
-using BeatList = QList<track::io::Beat>;
 } // namespace mixxx
 
 #include "track/beatiterator.h"
@@ -32,8 +32,8 @@ namespace mixxx {
 class BeatsInternal {
   public:
     BeatsInternal();
-    BeatsInternal(const QByteArray& byteArray);
-    BeatsInternal(const QVector<FramePos>& beats,
+    void initWithProtobuf(const QByteArray& byteArray);
+    void initWithAnalyzer(const QVector<FramePos>& beats,
             const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers,
             const QVector<track::io::PhraseMarker>& phraseMarkers,
             const QVector<track::io::SectionMarker>& sectionMarkers);
@@ -67,8 +67,8 @@ class BeatsInternal {
     QString getVersion() const;
     QString getSubVersion() const;
     void setSubVersion(const QString& subVersion);
-    Bpm calculateBpm(const track::io::Beat& startBeat,
-            const track::io::Beat& stopBeat) const;
+    Bpm calculateBpm(const Beat& startBeat,
+            const Beat& stopBeat) const;
     void scale(enum BPMScale scale);
     FramePos findNBeatsFromFrame(FramePos fromFrame, double beats) const;
     bool findPrevNextBeats(FramePos frame,
@@ -81,8 +81,7 @@ class BeatsInternal {
     bool hasBeatInRange(FramePos startFrame, FramePos stopFrame) const;
     double getBpmRange(FramePos startFrame, FramePos stopFrame) const;
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
-    TimeSignature getSignature(int beatIndex) const;
-    void setSignature(const TimeSignature& signature, int beatIndex);
+    void setSignature(TimeSignature sig, int downbeatIndex);
     void translate(FrameDiff_t numFrames);
     void setBpm(Bpm bpm);
     inline int size() {
@@ -90,6 +89,9 @@ class BeatsInternal {
     }
     FramePos getFirstBeatPosition() const;
     FramePos getLastBeatPosition() const;
+    Beat getBeatAtIndex(int index) {
+        return m_beats.at(index);
+    }
 
   private:
     void updateBpm();
@@ -101,13 +103,13 @@ class BeatsInternal {
     void scaleFourth();
     void scaleMultiple(uint multiple);
     void scaleFraction(uint fraction);
-    bool isDownbeat(int beatIndex);
-    bool hasTimeSignatureMarkerBefore(int beatIndex);
+    void generateBeatsFromMarkers();
+    void clearMarkers();
 
     QString m_subVersion;
     Bpm m_bpm;
     BeatList m_beats;
-    QVector<track::io::TimeSignatureMarker> m_timeSignatureMarkers;
+    track::io::Beats m_beatsProto;
     int m_iSampleRate;
     double m_dDurationSeconds;
     friend QDebug operator<<(QDebug dbg, const BeatsInternal& arg);
@@ -156,8 +158,8 @@ class Beats final : public QObject {
     void setSubVersion(const QString& subVersion);
     bool isValid() const;
     /// Calculates the BPM between two beat positions.
-    Bpm calculateBpm(const track::io::Beat& startBeat,
-            const track::io::Beat& stopBeat) const;
+    Bpm calculateBpm(const Beat& startBeat,
+            const Beat& stopBeat) const;
 
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of firstBeatFrame. Does not generate an updated() signal, since it is
@@ -214,6 +216,15 @@ class Beats final : public QObject {
     bool hasBeatInRange(FramePos startFrame,
             FramePos stopFrame) const;
 
+    /**
+     * Return Beat at (0 based) index
+     * @param index
+     * @return Beat object
+     */
+    Beat getBeatAtIndex(int index) {
+        return m_beatsInternal.getBeatAtIndex(index);
+    }
+
     /// Return the average BPM over the entire track if the BPM is
     /// valid, otherwise returns -1
     Bpm getBpm() const;
@@ -228,11 +239,8 @@ class Beats final : public QObject {
     /// BPM returns -1.
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
 
-    /// Sets the track signature at the nearest frame
-    void setSignature(TimeSignature sig, int beatIndex);
-
-    /// Return the track signature at the given frame position
-    TimeSignature getSignature(int beatIndex) const;
+    /// Sets the track signature starting at specified bar
+    void setSignature(TimeSignature sig, int downbeatIndex);
 
     /// Sets the nearest beat as a downbeat
 
@@ -270,6 +278,7 @@ class Beats final : public QObject {
     mutable QMutex m_mutex;
     const Track* m_track;
     BeatsInternal m_beatsInternal;
+
   signals:
     void updated();
 };

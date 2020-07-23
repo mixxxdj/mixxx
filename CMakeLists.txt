@@ -807,6 +807,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/qtvsynctestrenderer.cpp
   src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
   src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/waveformbeat.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
@@ -852,6 +853,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
+  src/widget/wbeatmenu.cpp
   src/widget/wbeatspinbox.cpp
   src/widget/wcolorpicker.cpp
   src/widget/wcolorpickeraction.cpp

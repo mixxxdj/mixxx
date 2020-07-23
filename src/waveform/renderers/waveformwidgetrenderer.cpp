@@ -10,7 +10,7 @@
 #include "util/performancetimer.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
-const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;
+const double WaveformWidgetRenderer::s_waveformMaxZoom = 30.0;
 const double WaveformWidgetRenderer::s_waveformDefaultZoom = 3.0;
 const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
@@ -278,6 +278,10 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
 }
 
+void WaveformWidgetRenderer::setBeatGridMode(BeatGridMode mode) {
+    m_modeBeatGrid = mode;
+}
+
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;
     //used to postpone first display until track sample is actually available
@@ -303,4 +307,14 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
         }
     }
     return nullptr;
+}
+
+// TODO(hacksdump): Optimize this search
+std::optional<WaveformBeat> WaveformWidgetRenderer::getBeatAtPoint(QPoint point) const {
+    for (const auto& beat : m_beatsOnScreen) {
+        if (beat.contains(point, getOrientation())) {
+            return beat;
+        }
+    }
+    return std::nullopt;
 }

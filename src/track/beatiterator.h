@@ -22,39 +22,13 @@ class BeatIterator final {
     /// Advances the iterator and returns the current beat frame position.
     /// If you need the frame position make sure you store it, is not possible
     /// to get it again.
-    track::io::Beat next() {
+    Beat next() {
         if (hasNext()) {
             return *m_currentBeat++;
         } else {
-            return track::io::Beat();
+            return Beat(mixxx::kInvalidFramePos);
         }
     }
-
-    /*
-    // TODO(hacksdump): These will be removed from this iterator and
-    // will be made methods of the Beat class to be introduced in #2844.
-
-    /// Returns true if the current beat is a down beat.
-    bool isBar() const {
-        return m_currentBeat->type() == mixxx::track::io::BAR;
-    }
-
-    /// Returns true if the current beat is a phrase beat.
-    bool isPhrase() const {
-        return m_currentBeat->type() == mixxx::track::io::PHRASE;
-    }
-
-    /// The current beat becomes a regular beat.
-    void makeBeat() {
-        // TODO(JVC) Const_cast is needed until we manage to make BeatIterator read/write
-        const_cast<mixxx::track::io::Beat&>(*m_currentBeat).set_type(mixxx::track::io::BEAT);
-    }
-
-    /// The current beat becomes a downbeat.
-    void makeBar() {
-        // TODO(JVC) Const_cast is needed until we manage to make BeatIterator read/write
-        const_cast<mixxx::track::io::Beat&>(*m_currentBeat).set_type(mixxx::track::io::BAR);
-    }*/
 
   private:
     BeatList::const_iterator m_currentBeat;

@@ -1,17 +1,17 @@
 #pragma once
 
-#include <vector>
-
 #include <QObject>
 #include <QTime>
 #include <QVector>
+#include <vector>
 
-#include "util/singleton.h"
+#include "preferences/beatgridmode.h"
 #include "preferences/usersettings.h"
-#include "waveform/widgets/waveformwidgettype.h"
-#include "waveform/waveform.h"
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
+#include "util/singleton.h"
+#include "waveform/waveform.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
@@ -110,6 +110,11 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setDisplayBeatGridAlpha(int alpha);
     int beatGridAlpha() const { return m_beatGridAlpha; }
 
+    void setBeatGridMode(BeatGridMode mode);
+    BeatGridMode beatGridMode() const {
+        return m_beatGridMode;
+    }
+
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
@@ -185,6 +190,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
+    BeatGridMode m_beatGridMode;
 
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
