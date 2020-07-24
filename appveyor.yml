@@ -64,6 +64,7 @@ for:
       libavutil-dev
       libchromaprint-dev
       libebur128-dev
+      libfftw3-dev
       libflac-dev
       libid3tag0-dev
       liblilv-dev
@@ -117,6 +118,7 @@ for:
       -DBULK=ON
       -DFFMPEG=ON
       -DHID=ON
+      -DKEYFINDER=ON
       -DLILV=ON
       -DLOCALECOMPARE=ON
       -DMAD=ON
