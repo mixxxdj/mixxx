@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <QtConcurrent>
+
 #include "macros/macrorecorder.h"
 #include "signalpathtest.h"
 
@@ -68,6 +70,20 @@ TEST(MacroRecordingTest, RecordCueJump) {
     EXPECT_EQ(
             ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(),
             MacroRecorder::Status::Recording);
+}
+
+TEST(MacroRecordingTest, StopRecordingAsync) {
+    MacroRecorder recorder;
+    recorder.setState(MacroRecorder::State::Recording);
+    std::atomic<MacroRecorder::State> state;
+    QtConcurrent::run([&recorder, &state] {
+        QThread::msleep(100);
+        state.store(recorder.getState());
+        recorder.setState(MacroRecorder::State::Armed);
+    });
+    recorder.stopRecording();
+    EXPECT_EQ(state.load(), MacroRecorder::State::Recording);
+    EXPECT_EQ(recorder.getState(), MacroRecorder::State::Disabled);
 }
 
 TEST(MacroRecordingTest, RecordingToggleControl) {

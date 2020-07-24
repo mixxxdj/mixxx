@@ -52,6 +52,7 @@ class MacroRecorder : public RecordingManagerBase {
   private:
     FRIEND_TEST(MacroRecordingTest, ClaimRecording);
     FRIEND_TEST(MacroRecordingTest, RecordCueJump);
+    FRIEND_TEST(MacroRecordingTest, StopRecordingAsync);
 
     enum class State : uint8_t {
         /// Nothing is going on
