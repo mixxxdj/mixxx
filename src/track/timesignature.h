@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "proto/beats.pb.h"
+
 namespace mixxx {
 
 /// Musical Time signature
