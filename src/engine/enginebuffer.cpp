@@ -489,7 +489,7 @@ void EngineBuffer::slotTrackLoading() {
     m_pause.unlock();
 
     // Set play here, to signal the user that the play command is adopted
-    m_playButton->set((double)m_bPlayAfterLoading);
+    m_playButton->set(m_bPlayAfterLoading ? 1.0 : 0.0);
     m_pTrackSamples->set(0); // Stop renderer
 }
 
