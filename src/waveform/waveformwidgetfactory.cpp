@@ -111,6 +111,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
+          m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS),
           m_vsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
@@ -533,6 +534,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
         viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
+        viewer->setBeatGridMode(m_beatGridMode);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
