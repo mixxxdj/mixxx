@@ -1521,6 +1521,16 @@ if(KEYFINDER)
       EXCLUDE_FROM_ALL TRUE
     )
 
+    # This is a bit of a hack to make sure that the include directory actually
+    # exists when configuring the build.
+    # ExternalProject_Add() will create it
+    # at compile time, but CMake already
+    # checks that all directories passed to
+    # target_include_directories() exist
+    # during configuration and will throw
+    # an error if not.
+    file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
+
     add_library(mixxx-keyfinder UNKNOWN IMPORTED)
     add_dependencies(mixxx-keyfinder keyfinder)
     set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
