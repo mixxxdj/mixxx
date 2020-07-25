@@ -24,14 +24,10 @@ message Color {
   optional int32 blue = 3 [ default = 100 ];
 }
 
-message Bpm {
-  optional double bpm = 1 [ default = 0 ];
-  optional Source source = 2;
-}
-
 message BpmMarker {
   optional int32 beat_index = 1;
-  optional Bpm bpm = 2;
+  optional double bpm = 2;
+  optional Source source = 3;
 }
 
 message TimeSignature {
@@ -77,6 +73,11 @@ message LegacyBeat {
 
 message LegacyBeatMap {
   repeated LegacyBeat beat = 1;
+}
+
+message Bpm {
+  optional double bpm = 1 [ default = 0 ];
+  optional Source source = 2;
 }
 
 message LegacyBeatGrid {

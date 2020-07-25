@@ -331,11 +331,11 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
             FrameDiff_t beatLength = beats.at(i) - beats.at(i - 1);
             Bpm immediateBpm(kSecondsPerMinute * m_iSampleRate / beatLength);
             if (m_beatsProto.bpm_markers().empty() ||
-                    m_beatsProto.bpm_markers().rbegin()->bpm().bpm() !=
+                    m_beatsProto.bpm_markers().rbegin()->bpm() !=
                             immediateBpm.getValue()) {
                 track::io::BpmMarker bpmMarker;
                 bpmMarker.set_beat_index(bpmMarkerBeatIndex);
-                bpmMarker.mutable_bpm()->set_bpm(immediateBpm.getValue());
+                bpmMarker.set_bpm(immediateBpm.getValue());
                 m_beatsProto.add_bpm_markers()->CopyFrom(bpmMarker);
             }
             bpmMarkerBeatIndex++;
@@ -463,8 +463,8 @@ void BeatsInternal::scaleFourth() {
 void BeatsInternal::scaleMultiple(uint multiple) {
     for (int i = 0; i < m_beatsProto.bpm_markers_size(); ++i) {
         track::io::BpmMarker oldBpmMarker = m_beatsProto.bpm_markers().Get(i);
-        m_beatsProto.mutable_bpm_markers()->Mutable(i)->mutable_bpm()->set_bpm(
-                oldBpmMarker.bpm().bpm() * multiple);
+        m_beatsProto.mutable_bpm_markers()->Mutable(i)->set_bpm(
+                oldBpmMarker.bpm() * multiple);
         m_beatsProto.mutable_bpm_markers()->Mutable(i)->set_beat_index(
                 oldBpmMarker.beat_index() * multiple);
     }
@@ -473,8 +473,8 @@ void BeatsInternal::scaleMultiple(uint multiple) {
 void BeatsInternal::scaleFraction(uint fraction) {
     for (int i = 0; i < m_beatsProto.bpm_markers_size(); ++i) {
         track::io::BpmMarker oldBpmMarker = m_beatsProto.bpm_markers().Get(i);
-        m_beatsProto.mutable_bpm_markers()->Mutable(i)->mutable_bpm()->set_bpm(
-                oldBpmMarker.bpm().bpm() / fraction);
+        m_beatsProto.mutable_bpm_markers()->Mutable(i)->set_bpm(
+                oldBpmMarker.bpm() / fraction);
         m_beatsProto.mutable_bpm_markers()->Mutable(i)->set_beat_index(
                 oldBpmMarker.beat_index() / fraction);
     }
@@ -640,7 +640,7 @@ void BeatsInternal::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
     m_beatsProto.set_first_downbeat_index(0);
     track::io::BpmMarker bpmMarker;
     bpmMarker.set_beat_index(0);
-    bpmMarker.mutable_bpm()->set_bpm(dBpm.getValue());
+    bpmMarker.set_bpm(dBpm.getValue());
     m_beatsProto.add_bpm_markers()->CopyFrom(bpmMarker);
     generateBeatsFromMarkers();
 }
@@ -850,7 +850,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
     Beat addedBeat(kInvalidFramePos);
     while (true) {
         auto currentBpmMarker = m_beatsProto.bpm_markers().Get(bpmMarkerIndex);
-        Bpm currentBpm = Bpm(currentBpmMarker.bpm().bpm());
+        Bpm currentBpm = Bpm(currentBpmMarker.bpm());
         auto currentTimeSignatureMarker =
                 m_beatsProto.time_signature_markers().Get(
                         timeSignatureMarkerIndex);
