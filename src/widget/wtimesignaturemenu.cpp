@@ -13,6 +13,10 @@ WTimeSignatureMenu::WTimeSignatureMenu(QWidget* parent)
           m_pBeatCountBox(make_parented<QSpinBox>(this)),
           m_beat(mixxx::kInvalidFramePos) {
     hide();
+    setWindowFlags(Qt::Popup);
+    setAttribute(Qt::WA_StyledBackground);
+    setObjectName("WTimeSignatureMenu");
+
     QHBoxLayout* pMainLayout = new QHBoxLayout();
     pMainLayout->addWidget(m_pBeatCountBox);
     setLayout(pMainLayout);
@@ -43,8 +47,8 @@ void WTimeSignatureMenu::setBeat(mixxx::Beat beat) {
 
 void WTimeSignatureMenu::popup(const QPoint& p) {
     m_pBeatCountBox->setValue(m_beat.getTimeSignature().getBeatsPerBar());
-    //        auto parentWidget = static_cast<QWidget*>(parent());
-    //        QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
-    //        move(topLeft);
+    auto parentWidget = static_cast<QWidget*>(parent());
+    QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
+    move(topLeft);
     show();
 }
