@@ -11,19 +11,6 @@ enum Source {
   USER = 2;
 }
 
-enum SectionType {
-  INTRO = 0;
-  OUTRO = 1;
-  OTHER = 2;
-}
-
-// Setting grey as the default color
-message Color {
-  optional int32 red = 1 [ default = 100 ];
-  optional int32 green = 2 [ default = 100 ];
-  optional int32 blue = 3 [ default = 100 ];
-}
-
 message BpmMarker {
   optional int32 beat_index = 1;
   optional double bpm = 2;
@@ -36,23 +23,31 @@ message TimeSignature {
 }
 
 message TimeSignatureMarker {
-  optional int32 downbeat_index = 1 [ default = 0 ];
+  optional int32 downbeat_index = 1;
   optional TimeSignature time_signature = 2;
 }
 
 message PhraseMarker {
-  optional int32 downbeat_index = 1 [ default = 0 ];
+  optional int32 downbeat_index = 1;
 }
 
-message Section {
-  optional string name = 1 [ default = "UNNAMED"];
-  optional SectionType type = 2 [ default = OTHER ];
-  optional Color color = 3;
+enum SectionType {
+  OTHER = 0;
+  INTRO = 1;
+  OUTRO = 2;
+}
+
+message Color {
+  optional int32 red = 1;
+  optional int32 green = 2;
+  optional int32 blue = 3;
 }
 
 message SectionMarker {
-  optional int32 downbeat_index = 1 [default = 0];
-  optional Section section = 2;
+  optional int32 downbeat_index = 1;
+  optional string name = 2;
+  optional SectionType type = 3;
+  optional Color color = 4;
 }
 
 message Beats {
