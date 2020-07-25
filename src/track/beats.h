@@ -34,9 +34,7 @@ class BeatsInternal {
     BeatsInternal();
     void initWithProtobuf(const QByteArray& byteArray);
     void initWithAnalyzer(const QVector<FramePos>& beats,
-            const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers,
-            const QVector<track::io::PhraseMarker>& phraseMarkers,
-            const QVector<track::io::SectionMarker>& sectionMarkers);
+            const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers);
 
     enum BPMScale {
         DOUBLE,
@@ -132,11 +130,7 @@ class Beats final : public QObject {
             const QVector<FramePos>& beats,
             const QVector<track::io::TimeSignatureMarker>&
                     timeSignatureMarkers =
-                            QVector<track::io::TimeSignatureMarker>(),
-            const QVector<track::io::PhraseMarker>& phraseMarkers =
-                    QVector<track::io::PhraseMarker>(),
-            const QVector<track::io::SectionMarker>& sectionMarkers =
-                    QVector<track::io::SectionMarker>());
+                            QVector<track::io::TimeSignatureMarker>());
     ~Beats() override = default;
 
     using iterator = BeatIterator;

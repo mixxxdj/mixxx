@@ -26,7 +26,7 @@ message TimeSignatureMarker {
   optional int32 downbeat_index = 1;
   optional TimeSignature time_signature = 2;
 }
-
+/*
 message PhraseMarker {
   optional int32 downbeat_index = 1;
 }
@@ -49,14 +49,12 @@ message SectionMarker {
   optional SectionType type = 3;
   optional Color color = 4;
 }
-
+*/
 message Beats {
   optional double first_frame_position = 1;
   optional int32 first_downbeat_index = 2;
   repeated BpmMarker bpm_markers = 3;
   repeated TimeSignatureMarker time_signature_markers = 4;
-  repeated PhraseMarker phrase_markers = 5;
-  repeated SectionMarker section_markers = 6;
 }
 
 // These are legacy data structures for upgrading from Mixxx < 2.4
