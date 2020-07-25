@@ -11,6 +11,7 @@ constexpr int kMaxBeatsPerBar = 32;
 WTimeSignatureMenu::WTimeSignatureMenu(QWidget* parent)
         : QWidget(parent),
           m_pBeatCountBox(make_parented<QSpinBox>(this)),
+          m_pBeatLengthBox(make_parented<QComboBox>(this)),
           m_beat(mixxx::kInvalidFramePos) {
     hide();
     setWindowFlags(Qt::Popup);
@@ -19,11 +20,25 @@ WTimeSignatureMenu::WTimeSignatureMenu(QWidget* parent)
 
     QHBoxLayout* pMainLayout = new QHBoxLayout();
     pMainLayout->addWidget(m_pBeatCountBox);
+    pMainLayout->addWidget(m_pBeatLengthBox);
     setLayout(pMainLayout);
     connect(m_pBeatCountBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &WTimeSignatureMenu::slotBeatCountChanged);
+
+    // 2 ^ index corresponds to beat size
+    m_pBeatLengthBox->addItem(tr("1"));
+    m_pBeatLengthBox->addItem(tr("2"));
+    m_pBeatLengthBox->addItem(tr("4"));
+    m_pBeatLengthBox->addItem(tr("8"));
+    m_pBeatLengthBox->addItem(tr("16"));
+    m_pBeatLengthBox->addItem(tr("32"));
+
+    connect(m_pBeatLengthBox,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &WTimeSignatureMenu::slotBeatSizeChanged);
 
     m_pBeatCountBox->setMinimum(kMinBeatsPerBar);
     m_pBeatCountBox->setMaximum(kMaxBeatsPerBar);
@@ -33,16 +48,29 @@ WTimeSignatureMenu::~WTimeSignatureMenu() {
 }
 
 void WTimeSignatureMenu::slotBeatCountChanged(int value) {
+    mixxx::TimeSignature newTimeSignature(value, m_beat.getTimeSignature().getNoteValue());
+    setTimeSignature(newTimeSignature);
+}
+
+void WTimeSignatureMenu::slotBeatSizeChanged(int index) {
+    int beatSize = pow(2, index);
+    mixxx::TimeSignature newTimeSignature(m_beat.getTimeSignature().getBeatsPerBar(), beatSize);
+    setTimeSignature(newTimeSignature);
+}
+
+void WTimeSignatureMenu::setTimeSignature(mixxx::TimeSignature timeSignature) {
     if (m_beat.getFramePosition() != mixxx::kInvalidFramePos &&
-            kMinBeatsPerBar <= value && value <= kMaxBeatsPerBar) {
-        mixxx::TimeSignature newTimeSignature(value, m_beat.getTimeSignature().getNoteValue());
-        m_pBeats->setSignature(newTimeSignature, m_beat.getBarIndex());
+            kMinBeatsPerBar <= timeSignature.getBeatsPerBar() &&
+            timeSignature.getBeatsPerBar() <= kMaxBeatsPerBar) {
+        m_pBeats->setSignature(timeSignature, m_beat.getBarIndex());
     }
 }
 
 void WTimeSignatureMenu::setBeat(mixxx::Beat beat) {
     m_beat = beat;
     m_pBeatCountBox->setValue(beat.getTimeSignature().getBeatsPerBar());
+    m_pBeatLengthBox->setCurrentIndex(
+            static_cast<int>(log2(beat.getTimeSignature().getNoteValue())));
 }
 
 void WTimeSignatureMenu::popup(const QPoint& p) {
