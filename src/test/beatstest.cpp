@@ -300,10 +300,9 @@ TEST_F(BeatsTest, Signature) {
     EXPECT_EQ(m_pBeats1->getBeatAtIndex(0).getTimeSignature(),
             TimeSignature())
             << "If no Time Signature defined, it must be default(4/4)";
-
     const auto timeSignatureInitial = TimeSignature(3, 4);
-    const auto timeSignatureIntermediate = TimeSignature(4, 4);
-    const auto timeSignatureLater = TimeSignature(5, 4);
+    const auto timeSignatureIntermediate = TimeSignature(4, 8);
+    const auto timeSignatureLater = TimeSignature(5, 2);
 
     // Add time signature to the beginning
     m_pBeats1->setSignature(timeSignatureInitial, 0);
@@ -316,12 +315,51 @@ TEST_F(BeatsTest, Signature) {
 
     EXPECT_EQ(m_pBeats1->getBeatAtIndex(0).getTimeSignature(),
             timeSignatureInitial);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(1).getTimeSignature(),
+            timeSignatureInitial);
     EXPECT_EQ(m_pBeats1->getBeatAtIndex(5).getTimeSignature(),
             timeSignatureInitial);
     EXPECT_EQ(m_pBeats1->getBeatAtIndex(9).getTimeSignature(),
             timeSignatureIntermediate);
-    EXPECT_EQ(m_pBeats1->getBeatAtIndex(30).getTimeSignature(),
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(15).getTimeSignature(),
+            timeSignatureIntermediate);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(25).getTimeSignature(),
             timeSignatureLater);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(40).getTimeSignature(),
+            timeSignatureLater);
+
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(3).getType(), mixxx::Beat::DOWNBEAT);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(9).getType(), mixxx::Beat::DOWNBEAT);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(13).getType(), mixxx::Beat::DOWNBEAT);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(25).getType(), mixxx::Beat::DOWNBEAT);
+    EXPECT_EQ(m_pBeats1->getBeatAtIndex(30).getType(), mixxx::Beat::DOWNBEAT);
+
+    FrameDiff_t beatLengthCrochet = getBeatLengthFrames(m_bpm);
+
+    FrameDiff_t firstBeatLength =
+            m_pBeats1->getBeatAtIndex(1).getFramePosition() -
+            m_pBeats1->getBeatAtIndex(0).getFramePosition();
+    EXPECT_DOUBLE_EQ(beatLengthCrochet, firstBeatLength);
+
+    FrameDiff_t ninthBeatLength =
+            m_pBeats1->getBeatAtIndex(9).getFramePosition() -
+            m_pBeats1->getBeatAtIndex(8).getFramePosition();
+    EXPECT_DOUBLE_EQ(beatLengthCrochet, ninthBeatLength);
+
+    FrameDiff_t tenthBeatLength =
+            m_pBeats1->getBeatAtIndex(10).getFramePosition() -
+            m_pBeats1->getBeatAtIndex(9).getFramePosition();
+    EXPECT_DOUBLE_EQ(beatLengthCrochet / 2, tenthBeatLength);
+
+    FrameDiff_t twentyFifthBeatLength =
+            m_pBeats1->getBeatAtIndex(25).getFramePosition() -
+            m_pBeats1->getBeatAtIndex(24).getFramePosition();
+    EXPECT_DOUBLE_EQ(beatLengthCrochet / 2, twentyFifthBeatLength);
+
+    FrameDiff_t twentySixthBeatLength =
+            m_pBeats1->getBeatAtIndex(26).getFramePosition() -
+            m_pBeats1->getBeatAtIndex(25).getFramePosition();
+    EXPECT_DOUBLE_EQ(beatLengthCrochet * 2, twentySixthBeatLength);
 }
 
 TEST_F(BeatsTest, Iterator) {

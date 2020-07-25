@@ -19,8 +19,11 @@ inline bool TimeSignatureMarkerEarlier(
 constexpr int kSecondsPerMinute = 60;
 constexpr double kBeatVicinityFactor = 0.1;
 
-inline FrameDiff_t getBeatLengthFrames(Bpm bpm, double sampleRate) {
-    return kSecondsPerMinute * sampleRate / bpm.getValue();
+inline FrameDiff_t getBeatLengthFrames(Bpm bpm,
+        double sampleRate,
+        TimeSignature timeSignature = TimeSignature()) {
+    return kSecondsPerMinute * sampleRate *
+            (4.0 / timeSignature.getNoteValue()) / bpm.getValue();
 }
 } // namespace
 
@@ -32,8 +35,7 @@ Beats::Beats(const Track* track,
         // This causes BeatsInternal constructor to be called twice.
         // But it can't be included in ctor initializer list since
         // we already have a delegating constructor.
-        m_beatsInternal.initWithAnalyzer(
-                beats, timeSignatureMarkers);
+        m_beatsInternal.initWithAnalyzer(beats, timeSignatureMarkers);
     }
     slotTrackBeatsUpdated();
 }
@@ -103,8 +105,7 @@ bool Beats::isValid() const {
     return m_beatsInternal.isValid();
 }
 
-Bpm Beats::calculateBpm(const Beat& startBeat,
-        const Beat& stopBeat) const {
+Bpm Beats::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const {
     return m_beatsInternal.calculateBpm(startBeat, stopBeat);
 }
 
@@ -216,8 +217,8 @@ FramePos BeatsInternal::findNthBeat(FramePos frame, int n) const {
 
     Beat beat(frame);
     // it points at the first occurrence of beat or the next largest beat
-    BeatList::const_iterator it = std::lower_bound(
-            m_beats.cbegin(), m_beats.cend(), beat);
+    BeatList::const_iterator it =
+            std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat);
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
@@ -272,11 +273,11 @@ FramePos BeatsInternal::findNthBeat(FramePos frame, int n) const {
         }
     } else if (n < 0 && previous_beat != m_beats.end()) {
         for (; true; --previous_beat) {
-                if (n == -1) {
-                    // Return a sample offset
-                    return previous_beat->getFramePosition();
-                }
-                ++n;
+            if (n == -1) {
+                // Return a sample offset
+                return previous_beat->getFramePosition();
+            }
+            ++n;
 
             // Don't step before the start of the list.
             if (previous_beat == m_beats.begin()) {
@@ -318,8 +319,11 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     m_beatsProto.set_first_frame_position(beats.at(0).getValue());
     int bpmMarkerBeatIndex = 0;
     for (int i = 1; i < beats.size(); ++i) {
-        VERIFY_OR_DEBUG_ASSERT(beats.at(i) > beats.at(i - 1) && beats.at(i) >= FramePos(0)) {
-            qDebug() << "Beats not in increasing order or negative, discarding beat" << beats.at(i);
+        VERIFY_OR_DEBUG_ASSERT(
+                beats.at(i) > beats.at(i - 1) && beats.at(i) >= FramePos(0)) {
+            qDebug() << "Beats not in increasing order or negative, discarding "
+                        "beat"
+                     << beats.at(i);
         }
         else {
             FrameDiff_t beatLength = beats.at(i) - beats.at(i - 1);
@@ -850,7 +854,9 @@ void BeatsInternal::generateBeatsFromMarkers() {
                         timeSignatureMarkerIndex);
         TimeSignature currentTimeSignature =
                 TimeSignature(currentTimeSignatureMarker.time_signature());
-        FrameDiff_t beatLength = getBeatLengthFrames(currentBpm, m_iSampleRate);
+        FrameDiff_t beatLength = getBeatLengthFrames(
+                currentBpm, m_iSampleRate, currentTimeSignature);
+
         if (barRelativeBeatIndex % currentTimeSignature.getBeatsPerBar() == 0) {
             barIndex++;
             if (timeSignatureMarkerIndex <
@@ -866,6 +872,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
                         currentTimeSignatureMarker.time_signature());
             }
         }
+
         Beat::Type beatType =
                 barRelativeBeatIndex % currentTimeSignature.getBeatsPerBar() ==
                         0
