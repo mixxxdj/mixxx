@@ -28,16 +28,19 @@ WNumberRate::WNumberRate(const char * group, QWidget * parent)
     setValue(0);
 }
 
-void WNumberRate::setValue(double /*dValue*/) {
-    double vsign = m_pRateControl->get() *
-            m_pRateRangeControl->get() *
-            m_pRateDirControl->get();
+void WNumberRate::setValue(double dValue) {
+    double digitFactor = pow(10, m_iNoDigits);
+    // Calculate percentage rounded to the number of digits specified by iNoDigits
+    double percentage = round((dValue - 1) * 100.0 * digitFactor) / digitFactor;
 
-    char sign = '+';
-    if (vsign < -0.00000001) {
+    QString sign(' ');
+    if (percentage > 0) {
+        sign = '+';
+    }
+    if (percentage < 0) {
         sign = '-';
     }
 
     setText(QString(m_skinText).append(sign)
-            .append("%1").arg(fabs(vsign) * 100.0, 0, 'f', m_iNoDigits));
+            .append("%1").arg(fabs(percentage), 'f', m_iNoDigits);
 }
