@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QMenu>
 #include <QWidget>
+#include <QtWidgets/QSpinBox>
 
 #include "preferences/usersettings.h"
 #include "track/beats.h"
@@ -16,34 +17,21 @@ class WTimeSignatureMenu : public QWidget {
   public:
     WTimeSignatureMenu(QWidget* parent = nullptr);
     ~WTimeSignatureMenu() override;
-    void setTimeSignature(mixxx::TimeSignature timeSignature);
-    mixxx::TimeSignature getTimeSignature() {
-        return m_timeSignature;
-    }
     void setBeatsPointer(mixxx::BeatsPointer pBeats) {
         m_pBeats = pBeats;
     }
 
-    void setBeat(mixxx::Beat beat) {
-        m_beat = beat;
-        m_pBeatCountInputBox->setPlaceholderText(QString(beat.getTimeSignature().getBeatsPerBar()));
-    }
+    void setBeat(mixxx::Beat beat);
 
-    void popup(const QPoint& p) {
-        //        auto parentWidget = static_cast<QWidget*>(parent());
-        //        QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
-        //        move(topLeft);
-        show();
-    }
+    void popup(const QPoint& p);
     //
     //    signals:
     //     void timeSignatureUpdated(mixxx::TimeSignature timeSignature);
   private slots:
-    void slotBeatCountChanged(QString value);
+    void slotBeatCountChanged(int value);
 
   private:
-    mixxx::TimeSignature m_timeSignature;
-    parented_ptr<QLineEdit> m_pBeatCountInputBox;
+    parented_ptr<QSpinBox> m_pBeatCountBox;
     mixxx::BeatsPointer m_pBeats;
     mixxx::Beat m_beat;
 };
