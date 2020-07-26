@@ -135,6 +135,7 @@ TraktorS2MK2.registerInputPackets = function() {
   MessageShort.addControl("[Channel1]", "!jog_wheel", 0x01, "I");
   MessageShort.addControl("[Channel1]", "!load_track", 0x0C, "B", 0x08);
   MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effect_focus_button", 0x0E, "B", 0x10);
+  // closing "]" intentionally left off here to make string manipulation a bit easier
   MessageShort.addControl("[EffectRack1_EffectUnit1", "!effectbutton1", 0x0E, "B", 0x80);
   MessageShort.addControl("[EffectRack1_EffectUnit1", "!effectbutton2", 0x0E, "B", 0x40);
   MessageShort.addControl("[EffectRack1_EffectUnit1", "!effectbutton3", 0x0E, "B", 0x20);
