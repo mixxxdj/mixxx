@@ -18,21 +18,21 @@
 
 var TraktorS3 = new function() {
     this.controller = new HIDController();
-    this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
+    this.shiftPressed = {"deck1": false, "deck2": false};
     this.fxButtonState = {1: false, 2: false, 3: false, 4: false};
-    this.padModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Hotcues Mode, 1 = Samples Mode
+    this.padModeState = {"deck1": 0, "deck2": 0}; // 0 = Hotcues Mode, 1 = Samples Mode
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
-    this.browseKnobEncoderState = {"[Channel1]": 0, "[Channel2]": 0};
-    this.loopKnobEncoderState = {"[Channel1]": 0, "[Channel2]": 0};
-    this.moveKnobEncoderState = {"[Channel1]": 0, "[Channel2]": 0};
+    this.browseKnobEncoderState = {"deck1": 0, "deck2": 0};
+    this.loopKnobEncoderState = {"deck1": 0, "deck2": 0};
+    this.moveKnobEncoderState = {"deck1": 0, "deck2": 0};
 
     // Microphone button
     this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
 
     // Sync buttons
-    this.syncPressedTimer = {"[Channel1]": 0, "[Channel2]": 0}; // Timer to distinguish between short and long press
+    this.syncPressedTimer = {"deck1": 0, "deck2": 0}; // Timer to distinguish between short and long press
 
     // Jog wheels
     this.pitchBendMultiplier = 1.1;
@@ -46,73 +46,95 @@ var TraktorS3 = new function() {
     };
 
     // VuMeter
-    this.vuLeftConnection = {};
-    this.vuRightConnection = {};
-    this.clipLeftConnection = {};
-    this.clipRightConnection = {};
+    this.vuConnections = {
+        "[Channel1]": {},
+        "[Channel2]": {},
+        "[Channel3]": {},
+        "[Channel4]": {}
+    };
+    this.clipConnections = {
+        "[Channel1]": {},
+        "[Channel2]": {},
+        "[Channel3]": {},
+        "[Channel4]": {}
+    };
 
     // Sampler callbacks
     this.samplerCallbacks = [];
     this.samplerHotcuesRelation = {
-        "[Channel1]": {
+        "deck1": {
             1: 1, 2: 2, 3: 3, 4: 4, 5: 9, 6: 10, 7: 11, 8: 12
-        }, "[Channel2]": {
+        }, "deck2": {
             1: 5, 2: 6, 3: 7, 4: 8, 5: 13, 6: 14, 7: 15, 8: 16
         }
     };
+
+    this.controller.switchDeck(1);
+    this.controller.switchDeck(2);
 };
 
-TraktorS3.init = function(id) {
+TraktorS3.init = function(_id) {
     TraktorS3.registerInputPackets();
     TraktorS3.registerOutputPackets();
     HIDDebug("TraktorS3: Init done!");
 
-    TraktorS3.debugLights();
+    //TraktorS3.debugLights();
 };
 
 TraktorS3.registerInputPackets = function() {
-    var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
-    var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
+    var messageShort = new HIDPacket(TraktorS3.controller, "shortmessage", 0x01, this.messageCallback);
+    var messageLong = new HIDPacket(TraktorS3.controller, "longmessage", 0x02, this.messageCallback);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!play", 0x03, 0x01, this.playHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!play", 0x06, 0x02, this.playHandler);
+    // Establish all of the groups
+    messageShort.registerGroup("[Channel1]");
+    messageShort.registerGroup("[Channel2]");
+    messageShort.registerGroup("[Channel3]");
+    messageShort.registerGroup("[Channel4]");
 
-    this.registerInputButton(messageShort, "[Channel1]", "!cue_default", 0x02, 0x80, this.cueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!cue_default", 0x06, 0x01, this.cueHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, this.deckSwitchHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, this.deckSwitchHandler);
+    this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, this.deckSwitchHandler);
+    this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, this.deckSwitchHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!shift", 0x01, 0x01, this.shiftHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!shift", 0x04, 0x02, this.shiftHandler);
+    this.registerInputButton(messageShort, "deck1", "!play", 0x03, 0x01, this.playHandler);
+    this.registerInputButton(messageShort, "deck2", "!play", 0x06, 0x02, this.playHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!sync", 0x02, 0x08, this.syncHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!sync", 0x05, 0x10, this.syncHandler);
+    this.registerInputButton(messageShort, "deck1", "!cue_default", 0x02, 0x80, this.cueHandler);
+    this.registerInputButton(messageShort, "deck2", "!cue_default", 0x06, 0x01, this.cueHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!keylock", 0x02, 0x10, this.keylockHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!keylock", 0x05, 0x20, this.keylockHandler);
+    this.registerInputButton(messageShort, "deck1", "!shift", 0x01, 0x01, this.shiftHandler);
+    this.registerInputButton(messageShort, "deck2", "!shift", 0x04, 0x02, this.shiftHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcues", 0x02, 0x20, this.padModeHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcues", 0x05, 0x40, this.padModeHandler);
+    this.registerInputButton(messageShort, "deck1", "!sync", 0x02, 0x08, this.syncHandler);
+    this.registerInputButton(messageShort, "deck2", "!sync", 0x05, 0x10, this.syncHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!samples", 0x02, 0x40, this.padModeHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!samples", 0x05, 0x80, this.padModeHandler);
+    this.registerInputButton(messageShort, "deck1", "!keylock", 0x02, 0x10, this.keylockHandler);
+    this.registerInputButton(messageShort, "deck2", "!keylock", 0x05, 0x20, this.keylockHandler);
+
+    this.registerInputButton(messageShort, "deck1", "!hotcues", 0x02, 0x20, this.padModeHandler);
+    this.registerInputButton(messageShort, "deck2", "!hotcues", 0x05, 0x40, this.padModeHandler);
+
+    this.registerInputButton(messageShort, "deck1", "!samples", 0x02, 0x40, this.padModeHandler);
+    this.registerInputButton(messageShort, "deck2", "!samples", 0x05, 0x80, this.padModeHandler);
 
     // // Number pad buttons (Hotcues or Samplers depending on current mode)
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_1", 0x03, 0x02, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_2", 0x03, 0x04, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_3", 0x03, 0x08, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_4", 0x03, 0x10, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_5", 0x03, 0x20, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_6", 0x03, 0x40, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_7", 0x03, 0x80, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_8", 0x04, 0x01, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_1", 0x03, 0x02, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_2", 0x03, 0x04, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_3", 0x03, 0x08, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_4", 0x03, 0x10, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_5", 0x03, 0x20, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_6", 0x03, 0x40, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_7", 0x03, 0x80, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck1", "!pad_8", 0x04, 0x01, this.numberButtonHandler);
 
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_1", 0x06, 0x04, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_2", 0x06, 0x08, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_3", 0x06, 0x10, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_4", 0x06, 0x20, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_5", 0x06, 0x40, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_6", 0x06, 0x80, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_7", 0x07, 0x01, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_8", 0x07, 0x02, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_1", 0x06, 0x04, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_2", 0x06, 0x08, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_3", 0x06, 0x10, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_4", 0x06, 0x20, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_5", 0x06, 0x40, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_6", 0x06, 0x80, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_7", 0x07, 0x01, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "deck2", "!pad_8", 0x07, 0x02, this.numberButtonHandler);
 
     // // Headphone buttons
     this.registerInputButton(messageShort, "[Channel1]", "!pfl", 0x08, 0x01, this.headphoneHandler);
@@ -122,29 +144,29 @@ TraktorS3.registerInputPackets = function() {
 
     // // Track browsing
     // TODO: bind touch: 0x09/0x40, 0x0A/0x02
-    this.registerInputButton(messageShort, "[Channel1]", "!SelectTrack", 0x0B, 0x0F, this.selectTrackHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!SelectTrack", 0x0C, 0xF0, this.selectTrackHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!LoadSelectedTrack", 0x09, 0x01, this.loadTrackHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!LoadSelectedTrack", 0x09, 0x08, this.loadTrackHandler);
+    this.registerInputButton(messageShort, "deck1", "!SelectTrack", 0x0B, 0x0F, this.selectTrackHandler);
+    this.registerInputButton(messageShort, "deck2", "!SelectTrack", 0x0C, 0xF0, this.selectTrackHandler);
+    this.registerInputButton(messageShort, "deck1", "!LoadSelectedTrack", 0x09, 0x01, this.loadTrackHandler);
+    this.registerInputButton(messageShort, "deck2", "!LoadSelectedTrack", 0x09, 0x08, this.loadTrackHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!MaximizeLibrary", 0x01, 0x40, this.maximizeLibraryHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!MaximizeLibrary", 0x04, 0x80, this.maximizeLibraryHandler);
-    // this.registerInputButton(messageShort, "[Channel1]", "!AddTrack", 0x01, 0x04, this.addTrackHandler);
-    // this.registerInputButton(messageShort, "[Channel2]", "!AddTrack", 0x04, 0x10, this.addTrackHandler);
+    this.registerInputButton(messageShort, "deck1", "!MaximizeLibrary", 0x01, 0x40, this.maximizeLibraryHandler);
+    this.registerInputButton(messageShort, "deck2", "!MaximizeLibrary", 0x04, 0x80, this.maximizeLibraryHandler);
+    // this.registerInputButton(messageShort, "deck1", "!AddTrack", 0x01, 0x04, this.addTrackHandler);
+    // this.registerInputButton(messageShort, "deck2", "!AddTrack", 0x04, 0x10, this.addTrackHandler);
 
     // // Loop control
     // TODO: bind touch detections: 0x0A/0x01, 0x0A/0x08
-    this.registerInputButton(messageShort, "[Channel1]", "!SelectLoop", 0x0C, 0x0F, this.selectLoopHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!SelectLoop", 0x0D, 0xF0, this.selectLoopHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!ActivateLoop", 0x09, 0x04, this.activateLoopHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!ActivateLoop", 0x09, 0x20, this.activateLoopHandler);
+    this.registerInputButton(messageShort, "deck1", "!SelectLoop", 0x0C, 0x0F, this.selectLoopHandler);
+    this.registerInputButton(messageShort, "deck2", "!SelectLoop", 0x0D, 0xF0, this.selectLoopHandler);
+    this.registerInputButton(messageShort, "deck1", "!ActivateLoop", 0x09, 0x04, this.activateLoopHandler);
+    this.registerInputButton(messageShort, "deck2", "!ActivateLoop", 0x09, 0x20, this.activateLoopHandler);
 
     // // Beatjump
     // TODO: bind touch detections: 0x09/0x80, 0x0A/0x04
-    this.registerInputButton(messageShort, "[Channel1]", "!SelectBeatjump", 0x0B, 0xF0, this.selectBeatjumpHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!SelectBeatjump", 0x0D, 0x0F, this.selectBeatjumpHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!ActivateBeatjump", 0x09, 0x02, this.activateBeatjumpHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!ActivateBeatjump", 0x09, 0x10, this.activateBeatjumpHandler);
+    this.registerInputButton(messageShort, "deck1", "!SelectBeatjump", 0x0B, 0xF0, this.selectBeatjumpHandler);
+    this.registerInputButton(messageShort, "deck2", "!SelectBeatjump", 0x0D, 0x0F, this.selectBeatjumpHandler);
+    this.registerInputButton(messageShort, "deck1", "!ActivateBeatjump", 0x09, 0x02, this.activateBeatjumpHandler);
+    this.registerInputButton(messageShort, "deck2", "!ActivateBeatjump", 0x09, 0x10, this.activateBeatjumpHandler);
 
     // // There is only one button on the controller, we use to toggle quantization for all channels
     // this.registerInputButton(messageShort, "[ChannelX]", "!quantize", 0x06, 0x40, this.quantizeHandler);
@@ -153,10 +175,10 @@ TraktorS3.registerInputPackets = function() {
     // this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x06, 0x80, this.microphoneHandler);
 
     // // Jog wheels
-    this.registerInputButton(messageShort, "[Channel1]", "!jog_touch", 0x0A, 0x10, this.jogTouchHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!jog_touch", 0x0A, 0x20, this.jogTouchHandler);
-    this.registerInputJog(messageShort, "[Channel1]", "!jog", 0x0E, 0xFFFFFF, this.jogHandler);
-    this.registerInputJog(messageShort, "[Channel2]", "!jog", 0x12, 0xFFFFFF, this.jogHandler);
+    this.registerInputButton(messageShort, "deck1", "!jog_touch", 0x0A, 0x10, this.jogTouchHandler);
+    this.registerInputButton(messageShort, "deck2", "!jog_touch", 0x0A, 0x20, this.jogTouchHandler);
+    this.registerInputJog(messageShort, "deck1", "!jog", 0x0E, 0xFFFFFF, this.jogHandler);
+    this.registerInputJog(messageShort, "deck2", "!jog", 0x12, 0xFFFFFF, this.jogHandler);
 
     // // FX Buttons
     this.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, this.fxHandler);
@@ -165,26 +187,26 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, this.fxHandler);
 
     // // Rev / FLUX / GRID
-    this.registerInputButton(messageShort, "[Channel1]", "!reverse", 0x01, 0x04, this.reverseHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!reverse", 0x04, 0x08, this.reverseHandler);
+    this.registerInputButton(messageShort, "deck1", "!reverse", 0x01, 0x04, this.reverseHandler);
+    this.registerInputButton(messageShort, "deck2", "!reverse", 0x04, 0x08, this.reverseHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!slip_enabled", 0x01, 0x02, this.fluxHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!slip_enabled", 0x04, 0x04, this.fluxHandler);
+    this.registerInputButton(messageShort, "deck1", "!slip_enabled", 0x01, 0x02, this.fluxHandler);
+    this.registerInputButton(messageShort, "deck2", "!slip_enabled", 0x04, 0x04, this.fluxHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!grid", 0x01, 0x08, this.beatgridHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!grid", 0x05, 0x01, this.beatgridHandler);
+    this.registerInputButton(messageShort, "deck1", "!grid", 0x01, 0x08, this.beatgridHandler);
+    this.registerInputButton(messageShort, "deck2", "!grid", 0x05, 0x01, this.beatgridHandler);
 
     // // TODO: implement jog
-    // this.registerInputButton(messageShort, "[Channel1]", "!grid", 0x02, 0x01, this.jogHandler);
-    // this.registerInputButton(messageShort, "[Channel2]", "!grid", 0x05, 0x02, this.jpgHandler);
+    // this.registerInputButton(messageShort, "deck1", "!grid", 0x02, 0x01, this.jogHandler);
+    // this.registerInputButton(messageShort, "deck2", "!grid", 0x05, 0x02, this.jpgHandler);
 
     // Unmapped: preview, star, list, encoder touches, jog
     // DECK ASSIGNMENT
 
     this.controller.registerInputPacket(messageShort);
 
-    this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x01, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Channel2]", "rate", 0x0D, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "deck1", "rate", 0x01, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "deck2", "rate", 0x0D, 0xFFFF, this.parameterHandler);
 
     this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x05, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x07, 0xFFFF, this.parameterHandler);
@@ -226,25 +248,32 @@ TraktorS3.registerInputPackets = function() {
     this.controller.registerInputPacket(messageLong);
 
     // Soft takeover for all knobs
-    engine.softTakeover("[Channel1]", "rate", true);
-    engine.softTakeover("[Channel2]", "rate", true);
+    engine.softTakeover("deck1", "rate", true);
+    engine.softTakeover("deck2", "rate", true);
 
-    engine.softTakeover("[Channel1]", "volume", true);
-    engine.softTakeover("[Channel2]", "volume", true);
+    engine.softTakeover("deck1", "volume", true);
+    engine.softTakeover("deck2", "volume", true);
 
-    engine.softTakeover("[Channel1]", "pregain", true);
-    engine.softTakeover("[Channel2]", "pregain", true);
+    engine.softTakeover("deck1", "pregain", true);
+    engine.softTakeover("deck2", "pregain", true);
 
-    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
-    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
     engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
-
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
     engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
     engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", true);
     engine.softTakeover("[EqualizerRack1_[Channel3]_Effect1]", "parameter1", true);
+    engine.softTakeover("[EqualizerRack1_[Channel3]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel3]_Effect1]", "parameter3", true);
+    engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]", "parameter1", true);
+    engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]", "parameter3", true);
 
     engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
     engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
+    engine.softTakeover("[QuickEffectRack1_[Channel3]]", "super1", true);
+    engine.softTakeover("[QuickEffectRack1_[Channel4]]", "super1", true);
 
     engine.softTakeover("[Master]", "crossfader", true);
     engine.softTakeover("[Master]", "gain", true);
@@ -276,11 +305,21 @@ TraktorS3.registerInputButton = function(message, group, name, offset, bitmask, 
     message.setCallback(group, name, callback);
 };
 
+TraktorS3.deckSwitchHandler = function(field) {
+    for (var key in field) {
+        var value = field[key];
+        HIDDebug("what is a field: " + key + ": " + value);
+    }
+    TraktorS3.controller.switchDeck(TraktorS3.controller.resolveDeck(field.group));
+};
+
 TraktorS3.playHandler = function(field) {
+    HIDDebug("group?? " + field.group);
     if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(field.group, "start_stop", field.value);
     } else if (field.value === 1) {
-        script.toggleControl(field.group, "play");
+        HIDDebug("sooooo play?");
+        script.toggleControl(group, "play");
     }
 };
 
@@ -291,6 +330,7 @@ TraktorS3.cueHandler = function(field) {
         engine.setValue(field.group, "cue_default", field.value);
     }
 };
+
 
 TraktorS3.shiftHandler = function(field) {
     HIDDebug("SHIFT!" + field.group + " " + field.value);
@@ -309,8 +349,8 @@ TraktorS3.keylockHandler = function(field) {
 
 TraktorS3.syncHandler = function(field) {
     if (TraktorS3.shiftPressed[field.group]) {
-        // engine.setValue(field.group, "start_stop", field.value);
-    } else {
+        // engine.setValue(field.group, "sync_enabled", field.value);
+    } else if (field.value === 1) {
         //TODO: latching not working?
         engine.setValue(field.group, "sync_enabled", field.value);
     }
@@ -488,6 +528,7 @@ TraktorS3.quantizeHandler = function(field) {
         return;
     }
 
+    // TODO: fix quantize
     var res = !(engine.getValue("[Channel1]", "quantize") && engine.getValue("[Channel2]", "quantize"));
     engine.setValue("[Channel1]", "quantize", res);
     engine.setValue("[Channel2]", "quantize", res);
@@ -572,7 +613,7 @@ TraktorS3.jogHandler = function(field) {
 TraktorS3.scalerJog = function(tick_delta, time_delta) {
     // If it's playing nudge
     var multiplier = 1.0;
-    if (TraktorS3.shiftPressed["[Channel1]"] || TraktorS3.shiftPressed["[Channel2]"]) {
+    if (TraktorS3.shiftPressed["deck1"] || TraktorS3.shiftPressed["deck2"]) {
         multiplier = 100.0;
     }
     if (engine.getValue(group, "play")) {
@@ -660,6 +701,8 @@ TraktorS3.fxHandler = function(field) {
 
     engine.setValue(group, "group_[Channel1]_enable", TraktorS3.fxButtonState[fxNumber]);
     engine.setValue(group, "group_[Channel2]_enable", TraktorS3.fxButtonState[fxNumber]);
+    engine.setValue(group, "group_[Channel3]_enable", TraktorS3.fxButtonState[fxNumber]);
+    engine.setValue(group, "group_[Channel4]_enable", TraktorS3.fxButtonState[fxNumber]);
     TraktorS3.outputHandler(TraktorS3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
 };
 
@@ -740,73 +783,73 @@ TraktorS3.debugLights = function() {
 };
 
 TraktorS3.registerOutputPackets = function() {
-    var outputA = new HIDPacket("outputA", 0x80);
+    var outputA = new HIDPacket(TraktorS3.controller, "outputA", 0x80);
 
-    outputA.addOutput("[Channel1]", "shift", 0x01, "B");
-    outputA.addOutput("[Channel2]", "shift", 0x1A, "B");
+    outputA.addOutput("deck1", "shift", 0x01, "B");
+    outputA.addOutput("deck2", "shift", 0x1A, "B");
 
-    outputA.addOutput("[Channel1]", "slip_enabled", 0x02, "B");
-    outputA.addOutput("[Channel2]", "slip_enabled", 0x1B, "B");
+    outputA.addOutput("deck1", "slip_enabled", 0x02, "B");
+    outputA.addOutput("deck2", "slip_enabled", 0x1B, "B");
 
-    outputA.addOutput("[Channel1]", "reverse", 0x03, "B");
-    outputA.addOutput("[Channel2]", "reverse", 0x1C, "B");
+    outputA.addOutput("deck1", "reverse", 0x03, "B");
+    outputA.addOutput("deck2", "reverse", 0x1C, "B");
 
-    outputA.addOutput("[Channel1]", "keylock", 0x0D, "B");
-    outputA.addOutput("[Channel2]", "keylock", 0x26, "B");
+    outputA.addOutput("deck1", "keylock", 0x0D, "B");
+    outputA.addOutput("deck2", "keylock", 0x26, "B");
 
-    outputA.addOutput("[Channel1]", "hotcues", 0x0E, "B");
-    outputA.addOutput("[Channel2]", "hotcues", 0x27, "B");
+    outputA.addOutput("deck1", "hotcues", 0x0E, "B");
+    outputA.addOutput("deck2", "hotcues", 0x27, "B");
 
-    outputA.addOutput("[Channel1]", "samples", 0x0F, "B");
-    outputA.addOutput("[Channel2]", "samples", 0x28, "B");
+    outputA.addOutput("deck1", "samples", 0x0F, "B");
+    outputA.addOutput("deck2", "samples", 0x28, "B");
 
-    outputA.addOutput("[Channel1]", "cue_indicator", 0x10, "B");
-    outputA.addOutput("[Channel2]", "cue_indicator", 0x29, "B");
+    outputA.addOutput("deck1", "cue_indicator", 0x10, "B");
+    outputA.addOutput("deck2", "cue_indicator", 0x29, "B");
 
-    outputA.addOutput("[Channel1]", "play_indicator", 0x11, "B");
-    outputA.addOutput("[Channel2]", "play_indicator", 0x2A, "B");
+    outputA.addOutput("deck1", "play_indicator", 0x11, "B");
+    outputA.addOutput("deck2", "play_indicator", 0x2A, "B");
 
-    outputA.addOutput("[Channel1]", "sync_enabled", 0x0C, "B");
-    outputA.addOutput("[Channel2]", "sync_enabled", 0x25, "B");
+    outputA.addOutput("deck1", "sync_enabled", 0x0C, "B");
+    outputA.addOutput("deck2", "sync_enabled", 0x25, "B");
 
-    outputA.addOutput("[Channel1]", "pad_1", 0x12, "B");
-    outputA.addOutput("[Channel1]", "pad_2", 0x13, "B");
-    outputA.addOutput("[Channel1]", "pad_3", 0x14, "B");
-    outputA.addOutput("[Channel1]", "pad_4", 0x15, "B");
-    outputA.addOutput("[Channel1]", "pad_5", 0x16, "B");
-    outputA.addOutput("[Channel1]", "pad_6", 0x17, "B");
-    outputA.addOutput("[Channel1]", "pad_7", 0x18, "B");
-    outputA.addOutput("[Channel1]", "pad_8", 0x19, "B");
+    outputA.addOutput("deck1", "pad_1", 0x12, "B");
+    outputA.addOutput("deck1", "pad_2", 0x13, "B");
+    outputA.addOutput("deck1", "pad_3", 0x14, "B");
+    outputA.addOutput("deck1", "pad_4", 0x15, "B");
+    outputA.addOutput("deck1", "pad_5", 0x16, "B");
+    outputA.addOutput("deck1", "pad_6", 0x17, "B");
+    outputA.addOutput("deck1", "pad_7", 0x18, "B");
+    outputA.addOutput("deck1", "pad_8", 0x19, "B");
 
-    outputA.addOutput("[Channel2]", "pad_1", 0x2B, "B");
-    outputA.addOutput("[Channel2]", "pad_2", 0x2C, "B");
-    outputA.addOutput("[Channel2]", "pad_3", 0x2D, "B");
-    outputA.addOutput("[Channel2]", "pad_4", 0x2E, "B");
-    outputA.addOutput("[Channel2]", "pad_5", 0x2F, "B");
-    outputA.addOutput("[Channel2]", "pad_6", 0x30, "B");
-    outputA.addOutput("[Channel2]", "pad_7", 0x31, "B");
-    outputA.addOutput("[Channel2]", "pad_8", 0x32, "B");
+    outputA.addOutput("deck2", "pad_1", 0x2B, "B");
+    outputA.addOutput("deck2", "pad_2", 0x2C, "B");
+    outputA.addOutput("deck2", "pad_3", 0x2D, "B");
+    outputA.addOutput("deck2", "pad_4", 0x2E, "B");
+    outputA.addOutput("deck2", "pad_5", 0x2F, "B");
+    outputA.addOutput("deck2", "pad_6", 0x30, "B");
+    outputA.addOutput("deck2", "pad_7", 0x31, "B");
+    outputA.addOutput("deck2", "pad_8", 0x32, "B");
 
     outputA.addOutput("[Channel1]", "pfl", 0x39, "B");
     outputA.addOutput("[Channel2]", "pfl", 0x3A, "B");
     outputA.addOutput("[Channel3]", "pfl", 0x38, "B");
     outputA.addOutput("[Channel4]", "pfl", 0x3B, "B");
 
-    // outputA.addOutput("[Channel1]", "addTrack", 0x03, "B");
-    // outputA.addOutput("[Channel2]", "addTrack", 0x2A, "B");
+    // outputA.addOutput("deck1", "addTrack", 0x03, "B");
+    // outputA.addOutput("deck2", "addTrack", 0x2A, "B");
 
-    outputA.addOutput("[Channel1]", "grid", 0x08, "B");
-    outputA.addOutput("[Channel2]", "grid", 0x20, "B");
+    outputA.addOutput("deck1", "grid", 0x08, "B");
+    outputA.addOutput("deck2", "grid", 0x20, "B");
 
-    outputA.addOutput("[Channel1]", "MaximizeLibrary", 0x07, "B");
-    outputA.addOutput("[Channel2]", "MaximizeLibrary", 0x21, "B");
+    outputA.addOutput("deck1", "MaximizeLibrary", 0x07, "B");
+    outputA.addOutput("deck2", "MaximizeLibrary", 0x21, "B");
 
     // outputA.addOutput("[ChannelX]", "quantize", 0x3C, "B");
     // outputA.addOutput("[Microphone]", "talkover", 0x3D, "B");
 
     this.controller.registerOutputPacket(outputA);
 
-    var outputB = new HIDPacket("outputB", 0x81);
+    var outputB = new HIDPacket(TraktorS3.controller, "outputB", 0x81);
 
     var VuOffsets = {
         "[Channel3]": 0x01,
@@ -820,9 +863,9 @@ TraktorS3.registerOutputPackets = function() {
         }
     }
 
-    outputB.addOutput("[Channel3]", "PeakIndicator", 0x09, "B");
     outputB.addOutput("[Channel1]", "PeakIndicator", 0x1E, "B");
     outputB.addOutput("[Channel2]", "PeakIndicator", 0x2D, "B");
+    outputB.addOutput("[Channel3]", "PeakIndicator", 0x09, "B");
     outputB.addOutput("[Channel4]", "PeakIndicator", 0x3C, "B");
 
     outputB.addOutput("[ChannelX]", "fxButton1", 0x3C, "B");
@@ -832,36 +875,38 @@ TraktorS3.registerOutputPackets = function() {
 
     this.controller.registerOutputPacket(outputB);
 
-    this.linkOutput("[Channel1]", "play_indicator", this.outputHandler);
-    this.linkOutput("[Channel2]", "play_indicator", this.outputHandler);
+    this.linkOutput("deck1", "play_indicator", this.outputHandler);
+    this.linkOutput("deck2", "play_indicator", this.outputHandler);
 
-    this.linkOutput("[Channel1]", "cue_indicator", this.outputHandler);
-    this.linkOutput("[Channel2]", "cue_indicator", this.outputHandler);
+    this.linkOutput("deck1", "cue_indicator", this.outputHandler);
+    this.linkOutput("deck2", "cue_indicator", this.outputHandler);
 
-    this.linkOutput("[Channel1]", "sync_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "sync_enabled", this.outputHandler);
+    this.linkOutput("deck1", "sync_enabled", this.outputHandler);
+    this.linkOutput("deck2", "sync_enabled", this.outputHandler);
 
-    this.linkOutput("[Channel1]", "keylock", this.outputHandler);
-    this.linkOutput("[Channel2]", "keylock", this.outputHandler);
+    this.linkOutput("deck1", "keylock", this.outputHandler);
+    this.linkOutput("deck2", "keylock", this.outputHandler);
 
     for (var i = 1; i <= 8; ++i) {
-        TraktorS3.controller.linkOutput("[Channel1]", "pad_" + i, "[Channel1]", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
-        TraktorS3.controller.linkOutput("[Channel2]", "pad_" + i, "[Channel2]", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
+        TraktorS3.controller.linkOutput("deck1", "pad_" + i, "deck1", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
+        TraktorS3.controller.linkOutput("deck2", "pad_" + i, "deck2", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
     }
 
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
     this.linkOutput("[Channel2]", "pfl", this.outputHandler);
+    this.linkOutput("[Channel3]", "pfl", this.outputHandler);
+    this.linkOutput("[Channel4]", "pfl", this.outputHandler);
 
-    this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "slip_enabled", this.outputHandler);
+    this.linkOutput("deck1", "slip_enabled", this.outputHandler);
+    this.linkOutput("deck2", "slip_enabled", this.outputHandler);
 
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // VuMeter
-    this.vuLeftConnection = engine.makeConnection("[Channel1]", "VuMeter", this.vuMeterHandler);
-    this.vuRightConnection = engine.makeConnection("[Channel2]", "VuMeter", this.vuMeterHandler);
-    this.clipLeftConnection = engine.makeConnection("[Channel1]", "PeakIndicator", this.peakOutputHandler);
-    this.clipRightConnection = engine.makeConnection("[Channel2]", "PeakIndicator", this.peakOutputHandler);
+    for (var i = 1; i <= 4; i++) {
+        this.vuConnections[i] = engine.makeConnection("[Channel" + i + "]", "VuMeter", this.vuMeterHandler);
+        this.clipConnections[i] = engine.makeConnection("[Channel" + i + "]", "PeakIndicator", this.peakOutputHandler);
+    }
 
     // Sampler callbacks
     for (i = 1; i <= 16; ++i) {
@@ -949,17 +994,17 @@ TraktorS3.samplesOutputHandler = function(value, group, key) {
     // Sampler 1-4, 9-12 -> Channel1
     // Samples 5-8, 13-16 -> Channel2
     var sampler = TraktorS3.resolveSampler(group);
-    var deck = "[Channel1]";
+    var deck = "deck1";
     var num = sampler;
     if (sampler === undefined) {
         return;
     } else if (sampler > 4 && sampler < 9) {
-        deck = "[Channel2]";
+        deck = "deck2";
         num = sampler - 4;
     } else if (sampler > 8 && sampler < 13) {
         num = sampler - 4;
     } else if (sampler > 12 && sampler < 17) {
-        deck = "[Channel2]";
+        deck = "deck2";
         num = sampler - 8;
     }
 
@@ -1002,69 +1047,73 @@ TraktorS3.lightDeck = function(switchOff) {
         fullLight = 0x00;
     }
 
-    var current = (engine.getValue("[Channel1]", "play_indicator") ? fullLight : softLight);
-    TraktorS3.controller.setOutput("[Channel1]", "play_indicator", current, false);
-    current = (engine.getValue("[Channel2]", "play_indicator")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel2]", "play_indicator", current, false);
+    var current = (engine.getValue("deck1", "play_indicator") ? fullLight : softLight);
+    TraktorS3.controller.setOutput("deck1", "play_indicator", current, false);
+    current = (engine.getValue("deck2", "play_indicator")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck2", "play_indicator", current, false);
 
-    current = (engine.getValue("[Channel1]", "cue_indicator")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel1]", "cue_indicator", current, false);
-    current = (engine.getValue("[Channel2]", "cue_indicator")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel2]", "cue_indicator", current, false);
+    current = (engine.getValue("deck1", "cue_indicator")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck1", "cue_indicator", current, false);
+    current = (engine.getValue("deck2", "cue_indicator")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck2", "cue_indicator", current, false);
 
-    TraktorS3.controller.setOutput("[Channel1]", "shift", softLight, false);
-    TraktorS3.controller.setOutput("[Channel2]", "shift", softLight, false);
+    TraktorS3.controller.setOutput("deck1", "shift", softLight, false);
+    TraktorS3.controller.setOutput("deck2", "shift", softLight, false);
 
-    current = (engine.getValue("[Channel1]", "sync_enabled")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel1]", "sync_enabled", current, false);
-    current = (engine.getValue("[Channel1]", "sync_enabled")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel2]", "sync_enabled", current, false);
+    current = (engine.getValue("deck1", "sync_enabled")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck1", "sync_enabled", current, false);
+    current = (engine.getValue("deck2", "sync_enabled")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck2", "sync_enabled", current, false);
 
     // Hotcues mode is default start value
-    TraktorS3.controller.setOutput("[Channel1]", "hotcues", fullLight, false);
-    TraktorS3.controller.setOutput("[Channel2]", "hotcues", fullLight, false);
+    TraktorS3.controller.setOutput("deck1", "hotcues", fullLight, false);
+    TraktorS3.controller.setOutput("deck2", "hotcues", fullLight, false);
 
-    TraktorS3.controller.setOutput("[Channel1]", "samples", softLight, false);
-    TraktorS3.controller.setOutput("[Channel2]", "samples", softLight, false);
+    TraktorS3.controller.setOutput("deck1", "samples", softLight, false);
+    TraktorS3.controller.setOutput("deck2", "samples", softLight, false);
 
-    current = (engine.getValue("[Channel1]", "keylock")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel1]", "keylock", current, false);
-    current = (engine.getValue("[Channel2]", "keylock")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel2]", "keylock", current, false);
+    current = (engine.getValue("deck1", "keylock")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck1", "keylock", current, false);
+    current = (engine.getValue("deck2", "keylock")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck2", "keylock", current, false);
 
     for (var i = 1; i <= 8; ++i) {
-        current = (engine.getValue("[Channel1]", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
-        TraktorS3.controller.setOutput("[Channel1]", "pad_" + i, current, false);
-        current = (engine.getValue("[Channel2]", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
-        TraktorS3.controller.setOutput("[Channel2]", "pad_" + i, current, false);
+        current = (engine.getValue("deck1", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
+        TraktorS3.controller.setOutput("deck1", "pad_" + i, current, false);
+        current = (engine.getValue("deck2", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
+        TraktorS3.controller.setOutput("deck2", "pad_" + i, current, false);
     }
 
     current = (engine.getValue("[Channel1]", "pfl")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("[Channel1]", "pfl", current, false);
     current = (engine.getValue("[Channel2]", "pfl")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("[Channel2]", "pfl", current, false);
+    current = (engine.getValue("[Channel3]", "pfl")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("[Channel3]", "pfl", current, false);
+    current = (engine.getValue("[Channel4]", "pfl")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("[Channel4]", "pfl", current, false);
 
     TraktorS3.controller.setOutput("[ChannelX]", "fxButton1", softLight, false);
     TraktorS3.controller.setOutput("[ChannelX]", "fxButton2", softLight, false);
     TraktorS3.controller.setOutput("[ChannelX]", "fxButton3", softLight, false);
     TraktorS3.controller.setOutput("[ChannelX]", "fxButton4", softLight, false);
 
-    TraktorS3.controller.setOutput("[Channel1]", "reverse", softLight, false);
-    TraktorS3.controller.setOutput("[Channel2]", "reverse", softLight, false);
+    TraktorS3.controller.setOutput("deck1", "reverse", softLight, false);
+    TraktorS3.controller.setOutput("deck", "reverse", softLight, false);
 
-    current = (engine.getValue("[Channel1]", "slip_enabled")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel1]", "slip_enabled", current, false);
-    current = (engine.getValue("[Channel2]", "slip_enabled")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel2]", "slip_enabled", current, false);
+    current = (engine.getValue("deck1", "slip_enabled")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck1", "slip_enabled", current, false);
+    current = (engine.getValue("deck", "slip_enabled")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck", "slip_enabled", current, false);
 
-    TraktorS3.controller.setOutput("[Channel1]", "addTrack", softLight, false);
-    TraktorS3.controller.setOutput("[Channel2]", "addTrack", softLight, false);
+    TraktorS3.controller.setOutput("deck1", "addTrack", softLight, false);
+    TraktorS3.controller.setOutput("deck", "addTrack", softLight, false);
 
-    TraktorS3.controller.setOutput("[Channel1]", "grid", softLight, false);
-    TraktorS3.controller.setOutput("[Channel2]", "grid", softLight, false);
+    TraktorS3.controller.setOutput("deck1", "grid", softLight, false);
+    TraktorS3.controller.setOutput("deck", "grid", softLight, false);
 
-    TraktorS3.controller.setOutput("[Channel1]", "MaximizeLibrary", softLight, false);
-    TraktorS3.controller.setOutput("[Channel2]", "MaximizeLibrary", softLight, false);
+    TraktorS3.controller.setOutput("deck1", "MaximizeLibrary", softLight, false);
+    TraktorS3.controller.setOutput("deck", "MaximizeLibrary", softLight, false);
 
     TraktorS3.controller.setOutput("[ChannelX]", "quantize", softLight, false);
 
@@ -1073,7 +1122,7 @@ TraktorS3.lightDeck = function(switchOff) {
     TraktorS3.controller.setOutput("[Microphone]", "talkover", current, true);
 };
 
-TraktorS3.messageCallback = function(packet, data) {
+TraktorS3.messageCallback = function(_packet, data) {
     for (var name in data) {
         if (data.hasOwnProperty(name)) {
             TraktorS3.controller.processButton(data[name]);
