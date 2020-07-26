@@ -193,6 +193,7 @@ class CueControl : public EngineControl {
     double quantizeCuePoint(double position);
     double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
+    void seekOnLoad(double seekOnLoadPosition);
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
@@ -203,6 +204,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;
+    ControlValueAtomic<double> m_usedSeekOnLoadPosition;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;

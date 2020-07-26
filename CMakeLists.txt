@@ -1459,6 +1459,52 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
 endif()
 
+# Denon Engine Prime library export support (using libdjinterop)
+option(ENGINEPRIME "Support for library export to Denon Engine Prime" OFF)
+if(ENGINEPRIME)
+  target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
+
+  # Look for an existing installation of libdjinterop and use that if available.
+  # Otherwise, download and build from GitHub.
+  find_package(DjInterop)
+  if(DjInterop_FOUND)
+    # An existing installation of djinterop is available.
+    message(STATUS "Linking dynamically to existing installation of libdjinterop")
+    target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
+    target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
+  else()
+    # Fetch djinterop sources from GitHub and build them statically.
+    message(STATUS "Linking statically to libdjinterop fetched from GitHub")
+
+    set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
+    ExternalProject_Add(libdjinterop
+      GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
+      GIT_TAG tags/0.11.0
+      GIT_SHALLOW TRUE
+      INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
+      CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      EXCLUDE_FROM_ALL TRUE
+    )
+
+    # Assemble a library based on the external project.
+    add_library(mixxx-libdjinterop STATIC IMPORTED)
+    add_dependencies(mixxx-libdjinterop libdjinterop)
+    set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
+    set(DJINTEROP_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(DJINTEROP_LIBRARY_DIR "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
+    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_DIR}")
+    target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
+    target_link_libraries(mixxx-lib PUBLIC mixxx-libdjinterop)
+
+    # Since we have built libdjinterop from sources as a static library, its
+    # transitive dependencies are not automatically recognised.  libdjinterop
+    # depends on zlib and sqlite3.  Mixxx already has a dependency on sqlite3,
+    # but not zlib, so we explicitly add that here.
+    find_package(ZLIB 1.2.8 REQUIRED)
+    target_link_libraries(mixxx-lib PUBLIC ${ZLIB_LIBRARIES})
+  endif()
+endif()
+
 # Ebur128
 find_package(Ebur128)
 cmake_dependent_option(EBUR128_STATIC "Link libebur128 statically" OFF "Ebur128_FOUND" ON)
