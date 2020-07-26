@@ -64,8 +64,8 @@ TraktorS2MK3.init = function (id) {
 };
 
 TraktorS2MK3.registerInputPackets = function () {
-    var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
-    var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
+    var messageShort = new HIDPacket(this.controller, "shortmessage", 0x01, this.messageCallback);
+    var messageLong = new HIDPacket(this.controller, "longmessage", 0x02, this.messageCallback);
 
     this.registerInputButton(messageShort, "[Channel1]", "!play", 0x02, 0x08, this.playHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!play", 0x05, 0x20, this.playHandler);
@@ -625,7 +625,7 @@ TraktorS2MK3.beatgridHandler = function (field) {
 };
 
 TraktorS2MK3.registerOutputPackets = function () {
-    var output = new HIDPacket("output", 0x80);
+    var output = new HIDPacket(this.controller, "output", 0x80);
 
     output.addOutput("[Channel1]", "play_indicator", 0x0C, "B");
     output.addOutput("[Channel2]", "play_indicator", 0x33, "B");

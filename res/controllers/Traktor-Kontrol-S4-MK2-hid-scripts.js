@@ -79,8 +79,8 @@ TraktorS4MK2 = new function() {
 }
 
 TraktorS4MK2.registerInputPackets = function() {
-  MessageShort = new HIDPacket("shortmessage", 0x01, this.shortMessageCallback);
-  MessageLong = new HIDPacket("longmessage", 0x02, this.longMessageCallback);
+  MessageShort = new HIDPacket(this.controller, "shortmessage", 0x01, this.shortMessageCallback);
+  MessageLong = new HIDPacket(this.controller, "longmessage", 0x02, this.longMessageCallback);
 
   // Values in the short message are all buttons, except the jog wheels.
   // An exclamation point indicates a specially-handled function.  Everything else is a standard
@@ -312,9 +312,9 @@ TraktorS4MK2.registerInputPackets = function() {
 }
 
 TraktorS4MK2.registerOutputPackets = function() {
-  Output1 = new HIDPacket("output1", 0x80);
-  Output2 = new HIDPacket("output2", 0x81);
-  Output3 = new HIDPacket("output3", 0x82);
+  Output1 = new HIDPacket(this.controller, "output1", 0x80);
+  Output2 = new HIDPacket(this.controller, "output2", 0x81);
+  Output3 = new HIDPacket(this.controller, "output3", 0x82);
 
   Output1.addOutput("[Channel1]", "track_samples", 0x10, "B");
   Output1.addOutput("[Channel2]", "track_samples", 0x18, "B");

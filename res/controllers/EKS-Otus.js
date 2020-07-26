@@ -27,7 +27,7 @@ function EKSOtusController() {
         var name = undefined;
         var offset = 0;
 
-        packet = new HIDPacket("control", 0, undefined, [0x35]);
+        packet = new HIDPacket(this.controller, "control", 0, undefined, [0x35]);
         packet.addControl("hid","wheel_position",2,"H");
         packet.addControl("hid","wheel_speed",4,"h");
         packet.addControl("hid","timestamp",6,"I");
@@ -87,12 +87,12 @@ function EKSOtusController() {
         packet.addControl("hid","deck_status",52,"B");
         this.controller.registerInputPacket(packet);
 
-        packet = new HIDPacket("firmware_version", 0xa, undefined, [0x4]);
+        packet = new HIDPacket(this.controller, "firmware_version", 0xa, undefined, [0x4]);
         packet.addControl("hid","major",2,"B");
         packet.addControl("hid","minor",3,"B");
         this.controller.registerInputPacket(packet);
 
-        packet = new HIDPacket("trackpad_mode", 0x5, undefined, [0x3]);
+        packet = new HIDPacket(this.controller, "trackpad_mode", 0x5, undefined, [0x3]);
         packet.addControl("hid","status",2,"B");
         this.controller.registerInputPacket(packet);
 
@@ -103,7 +103,7 @@ function EKSOtusController() {
         var name = undefined;
         var offset = 0;
 
-        packet = new HIDPacket("button_leds", 0x16, undefined, [0x18]);
+        packet = new HIDPacket(this.controller, "button_leds", 0x16, undefined, [0x18]);
         offset = 1;
         packet.addOutput("hid","jog_nw",offset++,"B");
         packet.addOutput("hid","jog_ne",offset++,"B");
@@ -129,7 +129,7 @@ function EKSOtusController() {
         packet.addOutput("hid","fastforward",offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("slider_leds", 0x17, undefined, [0x16]);
+        packet = new HIDPacket(this.controller, "slider_leds", 0x17, undefined, [0x16]);
         offset = 1;
         packet.addOutput("pitch","slider_1",offset++,"B");
         packet.addOutput("pitch","slider_2",offset++,"B");
@@ -153,26 +153,26 @@ function EKSOtusController() {
         packet.addOutput("pitch","slider_scale_3",offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("led_wheel_left", 0x14, undefined, [0x20]);
+        packet = new HIDPacket(this.controller, "led_wheel_left", 0x14, undefined, [0x20]);
         offset = 1;
         for (var led_index=1;led_index<=this.wheelLEDCount/2;led_index++)
             packet.addOutput("hid","wheel_" + led_index,offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("led_wheel_right", 0x15, undefined, [0x20]);
+        packet = new HIDPacket(this.controller, "led_wheel_right", 0x15, undefined, [0x20]);
         offset = 1;
         for (var led_index=this.wheelLEDCount/2+1;led_index<=this.wheelLEDCount;led_index++)
             packet.addOutput("hid","wheel_" + led_index,offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("request_firmware_version", 0xa, undefined, [0x2]);
+        packet = new HIDPacket(this.controller, "request_firmware_version", 0xa, undefined, [0x2]);
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("set_trackpad_mode", 0x5, undefined, [0x3]);
+        packet = new HIDPacket(this.controller, "set_trackpad_mode", 0x5, undefined, [0x3]);
         packet.addControl("hid","mode",2,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("set_ledcontrol_mode", 0x1d, undefined, [0x3]);
+        packet = new HIDPacket(this.controller, "set_ledcontrol_mode", 0x1d, undefined, [0x3]);
         packet.addControl("hid","mode",2,"B");
         this.controller.registerOutputPacket(packet);
     }

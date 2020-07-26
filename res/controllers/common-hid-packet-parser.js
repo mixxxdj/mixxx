@@ -112,6 +112,7 @@ HIDModifierList.prototype.setCallback = function(name, callback) {
  * HID Packet object
  *
  * One HID input/output packet to register to HIDController
+ * @param controller the controller object which is this packet's parent.
  * @param name     name of packet
  * @param reportId report ID of the packet. If the device only uses
  *          one report type, this must be 0.
@@ -122,7 +123,8 @@ HIDModifierList.prototype.setCallback = function(name, callback) {
  * @param header   (optional) list of bytes to match from beginning
  *          of packet. Do NOT put the report ID in this; use
  *          the reportId parameter instead. */
-HIDPacket = function(name, reportId, callback, header) {
+HIDPacket = function(controller, name, reportId, callback, header) {
+    this.controller = controller
     this.name = name
     this.header = header
     this.callback = callback

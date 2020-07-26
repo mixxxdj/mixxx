@@ -10,7 +10,7 @@ function SonySixxAxisController() {
     this.controller.activeDeck = 1;
 
     this.registerInputPackets = function() {
-        packet = new HIDPacket("control",[],49);
+        packet = new HIDPacket(this.controller, "control",[],49);
 
         // Toggle buttons
         packet.addControl("hid","select",2,"B",0x1);
