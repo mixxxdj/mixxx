@@ -161,11 +161,11 @@ TraktorS2MK2.registerInputPackets = function() {
   MessageShort.addControl("[EffectRack1_EffectUnit2", "!effectbutton2", 0xD, "B", 0x10);
   MessageShort.addControl("[EffectRack1_EffectUnit2", "!effectbutton3", 0xD, "B", 0x08);
 
-  MessageShort.addControl("[Channel1]", "pfl", 0x0C, "B", 0x10);
+  MessageShort.addControl("[Channel1]", "!pfl", 0x0C, "B", 0x10);
   MessageShort.addControl("[EffectRack1_EffectUnit1]","group_[Channel1]_enable", 0x0E, "B", 0x08);
   MessageShort.addControl("[EffectRack1_EffectUnit2]","group_[Channel1]_enable", 0x0E, "B", 0x04);
 
-  MessageShort.addControl("[Channel2]", "pfl", 0x0A, "B", 0x10);
+  MessageShort.addControl("[Channel2]", "!pfl", 0x0A, "B", 0x10);
   MessageShort.addControl("[EffectRack1_EffectUnit1]","group_[Channel2]_enable", 0x0E, "B", 0x02);
   MessageShort.addControl("[EffectRack1_EffectUnit2]","group_[Channel2]_enable", 0x0E, "B", 0x01);
   
@@ -175,6 +175,9 @@ TraktorS2MK2.registerInputPackets = function() {
 
   MessageShort.setCallback("[Channel1]", "!top_encoder_press", this.topEncoderPress);
   MessageShort.setCallback("[Channel2]", "!top_encoder_press", this.topEncoderPress);
+  
+  MessageShort.setCallback("[Channel1]", "!pfl", this.pflButton);
+  MessageShort.setCallback("[Channel2]", "!pfl", this.pflButton);  
   
   MessageShort.setCallback("[Channel1]", "!shift", this.shift);
   MessageShort.setCallback("[Channel2]", "!shift", this.shift);
@@ -1335,6 +1338,16 @@ TraktorS2MK2.outputCallbackDark = function(value,group,key) {
     led_value = 0x7F;
   }
   TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.freeze_lights);
+}
+
+TraktorS2MK2.pflButton = function(field) {
+  if (field.value > 0) {
+    if (TraktorS2MK2.shift_pressed[field.group]) {
+      script.toggleControl(field.group, "quantize");
+    } else {
+      script.toggleControl(field.group, "pfl");
+    }
+  }
 }
 
 TraktorS2MK2.sendPadColor = function(group, padNumber, color) {
