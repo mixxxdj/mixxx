@@ -2,6 +2,9 @@
 
 #include <QtCore>
 
+#include "proto/macro.pb.h"
+namespace proto = mixxx::track::io;
+
 const QLoggingCategory macroLoggingCategory("macros");
 
 /// A MacroAction is the building block of a Macro.
@@ -24,6 +27,18 @@ struct MacroAction {
     inline bool operator!=(const MacroAction& other) const {
         return !operator==(other);
     }
+
+    proto::Macro_Action* serialize() const {
+        auto serialized = new proto::Macro_Action();
+        serialized->set_origin(position);
+        serialized->set_target(target);
+        serialized->set_type(Type::JUMP);
+        return serialized;
+    };
+
+    enum Type : uint8_t {
+        JUMP = 0
+    };
 };
 
 /// A Macro stores a list of MacroActions.

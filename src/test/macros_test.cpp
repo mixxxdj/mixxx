@@ -5,14 +5,14 @@
 #include "macros/macrorecorder.h"
 #include "signalpathtest.h"
 
-TEST(MacrosTest, CreateMacro) {
+TEST(MacrosTest, CreateAndSerializeMacro) {
     Macro macro;
     EXPECT_EQ(macro.getLength(), 0);
     macro.appendJump(0, 1);
     EXPECT_EQ(macro.getLength(), 1);
     EXPECT_EQ(macro.actions[0], MacroAction(0, 1));
 
-    QString filename(QDir::currentPath() % "/src/test/macro-proto-test");
+    QString filename(QDir::currentPath() % "/src/test/macro_proto");
     ASSERT_TRUE(QFile::exists(filename));
     QFile file(filename);
     file.open(QIODevice::OpenModeFlag::ReadOnly);
@@ -75,7 +75,7 @@ TEST(MacroRecordingTest, RecordCueJump) {
 TEST(MacroRecordingTest, StopRecordingAsync) {
     MacroRecorder recorder;
     recorder.setState(MacroRecorder::State::Recording);
-    std::atomic<MacroRecorder::State> state;
+    std::atomic<MacroRecorder::State> state{};
     QtConcurrent::run([&recorder, &state] {
         QThread::msleep(100);
         state.store(recorder.getState());
@@ -118,6 +118,7 @@ TEST_F(MacroRecorderTest, RecordSeek) {
     m_pChannel1->getEngineBuffer()->slotControlSeekExact(50 * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getMacro().getLength(), 0);
+
     m_pChannel1->getEngineBuffer()->slotControlSeekAbs(10 * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getMacro().getLength(), 1);
