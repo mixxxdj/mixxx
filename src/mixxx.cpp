@@ -470,6 +470,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
+            &m_skinCreatedControls,
             m_pKeyboard,
             m_pPlayerManager,
             m_pControllerManager,
@@ -477,7 +478,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pVCManager,
             m_pEffectsManager,
             m_pRecordingManager);
-    if (m_pCentralWidget == nullptr) {
+    if (!m_pCentralWidget) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded - see <b>mixxx</b> trace for more information");
         m_pCentralWidget = oldWidget;
@@ -660,6 +661,10 @@ void MixxxMainWindow::finalize() {
     VERIFY_OR_DEBUG_ASSERT(pSkin.isNull()) {
         qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
     }
+
+    // Delete Controls created by skins
+    qDeleteAll(m_skinCreatedControls);
+    m_skinCreatedControls.clear();
 
     // TODO() Verify if this comment still applies:
     // WMainMenuBar holds references to controls so we need to delete it
@@ -1425,6 +1430,7 @@ void MixxxMainWindow::rebootMixxxView() {
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
+            &m_skinCreatedControls,
             m_pKeyboard,
             m_pPlayerManager,
             m_pControllerManager,
@@ -1432,7 +1438,7 @@ void MixxxMainWindow::rebootMixxxView() {
             m_pVCManager,
             m_pEffectsManager,
             m_pRecordingManager);
-    if (m_pCentralWidget == nullptr) {
+    if (!m_pCentralWidget) {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
