@@ -29,7 +29,7 @@
 // * cue button: default cue behaviour
 // * play: toggle play
 // * shift + play: sync
-// 
+//
 
 DJTechCDJ101 = {};
 DJTechCDJ101.pushmaxtime = 200;
@@ -51,7 +51,7 @@ DJTechCDJ101.shutdown = function() {}
 // utility function
 //
 
-DJTechCDJ101.mtime = function() 
+DJTechCDJ101.mtime = function()
 {
     var t = new Date();
     return t.getTime();
@@ -85,7 +85,7 @@ DJTechCDJ101.cue_feedback_deck2 = function(value)
 // translate 14bit pitchbend message into pitch control
 //
 
-DJTechCDJ101.pitch = function(channel, lsb, msb, status, group) 
+DJTechCDJ101.pitch = function(channel, lsb, msb, status, group)
 {
     engine.setValue(group, "rate", script.pitch(lsb, msb, status)); // not working for some reason
     //engine.setValue(group, "rate", (8192 - (msb << 7 | lsb)) / 8192);
@@ -103,7 +103,7 @@ DJTechCDJ101.beatjump = function(group, jump)
 // click to load track
 //
 
-DJTechCDJ101.browse = function(channel, control, value, status, group) 
+DJTechCDJ101.browse = function(channel, control, value, status, group)
 {
     if (DJTechCDJ101.pushed) {
         engine.setValue("[Playlist]", value == 0x41 ? "SelectNextPlaylist" : "SelectPrevPlaylist", 1);
@@ -113,7 +113,7 @@ DJTechCDJ101.browse = function(channel, control, value, status, group)
     }
 }
 
-DJTechCDJ101.push = function(channel, control, value, status, group) 
+DJTechCDJ101.push = function(channel, control, value, status, group)
 {
     if (value > 0) {
         DJTechCDJ101.pushed = true;
@@ -149,7 +149,7 @@ DJTechCDJ101.cue = function(channel, control, value, status, group)
 }
 
 //
-// when the push button is held, pressing play will sync 
+// when the push button is held, pressing play will sync
 //
 
 DJTechCDJ101.play = function(channel, control, value, status, group)
@@ -170,7 +170,7 @@ DJTechCDJ101.play = function(channel, control, value, status, group)
 // when deck is playing either enable or disable scratch mode, no action otherwise
 //
 
-DJTechCDJ101.jogtouch = function(channel, control, value, status, group) 
+DJTechCDJ101.jogtouch = function(channel, control, value, status, group)
 {
     var deck = parseInt(group.substring(8,9));
 
@@ -180,7 +180,7 @@ DJTechCDJ101.jogtouch = function(channel, control, value, status, group)
     else {
         //
         // don't disable right away in case of spin backs if playing and also morph
-        // outer jog movements into top jog movements during this time 
+        // outer jog movements into top jog movements during this time
         //
 
         if (!engine.getValue(group, "play")) {
@@ -206,7 +206,7 @@ DJTechCDJ101.finishScratch = function(deck, stop_timer)
 // use outer part of jog to pitchbend when in play mode and fine track seek when not
 //
 
-DJTechCDJ101.jogouter = function(channel, control, value, status, group) 
+DJTechCDJ101.jogouter = function(channel, control, value, status, group)
 {
     //
     // when touch surface has been release for a short time convert
@@ -232,7 +232,7 @@ DJTechCDJ101.jogouter = function(channel, control, value, status, group)
 // track not playing: seek thru track (using same scratch ticks and gives more positive response) or seek faster through track when push button held down
 //
 
-DJTechCDJ101.jogtop = function(channel, control, value, status, group) 
+DJTechCDJ101.jogtop = function(channel, control, value, status, group)
 {
     value -= 0x40;
     if (!engine.getValue(group, "play") && DJTechCDJ101.pushed) {
