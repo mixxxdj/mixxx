@@ -557,10 +557,6 @@ void EngineMaster::process(const int iBufferSize) {
             // buffers within the same callback.
             applyMasterEffects();
 
-            if (headphoneEnabled) {
-                processHeadphones(masterMixGainInHeadphones);
-            }
-
             // Copy master mix to booth output with booth gain before mixing
             // talkover with master mix
             if (boothEnabled) {
@@ -574,6 +570,10 @@ void EngineMaster::process(const int iBufferSize) {
             // Mix talkover into master mix
             if (m_pNumMicsConfigured->get() > 0) {
                 SampleUtil::add(m_pMaster, m_pTalkover, m_iBufferSize);
+            }
+        
+            if (headphoneEnabled) {
+                processHeadphones(masterMixGainInHeadphones);
             }
 
             // Apply master gain
@@ -595,15 +595,15 @@ void EngineMaster::process(const int iBufferSize) {
             // process master effects here before mixing in talkover.
             applyMasterEffects();
 
-            if (headphoneEnabled) {
-                processHeadphones(masterMixGainInHeadphones);
-            }
-
             // Mix talkover with master
             if (m_pNumMicsConfigured->get() > 0) {
                 SampleUtil::add(m_pMaster, m_pTalkover, m_iBufferSize);
             }
 
+            if (headphoneEnabled) {
+                processHeadphones(masterMixGainInHeadphones);
+            }
+            
             // Copy master mix (with talkover mixed in) to booth output with booth gain
             if (boothEnabled) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
