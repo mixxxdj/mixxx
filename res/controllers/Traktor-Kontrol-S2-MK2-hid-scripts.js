@@ -105,8 +105,8 @@ TraktorS2MK2 = new function() {
 }
 
 TraktorS2MK2.registerInputPackets = function() {
-  MessageShort = new HIDPacket("shortmessage", 0x01, this.shortMessageCallback);
-  MessageLong = new HIDPacket("longmessage", 0x02, this.longMessageCallback);
+  var MessageShort = new HIDPacket("shortmessage", 0x01, this.shortMessageCallback);
+  var MessageLong = new HIDPacket("longmessage", 0x02, this.longMessageCallback);
 
   // Values in the short message are all buttons, except the jog wheels.
   // An exclamation point indicates a specially-handled function.  Everything else is a standard
@@ -312,8 +312,8 @@ TraktorS2MK2.registerInputPackets = function() {
 }
 
 TraktorS2MK2.registerOutputPackets = function() {
-  OutputTop = new HIDPacket("outputTop", 0x80);
-  OutputBottom = new HIDPacket("outputBottom", 0x81);
+  var OutputTop = new HIDPacket("outputTop", 0x80);
+  var OutputBottom = new HIDPacket("outputBottom", 0x81);
   
   OutputTop.addOutput("[Channel1]", "track_loaded", 0x19, "B");
   OutputTop.addOutput("[Channel2]", "track_loaded", 0x1A, "B");
