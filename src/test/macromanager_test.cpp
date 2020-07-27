@@ -8,7 +8,7 @@
 class MacroManagerTest : public MixxxDbTest {
   public:
     MacroManagerTest()
-            : m_macroManager(dbConnectionPooler()) {
+            : m_macroManager(dbConnectionPooler(), nullptr) {
         MixxxDb::initDatabaseSchema(dbConnection());
     }
 

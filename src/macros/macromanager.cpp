@@ -4,10 +4,14 @@
 #include <QSqlQuery>
 
 #include "library/queryutil.h"
+#include "mixer/basetrackplayer.h"
 #include "util/db/dbconnectionpooled.h"
 
-MacroManager::MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool)
+MacroManager::MacroManager(
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        PlayerManager* pPlayerManager)
         : m_pMacroRecorder(std::make_unique<MacroRecorder>()),
+          m_pPlayerManager(pPlayerManager),
           m_database(mixxx::DbConnectionPooled(pDbConnectionPool)) {
     connect(getRecorder(),
             &MacroRecorder::saveMacro,
@@ -17,7 +21,8 @@ MacroManager::MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool)
 
 void MacroManager::slotSaveMacro(ChannelHandle channel, QVector<MacroAction> actions) {
     qCDebug(macroLoggingCategory) << "Saving Macro for channel" << channel.handle();
-    saveMacro(TrackId(1), "Unnamed Macro", actions);
+    auto track = m_pPlayerManager->getPlayer(channel)->getLoadedTrack();
+    saveMacro(track->getId(), "Unnamed Macro", actions);
 }
 
 void MacroManager::saveMacro(TrackId trackId, QString label, QVector<MacroAction> actions) {
@@ -27,7 +32,6 @@ void MacroManager::saveMacro(TrackId trackId, QString label, QVector<MacroAction
             "(track_id, label, state, content) "
             "VALUES "
             "(:trackId, :label, :state, :content)"));
-    // TODO(xerus) obtain trackId
     query.bindValue(":trackId", trackId.toVariant());
     query.bindValue(":label", label);
     query.bindValue(":state", 0u);

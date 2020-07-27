@@ -3,13 +3,14 @@
 #include <QObject>
 
 #include "macrorecorder.h"
+#include "mixer/playermanager.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 
 class MacroManager : public QObject {
     Q_OBJECT
   public:
-    MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool);
+    MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool, PlayerManager* pPlayerManager);
 
     MacroRecorder* getRecorder();
 
@@ -21,5 +22,6 @@ class MacroManager : public QObject {
 
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;
+    PlayerManager* m_pPlayerManager;
     QSqlDatabase m_database;
 };
