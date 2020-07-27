@@ -243,13 +243,16 @@ int HidController::close() {
 bool HidController::poll() {
     Trace hidRead("HidController poll");
 
-    int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
-    if (result == -1) {
-        return false;
-    } else if (result > 0) {
-        Trace process("HidController process packet");
-        QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
-        receive(outData, mixxx::Time::elapsed());
+    int result = 1;
+    while (result > 0) {
+        result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
+        if (result == -1) {
+            return false;
+        } else if (result > 0) {
+            Trace process("HidController process packet");
+            QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
+            receive(outData, mixxx::Time::elapsed());
+        }
     }
 
     return true;
