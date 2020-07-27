@@ -1,9 +1,10 @@
 #include "engine/controls/clockcontrol.h"
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
-#include "engine/controls/enginecontrol.h"
 #include "control/controlproxy.h"
+#include "engine/controls/enginecontrol.h"
+#include "preferences/usersettings.h"
+#include "util/frameadapter.h"
 
 ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
@@ -47,8 +48,9 @@ void ClockControl::process(const double dRate,
 
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        mixxx::FramePos closestBeat = pBeats->findClosestBeat(mixxx::FramePos(currentSample / 2.0));
-        double distanceToClosestBeat = fabs(currentSample - closestBeat.getValue() * 2.0);
+        auto currentFrame = samplePosToFramePos(currentSample);
+        mixxx::FramePos closestBeat = pBeats->findClosestBeat(currentFrame);
+        double distanceToClosestBeat = fabs(framesToSamples(currentFrame - closestBeat));
         m_pCOBeatActive->set(distanceToClosestBeat < blinkIntervalSamples / 2.0);
     }
 }
