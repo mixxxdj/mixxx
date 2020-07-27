@@ -119,9 +119,10 @@ EngineBuffer* EngineControl::pickSyncTarget() {
 }
 
 EngineControl::FrameOfTrack EngineControl::getFrameOfTrack() const {
+    auto sampleOfTrack = getSampleOfTrack();
     FrameOfTrack frameOfTrack{
-            samplePosToFramePos(getSampleOfTrack().current),
-            samplePosToFramePos(getSampleOfTrack().total),
-            getSampleOfTrack().rate};
+            samplePosToFramePos(sampleOfTrack.current),
+            samplePosToFramePos(sampleOfTrack.total),
+            sampleOfTrack.rate};
     return frameOfTrack;
 }
