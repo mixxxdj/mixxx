@@ -632,7 +632,7 @@ HIDPacket.prototype.parse = function(data) {
                     field.delta = value - field.value
                 }
                 if (field.mindelta == undefined || change > field.mindelta) {
-                    field_changes[field.name] = field
+                    field_changes[field.id] = field
                     field.value = value
                 }
             }
