@@ -276,8 +276,8 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
     // If we got here then the user doesn't want to replace the beatgrid but
     // since the first beat is zero we'll apply the offset we just detected.
-    mixxx::FramePos currentFirstBeat = pCurrentBeats->findNextBeat(mixxx::FramePos(0));
-    mixxx::FramePos newFirstBeat = pBeats->findNextBeat(mixxx::FramePos(0));
+    mixxx::FramePos currentFirstBeat = pCurrentBeats->getBeatAtIndex(0).getFramePosition();
+    mixxx::FramePos newFirstBeat = pBeats->getBeatAtIndex(0).getFramePosition();
     if (currentFirstBeat == mixxx::FramePos(0.0) && newFirstBeat > mixxx::FramePos(0)) {
         pCurrentBeats->translate(newFirstBeat - currentFirstBeat);
     }
