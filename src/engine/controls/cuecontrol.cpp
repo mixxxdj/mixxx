@@ -12,6 +12,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/frameadapter.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -1717,11 +1718,11 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    mixxx::FramePos closestBeat = pBeats->findClosestBeat(mixxx::FramePos(cuePos / 2.0));
+    mixxx::FramePos closestBeat = pBeats->findClosestBeat(samplePosToFramePos(cuePos));
     // The closest beat can be an unreachable  interpolated beat past the end of
     // the track.
-    if (closestBeat != mixxx::FramePos(-1.0) && closestBeat <= mixxx::FramePos(total / 2.0)) {
-        return closestBeat.getValue() * 2;
+    if (closestBeat != mixxx::kInvalidFramePos && closestBeat <= samplePosToFramePos(total)) {
+        return framePosToSamplePos(closestBeat);
     }
 
     return cuePos;
