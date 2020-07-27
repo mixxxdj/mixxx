@@ -27,13 +27,13 @@ WTimeSignatureMenu::WTimeSignatureMenu(QWidget* parent)
             this,
             &WTimeSignatureMenu::slotBeatCountChanged);
 
-    // 2 ^ index corresponds to beat size
-    m_pBeatLengthBox->addItem(tr("1"));
-    m_pBeatLengthBox->addItem(tr("2"));
-    m_pBeatLengthBox->addItem(tr("4"));
-    m_pBeatLengthBox->addItem(tr("8"));
-    m_pBeatLengthBox->addItem(tr("16"));
-    m_pBeatLengthBox->addItem(tr("32"));
+    // 2^comboBoxIndex corresponds to beat size
+    m_pBeatLengthBox->addItem("1");
+    m_pBeatLengthBox->addItem("2");
+    m_pBeatLengthBox->addItem("4");
+    m_pBeatLengthBox->addItem("8");
+    m_pBeatLengthBox->addItem("16");
+    m_pBeatLengthBox->addItem("32");
 
     connect(m_pBeatLengthBox,
             QOverload<int>::of(&QComboBox::activated),
