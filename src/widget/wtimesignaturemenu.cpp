@@ -4,7 +4,7 @@
 #include <QtWidgets/QHBoxLayout>
 
 namespace {
-constexpr int kMinBeatsPerBar = 2;
+constexpr int kMinBeatsPerBar = 1;
 constexpr int kMaxBeatsPerBar = 32;
 } // namespace
 
