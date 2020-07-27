@@ -1165,6 +1165,7 @@ class MixxxCore(Feature):
                    "src/waveform/visualsmanager.cpp",
                    "src/waveform/visualplayposition.cpp",
                    "src/waveform/renderers/waveformbeat.cpp",
+                   "src/waveform/renderers/waveformbeatmarker.cpp",
                    "src/waveform/renderers/waveformwidgetrenderer.cpp",
                    "src/waveform/renderers/waveformrendererabstract.cpp",
                    "src/waveform/renderers/waveformrenderbackground.cpp",

@@ -838,7 +838,10 @@ void BeatsInternal::generateBeatsFromMarkers() {
     Beat firstBeat(FramePos(m_beatsProto.first_frame_position()),
             Beat::DOWNBEAT,
             TimeSignature(
-                    m_beatsProto.time_signature_markers(0).time_signature()));
+                    m_beatsProto.time_signature_markers(0).time_signature()),
+            0,
+            0,
+            true);
     m_beats.append(firstBeat);
     const FramePos trackLastFrame(m_iSampleRate * m_dDurationSeconds);
     int bpmMarkerIndex = 0;
@@ -846,7 +849,10 @@ void BeatsInternal::generateBeatsFromMarkers() {
     int barIndex = 0;
     int barRelativeBeatIndex = 1;
     Beat addedBeat(kInvalidFramePos);
+    // TODO(hacksdump): Use markers for BPM and enable marker only on user edited markers.
+    bool beatHasMarker;
     while (true) {
+        beatHasMarker = false;
         auto currentBpmMarker = m_beatsProto.bpm_markers().Get(bpmMarkerIndex);
         Bpm currentBpm = Bpm(currentBpmMarker.bpm());
         auto currentTimeSignatureMarker =
@@ -870,6 +876,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
                                 timeSignatureMarkerIndex);
                 currentTimeSignature = TimeSignature(
                         currentTimeSignatureMarker.time_signature());
+                beatHasMarker = true;
             }
         }
 
@@ -890,7 +897,8 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 beatType,
                 currentTimeSignature,
                 m_beats.size(),
-                barIndex);
+                barIndex,
+                beatHasMarker);
         if (addedBeat.getFramePosition() <= trackLastFrame) {
             m_beats.append(addedBeat);
         } else {

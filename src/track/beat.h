@@ -18,12 +18,14 @@ class Beat {
             Type type = BEAT,
             TimeSignature timeSignature = TimeSignature(),
             int beatIndex = 0,
-            int barIndex = 0) {
+            int barIndex = 0,
+            bool hasMarker = false) {
         m_framePos = framePos;
         m_eType = type;
         m_iBeatIndex = beatIndex;
         m_iBarIndex = barIndex;
         m_timeSignature = timeSignature;
+        m_bHasMarker = hasMarker;
     }
     int getBeatIndex() const {
         return m_iBeatIndex;
@@ -45,9 +47,14 @@ class Beat {
         return m_eType;
     }
 
+    bool hasMarker() const {
+        return m_bHasMarker;
+    }
+
   private:
     int m_iBeatIndex;
     int m_iBarIndex;
+    bool m_bHasMarker;
     Type m_eType;
     FramePos m_framePos;
     TimeSignature m_timeSignature;

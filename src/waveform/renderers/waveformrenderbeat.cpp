@@ -19,6 +19,7 @@ constexpr int kMaxZoomFactorToDisplayBeats = 15;
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_beats.resize(128);
+    m_beatMarkers.resize(8);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -79,6 +80,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
+    int beatMarkerCount = 0;
     QList<WaveformBeat> beatsOnScreen;
 
     while (it->hasNext()) {
@@ -105,12 +107,27 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                 kMaxZoomFactorToDisplayBeats));
         beatsOnScreen.append(*waveformBeat);
         beatCount++;
+
+        if (beatMarkerCount >= m_beatMarkers.size()) {
+            m_beatMarkers.resize(m_beatMarkers.size() * 2);
+        }
+        if (beat.hasMarker()) {
+            m_beatMarkers[beatMarkerCount].setPositionPixels(beatPixelPositionInWidgetSpace);
+            m_beatMarkers[beatMarkerCount].setLength(
+                    (orientation == Qt::Horizontal) ? rendererHeight
+                                                    : rendererWidth);
+            beatMarkerCount++;
+        }
     }
 
     // Make sure to use constData to prevent detaches!
     for (int i = 0; i < beatCount; i++) {
         const auto currentBeat = m_beats.constData() + i;
         currentBeat->draw(painter);
+    }
+    for (int i = 0; i < beatMarkerCount; i++) {
+        const auto currentBeatMarker = m_beatMarkers.constData() + i;
+        currentBeatMarker->draw(painter);
     }
     m_waveformRenderer->setBeatsOnScreen(beatsOnScreen);
 }

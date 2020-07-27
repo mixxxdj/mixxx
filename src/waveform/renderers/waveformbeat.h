@@ -7,13 +7,6 @@
 #include "track/beat.h"
 #include "waveform/renderers/waveformelementrightclickable.h"
 
-enum class Direction : int {
-    UP = 0,
-    DOWN,
-    LEFT,
-    RIGHT
-};
-
 class WaveformBeat final : WaveformElementRightClickable {
   public:
     WaveformBeat();

@@ -1,47 +1,10 @@
 #include "waveform/renderers/waveformbeat.h"
 
-#include "util/math.h"
+#include "waveform/renderers/geometryutils.h"
 
 namespace {
 constexpr int kTriangleEdgeLength = 10;
 constexpr int kClickableLinePaddingPixels = 5;
-
-inline float getEquilateralTriangleAltitude(float triangleEdgeLength) {
-    return sqrt(3) / 2 * triangleEdgeLength;
-}
-
-QPolygonF getEquilateralTriangle(float edgeLength,
-        QPointF baseMidPoint,
-        Direction pointingDirection) {
-    QPolygonF polygon;
-    QPointF firstPoint = baseMidPoint;
-    QPointF secondPoint = baseMidPoint;
-    QPointF thirdPoint = baseMidPoint;
-
-    float halfBase = edgeLength / 2;
-    float altitude = getEquilateralTriangleAltitude(edgeLength);
-
-    if (pointingDirection == Direction::DOWN || pointingDirection == Direction::UP) {
-        firstPoint.setX(baseMidPoint.x() - halfBase);
-        secondPoint.setX(baseMidPoint.x() + halfBase);
-        if (pointingDirection == Direction::DOWN) {
-            thirdPoint.setY(baseMidPoint.y() + altitude);
-        } else {
-            thirdPoint.setY(baseMidPoint.y() - altitude);
-        }
-    } else {
-        firstPoint.setY(baseMidPoint.y() - halfBase);
-        secondPoint.setY(baseMidPoint.y() + halfBase);
-        if (pointingDirection == Direction::RIGHT) {
-            thirdPoint.setX(baseMidPoint.x() + altitude);
-        } else {
-            thirdPoint.setX(baseMidPoint.x() - altitude);
-        }
-    }
-
-    polygon << firstPoint << secondPoint << thirdPoint;
-    return polygon;
-}
 } // namespace
 
 WaveformBeat::WaveformBeat()
