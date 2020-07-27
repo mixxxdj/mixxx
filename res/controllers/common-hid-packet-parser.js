@@ -334,8 +334,10 @@ HIDPacket.prototype.removeControl = function(group, name) {
  * @param pack      control packing format for unpack(), one of b/B, h/H, i/I
  * @param bitmask   bitmask size, undefined for byte(s) controls
  *           NOTE: Parsing bitmask with multiple bits is not supported yet.
- * @param isEncoder indicates if this is an encoder which should be wrapped and delta reported */
-HIDPacket.prototype.addControl = function(group, name, offset, pack, bitmask, isEncoder) {
+ * @param isEncoder indicates if this is an encoder which should be wrapped and delta reported
+ * @param callback callback function for the control
+ */
+HIDPacket.prototype.addControl = function(group, name, offset, pack, bitmask, isEncoder, callback) {
     var control_group = this.getGroup(group, true)
     var bitvector = undefined
     if (control_group == undefined) {
@@ -358,6 +360,9 @@ HIDPacket.prototype.addControl = function(group, name, offset, pack, bitmask, is
         }
         bitvector = field.value
         bitvector.addBitMask(group, name, bitmask)
+        if (callback !== undefined && typeof callback === "function") {
+            this.setCallback(group, name, callback);
+        }
         return
     }
 
@@ -415,6 +420,10 @@ HIDPacket.prototype.addControl = function(group, name, offset, pack, bitmask, is
 
     // Add the new field to the packet
     control_group[field.id] = field
+    
+    if (callback !== undefined && typeof callback === "function") {
+        this.setCallback(group, name, callback);
+    }
 }
 
 /** Register a Output control field or Output control bit to output packet
