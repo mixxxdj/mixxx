@@ -714,7 +714,7 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
     } else if (this_near_next && !other_near_next) {
         newPlaypos += thisNextBeat.getValue();
     } else { //!this_near_next && other_near_next
-        thisPrevBeat = m_pBeats->findNthBeat(thisPosition, -1);
+        thisPrevBeat = m_pBeats->findNthBeat(thisPosition, -2);
         newPlaypos += thisPrevBeat.getValue();
     }
 
