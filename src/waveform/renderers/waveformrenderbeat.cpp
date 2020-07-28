@@ -116,6 +116,13 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_beatMarkers[beatMarkerCount].setLength(
                     (orientation == Qt::Horizontal) ? rendererHeight
                                                     : rendererWidth);
+            QStringList displayItems;
+            QString timeSignatureString =
+                    QString::number(beat.getTimeSignature().getBeatsPerBar()) +
+                    "/" +
+                    QString::number(beat.getTimeSignature().getNoteValue());
+            displayItems.append(timeSignatureString);
+            m_beatMarkers[beatMarkerCount].setTextDisplayItems(displayItems);
             beatMarkerCount++;
         }
     }

@@ -16,8 +16,13 @@ class WaveformBeatMarker final {
         m_length = length;
     }
 
+    void setTextDisplayItems(QStringList items) {
+        m_textDisplayItems = items;
+    }
+
   private:
     Qt::Orientation m_orientation;
     int m_position;
     int m_length;
+    QStringList m_textDisplayItems;
 };
