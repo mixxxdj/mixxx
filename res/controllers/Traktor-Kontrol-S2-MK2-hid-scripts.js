@@ -472,9 +472,7 @@ TraktorS2MK2.shortMessageCallback = function(packet, data) {
   }
 }
 
-// There are no buttons handled by the long message, so this is a little simpler.  (Even though
-// this is very similar to the other handler, it's easier to keep them separate to know what's
-// a control and what's a button.
+// There are no buttons handled by the long message, so this is a little simpler.
 TraktorS2MK2.longMessageCallback = function(packet, data) {
   for (name in data) {
     field = data[name];
