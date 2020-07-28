@@ -138,10 +138,9 @@ TraktorS2MK2.registerInputPackets = function() {
   MessageShort.addControl("[Channel1]", "!load_track", 0x0C, "B", 0x08, false, this.loadTrackButton);
   MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effect_focus_button",
     0x0E, "B", 0x10, false, this.effectFocusButton);
-  // closing "]" intentionally left off here to make string manipulation a bit easier
-  MessageShort.addControl("[EffectRack1_EffectUnit1", "!effectbutton1", 0x0E, "B", 0x80, false, this.effectButton);
-  MessageShort.addControl("[EffectRack1_EffectUnit1", "!effectbutton2", 0x0E, "B", 0x40, false, this.effectButton);
-  MessageShort.addControl("[EffectRack1_EffectUnit1", "!effectbutton3", 0x0E, "B", 0x20, false, this.effectButton);
+  MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effectbutton1", 0x0E, "B", 0x80, false, this.effectButton);
+  MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effectbutton2", 0x0E, "B", 0x40, false, this.effectButton);
+  MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effectbutton3", 0x0E, "B", 0x20, false, this.effectButton);
 
   MessageShort.addControl("[Channel2]", "!top_encoder_press", 0x0D, "B", 0x80, false, this.topEncoderPress);
   MessageShort.addControl("[Channel2]", "!shift", 0x09, "B", 0x08, false, this.shift);
@@ -163,10 +162,9 @@ TraktorS2MK2.registerInputPackets = function() {
   MessageShort.addControl("[Channel2]", "!load_track", 0x0C, "B", 0x04, false, this.loadTrackButton);
   MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effect_focus_button",
     0xD, "B", 0x04, false, this.effectFocusButton);
-  // closing "]" intentionally left off here to make string manipulation a bit easier
-  MessageShort.addControl("[EffectRack1_EffectUnit2", "!effectbutton1", 0xD, "B", 0x20, false, this.effectButton);
-  MessageShort.addControl("[EffectRack1_EffectUnit2", "!effectbutton2", 0xD, "B", 0x10, false, this.effectButton);
-  MessageShort.addControl("[EffectRack1_EffectUnit2", "!effectbutton3", 0xD, "B", 0x08, false, this.effectButton);
+  MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effectbutton1", 0xD, "B", 0x20, false, this.effectButton);
+  MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effectbutton2", 0xD, "B", 0x10, false, this.effectButton);
+  MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effectbutton3", 0xD, "B", 0x08, false, this.effectButton);
 
   MessageShort.addControl("[Channel1]", "!pfl", 0x0C, "B", 0x10, false, this.pflButton);
   MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0E, "B", 0x08);
@@ -197,14 +195,14 @@ TraktorS2MK2.registerInputPackets = function() {
   MessageLong.addControl("[Channel2]", "!right_encoder", 0x03, "B", 0x0F, false, this.rightEncoder);
 
   MessageLong.addControl("[EffectRack1_EffectUnit1]", "mix", 0x17, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit1", "!effectknob1", 0x19, "H", null, false, this.effectKnob);
-  MessageLong.addControl("[EffectRack1_EffectUnit1", "!effectknob2", 0x1B, "H", null, false, this.effectKnob);
-  MessageLong.addControl("[EffectRack1_EffectUnit1", "!effectknob3", 0x1D, "H", null, false, this.effectKnob);
+  MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob1", 0x19, "H", null, false, this.effectKnob);
+  MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob2", 0x1B, "H", null, false, this.effectKnob);
+  MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob3", 0x1D, "H", null, false, this.effectKnob);
 
   MessageLong.addControl("[EffectRack1_EffectUnit2]", "mix", 0x1F, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit2", "!effectknob1", 0x21, "H", null, false, this.effectKnob);
-  MessageLong.addControl("[EffectRack1_EffectUnit2", "!effectknob2", 0x23, "H", null, false, this.effectKnob);
-  MessageLong.addControl("[EffectRack1_EffectUnit2", "!effectknob3", 0x25, "H", null, false, this.effectKnob);
+  MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x21, "H", null, false, this.effectKnob);
+  MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x23, "H", null, false, this.effectKnob);
+  MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x25, "H", null, false, this.effectKnob);
   
   for (var i = 1; i < 3; i++) {
     engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
@@ -1022,30 +1020,34 @@ TraktorS2MK2.effectFocusButton = function(field) {
 // Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.effectKnob = function(field) {
   var knobNumber = parseInt(field.id.slice(-1));
-  var effectUnitGroup = field.group + "]";
+  var effectUnitGroup = field.group;
   var focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
   if (focusedEffect > 0) {
-    engine.setParameter(field.group + "_Effect" + focusedEffect + "]", "parameter" + knobNumber, field.value / 4096);
+    engine.setParameter(effectUnitGroup.slice(0,-1) + "_Effect" + focusedEffect + "]",
+                        "parameter" + knobNumber,
+                        field.value / 4096);
   } else {
-    engine.setParameter(field.group + "_Effect" + knobNumber + "]", "meta", field.value / 4096);
+    engine.setParameter(effectUnitGroup.slice(0,-1) + "_Effect" + knobNumber + "]",
+                        "meta",
+                        field.value / 4096);
   }
 }
 
 // Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.effectButton = function(field) {
   var buttonNumber = parseInt(field.id.slice(-1));
-  var effectUnitGroup = field.group + "]";
-  var effectUnitNumber = field.group.slice(-1);
+  var effectUnitGroup = field.group;
+  var effectUnitNumber = field.group.match(script.effectUnitRegEx)[1];
   var focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
     
   var toggle = function () {
     var group;
     var key;
     if (focusedEffect === 0) {
-      group = field.group + "_Effect" + buttonNumber + "]";
+      group = effectUnitGroup.slice(0,-1) + "_Effect" + buttonNumber + "]";
       key = "enabled";
     } else {
-      group = field.group + "_Effect" + focusedEffect + "]"
+      group = effectUnitGroup.slice(0,-1) + "_Effect" + focusedEffect + "]"
       key = "button_parameter" + buttonNumber;
     }
     script.toggleControl(group, key);
