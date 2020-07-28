@@ -1293,7 +1293,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // that is marked for the transition time. If neither is marked, fall
         // back to the transition time from the spinbox.
         double transitionLength = outroLength;
-        double fadeBeginPos = outroStart;
         if (transitionLength > 0) {
             if (introLength > 0) {
                 if (outroLength > introLength) {
