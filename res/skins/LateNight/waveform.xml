@@ -16,9 +16,12 @@
             <Channel><Variable name="ChanNum"/></Channel>
             <BgColor><Variable name="BgColorWaveform"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
-            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+            <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+            <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+            <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
+            <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
+            <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
+            <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
             <BeatColor><Variable name="BeatColor"/></BeatColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>
