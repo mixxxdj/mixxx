@@ -97,38 +97,38 @@ VestaxVCI1003DEX.loopPlus = function (channel, control, value, status, group) {i
 // deck specific buttons start
 
 VestaxVCI1003DEX.jog_touch1 = function (channel, control, value, status, group) {
-if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);} 
+if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);}
 if(value==0)  {engine.scratchDisable("[Channel1]");}
 }
 
 VestaxVCI1003DEX.jog_touch2 = function (channel, control, value, status, group) {
-if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);} 
+if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);}
 if(value==0)  {engine.scratchDisable("[Channel1]");}
 }
 
 VestaxVCI1003DEX.jog_wheel1 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel1]","jog", jogValue/16);
 }
 
 VestaxVCI1003DEX.jog_wheel2 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel2]","jog", jogValue/16);
 }
 
 VestaxVCI1003DEX.jog_wheel_seek1 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel1]","jog", jogValue);
 }
 
 VestaxVCI1003DEX.jog_wheel_seek2 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel2]","jog", jogValue);
@@ -544,27 +544,27 @@ midi.sendShortMsg(0x90,0x52,0x7F);// selection down button led on!!cc
 
 
 // channel A
-midi.sendShortMsg(0x80,0x53,0x7F);// pad1  button led off 
+midi.sendShortMsg(0x80,0x53,0x7F);// pad1  button led off
 midi.sendShortMsg(0x90,0x53,0x7F);// pad1  button led on
-midi.sendShortMsg(0x80,0x54,0x7F);// pad1  button led off 
+midi.sendShortMsg(0x80,0x54,0x7F);// pad1  button led off
 midi.sendShortMsg(0x90,0x54,0x7F);// pad1  button led on
-midi.sendShortMsg(0x80,0x55,0x7F);// pad1  button led off 
+midi.sendShortMsg(0x80,0x55,0x7F);// pad1  button led off
 midi.sendShortMsg(0x90,0x55,0x7F);// pad1  button led on
 
 //channel B
-midi.sendShortMsg(0x80,0x56,0x7F);// pad2  button led off 
+midi.sendShortMsg(0x80,0x56,0x7F);// pad2  button led off
 midi.sendShortMsg(0x90,0x56,0x7F);// pad2  button led on
-midi.sendShortMsg(0x80,0x57,0x7F);// pad2  button led off 
+midi.sendShortMsg(0x80,0x57,0x7F);// pad2  button led off
 midi.sendShortMsg(0x90,0x57,0x7F);// pad2  button led on
-midi.sendShortMsg(0x80,0x58,0x7F);// pad2  button led off 
+midi.sendShortMsg(0x80,0x58,0x7F);// pad2  button led off
 midi.sendShortMsg(0x90,0x58,0x7F);// pad2  button led on
 
 // sampler
-midi.sendShortMsg(0x80,0x59,0x7F);// pad3  button led off 
+midi.sendShortMsg(0x80,0x59,0x7F);// pad3  button led off
 midi.sendShortMsg(0x90,0x59,0x7F);// pad3  button led on
-midi.sendShortMsg(0x80,0x5A,0x7F);// pad3  button led off 
+midi.sendShortMsg(0x80,0x5A,0x7F);// pad3  button led off
 midi.sendShortMsg(0x90,0x5A,0x7F);// pad3  button led on
-midi.sendShortMsg(0x80,0x5B,0x7F);// pad3  button led off 
+midi.sendShortMsg(0x80,0x5B,0x7F);// pad3  button led off
 midi.sendShortMsg(0x90,0x5B,0x7F);// pad3  button led on
 
 midi.sendShortMsg(0x80,0x5C,0x7F);// up button led off !!

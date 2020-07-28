@@ -2,14 +2,14 @@ function NumarkTotalControl() {}
 
 NumarkTotalControl.init = function(id) {	// called when the MIDI device is opened & set up
 	NumarkTotalControl.id = id;	// Store the ID of this device for later use
-	
+
 	NumarkTotalControl.directoryMode = false;
-	
+
 	NumarkTotalControl.scratchMode = false;
 	NumarkTotalControl.scratchTimer = [-1, -1];
-	
+
 	NumarkTotalControl.simpleCue = false;
-	
+
 	NumarkTotalControl.extendedLooping = false;
 	NumarkTotalControl.oldLoopStart = [-1, -1];
 	NumarkTotalControl.extendedLoopingType = { "None": 0, "SetBegin": 1, "SetLength": 2 };
@@ -18,10 +18,10 @@ NumarkTotalControl.init = function(id) {	// called when the MIDI device is opene
 	NumarkTotalControl.extendedLoopingLEDState = [false, false];
 	NumarkTotalControl.extendedLoopingLEDTimer = [-1, -1];
 	NumarkTotalControl.extendedLoopingJogCarryOver = [0, 0];
-	
+
 	NumarkTotalControl.quantizeLEDState = false;
 	NumarkTotalControl.quantizeLEDTimer = -1;
-	
+
 	NumarkTotalControl.leds = [
 		// Common
 		{ "directory": 0x56, "simpleCue": 0x33, "scratchMode": 0x31, "extendedLooping": 0x44, "quantize": 0x45 },
@@ -30,17 +30,17 @@ NumarkTotalControl.init = function(id) {	// called when the MIDI device is opene
 		// Deck 2
 		{ "rate": 0x43, "tap": 0x47, "loopIn": 0x4a, "loopOut": 0x4b, "loopHalve": 0x48, "loopDouble": 0x49 }
 	];
-	
+
 	// Doesn't work ?!?
 	engine.softTakeover("[Channel1]", "rate", true);
 	engine.softTakeover("[Channel2]", "rate", true);
-	
+
 	NumarkTotalControl.setLED(NumarkTotalControl.leds[1]["rate"], true);	// Turn on 0 rate lights
 	NumarkTotalControl.setLED(NumarkTotalControl.leds[2]["rate"], true);	// Turn on 0 rate lights
-	
+
 	engine.connectControl("[Channel1]", "loop_enabled", "NumarkTotalControl.loopLEDs");
 	engine.connectControl("[Channel2]", "loop_enabled", "NumarkTotalControl.loopLEDs");
-	
+
 	engine.connectControl("[Channel1]", "quantize", "NumarkTotalControl.quantizeLED");
 	engine.connectControl("[Channel2]", "quantize", "NumarkTotalControl.quantizeLED");
 }
@@ -48,7 +48,7 @@ NumarkTotalControl.init = function(id) {	// called when the MIDI device is opene
 NumarkTotalControl.shutdown = function(id) {	// called when the MIDI device is closed
 	engine.connectControl("[Channel1]", "loop_enabled", "NumarkTotalControl.loopLEDs", true);
 	engine.connectControl("[Channel2]", "loop_enabled", "NumarkTotalControl.loopLEDs", true);
-	
+
 	var lowestLED = 0x30;
 	var highestLED = 0x56;
 	for (var i=lowestLED; i<=highestLED; i++) {
@@ -147,14 +147,14 @@ NumarkTotalControl.loopExtendedAdjustment = function(group) {
 		engine.beginTimer(20, "NumarkTotalControl.loopExtendedAdjustment('" + group + "')", true);
 		return;
 	}
-	
+
 	// Restore loop start position
 	var currentPosition = start;
 	start = NumarkTotalControl.oldLoopStart[deck-1];
 	engine.setValue(group, "loop_start_position", start);
 	NumarkTotalControl.oldLoopStart[deck-1] = -1;
 	var len = currentPosition - start;
-	
+
 	// Calculate nearest beat
 	var beatSamples = NumarkTotalControl.samplesPerBeat(group);
 	var lenInBeats = len / beatSamples;
@@ -162,34 +162,34 @@ NumarkTotalControl.loopExtendedAdjustment = function(group) {
 		//print("Full: " + Math.ceil(lenInBeats));
 		//print("Mult2: " + (Math.ceil(lenInBeats / 2) * 2));
 		//print("Pot2: " + Math.pow(2, Math.ceil(Math.log(lenInBeats) / Math.log(2))));
-		
+
 		// Round to full beats
 		//lenInBeats = Math.ceil(lenInBeats);
-		
+
 		// Round to 2*x beats
 		//lenInBeats = Math.ceil(lenInBeats / 2) * 2;
-		
+
 		// Round to 2^x beats
 		lenInBeats = Math.pow(2, Math.ceil(Math.log(lenInBeats) / Math.log(2)));
 	} else {
 		//print("Full: 1 / " + Math.floor(1 / lenInBeats));
 		//print("Mult2: 1 / " + (Math.floor(1 / lenInBeats / 2) * 2));
 		//print("Pot2: 1 / " + Math.pow(2, Math.floor(Math.log(1 / lenInBeats) / Math.log(2))));
-		
+
 		// Round to beat fragments
 		//lenInBeats = 1 / Math.floor(1 / lenInBeats);
-		
+
 		// Round to fragments of 2*x beats
 		//lenInBeats = 1 / (Math.floor(1 / lenInBeats / 2) * 2);
-		
+
 		// Round to fragments of 2^x beats
 		lenInBeats = 1 / Math.pow(2, Math.floor(Math.log(1 / lenInBeats) / Math.log(2)));
 	}
 	len = lenInBeats * beatSamples;
-	
+
 	// Set calculated loop end
 	engine.setValue(group, "loop_end_position", start + len);
-	
+
 	// Start looping
 	engine.setValue(group, "reloop_exit", 1);
 }
@@ -220,7 +220,7 @@ NumarkTotalControl.loopLEDs = function(value, group, key) {
 		status = true;
 	}
 	NumarkTotalControl.setLED(NumarkTotalControl.leds[deck]["loopOut"], status);
-	
+
 	if (!NumarkTotalControl.extendedLooping) {
 		status = false;
 	}
@@ -365,7 +365,7 @@ NumarkTotalControl.jogWheel = function(channel, control, value, status, group) {
 		posNeg = -1;
 		adjustedJog = value - 128;
 	}
-	
+
 	if (NumarkTotalControl.extendedLoopingState[deck-1] == NumarkTotalControl.extendedLoopingType.SetBegin) {
 		var start = engine.getValue(group, "loop_start_position");
 		var end = engine.getValue(group, "loop_end_position");

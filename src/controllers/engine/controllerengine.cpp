@@ -230,6 +230,17 @@ void ControllerEngine::uninitializeScriptEngine() {
 }
 
 void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    VERIFY_OR_DEBUG_ASSERT(!moduleFileInfo.filePath().isEmpty()) {
+        return;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(moduleFileInfo.isFile()) {
+        return;
+    }
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     m_moduleFileInfo = moduleFileInfo;
 
@@ -318,7 +329,14 @@ void ControllerEngine::reloadScripts() {
 
     qDebug() << "Re-initializing scripts";
     initializeScripts(m_lastScriptFiles);
-    loadModule(m_moduleFileInfo);
+
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    if (!m_moduleFileInfo.filePath().isEmpty()) {
+        loadModule(m_moduleFileInfo);
+    }
 }
 
 void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts) {

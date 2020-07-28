@@ -225,6 +225,9 @@ int WWidgetGroup::getHighlight() const {
 }
 
 void WWidgetGroup::setHighlight(int highlight) {
+    if (m_highlight == highlight) {
+        return;
+    }
     m_highlight = highlight;
     style()->unpolish(this);
     style()->polish(this);

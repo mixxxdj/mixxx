@@ -123,9 +123,10 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     }
 
     if (!pWidget->setProperty(m_propertyName.constData(),parameter)) {
-        qDebug() << "Setting property" << m_propertyName
-                 << "to widget" << pWidget->objectName()
-                 << "failed. Value:" << parameter;
+        qWarning() << "Property" << m_propertyName
+                   << "was not defined for widget" << pWidget->objectName()
+                   << "of type" << pWidget->metaObject()->className()
+                   << "(parameter:" << parameter << ")";
     }
 
     // According to http://stackoverflow.com/a/3822243 this is the least

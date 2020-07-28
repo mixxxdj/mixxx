@@ -2,10 +2,10 @@ function HCInstinct() {};
 
 
 
-// ----------   Global variables    ---------- 
+// ----------   Global variables    ----------
 HCInstinct.scratching = [false, false];
-HCInstinct.pitchSpeedFast = true;     // temporary Pitch Speed of +/-  true = 
-HCInstinct.vinylButton = false;            
+HCInstinct.pitchSpeedFast = true;     // temporary Pitch Speed of +/-  true =
+HCInstinct.vinylButton = false;
 HCInstinct.pitchSwitches = new Array();
 HCInstinct.pitchSwitches["A"] = [0,0];
 HCInstinct.pitchSwitches["B"] = [0,0];
@@ -14,7 +14,7 @@ HCInstinct.pitchB = [0,0];
 // ----------   Functions    ----------
 
 // called when the MIDI device is opened & set up
-HCInstinct.init = function(id, debugging) {    
+HCInstinct.init = function(id, debugging) {
     HCInstinct.id = id;
     HCInstinct.FastPosition=[0,0];
     HCInstinct.jogFastPosition=[0,0];
@@ -31,7 +31,7 @@ HCInstinct.init = function(id, debugging) {
 // Called when the MIDI device is closed
 HCInstinct.shutdown = function(id) {
     HCInstinct.allLedOff();
-    print ("***** Hercules DJ Instinct Control id: \""+id+"\" shutdown.");    
+    print ("***** Hercules DJ Instinct Control id: \""+id+"\" shutdown.");
 };
 
 
@@ -87,12 +87,12 @@ HCInstinct.wheelTouch1 = function (channel, control, value, status) {
 
 };
 
- 
+
 HCInstinct.wheelTurn0 = function (channel, control, value, status) {
-    
+
     // See if we're on scratching.
     //if (HCInstinct.scratching[0] == false )  return;
-   
+
     var newValue;
     if (value-64 > 0) newValue = value-128; // 7F, 7E, 7D
     else newValue = value;
@@ -100,10 +100,10 @@ HCInstinct.wheelTurn0 = function (channel, control, value, status) {
 };
 
 HCInstinct.wheelTurn1 = function (channel, control, value, status) {
-    
+
     // See if we're on scratching.
     if (HCInstinct.scratching[1] == false )  return;
-   
+
     var newValue;
     if (value-64 > 0) newValue = value-128; // 7F, 7E, 7D
     else newValue = value;
@@ -117,7 +117,7 @@ HCInstinct.knobIncrement = function (group, action, minValue, maxValue, centralV
     rangeWidthLeft = centralValue-minValue;
     rangeWidthRight = maxValue-centralValue;
     actual = engine.getValue(group, action);
-    
+
     if (actual < 1){
         increment = ((rangeWidthLeft)/semiStep)*sign;
     }
@@ -134,46 +134,46 @@ HCInstinct.knobIncrement = function (group, action, minValue, maxValue, centralV
     else if (sign == -1 && actual > minValue){
         newValue = actual + increment;
     }
-    
+
     return newValue;
 };
 
 
 
-// Pitch +/- 
+// Pitch +/-
 HCInstinct.pitch = function (midino, control, value, status, group) {
     var speed = (HCInstinct.vinylButton == true) ? "" : "_small";
     var state = (value == 0x7F) ? 1 : 0;
     switch (control){
         case 0x11: HCInstinct.pitchSwitches["A"][0]=state;
-            engine.setValue(group, "rate_temp_down"+speed, state); 
+            engine.setValue(group, "rate_temp_down"+speed, state);
             break;
         case 0x12: HCInstinct.pitchSwitches["A"][1]=state;
-            engine.setValue(group, "rate_temp_up"+speed, state); 
+            engine.setValue(group, "rate_temp_up"+speed, state);
             break;
         case 0x2B: HCInstinct.pitchSwitches["B"][0]=state;
-            engine.setValue(group, "rate_temp_down"+speed, state); 
+            engine.setValue(group, "rate_temp_down"+speed, state);
             break;
         case 0x2C: HCInstinct.pitchSwitches["B"][1]=state;
-            engine.setValue(group, "rate_temp_up"+speed, state); 
+            engine.setValue(group, "rate_temp_up"+speed, state);
             break;
-    };    
+    };
         // when buttons + and - pressed simultaneously
         if (HCInstinct.pitchSwitches["A"][0] && HCInstinct.pitchSwitches["A"][1]) {
         // reset pitch to 0
-        engine.setValue(group, "rate", 0); 
+        engine.setValue(group, "rate", 0);
     };
         if (HCInstinct.pitchSwitches["B"][0] && HCInstinct.pitchSwitches["B"][1]) {
-        engine.setValue(group, "rate", 0); 
+        engine.setValue(group, "rate", 0);
     }
 };
 
-// Up/Down-Siwtches 
+// Up/Down-Siwtches
 HCInstinct.tempPitch = function (midino, control, value, status, group) {
     var rate = (value==0x7F) ? "rate_perm_down" : "rate_perm_up" ;
     if (HCInstinct.vinylButton == false) {
         rate = rate + "_small";
-    }    
+    }
     engine.setValue(group, rate, 1);
     engine.setValue(group, rate, 0);
 };

@@ -146,7 +146,18 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
     }
 
     QString moduleFileName = controller.firstChildElement("module").text();
-    preset->setModuleFileInfo(preset->dirPath().absoluteFilePath(moduleFileName));
+
+    if (moduleFileName.isEmpty()) {
+        return;
+    }
+
+    QFileInfo moduleFileInfo(preset->dirPath().absoluteFilePath(moduleFileName));
+    if (!moduleFileInfo.isFile()) {
+        qWarning() << "Controller Module is not a file:" << moduleFileInfo.absoluteFilePath();
+        return;
+    }
+
+    preset->setModuleFileInfo(moduleFileInfo);
 }
 
 bool ControllerPresetFileHandler::writeDocument(
