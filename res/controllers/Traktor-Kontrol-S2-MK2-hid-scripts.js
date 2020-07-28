@@ -785,25 +785,24 @@ TraktorS2MK2.setPadMode = function(group, padMode) {
   TraktorS2MK2.current_pad_mode[group] = padMode;
 }
 
-TraktorS2MK2.padButton = function(field) {
-  var group = field.id.split(".")[0];
-  var buttonNumber = parseInt(field.name[field.name.length - 1]);
-  var padMode = TraktorS2MK2.current_pad_mode[group];
-  
-  if (padMode === TraktorS2MK2.pad_modes.hotcue) {
+TraktorS2MK2.hotcueButton = function(buttonNumber, group, value) {
     if (TraktorS2MK2.shift_pressed[group]) {
-      engine.setValue(field.group, "hotcue_" + buttonNumber + "_clear", field.value);
+      engine.setValue(group, "hotcue_" + buttonNumber + "_clear", value);
     } else {
-      engine.setValue(field.group, "hotcue_" + buttonNumber + "_activate", field.value);
+      engine.setValue(group, "hotcue_" + buttonNumber + "_activate", value);
     }
-  } else if (padMode === TraktorS2MK2.pad_modes.intro_outro) {
+}
+
+TraktorS2MK2.introOutroButton = function(buttonNumber, group, value) {
     if (TraktorS2MK2.shift_pressed[group]) {
-      engine.setValue(field.group, intro_outro_keys[buttonNumber-1] + "_clear", field.value);
+      engine.setValue(group, intro_outro_keys[buttonNumber-1] + "_clear", value);
     } else {
-      engine.setValue(field.group, intro_outro_keys[buttonNumber-1] + "_activate", field.value);
+      engine.setValue(group, intro_outro_keys[buttonNumber-1] + "_activate", value);
     }
-  } else if (padMode === TraktorS2MK2.pad_modes.sampler) {
-    if (field.value === 0) {
+}
+
+TraktorS2MK2.samplerButton = function(buttonNumber, group, value) {
+    if (value === 0) {
       return;
     }
     var samplerNumber = group === "[Channel1]" ? buttonNumber : buttonNumber + 4;
@@ -821,6 +820,19 @@ TraktorS2MK2.padButton = function(field) {
         script.triggerControl(samplerGroup, "cue_gotoandplay");
       }
     }
+}
+
+TraktorS2MK2.padButton = function(field) {
+  var group = field.id.split(".")[0];
+  var buttonNumber = parseInt(field.name[field.name.length - 1]);
+  var padMode = TraktorS2MK2.current_pad_mode[group];
+  
+  if (padMode === TraktorS2MK2.pad_modes.hotcue) {
+    TraktorS2MK2.hotcueButton(buttonNumber, field.group, field.value);
+  } else if (padMode === TraktorS2MK2.pad_modes.intro_outro) {
+    TraktorS2MK2.introOutroButton(buttonNumber, field.group, field.value);
+  } else if (padMode === TraktorS2MK2.pad_modes.sampler) {
+    TraktorS2MK2.samplerButton(buttonNumber, field.group, field.value);
   }
 }
 
