@@ -20,7 +20,7 @@ TraktorS2MK2 = new function() {
 
   // When true, packets will not be sent to the controller.
   // Used when updating multiple LEDs simultaneously.
-  this.freeze_lights = false;
+  this.batching_LED_update = false;
 
   // Previous values, used for calculating deltas for encoder knobs.
   this.previous_browse = 0;
@@ -404,7 +404,7 @@ TraktorS2MK2.lightGroup = function(packet, output_group_name, co_group_name) {
 
 TraktorS2MK2.lightDeck = function(group) {
   // Freeze the lights while we do this update so we don't spam HID.
-  this.freeze_lights = true;
+  this.batching_LED_update = true;
   for (var packet_name in this.controller.OutputPackets) {
     packet = this.controller.OutputPackets[packet_name];
     TraktorS2MK2.lightGroup(packet, group, group);
@@ -412,7 +412,7 @@ TraktorS2MK2.lightDeck = function(group) {
     TraktorS2MK2.outputCallback(0, group, "!shift");
   }
 
-  this.freeze_lights = false;
+  this.batching_LED_update = false;
   // And now send them all.
   for (packet_name in this.controller.OutputPackets) {
     var packet_ob = this.controller.OutputPackets[packet_name];
@@ -834,10 +834,10 @@ TraktorS2MK2.samplerModeButton = function(field) {
   if (padMode !== TraktorS2MK2.pad_modes.sampler) {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.sampler);
     TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x7f, false);
-    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x00, !TraktorS2MK2.freeze_lights);
+    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x00, !TraktorS2MK2.batching_LED_update);
   } else {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.hotcue);
-    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x00, !TraktorS2MK2.freeze_lights);
+    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x00, !TraktorS2MK2.batching_LED_update);
   }
 }
 
@@ -849,10 +849,10 @@ TraktorS2MK2.introOutroModeButton = function(field) {
   if (padMode !== TraktorS2MK2.pad_modes.intro_outro) {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.intro_outro);
     TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x7f, false);
-    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x00, !TraktorS2MK2.freeze_lights);
+    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x00, !TraktorS2MK2.batching_LED_update);
   } else {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.hotcue);
-    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x00, !TraktorS2MK2.freeze_lights);
+    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x00, !TraktorS2MK2.batching_LED_update);
   }
 }
 
@@ -881,12 +881,12 @@ TraktorS2MK2.connectEffectButtonLEDs = function(effectUnitGroup) {
   var makeButtonLEDcallback = function(effectNumber) {
     return function(value, group, control) {
       TraktorS2MK2.controller.setOutput(effectUnitGroup, "!effectbutton" + effectNumber,
-        value === 1 ? 0x7f : 0, !TraktorS2MK2.freeze_lights);
+        value === 1 ? 0x7f : 0, !TraktorS2MK2.batching_LED_update);
     };
   };
   
   // FIXME: Why do the LEDs flicker?
-  TraktorS2MK2.freeze_lights = true;
+  TraktorS2MK2.batching_LED_update = true;
   for (var i = 0; i < 3; i++) {
     var effectGroup;
     var key;
@@ -901,7 +901,7 @@ TraktorS2MK2.connectEffectButtonLEDs = function(effectUnitGroup) {
       effectGroup, key, makeButtonLEDcallback(i+1));
     TraktorS2MK2.effectButtonLEDconnections[effectUnitGroup][i].trigger();
   }
-  TraktorS2MK2.freeze_lights = false;
+  TraktorS2MK2.batching_LED_update = false;
   TraktorS2MK2.effectButtonLEDconnections[effectUnitGroup][2].trigger();
 }
 
@@ -922,7 +922,7 @@ TraktorS2MK2.onShowParametersChange = function(value, group, control) {
 }
 
 TraktorS2MK2.onFocusedEffectChange = function(value, group, control) {
-  TraktorS2MK2.controller.setOutput(group, "!effect_focus_button", value > 0 ? 0x7f : 0, !TraktorS2MK2.freeze_lights);
+  TraktorS2MK2.controller.setOutput(group, "!effect_focus_button", value > 0 ? 0x7f : 0, !TraktorS2MK2.batching_LED_update);
   if (value === 0) {
     for (var i = 1; i < 3; i++) {
       // The previously focused effect is not available here, so iterate over all effects' parameter knobs.
@@ -953,16 +953,16 @@ TraktorS2MK2.effectFocusButton = function(field) {
       var makeButtonLEDcallback = function(buttonNumber) {
           return function(value, group, control) {
             TraktorS2MK2.controller.setOutput(group, "!effectbutton" + buttonNumber,
-              value === buttonNumber ? 0x7f : 0, !TraktorS2MK2.freeze_lights);
+              value === buttonNumber ? 0x7f : 0, !TraktorS2MK2.batching_LED_update);
           };
       };
-      TraktorS2MK2.freeze_lights = true;
+      TraktorS2MK2.batching_LED_update = true;
       for (var i = 0; i < 3; i++) {
         TraktorS2MK2.effectButtonLEDconnections[i] = engine.makeConnection(
           field.group, "focused_effect", makeButtonLEDcallback(i+1));
         TraktorS2MK2.effectButtonLEDconnections[i].trigger();
       }
-      TraktorS2MK2.freeze_lights = false;
+      TraktorS2MK2.batching_LED_update = false;
       TraktorS2MK2.effectButtonLEDconnections[2].trigger();
     });
     if (!showParameters) {
@@ -1239,7 +1239,7 @@ TraktorS2MK2.outputChannelCallback = function(value,group,key) {
   if (value) {
     led_value = 0x7F;
   }
-  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.freeze_lights);
+  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.outputChannelCallbackDark = function(value,group,key) {
@@ -1247,7 +1247,7 @@ TraktorS2MK2.outputChannelCallbackDark = function(value,group,key) {
   if (value) {
     led_value = 0x7F;
   }
-  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.freeze_lights);
+  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.outputCallback = function(value,group,key) {
@@ -1255,7 +1255,7 @@ TraktorS2MK2.outputCallback = function(value,group,key) {
   if (value) {
     led_value = 0x7F;
   }
-  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.freeze_lights);
+  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.outputCallbackLoop = function(value,group,key) {
@@ -1263,7 +1263,7 @@ TraktorS2MK2.outputCallbackLoop = function(value,group,key) {
   if (engine.getValue(group, "loop_enabled")) {
     led_value = 0x7F;
   }
-  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.freeze_lights);
+  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.outputCallbackDark = function(value,group,key) {
@@ -1271,7 +1271,7 @@ TraktorS2MK2.outputCallbackDark = function(value,group,key) {
   if (value) {
     led_value = 0x7F;
   }
-  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.freeze_lights);
+  TraktorS2MK2.controller.setOutput(group, key, led_value, !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.pflButton = function(field) {
@@ -1288,7 +1288,7 @@ TraktorS2MK2.sendPadColor = function(group, padNumber, color) {
   var padKey = "!pad_" + padNumber + "_";
   TraktorS2MK2.controller.setOutput(group, padKey + "R", color.red, false);
   TraktorS2MK2.controller.setOutput(group, padKey + "G", color.green, false);
-  TraktorS2MK2.controller.setOutput(group, padKey + "B", color.blue, !TraktorS2MK2.freeze_lights);
+  TraktorS2MK2.controller.setOutput(group, padKey + "B", color.blue, !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.outputHotcueCallback = function(value, group, key) {
