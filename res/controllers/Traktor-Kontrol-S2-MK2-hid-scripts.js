@@ -727,6 +727,14 @@ var intro_outro_colors = [
   {red: 0x7f, green: 0, blue: 0}
 ];
 
+var intro_outro_colors_dim = [
+  {red: 0, green: ButtonBrightnessOff, blue: 0},
+  {red: 0, green: ButtonBrightnessOff, blue: 0},
+  {red: ButtonBrightnessOff, green: 0, blue: 0},
+  {red: ButtonBrightnessOff, green: 0, blue: 0}
+];
+
+
 TraktorS2MK2.setPadMode = function(group, padMode) {
   TraktorS2MK2.pad_connections[group].forEach(function(connection) {
     connection.disconnect();
@@ -749,7 +757,7 @@ TraktorS2MK2.setPadMode = function(group, padMode) {
           if (value > 0) {
             TraktorS2MK2.sendPadColor(group, padNumber, intro_outro_colors[padNumber-1]);
           } else {
-            TraktorS2MK2.sendPadColor(group, padNumber, {red: 0, green: 0, blue: 0});
+            TraktorS2MK2.sendPadColor(group, padNumber, intro_outro_colors_dim[padNumber-1]);
           }
         };
       };
@@ -895,6 +903,7 @@ TraktorS2MK2.samplerActivateButton = function(field) {
   }
 }
 
+// Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.connectEffectButtonLEDs = function(effectUnitGroup) {
   TraktorS2MK2.effectButtonLEDconnections[effectUnitGroup].forEach(function(connection) {
     connection.disconnect();
@@ -928,6 +937,7 @@ TraktorS2MK2.connectEffectButtonLEDs = function(effectUnitGroup) {
   TraktorS2MK2.effectButtonLEDconnections[effectUnitGroup][2].trigger();
 }
 
+// Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.onShowParametersChange = function(value, group, control) {
   if (value === 0) {
     if (engine.getValue(group, "show_focus") > 0) {
@@ -944,6 +954,7 @@ TraktorS2MK2.onShowParametersChange = function(value, group, control) {
   TraktorS2MK2.connectEffectButtonLEDs(group);
 }
 
+// Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.onFocusedEffectChange = function(value, group, control) {
   TraktorS2MK2.controller.setOutput(group, "!effect_focus_button", value > 0 ? ButtonBrightnessOn : ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
   if (value === 0) {
@@ -960,6 +971,7 @@ TraktorS2MK2.onFocusedEffectChange = function(value, group, control) {
   }
 }
 
+// Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.effectFocusButton = function(field) {
   var showParameters = engine.getValue(field.group, "show_parameters");
   if (field.value > 0) {
@@ -1009,6 +1021,7 @@ TraktorS2MK2.effectFocusButton = function(field) {
   }
 }
 
+// Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.effectKnob = function(field) {
   var knobNumber = parseInt(field.id.slice(-1));
   var effectUnitGroup = field.group + "]";
@@ -1020,6 +1033,7 @@ TraktorS2MK2.effectKnob = function(field) {
   }
 }
 
+// Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.effectButton = function(field) {
   var buttonNumber = parseInt(field.id.slice(-1));
   var effectUnitGroup = field.group + "]";
