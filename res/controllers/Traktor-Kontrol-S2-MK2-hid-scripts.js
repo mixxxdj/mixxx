@@ -114,22 +114,22 @@ TraktorS2MK2.registerInputPackets = function() {
   
   MessageShort.addControl("[Channel1]", "!top_encoder_press", 0x0D, "B", 0x40, false, this.topEncoderPress);  
   MessageShort.addControl("[Channel1]", "!shift", 0x0B, "B", 0x08, false, this.shift);
-  MessageShort.addControl("[Channel1]", "!sync_enabled", 0x0B, "B", 0x04, false, this.syncEnabled);
-  MessageShort.addControl("[Channel1]", "!cue_default", 0x0B, "B", 0x02, false, this.cue);
-  MessageShort.addControl("[Channel1]", "!play", 0x0B, "B", 0x01, false, this.play);
-  MessageShort.addControl("[Channel1]", "!pad1", 0x0B, "B", 0x80, false, this.pad);
-  MessageShort.addControl("[Channel1]", "!pad2", 0x0B, "B", 0x40, false, this.pad);
-  MessageShort.addControl("[Channel1]", "!pad3", 0x0B, "B", 0x20, false, this.pad);
-  MessageShort.addControl("[Channel1]", "!pad4", 0x0B, "B", 0x10, false, this.pad);
-  MessageShort.addControl("[Channel1]", "!loop_in", 0x0C, "B", 0x40, false, this.loopIn);
-  MessageShort.addControl("[Channel1]", "!loop_out", 0x0C, "B", 0x80, false, this.loopOut);
+  MessageShort.addControl("[Channel1]", "!sync_enabled", 0x0B, "B", 0x04, false, this.syncButton);
+  MessageShort.addControl("[Channel1]", "!cue_default", 0x0B, "B", 0x02, false, this.cueButton);
+  MessageShort.addControl("[Channel1]", "!play", 0x0B, "B", 0x01, false, this.playButton);
+  MessageShort.addControl("[Channel1]", "!pad1", 0x0B, "B", 0x80, false, this.padButton);
+  MessageShort.addControl("[Channel1]", "!pad2", 0x0B, "B", 0x40, false, this.padButton);
+  MessageShort.addControl("[Channel1]", "!pad3", 0x0B, "B", 0x20, false, this.padButton);
+  MessageShort.addControl("[Channel1]", "!pad4", 0x0B, "B", 0x10, false, this.padButton);
+  MessageShort.addControl("[Channel1]", "!loop_in", 0x0C, "B", 0x40, false, this.loopInButton);
+  MessageShort.addControl("[Channel1]", "!loop_out", 0x0C, "B", 0x80, false, this.loopOutButton);
   MessageShort.addControl("[Channel1]", "!remix_button", 0x0C, "B", 0x02, false, this.samplerModeButton);
   MessageShort.addControl("[Channel1]", "!flux_button", 0x0C, "B", 0x20, false, this.introOutroModeButton);
   MessageShort.addControl("[Channel1]", "!left_encoder_press", 0x0F, "B", 0x01, false, this.leftEncoderPress);
   MessageShort.addControl("[Channel1]", "!right_encoder_press", 0x0F, "B", 0x02, false, this.rightEncoderPress);
   MessageShort.addControl("[Channel1]", "!jog_touch", 0x0A, "B", 0x01, false, this.jogTouch);
   MessageShort.addControl("[Channel1]", "!jog_wheel", 0x01, "I", null, false, this.jogMove);
-  MessageShort.addControl("[Channel1]", "!load_track", 0x0C, "B", 0x08, false, this.loadTrack);
+  MessageShort.addControl("[Channel1]", "!load_track", 0x0C, "B", 0x08, false, this.loadTrackButton);
   MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effect_focus_button",
     0x0E, "B", 0x10, false, this.effectFocusButton);
   // closing "]" intentionally left off here to make string manipulation a bit easier
@@ -139,22 +139,22 @@ TraktorS2MK2.registerInputPackets = function() {
 
   MessageShort.addControl("[Channel2]", "!top_encoder_press", 0x0D, "B", 0x80, false, this.topEncoderPress);
   MessageShort.addControl("[Channel2]", "!shift", 0x09, "B", 0x08, false, this.shift);
-  MessageShort.addControl("[Channel2]", "!sync_enabled", 0x09, "B", 0x04, false, this.syncEnabled);
-  MessageShort.addControl("[Channel2]", "!cue_default", 0x09, "B", 0x02, false, this.cue);
-  MessageShort.addControl("[Channel2]", "!play", 0x09, "B", 0x01, false, this.play);
-  MessageShort.addControl("[Channel2]", "!pad1", 0x09, "B", 0x80, false, this.pad);
-  MessageShort.addControl("[Channel2]", "!pad2", 0x09, "B", 0x40, false, this.pad);
-  MessageShort.addControl("[Channel2]", "!pad3", 0x09, "B", 0x20, false, this.pad);
-  MessageShort.addControl("[Channel2]", "!pad4", 0x09, "B", 0x10, false, this.pad);
-  MessageShort.addControl("[Channel2]", "!loop_in", 0x0A, "B", 0x40, false, this.loopIn);
-  MessageShort.addControl("[Channel2]", "!loop_out", 0x0A, "B", 0x80, false, this.loopOut);
+  MessageShort.addControl("[Channel2]", "!sync_enabled", 0x09, "B", 0x04, false, this.syncButton);
+  MessageShort.addControl("[Channel2]", "!cue_default", 0x09, "B", 0x02, false, this.cueButton);
+  MessageShort.addControl("[Channel2]", "!play", 0x09, "B", 0x01, false, this.playButton);
+  MessageShort.addControl("[Channel2]", "!pad1", 0x09, "B", 0x80, false, this.padButton);
+  MessageShort.addControl("[Channel2]", "!pad2", 0x09, "B", 0x40, false, this.padButton);
+  MessageShort.addControl("[Channel2]", "!pad3", 0x09, "B", 0x20, false, this.padButton);
+  MessageShort.addControl("[Channel2]", "!pad4", 0x09, "B", 0x10, false, this.padButton);
+  MessageShort.addControl("[Channel2]", "!loop_in", 0x0A, "B", 0x40, false, this.loopInButton);
+  MessageShort.addControl("[Channel2]", "!loop_out", 0x0A, "B", 0x80, false, this.loopOutButton);
   MessageShort.addControl("[Channel2]", "!remix_button", 0x0C, "B", 0x01, false, this.samplerModeButton);
   MessageShort.addControl("[Channel2]", "!flux_button", 0x0A, "B", 0x20, false, this.introOutroModeButton);
   MessageShort.addControl("[Channel2]", "!left_encoder_press", 0x0F, "B", 0x08, false, this.leftEncoderPress);
   MessageShort.addControl("[Channel2]", "!right_encoder_press", 0x0F, "B", 0x10, false, this.rightEncoderPress);
   MessageShort.addControl("[Channel2]", "!jog_touch", 0x0A, "B", 0x02, false, this.jogTouch);
   MessageShort.addControl("[Channel2]", "!jog_wheel", 0x05, "I", null, false, this.jogMove);
-  MessageShort.addControl("[Channel2]", "!load_track", 0x0C, "B", 0x04, false, this.loadTrack);
+  MessageShort.addControl("[Channel2]", "!load_track", 0x0C, "B", 0x04, false, this.loadTrackButton);
   MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effect_focus_button",
     0xD, "B", 0x04, false, this.effectFocusButton);
   // closing "]" intentionally left off here to make string manipulation a bit easier
@@ -228,7 +228,7 @@ TraktorS2MK2.registerInputPackets = function() {
   MessageLong.addControl("[Master]", "headMix", 0x0B, "H");
   MessageLong.addControl("[Master]", "!samplerGain", 0xD, "H");
   MessageLong.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
-  MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0x0F, false, this.callbackBrowse);
+  MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0x0F, false, this.browseEncoder);
 
   this.controller.setScaler("volume", this.scalerVolume);
   this.controller.setScaler("headMix", this.scalerSlider);
@@ -491,7 +491,7 @@ TraktorS2MK2.shift = function(field) {
   TraktorS2MK2.outputCallback(field.value, field.group, "!shift");
 }
 
-TraktorS2MK2.loadTrack = function(field) {
+TraktorS2MK2.loadTrackButton = function(field) {
   var splitted = field.id.split(".");
   var group = splitted[0];
   if (TraktorS2MK2.shift_pressed[group]) {
@@ -501,7 +501,7 @@ TraktorS2MK2.loadTrack = function(field) {
   }
 }
 
-TraktorS2MK2.syncEnabled = function(field) {
+TraktorS2MK2.syncButton = function(field) {
   var now = Date.now();
 
   var splitted = field.id.split(".");
@@ -535,7 +535,7 @@ TraktorS2MK2.syncEnabled = function(field) {
   }
 }
 
-TraktorS2MK2.cue = function(field) {
+TraktorS2MK2.cueButton = function(field) {
   var splitted = field.id.split(".");
   var group = splitted[0];
   if (TraktorS2MK2.shift_pressed[group]) {
@@ -555,7 +555,7 @@ TraktorS2MK2.cue = function(field) {
   }
 }
 
-TraktorS2MK2.play = function(field) {
+TraktorS2MK2.playButton = function(field) {
   if (field.value === 0) {
     return;
   }
@@ -785,7 +785,7 @@ TraktorS2MK2.setPadMode = function(group, padMode) {
   TraktorS2MK2.current_pad_mode[group] = padMode;
 }
 
-TraktorS2MK2.pad = function(field) {
+TraktorS2MK2.padButton = function(field) {
   var group = field.id.split(".")[0];
   var buttonNumber = parseInt(field.name[field.name.length - 1]);
   var padMode = TraktorS2MK2.current_pad_mode[group];
@@ -854,12 +854,12 @@ TraktorS2MK2.introOutroModeButton = function(field) {
   }
 }
 
-TraktorS2MK2.loopIn = function(field) {
+TraktorS2MK2.loopInButton = function(field) {
   var group = field.id.split(".")[0];
   engine.setValue(group, "loop_in", field.value);
 }
 
-TraktorS2MK2.loopOut = function(field) {
+TraktorS2MK2.loopOutButton = function(field) {
   var group = field.id.split(".")[0];
   engine.setValue(group, "loop_out", field.value);
 }
@@ -1196,7 +1196,7 @@ TraktorS2MK2.rightEncoderPress = function(field) {
   }
 }
 
-TraktorS2MK2.callbackBrowse = function(field) {
+TraktorS2MK2.browseEncoder = function(field) {
   // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
   prev_browse = TraktorS2MK2.previous_browse;
   TraktorS2MK2.previous_browse = field.value;
