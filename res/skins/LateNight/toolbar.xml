@@ -159,7 +159,7 @@
             </Children>
           </WidgetGroup><!-- LatencyMeterBox -->
 
-          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>BatteryBox</ObjectName>
@@ -193,7 +193,7 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>7f,min</Size></WidgetGroup>
+      <WidgetGroup><Size>12f,min</Size></WidgetGroup>
 
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
@@ -247,25 +247,25 @@
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
       <PushButton>
-        <Size>82f,20f</Size>
+        <Size>72f,20f</Size>
         <TooltipId>broadcast_enabled</TooltipId>
         <ObjectName>BroadcastButton</ObjectName>
         <NumberStates>4</NumberStates>
         <State>
           <Number>0</Number>
-          <Text>Broadcast</Text>
+          <Text>      ON AIR</Text>
         </State>
         <State>
           <Number>1</Number>
-          <Text>Connecting...</Text>
+          <Text>       ...</Text>
         </State>
         <State>
           <Number>2</Number>
-          <Text>ON AIR</Text>
+          <Text>      ON AIR</Text>
         </State>
         <State>
           <Number>3</Number>
-          <Text>Conn. Failed</Text>
+          <Text>       ---</Text>
         </State>
         <Connection>
           <ConfigKey>[Shoutcast],enabled</ConfigKey>

@@ -2213,9 +2213,18 @@ WPushButton#RecButton[displayValue="1"],
     image: url(skin:/palemoon/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
-#SkinSettingsToggle[displayValue="0"] {
+#BroadcastButton[displayValue="0"] {
   /* for some reason the alignment isn't rescpected, so the icons
-    have to be sized like available area (76x16px) */
+    have to be sized like available area (button size - margin) */
+  image: url(skin:/palemoon/buttons/btn__broadcast_off.svg) no-repeat left top;
+  }
+  #BroadcastButton[displayValue="1"],
+  #BroadcastButton[displayValue="2"],
+  #BroadcastButton[displayValue="3"] {
+    image: url(skin:/palemoon/buttons/btn__broadcast_on.svg) no-repeat left top;
+  }
+
+#SkinSettingsToggle[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__settings_off.svg) no-repeat left top;
   }
   #SkinSettingsToggle[displayValue="1"] {
