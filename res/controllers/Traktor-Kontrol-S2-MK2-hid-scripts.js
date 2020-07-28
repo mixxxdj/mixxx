@@ -111,8 +111,6 @@ TraktorS2MK2.registerInputPackets = function() {
   // Values in the short message are all buttons, except the jog wheels.
   // An exclamation point indicates a specially-handled function.  Everything else is a standard
   // Mixxx control object name.
-  // "[Channel1]" and "[Channel2]" refer to the left deck or right deck, and may be Channel1 or 3 depending
-  // on the deck switch state.  These are keywords in the HID library.
   
   MessageShort.addControl("[Channel1]", "!top_encoder_press", 0x0D, "B", 0x40, false, this.topEncoderPress);  
   MessageShort.addControl("[Channel1]", "!shift", 0x0B, "B", 0x08, false, this.shift);
