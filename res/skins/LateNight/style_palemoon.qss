@@ -2552,7 +2552,7 @@ WSearchLineEdit {
     /* doesn't catch hover state
     #HorizontalSplitter::handle:hover,
     #HorizontalSplitter::handle[hover="true"] */ {
-      image: url(skin:/palemoon/style/splitter_handle_horizontal_checked.svg);
+      image: url(skin:/palemoon/style/splitter_handle_horizontal_pressed.svg);
     }
 
 /* VerticalSplitter (the splitter itself is vertical)
@@ -2571,7 +2571,7 @@ WSearchLineEdit {
   }
   #LibrarySplitter::handle:pressed,
   #LibrarySplitter::handle:hover {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_checked.svg);
+    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.svg);
   }
 /************ splitters ***********************/
 

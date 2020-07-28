@@ -35,6 +35,7 @@
 #Sampler, #SamplerMini,
 WEffectSelector::checked, #fadeModeCombobox::checked,
 WLibrary,
+#SidebarCoverSplitter,
 #SidebarBox,
 #PreviewDeck,
 #LibExpandBox,
@@ -188,9 +189,9 @@ WSearchLineEdit,
 }
 
 #FxSlotSeparatorV {
-  min-width: 2px;
-  max-width: 2px;
-  image: url(skin:/classic/style/fx_separator.png) repeat center center;
+  min-width: 1px;
+  max-width: 1px;
+  image: url(skin:/classic/style/fx_separator.svg) repeat center center;
   margin: 2px 0px;
 }
 #FxSlotSeparatorH {
@@ -1784,7 +1785,7 @@ WPushButton#SamplerExpand[displayValue="0"],
   image: url(skin:/classic/style/mixxx_logo_small.svg) no-repeat center center;
 }
 #ToolbarSeparator {
-  image: url(skin:/classic/style/toolbar_separator.png) no-repeat center center;
+  image: url(skin:/classic/style/toolbar_separator.svg) no-repeat center center;
   margin: 0px 3px;
 }
 
@@ -2158,14 +2159,14 @@ WSearchLineEdit {
 
 #WaveformSplitter::handle,
 #SidebarCoverSplitter::handle {
-    image: url(skin:/classic/style/splitter_handle_horizontal_unchecked.png); /*
+    image: url(skin:/classic/style/splitter_handle_horizontal.png); /*
     border-top: 1px solid #000; */
   }
   #WaveformSplitter::handle:pressed,
   #WaveformSplitter::handle:hover,
   #SidebarCoverSplitter::handle:pressed,
   #SidebarCoverSplitter::handle:hover {
-    image: url(skin:/classic/style/splitter_handle_horizontal_checked.png);
+    image: url(skin:/classic/style/splitter_handle_horizontal_pressed.png);
   }
   #WaveformSplitter::handle:vertical,
   #SidebarCoverSplitter::handle:vertical {
@@ -2182,12 +2183,12 @@ WSearchLineEdit {
   background-image: url(skin:/classic/style/library_splitter_handle_unchecked.svg);
   background-position: center top;
   background-repeat: no-repeat;  */
-  image: url(skin:/classic/style/splitter_handle_vertical_unchecked.png);
+  image: url(skin:/classic/style/splitter_handle_vertical.png);
   background-color: #1e1e1e;
 }
 #LibrarySplitter::handle:pressed,
 #LibrarySplitter::handle:hover {
-  image: url(skin:/classic/style/splitter_handle_vertical_checked.png);
+  image: url(skin:/classic/style/splitter_handle_vertical_pressed.png);
 }
 #LibrarySplitter::handle:vertical {
   /* 'height' works although it's actually the width of the handle */
