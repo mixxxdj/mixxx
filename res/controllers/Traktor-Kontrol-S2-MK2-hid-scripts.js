@@ -72,7 +72,7 @@ TraktorS2MK2 = new function() {
   this.last_tick_time = [0.0, 0.0];
   this.sync_enabled_time = {};
   
-  this.longPressTimeout = 275; // milliseconds
+  this.longPressTimeoutMilliseconds = 275; // milliseconds
   
   this.effectButtonLongPressTimer = {
     "[EffectRack1_EffectUnit1]": [0, 0, 0, 0],
@@ -945,7 +945,7 @@ TraktorS2MK2.effectFocusButton = function(field) {
       engine.setValue(field.group, "load_preset", 1);
       return;
     }
-    TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeout, function() {
+    TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds, function() {
       TraktorS2MK2.effectFocusChooseModeActive[field.group] = true;
       TraktorS2MK2.effectButtonLEDconnections[field.group].forEach(function(connection) {
         connection.disconnect();
@@ -1030,7 +1030,7 @@ TraktorS2MK2.effectButton = function(field) {
       } else {
         toggle();
         TraktorS2MK2.effectButtonLongPressTimer[effectUnitGroup][buttonNumber] =
-          engine.beginTimer(TraktorS2MK2.longPressTimeout,
+          engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds,
             function() {
               TraktorS2MK2.effectButtonIsLongPressed[effectUnitGroup][buttonNumber] = true;
               TraktorS2MK2.effectButtonLongPressTimer[effectUnitGroup][buttonNumber] = 0;
