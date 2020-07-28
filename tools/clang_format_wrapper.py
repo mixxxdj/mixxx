@@ -93,7 +93,12 @@ def run_clang_format(file_list: List[str]) -> bool:
     out = check_output(command, text=True)
     logger.debug(out)
 
-    return False if out == "clang-format did not modify any files\n" else True
+    if (
+        out == "clang-format did not modify any files\n"
+        or out == "no modified files to format\n"
+    ):
+        return False
+    return True
 
 
 def main():
