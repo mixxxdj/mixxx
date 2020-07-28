@@ -1086,31 +1086,38 @@ TraktorS2MK2.effectButton = function(field) {
   }
 }
 
-TraktorS2MK2.topEncoder = function(field) {
-  // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
-  prev_pregain = TraktorS2MK2.previous_pregain[field.group];
-  TraktorS2MK2.previous_pregain[field.group] = field.value;
-  var delta = 0;
-  if (prev_pregain === 15 && field.value === 0) {
-    delta = 0.05;
-  } else if (prev_pregain === 0 && field.value === 15) {
-    delta = -0.05;
-  } else if (field.value > prev_pregain) {
-    delta = 0.05;
+/// return value 1 === right turn
+/// return value -1 === left turn
+TraktorS2MK2.encoderDelta = function(newValue, oldValue) {
+  var direction = 0;
+  var min = 0;
+  var max = 15;
+  if (oldValue === max && newValue === min) {
+    direction = 1;
+  } else if (oldValue === min && newValue === max) {
+    direction = -1;
+  } else if (newValue > oldValue) {
+    direction = 1;
   } else {
-    delta = -0.05;
+    direction = -1;
   }
+  return direction;
+}
+
+TraktorS2MK2.topEncoder = function(field) {
+  var delta = 0.03333 * TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previous_pregain[group]);
+  TraktorS2MK2.previous_pregain[field.group] = field.value;
 
   if (TraktorS2MK2.shift_pressed[field.group]) {
-    var cur_pregain = engine.getValue(group, "pregain");
-    engine.setValue(group, "pregain", cur_pregain + delta);
+    var cur_pregain = engine.getParameter(group, "pregain");
+    engine.setParameter(group, "pregain", cur_pregain + delta);
   } else {
     var quickeffect_group = "[QuickEffectRack1_" + field.group + "]";
     if (TraktorS2MK2.top_encoder_pressed[field.group]) {
       script.triggerControl(quickeffect_group, delta > 0 ? "next_chain" : "prev_chain");
     } else {
-      var cur_quickeffect = engine.getValue(quickeffect_group, "super1");
-      engine.setParameter(quickeffect_group, "super1", cur_quickeffect + delta / 1.5);
+      var cur_quickeffect = engine.getParameter(quickeffect_group, "super1");
+      engine.setParameter(quickeffect_group, "super1", cur_quickeffect + delta);
     }
   }
 }
@@ -1129,21 +1136,10 @@ TraktorS2MK2.topEncoderPress = function(field) {
 }
 
 TraktorS2MK2.leftEncoder = function(field) {
-  // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
   var splitted = field.id.split(".");
-  var group = splitted[0]
-  previous_leftencoder = TraktorS2MK2.previous_leftencoder[group];
+  var group = splitted[0];
+  var delta = TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previous_leftencoder[group]);
   TraktorS2MK2.previous_leftencoder[group] = field.value;
-  var delta = 0;
-  if (previous_leftencoder === 15 && field.value === 0) {
-    delta = 1;
-  } else if (previous_leftencoder === 0 && field.value === 15) {
-    delta = -1;
-  } else if (field.value > previous_leftencoder) {
-    delta = 1;
-  } else {
-    delta = -1;
-  }
 
   if (TraktorS2MK2.shift_pressed[group]) {
     if (delta == 1) {
@@ -1182,18 +1178,8 @@ TraktorS2MK2.leftEncoderPress = function(field) {
 TraktorS2MK2.rightEncoder = function(field) {
   var splitted = field.id.split(".");
   var group = splitted[0]
-  previous_rightencoder = TraktorS2MK2.previous_leftencoder[group];
-  TraktorS2MK2.previous_leftencoder[group] = field.value;
-  var delta = 0;
-  if (previous_rightencoder === 15 && field.value === 0) {
-    delta = 1;
-  } else if (previous_rightencoder === 0 && field.value === 15) {
-    delta = -1;
-  } else if (field.value > previous_rightencoder) {
-    delta = 1;
-  } else {
-    delta = -1;
-  }
+  var delta = TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previous_rightencoder[group]);
+  TraktorS2MK2.previous_rightencoder[group] = field.value;
 
   if (TraktorS2MK2.shift_pressed[group]) {
     if (delta == 1) {
