@@ -13,7 +13,13 @@
 // 1. "REWIND": seeks to the very start of the track.
 // 2. "REVERSEROLL": performs a temporary reverse or "censor" effect, where the track
 //    is momentarily played in reverse until the button is released.
-ShiftCueButtonAction = "REWIND";
+var ShiftCueButtonAction = "REWIND";
+
+// Set the brightness of button LEDs which are off and on. This uses a scale from 0 to 0x7f (127).
+// If you don't have the optional power adapter and are using the controller with USB bus power,
+// 0x09 is probably too dim to notice.
+var ButtonBrightnessOff = 0x09;
+var ButtonBrightnessOn = 0x7f;
 
 TraktorS2MK2 = new function() {
   this.controller = new HIDController();
@@ -353,20 +359,20 @@ TraktorS2MK2.registerOutputPackets = function() {
   TraktorS2MK2.linkChannelOutput("[Channel2]", "pfl", TraktorS2MK2.outputChannelCallback);
   TraktorS2MK2.linkChannelOutput("[Channel1]", "track_loaded", TraktorS2MK2.outputChannelCallback);
   TraktorS2MK2.linkChannelOutput("[Channel2]", "track_loaded", TraktorS2MK2.outputChannelCallback);
-  TraktorS2MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS2MK2.outputChannelCallback);
-  TraktorS2MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS2MK2.outputChannelCallback);
+  TraktorS2MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
+  TraktorS2MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
   TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
   TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
   TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", TraktorS2MK2.outputChannelCallback);
   TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", TraktorS2MK2.outputChannelCallback);
 
-  engine.makeConnection("[EffectRack1_EffectUnit1]", "focused_effect", TraktorS2MK2.onFocusedEffectChange);
-  engine.makeConnection("[EffectRack1_EffectUnit2]", "focused_effect", TraktorS2MK2.onFocusedEffectChange);  
+  engine.makeConnection("[EffectRack1_EffectUnit1]", "focused_effect", TraktorS2MK2.onFocusedEffectChange).trigger();
+  engine.makeConnection("[EffectRack1_EffectUnit2]", "focused_effect", TraktorS2MK2.onFocusedEffectChange).trigger();
   TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit1]");
   TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit2]");
   
-  engine.makeConnection("[Channel1]", "VuMeter", TraktorS2MK2.onVuMeterChanged);
-  engine.makeConnection("[Channel2]", "VuMeter", TraktorS2MK2.onVuMeterChanged);
+  engine.makeConnection("[Channel1]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
+  engine.makeConnection("[Channel2]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
 
   engine.makeConnection("[Channel1]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);
   engine.makeConnection("[Channel2]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);
@@ -406,8 +412,11 @@ TraktorS2MK2.lightDeck = function(group) {
   for (var packet_name in this.controller.OutputPackets) {
     packet = this.controller.OutputPackets[packet_name];
     TraktorS2MK2.lightGroup(packet, group, group);
-    // Shift is a weird key because there's no CO that it is actually associated with.
+    // These outputs show state managed by this script and do not react to ControlObject changes,
+    // so manually set them here.
     TraktorS2MK2.outputCallback(0, group, "!shift");
+    TraktorS2MK2.outputCallback(0, group, "!flux_button");
+    TraktorS2MK2.outputCallback(0, group, "!remix_button");
   }
 
   this.batching_LED_update = false;
@@ -437,7 +446,7 @@ TraktorS2MK2.shutdown = function() {
     data[i] = 0;
   }
   // Leave USB plug indicator light on.
-  data[0x1C] = 0x7f;
+  data[0x1C] = ButtonBrightnessOn;
   controller.send(data, data.length, 0x80);
   
   for (i = 0; i < 33; i++) {
@@ -487,8 +496,10 @@ TraktorS2MK2.toggleButton = function(field) {
 
 TraktorS2MK2.shift = function(field) {
   var group = field.id.split(".")[0];
-  TraktorS2MK2.shift_pressed[group] = field.value;
-  TraktorS2MK2.outputCallback(field.value, field.group, "!shift");
+  TraktorS2MK2.shift_pressed[group] = field.value > 0;
+  TraktorS2MK2.controller.setOutput(group, "!shift",
+    TraktorS2MK2.shift_pressed[group] ? ButtonBrightnessOn : ButtonBrightnessOff, field.group, "!shift",
+    !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.loadTrackButton = function(field) {
@@ -710,10 +721,10 @@ var intro_outro_keys = [
 ];
 
 var intro_outro_colors = [
-  {red: 0,   green: 255, blue: 0},
-  {red: 0,   green: 255, blue: 0},
-  {red: 255, green: 0,   blue: 0},
-  {red: 255, green: 0,   blue: 0}
+  {red: 0, green: 0x7f, blue: 0},
+  {red: 0, green: 0x7f, blue: 0},
+  {red: 0x7f, green: 0, blue: 0},
+  {red: 0x7f, green: 0, blue: 0}
 ];
 
 TraktorS2MK2.setPadMode = function(group, padMode) {
@@ -754,12 +765,14 @@ TraktorS2MK2.setPadMode = function(group, padMode) {
           if (engine.getValue(samplerGroup, "track_loaded")) {
             if (engine.getValue(samplerGroup, "play") === 1) {
               if (engine.getValue(samplerGroup, "repeat") === 1) {
-                TraktorS2MK2.sendPadColor(deckGroup, padNumber, {red: 255, green: 255, blue: 0});
+                TraktorS2MK2.sendPadColor(deckGroup, padNumber,
+                  {red: 0x7f, green: 0x7f, blue: 0});
               } else {
-                TraktorS2MK2.sendPadColor(deckGroup, padNumber, {red: 0xAF, green: 0x00, blue: 0xCC});
+                TraktorS2MK2.sendPadColor(deckGroup, padNumber,
+                  {red: 0xAF, green: 0x00, blue: 0xCC});
               }
             } else {
-              TraktorS2MK2.sendPadColor(deckGroup, padNumber, {red: 255, green: 255, blue: 255});
+              TraktorS2MK2.sendPadColor(deckGroup, padNumber, {red: 0x7f, green: 0x7f, blue: 0x7f});
             }
           } else {
             TraktorS2MK2.sendPadColor(deckGroup, padNumber, {red: 0, green: 0, blue: 0});
@@ -843,11 +856,11 @@ TraktorS2MK2.samplerModeButton = function(field) {
   var padMode = TraktorS2MK2.current_pad_mode[field.group];
   if (padMode !== TraktorS2MK2.pad_modes.sampler) {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.sampler);
-    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x7f, false);
-    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x00, !TraktorS2MK2.batching_LED_update);
+    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", ButtonBrightnessOn, false);
+    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
   } else {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.hotcue);
-    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x00, !TraktorS2MK2.batching_LED_update);
+    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
   }
 }
 
@@ -858,11 +871,11 @@ TraktorS2MK2.introOutroModeButton = function(field) {
   var padMode = TraktorS2MK2.current_pad_mode[field.group];
   if (padMode !== TraktorS2MK2.pad_modes.intro_outro) {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.intro_outro);
-    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x7f, false);
-    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", 0x00, !TraktorS2MK2.batching_LED_update);
+    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", ButtonBrightnessOn, false);
+    TraktorS2MK2.controller.setOutput(field.group, "!remix_button", ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
   } else {
     TraktorS2MK2.setPadMode(field.group, TraktorS2MK2.pad_modes.hotcue);
-    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", 0x00, !TraktorS2MK2.batching_LED_update);
+    TraktorS2MK2.controller.setOutput(field.group, "!flux_button", ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
   }
 }
 
@@ -878,7 +891,7 @@ TraktorS2MK2.loopOutButton = function(field) {
 
 TraktorS2MK2.samplerActivateButton = function(field) {
   if (field.value > 0) {
-    TraktorS2Mk2.controller.samplers_active[field.group] = !TraktorS2Mk2.controller.samplers_active[field.group];
+    TraktorS2MK2.controller.samplers_active[field.group] = !TraktorS2MK2.controller.samplers_active[field.group];
   }
 }
 
@@ -891,7 +904,7 @@ TraktorS2MK2.connectEffectButtonLEDs = function(effectUnitGroup) {
   var makeButtonLEDcallback = function(effectNumber) {
     return function(value, group, control) {
       TraktorS2MK2.controller.setOutput(effectUnitGroup, "!effectbutton" + effectNumber,
-        value === 1 ? 0x7f : 0, !TraktorS2MK2.batching_LED_update);
+        value === 1 ? ButtonBrightnessOn : ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
     };
   };
   
@@ -932,7 +945,7 @@ TraktorS2MK2.onShowParametersChange = function(value, group, control) {
 }
 
 TraktorS2MK2.onFocusedEffectChange = function(value, group, control) {
-  TraktorS2MK2.controller.setOutput(group, "!effect_focus_button", value > 0 ? 0x7f : 0, !TraktorS2MK2.batching_LED_update);
+  TraktorS2MK2.controller.setOutput(group, "!effect_focus_button", value > 0 ? ButtonBrightnessOn : ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
   if (value === 0) {
     for (var i = 1; i < 3; i++) {
       // The previously focused effect is not available here, so iterate over all effects' parameter knobs.
@@ -963,7 +976,7 @@ TraktorS2MK2.effectFocusButton = function(field) {
       var makeButtonLEDcallback = function(buttonNumber) {
           return function(value, group, control) {
             TraktorS2MK2.controller.setOutput(group, "!effectbutton" + buttonNumber,
-              value === buttonNumber ? 0x7f : 0, !TraktorS2MK2.batching_LED_update);
+              value === buttonNumber ? ButtonBrightnessOn : ButtonBrightnessOff, !TraktorS2MK2.batching_LED_update);
           };
       };
       TraktorS2MK2.batching_LED_update = true;
@@ -1261,7 +1274,7 @@ TraktorS2MK2.outputChannelCallbackDark = function(value,group,key) {
 }
 
 TraktorS2MK2.outputCallback = function(value,group,key) {
-  var led_value = 0x09;
+  var led_value = ButtonBrightnessOff;
   if (value) {
     led_value = 0x7F;
   }
@@ -1269,7 +1282,7 @@ TraktorS2MK2.outputCallback = function(value,group,key) {
 }
 
 TraktorS2MK2.outputCallbackLoop = function(value,group,key) {
-  var led_value = 0x09;
+  var led_value = ButtonBrightnessOff;
   if (engine.getValue(group, "loop_enabled")) {
     led_value = 0x7F;
   }
@@ -1296,9 +1309,18 @@ TraktorS2MK2.pflButton = function(field) {
 
 TraktorS2MK2.sendPadColor = function(group, padNumber, color) {
   var padKey = "!pad_" + padNumber + "_";
-  TraktorS2MK2.controller.setOutput(group, padKey + "R", color.red, false);
-  TraktorS2MK2.controller.setOutput(group, padKey + "G", color.green, false);
-  TraktorS2MK2.controller.setOutput(group, padKey + "B", color.blue, !TraktorS2MK2.batching_LED_update);
+  var ColorBrightnessScaler = ButtonBrightnessOn / 0x7f;
+  var red = color.red * ColorBrightnessScaler;
+  var green = color.green * ColorBrightnessScaler;
+  var blue = color.blue * ColorBrightnessScaler;
+  if (color.red === 0 && color.green === 0 && color.blue === 0) {
+      red = ButtonBrightnessOff;
+      green = ButtonBrightnessOff;
+      blue = ButtonBrightnessOff;
+  }
+  TraktorS2MK2.controller.setOutput(group, padKey + "R", red, false);
+  TraktorS2MK2.controller.setOutput(group, padKey + "G", green, false);
+  TraktorS2MK2.controller.setOutput(group, padKey + "B", blue, !TraktorS2MK2.batching_LED_update);
 }
 
 TraktorS2MK2.outputHotcueCallback = function(value, group, key) {
@@ -1306,6 +1328,11 @@ TraktorS2MK2.outputHotcueCallback = function(value, group, key) {
   var color;
   if (engine.getValue(group, 'hotcue_' + hotcueNumber + '_enabled')) {
     color = colorCodeToObject(engine.getValue(group, 'hotcue_' + hotcueNumber + '_color'));
+    // hotcue_X_color reports red, green, and blue on a 0-255 scale, but the controller LEDs
+    // only support values 0 - 127.
+    color.red /= 2;
+    color.green /= 2;
+    color.blue /= 2;
   } else {
     color = {red: 0, green: 0, blue: 0};
   }
