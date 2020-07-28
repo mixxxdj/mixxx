@@ -834,6 +834,21 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 generatedTimeSignatureMarker);
     }
 
+    // Clear redundant markers
+    QList<track::io::TimeSignatureMarker> minimalTimeSignatureMarkers;
+    for (const auto& timeSignatureMarker : m_beatsProto.time_signature_markers()) {
+        if (minimalTimeSignatureMarkers.empty() ||
+                TimeSignature(minimalTimeSignatureMarkers.constLast()
+                                      .time_signature()) !=
+                        TimeSignature(timeSignatureMarker.time_signature())) {
+            minimalTimeSignatureMarkers.append(timeSignatureMarker);
+        }
+    }
+    m_beatsProto.clear_time_signature_markers();
+    for (const auto& minimalTimeSignatureMarker : minimalTimeSignatureMarkers) {
+        m_beatsProto.add_time_signature_markers()->CopyFrom(minimalTimeSignatureMarker);
+    }
+
     m_beats.clear();
     Beat firstBeat(FramePos(m_beatsProto.first_frame_position()),
             Beat::DOWNBEAT,
