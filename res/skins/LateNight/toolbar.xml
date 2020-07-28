@@ -26,7 +26,7 @@
         <Children>
 
           <Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">toggle_waveforms</SetVariable>
+            <SetVariable name="TooltipId">show_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">80f,20f</SetVariable>
             <SetVariable name="state_0_text">WAVEFORMS</SetVariable>
@@ -94,7 +94,7 @@
         <Children>
 
           <Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">FIXME_waveforms</SetVariable>
+            <SetVariable name="TooltipId">show_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">80f,20f</SetVariable>
             <SetVariable name="state_0_text">DECKS</SetVariable>
@@ -103,7 +103,7 @@
           </Template>
 
           <Template src="skin:/controls/button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_4decks</SetVariable>
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">52f,20f</SetVariable>
             <SetVariable name="state_0_text">4 DECKS</SetVariable>
