@@ -896,12 +896,6 @@ TraktorS2MK2.loopOutButton = function(field) {
     engine.setValue(group, "loop_out", field.value);
 };
 
-TraktorS2MK2.samplerActivateButton = function(field) {
-    if (field.value > 0) {
-        TraktorS2MK2.controller.samplers_active[field.group] = !TraktorS2MK2.controller.samplers_active[field.group];
-    }
-};
-
 // Refer to https://github.com/mixxxdj/mixxx/wiki/standard-effects-mapping for how to use this.
 TraktorS2MK2.connectEffectButtonLEDs = function(effectUnitGroup) {
     TraktorS2MK2.effectButtonLEDconnections[effectUnitGroup].forEach(function(connection) {
