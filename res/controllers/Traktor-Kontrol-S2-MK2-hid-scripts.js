@@ -431,6 +431,24 @@ TraktorS2MK2.lightDeck = function(group) {
 };
 
 TraktorS2MK2.init = function() {
+    if (!(ShiftCueButtonAction === "REWIND" || ShiftCueButtonAction === "REVERSEROLL")) {
+        throw new Error("ShiftCueButtonAction must be either \"REWIND\" or \"REVERSEROLL\"\n" +
+            "ShiftCueButtonAction is: " + ShiftCueButtonAction);
+    }
+    if (typeof ButtonBrightnessOff !== "number" || ButtonBrightnessOff < 0 || ButtonBrightnessOff > 0x7f) {
+        throw new Error("ButtonBrightnessOff must be a number between 0 and 0x7f (127).\n" +
+            "ButtonBrightnessOff is: " + ButtonBrightnessOff);
+    }
+    if (typeof ButtonBrightnessOff !== "number" || ButtonBrightnessOff < 0 || ButtonBrightnessOff > 0x7f) {
+        throw new Error("ButtonBrightnessOn must be a number between 0 and 0x7f (127).\n" +
+            "ButtonBrightnessOn is: " + ButtonBrightnessOn);
+    }
+    if (ButtonBrightnessOn < ButtonBrightnessOff) {
+        throw new Error("ButtonBrightnessOn must be greater than ButtonBrightnessOff.\n" +
+            "ButtonBrightnessOn is: " + ButtonBrightnessOn + "\n" +
+            "ButtonBrightnessOff is: " + ButtonBrightnessOff);
+    }
+
     TraktorS2MK2.registerInputPackets();
     TraktorS2MK2.registerOutputPackets();
     //   var data = [0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x00, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f];
@@ -557,9 +575,6 @@ TraktorS2MK2.cueButton = function(field) {
             engine.setValue(field.group, "start_stop", 1);
         } else if (ShiftCueButtonAction === "REVERSEROLL") {
             engine.setValue(field.group, "reverseroll", field.value);
-        } else {
-            print ("Traktor S2 Mk2 WARNING: Invalid ShiftCueButtonAction picked.  Must be either REWIND " +
-           "or REVERSEROLL");
         }
     } else {
         engine.setValue(field.group, "cue_default", field.value);
