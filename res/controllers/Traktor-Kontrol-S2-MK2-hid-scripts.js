@@ -8,6 +8,7 @@
 /*      but feel free to tweak this to your heart's content!    */
 /****************************************************************/
 
+
 // ==== Friendly User Configuration ====
 // The Cue button, when Shift is also held, can have two possible functions:
 // 1. "REWIND": seeks to the very start of the track.
@@ -21,6 +22,8 @@ var ShiftCueButtonAction = "REWIND";
 var ButtonBrightnessOff = 0x01;
 var ButtonBrightnessOn = 0x7f;
 
+// eslint definitions
+/* global controller, HIDController, HIDPacket */
 var TraktorS2MK2 = new function() {
     this.controller = new HIDController();
 
