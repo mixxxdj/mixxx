@@ -1,5 +1,3 @@
-// playermanager.cpp
-// Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 #include "mixer/playermanager.h"
 
 #include <QMutexLocker>
@@ -23,7 +21,6 @@
 #include "util/defs.h"
 #include "util/logger.h"
 #include "util/sleepableqthread.h"
-#include "util/stat.h"
 
 namespace {
 
@@ -379,12 +376,16 @@ void PlayerManager::addDeckInner() {
             &EngineDeck::noPassthroughInputConfigured,
             this,
             &PlayerManager::noDeckPassthroughInputConfigured);
-    connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
-            this, SIGNAL(noVinylControlInputConfigured()));
+    connect(pDeck,
+            &Deck::noVinylControlInputConfigured,
+            this,
+            &PlayerManager::noVinylControlInputConfigured);
 
     if (m_pTrackAnalysisScheduler) {
-        connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotAnalyzeTrack(TrackPointer)));
+        connect(pDeck,
+                &Deck::newTrackLoaded,
+                this,
+                &PlayerManager::slotAnalyzeTrack);
     }
 
     m_players[group] = pDeck;
@@ -412,7 +413,8 @@ void PlayerManager::addDeckInner() {
     pDeck->setupEqControls();
 
     // Setup quick effect rack for this deck.
-    QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
+    QuickEffectRackPointer pQuickEffectRack =
+            m_pEffectsManager->getQuickEffectRack(0);
     VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
         return;
     }
@@ -421,7 +423,7 @@ void PlayerManager::addDeckInner() {
 
 void PlayerManager::loadSamplers() {
     m_pSamplerBank->loadSamplerBankFromPath(
-        m_pConfig->getSettingsPath() + "/samplers.xml");
+            m_pConfig->getSettingsPath() + "/samplers.xml");
 }
 
 void PlayerManager::addSampler() {
@@ -444,8 +446,10 @@ void PlayerManager::addSamplerInner() {
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
             m_pEffectsManager, m_pVisualsManager, orientation, group);
     if (m_pTrackAnalysisScheduler) {
-        connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotAnalyzeTrack(TrackPointer)));
+        connect(pSampler,
+                &Sampler::newTrackLoaded,
+                this,
+                &PlayerManager::slotAnalyzeTrack);
     }
 
     m_players[group] = pSampler;
@@ -470,8 +474,10 @@ void PlayerManager::addPreviewDeckInner() {
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
             m_pEffectsManager, m_pVisualsManager, orientation, group);
     if (m_pTrackAnalysisScheduler) {
-        connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotAnalyzeTrack(TrackPointer)));
+        connect(pPreviewDeck,
+                &PreviewDeck::newTrackLoaded,
+                this,
+                &PlayerManager::slotAnalyzeTrack);
     }
 
     m_players[group] = pPreviewDeck;
@@ -487,10 +493,16 @@ void PlayerManager::addMicrophoneInner() {
     // Do not lock m_mutex here.
     int index = m_microphones.count();
     QString group = groupForMicrophone(index);
-    Microphone* pMicrophone = new Microphone(this, group, index, m_pSoundManager,
-                                             m_pEngine, m_pEffectsManager);
-    connect(pMicrophone, SIGNAL(noMicrophoneInputConfigured()),
-            this, SIGNAL(noMicrophoneInputConfigured()));
+    Microphone* pMicrophone = new Microphone(this,
+            group,
+            index,
+            m_pSoundManager,
+            m_pEngine,
+            m_pEffectsManager);
+    connect(pMicrophone,
+            &Microphone::noMicrophoneInputConfigured,
+            this,
+            &PlayerManager::noMicrophoneInputConfigured);
     m_microphones.append(pMicrophone);
 }
 
@@ -504,10 +516,11 @@ void PlayerManager::addAuxiliaryInner() {
     int index = m_auxiliaries.count();
     QString group = groupForAuxiliary(index);
 
-    Auxiliary* pAuxiliary = new Auxiliary(this, group, index, m_pSoundManager,
-                                          m_pEngine, m_pEffectsManager);
-    connect(pAuxiliary, SIGNAL(noAuxiliaryInputConfigured()),
-            this, SIGNAL(noAuxiliaryInputConfigured()));
+    auto pAuxiliary = new Auxiliary(this, group, index, m_pSoundManager, m_pEngine, m_pEffectsManager);
+    connect(pAuxiliary,
+            &Auxiliary::noAuxiliaryInputConfigured,
+            this,
+            &PlayerManager::noAuxiliaryInputConfigured);
     m_auxiliaries.append(pAuxiliary);
 }
 
