@@ -1220,6 +1220,9 @@ TraktorS2MK2.browseEncoder = function(field) {
     var delta = TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previousBrowse);
     TraktorS2MK2.previousBrowse = field.value;
 
+    if (TraktorS2MK2.shiftPressed["[Channel1]"] || TraktorS2MK2.shiftPressed["[Channel2]"]) {
+        delta *= 5;
+    }
     engine.setValue("[Playlist]", "SelectTrackKnob", delta);
 };
 
