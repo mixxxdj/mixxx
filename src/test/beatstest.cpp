@@ -444,4 +444,15 @@ TEST_F(BeatsTest, FindClosest) {
     }
 }
 
+TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
+    // Let's test global BPM first
+    auto oldBpm = m_pBeats1->getBpm();
+    auto oldTimeSignature = m_pBeats1->getBeatAtIndex(0).getTimeSignature();
+    m_pBeats1->setSignature(TimeSignature(oldTimeSignature.getBeatsPerBar(),
+                                    oldTimeSignature.getNoteValue() * 2),
+            0);
+    auto newBpm = m_pBeats1->getBpm();
+
+    ASSERT_EQ(oldBpm, newBpm);
+}
 } // namespace
