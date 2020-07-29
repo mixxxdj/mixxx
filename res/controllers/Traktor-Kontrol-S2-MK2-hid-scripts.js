@@ -18,7 +18,7 @@ var ShiftCueButtonAction = "REWIND";
 // Set the brightness of button LEDs which are off and on. This uses a scale from 0 to 0x7f (127).
 // If you don't have the optional power adapter and are using the controller with USB bus power,
 // 0x09 is probably too dim to notice.
-var ButtonBrightnessOff = 0x09;
+var ButtonBrightnessOff = 0x01;
 var ButtonBrightnessOn = 0x7f;
 
 TraktorS2MK2 = new function() {
