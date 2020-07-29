@@ -361,11 +361,11 @@ HIDPacket.prototype.addControl = function(group, name, offset, pack, bitmask, is
         bitvector = field.value
         bitvector.addBitMask(group, name, bitmask)
         if (callback !== undefined) {
-            if (typeof callback === "function") {
-                this.setCallback(group, name, callback);
-            } else {
+            if (typeof callback !== "function") {
                 HIDDebug("ERROR callback provided for " + group + "." + name + " is not a function.");
+                return;
             }
+            this.setCallback(group, name, callback);
         }
         return
     }
@@ -426,11 +426,11 @@ HIDPacket.prototype.addControl = function(group, name, offset, pack, bitmask, is
     control_group[field.id] = field
     
     if (callback !== undefined) {
-        if (typeof callback === "function") {
-            this.setCallback(group, name, callback);
-        } else {
+        if (typeof callback !== "function") {
             HIDDebug("ERROR callback provided for " + group + "." + name + " is not a function.");
+            return;
         }
+        this.setCallback(group, name, callback);
     }
 }
 
