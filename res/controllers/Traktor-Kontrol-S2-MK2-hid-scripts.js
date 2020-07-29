@@ -1101,7 +1101,7 @@ TraktorS2MK2.effectButton = function(field) {
 
 /// return value 1 === right turn
 /// return value -1 === left turn
-TraktorS2MK2.encoderDelta = function(newValue, oldValue) {
+TraktorS2MK2.encoderDirection = function(newValue, oldValue) {
     var direction = 0;
     var min = 0;
     var max = 15;
@@ -1118,7 +1118,7 @@ TraktorS2MK2.encoderDelta = function(newValue, oldValue) {
 };
 
 TraktorS2MK2.topEncoder = function(field) {
-    var delta = 0.03333 * TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previousPregain[field.group]);
+    var delta = 0.03333 * TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousPregain[field.group]);
     TraktorS2MK2.previousPregain[field.group] = field.value;
 
     if (TraktorS2MK2.shiftPressed[field.group]) {
@@ -1151,7 +1151,7 @@ TraktorS2MK2.topEncoderPress = function(field) {
 TraktorS2MK2.leftEncoder = function(field) {
     var splitted = field.id.split(".");
     var group = splitted[0];
-    var delta = TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previousLeftEncoder[group]);
+    var delta = TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousLeftEncoder[group]);
     TraktorS2MK2.previousLeftEncoder[group] = field.value;
 
     if (TraktorS2MK2.shiftPressed[group]) {
@@ -1191,7 +1191,7 @@ TraktorS2MK2.leftEncoderPress = function(field) {
 TraktorS2MK2.rightEncoder = function(field) {
     var splitted = field.id.split(".");
     var group = splitted[0];
-    var delta = TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previousRightEncoder[group]);
+    var delta = TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousRightEncoder[group]);
     TraktorS2MK2.previousRightEncoder[group] = field.value;
 
     if (TraktorS2MK2.shiftPressed[group]) {
@@ -1235,7 +1235,7 @@ TraktorS2MK2.rightEncoderPress = function(field) {
 };
 
 TraktorS2MK2.browseEncoder = function(field) {
-    var delta = TraktorS2MK2.encoderDelta(field.value, TraktorS2MK2.previousBrowse);
+    var delta = TraktorS2MK2.encoderDirection(field.value, TraktorS2MK2.previousBrowse);
     TraktorS2MK2.previousBrowse = field.value;
 
     if (TraktorS2MK2.shiftPressed["[Channel1]"] || TraktorS2MK2.shiftPressed["[Channel2]"]) {
