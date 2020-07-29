@@ -363,15 +363,15 @@ void PlayerManager::addDeckInner() {
         return;
     }
 
-    int number = m_decks.count() + 1;
+    int deckIndex = m_decks.count();
 
-    EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
-    if (number % 2 == 0) {
-        orientation = EngineChannel::RIGHT;
-    }
-
-    Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
-            m_pVisualsManager, orientation, group);
+    Deck* pDeck = new Deck(this,
+            m_pConfig,
+            m_pEngine,
+            m_pEffectsManager,
+            m_pVisualsManager,
+            deckIndex % 2 == 1 ? EngineChannel::RIGHT : EngineChannel::LEFT,
+            group);
     connect(pDeck->getEngineDeck(),
             &EngineDeck::noPassthroughInputConfigured,
             this,
@@ -391,14 +391,14 @@ void PlayerManager::addDeckInner() {
     m_players[group] = pDeck;
     m_decks.append(pDeck);
 
-    // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
+    // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, 2, number - 1), m_pEngine);
+            AudioOutput(AudioOutput::DECK, 0, 2, deckIndex), m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, number - 1), pEngineDeck);
+            AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
 
     // Setup equalizer rack for this deck.
     EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
@@ -534,10 +534,9 @@ BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
     QMutexLocker locker(&m_mutex);
-    if (deck < 1 || deck > numDecks()) {
-        kLogger.warning() << "Warning getDeck() called with invalid index: "
-                   << deck;
-        return NULL;
+    VERIFY_OR_DEBUG_ASSERT(deck > 0 && deck <= numDecks()) {
+        qWarning() << "getDeck() called with invalid number:" << deck;
+        return nullptr;
     }
     return m_decks[deck - 1];
 }
