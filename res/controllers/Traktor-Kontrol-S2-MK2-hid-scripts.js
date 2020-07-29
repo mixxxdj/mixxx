@@ -1355,7 +1355,7 @@ TraktorS2MK2.onVuMeterChanged = function(value, group, _key) {
     var partialIllum = (scaledValue - fullIllumCount) * 0x7F;
 
     for (var i = 0; i <= 3; i++) {
-        var key = "!" + "VuMeter" + i;
+        var key = "!VuMeter" + i;
         if (i < fullIllumCount) {
             // Don't update lights until they're all done, so the last term is false.
             TraktorS2MK2.controller.setOutput(group, key, 0x7F, false);
