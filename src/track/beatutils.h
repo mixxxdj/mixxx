@@ -83,6 +83,8 @@ class BeatUtils {
         QMap<double, int>* filteredFrequencyTable);
     static QMap<int, double> findTempoChanges(
             QMap<double, int> tempoFrequency, QList<double> tempoList);
+    static void RemoveSmallArrhythmic(QVector<double>& rawBeats, int sampleRate,
+            QMap<int, double> &stableTemposByPosition);
     static QVector<double> calculateFixedTempoBeatMap(
         const QVector<double> &rawbeats, const int sampleRate, const double globalBpm);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(

@@ -7,6 +7,28 @@
 #include "track/beatstats.h"
 #include "util/fpclassify.h"
 
+void MovingMode::update(double newValue, double oldValue) {
+    m_tempoFrequency[newValue] += 1;
+    if (!util_isnan(oldValue)) {
+        m_tempoFrequency[oldValue] -= 1;
+    }
+}
+// this is an incomplete implementation that do NOT
+// handle cases where the mode is not unique.
+double MovingMode::compute() {
+    QMapIterator<double,  int> tempo(m_tempoFrequency);
+    int max = 0;
+    double mode;
+    while (tempo.hasNext()) {
+        tempo.next();
+        if (max < tempo.value()) {
+            mode = tempo.key();
+            max = tempo.value();
+        }
+    }
+    return mode;
+}
+
 void MovingMedian::update(double newValue, double oldValue) {
     auto insertPosition = std::lower_bound(m_sortedValues.begin(), m_sortedValues.end(), newValue);
     m_sortedValues.insert(insertPosition, newValue);

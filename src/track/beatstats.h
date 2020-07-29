@@ -59,3 +59,13 @@ class MovingMedian : public WindowedStatistics {
               : WindowedStatistics(period) {};
       ~MovingMedian() = default;
 };
+
+class MovingMode : public WindowedStatistics {
+    QMap<double, int> m_tempoFrequency;
+    void update(double, double) override;
+    double compute() override;
+    public:
+      MovingMode(int period)
+              : WindowedStatistics(period) {};
+      ~MovingMode() = default;
+};
