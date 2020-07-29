@@ -208,10 +208,10 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x23, "H", null, false, this.effectKnob);
     MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x25, "H", null, false, this.effectKnob);
 
-    for (var i = 1; i < 3; i++) {
+    for (var i = 1; i <= 2; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
         engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "meta", true);
-        for (var j = 1; j < 3; j++) {
+        for (var j = 1; j <= 2; j++) {
             engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "parameter" + j, true);
             engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "parameter" + j, true);
         }
@@ -262,7 +262,7 @@ TraktorS2MK2.registerOutputPackets = function() {
         "[Channel2]": 0x06
     };
     for (var ch in VuOffsets) {
-        for (var i = 0; i < 0x04; i++) {
+        for (var i = 0; i <= 0x03; i++) {
             OutputTop.addOutput(ch, "!" + "VuMeter" + i, VuOffsets[ch] + i, "B");
         }
     }
@@ -463,14 +463,14 @@ TraktorS2MK2.init = function() {
 
 TraktorS2MK2.shutdown = function() {
     var data = [];
-    for (var i = 0; i < 38; i++) {
+    for (var i = 0; i <= 37; i++) {
         data[i] = 0;
     }
     // Leave USB plug indicator light on.
     data[0x1C] = ButtonBrightnessOn;
     controller.send(data, data.length, 0x80);
 
-    for (i = 0; i < 33; i++) {
+    for (i = 0; i <= 32; i++) {
         data[i] = 0;
     }
     controller.send(data, data.length, 0x81);
@@ -928,7 +928,7 @@ TraktorS2MK2.connectEffectButtonLEDs = function(effectUnitGroup) {
 
     // FIXME: Why do the LEDs flicker?
     TraktorS2MK2.batchingLEDUpdate = true;
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i <= 2; i++) {
         var effectGroup;
         var key;
         if (focusedEffect === 0) {
@@ -967,14 +967,14 @@ TraktorS2MK2.onShowParametersChange = function(value, group, _control) {
 TraktorS2MK2.onFocusedEffectChange = function(value, group, _control) {
     TraktorS2MK2.controller.setOutput(group, "!effect_focus_button", value > 0 ? ButtonBrightnessOn : ButtonBrightnessOff, !TraktorS2MK2.batchingLEDUpdate);
     if (value === 0) {
-        for (var i = 1; i < 3; i++) {
+        for (var i = 1; i <= 2; i++) {
             // The previously focused effect is not available here, so iterate over all effects' parameter knobs.
             for (var j = 1; j < 3; j++) {
                 engine.softTakeoverIgnoreNextValue(group.slice(0, -1) + "_Effect" + i + "]", "parameter" + j);
             }
         }
     } else {
-        for (i = 1; i < 3; i++) {
+        for (i = 1; i <= 2; i++) {
             engine.softTakeoverIgnoreNextValue(group.slice(0, -1) + "_Effect" + i + "]", "meta");
         }
     }
@@ -1001,7 +1001,7 @@ TraktorS2MK2.effectFocusButton = function(field) {
                 };
             };
             TraktorS2MK2.batchingLEDUpdate = true;
-            for (var i = 0; i < 3; i++) {
+            for (var i = 0; i <= 2; i++) {
                 TraktorS2MK2.effectButtonLEDconnections[i] = engine.makeConnection(
                     field.group, "focused_effect", makeButtonLEDcallback(i+1));
                 TraktorS2MK2.effectButtonLEDconnections[i].trigger();
@@ -1354,7 +1354,7 @@ TraktorS2MK2.onVuMeterChanged = function(value, group, _key) {
     // Figure out how much the partially-illuminated segment is illuminated.
     var partialIllum = (scaledValue - fullIllumCount) * 0x7F;
 
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i <= 3; i++) {
         var key = "!" + "VuMeter" + i;
         if (i < fullIllumCount) {
             // Don't update lights until they're all done, so the last term is false.
