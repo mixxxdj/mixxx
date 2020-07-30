@@ -14,6 +14,9 @@
 
 namespace {
 constexpr int kMaxZoomFactorToDisplayBeats = 15;
+inline int opacityPercentageToAlpha(int opacityPercentageOnHundredScale) {
+    return opacityPercentageOnHundredScale * 255.0 / 100;
+}
 }
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -53,10 +56,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_waveformRenderer->getFirstDisplayedPosition();
     const double lastDisplayedPosition =
             m_waveformRenderer->getLastDisplayedPosition();
-
-    // qDebug() << "trackSamples" << trackSamples
-    //         << "firstDisplayedPosition" << firstDisplayedPosition
-    //         << "lastDisplayedPosition" << lastDisplayedPosition;
 
     std::unique_ptr<mixxx::Beats::iterator> it(trackBeats->findBeats(
             mixxx::FramePos(firstDisplayedPosition * trackSamples / 2.0),
@@ -105,6 +104,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 (beat.getType() == mixxx::Beat::BEAT &&
                         m_waveformRenderer->getZoomFactor() <
                                 kMaxZoomFactorToDisplayBeats));
+        waveformBeat->setAlpha(opacityPercentageToAlpha(alpha));
         beatsOnScreen.append(*waveformBeat);
         beatCount++;
 

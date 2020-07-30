@@ -5,23 +5,27 @@
 namespace {
 constexpr int kTriangleEdgeLength = 10;
 constexpr int kClickableLinePaddingPixels = 5;
+const QColor downbeatTriangleFillBaseColor = Qt::red;
 } // namespace
 
 WaveformBeat::WaveformBeat()
-        : m_orientation(Qt::Horizontal),
+        : m_beat(mixxx::FramePos(0)),
+          m_orientation(Qt::Horizontal),
+          m_iAlpha(255),
           m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS),
-          m_beat(mixxx::FramePos(0)),
           m_bVisible(true) {
 }
 
 void WaveformBeat::draw(QPainter* painter) const {
     if (m_bVisible) {
+        auto downBeatTriangleColor = downbeatTriangleFillBaseColor;
+        downBeatTriangleColor.setAlpha(m_iAlpha);
+        painter->setBrush(downBeatTriangleColor);
         if (m_orientation == Qt::Horizontal) {
             painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
             if (m_beat.getType() == mixxx::Beat::DOWNBEAT &&
                     m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
                 // TODO(hacksdump): Get color from skin context
-                painter->setBrush(Qt::red);
                 painter->drawPolygon(getEquilateralTriangle(
                         kTriangleEdgeLength, QPointF(m_position, 0), Direction::DOWN));
                 painter->drawPolygon(getEquilateralTriangle(
@@ -31,7 +35,6 @@ void WaveformBeat::draw(QPainter* painter) const {
             painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
             if (m_beat.getType() == mixxx::Beat::BEAT &&
                     m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
-                painter->setBrush(Qt::red);
                 painter->drawPolygon(getEquilateralTriangle(
                         kTriangleEdgeLength, QPointF(0, m_position), Direction::RIGHT));
                 painter->drawPolygon(getEquilateralTriangle(kTriangleEdgeLength,
