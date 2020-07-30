@@ -86,29 +86,10 @@ def group_lines(
             yield FileLines(filename, grouped_linenumbers)
 
 
-logging.basicConfig()
-logger = logging.getLogger(__name__)
-
-
-def run_on(filename, cmd) -> bool:
-    with open(filename) as fp:
-        proc = subprocess.run(cmd, stdin=fp, capture_output=True, text=True)
-    try:
-        proc.check_returncode()
-    except subprocess.CalledProcessError:
-        logger.error(
-            "Error while executing command %s: %s", cmd, proc.stderr,
-        )
-        return False
-
-    if proc.stderr:
-        print(proc.stderr)
-    with open(filename, mode="w+") as fp:
-        fp.write(proc.stdout)
-    return True
-
-
 def main(argv: typing.Optional[typing.List[str]] = None) -> int:
+    logging.basicConfig()
+    logger = logging.getLogger(__name__)
+
     import sys
 
     print(sys.argv)
@@ -132,25 +113,8 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             for line in all_lines
             if os.path.abspath(os.path.join(line.sourcefile)) in files
         )
-    changed_files_all = group_lines(all_lines)
 
-    # Only keep long lines
-    long_lines = (
-        line
-        for line in all_lines
-        if (len(line.text) - 1) >= LINE_LENGTH_THRESHOLD
-    )
-    changed_files = group_lines(long_lines)
-
-    mixxx_cpp = os.path.join(rootdir, "src/mixxx.cpp")
-    proc_dump_config = subprocess.run(
-        ["clang-format", "--dump-config", mixxx_cpp],
-        capture_output=True,
-        text=True,
-    )
-    proc_dump_config.check_returncode()
-
-    for changed_file in changed_files_all:
+    for changed_file in group_lines(all_lines):
         line_arguments = [
             "[{},{}]".format(start, end) for start, end in changed_file.lines
         ]
@@ -166,10 +130,35 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             '--line-filter=[{{"name":"{}","lines":[{}]}}]'.format(
                 changed_file.filename, ",".join(line_arguments)
             ),
+            "--quiet",
             changed_file.filename,
         ]
-        if not run_on(os.path.join(rootdir, changed_file.filename), cmd):
+
+        proc = subprocess.run(cmd)
+        try:
+            proc.check_returncode()
+        except subprocess.CalledProcessError:
+            logger.error("Error while executing '%s': %s", cmd, proc.stderr)
             return 1
+
+        if proc.stderr:
+            print(proc.stderr)
+
+    # Filter only long lines
+    long_lines = (
+        line
+        for line in all_lines
+        if (len(line.text) - 1) >= LINE_LENGTH_THRESHOLD
+    )
+
+    # Get default clang-format config
+    mixxx_cpp = os.path.join(rootdir, "src/mixxx.cpp")
+    proc_dump_config = subprocess.run(
+        ["clang-format", "--dump-config", mixxx_cpp],
+        capture_output=True,
+        text=True,
+    )
+    proc_dump_config.check_returncode()
 
     with tempfile.TemporaryDirectory(prefix="clang-format") as tempdir:
         # Create temporary config with ColumnLimit enabled
@@ -183,7 +172,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
                 )
             )
 
-        for changed_file in changed_files:
+        for changed_file in group_lines(long_lines):
             line_arguments = [
                 "--lines={}:{}".format(start, end)
                 for start, end in changed_file.lines
@@ -200,8 +189,24 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
                 ),
                 *line_arguments,
             ]
-            if not run_on(os.path.join(rootdir, changed_file.filename), cmd):
+            filename = os.path.join(rootdir, changed_file.filename)
+            with open(filename) as fp:
+                proc = subprocess.run(
+                    cmd, stdin=fp, capture_output=True, text=True
+                )
+            try:
+                proc.check_returncode()
+            except subprocess.CalledProcessError:
+                logger.error(
+                    "Error while executing '%s': %s", cmd, proc.stderr
+                )
                 return 1
+
+            if proc.stderr:
+                print(proc.stderr)
+            with open(filename, mode="w+") as fp:
+                fp.write(proc.stdout)
+
     return 0
 
 
