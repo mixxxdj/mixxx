@@ -46,6 +46,10 @@ endif()
 
 #######################################################################
 
+# Export compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+file(CREATE_LINK ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json SYMBOLIC)
+
 set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs

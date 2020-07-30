@@ -118,7 +118,7 @@ repos:
   hooks:
   - id: line-length
     name: line-length
-    description: Check for lines longer 100 and brakes them before 80.
+    description: Check for lines longer than 100 chars and break them before 80.
     entry: ./tools/line_length.py
     stages:
     - commit

@@ -86,10 +86,29 @@ def group_lines(
             yield FileLines(filename, grouped_linenumbers)
 
 
-def main(argv: typing.Optional[typing.List[str]] = None) -> int:
-    logging.basicConfig()
-    logger = logging.getLogger(__name__)
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
+
+def run_on(filename, cmd) -> bool:
+    with open(filename) as fp:
+        proc = subprocess.run(cmd, stdin=fp, capture_output=True, text=True)
+    try:
+        proc.check_returncode()
+    except subprocess.CalledProcessError:
+        logger.error(
+            "Error while executing command %s: %s", cmd, proc.stderr,
+        )
+        return False
+
+    if proc.stderr:
+        print(proc.stderr)
+    with open(filename, mode="w+") as fp:
+        fp.write(proc.stdout)
+    return True
+
+
+def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     import sys
 
     print(sys.argv)
@@ -113,6 +132,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             for line in all_lines
             if os.path.abspath(os.path.join(line.sourcefile)) in files
         )
+    changed_files_all = group_lines(all_lines)
 
     # Only keep long lines
     long_lines = (
@@ -122,13 +142,13 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     )
     changed_files = group_lines(long_lines)
 
-    cpp_file = os.path.join(rootdir, "src/mixxx.cpp")
-    proc = subprocess.run(
-        ["clang-format", "--dump-config", cpp_file],
+    mixxx_cpp = os.path.join(rootdir, "src/mixxx.cpp")
+    proc_dump_config = subprocess.run(
+        ["clang-format", "--dump-config", mixxx_cpp],
         capture_output=True,
         text=True,
     )
-    proc.check_returncode()
+    proc_dump_config.check_returncode()
 
     with tempfile.TemporaryDirectory(prefix="clang-format") as tempdir:
         # Create temporary config with ColumnLimit enabled
@@ -138,7 +158,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
                 re.sub(
                     r"(ColumnLimit:\s*)\d+",
                     r"\g<1>{}".format(BREAK_BEFORE),
-                    proc.stdout,
+                    proc_dump_config.stdout,
                 )
             )
 
@@ -159,24 +179,8 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
                 ),
                 *line_arguments,
             ]
-
-            filename = os.path.join(rootdir, changed_file.filename)
-            with open(filename) as fp:
-                proc = subprocess.run(
-                    cmd, stdin=fp, capture_output=True, text=True
-                )
-            try:
-                proc.check_returncode()
-            except subprocess.CalledProcessError:
-                logger.error(
-                    "Error while executing command %s: %s", cmd, proc.stderr,
-                )
+            if not run_on(os.path.join(rootdir, changed_file.filename), cmd):
                 return 1
-
-            if proc.stderr:
-                print(proc.stderr)
-            with open(filename, mode="w+") as fp:
-                fp.write(proc.stdout)
     return 0
 
 
