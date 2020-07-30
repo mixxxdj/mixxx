@@ -6,12 +6,13 @@
 #include <QtDebug>
 #include <unordered_set>
 
+#include "../lib/qm-dsp/base/Pitch.h"
+#include "analyzer/analyzerrhythmstats.h"
 #include "analyzer/constants.h"
+#include "engine/engine.h" // Included to get mixxx::kEngineChannelCount
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/track.h"
-#include "engine/engine.h" // Included to get mixxx::kEngineChannelCount
-#include "analyzer/analyzerrhythmstats.h"
 
 namespace {
 
@@ -28,6 +29,8 @@ constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
+constexpr int kBinsPerOctave = 36;
+constexpr int kTuningFrequencyHertz = 440;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
@@ -44,14 +47,19 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
 
 } // namespace
 
-
 AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
         : m_iSampleRate(0),
           m_iTotalSamples(0),
           m_iMaxSamplesToProcess(0),
           m_iCurrentSample(0),
           m_iMinBpm(0),
-          m_iMaxBpm(9999) {
+          m_iMaxBpm(9999),
+          m_beatsPerBar(4),
+          m_window(nullptr),
+          m_fftRealOut(nullptr),
+          m_fftImagOut(nullptr),
+          m_constQRealOut(nullptr),
+          m_constQImagOut(nullptr) {
 }
 
 inline int AnalyzerRhythm::stepSize() {
@@ -80,14 +88,30 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
 
     CQConfig constQParams;
     constQParams.FS = m_iSampleRate; // sample rate
-    constQParams.min = 50.0; // minimum frequency
-    constQParams.max = 12000.0; // maximum frequency
-    constQParams.BPO = 4.0; // bins per octave
+
+    //constQParams.min = 50.0; // minimum frequency
+    //constQParams.max = 12000.0; // maximum frequency
+
+    // Set C1 (= MIDI #24) 32,7 Hz as our base:
+    // Set C3 (= MIDI #48) 130,8 Hz as our base:
+    // This implies that key = 1 => Cmaj, key = 12 => Bmaj, key = 13 => Cmin, etc.
+    const float centsOffset = -12.0f / kBinsPerOctave *
+            100; // 3 bins per note, start with the first
+    constQParams.min =
+            Pitch::getFrequencyForPitch(48, centsOffset, kTuningFrequencyHertz);
+    // Set C9 (= MIDI #120) 8372.02 Hz max:
+    // Set C8 (= MIDI #108) 4186.01 Hz max:
+    constQParams.max =
+            Pitch::getFrequencyForPitch(108, centsOffset, kTuningFrequencyHertz);
+
+    constQParams.BPO = kBinsPerOctave; // bins per octave
     constQParams.CQThresh = 0.0054; // (??) same value used by qm segmenter
     m_constQ = std::make_unique<ConstantQ>(constQParams);
 
     const int fftSize = m_constQ->getFFTLength();
     const int constQNumberOfBins = m_constQ->getK();
+
+    qDebug() << "constQNumberOfBins" << constQNumberOfBins;
 
     m_constQRealOut = new double[constQNumberOfBins];
     m_constQImagOut = new double[constQNumberOfBins];
@@ -99,8 +123,8 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
 
     m_window = new Window<double>(HammingWindow, fftSize);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
-            makeDetectionFunctionConfig(stepSize(), fftSize));
-    
+            makeDetectionFunctionConfig(stepSize(), (constQNumberOfBins - 1) * 2));
+
     qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << stepSize();
 
     m_onsetsProcessor.initialize(
@@ -282,11 +306,20 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double> &beatsSD) 
 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_onsetsProcessor.finalize();
+
+    int counter = 0;
+
+    for (auto onset : m_detectionResults) {
+        qDebug() << counter << onset.t.complexSpecDiff;
+        counter++;
+    }
+
     m_downbeatsProcessor.finalize();
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
     auto [bpb, firstDownbeat] = computeMeter(beatsSpecDiff);
-    int counter = 0;
+
+    /*
     for (auto onset : m_detectionResults) {
         qDebug() << counter;
         qDebug() << onset.t.hiFrequency;
@@ -295,7 +328,7 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
         qDebug() << onset.t.complexSpecDiff;
         qDebug() << "----------";
     }
-    
+    */
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
         double result = (beats.at(i) * stepSize()) - (stepSize() / mixxx::kEngineChannelCount);

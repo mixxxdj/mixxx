@@ -64,7 +64,7 @@ void DetectionFunction::initialise( DFConfig Config )
     m_magPeaks = new double[ m_halfLength ];
     memset(m_magPeaks,0, m_halfLength*sizeof(double));
 
-    m_phaseVoc = new PhaseVocoder(m_dataLength, m_stepSize);
+//    m_phaseVoc = new PhaseVocoder(m_dataLength, m_stepSize);
 
     m_magnitude = new double[ m_halfLength ];
     m_thetaAngle = new double[ m_halfLength ];
@@ -95,8 +95,8 @@ DFresults DetectionFunction::processTimeDomain(const double *samples)
 {
     m_window->cut(samples, m_windowed);
 
-    m_phaseVoc->processTimeDomain(m_windowed, 
-                                  m_magnitude, m_thetaAngle, m_unwrapped);
+ //   m_phaseVoc->processTimeDomain(m_windowed,
+ //                                 m_magnitude, m_thetaAngle, m_unwrapped);
 
     if (m_whiten) whiten();
 
@@ -106,8 +106,20 @@ DFresults DetectionFunction::processTimeDomain(const double *samples)
 DFresults DetectionFunction::processFrequencyDomain(const double *reals,
                                                  const double *imags)
 {
-    m_phaseVoc->processFrequencyDomain(reals, imags,
-                                       m_magnitude, m_thetaAngle, m_unwrapped);
+    PhaseVocoder::processFrequencyDomain(reals, imags,
+                                       m_magnitude, m_thetaAngle, m_unwrapped, m_halfLength);
+
+    static int count = 0;
+
+    if (count == 5145 || count == 5126) {
+        std::cout << m_halfLength << "\n";
+        for (int i = 0; i < m_halfLength; ++i) {
+            double m = m_magnitude[i];
+            std::cout << m << " ";
+        }
+        std::cout << "\n";
+    }
+    count++;
 
     if (m_whiten) whiten();
 

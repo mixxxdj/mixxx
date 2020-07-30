@@ -50,8 +50,8 @@ public:
      * mag, phase, and unwrapped must each be non-NULL and point to
      * enough space for size/2+1 values.
      */
-    void processFrequencyDomain(const double *reals, const double *imags,
-                                double *mag, double *phase, double *unwrapped);
+    static void processFrequencyDomain(const double *reals, const double *imags,
+                                double *mag, double *phase, double *unwrapped, int size);
 
     /**
      * Reset the stored phases to zero. Note that this may be
@@ -63,9 +63,17 @@ public:
 
 protected:
     void FFTShift(double *src);
-    void getMagnitudes(double *mag);
-    void getPhases(double *theta);
-    void unwrapPhases(double *theta, double *unwrapped);
+    static void getMagnitudes(
+            const double *reals,
+            const double *imags,
+            double *mag,
+            int size);
+    static void getPhases(
+            const double *reals,
+            const double *imags,
+            double *theta,
+            int size);
+    void unwrapPhases(const double *theta, double *unwrapped);
 
     int m_n;
     int m_hop;
