@@ -124,7 +124,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
 
         cmd = [
             "clang-tidy",
-            "--checks=-*,modernize-use-nullptr",
+            "--checks=-*,modernize-use-nullptr,modernize-use-auto",
             "--fix",
             '--header-filter=""',
             '--line-filter=[{{"name":"{}","lines":[{}]}}]'.format(
