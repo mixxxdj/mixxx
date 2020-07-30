@@ -150,6 +150,27 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     )
     proc_dump_config.check_returncode()
 
+    for changed_file in changed_files_all:
+        line_arguments = [
+            "[{},{}]".format(start, end) for start, end in changed_file.lines
+        ]
+
+        if not line_arguments:
+            continue
+
+        cmd = [
+            "clang-tidy",
+            "--checks=-*,modernize-use-nullptr",
+            "--fix",
+            '--header-filter=""',
+            '--line-filter=[{{"name":"{}","lines":[{}]}}]'.format(
+                changed_file.filename, ",".join(line_arguments)
+            ),
+            changed_file.filename,
+        ]
+        if not run_on(os.path.join(rootdir, changed_file.filename), cmd):
+            return 1
+
     with tempfile.TemporaryDirectory(prefix="clang-format") as tempdir:
         # Create temporary config with ColumnLimit enabled
         configfile = os.path.join(tempdir, ".clang-format")

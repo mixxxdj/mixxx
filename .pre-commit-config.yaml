@@ -119,6 +119,7 @@ repos:
   - id: line-length
     name: line-length
     description: Check for lines longer than 100 chars and break them before 80.
+      Also runs some uncontroversial clang-tidy modernizations if possible.
     entry: ./tools/line_length.py
     stages:
     - commit
