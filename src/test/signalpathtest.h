@@ -66,18 +66,38 @@ class BaseSignalPathTest : public MixxxTest {
                                                m_pEffectsManager, m_pChannelHandleFactory,
                                                false);
 
-        m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup1);
-        m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup2);
-        m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup3);
+        m_pMixerDeck1 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup1));
+        m_pMixerDeck2 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup2));
+        m_pMixerDeck3 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup3));
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sPreviewGroup);
+        m_pPreview1 = new PreviewDeck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing

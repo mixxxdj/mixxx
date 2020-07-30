@@ -41,19 +41,22 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
-        const QString& group,
+        const ChannelHandleAndGroup& handle_group,
         bool defaultMaster,
         bool defaultHeadphones,
         bool primaryDeck)
-        : BaseTrackPlayer(pParent, group),
+        : BaseTrackPlayer(pParent, handle_group.name()),
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
-    ChannelHandleAndGroup channelGroup =
-            pMixingEngine->registerChannelGroup(group);
-    m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine, pEffectsManager, defaultOrientation, primaryDeck);
+    m_pChannel = new EngineDeck(handle_group,
+            pConfig,
+            pMixingEngine,
+            pEffectsManager,
+            defaultOrientation,
+            primaryDeck);
 
     m_pInputConfigured = make_parented<ControlProxy>(getGroup(), "input_configured", this);
 #ifdef __VINYLCONTROL__

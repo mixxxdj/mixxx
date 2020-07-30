@@ -6,6 +6,7 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
+#include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
@@ -30,8 +31,8 @@ class PlayerManagerInterface {
   public:
     virtual ~PlayerManagerInterface() = default;
 
-    // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
+    virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
+    virtual BaseTrackPlayer* getPlayer(const ChannelHandle& channelHandle) const = 0;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
@@ -84,7 +85,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns true if the group is a deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
-    static bool isDeckGroup(const QString& group, int* number=NULL);
+    static bool isDeckGroup(const QString& group, int* number = nullptr);
 
     // Returns true if the group is a sampler group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
@@ -92,11 +93,13 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns true if the group is a preview deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
-    static bool isPreviewDeckGroup(const QString& group, int* number=NULL);
+    static bool isPreviewDeckGroup(const QString& group, int* number = nullptr);
 
     // Get a BaseTrackPlayer (Deck, Sampler or PreviewDeck) by its group.
     // Auxiliaries and microphones are not players.
     BaseTrackPlayer* getPlayer(const QString& group) const override;
+    // Get a BaseTrackPlayer (Deck, Sampler or PreviewDeck) by its handle.
+    BaseTrackPlayer* getPlayer(const ChannelHandle& handle) const override;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     Deck* getDeck(unsigned int player) const override;
@@ -263,8 +266,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
-    QList<PreviewDeck*> m_preview_decks;
+    QList<PreviewDeck*> m_previewDecks;
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
-    QMap<QString, BaseTrackPlayer*> m_players;
+    QMap<ChannelHandle, BaseTrackPlayer*> m_players;
 };

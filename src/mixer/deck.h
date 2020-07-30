@@ -8,11 +8,11 @@ class Deck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
     Deck(QObject* pParent,
-         UserSettingsPointer pConfig,
-         EngineMaster* pMixingEngine,
-         EffectsManager* pEffectsManager,
-         VisualsManager* pVisualsManager,
-         EngineChannel::ChannelOrientation defaultOrientation,
-         const QString& group);
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            const ChannelHandleAndGroup& handle_group);
     ~Deck() override = default;
 };

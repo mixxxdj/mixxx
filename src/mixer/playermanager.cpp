@@ -147,7 +147,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
-    foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
+    foreach (PreviewDeck* pPreviewDeck, m_previewDecks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
@@ -307,15 +307,15 @@ void PlayerManager::slotChangeNumSamplers(double v) {
 void PlayerManager::slotChangeNumPreviewDecks(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
-    if (num < m_preview_decks.size()) {
+    if (num < m_previewDecks.size()) {
         // The request was invalid -- don't set the value.
         kLogger.debug() << "Ignoring request to reduce the number of preview decks to" << num;
         return;
     }
-    while (m_preview_decks.size() < num) {
+    while (m_previewDecks.size() < num) {
         addPreviewDeckInner();
     }
-    m_pCONumPreviewDecks->setAndConfirm(m_preview_decks.size());
+    m_pCONumPreviewDecks->setAndConfirm(m_previewDecks.size());
 }
 
 void PlayerManager::slotChangeNumMicrophones(double v) {
@@ -358,8 +358,9 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
-    QString group = groupForDeck(m_decks.count());
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
+    ChannelHandleAndGroup handle_group =
+            m_pEngine->registerChannelGroup(groupForDeck(m_decks.count()));
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handle_group.handle())) {
         return;
     }
 
@@ -371,7 +372,7 @@ void PlayerManager::addDeckInner() {
             m_pEffectsManager,
             m_pVisualsManager,
             deckIndex % 2 == 1 ? EngineChannel::RIGHT : EngineChannel::LEFT,
-            group);
+            handle_group);
     connect(pDeck->getEngineDeck(),
             &EngineDeck::noPassthroughInputConfigured,
             this,
@@ -388,7 +389,7 @@ void PlayerManager::addDeckInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[group] = pDeck;
+    m_players[handle_group.handle()] = pDeck;
     m_decks.append(pDeck);
 
     // Register the deck output with SoundManager.
@@ -405,7 +406,7 @@ void PlayerManager::addDeckInner() {
     VERIFY_OR_DEBUG_ASSERT(pEqRack) {
         return;
     }
-    pEqRack->setupForGroup(group);
+    pEqRack->setupForGroup(handle_group.name());
 
     // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
     // this deck to fetch the legacy EQ controls.
@@ -418,7 +419,7 @@ void PlayerManager::addDeckInner() {
     VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
         return;
     }
-    pQuickEffectRack->setupForGroup(group);
+    pQuickEffectRack->setupForGroup(handle_group.name());
 }
 
 void PlayerManager::loadSamplers() {
@@ -434,17 +435,22 @@ void PlayerManager::addSampler() {
 
 void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
-    QString group = groupForSampler(m_samplers.count());
-
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
+    ChannelHandleAndGroup handle_group =
+            m_pEngine->registerChannelGroup(groupForSampler(m_samplers.count()));
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handle_group.handle())) {
         return;
     }
 
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
-    Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
-            m_pEffectsManager, m_pVisualsManager, orientation, group);
+    Sampler* pSampler = new Sampler(this,
+            m_pConfig,
+            m_pEngine,
+            m_pEffectsManager,
+            m_pVisualsManager,
+            orientation,
+            handle_group);
     if (m_pTrackAnalysisScheduler) {
         connect(pSampler,
                 &Sampler::newTrackLoaded,
@@ -452,7 +458,7 @@ void PlayerManager::addSamplerInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[group] = pSampler;
+    m_players[handle_group.handle()] = pSampler;
     m_samplers.append(pSampler);
 }
 
@@ -463,16 +469,22 @@ void PlayerManager::addPreviewDeck() {
 
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
-    QString group = groupForPreviewDeck(m_preview_decks.count());
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
+    ChannelHandleAndGroup handle_group = m_pEngine->registerChannelGroup(
+            groupForPreviewDeck(m_previewDecks.count()));
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handle_group.handle())) {
         return;
     }
 
     // All preview decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
-    PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
-            m_pEffectsManager, m_pVisualsManager, orientation, group);
+    PreviewDeck* pPreviewDeck = new PreviewDeck(this,
+            m_pConfig,
+            m_pEngine,
+            m_pEffectsManager,
+            m_pVisualsManager,
+            orientation,
+            handle_group);
     if (m_pTrackAnalysisScheduler) {
         connect(pPreviewDeck,
                 &PreviewDeck::newTrackLoaded,
@@ -480,8 +492,8 @@ void PlayerManager::addPreviewDeckInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[group] = pPreviewDeck;
-    m_preview_decks.append(pPreviewDeck);
+    m_players[handle_group.handle()] = pPreviewDeck;
+    m_previewDecks.append(pPreviewDeck);
 }
 
 void PlayerManager::addMicrophone() {
@@ -524,12 +536,17 @@ void PlayerManager::addAuxiliaryInner() {
     m_auxiliaries.append(pAuxiliary);
 }
 
-BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
+BaseTrackPlayer* PlayerManager::getPlayer(const QString& group) const {
+    return getPlayer(m_pEngine->registerChannelGroup(group).handle());
+}
+
+BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
     QMutexLocker locker(&m_mutex);
-    if (m_players.contains(group)) {
-        return m_players[group];
+
+    if (m_players.contains(handle)) {
+        return m_players[handle];
     }
-    return NULL;
+    return nullptr;
 }
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
@@ -548,7 +565,7 @@ PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const 
                    << libPreviewPlayer;
         return NULL;
     }
-    return m_preview_decks[libPreviewPlayer - 1];
+    return m_previewDecks[libPreviewPlayer - 1];
 }
 
 Sampler* PlayerManager::getSampler(unsigned int sampler) const {

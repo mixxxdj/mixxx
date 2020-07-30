@@ -58,7 +58,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const QString& group,
+            const ChannelHandleAndGroup& handle_group,
             bool defaultMaster,
             bool defaultHeadphones,
             bool primaryDeck);
