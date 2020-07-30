@@ -1,5 +1,4 @@
-#ifndef MIXER_DECK_H
-#define MIXER_DECK_H
+#pragma once
 
 #include <QObject>
 
@@ -17,5 +16,3 @@ class Deck : public BaseTrackPlayerImpl {
          const QString& group);
     ~Deck() override = default;
 };
-
-#endif // MIXER_DECK_H

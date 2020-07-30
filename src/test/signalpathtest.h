@@ -1,5 +1,4 @@
-#ifndef ENGINEBACKENDTEST_H_
-#define ENGINEBACKENDTEST_H_
+#pragma once
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -210,11 +209,11 @@ class BaseSignalPathTest : public MixxxTest {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
+    static const QString m_sMasterGroup;
+    static const QString m_sInternalClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
     static const QString m_sGroup3;
-    static const QString m_sMasterGroup;
-    static const QString m_sInternalClockGroup;
     static const QString m_sPreviewGroup;
     static const QString m_sSamplerGroup;
     static const double kDefaultRateRange;
@@ -234,5 +233,3 @@ class SignalPathTest : public BaseSignalPathTest {
         loadTrack(m_pMixerDeck3, pTrack);
     }
 };
-
-#endif /* ENGINEBACKENDTEST_H_ */

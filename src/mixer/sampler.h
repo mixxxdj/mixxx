@@ -1,5 +1,4 @@
-#ifndef MIXER_SAMPLER_H
-#define MIXER_SAMPLER_H
+#pragma once
 
 #include "mixer/basetrackplayer.h"
 
@@ -15,5 +14,3 @@ class Sampler : public BaseTrackPlayerImpl {
             QString group);
     ~Sampler() override = default;
 };
-
-#endif /* MIXER_SAMPLER_H */
