@@ -105,10 +105,6 @@ bool Beats::isValid() const {
     return m_beatsInternal.isValid();
 }
 
-Bpm Beats::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const {
-    return m_beatsInternal.calculateBpm(startBeat, stopBeat);
-}
-
 FramePos Beats::findPrevBeat(FramePos frame) const {
     return m_beatsInternal.findPrevBeat(frame);
 }
@@ -145,11 +141,6 @@ bool Beats::hasBeatInRange(FramePos startFrame, FramePos stopFrame) const {
 Bpm Beats::getBpm() const {
     QMutexLocker locker(&m_mutex);
     return m_beatsInternal.getBpm();
-}
-
-double Beats::getBpmRange(FramePos startFrame, FramePos stopFrame) const {
-    QMutexLocker locker(&m_mutex);
-    return m_beatsInternal.getBpmRange(startFrame, stopFrame);
 }
 
 Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
@@ -696,14 +687,6 @@ FramePos BeatsInternal::findNextBeat(FramePos frame) const {
 }
 FramePos BeatsInternal::findPrevBeat(FramePos frame) const {
     return findNthBeat(frame, -1);
-}
-double BeatsInternal::getBpmRange(
-        FramePos startFrame, FramePos stopFrame) const {
-    if (!isValid()) {
-        return -1;
-    }
-    Beat startBeat(startFrame), stopBeat(stopFrame);
-    return calculateBpm(startBeat, stopBeat).getValue();
 }
 Bpm BeatsInternal::getBpmAroundPosition(FramePos curFrame, int n) const {
     if (!isValid()) {

@@ -77,7 +77,6 @@ class BeatsInternal {
     std::unique_ptr<BeatsInternal::iterator> findBeats(
             FramePos startFrame, FramePos stopFrame) const;
     bool hasBeatInRange(FramePos startFrame, FramePos stopFrame) const;
-    double getBpmRange(FramePos startFrame, FramePos stopFrame) const;
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
     void setSignature(TimeSignature sig, int downbeatIndex);
     void translate(FrameDiff_t numFrames);
@@ -151,9 +150,6 @@ class Beats final : public QObject {
     QString getSubVersion() const;
     void setSubVersion(const QString& subVersion);
     bool isValid() const;
-    /// Calculates the BPM between two beat positions.
-    Bpm calculateBpm(const Beat& startBeat,
-            const Beat& stopBeat) const;
 
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of firstBeatFrame. Does not generate an updated() signal, since it is
@@ -222,11 +218,6 @@ class Beats final : public QObject {
     /// Return the average BPM over the entire track if the BPM is
     /// valid, otherwise returns -1
     Bpm getBpm() const;
-
-    /// Return the average BPM over the range from startFrameNum to endFrameNum,
-    /// specified in frames if the BPM is valid, otherwise returns -1
-    double getBpmRange(FramePos startFrame,
-            FramePos stopFrame) const;
 
     /// Return the average BPM over the range of n*2 beats centered around
     /// curFrameNum.  (An n of 4 results in an averaging of 8 beats).  Invalid
