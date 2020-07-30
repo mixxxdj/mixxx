@@ -3,3 +3,4 @@
 # https://black.readthedocs.io/en/stable/the_black_code_style.html#slices
 # W503 conflicts with black, too.
 ignore = E203,W503
+max-line-length = 99

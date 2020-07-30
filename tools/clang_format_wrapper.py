@@ -72,7 +72,7 @@ def get_git_status() -> Iterable[GitEdit]:
 def run_clang_format(file_list: List[str]) -> bool:
     """Execute git-clang-format for provided `file_list`.
 
-    Return True if `git-clang-format` has errors or has modified any file,
+    Return False if `git-clang-format` has errors or has modified any file,
     i.e. if it failed the formatting test.
     """
     if not file_list:
@@ -93,7 +93,9 @@ def run_clang_format(file_list: List[str]) -> bool:
     out = check_output(command, text=True)
     logger.debug(out)
 
-    return False if out == "clang-format did not modify any files\n" else True
+    # If there's only a single line of output, we can assume that nothing was changed.
+    # This is not very clean, but better than hard-coding the expected message.
+    return out.index("\n") == out.rindex("\n")
 
 
 def main():
@@ -120,7 +122,7 @@ def main():
     if paths_to_be_clang_formatted:
         logger.debug("Paths:\n%s", "\n".join(paths_to_be_clang_formatted))
 
-        if run_clang_format(paths_to_be_clang_formatted):
+        if not run_clang_format(paths_to_be_clang_formatted):
             return 1
 
     return 0
