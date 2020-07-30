@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import argparse
-import re
+import itertools
 import logging
 import os
-import itertools
+import re
 import subprocess
 import tempfile
 import typing
@@ -114,35 +114,37 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             if os.path.abspath(os.path.join(line.sourcefile)) in files
         )
 
-    for changed_file in group_lines(all_lines):
-        line_arguments = [
-            "[{},{}]".format(start, end) for start, end in changed_file.lines
-        ]
+    # Run clang-tidy modernizations if compile command database exists
+    if os.path.exists(os.path.join(rootdir, "compile_commands.json")):
+        for changed_file in group_lines(all_lines):
+            line_arguments = [
+                "[{},{}]".format(start, end)
+                for start, end in changed_file.lines
+            ]
+            if not line_arguments:
+                continue
 
-        if not line_arguments:
-            continue
-
-        cmd = [
-            "clang-tidy",
-            "--checks=-*,modernize-use-nullptr,modernize-use-auto",
-            "--fix",
-            '--header-filter=""',
-            '--line-filter=[{{"name":"{}","lines":[{}]}}]'.format(
-                changed_file.filename, ",".join(line_arguments)
-            ),
-            "--quiet",
-            changed_file.filename,
-        ]
-
-        proc = subprocess.run(cmd)
-        try:
-            proc.check_returncode()
-        except subprocess.CalledProcessError:
-            logger.error("Error while executing '%s': %s", cmd, proc.stderr)
-            return 1
-
-        if proc.stderr:
-            print(proc.stderr)
+            cmd = [
+                "clang-tidy",
+                "--checks=-*,modernize-use-nullptr,modernize-use-auto",
+                "--fix",
+                '--header-filter=""',
+                '--line-filter=[{{"name":"{}","lines":[{}]}}]'.format(
+                    changed_file.filename, ",".join(line_arguments)
+                ),
+                "--quiet",
+                changed_file.filename,
+            ]
+            proc = subprocess.run(cmd)
+            try:
+                proc.check_returncode()
+            except subprocess.CalledProcessError:
+                logger.error(
+                    "Error while executing '%s': %s", cmd, proc.stderr
+                )
+                return 1
+            if proc.stderr:
+                print(proc.stderr)
 
     # Filter only long lines
     long_lines = (
