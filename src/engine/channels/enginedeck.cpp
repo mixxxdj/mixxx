@@ -9,13 +9,14 @@
 #include "util/sample.h"
 #include "waveform/waveformwidgetfactory.h"
 
-EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
+EngineDeck::EngineDeck(
+        const ChannelHandleAndGroup& handleGroup,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         bool primaryDeck)
-        : EngineChannel(handle_group, defaultOrientation, pEffectsManager,
+        : EngineChannel(handleGroup, defaultOrientation, pEffectsManager,
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),

@@ -358,9 +358,9 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
-    ChannelHandleAndGroup handle_group =
+    ChannelHandleAndGroup handleGroup =
             m_pEngine->registerChannelGroup(groupForDeck(m_decks.count()));
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handle_group.handle())) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
         return;
     }
 
@@ -372,7 +372,7 @@ void PlayerManager::addDeckInner() {
             m_pEffectsManager,
             m_pVisualsManager,
             deckIndex % 2 == 1 ? EngineChannel::RIGHT : EngineChannel::LEFT,
-            handle_group);
+            handleGroup);
     connect(pDeck->getEngineDeck(),
             &EngineDeck::noPassthroughInputConfigured,
             this,
@@ -389,7 +389,7 @@ void PlayerManager::addDeckInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[handle_group.handle()] = pDeck;
+    m_players[handleGroup.handle()] = pDeck;
     m_decks.append(pDeck);
 
     // Register the deck output with SoundManager.
@@ -406,7 +406,7 @@ void PlayerManager::addDeckInner() {
     VERIFY_OR_DEBUG_ASSERT(pEqRack) {
         return;
     }
-    pEqRack->setupForGroup(handle_group.name());
+    pEqRack->setupForGroup(handleGroup.name());
 
     // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
     // this deck to fetch the legacy EQ controls.
@@ -419,7 +419,7 @@ void PlayerManager::addDeckInner() {
     VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
         return;
     }
-    pQuickEffectRack->setupForGroup(handle_group.name());
+    pQuickEffectRack->setupForGroup(handleGroup.name());
 }
 
 void PlayerManager::loadSamplers() {
@@ -435,9 +435,9 @@ void PlayerManager::addSampler() {
 
 void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
-    ChannelHandleAndGroup handle_group =
+    ChannelHandleAndGroup handleGroup =
             m_pEngine->registerChannelGroup(groupForSampler(m_samplers.count()));
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handle_group.handle())) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
         return;
     }
 
@@ -450,7 +450,7 @@ void PlayerManager::addSamplerInner() {
             m_pEffectsManager,
             m_pVisualsManager,
             orientation,
-            handle_group);
+            handleGroup);
     if (m_pTrackAnalysisScheduler) {
         connect(pSampler,
                 &Sampler::newTrackLoaded,
@@ -458,7 +458,7 @@ void PlayerManager::addSamplerInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[handle_group.handle()] = pSampler;
+    m_players[handleGroup.handle()] = pSampler;
     m_samplers.append(pSampler);
 }
 
@@ -469,9 +469,9 @@ void PlayerManager::addPreviewDeck() {
 
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
-    ChannelHandleAndGroup handle_group = m_pEngine->registerChannelGroup(
+    ChannelHandleAndGroup handleGroup = m_pEngine->registerChannelGroup(
             groupForPreviewDeck(m_previewDecks.count()));
-    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handle_group.handle())) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
         return;
     }
 
@@ -484,7 +484,7 @@ void PlayerManager::addPreviewDeckInner() {
             m_pEffectsManager,
             m_pVisualsManager,
             orientation,
-            handle_group);
+            handleGroup);
     if (m_pTrackAnalysisScheduler) {
         connect(pPreviewDeck,
                 &PreviewDeck::newTrackLoaded,
@@ -492,7 +492,7 @@ void PlayerManager::addPreviewDeckInner() {
                 &PlayerManager::slotAnalyzeTrack);
     }
 
-    m_players[handle_group.handle()] = pPreviewDeck;
+    m_players[handleGroup.handle()] = pPreviewDeck;
     m_previewDecks.append(pPreviewDeck);
 }
 

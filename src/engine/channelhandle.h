@@ -116,9 +116,9 @@ inline QDebug operator<<(QDebug stream, const ChannelHandleAndGroup& g) {
 }
 
 inline uint qHash(
-        const ChannelHandleAndGroup& handle_group,
+        const ChannelHandleAndGroup& handleGroup,
         uint seed = 0) {
-    return qHash(handle_group.handle(), seed);
+    return qHash(handleGroup.handle(), seed);
 }
 
 // A helper class used by EngineMaster to assign ChannelHandles to channel group

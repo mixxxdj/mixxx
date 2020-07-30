@@ -11,6 +11,6 @@ class Sampler : public BaseTrackPlayerImpl {
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const ChannelHandleAndGroup& handle_group);
+            const ChannelHandleAndGroup& handleGroup);
     ~Sampler() override = default;
 };

@@ -12,7 +12,7 @@ class PreviewDeck : public BaseTrackPlayerImpl {
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const ChannelHandleAndGroup& handle_group);
+            const ChannelHandleAndGroup& handleGroup);
     ~PreviewDeck() override = default;
 };
 

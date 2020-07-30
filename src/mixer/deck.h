@@ -13,6 +13,6 @@ class Deck : public BaseTrackPlayerImpl {
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const ChannelHandleAndGroup& handle_group);
+            const ChannelHandleAndGroup& handleGroup);
     ~Deck() override = default;
 };
