@@ -241,6 +241,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageLong.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
     MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0x0F, false, this.browseEncoder);
 
+    TraktorS2MK2.scalerParameter.useSetParameter = true;
     this.controller.setScaler("volume", this.scalerVolume);
     this.controller.setScaler("headMix", this.scalerSlider);
     this.controller.setScaler("parameter1", this.scalerParameter);
@@ -1255,8 +1256,6 @@ TraktorS2MK2.browseEncoder = function(field) {
 TraktorS2MK2.scalerParameter = function(group, name, value) {
     return script.absoluteLin(value, 0, 1, 16, 4080);
 };
-// Tell the HIDController script to use setParameter instead of setValue.
-TraktorS2MK2.scalerParameter.useSetParameter = true;
 
 TraktorS2MK2.scalerVolume = function(group, name, value) {
     if (group === "[Master]") {
