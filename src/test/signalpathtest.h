@@ -80,7 +80,7 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
-                m_sGroup1);
+                m_pEngineMaster->registerChannelGroup(m_sGroup1));
         m_pMixerDeck2 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
@@ -88,7 +88,7 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
-                m_sGroup2);
+                m_pEngineMaster->registerChannelGroup(m_sGroup2));
         m_pMixerDeck3 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
@@ -96,7 +96,7 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
-                m_sGroup3);
+                m_pEngineMaster->registerChannelGroup(m_sGroup3));
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
@@ -107,7 +107,7 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
-                m_sPreviewGroup);
+                m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
@@ -246,11 +246,11 @@ class BaseSignalPathTest : public MixxxTest {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
+    static const QString m_sMasterGroup;
+    static const QString m_sInternalClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
     static const QString m_sGroup3;
-    static const QString m_sMasterGroup;
-    static const QString m_sInternalClockGroup;
     static const QString m_sPreviewGroup;
     static const QString m_sSamplerGroup;
     static const double kDefaultRateRange;

@@ -23,7 +23,8 @@ class MacroRecorder;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const ChannelHandleAndGroup& handle_group,
+    EngineDeck(
+            const ChannelHandleAndGroup& handleGroup,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             MacroRecorder* pMacroRecorder,

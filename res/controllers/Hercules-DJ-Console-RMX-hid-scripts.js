@@ -175,7 +175,7 @@ RMX.init = function() {
   c.capture("keypad4","all", function(g, e, v) {
     engine.setValue(g,"hotcue_4_activate",v)
   } );
-  
+
   c.capture("keypad5","all", function(g, e, v) {
     engine.setValue(g,"loop_in",v)
   } );
