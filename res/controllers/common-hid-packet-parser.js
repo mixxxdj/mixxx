@@ -122,8 +122,7 @@ HIDModifierList.prototype.setCallback = function(name, callback) {
  * @param header   (optional) list of bytes to match from beginning
  *          of packet. Do NOT put the report ID in this; use
  *          the reportId parameter instead. */
-HIDPacket = function(controller, name, reportId, callback, header) {
-    this.controller = controller;
+HIDPacket = function(name, reportId, callback, header) {
     this.name = name;
     this.header = header;
     this.callback = callback;
@@ -223,14 +222,6 @@ HIDPacket.prototype.unpack = function(data, field) {
     return value;
 };
 
-HIDPacket.prototype.registerGroup = function(group) {
-    if (group in this.groups) {
-        HIDDebug("Group already registered: " + group);
-        return;
-    }
-    this.groups[group] = {};
-};
-
 /** Find HID packet group matching name.
  * Create group if create is true */
 HIDPacket.prototype.getGroup = function(name, create) {
@@ -285,16 +276,7 @@ HIDPacket.prototype.getField = function(group, name) {
         return undefined;
     }
 
-    // Resolve virtual decks automatically.
-    HIDDebug("GROUPP????? " + group);
-    if (this.controller.virtualDecks.indexOf(group) !== -1) {
-        HIDDebug("resolving!");
-        group = this.controller.resolveGroup(group);
-        HIDDebug("and.... " + group);
-    }
-
     var control_group = this.groups[group];
-    HIDDebug("groups? " + this.groups + " " + group + " " + control_group);
     if (field_id in control_group)
         return control_group[field_id];
 
@@ -693,40 +675,6 @@ HIDPacket.prototype.send = function(debug) {
     controller.send(data, data.length, this.reportId);
 };
 
-// ActiveDecks = function () {
-//     this.activeDeckBitfield = undefined;
-//     this.numDecks = 0;
-// }
-
-// // Hypothetically ActiveDecks could work with any multiple of two. In practice it'll either
-// // be 2 or 4.
-// ActiveDecks.setDeckCount = function (count) {
-//     this.numDecks = count;
-// }
-
-// // Returns the deck number of the only active deck.
-// ActiveDecks.getSingleActiveDeck {
-//     if (this.activeDeck === undefined) {
-//         return undefined;
-//     }
-
-//     var activeCount = 0;
-//     var val = this.activeDeckBitfield;
-//     // Kernighan bitmask counting algorithm. It only
-//     // needs as many loop iterations as there are set values in the bitfield.
-//     while (val != 0) {
-//         val = val & (val - 1);
-//         ++activeCount;
-//     }
-//     if (activeCount === 0) {
-//         return undefined;
-//     }
-//     if (activeCount > 1) {
-//         HIDDebug("ERROR: expected only 1 active deck, got " + activeCount);
-//         return undefined;
-//     }
-//     return
-
 /**
  * HID Controller Class
  *
@@ -735,9 +683,8 @@ HIDPacket.prototype.send = function(debug) {
  *
  * initialized          by default false, you should set this to true when
  *                      controller is found and everything is OK
- * activeDeck           by default undefined, is list of ints that map
- *                      names 'deck','deck1' and 'deck2' to actual [ChannelX].
- *                      Supports multiple switches, and each switch can select 2 or 4 decks.
+ * activeDeck           by default undefined, used to map the virtual deck
+ *                      names 'deck','deck1' and 'deck2' to actual [ChannelX]
  * isScratchEnabled     set to true, when button 'jog_touch' is active
  * buttonStates         valid state values for buttons, should contain fields
  *                      released (default 0) and pressed (default 1)
@@ -860,29 +807,24 @@ HIDController.prototype.resolveDeckGroup = function(deck) {
  * a real mixxx group value, just return it as it without mapping. */
 HIDController.prototype.resolveGroup = function(group) {
     var channel_name = /\[Channel[0-9]+\]/;
-    if (group != undefined && group.match(channel_name)) {
+    if (group != undefined && group.match(channel_name))
         return group;
-    }
     if (this.valid_groups.indexOf(group) != -1) {
         return group;
     }
-    // activeDeck could refer to more than one active deck per controller,
-    // so we return the lowest deck
     if (group == "deck" || group == undefined) {
         if (this.activeDeck == undefined)
             return undefined;
         return "[Channel" + this.activeDeck + "]";
     }
-    HIDDebug("here?? " + this.activeDeck);
     if (this.activeDeck == 1 || this.activeDeck == 2) {
-        if (group === "deck1") return "[Channel1]";
-        if (group === "deck2") return "[Channel2]";
+        if (group == "deck1") return "[Channel1]";
+        if (group == "deck2") return "[Channel2]";
     }
     if (this.activeDeck == 3 || this.activeDeck == 4) {
-        if (group === "deck1") return "[Channel3]";
-        if (group === "deck2") return "[Channel4]";
+        if (group == "deck1") return "[Channel3]";
+        if (group == "deck2") return "[Channel4]";
     }
-    HIDDebug("whoop whoop undef");
     return undefined;
 };
 
