@@ -1,34 +1,10 @@
+#include "database/schemamanager.h"
+
 #include <gtest/gtest.h>
 
-#include "test/mixxxtest.h"
+#include "test/mixxxdbtest.h"
 
-#include "database/mixxxdb.h"
-#include "database/schemamanager.h"
-#include "util/db/dbconnectionpooler.h"
-#include "util/db/dbconnectionpooled.h"
-
-#include "library/dao/settingsdao.h"
-
-#include "util/assert.h"
-
-
-class SchemaManagerTest : public MixxxTest {
-  protected:
-    SchemaManagerTest()
-            : m_mixxxDb(config()),
-              m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-              m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())) {
-    }
-
-    QSqlDatabase dbConnection() const {
-        return m_dbConnection;
-    }
-
-  private:
-    const MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPooler m_dbConnectionPooler;
-    QSqlDatabase m_dbConnection;
-};
+class SchemaManagerTest : public MixxxDbTest {};
 
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {
     // Initial upgrade
