@@ -15,10 +15,19 @@ MacroManager::MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool)
             &MacroManager::saveMacro);
 }
 
-void MacroManager::saveMacro(ChannelHandle channel, Macro macro) {
+QByteArray serialize(QVector<MacroAction> actions) {
+    proto::Macro macroProto;
+    auto actionsProto = macroProto.mutable_actions();
+    for (auto action : actions) {
+        actionsProto->AddAllocated(action.serialize());
+    }
+    auto string = macroProto.SerializeAsString();
+    return QByteArray(string.data(), string.length());
+}
+
+void MacroManager::saveMacro(ChannelHandle channel, QVector<MacroAction> actions) {
     qCDebug(macroLoggingCategory) << "Saving Macro for channel" << channel.handle();
     // TODO(xerus) add test
-    macro.dump();
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "INSERT INTO macros "
@@ -30,7 +39,7 @@ void MacroManager::saveMacro(ChannelHandle channel, Macro macro) {
     query.bindValue(":state", 0);
     // TODO(xerus) proper labels
     query.bindValue(":label", QString("testch%1").arg(QString::number(channel.handle())));
-    query.bindValue(":content", macro.serialize());
+    query.bindValue(":content", serialize(actions));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;

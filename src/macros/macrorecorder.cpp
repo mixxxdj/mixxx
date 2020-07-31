@@ -8,6 +8,7 @@
 // TODO(xerus) handle track eject while recording
 
 namespace {
+constexpr uint kMaxMacroSize = 1000;
 const QString kConfigGroup = QStringLiteral("[MacroRecording]");
 }
 
@@ -15,9 +16,8 @@ MacroRecorder::MacroRecorder()
         : m_COToggleRecording(ConfigKey(kConfigGroup, "recording_toggle")),
           m_CORecStatus(ConfigKey(kConfigGroup, "recording_status")),
           m_activeChannel(nullptr),
-          m_macroRecordingState(State::Disabled),
           m_pStartRecordingTimer(this),
-          m_recordedMacro() {
+          m_pRecordedActions(kMaxMacroSize) {
     qCDebug(macroLoggingCategory) << "MacroRecorder construct";
 
     connect(&m_COToggleRecording,
@@ -33,27 +33,16 @@ MacroRecorder::MacroRecorder()
 void MacroRecorder::notifyCueJump(
         ChannelHandle* channel, double sourceFramePos, double destFramePos) {
     qCDebug(macroLoggingCategory) << "Jump in channel" << channel->handle();
-    if (checkOrClaimRecording(channel)) {
-        m_recordedMacro.appendJump(sourceFramePos, destFramePos);
+    if (isRecordingActive() && checkOrClaimRecording(channel)) {
+        m_pRecordedActions.emplace(sourceFramePos, destFramePos);
         qCDebug(macroLoggingCategory) << "Recorded jump in channel" << channel->handle();
-        setState(State::Armed);
     }
 }
 
 bool MacroRecorder::checkOrClaimRecording(ChannelHandle* channel) {
-    if (m_activeChannel != nullptr) {
-        return m_activeChannel->handle() == channel->handle() && claimRecording();
-    } else if (claimRecording()) {
-        m_activeChannel = channel;
-        qCDebug(macroLoggingCategory) << "Claimed recording for channel" << channel->handle();
-        return true;
-    }
-    return false;
-}
-
-bool MacroRecorder::claimRecording() {
-    auto armed = State::Armed;
-    return m_macroRecordingState.compare_exchange_weak(armed, State::Recording);
+    ChannelHandle* value = nullptr;
+    return m_activeChannel.compare_exchange_strong(value, channel) ||
+            value->handle() == channel->handle();
 }
 
 void MacroRecorder::pollRecordingStart() {
@@ -61,55 +50,50 @@ void MacroRecorder::pollRecordingStart() {
     if (getActiveChannel() == nullptr) {
         return;
     }
-    if (getState() != State::Disabled) {
-        m_CORecStatus.set(Status::Recording);
-    }
     m_pStartRecordingTimer.stop();
+    m_CORecStatus.set(Status::Recording);
 }
 
 void MacroRecorder::startRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording armed";
     m_CORecStatus.set(Status::Armed);
-    m_recordedMacro.clear();
-    setState(State::Armed);
     m_pStartRecordingTimer.start(300);
 }
 
 void MacroRecorder::stopRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording stop";
-    auto armed = State::Armed;
-    while (!m_macroRecordingState.compare_exchange_strong(armed, State::Disabled)) {
-        QThread::yieldCurrentThread();
-        if (getState() == State::Disabled) {
-            return;
-        }
-        armed = State::Armed;
-    }
+    m_pStartRecordingTimer.stop();
     m_CORecStatus.set(Status::Disabled);
-    if (m_activeChannel == nullptr) {
+
+    ChannelHandle* channel = m_activeChannel.exchange(nullptr);
+    if (channel == nullptr) {
         return;
     }
-    auto channel = m_activeChannel;
-    m_activeChannel = nullptr;
-    emit saveMacro(*channel, m_recordedMacro);
+
+    QVector<MacroAction> actions;
+    while (MacroAction* action = m_pRecordedActions.front()) {
+        m_pRecordedActions.pop();
+        actions.append(*action);
+    }
+    emit saveMacro(*channel, actions);
 }
 
-Macro MacroRecorder::getMacro() const {
-    return m_recordedMacro;
+const MacroAction MacroRecorder::getRecordedAction() {
+    return *m_pRecordedActions.front();
 }
 
-ChannelHandle* MacroRecorder::getActiveChannel() const {
-    return m_activeChannel;
+size_t MacroRecorder::getRecordingSize() const {
+    return m_pRecordedActions.size();
+}
+
+const ChannelHandle* MacroRecorder::getActiveChannel() const {
+    return m_activeChannel.load();
+}
+
+MacroRecorder::Status MacroRecorder::getStatus() const {
+    return Status(m_CORecStatus.get());
 }
 
 bool MacroRecorder::isRecordingActive() const {
-    return getState() != State::Disabled;
-}
-
-MacroRecorder::State MacroRecorder::getState() const {
-    return m_macroRecordingState.load();
-}
-
-void MacroRecorder::setState(State state) {
-    m_macroRecordingState.store(state);
+    return getStatus() > 0;
 }
