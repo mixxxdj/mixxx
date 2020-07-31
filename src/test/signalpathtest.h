@@ -1,5 +1,4 @@
-#ifndef ENGINEBACKENDTEST_H_
-#define ENGINEBACKENDTEST_H_
+#pragma once
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -67,18 +66,38 @@ class BaseSignalPathTest : public MixxxTest {
                                                m_pEffectsManager, m_pChannelHandleFactory,
                                                false);
 
-        m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup1);
-        m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup2);
-        m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup3);
+        m_pMixerDeck1 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup1));
+        m_pMixerDeck2 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup2));
+        m_pMixerDeck3 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup3));
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sPreviewGroup);
+        m_pPreview1 = new PreviewDeck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
@@ -210,11 +229,11 @@ class BaseSignalPathTest : public MixxxTest {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
+    static const QString m_sMasterGroup;
+    static const QString m_sInternalClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
     static const QString m_sGroup3;
-    static const QString m_sMasterGroup;
-    static const QString m_sInternalClockGroup;
     static const QString m_sPreviewGroup;
     static const QString m_sSamplerGroup;
     static const double kDefaultRateRange;
@@ -234,5 +253,3 @@ class SignalPathTest : public BaseSignalPathTest {
         loadTrack(m_pMixerDeck3, pTrack);
     }
 };
-
-#endif /* ENGINEBACKENDTEST_H_ */
