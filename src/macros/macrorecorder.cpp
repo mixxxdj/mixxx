@@ -7,11 +7,13 @@
 
 // TODO(xerus) handle track eject while recording
 
-const QString MacroRecorder::kControlsGroup = QStringLiteral("[MacroRecording]");
+namespace {
+const QString kConfigGroup = QStringLiteral("[MacroRecording]");
+}
 
 MacroRecorder::MacroRecorder()
-        : m_COToggleRecording(ConfigKey(kControlsGroup, "recording_toggle")),
-          m_CORecStatus(ConfigKey(kControlsGroup, "recording_status")),
+        : m_COToggleRecording(ConfigKey(kConfigGroup, "recording_toggle")),
+          m_CORecStatus(ConfigKey(kConfigGroup, "recording_status")),
           m_activeChannel(nullptr),
           m_macroRecordingState(State::Disabled),
           m_pStartRecordingTimer(this),
