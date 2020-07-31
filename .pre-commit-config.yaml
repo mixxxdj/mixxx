@@ -78,7 +78,7 @@ repos:
   hooks:
   - id: clang-format
     name: clang-format
-    entry: tools/clang_format_wrapper.py
+    entry: tools/clang_format.py
     require_serial: true
     stages:
     - commit
@@ -114,14 +114,3 @@ repos:
     stages:
     - commit
     - manual
-- repo: local
-  hooks:
-  - id: line-length
-    name: line-length
-    description: Check for lines longer 100 and brakes them before 80.
-    entry: ./tools/line_length.py
-    stages:
-    - commit
-    - manual
-    language: python
-    files: \.(c|cpp|h)$
