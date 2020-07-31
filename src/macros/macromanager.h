@@ -13,7 +13,7 @@ class MacroManager : public QObject {
     MacroRecorder* getRecorder();
 
   public slots:
-    void saveMacro(ChannelHandle channel, Macro macro);
+    void saveMacro(ChannelHandle channel, QVector<MacroAction> actions);
 
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;
