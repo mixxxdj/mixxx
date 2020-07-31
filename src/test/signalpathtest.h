@@ -59,12 +59,14 @@ class BaseSignalPathTest : public MixxxTest {
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
+        m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
         m_pVisualsManager = new VisualsManager();
-        m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
-                                               m_pEffectsManager, m_pChannelHandleFactory,
-                                               false);
+        m_pEngineMaster = new TestEngineMaster(m_pConfig,
+                m_sMasterGroup,
+                m_pEffectsManager,
+                m_pChannelHandleFactory,
+                false);
 
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
@@ -112,7 +114,7 @@ class BaseSignalPathTest : public MixxxTest {
         addDeck(m_pChannel3);
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
-        ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
+        ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
     }
 
     ~BaseSignalPathTest() override {
