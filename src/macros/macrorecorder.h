@@ -17,8 +17,6 @@
 class MacroRecorder : public RecordingManagerBase {
     Q_OBJECT
   public:
-    static const QString kControlsGroup;
-
     MacroRecorder();
 
     void startRecording() override;
