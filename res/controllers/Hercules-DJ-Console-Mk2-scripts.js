@@ -12,8 +12,8 @@ HerculesMk2.decayRate = 1.5;
 HerculesMk2.buttons123Modes = ["kill", "fx", "cue", "loop"];
 HerculesMk2.buttons123used = {"[Channel1]": false, "[Channel1]": false};
 
-// TODO HerculesMk2 controls should be divided into groups, then signals 
-// should directed to each group without thinking about specific controls 
+// TODO HerculesMk2 controls should be divided into groups, then signals
+// should directed to each group without thinking about specific controls
 // to allow for easy rebinding.
 
 HerculesMk2.cueLastDate1 = {"[Channel1]": 0, "[Channel2]" : 0};
@@ -27,9 +27,9 @@ HerculesMk2.controls = {
     0x03: { "channel": 2, "name": "cue", "type": "button" },
     0x08: { "channel": 1, "name": "play", "type": "button" },
     0x02: { "channel": 2, "name": "play", "type": "button" },
-    0x07: { "channel": 1, "name": "fx select", "type": "button", 
+    0x07: { "channel": 1, "name": "fx select", "type": "button",
         "mode": 0 },
-    0x01: { "channel": 2, "name": "fx select", "type": "button", 
+    0x01: { "channel": 2, "name": "fx select", "type": "button",
         "mode": 0 },
     0x0F: { "channel": 1, "name": "fx 1", "type": "button", "used": false },
     0x10: { "channel": 2, "name": "fx 1", "type": "button", "used": false },
@@ -64,18 +64,18 @@ HerculesMk2.controls = {
     }
 };
 
-HerculesMk2.leds = { 
+HerculesMk2.leds = {
 };
 
 HerculesMk2.init = function (id) { // called when the device is opened & set up
     HerculesMk2.initializeControls();
-    
+
     engine.connectControl("[Channel1]","playposition","HerculesMk2.wheelDecay");
     engine.connectControl("[Channel2]","playposition","HerculesMk2.wheelDecay");
-    
+
     print ("HerculesMk2 id: \""+id+"\" initialized.");
 };
-    
+
 HerculesMk2.initializeControls = function () {
     for (control in HerculesMk2.controls.outputs) {
     if (HerculesMk2.controls.outputs[control].type == 'led') {
@@ -86,7 +86,7 @@ HerculesMk2.initializeControls = function () {
 
     HerculesMk2.setLeds("on");
     HerculesMk2.setLeds("off");
-    
+
     // Set controls in Mixxx to reflect settings on the device
     midi.sendShortMsg(0xB0,0x7F,0x7F);
 };
@@ -95,20 +95,20 @@ HerculesMk2.shutdown = function (id) {
     HerculesMk2.setLeds("off");
 };
 
-HerculesMk2.getGroup = function (control){ 
-    // Get the "group" that used to be provided in group, this is not reusable 
-    // across devices and also breaks remapping of these functions to other 
-    // buttons.  
+HerculesMk2.getGroup = function (control){
+    // Get the "group" that used to be provided in group, this is not reusable
+    // across devices and also breaks remapping of these functions to other
+    // buttons.
 
     return "[Channel" + HerculesMk2.controls.inputs[control].channel + "]";
 };
 
-HerculesMk2.getControl = function (io, channel, name) { 
+HerculesMk2.getControl = function (io, channel, name) {
     // Accept channel in form 'N' or '[ChannelN]'
     channel = channel.replace(/\[Channel(\d)\]/, "$1");
 
     for (control in HerculesMk2.controls.inputs) {
-    if (HerculesMk2.controls.inputs[control].channel == channel && 
+    if (HerculesMk2.controls.inputs[control].channel == channel &&
         HerculesMk2.controls.inputs[control].name == name
         ) return HerculesMk2.controls.inputs[control];
     }
@@ -141,7 +141,7 @@ HerculesMk2.pauseScript = function(ms) {
 };
 
 HerculesMk2.pfl = function (group, control, value, status) {
-    if (value) { // Act on given mode being selected, not deselected. 
+    if (value) { // Act on given mode being selected, not deselected.
     if (HerculesMk2.debug) print("HerculesMk2.pfl: " + control.toString(16) + " " + value.toString(16));
     switch (control) {
     case 0x23: // Headphones Split
@@ -152,25 +152,25 @@ HerculesMk2.pfl = function (group, control, value, status) {
         break;
     case 0x21: // Headphones Deck A
         if (HerculesMk2.debug) print("HerculesMk2.pfl: Deck A");
-        engine.setValue("[Channel1]", "pfl", 1);        
+        engine.setValue("[Channel1]", "pfl", 1);
         engine.setValue("[Channel2]", "pfl", 0);
         break;
     case 0x22: // Headphones Deck B
         if (HerculesMk2.debug) print("HerculesMk2.pfl: Deck B");
-        engine.setValue("[Channel1]", "pfl", 0);        
-        engine.setValue("[Channel2]", "pfl", 1);        
+        engine.setValue("[Channel1]", "pfl", 0);
+        engine.setValue("[Channel2]", "pfl", 1);
     }
     }
 };
 
 HerculesMk2.cue = function (group, control, value, status) {
     group = HerculesMk2.getGroup(control);
-    
-    if ((engine.getValue(group, "duration") == 0) && (value)) { 
+
+    if ((engine.getValue(group, "duration") == 0) && (value)) {
     print("No song on " + group);
-    return; 
+    return;
     }
-    
+
     if (value) { // Down
     engine.setValue(group,"cue_default",1);
     HerculesMk2.setLed(group + " cue", "on");
@@ -182,12 +182,12 @@ HerculesMk2.cue = function (group, control, value, status) {
 HerculesMk2.play = function (group, control, value, status) {
     if (value) { // Only do stuff when play is pushed, not released.
     group = HerculesMk2.getGroup(control);
-    
-    if (engine.getValue(group, "duration") == 0) { 
+
+    if (engine.getValue(group, "duration") == 0) {
         print("No song on " + group);
-        return; 
+        return;
     }
-    
+
     engine.setValue(group,"play", !engine.getValue(group,"play"));
     HerculesMk2.setLed(group + " cue", "off");
     }
@@ -212,7 +212,7 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
 
     mode = HerculesMk2.getControl("inputs", group, "fx select").mode;
     mode = HerculesMk2.buttons123Modes[mode];
-    
+
     switch (mode) {
 
     case "kill": // Kill mode
@@ -221,13 +221,13 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
         case "fx 1":
         engine.setValue(group, "filterLowKill", !engine.getValue(group, "filterLowKill"));
         break;
-        case "fx 2": 
+        case "fx 2":
         engine.setValue(group, "filterMidKill", !engine.getValue(group, "filterMidKill"));
         break;
         case "fx 3":
         engine.setValue(group, "filterHighKill", !engine.getValue(group, "filterHighKill"));
         break;
-        } 
+        }
     }
     break; // End kill mode
 
@@ -237,7 +237,7 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
     // held down, then use the pitch pot to modify the effect settings
     if (!value) { // Button released.
         if (HerculesMk2.controls.inputs[control].used) {
-        // Button was used to turn the pitch control into a modifier 
+        // Button was used to turn the pitch control into a modifier
         // for the effect settings, so don't go on and turn the flanger
         // on/off
         HerculesMk2.controls.inputs[control].used = false;
@@ -250,11 +250,11 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
         case "fx 3":
         engine.setValue(group, "flanger", !engine.getValue(group, "flanger"));
         break;
-        } 
+        }
     }
     break; // End fx mode
 
-    case "cue": 
+    case "cue":
     if (value) { // onPress
         switch (HerculesMk2.controls.inputs[control].name) {
             case "fx 1":
@@ -321,7 +321,7 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
         }
     break;
 
-    default: 
+    default:
     print("HerculesMk2.buttons123: " + mode + " mode unsupported");
     }
 };
@@ -334,13 +334,13 @@ HerculesMk2.buttons123mode = function (group, control, value, status) {
     currentLed = group + " " + HerculesMk2.buttons123Modes[currentMode] + " mode";
     nextLed = group + " " + HerculesMk2.buttons123Modes[nextMode] + " mode";
 
-    sNextMode = HerculesMk2.buttons123Modes[nextMode]; 
+    sNextMode = HerculesMk2.buttons123Modes[nextMode];
     switch (sNextMode) {
     case "kill":
-    case "fx": 
+    case "fx":
         print("HerculesMk2.buttons123mode: Switching to " + sNextMode + " mode");
         break;
-    case "cue": 
+    case "cue":
         print("HerculesMk2.buttons123mode: Switching to " + sNextMode + " mode");
         break;
     case "loop":
@@ -363,7 +363,7 @@ HerculesMk2.buttons123mode = function (group, control, value, status) {
 };
 
 HerculesMk2.pitch = function (group, control, value, status) {
-    //  7F > 40: CCW Slow > Fast - 127 > 64 
+    //  7F > 40: CCW Slow > Fast - 127 > 64
     //  01 > 3F: CW Slow > Fast - 0 > 63
 
     group = HerculesMk2.getGroup(control);
@@ -377,7 +377,7 @@ HerculesMk2.pitch = function (group, control, value, status) {
     // pot to adjust the relevant flanger parameters instead of changing
     // the rate (as is normal operation for the pitch pot)
 
-    if (currentMode == "fx") { 
+    if (currentMode == "fx") {
     potStep = 25; // How many clicks round the pot from min to max values
 
     if (HerculesMk2.getControl("inputs", group, "fx 1").isDown) {
@@ -389,29 +389,29 @@ HerculesMk2.pitch = function (group, control, value, status) {
         newValue = currentValue + increment;
         newValue = newValue > max ? max : newValue < min ? min : newValue;
         if (HerculesMk2.debug) print ("HerculesMk2.pitch: value= " + newValue);
-        if (newValue != currentValue) 
+        if (newValue != currentValue)
         engine.setValue("[Flanger]", "lfoDepth", newValue);
-        
+
         HerculesMk2.getControl("inputs", group, "fx 1").used = true;
         done = true;
-    } 
+    }
 
     if (HerculesMk2.getControl("inputs", group, "fx 2").isDown) {
         min = 50; max = 10000;
         increment = (max-min)/potStep;
         increment = (value <= 0x3F) ? increment : increment * -1;
-    
+
         currentValue = engine.getValue("[Flanger]", "lfoDelay");
         newValue = currentValue + increment;
         newValue = newValue > max ? max : newValue < min ? min : newValue;
         if (HerculesMk2.debug) print ("HerculesMk2.pitch: value= " + newValue);
-        if (newValue != currentValue) 
+        if (newValue != currentValue)
         engine.setValue("[Flanger]", "lfoDelay", newValue);
-        
+
         HerculesMk2.getControl("inputs", group, "fx 2").used = true;
         done = true;
     }
-    
+
     if (HerculesMk2.getControl("inputs", group, "fx 3").isDown) {
         min = 50000; max = 2000000
         increment = (max-min)/potStep;
@@ -421,9 +421,9 @@ HerculesMk2.pitch = function (group, control, value, status) {
         newValue = currentValue + increment;
         newValue = newValue > max ? max : newValue < min ? min : newValue;
         if (HerculesMk2.debug) print ("HerculesMk2.pitch: value= " + newValue);
-        if (newValue != currentValue) 
+        if (newValue != currentValue)
         engine.setValue("[Flanger]", "lfoPeriod", newValue);
-        
+
         HerculesMk2.getControl("inputs", group, "fx 3").used = true;
         done = true;
     }
@@ -439,49 +439,49 @@ HerculesMk2.pitch = function (group, control, value, status) {
 };
 
 HerculesMk2.jog_wheel = function (group, control, value, status) {
-    //  7F > 40: CCW Slow > Fast - 127 > 64 
+    //  7F > 40: CCW Slow > Fast - 127 > 64
     //  01 > 3F: CW Slow > Fast - 0 > 63
     group = HerculesMk2.getGroup(control);
 
     if (HerculesMk2.controls.outputs[HerculesMk2.leds[group + " cue"]].isOn == true) {
     HerculesMk2.setLed(group + " cue", "off");
     }
-    
+
     jogValue = value >=0x40 ? value - 0x80 : value; // -64 to +63, - = CCW, + = CW
-    
+
     if (HerculesMk2.scratchMode) { // do some scratching
     if (HerculesMk2.debug) print("Do scratching value:" + value + " jogValue: " + jogValue );
     engine.setValue(group,"scratch", (engine.getValue(group,"scratch") + (jogValue/64)).toFixed(2));
     } else { // do pitch adjustment
-    newValue = jogValue; 
+    newValue = jogValue;
     if (HerculesMk2.debug) print("do pitching adjust " + jogValue + " new Value: " + newValue);
     engine.setValue(group,"jog", newValue);
     }
 };
-    
-HerculesMk2.wheelDecay = function (value) {    
+
+HerculesMk2.wheelDecay = function (value) {
     currentDate = new Date().getTime();
-    
+
     if (currentDate > HerculesMk2.decayLast + HerculesMk2.decayInterval) {
     HerculesMk2.decayLast = currentDate;
-    
+
     if (HerculesMk2.debug) print(" new playposition: " + value + " decayLast: "+ HerculesMk2.decayLast);
     if (HerculesMk2.scratchMode) { // do some scratching
         if (HerculesMk2.debug) print("Scratch deck1: " + engine.getValue("[Channel1]","scratch") + " deck2: "+ engine.getValue("[Channel2]","scratch"));
-        
+
         jog1DecayRate = HerculesMk2.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
-        jog1 = engine.getValue("[Channel1]","scratch"); 
+        jog1 = engine.getValue("[Channel1]","scratch");
         if (jog1 != 0) {
-        if (Math.abs(jog1) > jog1DecayRate) {  
+        if (Math.abs(jog1) > jog1DecayRate) {
             engine.setValue("[Channel1]","scratch", (jog1 / jog1DecayRate).toFixed(2));
         } else {
             engine.setValue("[Channel1]","scratch", 0);
         }
         }
         jog2DecayRate = HerculesMk2.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
-        jog2 = engine.getValue("[Channel2]","scratch"); 
+        jog2 = engine.getValue("[Channel2]","scratch");
         if (jog2 != 0) {
-        if (Math.abs(jog2) > jog2DecayRate) {  
+        if (Math.abs(jog2) > jog2DecayRate) {
             engine.setValue("[Channel2]","scratch", (jog2 / jog2DecayRate).toFixed(2));
         } else {
             engine.setValue("[Channel2]","scratch", 0);

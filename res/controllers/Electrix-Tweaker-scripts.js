@@ -19,12 +19,12 @@ ElectrixTweaker.vinylMode = {'[Channel1]': false, '[Channel2]': false, '[Channel
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -103,22 +103,22 @@ ElectrixTweaker.encoderRingStepsFill = [0, 1, 20, 30, 40, 50, 60, 64, 75, 85, 95
 ElectrixTweaker.buttons = {
     '[Channel1]': {
         'arrowSide': 42,
-        
+
         'mode': 33,
         'pfl': 34,
         'play': 35,
 
-        
+
         'hotcues': [
                 [1, 2, 3, 4],
                 [9, 10, 11, 12]
             ],
-        
+
         'forward': 17,
         'slip': 18,
         'shift': 19,
         'deckToggle': 20,
-        
+
         'back': 25,
         'quantize': 26,
         'key': 27,
@@ -128,25 +128,25 @@ ElectrixTweaker.buttons = {
         'mode': 36,
         'pfl': 37,
         'play': 38,
-        
+
         'arrowSide': 43,
-        
-        
+
+
         'hotcues': [
                 [5, 6, 7, 8],
                 [13, 14, 15, 16]
             ],
-            
+
         'forward': 21,
         'slip': 22,
         'shift': 23,
         'deckToggle': 24,
-        
+
         'back': 29,
         'quantize': 30,
         'key': 31,
         'sync': 32
-        
+
     }
 }
 ElectrixTweaker.buttons['[Channel3]'] = ElectrixTweaker.buttons['[Channel1]']
@@ -207,7 +207,7 @@ ElectrixTweaker.init = function () {
         engine.connectControl('[Sampler'+i+']', 'track_samples', 'ElectrixTweaker.oneShotLED')
         engine.trigger('[Sampler'+i+']', 'track_samples')
     }
-    
+
     midi.sendShortMsg(0x90, 39, 127) // light up arrow
     midi.sendShortMsg(0x90, 40, 127) // light top shift button
     midi.sendShortMsg(0x90, 41, 127) // light down arrow
@@ -259,7 +259,7 @@ ElectrixTweaker.initDeck = function (group) {
     for (i=1; i <= 32; i++) {
         engine.setValue(disconnectDeck, 'hotcue_'+i+'_activate', 0)
     }
-    
+
     midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['shift'], ElectrixTweaker.colorCodes['yellow'])
     midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['deckToggle'], ElectrixTweaker.deckColor[group])
     midi.sendShortMsg(
@@ -267,15 +267,15 @@ ElectrixTweaker.initDeck = function (group) {
         ElectrixTweaker.buttons[group]['slip'],
         ElectrixTweaker.slipMode[group] ? ElectrixTweaker.deckColor[group] : ElectrixTweaker.colorCodes['off']
     )
-    
+
     ElectrixTweaker.mode[group] = ElectrixTweaker.mode[disconnectDeck]
-    
+
     ElectrixTweaker.connectDeckControls(group)
 }
 
 ElectrixTweaker.connectDeckControls = function (group, remove) {
     remove = (typeof remove !== 'undefined') ? remove : false // default value for remove is false
-    
+
     var controlsToFunctions = {
         'pfl': 'ElectrixTweaker.pflButtonLED',
 //         'track_samples': 'ElectrixTweaker.arrowSideLED', // the line below would overwrite this attribute
@@ -296,7 +296,7 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
     }
     ElectrixTweaker.connectHotcuePage(group, remove)
     ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], remove)
-    
+
     if (ElectrixTweaker.vinylMode[group]) {
         ElectrixTweaker.connectVinylLEDs(group, remove)
     }
@@ -315,7 +315,7 @@ ElectrixTweaker.connectEncoderMode = function (group, mode, remove) {
                     midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['cc'], 70 + 8*ElectrixTweaker.eqSensitivity)
                     // enable local control of LED ring
                     midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['ring'], 70)
-                    
+
                     engine.trigger(group, 'filter' + encoder)
                     engine.trigger(group, 'filter' + encoder + 'Kill')
                 }
@@ -332,7 +332,7 @@ ElectrixTweaker.connectEncoderMode = function (group, mode, remove) {
                     // set LED ring to EQ mode with local control disabled
                     midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['ring'], 98)
                 }
-                
+
                 midi.sendShortMsg(
                     0xB0,
                     ElectrixTweaker.encoders[group]['High']['ring'],
@@ -340,13 +340,13 @@ ElectrixTweaker.connectEncoderMode = function (group, mode, remove) {
                         6 + Math.log(ElectrixTweaker.loopMoveSize[group]) / Math.log(2)
                     ]
                 )
-                
+
                 midi.sendShortMsg(
                     0xB0,
                     ElectrixTweaker.encoders[group]['Mid']['ring'],
                     64
                 )
-                
+
                 midi.sendShortMsg(
                     0xB0,
                     ElectrixTweaker.encoders[group]['Low']['ring'],
@@ -361,7 +361,7 @@ ElectrixTweaker.connectEncoderMode = function (group, mode, remove) {
 
 ElectrixTweaker.connectHotcuePage = function (group, remove) {
     remove = (typeof remove !== 'undefined') ? remove : false // default value for remove is false
-    
+
     var min = 1 + (ElectrixTweaker.hotcuePage[group] * 8)
     var max = min + 7
     for (i=min; i<=max; i++) {
@@ -427,7 +427,7 @@ ElectrixTweaker.topShiftButton = function (channel, control, value, status, grou
             engine.connectControl(ElectrixTweaker.deck[group], 'pregain', 'ElectrixTweaker.gainLEDs', true)
         }
     }
-    
+
     var controlsToFunctions = {
         'volume': 'ElectrixTweaker.masterGainLEDs',
         'balance': 'ElectrixTweaker.masterBalanceLEDs',
@@ -705,7 +705,7 @@ ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
                 if (value == 127) {
                     engine.setValue(group, 'loop_move_' + ElectrixTweaker.loopMoveSize[group] + '_backward', 1)
                     midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 0)
-                    
+
                 } else {
                     engine.setValue(group, 'loop_move_' + ElectrixTweaker.loopMoveSize[group] + '_forward', 1)
                     midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 127)
@@ -875,7 +875,7 @@ ElectrixTweaker.playButton = function (channel, control, value, status, group) {
         if (ElectrixTweaker.hotcuesPressed[group]) {
             ElectrixTweaker.playPressedWhileCueJuggling[group] = true
         }
-        
+
         engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
     }
 }
@@ -968,7 +968,7 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
                 ElectrixTweaker.hotcuesPressed[group] = 0
             }
 
-            
+
             ElectrixTweaker.slipMode[group] = ! ElectrixTweaker.slipMode[group]
             midi.sendShortMsg(
                 0x90,
