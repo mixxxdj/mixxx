@@ -78,6 +78,7 @@ repos:
   hooks:
   - id: clang-format
     name: clang-format
+    description: "Run clang-format in two passes (reformat, then break long lines)"
     entry: tools/clang_format.py
     require_serial: true
     stages:

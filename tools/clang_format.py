@@ -87,7 +87,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     rootdir = githelper.get_toplevel_path()
 
     # First pass: Format added lines using clang-format
-    logger.info("First pass: Reformat files...")
+    logger.info("First pass: Reformatting added/changed lines...")
     files_with_added_lines = githelper.get_changed_lines_grouped(
         from_ref=args.from_ref,
         filter_lines=lambda line: line.added,
@@ -97,7 +97,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
         run_clang_format_on_lines(rootdir, changed_file)
 
     # Second pass: Wrap long added lines using clang-format
-    logger.info("Second pass: Reformat files with long lines...")
+    logger.info("Second pass: Breaking long added/changed lines...")
     files_with_long_added_lines = githelper.get_changed_lines_grouped(
         from_ref=args.from_ref,
         filter_lines=lambda line: line.added
