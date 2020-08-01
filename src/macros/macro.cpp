@@ -2,50 +2,38 @@
 
 #include <QDebug>
 
-#include "util/assert.h"
+Macro::Macro(bool enabled, bool loop, QString label, QVector<MacroAction> actions)
+        : m_enabled(enabled),
+          m_loop(loop),
+          m_label(label),
+          m_actions(actions) {
+}
 
-Macro::Macro(QByteArray serialized) {
+QVector<MacroAction> Macro::deserialize(const QByteArray& serialized) {
     proto::Macro macroProto = proto::Macro();
     macroProto.ParseFromArray(serialized.data(), serialized.length());
-    for (auto action : macroProto.actions()) {
-        appendJump(action.origin(), action.target());
+    QVector<MacroAction> result(macroProto.actions_size());
+    int i = 0;
+    for (const proto::Macro_Action& action : macroProto.actions()) {
+        result.replace(i++, MacroAction(action.position(), action.target()));
     }
+    return result;
 }
 
-void Macro::appendJump(double sourceFramePos, double destFramePos) {
-    VERIFY_OR_DEBUG_ASSERT(m_length < kMaxSize) {
-        return;
-    }
-    qCDebug(macroLoggingCategory)
-            << "Length" << m_length
-            << ": Appending jump from position" << sourceFramePos << "to" << destFramePos;
-    actions[m_length].position = sourceFramePos;
-    actions[m_length].target = destFramePos;
-    m_length++;
-}
-
-void Macro::clear() {
-    qCDebug(macroLoggingCategory) << "Clearing Macro";
-    m_length = 0;
-}
-
-int Macro::getLength() const {
-    return m_length;
-}
-
-void Macro::dump() const {
-    for (size_t i = 0; i < m_length; ++i) {
-        auto action = actions[i];
-        qCDebug(macroLoggingCategory) << "Jump from " << action.position << " to " << action.target;
-    }
-}
-
-QByteArray Macro::serialize() const {
+QByteArray Macro::serialize(const QVector<MacroAction>& actions) {
     proto::Macro macroProto;
     auto actionsProto = macroProto.mutable_actions();
-    for (size_t i = 0; i < m_length; ++i) {
-        actionsProto->AddAllocated(actions[i].serialize());
+    for (const MacroAction& action : actions) {
+        actionsProto->AddAllocated(action.serialize());
     }
     auto string = macroProto.SerializeAsString();
     return QByteArray(string.data(), string.length());
+}
+
+proto::Macro_Action* MacroAction::serialize() const {
+    auto serialized = new proto::Macro_Action();
+    serialized->set_position(position);
+    serialized->set_target(target);
+    serialized->set_type(Type::JUMP);
+    return serialized;
 }

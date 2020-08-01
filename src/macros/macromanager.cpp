@@ -12,22 +12,15 @@ MacroManager::MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool)
     connect(getRecorder(),
             &MacroRecorder::saveMacro,
             this,
-            &MacroManager::saveMacro);
+            &MacroManager::slotSaveMacro);
 }
 
-QByteArray serialize(QVector<MacroAction> actions) {
-    proto::Macro macroProto;
-    auto actionsProto = macroProto.mutable_actions();
-    for (auto action : actions) {
-        actionsProto->AddAllocated(action.serialize());
-    }
-    auto string = macroProto.SerializeAsString();
-    return QByteArray(string.data(), string.length());
-}
-
-void MacroManager::saveMacro(ChannelHandle channel, QVector<MacroAction> actions) {
+void MacroManager::slotSaveMacro(ChannelHandle channel, QVector<MacroAction> actions) {
     qCDebug(macroLoggingCategory) << "Saving Macro for channel" << channel.handle();
-    // TODO(xerus) add test
+    saveMacro(TrackId(1), "Unnamed Macro", actions);
+}
+
+void MacroManager::saveMacro(TrackId trackId, QString label, QVector<MacroAction> actions) {
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "INSERT INTO macros "
@@ -35,11 +28,10 @@ void MacroManager::saveMacro(ChannelHandle channel, QVector<MacroAction> actions
             "VALUES "
             "(:trackId, :state, :label, :content)"));
     // TODO(xerus) obtain trackId
-    query.bindValue(":trackId", 1);
-    query.bindValue(":state", 0);
-    // TODO(xerus) proper labels
-    query.bindValue(":label", QString("testch%1").arg(QString::number(channel.handle())));
-    query.bindValue(":content", serialize(actions));
+    query.bindValue(":trackId", trackId.toVariant());
+    query.bindValue(":label", label);
+    query.bindValue(":state", 0u);
+    query.bindValue(":content", Macro::serialize(actions));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
