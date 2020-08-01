@@ -16,7 +16,7 @@ struct MacroAction {
     MacroAction(){};
     MacroAction(double position, double target)
             : position(position), target(target){};
-    /// TODO(xerus) use FramePos once https://github.com/mixxxdj/mixxx/pull/2861 is merged
+    // use FramePos once https://github.com/mixxxdj/mixxx/pull/2961 is merged
     double position;
     double target;
 
@@ -28,58 +28,24 @@ struct MacroAction {
         return !operator==(other);
     }
 
-    proto::Macro_Action* serialize() const {
-        auto serialized = new proto::Macro_Action();
-        serialized->set_origin(position);
-        serialized->set_target(target);
-        serialized->set_type(Type::JUMP);
-        return serialized;
-    };
+    proto::Macro_Action* serialize() const;
+    ;
 
     enum Type : uint8_t {
         JUMP = 0
     };
 };
 
-/// A Macro stores a list of MacroActions.
-/// The maximum size is fixed at a generous kMaxSize to prevent resizing in realtime code.
+/// A Macro stores a list of MacroActions as well as its current state and label.
 class Macro {
   public:
-    static const int kMaxSize = 1000;
+    static QByteArray serialize(const QVector<MacroAction>& actions);
+    static QVector<MacroAction> deserialize(const QByteArray& serialized);
 
-    Macro() = default;
-    Macro(QByteArray serialized);
+    Macro(bool enabled, bool loop, QString label, QVector<MacroAction> actions);
 
-    MacroAction actions[kMaxSize];
-
-    /// Append a jump action to this Macro by assigning the next available slot.
-    /// Only called in realtime code.
-    void appendJump(double sourceFramePos, double destFramePos);
-
-    /// Clears the contents of this Macro by setting its length to 0.
-    void clear();
-
-    /// Number of saved Actions.
-    int getLength() const;
-
-    QByteArray serialize() const;
-
-    /// For debugging - dump all saved actions to debug output.
-    void dump() const;
-
-    bool operator==(const Macro& other) const {
-        if (m_length != other.m_length)
-            return false;
-        size_t c = 0;
-        while (c < m_length) {
-            if (actions[c] != other.actions[c]) {
-                return false;
-            }
-            c++;
-        }
-        return true;
-    }
-
-  private:
-    size_t m_length = 0;
+    bool m_enabled;
+    bool m_loop;
+    QString m_label;
+    const QVector<MacroAction> m_actions;
 };
