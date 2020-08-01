@@ -488,18 +488,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         qWarning() << "Failed to load default skin styles!";
     }
 
-    // Load skin to a QWidget that we set as the central widget. Assignment
-    // intentional in next line.
-    m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
-            &m_skinCreatedControls,
-            m_pKeyboard,
-            m_pPlayerManager,
-            m_pControllerManager,
-            m_pLibrary,
-            m_pVCManager,
-            m_pEffectsManager,
-            m_pRecordingManager);
-    if (!m_pCentralWidget) {
+    if (!loadConfiguredSkin()) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded - see <b>mixxx</b> trace for more information");
         m_pCentralWidget = oldWidget;
@@ -1438,7 +1427,7 @@ void MixxxMainWindow::rebootMixxxView() {
         m_pCentralWidget->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pCentralWidget;
-        m_pCentralWidget = NULL;
+        m_pCentralWidget = nullptr;
     }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1448,18 +1437,7 @@ void MixxxMainWindow::rebootMixxxView() {
     bool wasFullScreen = isFullScreen();
     slotViewFullScreen(false);
 
-    // Load skin to a QWidget that we set as the central widget. Assignment
-    // intentional in next line.
-    m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
-            &m_skinCreatedControls,
-            m_pKeyboard,
-            m_pPlayerManager,
-            m_pControllerManager,
-            m_pLibrary,
-            m_pVCManager,
-            m_pEffectsManager,
-            m_pRecordingManager);
-    if (!m_pCentralWidget) {
+    if (!loadConfiguredSkin()) {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
@@ -1500,6 +1478,19 @@ void MixxxMainWindow::rebootMixxxView() {
 
     qDebug() << "rebootMixxxView DONE";
     emit skinLoaded();
+}
+
+bool MixxxMainWindow::loadConfiguredSkin() {
+    m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
+            &m_skinCreatedControls,
+            m_pKeyboard,
+            m_pPlayerManager,
+            m_pControllerManager,
+            m_pLibrary,
+            m_pVCManager,
+            m_pEffectsManager,
+            m_pRecordingManager);
+    return m_pCentralWidget != nullptr;
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
