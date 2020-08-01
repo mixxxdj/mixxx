@@ -1,0 +1,7 @@
+---
+Checks:          '-*,modernize-use-nullptr,modernize-use-auto'
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+AnalyzeTemporaryDtors: false
+FormatStyle:     none
+...

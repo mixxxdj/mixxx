@@ -319,6 +319,13 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
+# Export compile-commands.json and symlink it into the source directory (needed
+# for clang-tidy pre-commit hook)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+file(CREATE_LINK
+  ${CMAKE_BINARY_DIR}/compile_commands.json
+  ${CMAKE_SOURCE_DIR}/compile_commands.json SYMBOLIC)
+
 # Mixxx itself
 add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp

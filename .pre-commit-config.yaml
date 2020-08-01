@@ -76,6 +76,20 @@ repos:
     - manual
 - repo: local
   hooks:
+  - id: clang-tidy
+    name: clang-tidy
+    entry: tools/clang_tidy.py
+    require_serial: true
+    verbose: true
+    stages:
+    - commit
+    - manual
+    language: system
+    files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
+    additional_dependencies:
+    - clang-tidy
+- repo: local
+  hooks:
   - id: clang-format
     name: clang-format
     description: "Run clang-format in two passes (reformat, then break long lines)"
