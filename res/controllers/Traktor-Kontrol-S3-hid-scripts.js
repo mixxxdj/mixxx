@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* Traktor Kontrol S3 HID controller script v1.00                                */
-/* Last modification: July 2020                                                  */
+/* Last modification: August 2020                                                  */
 /* Author: Owen Williams                                                         */
 /* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3     */
 /*                                                                               */
@@ -28,6 +28,7 @@
 var TraktorS3 = new function() {
     this.controller = new HIDController();
     this.shiftPressed = {"deck1": false, "deck2": false};
+    this.previewPressed = {"deck1": false, "deck2": false};
     this.fxButtonState = {1: false, 2: false, 3: false, 4: false};
     this.padModeState = {"deck1": 0, "deck2": 0}; // 0 = Hotcues Mode, 1 = Samples Mode
 
@@ -152,10 +153,14 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputButton(messageShort, "deck1", "!LoadSelectedTrack", 0x09, 0x01, this.loadTrackHandler);
     this.registerInputButton(messageShort, "deck2", "!LoadSelectedTrack", 0x09, 0x08, this.loadTrackHandler);
 
-    this.registerInputButton(messageShort, "deck1", "!MaximizeLibrary", 0x01, 0x40, this.maximizeLibraryHandler);
-    this.registerInputButton(messageShort, "deck2", "!MaximizeLibrary", 0x04, 0x80, this.maximizeLibraryHandler);
-    // this.registerInputButton(messageShort, "deck1", "!AddTrack", 0x01, 0x04, this.addTrackHandler);
-    // this.registerInputButton(messageShort, "deck2", "!AddTrack", 0x04, 0x10, this.addTrackHandler);
+    this.registerInputButton(messageShort, "deck1", "!PreviewTrack", 0x01, 0x08, this.previewTrackHandler);
+    this.registerInputButton(messageShort, "deck2", "!PreviewTrack", 0x04, 0x10, this.previewTrackHandler);
+
+    this.registerInputButton(messageShort, "deck1", "!LibraryFocus", 0x01, 0x40, this.LibraryFocusHandler);
+    this.registerInputButton(messageShort, "deck2", "!LibraryFocus", 0x04, 0x80, this.LibraryFocusHandler);
+
+    this.registerInputButton(messageShort, "deck1", "!AddTrack", 0x01, 0x20, this.cueAutoDJHandler);
+    this.registerInputButton(messageShort, "deck2", "!AddTrack", 0x04, 0x40, this.cueAutoDJHandler);
 
     // // Loop control
     // TODO: bind touch detections: 0x0A/0x01, 0x0A/0x08
@@ -196,14 +201,14 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputButton(messageShort, "deck1", "!slip_enabled", 0x01, 0x02, this.fluxHandler);
     this.registerInputButton(messageShort, "deck2", "!slip_enabled", 0x04, 0x04, this.fluxHandler);
 
-    this.registerInputButton(messageShort, "deck1", "!grid", 0x01, 0x08, this.beatgridHandler);
+    this.registerInputButton(messageShort, "deck1", "!grid", 0x01, 0x80, this.beatgridHandler);
     this.registerInputButton(messageShort, "deck2", "!grid", 0x05, 0x01, this.beatgridHandler);
 
     // // TODO: implement jog
     // this.registerInputButton(messageShort, "deck1", "!grid", 0x02, 0x01, this.jogHandler);
     // this.registerInputButton(messageShort, "deck2", "!grid", 0x05, 0x02, this.jpgHandler);
 
-    // Unmapped: preview, star, list, encoder touches, jog
+    // Unmapped: star, encoder touches, jog
     // DECK ASSIGNMENT
 
     this.controller.registerInputPacket(messageShort);
@@ -319,7 +324,7 @@ TraktorS3.deckSwitchHandler = function(field) {
 TraktorS3.playHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
     HIDDebug("group?? " + activeGroup);
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "start_stop", field.value);
     } else if (field.value === 1) {
         HIDDebug("sooooo play?");
@@ -329,7 +334,7 @@ TraktorS3.playHandler = function(field) {
 
 TraktorS3.cueHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "cue_gotoandstop", field.value);
     } else {
         engine.setValue(activeGroup, "cue_default", field.value);
@@ -340,7 +345,7 @@ TraktorS3.cueHandler = function(field) {
 TraktorS3.shiftHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
     HIDDebug("SHIFT!" + activeGroup + " " + field.value);
-    TraktorS3.shiftPressed[activeGroup] = field.value;
+    TraktorS3.shiftPressed[field.group] = field.value;
     engine.setValue("[Controls]", "touch_shift", field.value);
     TraktorS3.outputHandler(field.value, field.group, "shift");
 };
@@ -356,7 +361,7 @@ TraktorS3.keylockHandler = function(field) {
 
 TraktorS3.syncHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         // engine.setValue(activeGroup, "sync_enabled", field.value);
     } else if (field.value === 1) {
         //TODO: latching not working?
@@ -403,7 +408,7 @@ TraktorS3.numberButtonHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
     if (TraktorS3.padModeState[activeGroup] === 0) {
         // Hotcues mode
-        if (TraktorS3.shiftPressed[activeGroup]) {
+        if (TraktorS3.shiftPressed[field.group]) {
             engine.setValue(activeGroup, "hotcue_" + padNumber + "_clear", field.value);
         } else {
             engine.setValue(activeGroup, "hotcue_" + padNumber + "_activate", field.value);
@@ -411,7 +416,7 @@ TraktorS3.numberButtonHandler = function(field) {
     } else {
         // Samples mode
         var sampler = TraktorS3.samplerHotcuesRelation[activeGroup][padNumber];
-        if (TraktorS3.shiftPressed[activeGroup]) {
+        if (TraktorS3.shiftPressed[field.group]) {
             var playing = engine.getValue("[Sampler" + sampler + "]", "play");
             if (playing) {
                 engine.setValue("[Sampler" + sampler + "]", "cue_default", field.value);
@@ -444,43 +449,66 @@ TraktorS3.selectTrackHandler = function(field) {
     if ((field.value + 1) % 16 === TraktorS3.browseKnobEncoderState[activeGroup]) {
         delta = -1;
     }
+    TraktorS3.browseKnobEncoderState[activeGroup] = field.value;
 
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    // When preview is held, rotating the library encoder scrolls through the previewing track.
+    if (TraktorS3.previewPressed[field.group]) {
+        var playPosition = engine.getValue("[PreviewDeck1]", "playposition");
+        HIDDebug("current playpos " + playPosition);
+        if (delta > 0) {
+            playPosition += 0.0125;
+        } else {
+            playPosition -= 0.0125;
+        }
+        HIDDebug("new playpos " + playPosition);
+        engine.setValue("[PreviewDeck1]", "playposition", playPosition);
+        return;
+    }
+
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue("[Library]", "MoveHorizontal", delta);
     } else {
         engine.setValue("[Library]", "MoveVertical", delta);
     }
-
-    TraktorS3.browseKnobEncoderState[activeGroup] = field.value;
 };
 
 TraktorS3.loadTrackHandler = function(field) {
     HIDDebug("LOAD TRACK!!!");
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "eject", field.value);
     } else {
         engine.setValue(activeGroup, "LoadSelectedTrack", field.value);
     }
 };
 
-TraktorS3.addTrackHandler = function(field) {
+TraktorS3.previewTrackHandler = function(field) {
+    if (field.value === 1) {
+        TraktorS3.previewPressed[field.group] = true;
+        engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+    } else {
+        TraktorS3.previewPressed[field.group] = false;
+        engine.setValue("[PreviewDeck1]", "play", 0);
+    }
+};
+
+TraktorS3.cueAutoDJHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
     TraktorS3.outputHandler(field.value, field.group, "addTrack");
 
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue("[Library]", "AutoDjAddTop", field.value);
     } else {
         engine.setValue("[Library]", "AutoDjAddBottom", field.value);
     }
 };
 
-TraktorS3.maximizeLibraryHandler = function(field) {
+TraktorS3.LibraryFocusHandler = function(field) {
     if (field.value === 0) {
         return;
     }
 
-    script.toggleControl("[Master]", "maximize_library");
+    script.toggleControl("[Library]", "MoveFocus");
 };
 
 TraktorS3.selectLoopHandler = function(field) {
@@ -499,11 +527,16 @@ TraktorS3.activateLoopHandler = function(field) {
         return;
     }
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
+    var isLoopActive = engine.getValue(activeGroup, "loop_enabled");
 
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "reloop_toggle", field.value);
     } else {
-        engine.setValue(activeGroup, "beatloop_activate", field.value);
+        if (isLoopActive) {
+            engine.setValue(activeGroup, "reloop_toggle", field.value);
+        } else {
+            engine.setValue(activeGroup, "beatloop_activate", field.value);
+        }
     }
 };
 
@@ -514,7 +547,7 @@ TraktorS3.selectBeatjumpHandler = function(field) {
         delta = -1;
     }
 
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         var beatjump_size = engine.getValue(activeGroup, "beatjump_size");
         if (delta > 0) {
             engine.setValue(activeGroup, "beatjump_size", beatjump_size * 2);
@@ -534,7 +567,7 @@ TraktorS3.selectBeatjumpHandler = function(field) {
 
 TraktorS3.activateBeatjumpHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "reloop_andstop", field.value);
     } else {
         engine.setValue(activeGroup, "beatlooproll_activate", field.value);
@@ -730,7 +763,7 @@ TraktorS3.fxHandler = function(field) {
 
 TraktorS3.reverseHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "reverseroll", field.value);
     } else {
         engine.setValue(activeGroup, "reverse", field.value);
@@ -750,7 +783,7 @@ TraktorS3.fluxHandler = function(field) {
 
 TraktorS3.beatgridHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    if (TraktorS3.shiftPressed[activeGroup]) {
+    if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "beats_translate_match_alignment", field.value);
     } else {
         engine.setValue(activeGroup, "beats_translate_curpos", field.value);
@@ -866,8 +899,8 @@ TraktorS3.registerOutputPackets = function() {
     outputA.addOutput("deck1", "grid", 0x08, "B");
     outputA.addOutput("deck2", "grid", 0x20, "B");
 
-    outputA.addOutput("deck1", "MaximizeLibrary", 0x07, "B");
-    outputA.addOutput("deck2", "MaximizeLibrary", 0x21, "B");
+    outputA.addOutput("deck1", "LibraryFocus", 0x07, "B");
+    outputA.addOutput("deck2", "LibraryFocus", 0x21, "B");
 
     // outputA.addOutput("[ChannelX]", "quantize", 0x3C, "B");
     // outputA.addOutput("[Microphone]", "talkover", 0x3D, "B");
@@ -1111,21 +1144,21 @@ TraktorS3.lightDeck = function(switchOff) {
     TraktorS3.controller.setOutput("[ChannelX]", "fxButton4", softLight, false);
 
     TraktorS3.controller.setOutput("deck1", "reverse", softLight, false);
-    TraktorS3.controller.setOutput("deck", "reverse", softLight, false);
+    TraktorS3.controller.setOutput("deck2", "reverse", softLight, false);
 
     current = (engine.getValue("deck1", "slip_enabled")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck1", "slip_enabled", current, false);
-    current = (engine.getValue("deck", "slip_enabled")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("deck", "slip_enabled", current, false);
+    current = (engine.getValue("deck2", "slip_enabled")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput("deck2", "slip_enabled", current, false);
 
     TraktorS3.controller.setOutput("deck1", "addTrack", softLight, false);
-    TraktorS3.controller.setOutput("deck", "addTrack", softLight, false);
+    TraktorS3.controller.setOutput("deck2", "addTrack", softLight, false);
 
     TraktorS3.controller.setOutput("deck1", "grid", softLight, false);
-    TraktorS3.controller.setOutput("deck", "grid", softLight, false);
+    TraktorS3.controller.setOutput("deck2", "grid", softLight, false);
 
-    TraktorS3.controller.setOutput("deck1", "MaximizeLibrary", softLight, false);
-    TraktorS3.controller.setOutput("deck", "MaximizeLibrary", softLight, false);
+    TraktorS3.controller.setOutput("deck1", "LibraryFocus", softLight, false);
+    TraktorS3.controller.setOutput("deck2", "LibraryFocus", softLight, false);
 
     TraktorS3.controller.setOutput("[ChannelX]", "quantize", softLight, false);
 
