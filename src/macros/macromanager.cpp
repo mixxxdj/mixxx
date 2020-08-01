@@ -24,9 +24,9 @@ void MacroManager::saveMacro(TrackId trackId, QString label, QVector<MacroAction
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "INSERT INTO macros "
-            "(track_id, state, label, content) "
+            "(track_id, label, state, content) "
             "VALUES "
-            "(:trackId, :state, :label, :content)"));
+            "(:trackId, :label, :state, :content)"));
     // TODO(xerus) obtain trackId
     query.bindValue(":trackId", trackId.toVariant());
     query.bindValue(":label", label);
