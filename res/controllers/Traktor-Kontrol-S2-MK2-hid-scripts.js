@@ -84,7 +84,7 @@ var TraktorS2MK2 = new function() {
     this.lastTickTime = [0.0, 0.0];
     this.syncEnabledTime = {};
 
-    this.longPressTimeoutMilliseconds = 275; // milliseconds
+    this.longPressTimeoutMilliseconds = 275;
 
     this.effectButtonLongPressTimer = {
         "[EffectRack1_EffectUnit1]": [0, 0, 0, 0],
