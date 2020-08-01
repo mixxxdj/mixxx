@@ -36,6 +36,16 @@ class ControllerEngineTest : public MixxxTest {
                                         QScriptValueList());
     }
 
+    void processEvents() {
+        // QCoreApplication::processEvents() only processes events that were
+        // queued when the method was called. Hence, events that were emitted
+        // by a slot that was triggered by processing are *not* processed and
+        // only queued for the next call. Thus, it makes sense to call this
+        // twice because otherwise some tests will fail on some architectures.
+        application()->processEvents();
+        application()->processEvents();
+    }
+
     ControllerEngine *cEngine;
     QScriptEngine *pScriptEngine;
 };
@@ -221,7 +231,7 @@ TEST_F(ControllerEngineTest, trigger) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -249,9 +259,9 @@ TEST_F(ControllerEngineTest, connectControl_ByString) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(execute("disconnect"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -277,7 +287,7 @@ TEST_F(ControllerEngineTest, connectControl_ByStringForbidDuplicateConnections) 
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -314,14 +324,14 @@ TEST_F(ControllerEngineTest,
     execute("changeTestCoValue");
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(1.0, counter->get());
 
     execute("disconnectConnection2");
     // The connection objects should refer to the same connection,
     // so disconnecting one should disconnect both.
     execute("changeTestCoValue");
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(1.0, counter->get());
 }
 
@@ -341,7 +351,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -365,7 +375,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections)
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly twice.
     EXPECT_DOUBLE_EQ(2.0, pass->get());
 }
@@ -393,9 +403,9 @@ TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(execute("disconnect"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly twice.
     EXPECT_DOUBLE_EQ(2.0, pass->get());
 }
@@ -418,9 +428,9 @@ TEST_F(ControllerEngineTest, connectControl_ByLambda) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(execute("disconnect"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -445,9 +455,9 @@ TEST_F(ControllerEngineTest, connectionObject_Disconnect) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(execute("disconnect"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -473,7 +483,7 @@ TEST_F(ControllerEngineTest, connectionObject_reflectDisconnect) {
     ));
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
-    application()->processEvents();
+    processEvents();
     EXPECT_DOUBLE_EQ(4.0, pass->get());
 }
 
@@ -511,13 +521,13 @@ TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectContro
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(execute("disconnectConnection1"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented once by connection2.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
     EXPECT_TRUE(execute("disconnectConnection2"));
-    application()->processEvents();
+    processEvents();
     // The counter should not have changed.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -552,7 +562,7 @@ TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
     execute("changeTestCoValue");
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(2.0, counter->get());
 
     execute("disconnectConnection1");
@@ -561,7 +571,7 @@ TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
     // changing the CO they were both connected to should
     // increment the counter once.
     execute("changeTestCoValue");
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(3.0, counter->get());
 }
 
@@ -614,7 +624,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
