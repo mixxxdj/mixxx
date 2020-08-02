@@ -18,7 +18,8 @@
 
 HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
         : Controller(pConfig),
-          m_pHidDevice(NULL) {
+          m_lastIncomingData(),
+          m_pHidDevice(nullptr) {
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
@@ -250,8 +251,19 @@ bool HidController::poll() {
             return false;
         } else if (result > 0) {
             Trace process("HidController process packet");
-            auto data = QByteArray::fromRawData(reinterpret_cast<char*>(m_pPollData), result);
-            receive(data, mixxx::Time::elapsed());
+            auto byteArray = QByteArray::fromRawData(reinterpret_cast<char*>(m_pPollData), result);
+            // Some controllers such as the Gemini GMX continuously send input packets even if it
+            // is identical to the previous packet. If this loop processed all those redundant
+            // packets, it would be a big performance problem.
+            // TODO: Test if this hack can be done with adequate performance in JS so a deep copy
+            // of each incoming packet isn't needed for most HID devices.
+            if (byteArray == m_lastIncomingData) {
+                continue;
+            } else {
+                // force a copy
+                m_lastIncomingData = QByteArray(byteArray.data());
+            }
+            receive(byteArray, mixxx::Time::elapsed());
         }
     }
 
