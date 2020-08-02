@@ -17,6 +17,8 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* TODO:                                                                         */
+/*   * RGB mapping (use roland dj-505 for reference) */
+/*   * wheel colors (animations!!!!) */
 /*   * touch for track browse, loop control, beatjump                            */
 /*   * jog button                                                                */
 /*   * sync latch                                                                */
@@ -60,8 +62,13 @@ var TraktorS3 = new function() {
         "[Channel1]": {},
         "[Channel2]": {},
         "[Channel3]": {},
-        "[Channel4]": {}
+        "[Channel4]": {},
     };
+    this.masterVuConnections = {
+        "VuMeterL": {},
+        "VuMeterR": {}
+    };
+
     this.clipConnections = {
         "[Channel1]": {},
         "[Channel2]": {},
@@ -69,11 +76,65 @@ var TraktorS3 = new function() {
         "[Channel4]": {}
     };
 
+    // The S3 has a set of predefined colors for many buttons. They are not
+    // mapped by RGB, but 16 colors, each with 4 levels of brightness, plus white.
+    this.colorPalette = {
+        OFF: 0x00,
+        RED: 0x04,
+        CARROT: 0x08,
+        ORANGE: 0x0C,
+        HONEY: 0x10,
+        YELLOW: 0x14,
+        LIME: 0x18,
+        GREEN: 0x1C,
+        AQUA: 0x20,
+        CELESTE: 0x24,
+        SKY: 0x28,
+        BLUE: 0x2C,
+        PURPLE: 0x30,
+        FUSCHIA: 0x34,
+        MAGENTA: 0x38,
+        AZALEA: 0x3C,
+        SALMON: 0x40,
+        WHITE: 0x44
+    };
+
+    this.DeckColors = {
+        "[Channel1]": this.colorPalette.ORANGE,
+        "[Channel2]": this.colorPalette.ORANGE,
+        "[Channel3]": this.colorPalette.SKY,
+        "[Channel4]": this.colorPalette.SKY
+    };
+
+    this.colorMap = new ColorMapper({
+        0xCC0000: this.colorPalette.RED,
+        0xCC5E00: this.colorPalette.CARROT,
+        0xCC7800: this.colorPalette.ORANGE,
+        0xCC9200: this.colorPalette.HONEY,
+
+        0xCCCC00: this.colorPalette.YELLOW,
+        0x81CC00: this.colorPalette.LIME,
+        0x00CC00: this.colorPalette.GREEN,
+        0x00CC49: this.colorPalette.AQUA,
+
+        0x00CCCC: this.colorPalette.CELESTE,
+        0x0091CC: this.colorPalette.SKY,
+        0x0000CC: this.colorPalette.BLUE,
+        0xCC00CC: this.colorPalette.PURPLE,
+
+        0xCC0091: this.colorPalette.FUSCHIA,
+        0xCC0079: this.colorPalette.MAGENTA,
+        0xCC477E: this.colorPalette.AZALEA,
+        0xCC4761: this.colorPalette.SALMON,
+
+        0xCCCCCC: this.colorPalette.WHITE,
+    });
+
     // Sampler callbacks
     this.samplerCallbacks = [];
     this.samplerHotcuesRelation = {
         "deck1": {
-            1: 1, 2: 2, 3: 3, 4: 4, 5: 9, 6: 10, 7: 11, 8: 12
+            1: 1, 2: 2, 3: 3, 4: 4, 5: 9,  6: 10, 7: 11, 8: 12
         }, "deck2": {
             1: 5, 2: 6, 3: 7, 4: 8, 5: 13, 6: 14, 7: 15, 8: 16
         }
@@ -88,7 +149,7 @@ TraktorS3.init = function(_id) {
     TraktorS3.registerOutputPackets();
     HIDDebug("TraktorS3: Init done!");
 
-    // TraktorS3.debugLights();
+    TraktorS3.debugLights();
 };
 
 TraktorS3.registerInputPackets = function() {
@@ -313,17 +374,21 @@ TraktorS3.registerInputButton = function(message, group, name, offset, bitmask, 
     message.setCallback(group, name, callback);
 };
 
-TraktorS3.deckSwitchHandler = function(field) {
+TraktorS3.deckSwitchHandler = function (field) {
+    if (field.value === 0) {
+        return;
+    }
     for (var key in field) {
         var value = field[key];
         HIDDebug("what is a field: " + key + ": " + value);
     }
     TraktorS3.controller.switchDeck(TraktorS3.controller.resolveDeck(field.group));
+    TraktorS3.lightDeck(true);
 };
 
 TraktorS3.playHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    HIDDebug("group?? " + activeGroup);
+    // HIDDebug("group?? " + activeGroup);
     if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue(activeGroup, "start_stop", field.value);
     } else if (field.value === 1) {
@@ -347,6 +412,7 @@ TraktorS3.shiftHandler = function(field) {
     HIDDebug("SHIFT!" + activeGroup + " " + field.value);
     TraktorS3.shiftPressed[field.group] = field.value;
     engine.setValue("[Controls]", "touch_shift", field.value);
+    // Shift is only white
     TraktorS3.outputHandler(field.value, field.group, "shift");
 };
 
@@ -379,26 +445,26 @@ TraktorS3.padModeHandler = function(field) {
         // If we are in hotcues mode and samples mode is activated
         engine.setValue("[Samplers]", "show_samplers", 1);
         TraktorS3.padModeState[activeGroup] = 1;
-        TraktorS3.outputHandler(0, field.group, "hotcues");
-        TraktorS3.outputHandler(1, field.group, "samples");
+        TraktorS3.colorOutputHandler(0, field.group, "hotcues");
+        TraktorS3.colorOutputHandler(1, field.group, "samples");
 
         // Light LEDs for all slots with loaded samplers
         for (var key in TraktorS3.samplerHotcuesRelation[activeGroup]) {
             if (TraktorS3.samplerHotcuesRelation[activeGroup].hasOwnProperty(key)) {
                 var loaded = engine.getValue("[Sampler" + TraktorS3.samplerHotcuesRelation[activeGroup][key] + "]", "track_loaded");
-                TraktorS3.outputHandler(loaded, field.group, "pad_" + key);
+                TraktorS3.colorOutputHandler(loaded, field.group, "pad_" + key);
             }
         }
     } else if (field.name === "!hotcues") {
         // If we are in samples mode and hotcues mode is activated
         TraktorS3.padModeState[activeGroup] = 0;
-        TraktorS3.outputHandler(1, field.group, "hotcues");
-        TraktorS3.outputHandler(0, field.group, "samples");
+        TraktorS3.colorOutputHandler(1, field.group, "hotcues");
+        TraktorS3.colorOutputHandler(0, field.group, "samples");
 
         // Light LEDs for all enabled hotcues
         for (var i = 1; i <= 8; ++i) {
             var active = engine.getValue(activeGroup, "hotcue_" + i + "_enabled");
-            TraktorS3.outputHandler(active, field.group, "pad_" + i);
+            TraktorS3.colorOutputHandler(active, field.group, "pad_" + i);
         }
     }
 };
@@ -494,7 +560,7 @@ TraktorS3.previewTrackHandler = function(field) {
 
 TraktorS3.cueAutoDJHandler = function(field) {
     var activeGroup = TraktorS3.controller.resolveGroup(field.group);
-    TraktorS3.outputHandler(field.value, field.group, "addTrack");
+    TraktorS3.colorOutputHandler(field.value, field.group, "addTrack");
 
     if (TraktorS3.shiftPressed[field.group]) {
         engine.setValue("[Library]", "AutoDjAddTop", field.value);
@@ -758,7 +824,7 @@ TraktorS3.fxHandler = function(field) {
     engine.setValue(group, "group_[Channel2]_enable", TraktorS3.fxButtonState[fxNumber]);
     engine.setValue(group, "group_[Channel3]_enable", TraktorS3.fxButtonState[fxNumber]);
     engine.setValue(group, "group_[Channel4]_enable", TraktorS3.fxButtonState[fxNumber]);
-    TraktorS3.outputHandler(TraktorS3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
+    TraktorS3.colorOutputHandler(TraktorS3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
 };
 
 TraktorS3.reverseHandler = function(field) {
@@ -789,29 +855,34 @@ TraktorS3.beatgridHandler = function(field) {
         engine.setValue(activeGroup, "beats_translate_curpos", field.value);
     }
 
-    TraktorS3.outputHandler(field.value, field.group, "grid");
+    TraktorS3.colorOutputHandler(field.value, field.group, "grid");
 };
+
+function sleepFor( sleepDuration ){
+    var now = new Date().getTime();
+    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ }
+}
 
 TraktorS3.debugLights = function() {
     // Call this if you want to just send raw packets to the controller (good for figuring out what
     // bytes do what).
-    //var data_strings = ["80 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 0A 0A 0A 0A 0A 0A 0A 0A 00 7F 00 00 00 00 0A 0A 0A 0A 0A 0A",
-    //                    "81 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 7F 0A 0A 0A 0A 0A 7F 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A",
-    //                    "82 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 00 00 7F 7F 7F 7F 7F 7F 00 00 7F 7F 7F 7F 7F 00 00 00 7F 7F 7F 7F 7F 7F 00 00 7F 7F 7F 7F 7F 00 00 00"];
-    //                   00 01 02 03  04 05 06 07  08 09 0A 0B  0C 0D 0E 0F
     var data_strings = [
-        "      FF 00  00 FF FF FF  00 00 00 00  FF FF FF 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 FF 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "FF ",
-        "      FF 00  00 00 00 00  00 00 00 00  00 00 00 FF " +
-        "FF 00 00 00  00 00 00 00  FF 00 00 00  00 00 FF FF " +
-        "FF 00 00 00  00 00 00 00  FF 00 00 00  00 00 00 00 " +
-        "FF 00 00 00  FF 00 00 FF  00 00 00 00  FF 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 "
+        "      7C 7C  7C 2C 2C 2C  2C FF 2C 2E  FF 2C 2C 3F " +
+        "FF 2C 7E FF  00 00 FF 2C  2C 2C 2C 7C  7C 7C FF 2C " +
+        "2C 2C 2C 2C  2E 0C 2C 2C  2E 00 2C 7C  00 00 00 00 " +
+        "00 00 00 00  7E 0C 0C 0C  0C 7C 7C 7C  70 04 1C 2C " +
+        "14 0E 7C 7C  00 2E 00 2E  00 2E 00 2E  00 00 00 00 " +
+        "00 00 00 00 ",
+        "      FF 00  00 00 00 00  00 00 00 00  FF 00 FF 00 " +
+        "FF 00 00 00  00 00 00 00  FF 00 00 00  00 FF FF FF " +
+        "FF 00 00 00  FF 00 00 00  FF FF 00 00  00 FF 00 00 " +
+        "00 00 00 00  FF 00 00 FF  00 00 FF 00  FF 00 FF FF " +
+        "00 00 00 00  FF FF FF 00  FF 00 00 00  FF 00 FF",
     ];
+
     var data = [Object(), Object()];
+
+    // var c = 4    * 0x10;
 
     for (i = 0; i < data.length; i++) {
         var ok = true;
@@ -834,11 +905,33 @@ TraktorS3.debugLights = function() {
             }
             data[i][j] = b;
         }
+        // if (i === 0) {
+        //     for (k = 0; k < data[0].length; k++) {
+        //         data[0][k] = 0x30;
+        //     }
+        // }
+        // for (d = 0; d < 8; d++) {
+        //     data[0][0x11+d] = (d+1) * 4 + 2;
+        // }
+        // for (d = 0; d < 8; d++) {
+        //     data[0][0x2A + d] = (d + 1) * 4 + 32 + 2;
+        // }
         if (ok) {
+            // HIDDebug("value: 0x" + c.toString(16));
             controller.send(data[i], data[i].length, 0x80 + i);
         }
     }
 };
+
+// 4 levels of every color, starting at 0x04
+// last colors at 0x40, then just whites
+// until 0x80 when it wraps around again
+// 0 red/orange: off, red, orange, wheat,
+// 1 yellows/greens: sun, parchment, kelp, grass
+// 2 blues: tropical water, baby blue, sky, cerulean
+// 3 purples/pinks: purple, orchid, don't use, azalea
+// 4 salmon, white, white, white
+
 
 TraktorS3.registerOutputPackets = function() {
     var outputA = new HIDPacket("outputA", 0x80);
@@ -905,6 +998,11 @@ TraktorS3.registerOutputPackets = function() {
     // outputA.addOutput("[ChannelX]", "quantize", 0x3C, "B");
     // outputA.addOutput("[Microphone]", "talkover", 0x3D, "B");
 
+    outputA.addOutput("[ChannelX]", "fxButton1", 0x3C, "B");
+    outputA.addOutput("[ChannelX]", "fxButton2", 0x3D, "B");
+    outputA.addOutput("[ChannelX]", "fxButton3", 0x3E, "B");
+    outputA.addOutput("[ChannelX]", "fxButton4", 0x3F, "B");
+
     this.controller.registerOutputPacket(outputA);
 
     var outputB = new HIDPacket("outputB", 0x81);
@@ -921,29 +1019,37 @@ TraktorS3.registerOutputPackets = function() {
         }
     }
 
+    var MasterVuOffsets = {
+        "VuMeterL": 0x3D,
+        "VuMeterR": 0x46
+    };
+    for (i = 0; i < 8; i++) {
+        outputB.addOutput("[Master]", "!" + "VuMeterL" + i, MasterVuOffsets["VuMeterL"] + i, "B");
+        outputB.addOutput("[Master]", "!" + "VuMeterR" + i, MasterVuOffsets["VuMeterR"] + i, "B");
+    }
+
+    outputB.addOutput("[Master]", "PeakIndicatorL", 0x45, "B");
+    outputB.addOutput("[Master]", "PeakIndicatorR", 0x4E, "B");
+
+    outputB.addOutput("[Channel3]", "PeakIndicator", 0x0F, "B");
     outputB.addOutput("[Channel1]", "PeakIndicator", 0x1E, "B");
     outputB.addOutput("[Channel2]", "PeakIndicator", 0x2D, "B");
-    outputB.addOutput("[Channel3]", "PeakIndicator", 0x09, "B");
     outputB.addOutput("[Channel4]", "PeakIndicator", 0x3C, "B");
-
-    outputB.addOutput("[ChannelX]", "fxButton1", 0x3C, "B");
-    outputB.addOutput("[ChannelX]", "fxButton2", 0x3D, "B");
-    outputB.addOutput("[ChannelX]", "fxButton3", 0x3E, "B");
-    outputB.addOutput("[ChannelX]", "fxButton4", 0x3F, "B");
 
     this.controller.registerOutputPacket(outputB);
 
+    // Play is always green
     this.linkOutput("deck1", "play_indicator", this.outputHandler);
     this.linkOutput("deck2", "play_indicator", this.outputHandler);
 
-    this.linkOutput("deck1", "cue_indicator", this.outputHandler);
-    this.linkOutput("deck2", "cue_indicator", this.outputHandler);
+    this.linkOutput("deck1", "cue_indicator", this.colorOutputHandler);
+    this.linkOutput("deck2", "cue_indicator", this.colorOutputHandler);
 
-    this.linkOutput("deck1", "sync_enabled", this.outputHandler);
-    this.linkOutput("deck2", "sync_enabled", this.outputHandler);
+    this.linkOutput("deck1", "sync_enabled", this.colorOutputHandler);
+    this.linkOutput("deck2", "sync_enabled", this.colorOutputHandler);
 
-    this.linkOutput("deck1", "keylock", this.outputHandler);
-    this.linkOutput("deck2", "keylock", this.outputHandler);
+    this.linkOutput("deck1", "keylock", this.colorOutputHandler);
+    this.linkOutput("deck2", "keylock", this.colorOutputHandler);
 
     for (var i = 1; i <= 8; ++i) {
         TraktorS3.controller.linkOutput("deck1", "pad_" + i, "deck1", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
@@ -960,11 +1066,17 @@ TraktorS3.registerOutputPackets = function() {
 
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
-    // VuMeter
+    // Channel VuMeters
     for (var i = 1; i <= 4; i++) {
-        this.vuConnections[i] = engine.makeConnection("[Channel" + i + "]", "VuMeter", this.vuMeterHandler);
+        this.vuConnections[i] = engine.makeConnection("[Channel" + i + "]", "VuMeter", this.channelVuMeterHandler);
         this.clipConnections[i] = engine.makeConnection("[Channel" + i + "]", "PeakIndicator", this.peakOutputHandler);
     }
+
+    // Master VuMeters
+    this.masterVuConnections["VuMeterL"] = engine.makeConnection("[Master]", "VuMeterL", this.masterVuMeterHandler);
+    this.masterVuConnections["VuMeterR"] = engine.makeConnection("[Master]", "VuMeterR", this.masterVuMeterHandler);
+    this.linkOutput("[Master]", "PeakIndicatorL", this.peakOutputHandler);
+    this.linkOutput("[Master]", "PeakIndicatorR", this.peakOutputHandler);
 
     // Sampler callbacks
     for (i = 1; i <= 16; ++i) {
@@ -980,26 +1092,32 @@ TraktorS3.linkOutput = function(group, name, callback) {
     TraktorS3.controller.linkOutput(group, name, group, name, callback);
 };
 
-TraktorS3.vuMeterHandler = function(value, group, key) {
-    // This handler is called a lot so it should be as fast as possible.
+TraktorS3.channelVuMeterHandler = function (value, group, key) {
+    TraktorS3.vuMeterHandler(value, group, key, 14);
+}
 
-    // VU is drawn on 14 segments, the 15th indicates clip.
-    // Figure out number of fully-illuminated segments.
-    var scaledValue = value * 14.0;
+TraktorS3.masterVuMeterHandler = function (value, group, key) {
+    TraktorS3.vuMeterHandler(value, group, key, 8);
+}
+
+TraktorS3.vuMeterHandler = function(value, group, key, segments) {
+    // This handler is called a lot so it should be as fast as possible.
+    // HIDDebug("group??" + group + " " + key);
+    var scaledValue = value * segments;
     var fullIllumCount = Math.floor(scaledValue);
 
     // Figure out how much the partially-illuminated segment is illuminated.
     var partialIllum = (scaledValue - fullIllumCount) * 0x7F;
 
-    for (i = 0; i < 14; i++) {
-        var key = "!" + "VuMeter" + i;
+    for (i = 0; i < segments; i++) {
+        var segmentKey = "!" + key + i;
         if (i < fullIllumCount) {
             // Don't update lights until they're all done, so the last term is false.
-            TraktorS3.controller.setOutput(group, key, 0x7F, false);
+            TraktorS3.controller.setOutput(group, segmentKey, 0x7F, false);
         } else if (i == fullIllumCount) {
-            TraktorS3.controller.setOutput(group, key, partialIllum, false);
+            TraktorS3.controller.setOutput(group, segmentKey, partialIllum, false);
         } else {
-            TraktorS3.controller.setOutput(group, key, 0x00, false);
+            TraktorS3.controller.setOutput(group, segmentKey, 0x00, false);
         }
     }
     TraktorS3.controller.OutputPackets["outputB"].send();
@@ -1014,15 +1132,26 @@ TraktorS3.peakOutputHandler = function(value, group, key) {
     TraktorS3.controller.setOutput(group, key, ledValue, true);
 };
 
+// outputHandler drives lights that only have one color.
 TraktorS3.outputHandler = function(value, group, key) {
-    // Custom value for multi-colored LEDs
     var ledValue = value;
     if (value === 0 || value === false) {
         // Off value
-        ledValue = 0x7C;
+        ledValue = 0x30;
     } else if (value === 1 || value === true) {
         // On value
-        ledValue = 0x7E;
+        ledValue = 0x33;
+    }
+
+    TraktorS3.controller.setOutput(group, key, ledValue, true);
+};
+
+// colorOutputHandler drives lights that have the palettized multicolor lights.
+TraktorS3.colorOutputHandler = function (value, group, key) {
+    var activeGroup = TraktorS3.controller.resolveGroup(group);
+    var ledValue = TraktorS3.DeckColors[activeGroup];
+    if (value === 1 || value === true) {
+        ledValue += 0x02;
     }
 
     TraktorS3.controller.setOutput(group, key, ledValue, true);
@@ -1085,29 +1214,32 @@ TraktorS3.resolveSampler = function(group) {
 };
 
 TraktorS3.lightDeck = function(switchOff) {
-    var softLight = 0x7C;
-    var fullLight = 0x7E;
+    var softLight = 0x30;
+    var fullLight = 0x33;
     if (switchOff) {
         softLight = 0x00;
         fullLight = 0x00;
     }
 
-    var current = (engine.getValue("deck1", "play_indicator") ? fullLight : softLight);
+    var groupA = TraktorS3.controller.resolveGroup("deck1");
+    var groupB = TraktorS3.controller.resolveGroup("deck2");
+
+    var current = (engine.getValue(groupA, "play_indicator") ? fullLight : softLight);
     TraktorS3.controller.setOutput("deck1", "play_indicator", current, false);
-    current = (engine.getValue("deck2", "play_indicator")) ? fullLight : softLight;
+    current = (engine.getValue(groupB, "play_indicator")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck2", "play_indicator", current, false);
 
-    current = (engine.getValue("deck1", "cue_indicator")) ? fullLight : softLight;
+    current = (engine.getValue(groupA, "cue_indicator")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck1", "cue_indicator", current, false);
-    current = (engine.getValue("deck2", "cue_indicator")) ? fullLight : softLight;
+    current = (engine.getValue(groupB, "cue_indicator")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck2", "cue_indicator", current, false);
 
     TraktorS3.controller.setOutput("deck1", "shift", softLight, false);
     TraktorS3.controller.setOutput("deck2", "shift", softLight, false);
 
-    current = (engine.getValue("deck1", "sync_enabled")) ? fullLight : softLight;
+    current = (engine.getValue(groupA, "sync_enabled")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck1", "sync_enabled", current, false);
-    current = (engine.getValue("deck2", "sync_enabled")) ? fullLight : softLight;
+    current = (engine.getValue(groupB, "sync_enabled")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck2", "sync_enabled", current, false);
 
     // Hotcues mode is default start value
@@ -1117,22 +1249,22 @@ TraktorS3.lightDeck = function(switchOff) {
     TraktorS3.controller.setOutput("deck1", "samples", softLight, false);
     TraktorS3.controller.setOutput("deck2", "samples", softLight, false);
 
-    current = (engine.getValue("deck1", "keylock")) ? fullLight : softLight;
+    current = (engine.getValue(groupA, "keylock")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck1", "keylock", current, false);
-    current = (engine.getValue("deck2", "keylock")) ? fullLight : softLight;
+    current = (engine.getValue(groupB, "keylock")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck2", "keylock", current, false);
 
     for (var i = 1; i <= 8; ++i) {
-        current = (engine.getValue("deck1", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
+        current = (engine.getValue(groupA, "hotcue_" + i + "_enabled")) ? fullLight : softLight;
         TraktorS3.controller.setOutput("deck1", "pad_" + i, current, false);
-        current = (engine.getValue("deck2", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
+        current = (engine.getValue(groupB, "hotcue_" + i + "_enabled")) ? fullLight : softLight;
         TraktorS3.controller.setOutput("deck2", "pad_" + i, current, false);
     }
 
-    current = (engine.getValue("[Channel1]", "pfl")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel1]", "pfl", current, false);
-    current = (engine.getValue("[Channel2]", "pfl")) ? fullLight : softLight;
-    TraktorS3.controller.setOutput("[Channel2]", "pfl", current, false);
+    current = (engine.getValue(groupA, "pfl")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput(groupA, "pfl", current, false);
+    current = (engine.getValue(groupB, "pfl")) ? fullLight : softLight;
+    TraktorS3.controller.setOutput(groupB, "pfl", current, false);
     current = (engine.getValue("[Channel3]", "pfl")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("[Channel3]", "pfl", current, false);
     current = (engine.getValue("[Channel4]", "pfl")) ? fullLight : softLight;
@@ -1146,9 +1278,9 @@ TraktorS3.lightDeck = function(switchOff) {
     TraktorS3.controller.setOutput("deck1", "reverse", softLight, false);
     TraktorS3.controller.setOutput("deck2", "reverse", softLight, false);
 
-    current = (engine.getValue("deck1", "slip_enabled")) ? fullLight : softLight;
+    current = (engine.getValue(groupA, "slip_enabled")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck1", "slip_enabled", current, false);
-    current = (engine.getValue("deck2", "slip_enabled")) ? fullLight : softLight;
+    current = (engine.getValue(groupB, "slip_enabled")) ? fullLight : softLight;
     TraktorS3.controller.setOutput("deck2", "slip_enabled", current, false);
 
     TraktorS3.controller.setOutput("deck1", "addTrack", softLight, false);
@@ -1164,6 +1296,7 @@ TraktorS3.lightDeck = function(switchOff) {
 
     // For the last output we should send the packet finally
     current = (engine.getValue("[Microphone]", "talkover")) ? fullLight : softLight;
+
     TraktorS3.controller.setOutput("[Microphone]", "talkover", current, true);
 };
 

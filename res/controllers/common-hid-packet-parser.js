@@ -452,7 +452,7 @@ HIDPacket.prototype.addOutput = function(group, name, offset, pack, bitmask, cal
     if (field != undefined) {
         if (bitmask == undefined) {
             HIDDebug(
-                "ERROR: overwrite non-bitmask control " + group + "." + name
+                "ERROR: overwrite non-bitmask control: " + group + ". " + name + ", " + field.id + " already exists"
             );
             return;
         }
@@ -516,8 +516,7 @@ HIDPacket.prototype.setCallback = function(group, name, callback) {
         return;
     }
     if (field == undefined) {
-        HIDDebug("setCallback: field for " + field_id + " not found"
-        );
+        HIDDebug("setCallback: field for " + field_id + " not found");
         return;
     }
     if (field.type == "bitvector") {
