@@ -84,13 +84,20 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                     sampleEndPosition);
                     if (currentMarkEndPoint < m_waveformRenderer->getWidth()) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.5);
+                        color.setAlphaF(0.4);
+
+                        QLinearGradient gradient(QPointF(0, 0),
+                                QPointF(0, m_waveformRenderer->getHeight()));
+                        gradient.setColorAt(0, color);
+                        gradient.setColorAt(0.25, QColor(Qt::transparent));
+                        gradient.setColorAt(0.75, QColor(Qt::transparent));
+                        gradient.setColorAt(1, color);
                         painter->fillRect(
                                 QRect(QPoint(currentMarkPoint, 0),
                                         QPoint(currentMarkEndPoint,
                                                 m_waveformRenderer
                                                         ->getHeight())),
-                                QBrush(color, Qt::BDiagPattern));
+                                QBrush(gradient));
                         visible = true;
                     }
                 }
@@ -120,12 +127,19 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                             sampleEndPosition);
                     if (currentMarkEndPoint < m_waveformRenderer->getHeight()) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.5);
+                        color.setAlphaF(0.4);
+
+                        QLinearGradient gradient(QPointF(0, 0),
+                                QPointF(m_waveformRenderer->getWidth(), 0));
+                        gradient.setColorAt(0, color);
+                        gradient.setColorAt(0.25, QColor(Qt::transparent));
+                        gradient.setColorAt(0.75, QColor(Qt::transparent));
+                        gradient.setColorAt(1, color);
                         painter->fillRect(
                                 QRect(QPoint(0, currentMarkPoint),
                                         QPoint(m_waveformRenderer->getWidth(),
                                                 currentMarkEndPoint)),
-                                QBrush(color, Qt::BDiagPattern));
+                                QBrush(gradient));
                         visible = true;
                     }
                 }
