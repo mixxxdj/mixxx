@@ -84,6 +84,7 @@ class HidController final : public Controller {
     QString hid_serial;
     QString hid_manufacturer;
     QString hid_product;
+    QByteArray m_lastIncomingData;
 
     QString m_sUID;
     hid_device* m_pHidDevice;
