@@ -16,9 +16,15 @@
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
-/* TODO:                                                                         */
+/* TODO:
+/*   * Active deck stuff:
+/*     * activedeck still only supports one switch
+/*     * colors assume single "off" instead of a dim version of the on color.
+/*     * I don't think I can use the built-in deck switchign because of the different
+/*       kinds of lights -- library assumes one type of led
+/*
 /*   * lights are still wonky, sometimes needs a couple tries to go through?? */
-/*   * RGB mapping (use roland dj-505 for reference) */
+/*   * deck lights */
 /*   * wheel colors (animations!!!!) */
 /*   * touch for track browse, loop control, beatjump                            */
 /*   * jog button                                                                */
@@ -79,8 +85,8 @@ var TraktorS3 = new function() {
 
     // The S3 has a set of predefined colors for many buttons. They are not
     // mapped by RGB, but 16 colors, each with 4 levels of brightness, plus white.
-    this.colorPalette = {
-        OFF: 0x00,
+    this.controller.LEDDimColors = {
+        off: 0x00,
         RED: 0x04,
         CARROT: 0x08,
         ORANGE: 0x0C,
@@ -100,35 +106,58 @@ var TraktorS3 = new function() {
         WHITE: 0x44
     };
 
-    this.DeckColors = {
-        "[Channel1]": this.colorPalette.ORANGE,
-        "[Channel2]": this.colorPalette.ORANGE,
-        "[Channel3]": this.colorPalette.SKY,
-        "[Channel4]": this.colorPalette.SKY
+    // The S3 has a set of predefined colors for many buttons. They are not
+    // mapped by RGB, but 16 colors, each with 4 levels of brightness, plus white.
+    this.controller.LEDColors = {
+        off: 0x02,
+        RED: 0x06,
+        CARROT: 0x0A,
+        ORANGE: 0x0E,
+        HONEY: 0x12,
+        YELLOW: 0x16,
+        LIME: 0x1A,
+        GREEN: 0x1E,
+        AQUA: 0x22,
+        CELESTE: 0x26,
+        SKY: 0x2A,
+        BLUE: 0x2E,
+        PURPLE: 0x32,
+        FUSCHIA: 0x36,
+        MAGENTA: 0x3A,
+        AZALEA: 0x3E,
+        SALMON: 0x42,
+        WHITE: 0x46
+    };
+
+    this.controller.deckOutputColors = {
+        1: "ORANGE",
+        2: "ORANGE",
+        3: "SKY",
+        4: "SKY"
     };
 
     this.colorMap = new ColorMapper({
-        0xCC0000: this.colorPalette.RED,
-        0xCC5E00: this.colorPalette.CARROT,
-        0xCC7800: this.colorPalette.ORANGE,
-        0xCC9200: this.colorPalette.HONEY,
+        0xCC0000: this.controller.LEDColors.RED,
+        0xCC5E00: this.controller.LEDColors.CARROT,
+        0xCC7800: this.controller.LEDColors.ORANGE,
+        0xCC9200: this.controller.LEDColors.HONEY,
 
-        0xCCCC00: this.colorPalette.YELLOW,
-        0x81CC00: this.colorPalette.LIME,
-        0x00CC00: this.colorPalette.GREEN,
-        0x00CC49: this.colorPalette.AQUA,
+        0xCCCC00: this.controller.LEDColors.YELLOW,
+        0x81CC00: this.controller.LEDColors.LIME,
+        0x00CC00: this.controller.LEDColors.GREEN,
+        0x00CC49: this.controller.LEDColors.AQUA,
 
-        0x00CCCC: this.colorPalette.CELESTE,
-        0x0091CC: this.colorPalette.SKY,
-        0x0000CC: this.colorPalette.BLUE,
-        0xCC00CC: this.colorPalette.PURPLE,
+        0x00CCCC: this.controller.LEDColors.CELESTE,
+        0x0091CC: this.controller.LEDColors.SKY,
+        0x0000CC: this.controller.LEDColors.BLUE,
+        0xCC00CC: this.controller.LEDColors.PURPLE,
 
-        0xCC0091: this.colorPalette.FUSCHIA,
-        0xCC0079: this.colorPalette.MAGENTA,
-        0xCC477E: this.colorPalette.AZALEA,
-        0xCC4761: this.colorPalette.SALMON,
+        0xCC0091: this.controller.LEDColors.FUSCHIA,
+        0xCC0079: this.controller.LEDColors.MAGENTA,
+        0xCC477E: this.controller.LEDColors.AZALEA,
+        0xCC4761: this.controller.LEDColors.SALMON,
 
-        0xCCCCCC: this.colorPalette.WHITE,
+        0xCCCCCC: this.controller.LEDColors.WHITE,
     });
 
     // Sampler callbacks
@@ -420,7 +449,7 @@ TraktorS3.shiftHandler = function(field) {
     TraktorS3.shiftPressed[field.group] = field.value;
     engine.setValue("[Controls]", "touch_shift", field.value);
     // Shift is only white
-    TraktorS3.outputHandler(field.value, field.group, "shift");
+    TraktorS3.deckOutputHandler(field.value, field.group, "shift");
 };
 
 TraktorS3.keylockHandler = function(field) {
@@ -456,9 +485,9 @@ TraktorS3.padModeHandler = function(field) {
         TraktorS3.colorOutputHandler(1, field.group, "samples");
 
         // Light LEDs for all slots with loaded samplers
-        for (var key in TraktorS3.samplerHotcuesRelation[activeGroup]) {
-            if (TraktorS3.samplerHotcuesRelation[activeGroup].hasOwnProperty(key)) {
-                var loaded = engine.getValue("[Sampler" + TraktorS3.samplerHotcuesRelation[activeGroup][key] + "]", "track_loaded");
+        for (var key in TraktorS3.samplerHotcuesRelation[field.group]) {
+            if (TraktorS3.samplerHotcuesRelation[field.group].hasOwnProperty(key)) {
+                var loaded = engine.getValue("[Sampler" + TraktorS3.samplerHotcuesRelation[field.group][key] + "]", "track_loaded");
                 TraktorS3.colorOutputHandler(loaded, field.group, "pad_" + key);
             }
         }
@@ -488,7 +517,7 @@ TraktorS3.numberButtonHandler = function(field) {
         }
     } else {
         // Samples mode
-        var sampler = TraktorS3.samplerHotcuesRelation[activeGroup][padNumber];
+        var sampler = TraktorS3.samplerHotcuesRelation[field.group][padNumber];
         if (TraktorS3.shiftPressed[field.group]) {
             var playing = engine.getValue("[Sampler" + sampler + "]", "play");
             if (playing) {
@@ -842,7 +871,7 @@ TraktorS3.reverseHandler = function(field) {
         engine.setValue(activeGroup, "reverse", field.value);
     }
 
-    TraktorS3.outputHandler(field.value, field.group, "reverse");
+    TraktorS3.deckOutputHandler(field.value, field.group, "reverse");
 };
 
 TraktorS3.fluxHandler = function(field) {
@@ -877,8 +906,8 @@ TraktorS3.debugLights = function() {
         "      7C 7C  7C 2C 2C 2C  2C 39 2C 2E  FF 2C 2C 3F " +
         "FF 2C 7E FF  00 FF FF FF  2C 2C 2C 7C  7C 7C FF 2C " +
         "2C 2C 2C 2C  2E 0C 2C 2C  2E 00 2C 7C  00 00 00 00 " +
-        "00 FF 00 00  7E 0C 0C 0C  0C 7C 7C 7C  70 04 1C FF " +
-        "14 00 7C 7C  00 FF 00 2E  00 2E 00 FF  00 00 00 00 " +
+        "00 FF 00 00  7E 0C 0C 0C  0C FF FF FF  70 FF 1C FF " +
+        "14 FF 40 FF  FF FF 00 2E  00 2E FF 00  00 FF 00 00 " +
         "00 00 FF 00 ",
         "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
         "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
@@ -1008,7 +1037,16 @@ TraktorS3.registerOutputPackets = function() {
     outputA.addOutput("[ChannelX]", "fxButton3", 0x3E, "B");
     outputA.addOutput("[ChannelX]", "fxButton4", 0x3F, "B");
 
-    outputA.addOutput("[Master]", "PeakIndicatorL", 0x53, "B");
+    var wheelOffsets = {
+        "deck1": 0x44,
+        "deck2": 0x4B
+    };
+    for (ch in wheelOffsets) {
+        for (i = 0; i < 8; i++) {
+            outputA.addOutput(ch, "!" + "wheel" + i, wheelOffsets[ch] + i, "B");
+        }
+    }
+
 
     this.controller.registerOutputPacket(outputA);
 
@@ -1046,8 +1084,10 @@ TraktorS3.registerOutputPackets = function() {
     this.controller.registerOutputPacket(outputB);
 
     // Play is always green
-    this.linkOutput("deck1", "play_indicator", this.outputHandler);
-    this.linkOutput("deck2", "play_indicator", this.outputHandler);
+    this.linkOutput("deck1", "play_indicator", this.deckOutputHandler);
+    this.linkOutput("deck2", "play_indicator", this.deckOutputHandler);
+    this.linkOutput("deck1", "play_indicator", this.wheelOutputHandler);
+    this.linkOutput("deck2", "play_indicator", this.wheelOutputHandler);
 
     this.linkOutput("deck1", "cue_indicator", this.colorOutputHandler);
     this.linkOutput("deck2", "cue_indicator", this.colorOutputHandler);
@@ -1068,8 +1108,8 @@ TraktorS3.registerOutputPackets = function() {
     this.linkOutput("[Channel3]", "pfl", this.outputHandler);
     this.linkOutput("[Channel4]", "pfl", this.outputHandler);
 
-    this.linkOutput("deck1", "slip_enabled", this.outputHandler);
-    this.linkOutput("deck2", "slip_enabled", this.outputHandler);
+    this.linkOutput("deck1", "slip_enabled", this.deckOutputHandler);
+    this.linkOutput("deck2", "slip_enabled", this.deckOutputHandler);
 
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
@@ -1141,6 +1181,18 @@ TraktorS3.peakOutputHandler = function(value, group, key) {
 
 // outputHandler drives lights that only have one color.
 TraktorS3.outputHandler = function(value, group, key) {
+
+    HIDDebug("REGULAR OUTPUT GROUP " + group);
+    // var updatedDeck = TraktorS3.controller.resolveDeck(group);
+    // if (updatedDeck !== TraktorS3.controller.activeDeck) {
+    //     return;
+    // }
+    // if (updatedDeck === 1 || updatedDeck === 3) {
+    //     group = "deck1";
+    // } else if (updatedDeck === 2 || updatedDeck === 4) {
+    //     group = "deck2";
+    // }
+
     var ledValue = value;
     if (value === 0 || value === false) {
         // Off value
@@ -1153,10 +1205,60 @@ TraktorS3.outputHandler = function(value, group, key) {
     TraktorS3.controller.setOutput(group, key, ledValue, true);
 };
 
+// deckOutputHandler drives lights that only have one color.
+TraktorS3.deckOutputHandler = function(value, group, key) {
+    // incoming value will be a channel, we have to resolve back to
+    // deck.
+    var updatedDeck = TraktorS3.controller.resolveDeck(group);
+    HIDDebug("updatedeck: " + updatedDeck);
+    if (updatedDeck != TraktorS3.controller.activeDeck) {
+        HIDDebug("does not match " + updatedDeck + " " + TraktorS3.controller.activeDeck);
+        return;
+    }
+    if (updatedDeck == 1 || updatedDeck == 3) {
+        group = "deck1";
+    } else if (updatedDeck == 2 || updatedDeck == 4) {
+        group = "deck2";
+    }
+    HIDDebug("DECK: OUTPUT GROUP " + group + " " + key + " " + value);
+
+    var ledValue = value;
+    if (value === 0 || value === false) {
+        // Off value
+        ledValue = 0x30;
+    } else if (value === 1 || value === true) {
+        // On value
+        ledValue = 0x33;
+    }
+
+    TraktorS3.controller.setOutput(group, key, ledValue, true);
+};
+
+TraktorS3.wheelOutputHandler = function(value, group, _key) {
+    var activeGroup = TraktorS3.controller.resolveGroup(group);
+    for (var i = 0; i < 8; i++) {
+        var sendPacket = (i == 7);
+        TraktorS3.colorOutputHandler(value, group, "!wheel" + i, sendPacket);
+    }
+};
+
 // colorOutputHandler drives lights that have the palettized multicolor lights.
 TraktorS3.colorOutputHandler = function(value, group, key, sendPacket) {
+    // Reject update if it's for a deck that's not selected.
+    var updatedDeck = TraktorS3.controller.resolveDeck(group);
+    if (updatedDeck !== TraktorS3.controller.activeDeck) {
+        return;
+    }
+    HIDDebug("updatedeck? " + updatedDeck);
+    if (updatedDeck == 1 || updatedDeck == 3) {
+        group = "deck1";
+    } else if (updatedDeck == 2 || updatedDeck == 4) {
+        group = "deck2";
+    }
+
+    HIDDebug("color output: " + group + "." + key + " " + value);
     var activeGroup = TraktorS3.controller.resolveGroup(group);
-    var ledValue = TraktorS3.DeckColors[activeGroup];
+    var ledValue = TraktorS3.controller.LEDColors[TraktorS3.controller.deckOutputColors[updatedDeck]];
     HIDDebug("group!" + activeGroup + " color " + ledValue);
     if (value === 1 || value === true) {
         ledValue += 0x02;
@@ -1164,6 +1266,8 @@ TraktorS3.colorOutputHandler = function(value, group, key, sendPacket) {
     if (sendPacket === undefined) {
         sendPacket = true;
     }
+
+    HIDDebug("So I think: " + group + " " + key);
 
     TraktorS3.controller.setOutput(group, key, ledValue, sendPacket);
 };
@@ -1225,6 +1329,7 @@ TraktorS3.resolveSampler = function(group) {
 };
 
 TraktorS3.lightDeck = function(switchOff) {
+    // return;
     HIDDebug("--------------------light deck");
     var softLight = 0x30;
     var fullLight = 0x33;

@@ -645,7 +645,7 @@ HIDPacket.prototype.parse = function(data) {
  * field object values are packed to the HID packet according to the
  * field type. */
 HIDPacket.prototype.send = function(debug) {
-    HIDDebug("~~~~~~~~~~~~~~~~");
+    // HIDDebug("~~~~~~~~~~~~~~~~");
     var data = [];
 
     if (this.header !== undefined) {
@@ -689,6 +689,7 @@ HIDPacket.prototype.send = function(debug) {
  * buttonStates         valid state values for buttons, should contain fields
  *                      released (default 0) and pressed (default 1)
  * LEDColors            possible Output colors named, must contain 'off' value
+ * LEDDimColors         Can be undefined. Names output colors, dim/unlit state
  * deckOutputColors        Which colors to use for each deck. Default 'on' for first
  *                      four decks. Values are like {1: 'red', 2: 'green' }
  *                      and must reference valid OutputColors fields.
@@ -1410,7 +1411,6 @@ HIDController.prototype.switchDeck = function(deck) {
         this.disconnectDeck();
     for (var packet_name in this.OutputPackets) {
         packet = this.OutputPackets[packet_name];
-        var send_packet = false;
         for (var group_name in packet.groups) {
             var group = packet.groups[group_name];
             for (var field_name in group) {
@@ -1424,18 +1424,29 @@ HIDController.prototype.switchDeck = function(deck) {
                         controlgroup = this.resolveGroup(bit.mapped_group);
                         engine.connectControl(controlgroup, bit.mapped_name, bit.mapped_callback, true);
                         engine.connectControl(new_group, bit.mapped_name, bit.mapped_callback);
+                        HIDDebug("new group: " + new_group);
                         var value = engine.getValue(new_group, bit.mapped_name);
-                        HIDDebug("BIT " + bit.group + "." + bit.name + " value " + value);
-                        if (value)
+                        HIDDebug("BIT " + bit.group + "." + bit.name + " value " + value + " ");
+                        HIDDebug("wat" + deck + " " +
+                            this.deckOutputColors[deck] + " " + this.LEDColors[this.deckOutputColors[deck]]);
+                        if (value) {
                             this.setOutput(
                                 bit.group, bit.name,
-                                this.LEDColors[this.deckOutputColors[deck]]
+                                this.LEDColors[this.deckOutputColors[deck]],
+                                false
                             );
-                        else
+                        } else {
+                            var dim = this.LEDColors.off;
+                            if (this.LEDDimColors !== undefined) {
+                                dim = this.LEDDimColors[this.deckOutputColors[deck]];
+                            }
                             this.setOutput(
                                 bit.group, bit.name,
-                                this.LEDColors.off
+                                dim,
+                                false
+
                             );
+                        }
                     }
                     continue;
                 }
@@ -1447,18 +1458,31 @@ HIDController.prototype.switchDeck = function(deck) {
                 engine.connectControl(controlgroup, field.mapped_name, field.mapped_callback, true);
                 engine.connectControl(new_group, field.mapped_name, field.mapped_callback);
                 var value = engine.getValue(new_group, field.mapped_name);
-                if (value)
+                HIDDebug("new group: " + new_group + " " + field.mapped_name + " :" + value);
+                HIDDebug("some seocond thins " + deck + " " + this.deckOutputColors[deck] + " " + this.LEDColors[this.deckOutputColors[deck]]);
+                if (value) {
                     this.setOutput(
                         field.group, field.name,
-                        this.LEDColors[this.deckOutputColors[deck]]
+                        this.LEDColors[this.deckOutputColors[deck]],
+                        false
                     );
-                else
+                } else {
+                    var dim = this.LEDColors.off;
+                    if (this.LEDDimColors !== undefined) {
+                        dim = this.LEDDimColors[this.deckOutputColors[deck]];
+                    }
                     this.setOutput(
                         field.group, field.name,
-                        this.LEDColors.off
+                        dim,
+                        false
                     );
+                }
             }
         }
+    }
+    for (p in this.OutputPackets) {
+        HIDDebug("packets???" + p);
+        this.OutputPackets[p].send();
     }
     this.activeDeck = deck;
     if (this.connectDeck != undefined)
@@ -1514,7 +1538,9 @@ HIDController.prototype.setOutput = function(group, name, value, send_packet) {
         HIDDebug("setOutput: unknown field: " + group + "." + name);
         return;
     }
-    HIDDebug("lighting: " + field.id + " 0x" + value.toString(16));
+    if (value !== undefined) {
+        HIDDebug("lighting: " + field.id + " 0x" + value.toString(16));
+    }
     field.value = value << field.bit_offset;
     field.toggle = value << field.bit_offset;
     if (send_packet)
