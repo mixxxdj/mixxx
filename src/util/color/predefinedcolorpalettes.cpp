@@ -268,4 +268,7 @@ const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
 const mixxx::RgbColor PredefinedColorPalettes::kDefaultCueColor =
         kSchemaMigrationReplacementColor;
 
+const mixxx::RgbColor PredefinedColorPalettes::kDefaultLoopColor =
+        kColorMixxxWhite;
+
 } // namespace mixxx

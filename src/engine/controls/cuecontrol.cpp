@@ -768,13 +768,24 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
 
-    ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
-    if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        auto hotcueColorPalette =
-                m_colorPaletteSettings.getHotcueColorPalette();
-        pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
+    if (cueType == mixxx::CueType::Loop) {
+        ConfigKey autoLoopColorsKey("[Controls]", "auto_loop_colors");
+        if (getConfig()->getValue(autoLoopColorsKey, false)) {
+            auto hotcueColorPalette =
+                    m_colorPaletteSettings.getHotcueColorPalette();
+            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
+        } else {
+            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultLoopColor);
+        }
     } else {
-        pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
+        ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
+        if (getConfig()->getValue(autoHotcueColorsKey, false)) {
+            auto hotcueColorPalette =
+                    m_colorPaletteSettings.getHotcueColorPalette();
+            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
+        } else {
+            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
+        }
     }
 
     if (cueType == mixxx::CueType::Loop) {
