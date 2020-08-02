@@ -1507,6 +1507,7 @@ if(KEYFINDER)
   else()
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
+    set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     ExternalProject_Add(keyfinder
       GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
       GIT_TAG 9b4440d66789b06483fe5273e06368a381d22707
@@ -1518,6 +1519,7 @@ if(KEYFINDER)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
+      BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
     )
 
@@ -1531,9 +1533,9 @@ if(KEYFINDER)
     # an error if not.
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
 
-    add_library(mixxx-keyfinder UNKNOWN IMPORTED)
+    add_library(mixxx-keyfinder STATIC IMPORTED)
     add_dependencies(mixxx-keyfinder keyfinder)
-    set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
     target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
     target_include_directories(mixxx-keyfinder INTERFACE "${KeyFinder_INSTALL_DIR}/include")
     target_link_libraries(mixxx-lib PUBLIC mixxx-keyfinder)
