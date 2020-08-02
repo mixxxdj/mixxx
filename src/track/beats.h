@@ -76,7 +76,6 @@ class BeatsInternal {
     FramePos findClosestBeat(FramePos frame) const;
     std::unique_ptr<BeatsInternal::iterator> findBeats(
             FramePos startFrame, FramePos stopFrame) const;
-    bool hasBeatInRange(FramePos startFrame, FramePos stopFrame) const;
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
     void setSignature(TimeSignature sig, int downbeatIndex);
     void translate(FrameDiff_t numFrames);
@@ -89,6 +88,7 @@ class BeatsInternal {
     Beat getBeatAtIndex(int index) {
         return m_beats.at(index);
     }
+    void setAsDownbeat(int beatIndex);
 
   private:
     void updateBpm();
@@ -202,10 +202,6 @@ class Beats final : public QObject {
     std::unique_ptr<Beats::iterator> findBeats(FramePos startFrame,
             FramePos stopFrame) const;
 
-    /// Return whether or not a Beat lies between startFrameNum and endFrameNum
-    bool hasBeatInRange(FramePos startFrame,
-            FramePos stopFrame) const;
-
     /**
      * Return Beat at (0 based) index
      * @param index
@@ -253,6 +249,12 @@ class Beats final : public QObject {
 
     /// Return the sample rate
     SINT getSampleRate() const;
+
+    /**
+     * Convert a non-downbeat to a downbeat shifting all downbeats
+     * @param beatIndex Index of the beat to be converted to downbeat
+     */
+    void setAsDownbeat(int beatIndex);
 
     /// Prints debugging information in stderr
     friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);

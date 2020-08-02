@@ -14,16 +14,18 @@ class Beat {
         BEAT,
         DOWNBEAT
     };
-    Beat(FramePos framePos,
+    explicit Beat(FramePos framePos,
             Type type = BEAT,
-            TimeSignature timeSignature = TimeSignature(),
+            const TimeSignature& timeSignature = TimeSignature(),
             int beatIndex = 0,
             int barIndex = 0,
+            int barRelativeBeatIndex = 0,
             bool hasMarker = false) {
         m_framePos = framePos;
         m_eType = type;
         m_iBeatIndex = beatIndex;
         m_iBarIndex = barIndex;
+        m_iBarRelativeBeatIndex = barRelativeBeatIndex;
         m_timeSignature = timeSignature;
         m_bHasMarker = hasMarker;
     }
@@ -33,6 +35,10 @@ class Beat {
 
     int getBarIndex() const {
         return m_iBarIndex;
+    }
+
+    int getBarRelativeBeatIndex() const {
+        return m_iBarRelativeBeatIndex;
     }
 
     TimeSignature getTimeSignature() const {
@@ -54,6 +60,7 @@ class Beat {
   private:
     int m_iBeatIndex;
     int m_iBarIndex;
+    int m_iBarRelativeBeatIndex;
     bool m_bHasMarker;
     Type m_eType;
     FramePos m_framePos;
@@ -74,7 +81,8 @@ inline QDebug operator<<(QDebug dbg, Beat beat) {
     dbg << "[ Position:" << beat.getFramePosition()
         << " | Signature:" << beat.getTimeSignature()
         << " | Type:" << beat.getType() << " | BarIndex:" << beat.getBarIndex()
-        << " | BeatIndex:" << beat.getBeatIndex() << "]";
+        << " | BeatIndex:" << beat.getBeatIndex() << "]"
+        << " | BarRelativeBeatIndex:" << beat.getBarRelativeBeatIndex() << "]";
     return dbg;
 }
 

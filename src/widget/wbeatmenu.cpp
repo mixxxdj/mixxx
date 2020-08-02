@@ -39,7 +39,7 @@ void WBeatMenu::updateMenu() {
 
 void WBeatMenu::slotDownbeatUpdated() {
     if (m_pBeats) {
-        // implement
+        m_pBeats->setAsDownbeat(m_beat.getBeatIndex());
     }
 }
 
