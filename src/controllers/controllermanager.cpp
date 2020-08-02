@@ -27,18 +27,18 @@
 #include "controllers/bulk/bulkenumerator.h"
 #endif
 
-namespace {
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
 #ifdef __LINUX__
 // Many Linux distros ship with the system tick set to 250Hz so 1ms timer
 // reportedly causes CPU hosage. See Bug #990992 rryan 6/2012
-const int kPollIntervalMillis = 5;
+const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(5);
 #else
-const int kPollIntervalMillis = 1;
+const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(1);
 #endif
 
+namespace {
 /// Strip slashes and spaces from device name, so that it can be used as config
 /// key or a filename.
 QString sanitizeDeviceName(QString name) {
@@ -97,7 +97,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         QDir().mkpath(userPresets);
     }
 
-    m_pollTimer.setInterval(kPollIntervalMillis);
+    m_pollTimer.setInterval(kPollInterval.toIntegerMillis());
     connect(&m_pollTimer, SIGNAL(timeout()),
             this, SLOT(pollDevices()));
 
@@ -359,7 +359,7 @@ void ControllerManager::pollDevices() {
     }
 
     mixxx::Duration duration = mixxx::Time::elapsed() - start;
-    if (duration > mixxx::Duration::fromMillis(kPollIntervalMillis)) {
+    if (duration > kPollInterval) {
         m_skipPoll = true;
     }
     //qDebug() << "ControllerManager::pollDevices()" << duration << start;
