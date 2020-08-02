@@ -6,16 +6,17 @@
   *
   */
 
-#include <wchar.h>
-#include <string.h>
-
-#include "util/path.h" // for PATH_MAX on Windows
-#include "controllers/controllermanager.h"
 #include "controllers/hid/hidcontroller.h"
-#include "controllers/defs_controllers.h"
-#include "util/trace.h"
+
+#include <string.h>
+#include <wchar.h>
+
 #include "controllers/controllerdebug.h"
+#include "controllers/controllermanager.h"
+#include "controllers/defs_controllers.h"
+#include "util/path.h" // for PATH_MAX on Windows
 #include "util/time.h"
+#include "util/trace.h"
 
 HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
         : Controller(pConfig),
