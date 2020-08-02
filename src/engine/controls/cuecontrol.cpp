@@ -2265,6 +2265,7 @@ HotcueControl::~HotcueControl() {
     delete m_hotcueGotoAndPlay;
     delete m_hotcueGotoAndStop;
     delete m_hotcueGotoAndLoop;
+    delete m_hotcueLoopToggle;
     delete m_hotcueActivate;
     delete m_hotcueActivateCue;
     delete m_hotcueActivateLoop;
