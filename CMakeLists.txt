@@ -2165,7 +2165,14 @@ endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
-cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND" OFF)
+# FIXME
+# It is difficult to get qmake to link Qt to a custom built SQLite on macOS instead of the system SQLite,
+# which results in a crash on startup when LOCALECOMPARE is enabled.
+if(APPLE)
+  cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" OFF "SQLite3_FOUND" OFF)
+else()
+  cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND" OFF)
+endif()
 if(LOCALECOMPARE)
   if(NOT SQLite3_FOUND)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
