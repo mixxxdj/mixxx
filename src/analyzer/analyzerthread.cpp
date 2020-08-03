@@ -87,6 +87,9 @@ AnalyzerThread::AnalyzerThread(
           m_sampleBuffer(mixxx::kAnalysisSamplesPerChunk),
           m_emittedState(AnalyzerThreadState::Void) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
+    if (modeFlags & AnalyzerModeFlags::LowPriority) {
+        setPriority(QThread::LowPriority);
+    }
 }
 
 void AnalyzerThread::doRun() {
