@@ -38,10 +38,11 @@ class ControllerEngineTest : public MixxxTest {
 
     void processEvents() {
         // QCoreApplication::processEvents() only processes events that were
-        // queued when the method was called. Hence, events that were emitted
-        // by a slot that was triggered by processing are *not* processed and
-        // only queued for the next call. Thus, it makes sense to call this
-        // twice because otherwise some tests will fail on some architectures.
+        // queued when the method was called. Hence, all subsequent events that
+        // are emitted while processing those queued events will not be
+        // processed and are enqueued for the next event processing cycle.
+        // Calling processEvents() twice ensures that at least all queued and
+        // the next round of emitted events are processed.
         application()->processEvents();
         application()->processEvents();
     }
