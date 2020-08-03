@@ -40,6 +40,12 @@ else()
   set(LLVM_CLANG false)
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(MIXXX_DEBUG 1)
+else()
+  set(MIXXX_DEBUG 0)
+endif()
+
 # CMake implicitly sets the variable MSVC to true for Microsoft
 # Visual C++ or another compiler simulating Visual C++.
 # https://cmake.org/cmake/help/latest/variable/MSVC.html
@@ -106,7 +112,7 @@ if(NOT OPTIMIZE STREQUAL "off")
       # Jenkins logs) Should we turn on PGO ?
       # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
       add_link_options(/LTCG:OFF)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    elseif(MIXXX_DEBUG)
       add_compile_options(/GL-)
     else()
       add_compile_options(/GL)
@@ -959,8 +965,10 @@ if(WARNINGS_FATAL)
   endif()
 endif()
 
-option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
+CMAKE_DEPENDENT_OPTION(DEBUG_ASSERTIONS_FATAL "Fail if a debug assertions fails"
+  ON "MIXXX_DEBUG" OFF)
 if(DEBUG_ASSERTIONS_FATAL)
+  message(STATUS "Debug Assertions are fatal")
   target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL)
 endif()
 
@@ -999,7 +1007,7 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
-    if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if(NOT STATIC_DEPS OR MIXXX_DEBUG)
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
@@ -1412,12 +1420,6 @@ if(WIN32)
     string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
   endif()
   set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
-
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(MIXXX_DEBUG 1)
-  else()
-    set(MIXXX_DEBUG 0)
-  endif()
 
   string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
   if(MIXXX_PRERELEASE_POSITION EQUAL -1)
