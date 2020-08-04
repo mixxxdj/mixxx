@@ -7,6 +7,14 @@
 
 namespace {
 const QString kConfigGroup = QStringLiteral("[MacroRecording]");
+
+const MacroAction s_action(500, 15);
+void checkRecordedAction(MacroRecorder* recorder, MacroAction action = s_action) {
+    EXPECT_EQ(recorder->getRecordingSize(), 1);
+    auto recordedAction = recorder->fetchRecordedActions().first();
+    EXPECT_EQ(recordedAction.position, action.position);
+    EXPECT_EQ(recordedAction.target, action.target);
+}
 }
 
 TEST(MacrosTest, SerializeMacroActions) {
@@ -48,25 +56,24 @@ TEST(MacroRecordingTest, RecordCueJump) {
     ChannelHandle handle = factory.getOrCreateHandle("test-one");
     ASSERT_EQ(recorder.getStatus(), MacroRecorder::Status::Disabled);
 
-    recorder.notifyCueJump(&handle, 0, 1);
+    recorder.notifyCueJump(&handle, s_action.position, s_action.target);
     ASSERT_EQ(recorder.getActiveChannel(), nullptr);
     EXPECT_EQ(recorder.getRecordingSize(), 0);
 
     recorder.startRecording();
-    recorder.notifyCueJump(&handle, 0, 1);
+    recorder.notifyCueJump(&handle, s_action.position, s_action.target);
     EXPECT_EQ(recorder.getActiveChannel()->handle(), handle.handle());
-    ASSERT_EQ(recorder.getRecordingSize(), 1);
-    EXPECT_EQ(recorder.getRecordedAction().position, 0);
-    EXPECT_EQ(recorder.getRecordedAction().target, 1);
+    ::checkRecordedAction(&recorder);
 
     auto handle2 = factory.getOrCreateHandle("test-two");
     recorder.notifyCueJump(&handle2, 0, 2);
     EXPECT_EQ(recorder.checkOrClaimRecording(&handle2), false);
     EXPECT_EQ(recorder.checkOrClaimRecording(&handle), true);
-    ASSERT_EQ(recorder.getRecordingSize(), 1);
+    ASSERT_EQ(recorder.getRecordingSize(), 0);
 
-    recorder.notifyCueJump(&handle, 3, 5);
-    EXPECT_EQ(recorder.getRecordingSize(), 2);
+    MacroAction otherAction(3, 5);
+    recorder.notifyCueJump(&handle, otherAction.position, otherAction.target);
+    ::checkRecordedAction(&recorder, otherAction);
 
     recorder.pollRecordingStart();
     EXPECT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
@@ -90,6 +97,10 @@ class MacroRecorderTest : public SignalPathTest {
     MacroRecorderTest()
             : SignalPathTest(new MacroRecorder()) {
     }
+
+    void checkRecordedAction(MacroAction action = s_action) {
+        return ::checkRecordedAction(m_pMacroRecorder, action);
+    }
 };
 
 TEST_F(MacroRecorderTest, RecordSeek) {
@@ -98,28 +109,33 @@ TEST_F(MacroRecorderTest, RecordSeek) {
     ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
     EXPECT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
             MacroRecorder::Status::Armed);
-    m_pChannel1->getEngineBuffer()->slotControlSeekExact(50 * mixxx::kEngineChannelCount);
+
+    m_pChannel1->getEngineBuffer()->slotControlSeekExact(
+            s_action.position * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 0);
 
-    m_pChannel1->getEngineBuffer()->slotControlSeekAbs(10 * mixxx::kEngineChannelCount);
+    m_pChannel1->getEngineBuffer()->slotControlSeekAbs(
+            s_action.target * mixxx::kEngineChannelCount);
     ProcessBuffer();
-    EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 1);
-    EXPECT_EQ(m_pMacroRecorder->getRecordedAction().position, 50);
-    EXPECT_EQ(m_pMacroRecorder->getRecordedAction().target, 10);
+    checkRecordedAction();
 }
 
 TEST_F(MacroRecorderTest, RecordHotcueActivation) {
+    MacroAction action(100, 0);
     ControlObject::toggle(ConfigKey(kConfigGroup, "recording_toggle"));
     ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
+
+    // Place hotcue 1 at position 0
     ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
+
     ProcessBuffer();
-    m_pChannel1->getEngineBuffer()->slotControlSeekExact(100 * mixxx::kEngineChannelCount);
+    m_pChannel1->getEngineBuffer()->slotControlSeekExact(
+            action.position * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 0);
+
     ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
     ProcessBuffer();
-    EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 1);
-    EXPECT_EQ(m_pMacroRecorder->getRecordedAction().position, 100);
-    EXPECT_EQ(m_pMacroRecorder->getRecordedAction().target, 0);
+    checkRecordedAction(action);
 }

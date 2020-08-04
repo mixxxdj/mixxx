@@ -39,8 +39,10 @@ class MacroRecorder : public RecordingManagerBase {
     /// Only called in realtime code.
     void notifyCueJump(ChannelHandle* channel, double sourceFramePos, double destFramePos);
 
+    /// Fetches all Actions recorded so far - note that this also clears them!
+    const QVector<MacroAction> fetchRecordedActions();
+
     size_t getRecordingSize() const;
-    const MacroAction getRecordedAction();
     const ChannelHandle* getActiveChannel() const;
 
   signals:

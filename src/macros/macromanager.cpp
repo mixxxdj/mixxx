@@ -59,6 +59,7 @@ QList<Macro> MacroManager::loadMacros(TrackId trackId) {
     int contentColumn = record.indexOf("content");
     while (query.next()) {
         uint state = query.value(stateColumn).toUInt();
+        // TODO(xerus): Use QFlags for state
         result.append(Macro(
                 state & 1u,
                 state & 2u,

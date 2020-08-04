@@ -70,16 +70,7 @@ void MacroRecorder::stopRecording() {
         return;
     }
 
-    QVector<MacroAction> actions;
-    while (MacroAction* action = m_pRecordedActions.front()) {
-        m_pRecordedActions.pop();
-        actions.append(*action);
-    }
-    emit saveMacro(*channel, actions);
-}
-
-const MacroAction MacroRecorder::getRecordedAction() {
-    return *m_pRecordedActions.front();
+    emit saveMacro(*channel, fetchRecordedActions());
 }
 
 size_t MacroRecorder::getRecordingSize() const {
@@ -96,4 +87,13 @@ MacroRecorder::Status MacroRecorder::getStatus() const {
 
 bool MacroRecorder::isRecordingActive() const {
     return getStatus() > 0;
+}
+
+const QVector<MacroAction> MacroRecorder::fetchRecordedActions() {
+    QVector<MacroAction> actions;
+    while (MacroAction* action = m_pRecordedActions.front()) {
+        m_pRecordedActions.pop();
+        actions.append(*action);
+    }
+    return actions;
 }
