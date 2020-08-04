@@ -918,7 +918,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
-  )
+)
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON)
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
@@ -1271,6 +1271,7 @@ add_executable(mixxx-test
   src/test/libraryscannertest.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
+  src/test/macromanager_test.cpp
   src/test/macros_test.cpp
   src/test/main.cpp
   src/test/mathutiltest.cpp
