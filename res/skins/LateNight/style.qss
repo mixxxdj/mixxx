@@ -385,8 +385,13 @@ WSpinny { /*
   padding: 1px;
 }
 #VuMeterBoxMaster {
-  /* gap in between Master lft/right Vu */
-  qproperty-layoutSpacing: 1;
+  /* gap in between Master lft/right Vu
+  qproperty-layoutSpacing: 1; */
+  }
+  #VuMeterBoxFull {
+    /* push all VU meters to the right to visullay center it
+      below Pfl buttons */
+    margin-left: 1px;
   }
   #VuMeterChannel_2Decks,
   #VuMeterChannel_4Decks,
