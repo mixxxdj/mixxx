@@ -394,28 +394,25 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newN
     }
 }
 
-QString SetlogFeature::getRootViewHtml() const {
-    QString playlistsTitle = tr("History");
-    QString playlistsSummary =
-            tr("The history section automatically keeps a list of tracks you "
-               "play in your DJ sets.");
-    QString playlistsSummary2 =
-            tr("This is handy for remembering what worked in your DJ sets, "
-               "posting set-lists, or reporting your plays to licensing "
-               "organizations.");
-    QString playlistsSummary3 =
-            tr("Every time you start Mixxx, a new history section is created. "
-               "You can export it as a playlist in various formats or play it "
-               "again with Auto DJ.");
-    QString playlistsSummary4 =
-            tr("You can join the current history session with a previous one "
-               "by right-clicking and selecting \"Join with previous\".");
+void SetlogFeature::activate() {
+    activatePlaylist(m_playlistId);
+}
 
-    QString html;
-    html.append(QStringLiteral("<h2>%1</h2>").arg(playlistsTitle));
-    html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary));
-    html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary2));
-    html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary3));
-    html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary4));
-    return html;
+void SetlogFeature::activatePlaylist(int playlistId) {
+    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    QModelIndex index = indexFromPlaylistId(playlistId);
+    if (playlistId != -1 && index.isValid()) {
+        m_pPlaylistTableModel->setTableModel(playlistId);
+        emit showTrackModel(m_pPlaylistTableModel);
+        emit enableCoverArtDisplay(true);
+        // Update selection only, if it is not the current playlist
+        if (playlistId != m_playlistId) {
+            emit featureSelect(this, m_lastRightClickedIndex);
+            activateChild(m_lastRightClickedIndex);
+        }
+    }
+}
+
+QString SetlogFeature::getRootViewHtml() const {
+    return QString();
 }

@@ -21,12 +21,14 @@ class SetlogFeature : public BasePlaylistFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+    void activatePlaylist(int playlistId) override;
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithPrevious();
     void slotGetNewPlaylist();
+    void activate() override;
 
   protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
