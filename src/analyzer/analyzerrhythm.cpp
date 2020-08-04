@@ -32,7 +32,7 @@ constexpr int kDfTypes = 5;
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
     DFConfig config;
-    config.DFType = dfAll - dfBroadBand;
+    config.DFType = dfAll;
     config.stepSize = stepSize;
     config.frameLength = windowSize;
     config.dbRise = 3;
@@ -77,40 +77,23 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
     int factor = MathUtilities::nextPowerOfTwo(m_iSampleRate / 3000);
     m_downbeat = std::make_unique<DownBeat>(
             m_iSampleRate, factor, stepSize());
-
-    CQConfig constQParams;
-    constQParams.FS = m_iSampleRate; // sample rate
-    constQParams.min = 50.0; // minimum frequency
-    constQParams.max = 12000.0; // maximum frequency
-    constQParams.BPO = 4.0; // bins per octave
-    constQParams.CQThresh = 0.0054; // (??) same value used by qm segmenter
-    m_constQ = std::make_unique<ConstantQ>(constQParams);
-
-    const int fftSize = m_constQ->getFFTLength();
-    const int constQNumberOfBins = m_constQ->getK();
-
-    m_constQRealOut = new double[constQNumberOfBins];
-    m_constQImagOut = new double[constQNumberOfBins];
     
-    m_fft = std::make_unique<FFTReal>(fftSize);
-    m_fftRealOut = new double[fftSize];
-    m_fftImagOut = new double[fftSize];
-    m_constQ->sparsekernel();
+    m_fft = std::make_unique<FFTReal>(windowSize());
+    m_fftRealOut = new double[windowSize()];
+    m_fftImagOut = new double[windowSize()];
 
-    m_window = new Window<double>(HammingWindow, fftSize);
+    m_window = new Window<double>(HammingWindow, windowSize());
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
-            makeDetectionFunctionConfig(stepSize(), fftSize));
+            makeDetectionFunctionConfig(stepSize(), windowSize()));
     
     qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << stepSize();
 
     m_onsetsProcessor.initialize(
-            fftSize, stepSize(), [this](double* pWindow, size_t) {
+            windowSize(), stepSize(), [this](double* pWindow, size_t) {
                 DFresults onsets;
                 m_window->cut(pWindow);
                 m_fft->forward(pWindow, m_fftRealOut, m_fftImagOut);
-                m_constQ->process(m_fftRealOut, m_fftImagOut, 
-                        m_constQRealOut, m_constQImagOut);
-                onsets = m_pDetectionFunction->processFrequencyDomain(m_constQRealOut, m_constQImagOut);
+                onsets = m_pDetectionFunction->processFrequencyDomain(m_fftRealOut, m_fftImagOut);
                 m_detectionResults.push_back(onsets);
                 return true;
             });
@@ -160,8 +143,6 @@ void AnalyzerRhythm::cleanup() {
     m_detectionResults.clear();
     m_pDetectionFunction.reset();
     delete m_window;
-    delete [] m_constQImagOut;
-    delete [] m_constQRealOut;
     delete [] m_fftImagOut;
     delete [] m_fftRealOut;
 }
@@ -190,8 +171,11 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
 
         TempoTrackV2 tt(m_iSampleRate, stepSize());
         tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
+        //qDebug() << beatPeriod.size() << tempi.size();
+        qDebug() << tempi;
 
         tt.calculateBeats(noteOnsets, beatPeriod, allBeats[dfType]);
+        //qDebug() << allBeats[dfType].size();
     }
     // Let's compare all beats positions and use the "best" one
     double maxAgreement = 0.0;
@@ -286,15 +270,6 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
     auto [bpb, firstDownbeat] = computeMeter(beatsSpecDiff);
-    int counter = 0;
-    for (auto onset : m_detectionResults) {
-        qDebug() << counter;
-        qDebug() << onset.t.hiFrequency;
-        qDebug() << onset.t.specDiff;
-        qDebug() << onset.t.phaseDev;
-        qDebug() << onset.t.complexSpecDiff;
-        qDebug() << "----------";
-    }
     
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {

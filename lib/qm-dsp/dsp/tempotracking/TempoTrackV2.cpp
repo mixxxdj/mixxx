@@ -110,15 +110,14 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     // then call viterbi decoding with weight vector and transition matrix
     // and get best path
 
-    int wv_len = 128;
-
+    int wv_len = 256;
     // MEPD 28/11/12
     // the default value of inputtempo in the beat tracking plugin is 120
     // so if the user specifies a different inputtempo, the rayparam will be updated
     // accordingly.
     // note: 60*44100/512 is a magic number
     // this might (will?) break if a user specifies a different frame rate for the onset detection function
-    double rayparam = (60*44100/512)/inputtempo;
+    double rayparam = (60*44100/512)/30;
 
     // make rayleigh weighting curve
     d_vec_t wv(wv_len);
@@ -140,8 +139,8 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     }
 
     // beat tracking frame size (roughly 6 seconds) and hop (1.5 seconds)
-    int winlen = 512;
-    int step = 128;
+    int winlen = 4096;
+    int step = 256;
 
     // matrix to store output of comb filter bank, increment column of matrix at each frame
     d_mat_t rcfmat;
@@ -166,7 +165,6 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
             rcfmat[col_counter].push_back( rcf[j] );
         }
     }
-
     // now call viterbi decoding function
     viterbi_decode(rcfmat,wv,beat_period,tempi);
 }
@@ -202,7 +200,7 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
     }
 
     // now apply comb filtering
-    int numelem = 4;
+    int numelem = 12;
 
     for (int i = 2; i < rcf_len; i++) { // max beat period
         for (int a = 1; a <= numelem; a++) { // number of comb elements
@@ -248,8 +246,8 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     // formed of Gaussians on diagonal - implies slow tempo change
     double sigma = 8.;
     // don't want really short beat periods, or really long ones
-    for (int i = 20; i  < wv_len - 20; i++) {
-        for (int j = 20; j < wv_len - 20; j++) {
+    for (int i = 64; i < wv_len; i++) { // we actually want the long periods for measure level, this limits 20~60 bars per minute.
+        for (int j = 64; j < wv_len; j++) {
             double mu = double(i);
             tmat[i][j] = exp( (-1.*pow((j-mu),2.)) / (2.*pow(sigma,2.)) );
         }

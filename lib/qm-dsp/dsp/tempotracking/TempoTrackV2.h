@@ -66,6 +66,7 @@ public:
                         const std::vector<double> &beatPeriod,
                         std::vector<double> &beats,
                         double alpha, double tightness);
+    void filter_df(std::vector<double> &df);
 
 private:
     typedef std::vector<int> i_vec_t;
@@ -78,7 +79,6 @@ private:
 
     void adapt_thresh(d_vec_t &df);
     double mean_array(const d_vec_t &dfin, int start, int end);
-    void filter_df(d_vec_t &df);
     void get_rcf(const d_vec_t &dfframe, const d_vec_t &wv, d_vec_t &rcf);
     void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv,
                         d_vec_t &bp, d_vec_t &tempi);
