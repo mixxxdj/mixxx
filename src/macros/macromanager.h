@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include "macrorecorder.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 
 class MacroManager : public QObject {
@@ -12,8 +13,11 @@ class MacroManager : public QObject {
 
     MacroRecorder* getRecorder();
 
+    void saveMacro(TrackId trackId, QString label, QVector<MacroAction> actions);
+    QList<Macro> loadMacros(TrackId trackId);
+
   public slots:
-    void saveMacro(ChannelHandle channel, QVector<MacroAction> actions);
+    void slotSaveMacro(ChannelHandle channel, QVector<MacroAction> actions);
 
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;

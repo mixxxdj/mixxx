@@ -39,6 +39,31 @@ void MacroManager::saveMacro(TrackId trackId, QString label, QVector<MacroAction
     qCDebug(macroLoggingCategory) << "Macro saved";
 }
 
+QList<Macro> MacroManager::loadMacros(TrackId trackId) {
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT * FROM macros WHERE track_id=:trackId"));
+    query.bindValue(":trackId", trackId.toVariant());
+    QList<Macro> result;
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return result;
+    }
+    const QSqlRecord record = query.record();
+    int stateColumn = record.indexOf("state");
+    int labelColumn = record.indexOf("label");
+    int contentColumn = record.indexOf("content");
+    while (query.next()) {
+        uint state = query.value(stateColumn).toUInt();
+        result.append(Macro(
+                state & 1u,
+                state & 2u,
+                query.value(labelColumn).toString(),
+                Macro::deserialize(query.value(contentColumn).toByteArray())));
+    }
+    return result;
+}
+
 MacroRecorder* MacroManager::getRecorder() {
     return m_pMacroRecorder.get();
 }
