@@ -27,7 +27,7 @@ class GuiTick;
 class KeyboardEventFilter;
 class LaunchImage;
 class Library;
-class MacroRecorder;
+class MacroManager;
 class PlayerManager;
 class RecordingManager;
 class SettingsManager;
@@ -140,7 +140,7 @@ class MixxxMainWindow : public QMainWindow {
 
     PlayerManager* m_pPlayerManager;
 
-    MacroRecorder* m_pMacroManager;
+    MacroManager* m_pMacroManager;
     RecordingManager* m_pRecordingManager;
 #ifdef __BROADCAST__
     BroadcastManager* m_pBroadcastManager;

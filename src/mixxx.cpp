@@ -33,7 +33,7 @@
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "macros/macrorecorder.h"
+#include "macros/macromanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "preferences/settingsmanager.h"
@@ -286,13 +286,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
-    m_pMacroManager = new MacroRecorder();
+    m_pMacroManager = new MacroManager();
 
     // Create the player manager (long)
     m_pPlayerManager = new PlayerManager(pConfig,
             m_pSoundManager,
             m_pEngine,
-            m_pMacroManager,
+            m_pMacroManager->getRecorder(),
             m_pEffectsManager,
             m_pVisualsManager);
     connect(m_pPlayerManager,
