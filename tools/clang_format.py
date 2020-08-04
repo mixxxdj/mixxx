@@ -71,7 +71,7 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
 
     if proc.stderr:
         logger.error(proc.stderr)
-    with open(filename, mode="w+") as fp:
+    with open(filename, mode="w") as fp:
         fp.write(proc.stdout)
 
 
