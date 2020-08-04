@@ -13,8 +13,6 @@ language: cpp
 # We turn off verbose output to avoid going over the 4MB output limit.
 env:
   global:
-    # For SCons builds
-    - SCONSFLAGS="battery=1 bulk=1 debug_assertions_fatal=1 hid=1 hss1394=0 lilv=1 opus=1 qtkeychain=1 shoutcast=1 test=1 verbose=0 vinylcontrol=1 virtualize=0"
     # For CMake builds
     # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
     - CMAKEFLAGS="-DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON"
@@ -32,7 +30,7 @@ jobs:
       language: python
       python: 3.7
       # There are too many files in the repo that have formatting issues. We'll
-      # disable these checks for now when pushing directly (but still run these
+      # disable these checks for now when pushing directly (but still run them
       # on Pull Requests!).
       env: SKIP=end-of-file-fixer,trailing-whitespace,clang-format,eslint
       cache:
@@ -59,20 +57,6 @@ jobs:
         - pre-commit run --from-ref HEAD^1 --to-ref HEAD --show-diff-on-failure
       addons: []
 
-    - name: Ubuntu/gcc/SCons build
-      compiler: gcc
-      # Ubuntu Bionic build prerequisites
-      before_install:
-        - sudo apt install -y scons
-      install:
-        # TODO for Ubuntu Focal: faad=0 ffmpeg=1
-        - scons -j "$(nproc)" faad=1 ffmpeg=0 localecompare=1 mad=1 modplug=1 wv=1
-      script:
-        # NOTE(sblaisot): 2018-01-02 removing gdb wrapper on linux due to a bug in
-        # return code in order to avoid having a successful build when a test fail.
-        # https://bugs.launchpad.net/mixxx/+bug/1699689
-        - ./mixxx-test
-
     - name: Ubuntu/gcc/CMake build
       compiler: gcc
       cache: ccache
@@ -96,64 +80,6 @@ jobs:
         # Run tests and benchmarks
         - ctest
         - cmake --build . --target benchmark
-
-    - name: OSX/clang/SCons build
-      os: osx
-      # The XCode version should match that on the build server!
-      osx_image: xcode9.4
-      compiler: clang
-      cache:
-        directories:
-          - $HOME/Library/Caches/Homebrew
-          - /usr/local/Homebrew
-      addons:
-        homebrew:
-          update: true
-          packages:
-            - chromaprint
-            - flac
-            - lame
-            - libsndfile
-            - libogg
-            - libvorbis
-            - libshout
-            - libid3tag
-            - libmad
-            - lilv
-            - opusfile
-            - portaudio
-            - portmidi
-            - protobuf
-            - qt5
-            - qtkeychain
-            - rubberband
-            - sound-touch
-            - taglib
-      # Workaround for bug in libopus's opus.h including <opus_multistream.h>
-      # instead of <opus/opus_multistream.h>.
-      env: >-
-        CFLAGS="-isystem /usr/local/include/opus"
-        CXXFLAGS="-isystem /usr/local/include/opus"
-      before_install:
-      - brew install scons
-      - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
-      - echo "QTDIR=$QTDIR"
-      install:
-        # We are hardcoding 4 threads here since "$(sysctl -n hw.ncpu)" only
-        # returns 2 and makes the travis job run into a timeout:
-        # https://docs.travis-ci.com/user/reference/overview/#virtualization-environments
-        - scons -j4 coreaudio=1
-      script:
-        # lldb doesn't provide an easy way to exit 1 on error:
-        # https://bugs.llvm.org/show_bug.cgi?id=27326
-        - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)"
-      before_cache:
-        # Avoid indefinite cache growth
-        - brew cleanup
-        # Cache only .git files under "/usr/local/Homebrew" so "brew update"
-        # does not take 5min every build
-        # Source: https://discourse.brew.sh/t/best-practice-for-homebrew-on-travis-brew-update-is-5min-to-build-time/5215/12
-        - find /usr/local/Homebrew \! -regex ".+\.git.+" -delete
 
     - name: OSX/clang/CMake build
       os: osx
