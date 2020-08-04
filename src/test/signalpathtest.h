@@ -1,24 +1,24 @@
 #pragma once
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QTest>
+#include <QtDebug>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "mixer/deck.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginebuffer.h"
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
+#include "mixer/deck.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
 #include "util/defs.h"
 #include "util/memory.h"
@@ -27,8 +27,8 @@
 #include "waveform/guitick.h"
 #include "waveform/visualsmanager.h"
 
-using ::testing::Return;
 using ::testing::_;
+using ::testing::Return;
 
 // Subclass of EngineMaster that provides access to the master buffer object
 // for comparison.
@@ -62,7 +62,8 @@ class BaseSignalPathTest : public MixxxTest {
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(nullptr, config(), m_pChannelHandleFactory);
         m_pVisualsManager = new VisualsManager();
-        m_pEngineMaster = new TestEngineMaster(m_pConfig,
+        m_pEngineMaster = new TestEngineMaster(
+                m_pConfig,
                 m_sMasterGroup,
                 m_pEffectsManager,
                 m_pChannelHandleFactory,
@@ -164,8 +165,11 @@ class BaseSignalPathTest : public MixxxTest {
     // Use tools/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesReference(const CSAMPLE* pBuffer, const int iBufferSize,
-                                   QString reference_title, const double delta=.0001) {
+    void assertBufferMatchesReference(
+            const CSAMPLE* pBuffer,
+            const int iBufferSize,
+            QString reference_title,
+            const double delta = .0001) {
         QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
         bool pass = true;
         int i = 0;
@@ -226,6 +230,7 @@ class BaseSignalPathTest : public MixxxTest {
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
+
     VisualsManager* m_pVisualsManager;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;

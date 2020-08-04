@@ -236,6 +236,12 @@ class EngineBuffer : public EngineObject {
     friend class CueControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
+    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
+    FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
+    FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
+    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
@@ -243,12 +249,6 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
-    FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
-    FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
-    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
-    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
-    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
-    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
 
     ChannelHandle m_channel;
     bool m_bHotcueJumpPending;
