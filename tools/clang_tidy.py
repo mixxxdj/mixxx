@@ -56,6 +56,11 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             "PRE_COMMIT_SOURCE"
         )
 
+    if not args.to_ref:
+        args.from_ref = os.getenv("PRE_COMMIT_TO_REF") or os.getenv(
+            "PRE_COMMIT_ORIGIN"
+        )
+
     rootdir = githelper.get_toplevel_path()
 
     # clang-tidy requires a compile_commands.json file to work correctly
@@ -67,6 +72,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     # Detect added/changed lines and run clang-tidy on them
     files_with_added_lines = githelper.get_changed_lines_grouped(
         from_ref=args.from_ref,
+        to_ref=args.to_ref,
         filter_lines=lambda line: line.added,
         include_files=args.files,
     )
