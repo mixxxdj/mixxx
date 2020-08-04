@@ -65,6 +65,12 @@ TEST_F(ControllerEngineTest, setValue) {
     EXPECT_DOUBLE_EQ(1.0, co->get());
 }
 
+TEST_F(ControllerEngineTest, getValue_InvalidKey) {
+    EXPECT_TRUE(evaluateAndAssert("engine.getValue('', '');"));
+    EXPECT_TRUE(evaluateAndAssert("engine.getValue('', 'invalid');"));
+    EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Invalid]', '');"));
+}
+
 TEST_F(ControllerEngineTest, setValue_InvalidControl) {
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Nothing]', 'nothing', 1.0);"));
 }
