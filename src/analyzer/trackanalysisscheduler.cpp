@@ -63,9 +63,7 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
         kLogger.debug()
                 << "Starting"
                 << numWorkerThreads
-                << "worker threads. Ideal: "
-                << QThread::idealThreadCount()
-                << ". Priority: "
+                << "worker threads. Priority: "
                 << (modeFlags & AnalyzerModeFlags::LowPriority ? "low" : "normal");
     }
     // 1st pass: Create worker threads
