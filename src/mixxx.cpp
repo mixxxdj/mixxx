@@ -782,7 +782,7 @@ void MixxxMainWindow::finalize() {
     {
         QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
                 ControlDoublePrivate::takeAllInstances();
-        VERIFY_OR_DEBUG_ASSERT(leakedControls.isEmpty()) {
+        if (!leakedControls.isEmpty()) {
             qWarning()
                     << "The following"
                     << leakedControls.size()
@@ -798,6 +798,7 @@ void MixxxMainWindow::finalize() {
                     pCDP->deleteCreatorCO();
                 }
             }
+            DEBUG_ASSERT(!"Controls were leaked!");
         }
         // Finally drop all shared pointers by exiting this scope
     }

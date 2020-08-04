@@ -51,6 +51,8 @@ class FakeDeck : public BaseTrackPlayer {
               outroEndPos(ConfigKey(group, "outro_end_position")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
+        outroStartPos.set(Cue::kNoPosition);
+        outroEndPos.set(Cue::kNoPosition);
     }
 
     void fakeTrackLoadedEvent(TrackPointer pTrack) {
