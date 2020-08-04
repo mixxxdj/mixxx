@@ -117,8 +117,12 @@ var TraktorS3 = new function() {
         WHITE: 0x44
     };
 
+    // Each color has four brightnesses.
+    this.LEDDimValue = 0x00;
+    this.LEDBrightValue = 0x02;
+
     this.controller.deckOutputColors = {
-        1: "HONEY",
+        1: "CARROT",
         2: "CARROT",
         3: "SKY",
         4: "SKY"
@@ -1322,17 +1326,17 @@ TraktorS3.lightDeck = function(group) {
     // Selected deck lights
     var ctrlr = TraktorS3.controller;
     if (group === "[Channel1]") {
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[ctrlr.deckOutputColors[1]] + 0x02, false);
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[ctrlr.deckOutputColors[3]], false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[ctrlr.deckOutputColors[1]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[ctrlr.deckOutputColors[3]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel2]") {
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]] + 0x02, false);
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[ctrlr.deckOutputColors[4]], false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[ctrlr.deckOutputColors[4]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel3]") {
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[ctrlr.deckOutputColors[3]] + 0x02, false);
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[ctrlr.deckOutputColors[1]], false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[ctrlr.deckOutputColors[3]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[ctrlr.deckOutputColors[1]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel4]") {
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[ctrlr.deckOutputColors[4]] + 0x02, false);
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]], false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[ctrlr.deckOutputColors[4]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]] + TraktorS3.LEDDimValue, false);
     }
 
     this.controller.freeze_lights = false;
@@ -1352,7 +1356,7 @@ TraktorS3.masterVuMeterHandler = function(value, group, key) {
 };
 
 TraktorS3.vuMeterHandler = function(value, group, key, segments) {
-    return;
+    // return;
     // This handler is called a lot so it should be as fast as possible.
     // HIDDebug("group??" + group + " " + key);
     var scaledValue = value * segments;
@@ -1386,7 +1390,6 @@ TraktorS3.peakOutputHandler = function(value, group, key) {
 
 // outputHandler drives lights that only have one color.
 TraktorS3.outputHandler = function(value, group, key) {
-
     HIDDebug("REGULAR OUTPUT GROUP " + group);
 
     var ledValue = value;
@@ -1482,7 +1485,9 @@ TraktorS3.colorOutputHandler = function(value, group, key, sendPacket) {
     // var activeGroup = TraktorS3.deckToGroup(group);
     // HIDDebug("group!" + group + " color " + ledValue);
     if (value === 1 || value === true) {
-        ledValue += 0x02;
+        ledValue += TraktorS3.LEDBrightValue;
+    } else {
+        ledValue += TraktorS3.LEDDimValue;
     }
     if (sendPacket === undefined) {
         sendPacket = true;
