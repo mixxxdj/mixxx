@@ -83,13 +83,19 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     logger = logging.getLogger(__name__)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--from-ref", help="compare against git reference")
+    parser.add_argument("--from-ref", help="use changes changes since commit")
+    parser.add_argument("--to-ref", help="use changes until commit")
     parser.add_argument("files", nargs="*", help="only check these files")
     args = parser.parse_args(argv)
 
     if not args.from_ref:
         args.from_ref = os.getenv("PRE_COMMIT_FROM_REF") or os.getenv(
             "PRE_COMMIT_SOURCE"
+        )
+
+    if not args.to_ref:
+        args.to_ref = os.getenv("PRE_COMMIT_TO_REF") or os.getenv(
+            "PRE_COMMIT_ORIGIN"
         )
 
     # Filter filenames
@@ -99,6 +105,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     logger.info("First pass: Reformatting added/changed lines...")
     files_with_added_lines = githelper.get_changed_lines_grouped(
         from_ref=args.from_ref,
+        to_ref=args.to_ref,
         filter_lines=lambda line: line.added,
         include_files=args.files,
     )
@@ -109,6 +116,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     logger.info("Second pass: Breaking long added/changed lines...")
     files_with_long_added_lines = githelper.get_changed_lines_grouped(
         from_ref=args.from_ref,
+        to_ref=args.to_ref,
         filter_lines=lambda line: line.added
         and len(line.text) > LINE_LENGTH_THRESHOLD,
         include_files=args.files,

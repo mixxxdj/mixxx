@@ -24,19 +24,18 @@ def get_toplevel_path() -> str:
 
 
 def get_changed_lines(
-    from_ref=None, filter_lines=None, include_files=None
+    from_ref=None, to_ref=None, filter_lines=None, include_files=None
 ) -> typing.Iterable[Line]:
     """Inspect `git diff-index` output, yields changed lines."""
 
     logger = logging.getLogger(__name__)
 
-    cmd = [
-        "git",
-        "diff-index",
-        "--patch",
-        "--unified=0",
-        from_ref if from_ref else "HEAD",
-    ]
+    if to_ref:
+        changeset = "{}...{}".format(from_ref if from_ref else "HEAD", to_ref)
+    else:
+        changeset = from_ref if from_ref else "HEAD"
+
+    cmd = ["git", "diff", "--patch", "--unified=0", changeset]
     if include_files:
         cmd.extend(["--", *include_files])
     logger.debug("Executing: %r", cmd)
@@ -100,11 +99,11 @@ def get_changed_lines(
 
 
 def get_changed_lines_grouped(
-    from_ref=None, filter_lines=None, include_files=None
+    from_ref=None, to_ref=None, filter_lines=None, include_files=None
 ) -> typing.Iterable[FileLines]:
     """Inspect `git diff-index` output, yields lines grouped by file."""
 
-    lines = get_changed_lines(from_ref, filter_lines, include_files)
+    lines = get_changed_lines(from_ref, to_ref, filter_lines, include_files)
     for filename, file_lines in itertools.groupby(
         lines, key=lambda line: line.sourcefile
     ):
