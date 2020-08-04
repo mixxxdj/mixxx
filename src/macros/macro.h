@@ -29,10 +29,9 @@ struct MacroAction {
     }
 
     proto::Macro_Action* serialize() const;
-    ;
 
-    enum Type : uint8_t {
-        JUMP = 0
+    enum class Type : uint8_t {
+        Jump = 0
     };
 };
 
