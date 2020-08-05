@@ -58,6 +58,7 @@
       <Align>bottom|right</Align>
       <Color><Variable name="LoopColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl><Variable name="Group"/>,loop_enabled</VisibilityControl>
     </Mark>
     <!-- Intro -->
     <MarkRange>
