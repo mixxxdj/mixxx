@@ -877,7 +877,8 @@ TraktorS3.finishJogTouch = function(group) {
     }
 };
 
-TraktorS3.fxHandler = function(field) {
+TraktorS3.fxHandler = function (field) {
+    HIDDebug("FX HANDLER");
     if (field.value === 0) {
         return;
     }
@@ -903,7 +904,7 @@ TraktorS3.reverseHandler = function(field) {
         engine.setValue(activeGroup, "reverse", field.value);
     }
 
-    TraktorS3.deckOutputHandler(field.value, field.group, "reverse");
+    TraktorS3.deckOutputHandler(field.value, field.group, "!reverse");
 };
 
 TraktorS3.fluxHandler = function(field) {
@@ -1014,8 +1015,8 @@ TraktorS3.registerOutputPackets = function() {
     outputA.addOutput("deck1", "slip_enabled", 0x02, "B");
     outputA.addOutput("deck2", "slip_enabled", 0x1B, "B");
 
-    outputA.addOutput("deck1", "reverse", 0x03, "B");
-    outputA.addOutput("deck2", "reverse", 0x1C, "B");
+    outputA.addOutput("deck1", "!reverse", 0x03, "B");
+    outputA.addOutput("deck2", "!reverse", 0x1C, "B");
 
     outputA.addOutput("deck1", "!PreviewTrack", 0x04, "B");
     outputA.addOutput("deck2", "!PreviewTrack", 0x1D, "B");
@@ -1140,13 +1141,6 @@ TraktorS3.registerOutputPackets = function() {
     TraktorS3.linkDeckOutputs("keylock", this.colorOutputHandler);
     TraktorS3.linkDeckOutputs("slip_enabled", this.deckOutputHandler);
     TraktorS3.linkDeckOutputs("quantize", this.colorOutputHandler);
-
-    // for (var i = 1; i <= 8; ++i) {
-    //     TraktorS3.linkDeckOutputs("pad_" + i, "deck1", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
-    //     TraktorS3.linkDeckOutputs("pad_" + i, "deck2", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
-    //     // TraktorS3.linkDeckOutputs("!pad_" + i, "deck1", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
-    //     // TraktorS3.linkDeckOutputs("!pad_" + i, "deck2", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
-    // }
 
     TraktorS3.linkChannelOutput("[Channel1]", "pfl", this.outputHandler);
     TraktorS3.linkChannelOutput("[Channel2]", "pfl", this.outputHandler);
@@ -1304,6 +1298,7 @@ TraktorS3.lightDeck = function(group) {
         TraktorS3.colorOutputHandler(0, deck_group_name, "!PreviewTrack");
         TraktorS3.colorOutputHandler(0, deck_group_name, "!AddTrack");
         TraktorS3.colorOutputHandler(0, deck_group_name, "!LibraryFocus");
+        TraktorS3.deckOutputHandler(0, deck_group_name, "!reverse");
     }
 
     //   // FX buttons
