@@ -477,10 +477,6 @@ bool EngineBuffer::isReverse() const {
     return m_reverse_old;
 }
 
-TrackPointer EngineBuffer::getLoadedTrack() const {
-    return m_pCurrentTrack;
-}
-
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoading() {
     // Pause EngineBuffer from processing frames
@@ -575,6 +571,35 @@ void EngineBuffer::ejectTrack() {
         notifyTrackLoaded(TrackPointer(), pOldTrack);
     }
     m_iTrackLoading = 0;
+}
+
+void EngineBuffer::notifyTrackLoaded(
+        TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    if (pOldTrack) {
+        disconnect(
+                pOldTrack.get(),
+                &Track::beatsUpdated,
+                this,
+                &EngineBuffer::slotUpdatedTrackBeats);
+    }
+
+    // First inform engineControls directly
+    // Note: we are still in a worker thread.
+    for (const auto& pControl : qAsConst(m_engineControls)) {
+        pControl->trackLoaded(pNewTrack);
+    }
+
+    if (pNewTrack) {
+        connect(
+                pNewTrack.get(),
+                &Track::beatsUpdated,
+                this,
+                &EngineBuffer::slotUpdatedTrackBeats,
+                Qt::DirectConnection);
+    }
+
+    // Inform BaseTrackPlayer via a queued connection
+    emit trackLoaded(pNewTrack, pOldTrack);
 }
 
 void EngineBuffer::slotPassthroughChanged(double enabled) {
@@ -1153,7 +1178,7 @@ void EngineBuffer::processSyncRequests() {
 
 void EngineBuffer::processSeek(bool paused) {
     // Check if we are cloning another channel before doing any seeking.
-    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(NULL);
+    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
     if (pChannel) {
         seekCloneBuffer(pChannel->getEngineBuffer());
     }
@@ -1246,6 +1271,16 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // Update all the indicators that EngineBuffer publishes to allow
     // external parts of Mixxx to observe its status.
     updateIndicators(m_speed_old, iBufferSize);
+}
+
+bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) const {
+    bool isSeekQueued = m_iSeekQueued.loadAcquire() != SEEK_NONE;
+    if (isSeekQueued) {
+        *pSeekPosition = m_queuedSeekPosition.getValue();
+    } else {
+        *pSeekPosition = -1;
+    }
+    return isSeekQueued;
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
@@ -1344,14 +1379,8 @@ bool EngineBuffer::isTrackLoaded() const {
     return false;
 }
 
-bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) {
-    bool isSeekQueued = m_iSeekQueued.loadAcquire() != SEEK_NONE;
-    if (isSeekQueued) {
-        *pSeekPosition = m_queuedSeekPosition.getValue();
-    } else {
-        *pSeekPosition = -1;
-    }
-    return isSeekQueued;
+TrackPointer EngineBuffer::getLoadedTrack() const {
+    return m_pCurrentTrack;
 }
 
 void EngineBuffer::slotEjectTrack(double v) {
@@ -1365,7 +1394,7 @@ void EngineBuffer::slotEjectTrack(double v) {
     }
 }
 
-double EngineBuffer::getExactPlayPos() {
+double EngineBuffer::getExactPlayPos() const {
     double visualPlayPos = getVisualPlayPos();
     if (visualPlayPos > 0) {
         return getVisualPlayPos() * getTrackSamples();
@@ -1376,65 +1405,25 @@ double EngineBuffer::getExactPlayPos() {
     }
 }
 
-double EngineBuffer::getVisualPlayPos() {
+double EngineBuffer::getVisualPlayPos() const {
     return m_visualPlayPos->getEnginePlayPos();
 }
 
-double EngineBuffer::getTrackSamples() {
+double EngineBuffer::getTrackSamples() const {
     return m_pTrackSamples->get();
 }
 
-void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
-                                    EngineBufferScale* pScaleKeylock) {
-    m_pScaleVinyl = pScaleVinyl;
-    m_pScaleKeylock = pScaleKeylock;
-    m_pScale = m_pScaleVinyl;
-    m_pScale->clear();
-    m_bScalerChanged = true;
-    // This bool is permanently set and can't be undone.
-    m_bScalerOverride = true;
-}
-
-void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    if (m_pBpmControl != NULL) {
-        m_pBpmControl->collectFeatures(pGroupFeatures);
-    }
-}
-
 double EngineBuffer::getRateRatio() const {
-    if (m_pBpmControl != NULL) {
+    if (m_pBpmControl != nullptr) {
         return m_pBpmControl->getRateRatio();
     }
     return 1.0;
 }
 
-void EngineBuffer::notifyTrackLoaded(
-        TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    if (pOldTrack) {
-        disconnect(
-                pOldTrack.get(),
-                &Track::beatsUpdated,
-                this,
-                &EngineBuffer::slotUpdatedTrackBeats);
+void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    if (m_pBpmControl != nullptr) {
+        m_pBpmControl->collectFeatures(pGroupFeatures);
     }
-
-    // First inform engineControls directly
-    // Note: we are still in a worker thread.
-    for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->trackLoaded(pNewTrack);
-    }
-
-    if (pNewTrack) {
-        connect(
-                pNewTrack.get(),
-                &Track::beatsUpdated,
-                this,
-                &EngineBuffer::slotUpdatedTrackBeats,
-                Qt::DirectConnection);
-    }
-
-    // Inform BaseTrackPlayer via a queued connection
-    emit trackLoaded(pNewTrack, pOldTrack);
 }
 
 void EngineBuffer::slotUpdatedTrackBeats() {
@@ -1444,4 +1433,16 @@ void EngineBuffer::slotUpdatedTrackBeats() {
             pControl->trackBeatsUpdated(pTrack->getBeats());
         }
     }
+}
+
+void EngineBuffer::setScalerForTest(
+        EngineBufferScale* pScaleVinyl,
+        EngineBufferScale* pScaleKeylock) {
+    m_pScaleVinyl = pScaleVinyl;
+    m_pScaleKeylock = pScaleKeylock;
+    m_pScale = m_pScaleVinyl;
+    m_pScale->clear();
+    m_bScalerChanged = true;
+    // This bool is permanently set and can't be undone.
+    m_bScalerOverride = true;
 }

@@ -140,27 +140,25 @@ class EngineBuffer : public EngineObject {
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
+    /// Return true iff a seek is currently queued but not yet processed
+    /// If no seek was queued, the seek position is set to -1
+    bool getQueuedSeekPosition(double* pSeekPosition) const;
+
     bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
 
-    /// Return true iff a seek is currently queued but not yet processed
-    /// If no seek was queued, the seek position is set to -1
-    bool getQueuedSeekPosition(double* pSeekPosition);
-
-    double getExactPlayPos();
-    double getVisualPlayPos();
-    double getTrackSamples();
-
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+    double getExactPlayPos() const;
+    double getVisualPlayPos() const;
+    double getTrackSamples() const;
 
     double getRateRatio() const;
 
-    // For dependency injection of readers.
-    //void setReader(CachingReader* pReader);
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScaleVinyl,
-                          EngineBufferScale* pScaleKeylock);
+    void setScalerForTest(
+            EngineBufferScale* pScaleVinyl,
+            EngineBufferScale* pScaleKeylock);
 
     // For injection of fake tracks.
     void loadFakeTrack(TrackPointer pTrack, bool bPlay);
