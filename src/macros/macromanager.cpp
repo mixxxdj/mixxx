@@ -21,7 +21,7 @@ MacroManager::MacroManager(
 void MacroManager::slotSaveMacro(ChannelHandle channel, QVector<MacroAction> actions) {
     qCDebug(macroLoggingCategory) << "Saving Macro for channel" << channel.handle();
     auto track = m_pPlayerManager->getPlayer(channel)->getLoadedTrack();
-    m_pMacroDao->saveMacro(track->getId(), "Unnamed Macro", actions, Macro::StateFlags::Enabled);
+    m_pMacroDao->saveMacro(track->getId(), "Unnamed Macro", actions, Macro::StateFlag::Enabled);
 }
 
 MacroRecorder* MacroManager::getRecorder() {
