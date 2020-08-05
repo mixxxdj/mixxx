@@ -221,7 +221,7 @@ bool SeratoBeatGrid::parseID3(
             return false;
         }
 
-        QByteArray markerData = QByteArray(buffer, kMarkerSizeID3);
+        QByteArray markerData = QByteArray::fromRawData(buffer, kMarkerSizeID3);
         SeratoBeatGridNonTerminalMarkerPointer pNonTerminalMarker =
                 SeratoBeatGridNonTerminalMarker::parseID3(markerData);
         if (!pNonTerminalMarker) {
@@ -266,7 +266,7 @@ bool SeratoBeatGrid::parseID3(
         return false;
     }
 
-    QByteArray markerData = QByteArray(buffer, kMarkerSizeID3);
+    QByteArray markerData = QByteArray::fromRawData(buffer, kMarkerSizeID3);
     SeratoBeatGridTerminalMarkerPointer pTerminalMarker =
             SeratoBeatGridTerminalMarker::parseID3(markerData);
     if (!pTerminalMarker) {
