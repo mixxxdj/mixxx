@@ -58,6 +58,7 @@ QByteArray SeratoBeatGridNonTerminalMarker::dumpID3() const {
     return data;
 }
 
+// static
 SeratoBeatGridNonTerminalMarkerPointer
 SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
     if (data.length() != kMarkerSizeID3) {
@@ -113,6 +114,7 @@ QByteArray SeratoBeatGridTerminalMarker::dumpID3() const {
     return data;
 }
 
+// static
 SeratoBeatGridTerminalMarkerPointer SeratoBeatGridTerminalMarker::parseID3(
         const QByteArray& data) {
     if (data.length() != kMarkerSizeID3) {
