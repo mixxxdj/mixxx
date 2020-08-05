@@ -138,4 +138,8 @@ TEST_F(MacroRecorderTest, RecordHotcueActivation) {
     ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
     ProcessBuffer();
     checkRecordedAction(action);
+
+    // Eject track and check that recording was stopped
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1);
+    EXPECT_EQ(m_pMacroRecorder->isRecordingActive(), false);
 }

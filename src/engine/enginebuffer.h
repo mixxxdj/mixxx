@@ -175,7 +175,8 @@ class EngineBuffer : public EngineObject {
     void slotControlSeekExact(double);
     void slotKeylockEngineChanged(double);
 
-    void slotEjectTrack(double);
+    /// Eject current track if the supplied value is greater than 0
+    void slotEjectTrack(double value);
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
