@@ -1,10 +1,11 @@
 #include "macro.h"
 
 #include <QDebug>
+#include <utility>
 
-Macro::Macro(QString label, QVector<MacroAction> actions, State state)
-        : m_label(label),
-          m_actions(actions),
+Macro::Macro(QVector<MacroAction> actions, QString label, State state)
+        : m_actions(std::move(actions)),
+          m_label(std::move(label)),
           m_state(state) {
 }
 
@@ -37,4 +38,14 @@ proto::Macro_Action* MacroAction::serialize() const {
     serialized->set_target(target);
     serialized->set_type(static_cast<uint>(Type::Jump));
     return serialized;
+}
+
+QDebug operator<<(QDebug debug, MacroAction action) {
+    debug << "Jump from" << action.position << "to" << action.target;
+    return debug;
+}
+QDebug operator<<(QDebug debug, Macro macro) {
+    debug << "Macro '" << macro.m_label << "' (" << macro.m_state << ")";
+    debug << macro.m_actions;
+    return debug;
 }

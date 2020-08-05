@@ -45,11 +45,10 @@ QList<Macro> MacroDAO::loadMacros(TrackId trackId) const {
     int labelColumn = record.indexOf("label");
     int contentColumn = record.indexOf("content");
     while (query.next()) {
-        uint state = query.value(stateColumn).toUInt();
         result.append(Macro(
-                query.value(labelColumn).toString(),
                 Macro::deserialize(query.value(contentColumn).toByteArray()),
-                Macro::State(state)));
+                query.value(labelColumn).toString(),
+                Macro::State(query.value(stateColumn).toUInt())));
     }
     return result;
 }

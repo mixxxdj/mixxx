@@ -47,10 +47,13 @@ class Macro {
     };
     Q_DECLARE_FLAGS(State, StateFlag);
 
-    Macro(QString label, QVector<MacroAction> actions, State state);
+    Macro(QVector<MacroAction> actions, QString label, State state);
 
-    State m_state;
-    QString m_label;
     const QVector<MacroAction> m_actions;
+    QString m_label;
+    State m_state;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(Macro::State)
+
+QDebug operator<<(QDebug debug, MacroAction action);
+QDebug operator<<(QDebug debug, Macro macro);
