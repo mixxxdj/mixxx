@@ -48,7 +48,7 @@ namespace mixxx {
 
 QByteArray SeratoBeatGridNonTerminalMarker::dumpID3() const {
     QByteArray data;
-    data.resize(kMarkerSizeID3);
+    data.reserve(kMarkerSizeID3);
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -104,7 +104,7 @@ SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
 
 QByteArray SeratoBeatGridTerminalMarker::dumpID3() const {
     QByteArray data;
-    data.resize(kMarkerSizeID3);
+    data.reserve(kMarkerSizeID3);
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -368,7 +368,7 @@ QByteArray SeratoBeatGrid::dumpID3() const {
     }
 
     quint32 numMarkers = m_nonTerminalMarkers.size() + 1;
-    data.resize(
+    data.reserve(
             sizeof(quint16) + // Version
             sizeof(quint32) + // Number of Markers
             (kMarkerSizeID3 * numMarkers) +
