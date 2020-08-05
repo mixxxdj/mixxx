@@ -5,8 +5,8 @@
 
 #include "library/queryutil.h"
 
-MacroDAO::MacroDAO(const QSqlDatabase& database)
-        : m_database(database) {
+void MacroDAO::initialize(const QSqlDatabase& database) {
+    m_database = database;
 }
 
 void MacroDAO::saveMacro(TrackId trackId,
@@ -30,7 +30,7 @@ void MacroDAO::saveMacro(TrackId trackId,
     qCDebug(macroLoggingCategory) << "Macro saved";
 }
 
-QList<Macro> MacroDAO::loadMacros(TrackId trackId) {
+QList<Macro> MacroDAO::loadMacros(TrackId trackId) const {
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "SELECT * FROM macros WHERE track_id=:trackId"));

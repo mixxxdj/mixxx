@@ -1036,6 +1036,16 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
             cuePoints);
 }
 
+QList<Macro> Track::getMacros() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_macros;
+}
+
+void Track::setMacros(QList<Macro> macros) {
+    QMutexLocker lock(&m_qMutex);
+    m_macros = macros;
+}
+
 bool Track::isDirty() {
     QMutexLocker lock(&m_qMutex);
     return m_bDirty;

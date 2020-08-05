@@ -8,8 +8,9 @@
 class MacroDAOTest : public MixxxDbTest {
   public:
     MacroDAOTest()
-            : m_macroDAO(dbConnection()) {
+            : m_macroDAO() {
         MixxxDb::initDatabaseSchema(dbConnection());
+        m_macroDAO.initialize(dbConnection());
     }
 
     MacroDAO m_macroDAO;

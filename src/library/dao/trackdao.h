@@ -1,16 +1,16 @@
-#ifndef TRACKDAO_H
-#define TRACKDAO_H
+#pragma once
 
 #include <QFileInfo>
+#include <QList>
 #include <QObject>
 #include <QSet>
-#include <QList>
 #include <QSqlDatabase>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
+#include "macros/macrodao.h"
+#include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
@@ -160,6 +160,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QSqlDatabase m_database;
 
     CueDAO& m_cueDao;
+    MacroDAO m_macroDao;
     PlaylistDAO& m_playlistDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
@@ -181,7 +182,4 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };
 
-
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
-
-#endif //TRACKDAO_H

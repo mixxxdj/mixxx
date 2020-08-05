@@ -60,11 +60,12 @@ void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
-                   PlaylistDAO& playlistDao,
-                   AnalysisDao& analysisDao,
-                   LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+        PlaylistDAO& playlistDao,
+        AnalysisDao& analysisDao,
+        LibraryHashDAO& libraryHashDao,
+        UserSettingsPointer pConfig)
         : m_cueDao(cueDao),
+          m_macroDao(),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
@@ -84,6 +85,7 @@ void TrackDAO::initialize(
         const QSqlDatabase& database) {
     DEBUG_ASSERT(!m_database.isOpen());
     m_database = database;
+    m_macroDao.initialize(database);
 }
 
 void TrackDAO::finish() {
@@ -1398,6 +1400,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
 
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
+
+    pTrack->setMacros(m_macroDao.loadMacros(trackId));
 
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
