@@ -292,20 +292,21 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_downbeatsProcessor.finalize();
     m_noveltyCurveProcessor.finalize();
 
-    int numberOfBlocks = MathUtilities::nextPowerOfTwo(m_spectrogram.size());
+    int numberOfBlocks = m_spectrogram.size();
     NoveltyCurveProcessor nc(m_iSampleRate, windowSize(), kNoveltyCurveCompressionConstant);
     std::vector<float> noveltyCurve = nc.spectrogramToNoveltyCurve(m_spectrogram);
-    float *hannWindow = new float[4096];
-    for (int i = 0; i < (int)4096; i++){
-        hannWindow[i] = 0.0;
-    }
     int tempogramWindowLength = pow(2,kTempogramLog2WindowLength);
     int tempogramHopSize = pow(2,kTempogramLog2HopSize);
     int tempogramFftLength = pow(2,kTempogramLog2FftLength);
+    
+    float *hannWindow = new float[tempogramWindowLength];
+    for (int i = 0; i < tempogramWindowLength; i++){
+        hannWindow[i] = 0.0;
+    }
     WindowFunction::hanning(hannWindow, tempogramWindowLength);
     SpectrogramProcessor spectrogramProcessor(tempogramWindowLength, tempogramFftLength, tempogramHopSize);
     Spectrogram tempogramDFT = spectrogramProcessor.process(&noveltyCurve[0], numberOfBlocks, hannWindow);
-    //qDebug() << tempogramDFT;
+    qDebug() << tempogramDFT;
     
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
