@@ -12,6 +12,12 @@
 #include <dsp/chromagram/ConstantQ.h>
 #include <base/Window.h>
 
+#include <dsp/tempogram/FIRFilter.h>
+#include <dsp/tempogram/WindowFunction.h>
+#include <dsp/tempogram/NoveltyCurveProcessor.h>
+#include <dsp/tempogram/SpectrogramProcessor.h>
+#include <dsp/tempogram/AutocorrelationProcessor.h>
+
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 
@@ -80,6 +86,7 @@ class AnalyzerRhythm : public Analyzer {
     std::unique_ptr<DownBeat> m_downbeat;
     mixxx::DownmixAndOverlapHelper m_onsetsProcessor;
     mixxx::DownmixAndOverlapHelper m_downbeatsProcessor;
+    mixxx::DownmixAndOverlapHelper m_noveltyCurveProcessor;
     std::vector<DFresults> m_detectionResults;
     std::unique_ptr<FFTReal> m_fft;
     std::unique_ptr<ConstantQ> m_constQ;
@@ -88,6 +95,10 @@ class AnalyzerRhythm : public Analyzer {
     double *m_fftImagOut;
     double *m_constQRealOut;
     double *m_constQImagOut;
+
+    Spectrogram m_spectrogram;
+    float m_noveltyCurveMinV;
+
 
     
 };

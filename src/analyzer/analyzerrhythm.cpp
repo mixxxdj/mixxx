@@ -28,11 +28,16 @@ constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
+constexpr float kNoveltyCurveMinDB = -74.;
+constexpr int kNoveltyCurveCompressionConstant = 1000;
+constexpr int kTempogramLog2WindowLength = 10;
+constexpr int kTempogramLog2HopSize = 6;
+constexpr int kTempogramLog2FftLength = kTempogramLog2WindowLength;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
     DFConfig config;
-    config.DFType = dfAll;
+    config.DFType = dfAll - dfBroadBand;
     config.stepSize = stepSize;
     config.frameLength = windowSize;
     config.dbRise = 3;
@@ -51,7 +56,8 @@ AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
           m_iMaxSamplesToProcess(0),
           m_iCurrentSample(0),
           m_iMinBpm(0),
-          m_iMaxBpm(9999) {
+          m_iMaxBpm(9999),
+          m_noveltyCurveMinV(pow(10,(float)kNoveltyCurveMinDB/20)) {
 }
 
 inline int AnalyzerRhythm::stepSize() {
@@ -103,6 +109,22 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
                 m_downbeat->pushAudioBlock(reinterpret_cast<float*>(pWindow));
                 return true;
             });
+
+    m_noveltyCurveProcessor.initialize(
+        windowSize(), stepSize(), [this](double* pWindow, size_t) {
+            int n = windowSize()/2 + 1;
+            const double *in = pWindow;
+
+            //calculate magnitude of FrequencyDomain input
+            std::vector<float> fftCoefficients;
+            for (int i = 0; i < n; i++){
+                float magnitude = sqrt(in[2*i] * in[2*i] + in[2*i + 1] * in[2*i + 1]);
+                magnitude = magnitude > m_noveltyCurveMinV ? magnitude : m_noveltyCurveMinV;
+                fftCoefficients.push_back(magnitude);
+            }
+            m_spectrogram.push_back(fftCoefficients);
+            return true;
+        });
     
     return true;
 }
@@ -135,7 +157,8 @@ bool AnalyzerRhythm::processSamples(const CSAMPLE *pIn, const int iLen) {
     }
     bool onsetReturn = m_onsetsProcessor.processStereoSamples(pIn, iLen);
     bool downbeatsReturn = m_downbeatsProcessor.processStereoSamples(pIn, iLen);
-    return onsetReturn & downbeatsReturn;
+    bool noveltyCurvReturn = m_noveltyCurveProcessor.processStereoSamples(pIn, iLen);
+    return onsetReturn & downbeatsReturn & noveltyCurvReturn;
 }
 
 void AnalyzerRhythm::cleanup() {
@@ -172,7 +195,7 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
         TempoTrackV2 tt(m_iSampleRate, stepSize());
         tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
         //qDebug() << beatPeriod.size() << tempi.size();
-        qDebug() << tempi;
+        //qDebug() << tempi;
 
         tt.calculateBeats(noteOnsets, beatPeriod, allBeats[dfType]);
         //qDebug() << allBeats[dfType].size();
@@ -267,6 +290,23 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double> &beatsSD) 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_onsetsProcessor.finalize();
     m_downbeatsProcessor.finalize();
+    m_noveltyCurveProcessor.finalize();
+
+    int numberOfBlocks = MathUtilities::nextPowerOfTwo(m_spectrogram.size());
+    NoveltyCurveProcessor nc(m_iSampleRate, windowSize(), kNoveltyCurveCompressionConstant);
+    std::vector<float> noveltyCurve = nc.spectrogramToNoveltyCurve(m_spectrogram);
+    float *hannWindow = new float[4096];
+    for (int i = 0; i < (int)4096; i++){
+        hannWindow[i] = 0.0;
+    }
+    int tempogramWindowLength = pow(2,kTempogramLog2WindowLength);
+    int tempogramHopSize = pow(2,kTempogramLog2HopSize);
+    int tempogramFftLength = pow(2,kTempogramLog2FftLength);
+    WindowFunction::hanning(hannWindow, tempogramWindowLength);
+    SpectrogramProcessor spectrogramProcessor(tempogramWindowLength, tempogramFftLength, tempogramHopSize);
+    Spectrogram tempogramDFT = spectrogramProcessor.process(&noveltyCurve[0], numberOfBlocks, hannWindow);
+    //qDebug() << tempogramDFT;
+    
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
     auto [bpb, firstDownbeat] = computeMeter(beatsSpecDiff);

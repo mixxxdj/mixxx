@@ -1823,6 +1823,11 @@ add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   lib/qm-dsp/maths/KLDivergence.cpp lib/qm-dsp/maths/MathUtilities.cpp
   # lib/qm-dsp/maths/pca/pca.c
   # lib/qm-dsp/thread/Thread.cpp
+  lib/qm-dsp/dsp/tempogram/FIRFilter.cpp
+  lib/qm-dsp/dsp/tempogram/WindowFunction.cpp
+  lib/qm-dsp/dsp/tempogram/NoveltyCurveProcessor.cpp
+  lib/qm-dsp/dsp/tempogram/SpectrogramProcessor.cpp
+  lib/qm-dsp/dsp/tempogram/AutocorrelationProcessor.cpp
 )
 target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
 if(UNIX)
