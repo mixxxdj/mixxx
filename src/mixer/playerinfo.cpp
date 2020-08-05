@@ -42,9 +42,17 @@ PlayerInfo::~PlayerInfo() {
     clearControlCache();
 }
 
+PlayerInfo& PlayerInfo::create() {
+    VERIFY_OR_DEBUG_ASSERT(!s_pPlayerInfo) {
+        return *s_pPlayerInfo;
+    }
+    s_pPlayerInfo = new PlayerInfo();
+    return *s_pPlayerInfo;
+}
+
 // static
 PlayerInfo& PlayerInfo::instance() {
-    if (!s_pPlayerInfo) {
+    VERIFY_OR_DEBUG_ASSERT(s_pPlayerInfo) {
         s_pPlayerInfo = new PlayerInfo();
     }
     return *s_pPlayerInfo;
