@@ -35,6 +35,11 @@ def get_changed_lines(
     else:
         changeset = from_ref if from_ref else "HEAD"
 
+    # We're using the pre-commit framework which stashes all unstaged changes
+    # before running the pre-commit hooks, so we don't need to add `--cached`
+    # here. Also, if we run 2 hooks that modify the files, the second hook
+    # should work on the diff that includes the unstaged changes made by the
+    # first hook, not the original diff.
     cmd = ["git", "diff", "--patch", "--unified=0", changeset]
     if include_files:
         cmd.extend(["--", *include_files])
