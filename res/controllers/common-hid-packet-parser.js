@@ -1554,10 +1554,11 @@ HIDController.prototype.setOutput = function(group, name, value, send_packet) {
         HIDDebug("setOutput: unknown field: " + group + "." + name);
         return;
     }
-    HIDDebug("eh???");
-    if (value !== undefined) {
-        HIDDebug("lighting: " + field.id + " 0x" + value.toString(16));
-    }
+    // if (value !== undefined) {
+    //     HIDDebug("lighting: " + field.id + " 0x" + value.toString(16));
+    // } else {
+    //     HIDDebug("undefined :(");
+    // }
     field.value = value << field.bit_offset;
     field.toggle = value << field.bit_offset;
     if (send_packet)
