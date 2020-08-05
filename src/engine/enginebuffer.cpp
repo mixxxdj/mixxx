@@ -1416,6 +1416,9 @@ void EngineBuffer::notifyTrackLoaded(
                 &Track::beatsUpdated,
                 this,
                 &EngineBuffer::slotUpdatedTrackBeats);
+        if (m_pMacroRecorder) {
+            m_pMacroRecorder->notifyTrackChange(&m_channel, pOldTrack);
+        }
     }
 
     // First inform engineControls directly

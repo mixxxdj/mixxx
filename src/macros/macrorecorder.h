@@ -11,6 +11,7 @@
 #include "engine/channelhandle.h"
 #include "macros/macro.h"
 #include "recording/recordingmanagerbase.h"
+#include "track/track.h"
 
 /// The MacroRecorder handles the recording of Macros and the [MacroRecording] controls.
 class MacroRecorder : public RecordingManagerBase {
@@ -39,14 +40,17 @@ class MacroRecorder : public RecordingManagerBase {
     /// Only called in realtime code.
     void notifyCueJump(ChannelHandle* channel, double sourceFramePos, double destFramePos);
 
+    void notifyTrackChange(ChannelHandle* channel, TrackPointer pTrack);
+
     /// Fetches all Actions recorded so far - note that this also clears them!
-    const QVector<MacroAction> fetchRecordedActions();
+    QVector<MacroAction> fetchRecordedActions();
 
     size_t getRecordingSize() const;
     const ChannelHandle* getActiveChannel() const;
 
   signals:
-    void saveMacro(ChannelHandle channel, QVector<MacroAction> actions);
+    void saveMacroFromChannel(QVector<MacroAction> actions, ChannelHandle channel);
+    void saveMacro(QVector<MacroAction> actions, TrackPointer pTrack);
 
   private slots:
     void pollRecordingStart();

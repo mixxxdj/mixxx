@@ -5,8 +5,6 @@
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
 
-// TODO(xerus) handle track eject while recording
-
 namespace {
 constexpr uint kMaxMacroSize = 1000;
 const QString kConfigGroup = QStringLiteral("[MacroRecording]");
@@ -70,7 +68,7 @@ void MacroRecorder::stopRecording() {
         return;
     }
 
-    emit saveMacro(*channel, fetchRecordedActions());
+    emit saveMacroFromChannel(fetchRecordedActions(), *channel);
 }
 
 size_t MacroRecorder::getRecordingSize() const {
@@ -89,11 +87,20 @@ bool MacroRecorder::isRecordingActive() const {
     return getStatus() > 0;
 }
 
-const QVector<MacroAction> MacroRecorder::fetchRecordedActions() {
+QVector<MacroAction> MacroRecorder::fetchRecordedActions() {
     QVector<MacroAction> actions;
     while (MacroAction* action = m_pRecordedActions.front()) {
         m_pRecordedActions.pop();
         actions.append(*action);
     }
     return actions;
+}
+
+void MacroRecorder::notifyTrackChange(ChannelHandle* channel, TrackPointer track) {
+    if (m_activeChannel.compare_exchange_strong(channel, nullptr)) {
+        m_pStartRecordingTimer.stop();
+        m_CORecStatus.set(Status::Disabled);
+
+        emit saveMacro(fetchRecordedActions(), track);
+    }
 }

@@ -16,7 +16,8 @@ class MacroManager : public QObject {
     MacroRecorder* getRecorder();
 
   public slots:
-    void slotSaveMacro(ChannelHandle channel, QVector<MacroAction> actions);
+    void slotSaveMacroFromChannel(QVector<MacroAction> actions, ChannelHandle channel);
+    void slotSaveMacro(QVector<MacroAction> actions, TrackPointer pTrack);
 
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;
