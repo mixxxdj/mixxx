@@ -59,7 +59,7 @@ void WorkerThread::run() {
     const int threadNumber = s_threadCounter.fetch_add(1) + 1;
     const QString threadName =
             m_name.isEmpty() ? QString::number(threadNumber) : QString("%1 #%2").arg(m_name, QString::number(threadNumber));
-    QThread::currentThread()->setObjectName(threadName);
+    setObjectName(threadName);
 
     if (m_priority != QThread::InheritPriority) {
         m_logger.debug() << "Set priority to: " << m_priority;
