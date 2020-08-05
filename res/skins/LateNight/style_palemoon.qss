@@ -313,11 +313,14 @@ WSearchLineEdit {
   border-radius: 1px;
 }
 
+/* Disbled for now since the hover effect is stuck as soon as the
+  track menu is opened.
 #TitleText[highlight="1"]:hover, #TitleTextSmall[highlight="1"]:hover,
 #ArtistText[highlight="1"]:hover, #ArtistTextSmall[highlight="1"]:hover {
   background-color: #171719;
   border-radius: 1px;
 }
+*/
 
 
 /**********************************************************************
