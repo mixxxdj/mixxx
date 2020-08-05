@@ -613,6 +613,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
+  src/macros/macro.cpp
+  src/macros/macrodao.cpp
+  src/macros/macromanager.cpp
+  src/macros/macrorecorder.cpp
   src/mixer/auxiliary.cpp
   src/mixer/baseplayer.cpp
   src/mixer/basetrackplayer.cpp
@@ -684,9 +688,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
-  src/macros/macro.cpp
-  src/macros/macromanager.cpp
-  src/macros/macrorecorder.cpp
   src/recording/recordingmanager.cpp
   src/recording/recordingmanagerbase.cpp
   src/skin/colorschemeparser.cpp
@@ -1271,7 +1272,7 @@ add_executable(mixxx-test
   src/test/libraryscannertest.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
-  src/test/macromanager_test.cpp
+  src/test/macrodao_test.cpp
   src/test/macros_test.cpp
   src/test/main.cpp
   src/test/mathutiltest.cpp

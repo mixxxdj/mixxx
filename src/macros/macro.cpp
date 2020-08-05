@@ -2,11 +2,10 @@
 
 #include <QDebug>
 
-Macro::Macro(bool enabled, bool loop, QString label, QVector<MacroAction> actions)
-        : m_enabled(enabled),
-          m_loop(loop),
-          m_label(label),
-          m_actions(actions) {
+Macro::Macro(QString label, QVector<MacroAction> actions, State state)
+        : m_label(label),
+          m_actions(actions),
+          m_state(state) {
 }
 
 // static

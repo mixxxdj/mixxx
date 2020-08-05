@@ -41,10 +41,16 @@ class Macro {
     static QByteArray serialize(const QVector<MacroAction>& actions);
     static QVector<MacroAction> deserialize(const QByteArray& serialized);
 
-    Macro(bool enabled, bool loop, QString label, QVector<MacroAction> actions);
+    enum class StateFlags {
+        Enabled = 1u,
+        Looped = 2u,
+    };
+    Q_DECLARE_FLAGS(State, StateFlags);
 
-    bool m_enabled;
-    bool m_loop;
+    Macro(QString label, QVector<MacroAction> actions, State state);
+
+    State m_state;
     QString m_label;
     const QVector<MacroAction> m_actions;
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(Macro::State)

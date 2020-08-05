@@ -1,9 +1,7 @@
 #include "macromanager.h"
 
 #include <QDebug>
-#include <QSqlQuery>
 
-#include "library/queryutil.h"
 #include "mixer/basetrackplayer.h"
 #include "util/db/dbconnectionpooled.h"
 
@@ -11,8 +9,8 @@ MacroManager::MacroManager(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         PlayerManager* pPlayerManager)
         : m_pMacroRecorder(std::make_unique<MacroRecorder>()),
-          m_pPlayerManager(pPlayerManager),
-          m_database(mixxx::DbConnectionPooled(pDbConnectionPool)) {
+          m_pMacroDAO(std::make_unique<MacroDAO>(mixxx::DbConnectionPooled(pDbConnectionPool))),
+          m_pPlayerManager(pPlayerManager) {
     connect(getRecorder(),
             &MacroRecorder::saveMacro,
             this,
@@ -22,53 +20,13 @@ MacroManager::MacroManager(
 void MacroManager::slotSaveMacro(ChannelHandle channel, QVector<MacroAction> actions) {
     qCDebug(macroLoggingCategory) << "Saving Macro for channel" << channel.handle();
     auto track = m_pPlayerManager->getPlayer(channel)->getLoadedTrack();
-    saveMacro(track->getId(), "Unnamed Macro", actions);
-}
-
-void MacroManager::saveMacro(TrackId trackId, QString label, QVector<MacroAction> actions) {
-    QSqlQuery query(m_database);
-    query.prepare(QStringLiteral(
-            "INSERT INTO macros "
-            "(track_id, label, state, content) "
-            "VALUES "
-            "(:trackId, :label, :state, :content)"));
-    query.bindValue(":trackId", trackId.toVariant());
-    query.bindValue(":label", label);
-    query.bindValue(":state", 0u);
-    query.bindValue(":content", Macro::serialize(actions));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-    qCDebug(macroLoggingCategory) << "Macro saved";
-}
-
-QList<Macro> MacroManager::loadMacros(TrackId trackId) {
-    QSqlQuery query(m_database);
-    query.prepare(QStringLiteral(
-            "SELECT * FROM macros WHERE track_id=:trackId"));
-    query.bindValue(":trackId", trackId.toVariant());
-    QList<Macro> result;
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return result;
-    }
-    const QSqlRecord record = query.record();
-    int stateColumn = record.indexOf("state");
-    int labelColumn = record.indexOf("label");
-    int contentColumn = record.indexOf("content");
-    while (query.next()) {
-        uint state = query.value(stateColumn).toUInt();
-        // TODO(xerus): Use QFlags for state
-        result.append(Macro(
-                state & 1u,
-                state & 2u,
-                query.value(labelColumn).toString(),
-                Macro::deserialize(query.value(contentColumn).toByteArray())));
-    }
-    return result;
+    m_pMacroDAO->saveMacro(track->getId(), "Unnamed Macro", actions, Macro::StateFlags::Enabled);
 }
 
 MacroRecorder* MacroManager::getRecorder() {
     return m_pMacroRecorder.get();
+}
+
+MacroDAO* MacroManager::getDAO() {
+    return m_pMacroDAO.get();
 }
