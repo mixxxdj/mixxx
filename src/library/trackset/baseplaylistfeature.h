@@ -102,11 +102,12 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
 
+  protected:
+    QSet<int> m_playlistsSelectedTrackIsIn;
+
   private:
     void initActions();
     virtual QString getRootViewHtml() const = 0;
 
     TrackPointer m_pSelectedTrack;
-
-    QSet<int> m_playlistsSelectedTrackIsIn;
 };

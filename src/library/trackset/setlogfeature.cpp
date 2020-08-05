@@ -18,6 +18,8 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 
+const int kNumDirectHistoryEntries = 5;
+
 SetlogFeature::SetlogFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
@@ -101,8 +103,11 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
-    QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = index.data(TreeItemModel::kDataRole).toInt();
+    // not a real entry
+    if (playlistId == -1) {
+        return;
+    }
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
@@ -137,7 +142,19 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 }
 
 QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
-    QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
+    return QList<BasePlaylistFeature::IdAndLabel>();
+}
+
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion
+  * Use a custom model in the histroy for grouping by year
+*/
+QModelIndex SetlogFeature::constructChildModel(int selected_id) {
+    QList<TreeItem*> data_list;
+    int selected_row = -1;
+
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
             m_pLibrary->trackCollections()->internalCollection()->database());
@@ -152,6 +169,9 @@ QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
     QSqlRecord record = playlistTableModel.record();
     int nameColumn = record.indexOf("name");
     int idColumn = record.indexOf("id");
+    int createdColumn = record.indexOf("date_created");
+
+    auto groups = QMap<int, TreeItem*>();
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
@@ -162,12 +182,44 @@ QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
                 playlistTableModel
                         .data(playlistTableModel.index(row, nameColumn))
                         .toString();
-        BasePlaylistFeature::IdAndLabel idAndLabel;
-        idAndLabel.id = id;
-        idAndLabel.label = name;
-        playlistLabels.append(idAndLabel);
+        QDateTime created =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, createdColumn))
+                        .toDateTime();
+
+        if (selected_id == id) {
+            // save index for selection
+            selected_row = row;
+        }
+
+        // Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(name, id);
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
+
+        decorateChild(item, id);
+        if (row >= kNumDirectHistoryEntries ) {
+            int year = created.date().year();
+
+            QMap<int, TreeItem*>::const_iterator i = groups.find(year);
+            if (i != groups.end() && i.key() == year) {
+                i.value()->insertChild(i.value()->childRows(), item);
+            } else {
+                TreeItem* groupItem = new TreeItem(QString("%1").arg(year), -1);
+                groupItem->insertChild(0, item);
+                groups.insert(year, groupItem);
+                data_list.append(groupItem);
+            }
+        } else {
+            data_list.append(item);
+        }
     }
-    return playlistLabels;
+
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertTreeItemRows(data_list, 0);
+    if (selected_row == -1) {
+        return QModelIndex();
+    }
+    return m_childModel.index(selected_row, 0);
 }
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {

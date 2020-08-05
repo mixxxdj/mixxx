@@ -32,6 +32,7 @@ class SetlogFeature : public BasePlaylistFeature {
 
   protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
+    QModelIndex constructChildModel(int selected_id) override;
     QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
 
