@@ -349,10 +349,12 @@ WSearchLineEdit {
 #ToolBar {
   padding: 1px 2px 0px 2px;
   }
-  #LatencyLabel,
   #BatteryBox,
   #ClockWidget {
     margin-bottom: 1px;
+  }
+  #LatencyLabel {
+    margin-top: 1px;
   }
 
 #Deck1, #DeckCompact1, #DeckMini1,
@@ -1257,17 +1259,13 @@ WLibrary QLabel {
 #VinylButton[displayValue="0"],
 #VinylCueButton[displayValue="0"],
 #VinylModeButton,
-#FxAssignButtons WPushButton[displayValue="0"],
-#LatencyLabel {
+#FxAssignButtons WPushButton[displayValue="0"] {
   color: #666;
   }
-  /*
-  #MasterControls #FxAssignButtons WPushButton[displayValue="0"] {
-    color: #847C79;
-  } */
 
 /* Even darker grey for knob labels in master/headphone mixer */
-#MixerMasterHeadphone #KnobLabel {
+#MixerMasterHeadphone #KnobLabel,
+#LatencyLabel {
   color: #444;
 }
 

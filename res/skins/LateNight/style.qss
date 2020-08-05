@@ -75,7 +75,6 @@ WLibrary QHeaderView {
 #KnobLabel,
 #FxUnitLabel,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
-#LatencyLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
 /* ToolBar */
