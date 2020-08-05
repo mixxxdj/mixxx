@@ -16,12 +16,13 @@ const QByteArray kSeratoBeatGridBase64EncodedPrefix = QByteArray(
 QByteArray base64encode(const QByteArray& data, bool chopPadding) {
     QByteArray dataBase64;
 
-    // A newline char is inserted at every 72 bytes of base64-encoded content.
-    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
-    // and base64-encode them one at a time:
+    // Serato inserts a newline char after every 72 bytes of base64-encoded
+    // content.  To mirror that behaviour, we can split the data into blocks of
+    // 72 bytes * 3/4 = 54 bytes and base64-encode them one at a time.
     int offset = 0;
     while (offset < data.size()) {
         if (offset > 0) {
+            // Add newline char after previous block of 54 raw bytes.
             dataBase64.append('\n');
         }
         QByteArray block = data.mid(offset, 54);
