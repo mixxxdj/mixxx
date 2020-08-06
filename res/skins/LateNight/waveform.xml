@@ -79,7 +79,7 @@
             </MarkRange>
             <Mark>
               <Control>intro_start_position</Control>
-              <Text></Text>
+              <Text>&#9698;</Text>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
@@ -112,7 +112,7 @@
             </Mark>
             <Mark>
               <Control>outro_end_position</Control>
-              <Text></Text>
+              <Text>&#9699;</Text>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>

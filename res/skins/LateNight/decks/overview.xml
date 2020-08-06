@@ -32,7 +32,7 @@
     <!-- Cue -->
     <Mark>
       <Control>cue_point</Control>
-      <Text> C </Text>
+      <Text>C</Text>
       <Align>top|right</Align>
       <Color><Variable name="CueColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
