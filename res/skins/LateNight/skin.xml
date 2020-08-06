@@ -203,7 +203,7 @@
       <SetVariable name="KnobColorFxParameter">grey</SetVariable>
       <!-- Size of the small EQ kill indicators
             svg is 6x6 px, set size to '0f,0f' to hide them -->
-      <SetVariable name="EqKillDotSize">6f,6f</SetVariable>
+      <SetVariable name="EqKillDotSize">9f,9f</SetVariable>
 
       <!-- Slider bar settings -->
       <SetVariable name="BarBgColor">#020202</SetVariable>

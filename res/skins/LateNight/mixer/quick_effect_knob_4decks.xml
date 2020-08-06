@@ -84,7 +84,7 @@
                   <PushButton>
                     <TooltipId>QuickEffectRack_enabled</TooltipId>
                     <ObjectName>QuickEffectDot</ObjectName>
-                    <Pos>0,28</Pos>
+                    <Pos>0,27</Pos>
                     <Size><Variable name="EqKillDotSize"/></Size>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>false</RightClickIsPushButton>
