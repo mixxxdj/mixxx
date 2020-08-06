@@ -3,17 +3,16 @@
 #include <QPainter>
 #include <QtDebug>
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include "util/performancetimer.h"
 #include "waveform/renderers/glslwaveformrenderersignal.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrenderplaymarker.h"
 #include "waveform/sharedglcontext.h"
-
-#include "util/performancetimer.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,
@@ -55,6 +54,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(
 #endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
+    addRenderer<WaveformRenderPlayMarker>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);

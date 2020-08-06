@@ -1172,6 +1172,7 @@ class MixxxCore(Feature):
                    "src/waveform/renderers/waveformrendermark.cpp",
                    "src/waveform/renderers/waveformrendermarkrange.cpp",
                    "src/waveform/renderers/waveformrenderbeat.cpp",
+                   "src/waveform/renderers/waveformrenderplaymarker.cpp",
                    "src/waveform/renderers/waveformrendererendoftrack.cpp",
                    "src/waveform/renderers/waveformrendererpreroll.cpp",
 

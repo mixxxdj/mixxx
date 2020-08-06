@@ -185,25 +185,6 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
             m_rendererStack.at(i)->draw(painter, event);
             //qDebug() << i << " e " << timer.restart().formatNanosWithUnit();
         }
-
-        const int lineX = m_width * m_playMarkerPosition;
-        const int lineY = m_height * m_playMarkerPosition;
-
-        painter->setPen(m_colors.getPlayPosColor());
-        if (m_orientation == Qt::Horizontal) {
-            painter->drawLine(lineX, 0, lineX, m_height);
-        } else {
-            painter->drawLine(0, lineY, m_width, lineY);
-        }
-        painter->setOpacity(0.5);
-        painter->setPen(m_colors.getBgColor());
-        if (m_orientation == Qt::Horizontal) {
-            painter->drawLine(lineX + 1, 0, lineX + 1, m_height);
-            painter->drawLine(lineX - 1, 0, lineX - 1, m_height);
-        } else {
-            painter->drawLine(0, lineY + 1, m_width, lineY + 1);
-            painter->drawLine(0, lineY - 1, m_width, lineY - 1);
-        }
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

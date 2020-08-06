@@ -814,6 +814,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/waveformmarkset.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
+  src/waveform/renderers/waveformrenderplaymarker.cpp
   src/waveform/renderers/waveformrendererabstract.cpp
   src/waveform/renderers/waveformrendererendoftrack.cpp
   src/waveform/renderers/waveformrendererfilteredsignal.cpp

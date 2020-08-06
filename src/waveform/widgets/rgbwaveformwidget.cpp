@@ -2,14 +2,14 @@
 
 #include <QPainter>
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
+#include "waveform/renderers/waveformrendererpreroll.h"
+#include "waveform/renderers/waveformrendererrgb.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererrgb.h"
-#include "waveform/renderers/waveformrendererpreroll.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrenderplaymarker.h"
 
 RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
         : QWidget(parent),
@@ -21,6 +21,7 @@ RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
     addRenderer<WaveformRendererRGB>();
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
+    addRenderer<WaveformRenderPlayMarker>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
