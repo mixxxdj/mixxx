@@ -399,7 +399,11 @@
             </item>
 
             <item row="7" column="1" colspan="3">
-             <widget class="QPlainTextEdit" name="txtComment"/>
+             <widget class="QPlainTextEdit" name="txtComment">
+              <property name="tabChangesFocus">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
 
             <item row="8" column="1" colspan="3">
@@ -977,11 +981,6 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>btnPrev</tabstop>
-  <tabstop>btnNext</tabstop>
-  <tabstop>btnCancel</tabstop>
-  <tabstop>btnApply</tabstop>
-  <tabstop>btnOK</tabstop>
   <tabstop>txtTrackName</tabstop>
   <tabstop>txtArtist</tabstop>
   <tabstop>txtAlbum</tabstop>
@@ -989,13 +988,13 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtComposer</tabstop>
   <tabstop>txtGenre</tabstop>
   <tabstop>txtGrouping</tabstop>
+  <tabstop>txtComment</tabstop>
   <tabstop>txtYear</tabstop>
   <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
   <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
   <tabstop>btnImportMetadataFromFile</tabstop>
   <tabstop>btnOpenFileBrowser</tabstop>
-  <tabstop>txtComment</tabstop>
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmConst</tabstop>
   <tabstop>bpmTap</tabstop>
@@ -1006,6 +1005,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>btnPrev</tabstop>
+  <tabstop>btnNext</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>btnApply</tabstop>
+  <tabstop>btnOK</tabstop>
  </tabstops>
  <resources/>
  <connections/>
