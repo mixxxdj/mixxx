@@ -17,12 +17,12 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* TODO:
-/*   * deck lights */
-/*   * wheel colors (animations!!!!) */
+/*   * wheel animations */
 /*   * touch for track browse, loop control, beatjump                            */
 /*   * jog button                                                                */
-/*   * sync latch                                                                */
-/*   * quantize                                                                  */
+/*   * star button */
+/*   * hotcue colors */
+/*   * FX buttons */
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -513,16 +513,7 @@ TraktorS3.numberButtonHandler = function (field) {
         return;
     }
     if (TraktorS3.padModeState[field.group] === 0) {
-        HIDDebug("hotcue button pressed");
-
-        // Light the button based on whether it's being pushed or not, and if there's a hotcue
-        // set for this position or not.
-        var ledValue = field.value;
-        if (!field.value) {
-            ledValue = engine.getValue(activeGroup, "hotcue_" + padNumber + "_enabled");
-            HIDDebug("disable, val is " + ledValue);
-        }
-        TraktorS3.colorOutputHandler(ledValue, field.group, "!pad_" + padNumber);
+        TraktorS3.lightHotcue(activeGroup, padNumber);
 
         // Hotcues mode
         if (TraktorS3.shiftPressed[field.group]) {
@@ -1293,6 +1284,25 @@ TraktorS3.lightGroup = function(packet, output_group_name, co_group_name) {
     }
 };
 
+TraktorS3.colorForHotcue = function (group, num) {
+    var colorCode = engine.getValue(group, "hotcue_" + num + "_color");
+    HIDDebug("color code for " + group + " " + num + " is " + colorCode);
+    return TraktorS3.colorMap.getValueForNearestColor(colorCode);
+}
+
+TraktorS3.lightHotcue = function (group, number) {
+    var deck = TraktorS3.resolveDeckIfActive(group);
+    var active = engine.getValue(group, "hotcue_" + number + "_enabled");
+    var ledValue = TraktorS3.controller.LEDColors.WHITE;
+    if (active) {
+        ledValue = TraktorS3.colorForHotcue(group, number);
+        ledValue += TraktorS3.LEDDimValue;
+    } else {
+        ledValue += TraktorS3.LEDDimValue;
+    }
+    TraktorS3.controller.setOutput(deck, "!pad_" + number, ledValue, !TraktorS3.freeze_lights);
+}
+
 TraktorS3.lightPads = function (group) {
     HIDDebug("LIGHT PADS " + group);
     var activeGroup = TraktorS3.deckToGroup(group);
@@ -1307,15 +1317,14 @@ TraktorS3.lightPads = function (group) {
                 idx += 8;
             }
             var loaded = engine.getValue("[Sampler" + idx + "]", "track_loaded");
-            TraktorS3.colorOutputHandler(loaded, activeGroup, "!pad_" + idx);
+            TraktorS3.colorOutputHandler(loaded, group, "!pad_" + idx);
         }
     } else {
         HIDDebug("HOT CUES!!");
         TraktorS3.colorOutputHandler(1, activeGroup, "hotcues");
         TraktorS3.colorOutputHandler(0, activeGroup, "samples");
         for (var i = 1; i <= 8; ++i) {
-            var active = engine.getValue(activeGroup, "hotcue_" + i + "_enabled");
-            TraktorS3.colorOutputHandler(active, activeGroup, "!pad_" + i);
+            TraktorS3.lightHotcue(activeGroup, i);
         }
     }
 }
@@ -1488,7 +1497,7 @@ TraktorS3.wheelOutputHandler = function(value, group, key) {
 
 // colorOutputHandler drives lights that have the palettized multicolor lights.
 TraktorS3.colorOutputHandler = function(value, group, key) {
-    HIDDebug("coloroutput! " + value + " " + group + " " + key);
+    // HIDDebug("coloroutput! " + value + " " + group + " " + key);
     // Reject update if it's for a specific channel that's not selected.
     var updatedDeck = TraktorS3.controller.resolveDeck(group);
     if (updatedDeck != undefined) {
