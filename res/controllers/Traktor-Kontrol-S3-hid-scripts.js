@@ -273,8 +273,8 @@ TraktorS3.registerInputPackets = function() {
 
     this.controller.registerInputPacket(messageShort);
 
-    this.registerInputScaler(messageLong, "deck1", "rate", 0x01, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "deck2", "rate", 0x0D, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "deck1", "rate", 0x01, 0xFFFF, this.pitchSliderHandler);
+    this.registerInputScaler(messageLong, "deck2", "rate", 0x0D, 0xFFFF, this.pitchSliderHandler);
 
     this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x05, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x07, 0xFFFF, this.parameterHandler);
@@ -318,6 +318,9 @@ TraktorS3.registerInputPackets = function() {
     // Soft takeover for all knobs
     engine.softTakeover("deck1", "rate", true);
     engine.softTakeover("deck2", "rate", true);
+
+    engine.softTakeover("deck1", "pitch_adjust", true);
+    engine.softTakeover("deck2", "pitch_adjust", true);
 
     engine.softTakeover("deck1", "volume", true);
     engine.softTakeover("deck2", "volume", true);
@@ -448,11 +451,38 @@ TraktorS3.syncHandler = function(field) {
     if (!activeGroup) {
         return;
     }
+
     if (TraktorS3.shiftPressed[field.group]) {
-        // engine.setValue(activeGroup, "sync_enabled", field.value);
-    } else if (field.value === 1) {
-        //TODO: latching not working?
-        engine.setValue(activeGroup, "sync_enabled", field.value);
+        engine.setValue(activeGroup, "beatsync_phase", field.value);
+        // Light LED while pressed
+        TraktorS3.colorOutputHandler(field.value, field.group, "sync_enabled");
+    } else {
+        if (field.value) {
+            if (engine.getValue(activeGroup, 'sync_enabled') === 0) {
+                script.triggerControl(activeGroup, "beatsync");
+                // Start timer to measure how long button is pressed
+                TraktorS3.syncPressedTimer[field.group] = engine.beginTimer(300, function () {
+                    engine.setValue(activeGroup, "sync_enabled", 1);
+                    // Reset sync button timer state if active
+                    if (TraktorS3.syncPressedTimer[field.group] !== 0) {
+                        TraktorS3.syncPressedTimer[field.group] = 0;
+                    }
+                }, true);
+
+                // Light corresponding LED when button is pressed
+                TraktorS3.colorOutputHandler(1, field.group, "sync_enabled");
+            } else {
+                // Deactivate sync lock
+                // LED is turned off by the callback handler for sync_enabled
+                engine.setValue(activeGroup, "sync_enabled", 0);
+            }
+        } else {
+            if (TraktorS3.syncPressedTimer[field.group] !== 0) {
+                // Timer still running -> stop it and unlight LED
+                engine.stopTimer(TraktorS3.syncPressedTimer[field.group]);
+                TraktorS3.colorOutputHandler(0, field.group, "sync_enabled");
+            }
+        }
     }
 };
 
@@ -722,6 +752,20 @@ TraktorS3.microphoneHandler = function(field) {
     }
 };
 
+TraktorS3.pitchSliderHandler = function(field) {
+    var activeGroup = TraktorS3.deckToGroup(field.group);
+    if (!activeGroup) {
+        return;
+    }
+    if (TraktorS3.shiftPressed[field.group]) {
+        // To match the pitch change from adjusting the rate, flip the pitch
+        // adjustment.
+        engine.setParameter(activeGroup, "pitch_adjust", 1.0 - (field.value / 4095));
+    } else {
+        engine.setParameter(activeGroup, "rate", field.value / 4095);
+    }
+};
+
 TraktorS3.parameterHandler = function(field) {
     var activeGroup = TraktorS3.deckToGroup(field.group);
     if (!activeGroup) {
@@ -940,10 +984,10 @@ TraktorS3.init = function(_id) {
     TraktorS3.registerOutputPackets();
     HIDDebug("TraktorS3: Init done!");
 
-    TraktorS3.lightDeck("[Channel3]");
-    TraktorS3.lightDeck("[Channel4]");
-    TraktorS3.lightDeck("[Channel1]");
-    TraktorS3.lightDeck("[Channel2]");
+    TraktorS3.lightDeck("[Channel3]", false);
+    TraktorS3.lightDeck("[Channel4]", false);
+    TraktorS3.lightDeck("[Channel1]", false);
+    TraktorS3.lightDeck("[Channel2]", true);
 
     // TraktorS3.debugLights();
 };
@@ -952,10 +996,10 @@ TraktorS3.debugLights = function() {
     // Call this if you want to just send raw packets to the controller (good for figuring out what
     // bytes do what).
     var data_strings = [
-        "      7C 00  35 2C 2C FF  2C 39 FF 00  FF FF 2C 00 " +
-        "00 2C 7E DD  00 FF FF FF  2C 2C 20 7C  7C 00 FF 00 " +
+        "      7C 00  35 2C 2C FF  2C 39 FF 00  FF FF 00 35 " +
+        "00 2C 7E 00  00 FF FF FF  2C 2C 20 7C  7C 00 FF 00 " +
         "FF 00 00 00  FF 00 2C 2C  00 FF 2C 7C  FF 00 00 00 " +
-        "00 FF 00 00  7E 0C 0C 0C  0C FF FF FF  70 FF 1C FF " +
+        "00 00 00 00  7E 0C 0C 0C  0C FF FF FF  70 FF 1C FF " +
         "14 FF 40 FF  FF FF 00 2E  00 2E FF 00  00 FF 00 00 " +
         "00 00 FF 00 ",
         "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
@@ -1276,9 +1320,12 @@ TraktorS3.lightPads = function (group) {
     }
 }
 
-TraktorS3.lightDeck = function(group) {
+TraktorS3.lightDeck = function (group, send_packets) {
+    if (send_packets === undefined) {
+        send_packets = true;
+    }
     // Freeze the lights while we do this update so we don't spam HID.
-    this.controller.freeze_lights = true;
+    TraktorS3.freeze_lights = true;
     for (var packet_name in this.controller.OutputPackets) {
         packet = this.controller.OutputPackets[packet_name];
         var deck_group_name = "deck1";
@@ -1328,11 +1375,13 @@ TraktorS3.lightDeck = function(group) {
         ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]] + TraktorS3.LEDDimValue, false);
     }
 
-    this.controller.freeze_lights = false;
+    TraktorS3.freeze_lights = false;
     // And now send them all.
-    for (packet_name in this.controller.OutputPackets) {
-        var packet_ob = this.controller.OutputPackets[packet_name];
-        packet_ob.send();
+    if (send_packets) {
+        for (packet_name in this.controller.OutputPackets) {
+            var packet_ob = this.controller.OutputPackets[packet_name];
+            packet_ob.send();
+        }
     }
 };
 
@@ -1398,21 +1447,6 @@ TraktorS3.deckOutputHandler = function(value, group, key) {
     // incoming value will be a channel, we have to resolve back to
     // deck.
     HIDDebug("deckoutput group " + group);
-    // var updatedDeck = TraktorS3.resolveDeckIfActive(group);
-    // if (!updatedDeck) {
-    //     HIDDebug("WRONG DECK " + group + " " + updatedDeck);
-    //     return;
-    // }
-    // HIDDebug("deckoutput updatedeck: " + updatedDeck);
-    // if (TraktorS3.activeDecks[updatedDeck]) {
-    //     HIDDebug("regdeck is not active: " + updatedDeck);
-    //     return;
-    // }
-    // if (updatedDeck == 1 || updatedDeck == 3) {
-    //     group = "deck1";
-    // } else if (updatedDeck == 2 || updatedDeck == 4) {
-    //     group = "deck2";
-    // }
 
     var ledValue = 0x20;
     if (value === 1 || value === true) {
@@ -1422,7 +1456,6 @@ TraktorS3.deckOutputHandler = function(value, group, key) {
     HIDDebug("DECK: OUTPUT GROUP " + group + " " + key + " " + ledValue);
 
     TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.freeze_lights);
-    // TraktorS3.controller.setOutput(group, key, ledValue, true);
 };
 
 TraktorS3.wheelOutputHandler = function(value, group, key) {
@@ -1435,21 +1468,26 @@ TraktorS3.wheelOutputHandler = function(value, group, key) {
     if (deck === undefined) {
         return;
     }
-    // var ctrlr = TraktorS3.controller;
-    // var ledValue = ctrlr.LEDColors[ctrlr.deckOutputColors[deck]];
-    // HIDDebug("wheel! of! " + deck + " " + ctrlr.deckOutputColors[deck] + " " + ledValue );
-    // if (value) {
-    // ledValue += 0x02;
-    // }
+
+    var sendPacket = !TraktorS3.freeze_lights;
+    TraktorS3.freeze_lights = true;
     for (var i = 0; i < 8; i++) {
-        var sendPacket = (i == 7);
-        // HIDDebug("wheel! " + ledValue.toString(16) + " " + sendPacket);
-        TraktorS3.colorOutputHandler(value, group, "!wheel" + i, sendPacket);
+        // HIDDebug("wheel! " + ledValue.toString(16));
+        TraktorS3.colorOutputHandler(value, group, "!wheel" + i);
+    }
+    if (sendPacket) {
+        for (packet_name in TraktorS3.controller.OutputPackets) {
+            var packet_ob = TraktorS3.controller.OutputPackets[packet_name];
+            packet_ob.send();
+        }
+        // Only unset freeze_lights if it wasn't already true when we
+        // entered this function.
+        TraktorS3.freeze_lights = false;
     }
 };
 
 // colorOutputHandler drives lights that have the palettized multicolor lights.
-TraktorS3.colorOutputHandler = function(value, group, key, sendPacket) {
+TraktorS3.colorOutputHandler = function(value, group, key) {
     HIDDebug("coloroutput! " + value + " " + group + " " + key);
     // Reject update if it's for a specific channel that's not selected.
     var updatedDeck = TraktorS3.controller.resolveDeck(group);
@@ -1479,13 +1517,10 @@ TraktorS3.colorOutputHandler = function(value, group, key, sendPacket) {
     } else {
         ledValue += TraktorS3.LEDDimValue;
     }
-    if (sendPacket === undefined) {
-        sendPacket = true;
-    }
 
     // HIDDebug("So I think: " + group + " " + key);
 
-    TraktorS3.controller.setOutput(group, key, ledValue, sendPacket);
+    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.freeze_lights);
 };
 
 TraktorS3.padLEDHandler = function (deck) {
@@ -1553,7 +1588,36 @@ TraktorS3.messageCallback = function(_packet, data) {
 
 TraktorS3.shutdown = function() {
     // Deactivate all LEDs
-    // TraktorS3.lightDeck(true);
+    var data_strings = [
+        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00 ",
+        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00",
+    ];
+
+    var data = [Object(), Object()];
+
+
+    for (i = 0; i < data.length; i++) {
+        var ok = true;
+        var splitted = data_strings[i].split(/\s+/);
+        data[i].length = splitted.length;
+        for (j = 0; j < splitted.length; j++) {
+            var byte_str = splitted[j];
+            if (byte_str.length === 0) {
+                continue;
+            }
+            data[i][j] = parseInt(byte_str, 16);
+        }
+        controller.send(data[i], data[i].length, 0x80 + i);
+    }
 
     HIDDebug("TraktorS3: Shutdown done!");
 };
