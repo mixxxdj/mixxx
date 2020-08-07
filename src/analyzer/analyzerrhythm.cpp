@@ -28,11 +28,12 @@ constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
+// tempogram resolution constants
 constexpr float kNoveltyCurveMinDB = -74.0;
 constexpr int kNoveltyCurveCompressionConstant = 1000;
 constexpr int kTempogramLog2WindowLength = 10;
-constexpr int kTempogramLog2HopSize = 8;
-constexpr int kTempogramLog2FftLength = 12;
+constexpr int kTempogramLog2HopSize = 6;
+constexpr int kTempogramLog2FftLength = 10;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
@@ -78,7 +79,6 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
     m_iMaxSamplesToProcess = m_iTotalSamples;
     m_iCurrentSample = 0;
 
-    
     // decimation factor aims at resampling to c. 3KHz; must be power of 2
     int factor = MathUtilities::nextPowerOfTwo(m_iSampleRate / 3000);
     m_downbeat = std::make_unique<DownBeat>(
@@ -113,12 +113,11 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
     m_noveltyCurveProcessor.initialize(
         windowSize(), windowSize()/2, [this](double* pWindow, size_t) {
             int n = windowSize()/2 + 1;
-            const double *in = pWindow;
-
+            double *in = pWindow;
             //calculate magnitude of FrequencyDomain input
             std::vector<float> fftCoefficients;
             for (int i = 0; i < n; i++){
-                float magnitude = sqrt(in[2*i] * in[2*i] + in[2*i + 1] * in[2*i + 1]);
+                float magnitude = static_cast<float>(sqrt(in[2*i] * in[2*i] + in[2*i + 1] * in[2*i + 1]));
                 magnitude = magnitude > m_noveltyCurveMinV ? magnitude : m_noveltyCurveMinV;
                 fftCoefficients.push_back(magnitude);
             }
@@ -128,6 +127,17 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
     
     return true;
 }
+
+void AnalyzerRhythm::setTempogramParameters() {
+    m_tempogramWindowLength = pow(2,kTempogramLog2WindowLength);
+    m_tempogramHopSize = pow(2,kTempogramLog2HopSize);
+    m_tempogramFftLength = pow(2,kTempogramLog2FftLength);
+
+    m_tempogramMinBPM = 60;
+    m_tempogramMaxBPM = 180;
+    m_tempogramInputSampleRate = m_iSampleRate / static_cast<float>((windowSize()/2));
+}
+
 
 bool AnalyzerRhythm::shouldAnalyze(TrackPointer pTrack) const {
     bool bpmLock = pTrack->isBpmLocked();
@@ -165,6 +175,7 @@ void AnalyzerRhythm::cleanup() {
     m_resultBeats.clear();
     m_detectionResults.clear();
     m_pDetectionFunction.reset();
+    m_noveltyCurve.clear();
     delete m_window;
     delete [] m_fftImagOut;
     delete [] m_fftRealOut;
@@ -172,6 +183,7 @@ void AnalyzerRhythm::cleanup() {
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
     std::vector<std::vector<double>> allBeats(kDfTypes);
+    qDebug() << m_detectionResults.size();
     for (int dfType = 0; dfType < kDfTypes; dfType += 1) {
         int nonZeroCount = m_detectionResults.size();
         while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1).results[dfType] <= 0.0) {
@@ -287,53 +299,30 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double> &beatsSD) 
     return std::make_tuple(bestBpb + kLowerBeatsPerBar, bestDownbeatPos);
 }
 
-void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
-    m_onsetsProcessor.finalize();
-    m_downbeatsProcessor.finalize();
-    m_noveltyCurveProcessor.finalize();
-    // Compute novelty curve
-    int numberOfBlocks = m_spectrogram.size();
-    NoveltyCurveProcessor nc(m_iSampleRate, windowSize(), kNoveltyCurveCompressionConstant);
-    std::vector<float> noveltyCurve = nc.spectrogramToNoveltyCurve(m_spectrogram);
-    // Compute dft tempogram
-    int tempogramWindowLength = pow(2,kTempogramLog2WindowLength);
-    int tempogramHopSize = pow(2,kTempogramLog2HopSize);
-    int tempogramFftLength = pow(2,kTempogramLog2FftLength);
-    qDebug() << "tempogramWindowLength << tempogramHopSize << tempogramFftLength" << tempogramWindowLength << tempogramHopSize << tempogramFftLength;
-    auto hannWindow = std::vector<float>(tempogramWindowLength, 0.0);
-    WindowFunction::hanning(&hannWindow[0], tempogramWindowLength);
-    SpectrogramProcessor spectrogramProcessor(tempogramWindowLength, tempogramFftLength, tempogramHopSize);
-    Spectrogram tempogramDFT = spectrogramProcessor.process(&noveltyCurve[0], numberOfBlocks, &hannWindow[0]);
-    // Compute acf tempogram
-    AutocorrelationProcessor autocorrelationProcessor(tempogramWindowLength, tempogramHopSize);
-    Spectrogram tempogramACF = autocorrelationProcessor.process(&noveltyCurve[0], numberOfBlocks);
-    
-    // Convert tempograms y axis to bpm
-    int tempogramLength = tempogramDFT.size(); // same as tempogramACT.size()
-    #define max(x,y) ((x) > (y) ? (x) : (y))
-    #define min(x,y) ((x) < (y) ? (x) : (y))
-    int tempogramMinBPM = 70;
-    int tempogramMaxBPM = 210;
-    float tempogramInputSampleRate = m_iSampleRate / (float) (windowSize()/2);
-    int tempogramMinBin = (max((int)floor(((tempogramMinBPM/60.0)
-            /tempogramInputSampleRate)*tempogramFftLength), 0));
-    qDebug() << (((tempogramMinBPM/60.0)/tempogramInputSampleRate)*tempogramFftLength);
-    int tempogramMaxBin = (min((int)ceil(((tempogramMaxBPM/60.0)
-            /tempogramInputSampleRate)*tempogramFftLength), tempogramFftLength/2));
+
+
+int AnalyzerRhythm::computeNoveltyCurve() {
+    NoveltyCurveProcessor nc(static_cast<float>(m_iSampleRate), windowSize(), kNoveltyCurveCompressionConstant);
+    m_noveltyCurve = nc.spectrogramToNoveltyCurve(m_spectrogram);
+    return m_spectrogram.size();
+}
+
+void AnalyzerRhythm::computeTempogramByDFT() {
+    auto hannWindow = std::vector<float>(m_tempogramWindowLength, 0.0);
+    WindowFunction::hanning(&hannWindow[0], m_tempogramWindowLength);
+    SpectrogramProcessor spectrogramProcessor(m_tempogramWindowLength,
+            m_tempogramFftLength, m_tempogramHopSize);
+    Spectrogram tempogramDFT = spectrogramProcessor.process(&m_noveltyCurve[0], m_noveltyCurve.size(), &hannWindow[0]);
+    // convert y axis to bpm
+    int tempogramMinBin = (std::max(static_cast<int>(floor(((m_tempogramMinBPM/60.0)
+            /m_tempogramInputSampleRate)*m_tempogramFftLength)), 0));
+    int tempogramMaxBin = (std::min(static_cast<int>(ceil(((m_tempogramMaxBPM/60.0)
+            /m_tempogramInputSampleRate)*m_tempogramFftLength)), m_tempogramFftLength/2));
     int binCount = tempogramMaxBin - tempogramMinBin + 1;
-
-    int tempogramMinLag = max((int)ceil((60/((windowSize()/2.0) * tempogramMaxBPM))
-                *m_iSampleRate), 0);
-    int tempogramMaxLag = min((int)floor(((60/(windowSize()/2.0) * tempogramMinBPM))
-                *m_iSampleRate), tempogramWindowLength-1);
-
-    qDebug() << binCount << tempogramMinBin << tempogramMaxBin;
-    binCount = tempogramMaxLag - tempogramMinLag + 1;
-    qDebug() << binCount << tempogramMinLag << tempogramMaxLag;
     float highest;
     float bestBpm;
     int bin;
-    for (int block = 0; block < tempogramLength; block++) {
+    for (int block = 0; block < tempogramDFT.size(); block++) {
         // dft
         qDebug() << "block" << block;
         qDebug() << "DFT tempogram";
@@ -341,7 +330,7 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
         bestBpm = .0;
         bin = 0;
         for (int k = tempogramMinBin; k <= tempogramMaxBin; k++){
-            float w = ((float)k/tempogramFftLength)*(tempogramInputSampleRate);
+            float w = (k/static_cast<float>(m_tempogramFftLength))*(m_tempogramInputSampleRate);
             float bpm = w*60;
             //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramDFT[block][k];
             if (tempogramDFT[block][k] > highest) {
@@ -349,23 +338,51 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
                 bestBpm = bpm;
             }
         }
-        qDebug() << "best bpm" << bestBpm;
-        // acf
+        qDebug() << "best bpm at block" << bestBpm << block;
+    }
+}
+
+void AnalyzerRhythm::computeTempogramByACF() {
+    // Compute acf tempogram
+    AutocorrelationProcessor autocorrelationProcessor(m_tempogramWindowLength, m_tempogramHopSize);
+    Spectrogram tempogramACF = autocorrelationProcessor.process(&m_noveltyCurve[0], m_noveltyCurve.size());
+    // Convert y axis to bpm
+    int tempogramMinLag = std::max(static_cast<int>(ceil((60/ ((windowSize()/2.0) * m_tempogramMaxBPM))
+                *m_iSampleRate)), 0);
+    int tempogramMaxLag = std::min(static_cast<int>(floor((60/ ((windowSize()/2.0) * m_tempogramMinBPM))
+                *m_iSampleRate)), m_tempogramWindowLength-1);
+
+    float highest;
+    float bestBpm;
+    int bin;
+    for (int block = 0; block < tempogramACF.size(); block++) {
+        qDebug() << "block" << block;
         qDebug() << "ACF tempogram";
         highest = .0;
         bestBpm = .0;
         bin = 0;
         for (int lag = tempogramMaxLag; lag >= tempogramMinLag; lag--) {
-            float bpm = 60/((windowSize()/2.0) * (lag/float(m_iSampleRate)));
+            float bpm = 60/((windowSize()/2.0) * (lag/static_cast<float>(m_iSampleRate)));
             //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramACF[block][lag];
             if (tempogramACF[block][lag] > highest) {
                 highest = tempogramACF[block][lag];
                 bestBpm = bpm;
             }
         }
-        qDebug() << "best bpm" << bestBpm;
+        qDebug() << "best bpm at block" << bestBpm << block;
     }
-    
+}
+
+
+void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
+    m_onsetsProcessor.finalize();
+    m_downbeatsProcessor.finalize();
+    m_noveltyCurveProcessor.finalize();
+
+    setTempogramParameters();
+    computeNoveltyCurve();
+    computeTempogramByACF();
+    computeTempogramByDFT();
 
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);

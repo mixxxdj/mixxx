@@ -68,7 +68,12 @@ class AnalyzerRhythm : public Analyzer {
     // downbeats and meter methods
     std::vector<double> computeBeatsSpectralDifference(std::vector<double>& beats);
     std::tuple<int, int> computeMeter(std::vector<double>& beatsSD);
-    
+    // tempogram methods
+    void setTempogramParameters();
+    void computeTempogramByDFT();
+    void computeTempogramByACF();
+    int computeNoveltyCurve();
+
     int m_iSampleRate;
     int m_iTotalSamples;
     int m_iMaxSamplesToProcess;
@@ -89,16 +94,18 @@ class AnalyzerRhythm : public Analyzer {
     mixxx::DownmixAndOverlapHelper m_noveltyCurveProcessor;
     std::vector<DFresults> m_detectionResults;
     std::unique_ptr<FFTReal> m_fft;
-    std::unique_ptr<ConstantQ> m_constQ;
     Window<double> *m_window;
     double *m_fftRealOut;
     double *m_fftImagOut;
-    double *m_constQRealOut;
-    double *m_constQImagOut;
-
+    // tempogram
     Spectrogram m_spectrogram;
     float m_noveltyCurveMinV;
-
-
+    std::vector<float> m_noveltyCurve;
+    int m_tempogramWindowLength;
+    int m_tempogramHopSize;
+    int m_tempogramFftLength;
+    int m_tempogramMinBPM;
+    int m_tempogramMaxBPM;
+    float m_tempogramInputSampleRate;
     
 };
