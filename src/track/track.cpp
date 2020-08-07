@@ -1041,7 +1041,7 @@ QList<Macro> Track::getMacros() const {
     return m_macros;
 }
 
-void Track::setMacros(QList<Macro> macros) {
+void Track::setMacros(const QList<Macro>& macros) {
     QMutexLocker lock(&m_qMutex);
     m_macros = macros;
 }

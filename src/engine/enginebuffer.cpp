@@ -65,6 +65,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_channel(pChannel->getHandle()),
           m_bHotcueJumpPending(false),
           m_pMacroRecorder(pMacroRecorder),
+          m_activeMacro(1000),
           m_pSyncControl(nullptr),
           m_pVinylControlControl(nullptr),
           m_pRateControl(nullptr),
@@ -529,6 +530,17 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
+    while (!m_activeMacro.empty()) {
+        m_activeMacro.pop();
+    }
+    for (const Macro& macro : pTrack->getMacros()) {
+        if (macro.m_state.testFlag(Macro::StateFlag::Enabled)) {
+            for (MacroAction action : macro.m_actions) {
+                m_activeMacro.push(action);
+            }
+        }
+    }
+
     notifyTrackLoaded(pTrack, pOldTrack);
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
@@ -739,6 +751,18 @@ void EngineBuffer::processTrackLocked(
 
     bool is_scratching = false;
     bool is_reverse = false;
+
+    if (!m_activeMacro.empty()) {
+        double framePos = m_filepos_play / kSamplesPerFrame;
+        MacroAction* nextAction = m_activeMacro.front();
+        double nextActionPos = nextAction->position;
+        // this method is called roughly every iBufferSize samples (double as often if you view frames)
+        // so use double that as the tolerance range
+        if (framePos > nextActionPos - iBufferSize && framePos < nextActionPos) {
+            slotControlSeekExact(m_activeMacro.front()->target * kSamplesPerFrame);
+            m_activeMacro.pop();
+        }
+    }
 
     // Update the slipped position and seek if it was disabled.
     processSlip(iBufferSize);
@@ -1211,8 +1235,8 @@ void EngineBuffer::processSeek(bool paused) {
         }
         if (m_pMacroRecorder && m_bHotcueJumpPending) {
             m_pMacroRecorder->notifyCueJump(&m_channel,
-                    m_filepos_play / mixxx::kEngineChannelCount,
-                    position / mixxx::kEngineChannelCount);
+                    m_filepos_play / kSamplesPerFrame,
+                    position / kSamplesPerFrame);
         }
         setNewPlaypos(position);
     }

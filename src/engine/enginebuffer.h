@@ -254,6 +254,7 @@ class EngineBuffer : public EngineObject {
     ChannelHandle m_channel;
     bool m_bHotcueJumpPending;
     MacroRecorder* m_pMacroRecorder;
+    rigtorp::SPSCQueue<MacroAction> m_activeMacro;
 
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;

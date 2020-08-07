@@ -283,7 +283,7 @@ class Track : public QObject {
 
     QList<Macro> getMacros() const;
 
-    void setMacros(QList<Macro> macros);
+    void setMacros(const QList<Macro>& macros);
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
