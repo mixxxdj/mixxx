@@ -28,11 +28,11 @@ constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
-constexpr float kNoveltyCurveMinDB = -74.;
+constexpr float kNoveltyCurveMinDB = -74.0;
 constexpr int kNoveltyCurveCompressionConstant = 1000;
-constexpr int kTempogramLog2WindowLength = 12;
+constexpr int kTempogramLog2WindowLength = 10;
 constexpr int kTempogramLog2HopSize = 8;
-constexpr int kTempogramLog2FftLength = kTempogramLog2WindowLength;
+constexpr int kTempogramLog2FftLength = 12;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
@@ -57,7 +57,7 @@ AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
           m_iCurrentSample(0),
           m_iMinBpm(0),
           m_iMaxBpm(9999),
-          m_noveltyCurveMinV(pow(10,(float)kNoveltyCurveMinDB/20)) {
+          m_noveltyCurveMinV(pow(10,kNoveltyCurveMinDB/20.0)) {
 }
 
 inline int AnalyzerRhythm::stepSize() {
@@ -111,7 +111,7 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
             });
 
     m_noveltyCurveProcessor.initialize(
-        windowSize(), stepSize(), [this](double* pWindow, size_t) {
+        windowSize(), windowSize()/2, [this](double* pWindow, size_t) {
             int n = windowSize()/2 + 1;
             const double *in = pWindow;
 
@@ -287,8 +287,6 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double> &beatsSD) 
     return std::make_tuple(bestBpb + kLowerBeatsPerBar, bestDownbeatPos);
 }
 
-
-
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_onsetsProcessor.finalize();
     m_downbeatsProcessor.finalize();
@@ -312,59 +310,62 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     
     // Convert tempograms y axis to bpm
     int tempogramLength = tempogramDFT.size(); // same as tempogramACT.size()
-    auto convedtedTempogramDFT = std::vector<float>();
-    auto convedtedTempogramACF = std::vector<float>();
-    QMap<double, std::vector<float> > dftTempogram;
     #define max(x,y) ((x) > (y) ? (x) : (y))
     #define min(x,y) ((x) < (y) ? (x) : (y))
-    for (int block = 0; block < tempogramLength; block++) {
-        // dft
-        int tempogramMinBPM = 60;
-        int tempogramMaxBPM = 180;
-        float tempogramInputSampleRate = (float)m_iSampleRate/stepSize();
-        int tempogramMinBin = (max((int)floor(((tempogramMinBPM/60)
-                /tempogramInputSampleRate)*tempogramFftLength), 0));
-        int tempogramMaxBin = (min((int)ceil(((tempogramMaxBPM/60)
-                /tempogramInputSampleRate)*tempogramFftLength), tempogramFftLength/2));
-        qDebug () << "block" << block;
-        float highest = 0.0;
-        float bestBpm = 0.0;
-        for (int k = tempogramMinBin; k <= tempogramMaxBin; k++){
-            convedtedTempogramDFT.push_back(tempogramDFT[block][k]);
-            float w = ((float)k/tempogramFftLength)*(tempogramInputSampleRate);
-            //qDebug() << w;
-            float bpm = w*60;
-            qDebug() << "bpm and value" << bpm << tempogramDFT[block][k];
-            
-            if (bpm > tempogramMinBPM) {
-                if (tempogramDFT[block][k] > highest) {
-                    highest = tempogramDFT[block][k];
-                    bestBpm = bpm;
-                    qDebug() << "best bpm and highest value" << bestBpm << highest;
-                }
-            }
-            
-            dftTempogram[bpm].push_back(tempogramDFT[block][k]);
-            //qDebug() << tempogramDFT[block][k];
-        }
-        qDebug() << "best bpm at block" << bestBpm << block;
-        // acf
-        int tempogramMinLag = max((int)ceil((60/(stepSize() * tempogramMaxBPM))
+    int tempogramMinBPM = 70;
+    int tempogramMaxBPM = 210;
+    float tempogramInputSampleRate = m_iSampleRate / (float) (windowSize()/2);
+    int tempogramMinBin = (max((int)floor(((tempogramMinBPM/60.0)
+            /tempogramInputSampleRate)*tempogramFftLength), 0));
+    qDebug() << (((tempogramMinBPM/60.0)/tempogramInputSampleRate)*tempogramFftLength);
+    int tempogramMaxBin = (min((int)ceil(((tempogramMaxBPM/60.0)
+            /tempogramInputSampleRate)*tempogramFftLength), tempogramFftLength/2));
+    int binCount = tempogramMaxBin - tempogramMinBin + 1;
+
+    int tempogramMinLag = max((int)ceil((60/((windowSize()/2.0) * tempogramMaxBPM))
                 *m_iSampleRate), 0);
-        int tempogramMaxLag = min((int)floor((60/(stepSize() * tempogramMinBPM))
+    int tempogramMaxLag = min((int)floor(((60/(windowSize()/2.0) * tempogramMinBPM))
                 *m_iSampleRate), tempogramWindowLength-1);
 
-        for (int k = tempogramMaxLag; k >= tempogramMinLag; k--) {
-            convedtedTempogramACF.push_back(tempogramACF[block][k]);
+    qDebug() << binCount << tempogramMinBin << tempogramMaxBin;
+    binCount = tempogramMaxLag - tempogramMinLag + 1;
+    qDebug() << binCount << tempogramMinLag << tempogramMaxLag;
+    float highest;
+    float bestBpm;
+    int bin;
+    for (int block = 0; block < tempogramLength; block++) {
+        // dft
+        qDebug() << "block" << block;
+        qDebug() << "DFT tempogram";
+        highest = .0;
+        bestBpm = .0;
+        bin = 0;
+        for (int k = tempogramMinBin; k <= tempogramMaxBin; k++){
+            float w = ((float)k/tempogramFftLength)*(tempogramInputSampleRate);
+            float bpm = w*60;
+            //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramDFT[block][k];
+            if (tempogramDFT[block][k] > highest) {
+                highest = tempogramDFT[block][k];
+                bestBpm = bpm;
+            }
         }
+        qDebug() << "best bpm" << bestBpm;
+        // acf
+        qDebug() << "ACF tempogram";
+        highest = .0;
+        bestBpm = .0;
+        bin = 0;
+        for (int lag = tempogramMaxLag; lag >= tempogramMinLag; lag--) {
+            float bpm = 60/((windowSize()/2.0) * (lag/float(m_iSampleRate)));
+            //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramACF[block][lag];
+            if (tempogramACF[block][lag] > highest) {
+                highest = tempogramACF[block][lag];
+                bestBpm = bpm;
+            }
+        }
+        qDebug() << "best bpm" << bestBpm;
     }
-    //qDebug() << dftTempogram;
-    auto tempi = dftTempogram.keys();
-    for (auto tempo : tempi) {
-        auto average = std::accumulate(dftTempogram[tempo].begin(), 
-                dftTempogram[tempo].end(), 0.0) / dftTempogram[tempo].size();
-        //qDebug() << tempo << average;
-    }
+    
 
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
