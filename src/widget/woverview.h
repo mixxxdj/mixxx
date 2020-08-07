@@ -165,12 +165,16 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
-    QColor m_qColorBackground;
+    QColor m_backgroundColor;
     int m_iLabelFontSize;
     QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
+    QColor m_axesColor;
+    QColor m_playPosColor;
     QColor m_endOfTrackColor;
     QColor m_passthroughOverlayColor;
+    QColor m_playedOverlayColor;
+    QColor m_lowColor;
     QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks
