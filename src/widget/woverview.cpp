@@ -34,7 +34,6 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
-#include "util/widgethelper.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
@@ -71,17 +70,20 @@ WOverview::WOverview(
           m_trackLoaded(false),
           m_scaleFactor(1.0) {
     m_endOfTrackControl = new ControlProxy(
-            m_group, "end_of_track", this);
+            m_group, "end_of_track", this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
-    m_pRateRatioControl = new ControlProxy(m_group, "rate_ratio", this);
+    m_pRateRatioControl = new ControlProxy(
+            m_group, "rate_ratio", this, ControlFlag::NoAssertIfMissing);
     // Needed to recalculate range durations when rate slider is moved without the deck playing
-    m_pRateRatioControl->connectValueChanged(this, &WOverview::onRateRatioChange);
-    m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
-    m_trackSamplesControl =
-            new ControlProxy(m_group, "track_samples", this);
-    m_playpositionControl = new ControlProxy(m_group, "playposition", this);
+    m_pRateRatioControl->connectValueChanged(
+            this, &WOverview::onRateRatioChange);
+    m_trackSampleRateControl = new ControlProxy(
+            m_group, "track_samplerate", this, ControlFlag::NoAssertIfMissing);
+    m_trackSamplesControl = new ControlProxy(m_group, "track_samples", this);
+    m_playpositionControl = new ControlProxy(
+            m_group, "playposition", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl =
-            new ControlProxy(m_group, "passthrough", this);
+            new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
     onPassthroughChange(m_pPassthroughControl->get());
 
@@ -530,11 +532,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             }
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
-                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
-                        *this,
-                        e->globalPos(),
-                        m_pCueMenuPopup->size());
-                m_pCueMenuPopup->popup(cueMenuTopLeft);
+                m_pCueMenuPopup->popup(e->globalPos());
             }
         }
     }

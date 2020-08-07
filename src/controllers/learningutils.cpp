@@ -219,7 +219,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // reset control.
         ConfigKey resetControl = control;
         resetControl.item.append("_set_default");
-        bool hasResetControl = ControlObject::getControl(resetControl) != NULL;
+        bool hasResetControl = ControlObject::getControl(resetControl,
+                                       ControlFlag::NoWarnIfMissing) != nullptr;
 
         // Find the CC control (based on the predicate one must exist) and add a
         // binding for it.

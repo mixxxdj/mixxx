@@ -22,7 +22,7 @@ NK2.cueMoveToNum=-1;//used in cue button moves (cueclear function)
 //############################################################################
 //references
 //############################################################################
- 
+
 NK2.MODcodes={"0000":0,"0001":1,"0010":2,"0011":3,"0100":4,"0101":5,"0110":6,"0111":7,"1000":8,"1001":9,"1010":10,"1011":11,"1100":12,"1101":13,"1110":14,"1111":15};//list of mod states
 NK2.Banks=new Array("N", "S", "M", "R");
 
@@ -63,17 +63,17 @@ NK2.init = function init() { // called when the device is opened & set up
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     engine.setValue("[Master]", "num_decks", NK2.numDecks);
     NK2.setup()
-    
+
     NK2.updateLEDs();
     print("decks: "+engine.getValue("[Master]", "num_decks"))
     };
 
 NK2.shutdown = function shutdown() {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     engine.stopTimer(NK2.LEDtimer);
     };
-    
+
 //############################################################################
 //SCENE SET FUNCTIONS - configure controls for selected scenes
 //############################################################################
@@ -85,7 +85,7 @@ NK2.bankSelect = function bankSelect(deck, bank) {
     NK2.doClearBank=false;//bank has just been selected.  Don't clear the bank when bank select button is released
     NK2.cycleState=0;
     NK2.bankSelectState=0;
-    
+
     //find bank indicator led, if bank activated
     if (NK2.curNSMR=="S"){
         NK2.LEDBankIndicator=NK2.Sbutton[NK2.curDeck];
@@ -111,11 +111,11 @@ NK2.fader = function fader(channel, control, value, status, group) {
 NK2.button = function button(channel, control, value, status, group) {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     //input received - gatekeeper function connected to all buttons
- 
+
     //get the control object for the current button on the current bank - associative array containing control info, LED state evaluators, press/release functions, etc.
     var theControl=NK2.getControl(control);
     if (theControl===false){return false;}//no control set for this button
-    
+
     if (value>0){//button was pressed
         var command = theControl["pressEval"];
         midi.sendShortMsg(NK2.midiChannel, control, 0x7F);//light LED while button pressed
@@ -129,13 +129,13 @@ NK2.button = function button(channel, control, value, status, group) {
 
 NK2.knob = function knob(channel, control, value, status, group) {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     //input received - gatekeeper function connected to all knobs
- 
+
     //get the control object for the current button on the current bank - associative array containing control info, LED state evaluators, press/release functions, etc.
     var theControl=NK2.getControl(control);
     if (theControl===false){return false;}//no control set for this button
-    
+
     var command = theControl["pressEval"];
     if (command!=false)eval(command);
 };
@@ -183,10 +183,10 @@ NK2.modrelease = function modrelease(button) {
         engine.stopTimer(NK2.cueMoveIndicator);
         NK2.cueMoveToNum=-1;
         NK2.cuemoveLastIndicator=-1;
-    
+
         NK2.MOD2state=0;
     };
-    
+
     NK2.updateLEDs();
 };
 
@@ -201,18 +201,18 @@ NK2.updateLEDs = function updateLEDs() {
     var midino;
     var control;
     var state=0;
-    
+
     for (var key in NK2.Controls){//clear hooks
         var midino=key;
         var thecontrol = NK2.getControl(key);
-        
-        
+
+
         var LEDstateType=thecontrol["LEDstateType"];
         var LEDstateEval=thecontrol["LEDstateEval"];
         var LEDhookControl=thecontrol["LEDhookControl"];
         var LEDhookFunction=thecontrol["LEDhookFunction"];
         var LEDhookGroup=(thecontrol["LEDhookGroup"]=="default")?NK2.Deck[NK2.curDeck]:thecontrol["LEDhookGroup"];
-        
+
         //clear hooks
         if (NK2.Controls[key]["LEDstateType"]==="hook" && LEDstateType==="hook"){//check if hooks are the same, if not, clear the hook
             if(NK2.Controls[key]["LEDhookGroup"]==LEDhookGroup && NK2.Controls[key]["LEDhookControl"]==LEDhookControl && NK2.Controls[key]["LEDhookFunction"]==LEDhookFunction){
@@ -224,27 +224,27 @@ NK2.updateLEDs = function updateLEDs() {
                 //engine.connectControl(NK2.Controls[key]["LEDhookGroup"], NK2.Controls[key]["LEDhookControl"], NK2.Controls[key]["LEDhookFunction"], true);
                 NK2.clearHook(NK2.Controls[key]["LEDhookGroup"], NK2.Controls[key]["LEDhookControl"], NK2.Controls[key]["LEDhookFunction"]);
             }
-            
+
         }else if(NK2.Controls[key]["LEDstateType"]==="hook"){//clear the hook
             //engine.connectControl(NK2.Controls[key]["LEDhookGroup"], NK2.Controls[key]["LEDhookControl"], NK2.Controls[key]["LEDhookFunction"], true);
             NK2.clearHook(NK2.Controls[key]["LEDhookGroup"], NK2.Controls[key]["LEDhookControl"], NK2.Controls[key]["LEDhookFunction"]);
         };
         //engine.connectControl(NK2.Controls[key]["LEDhookGroup"], NK2.Controls[key]["LEDhookControl"], NK2.Controls[key]["LEDhookFunction"], true);
     };//end clear hooks for
-        
+
     for (var key in NK2.Controls){//set new led settings
         var midino=key;
         var thecontrol = NK2.getControl(key);
-        
-        
+
+
         var LEDstateType=thecontrol["LEDstateType"];
         var LEDstateEval=thecontrol["LEDstateEval"];
         var LEDhookControl=thecontrol["LEDhookControl"];
         var LEDhookFunction=thecontrol["LEDhookFunction"];
         var LEDhookGroup=(thecontrol["LEDhookGroup"]=="default")?NK2.Deck[NK2.curDeck]:thecontrol["LEDhookGroup"];
-                
+
         if (thecontrol["LEDstateType"]===false){continue;}//control has no LED, LED Type is not set, or LED doesn't change on this mod setting.  skip to next control
-        
+
         //reset LED state storage
         NK2.Controls[key]["LEDstate"]=0;
         NK2.Controls[key]["LEDstateType"]=LEDstateType;
@@ -252,7 +252,7 @@ NK2.updateLEDs = function updateLEDs() {
         NK2.Controls[key]["LEDhookControl"]=LEDhookControl;
         NK2.Controls[key]["LEDhookFunction"]=LEDhookFunction;
         NK2.Controls[key]["LEDhookGroup"]=LEDhookGroup;
-        
+
 
         if (LEDstateType=="on"){//LED is always on
             state=1;
@@ -263,21 +263,21 @@ NK2.updateLEDs = function updateLEDs() {
             NK2.Controls[key]["LEDstate"]=0;
             }
         else if (LEDstateType=="hook"){//LED is hooked to a mixxx control
-            
+
             NK2.setHook(LEDhookGroup, LEDhookControl, LEDhookFunction);//set hook
             engine.trigger(LEDhookGroup, LEDhookControl);
-            
+
             continue;
             }
         else if (thecontrol["LEDstateType"]=="eval"){//LED state determined by evaluating a javascript statement
             if (NK2.debug>2){print("##updateLEDs Eval: "+thecontrol["LEDstateEval"])};
             if (NK2.debug>2){print("##updateLEDs midino: "+midino)};
             if (NK2.debug>2){print("##evalstate: "+eval(thecontrol["LEDstateEval"]))};
-            
+
             state=eval(LEDstateEval);
             NK2.Controls[key]["LEDstate"]=(state>0)?1:0;
             }//end if
-            
+
         midi.sendShortMsg(NK2.midiChannel, midino, state*127);
         state=0;//reset state
         }//end for
@@ -286,10 +286,10 @@ NK2.updateLEDs = function updateLEDs() {
 NK2.indicatorLEDs = function indicatorLEDs(value,group,control){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     engine.stopTimer(NK2.flashTimer);//kill previous timer if exists
-        
+
     NK2.flashon=0;
     NK2.flashcount=0;
-    
+
     NK2.flashTimer=engine.beginTimer(100, "NK2.flashIndicators()");
     return true;
 };
@@ -319,7 +319,7 @@ NK2.stopFlashTimer = function stopFlashTimer() {
 
 NK2.cueMoveIndicatorLEDs = function cueMoveIndicatorLEDs(control){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-     
+
     NK2.cuemovecontrol=control;
     if (NK2.cuemoveLastIndicator!=-1){midi.sendShortMsg(NK2.midiChannel, NK2.cuemoveLastIndicator, 0);}//turn off last indicator in case timer was interrupted (keeps last led from being left on if you switch "move to" buttons.
     NK2.cuemoveLastIndicator=control;
@@ -433,7 +433,7 @@ NK2.clearHook = function clearHook(group, control, func){//clear hook
 
 NK2.getControl = function getControl(control){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     var theControl=NK2.Controls[control][NK2.curNSMR][NK2.getCurModCode()];//get control for current mod settings
     if (theControl['isset']===false || typeof theControl === 'undefined'){
         theControl=NK2.Controls[control][NK2.curNSMR][NK2.bin2dec(NK2.cycleState.toString()+NK2.bankSelectState.toString()+"00")];//get control without mods, only check cycle state and bank select
@@ -445,16 +445,16 @@ NK2.getControl = function getControl(control){
 
         };
     };
-    
+
     if (theControl['isset']===false || typeof theControl === 'undefined'){return false;}
-    
+
     //returns the array of control commands and LED state functions for the control pressed for the current bank/mods
     return theControl;
 };
-    
+
 NK2.getCurModCode = function getCurModCode(control){//returns the current mod code value
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     var codestr=NK2.cycleState.toString()+NK2.bankSelectState.toString()+NK2.MOD1state.toString()+NK2.MOD2state.toString();
     //print("#####modcode: "+codestr);
     return parseInt(codestr, 2);
@@ -472,21 +472,21 @@ NK2.knobAdjust = function knobAdjust(group, control, value, min, max){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (group=="default"){group=NK2.Deck[NK2.curDeck];};
     //use a knob to adjust a mixxx control
-    
+
     var range=max-min;
     var newValue=min+((value/127)*range);
     if (newValue>max)newValue=max;
     if (newValue<min)newValue=min;
     engine.setValue(group, control, newValue);
     }
-    
+
 NK2.logKnobAdjust = function logKnobAdjust(group, control, value, min, max){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (group=="default"){group=NK2.Deck[NK2.curDeck];};
     //use a knob to adjust a mixxx control
     //on a logarithmic scale (0 min, 4 max)
     //K = 4*(V)^2
-    //V = (K/4)^0.5 -- K= value coming from prog (0-4, logarithmic scale), V=value adjusted to linear 0-1 
+    //V = (K/4)^0.5 -- K= value coming from prog (0-4, logarithmic scale), V=value adjusted to linear 0-1
     var range=max-min;
     var adjustedValue=value/127;//adjust range so it's on a scale of 0 to 1 - logarithmic
     var newValue=min+(range*Math.pow((adjustedValue),2));
@@ -498,7 +498,7 @@ NK2.logKnobAdjust = function logKnobAdjust(group, control, value, min, max){
 
 NK2.toggleBinaryControlAll = function toggleBinaryControlAll(control){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     var newstate = (engine.getValue(NK2.Deck[1], control)==0)?1:0;
     for (var i=1; i<9; i++){
         engine.setValue(NK2.Deck[i], control, newstate);
@@ -507,7 +507,7 @@ NK2.toggleBinaryControlAll = function toggleBinaryControlAll(control){
 
 NK2.wavezoomAll = function wavezoomAll(value){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-        
+
     var range=6-1;
     var newValue=Math.round(1+((value/127)*range));
     if (newValue>6)newValue=6;
@@ -523,7 +523,7 @@ NK2.wavezoomAll = function wavezoomAll(value){
 NK2.wavezoomDeck = function wavezoomDeck(value, group){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (group=="default"){group=NK2.Deck[NK2.curDeck];};
-    
+
     var range=6-1;
     var newValue=Math.round(1+((value/127)*range));
     if (newValue>6)newValue=6;
@@ -536,7 +536,7 @@ NK2.wavezoomDeck = function wavezoomDeck(value, group){
 
 NK2.mutePress = function mutePress(deck){//press mute button - toggle mute for a deck
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     if (NK2.deckData[deck]['muteVol']<0){//deck is currently not muted.  enable mute
         NK2.deckData[deck]['muteVol']=engine.getValue(deck, "volume");
         engine.setValue(deck, "volume", 0);
@@ -558,7 +558,7 @@ NK2.muteRelease = function muteRelease(deck){//release mute button
 NK2.binControlPress = function binControlPress(deck, control){//press button - toggle binary control for a deck
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (deck=="default"){deck=NK2.Deck[NK2.curDeck];};
-    
+
     var curstate=engine.getValue(deck, control);
     if (curstate===0 || (control=="play" && engine.getValue(deck, "reverse")==1)){//control currently off
         engine.setValue(deck, control,1);
@@ -572,7 +572,7 @@ NK2.binControlPress = function binControlPress(deck, control){//press button - t
 NK2.binControlRelease = function binControlMomentary(deck, control){//release momentary button - reset control to 0 on release
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (deck=="default"){deck=NK2.Deck[NK2.curDeck];};
-    
+
     engine.setValue(deck, control,0);
 };
 
@@ -594,26 +594,26 @@ NK2.cueClear = function cueClear(cue, control){//clear hotcue - OR move hotcue t
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (NK2.debug>2){print("##cue: "+cue)};
     if (NK2.debug>2){print("##deck: "+NK2.Deck[NK2.curDeck])};
-    
+
     if(engine.getValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_enabled")!=true){//hotcue not set - prepare to move next hotcue pressed to this button
         NK2.cueMoveToNum=cue;
         engine.stopTimer(NK2.cueMoveIndicator);
         NK2.cueMoveIndicator=engine.beginTimer(100, "NK2.cueMoveIndicatorLEDs("+control+")");//start timer for LED indicator flasher showing the button we're moving to
         return true;
     }
-    
+
     if(NK2.cueMoveToNum>0){//hotcue set, but we're moving it, not clearing it.
         engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+NK2.cueMoveToNum+"_set", 1);
-        engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+NK2.cueMoveToNum+"_position", engine.getValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_position"));    
+        engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+NK2.cueMoveToNum+"_position", engine.getValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_position"));
         engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_clear", 1);
         engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_clear", 0);
-    
+
         engine.stopTimer(NK2.cueMoveIndicator);
         NK2.cueMoveToNum=-1;//reset
         NK2.cuemoveLastIndicator=-1;
         return true;
     }
-    
+
     engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_clear", 1);
     engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_clear", 0);
 }
@@ -625,7 +625,7 @@ NK2.cueLoop = function cueLoop(cue){//jump to hotcue and start loop
         engine.setValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_activate", 0);
         engine.setValue(NK2.Deck[NK2.curDeck], "beatloop_"+NK2.cueLoopLen+"_activate", 1);
         }else{//jump to existing cue and loop
-        
+
         //calculate start and end points
         var startpos=engine.getValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_position");
         var loopseconds = NK2.cueLoopLen*(1/(engine.getValue(NK2.Deck[NK2.curDeck], "bpm")/60));
@@ -634,11 +634,11 @@ NK2.cueLoop = function cueLoop(cue){//jump to hotcue and start loop
 
         //disable loop if currently enabled
         if (engine.getValue(NK2.Deck[NK2.curDeck], "loop_enabled")==true){engine.setValue(NK2.Deck[NK2.curDeck], "reloop_exit", 1);}
-        
+
         //set start and endpoints
         engine.setValue(NK2.Deck[NK2.curDeck], "loop_start_position", startpos);
         engine.setValue(NK2.Deck[NK2.curDeck], "loop_end_position", endpos);
-        //enable loop    
+        //enable loop
         engine.setValue(NK2.Deck[NK2.curDeck], "reloop_exit", 1);
     }
 }
@@ -664,13 +664,13 @@ NK2.beatjump = function (jumplen) {
     var backseconds = numbeats*(1/(engine.getValue(NK2.Deck[NK2.curDeck], "bpm")/60));
     var backsamples = backseconds*engine.getValue(NK2.Deck[NK2.curDeck], "track_samplerate")*2;//*2 to compensate for stereo samples
     var newpos = curpos-(backsamples);
-    
+
     if (NK2.debug){print("backseconds: "+backseconds);}
     if (NK2.debug){print("backsamples: "+backsamples);}
     if (NK2.debug){print("curpos: "+curpos);}
     if (NK2.debug){print("newpos: "+newpos);}
     if (NK2.debug){print("numbeats: "+numbeats);}
-    
+
     engine.setValue(NK2.Deck[NK2.curDeck], "playposition", newpos/engine.getValue(NK2.Deck[NK2.curDeck], "track_samples"));
     };
 
@@ -686,7 +686,7 @@ NK2.beatloop = function beatloop(looplen, value) {
         };
 
     };
-    
+
 NK2.beatlooproll = function beatlooproll(looplen, value) {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
 
@@ -702,7 +702,7 @@ NK2.beatlooproll = function beatlooproll(looplen, value) {
 
 NK2.reloopButton = function reloopButton(value) {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     if (value>0){//button was pressed
         engine.stopTimer(NK2.reloopTimer);
         NK2.loopbuttonDown=true;
@@ -734,7 +734,7 @@ NK2.loopin = function loopin(value) {
         };
 
     };
-    
+
 NK2.loopout = function loopout(value) {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
 
@@ -752,7 +752,7 @@ NK2.loopout = function loopout(value) {
         };
 
     };
-    
+
 NK2.disablereloop = function disablereloop() {
     //timed function - fires half a second after pressing reloop.  Don't do the reloop if you hold down the button (so you can move the loop without exiting)
     NK2.doreloop=false;
@@ -771,7 +771,7 @@ NK2.disableloopout = function disableloopout() {
 NK2.loopminus = function loopminus() {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     //shrinks loop or moves loop back
-    if (NK2.loopbuttonDown !== true && NK2.loopinbuttonDown!==true && NK2.loopoutbuttonDown!==true){engine.setValue(NK2.Deck[NK2.curDeck], "loop_halve", 1); engine.setValue(NK2.Deck[NK2.curDeck], "loop_halve", 0); return false;}//shrink loop if no loop button down 
+    if (NK2.loopbuttonDown !== true && NK2.loopinbuttonDown!==true && NK2.loopoutbuttonDown!==true){engine.setValue(NK2.Deck[NK2.curDeck], "loop_halve", 1); engine.setValue(NK2.Deck[NK2.curDeck], "loop_halve", 0); return false;}//shrink loop if no loop button down
     else if (NK2.loopbuttonDown === true && engine.getValue(NK2.Deck[NK2.curDeck], "loop_start_position")>=0 && engine.getValue(NK2.Deck[NK2.curDeck], "loop_end_position")>=0 ){
         //move loop
         var interval =    NK2.loopmove*engine.getValue(NK2.Deck[NK2.curDeck], "track_samples")/engine.getValue(NK2.Deck[NK2.curDeck], "duration");
@@ -800,7 +800,7 @@ NK2.loopminus = function loopminus() {
 NK2.loopplus = function loopplus() {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     //grows loop or moves loop forward
-    if (NK2.loopbuttonDown !== true && NK2.loopinbuttonDown!==true && NK2.loopoutbuttonDown!==true){engine.setValue(NK2.Deck[NK2.curDeck], "loop_double", 1); engine.setValue(NK2.Deck[NK2.curDeck], "loop_double", 0); return false;}//shrink loop if no loop button down 
+    if (NK2.loopbuttonDown !== true && NK2.loopinbuttonDown!==true && NK2.loopoutbuttonDown!==true){engine.setValue(NK2.Deck[NK2.curDeck], "loop_double", 1); engine.setValue(NK2.Deck[NK2.curDeck], "loop_double", 0); return false;}//shrink loop if no loop button down
     else if (NK2.loopbuttonDown === true && engine.getValue(NK2.Deck[NK2.curDeck], "loop_start_position")>=0 && engine.getValue(NK2.Deck[NK2.curDeck], "loop_end_position")>=0 ){
         //move loop
         var interval =    NK2.loopmove*engine.getValue(NK2.Deck[NK2.curDeck], "track_samples")/engine.getValue(NK2.Deck[NK2.curDeck], "duration");
@@ -856,7 +856,7 @@ NK2.setOrientation = function setOrientation(deck, orientation) {//sets crossfad
 //############################################################################
 NK2.test = function test(channel, control, value, status, group) {
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     print("channel: "+channel);
     print("control: "+control.toString(16));
     print("value: "+value);
@@ -873,12 +873,12 @@ NK2.test = function test(channel, control, value, status, group) {
 NK2.testLED=0;//used by test function
 NK2.testleds=function testleds(){//sends LED on messages to all
     midi.sendShortMsg(0xB0, NK2.testLED, 0);
-    if (NK2.testLED>=127){return false; } 
+    if (NK2.testLED>=127){return false; }
     NK2.testLED++
-    midi.sendShortMsg(0xB0, NK2.testLED, 0x7F);    
+    midi.sendShortMsg(0xB0, NK2.testLED, 0x7F);
     NK2.LEDtimer=engine.beginTimer(100, "NK2.testleds()", true);
 }
-    
+
 //############################################################################
 //CONTROL CONFIG - initialize control command object and LED state tracker, bind commands to controls
 //############################################################################
@@ -886,13 +886,13 @@ NK2.testleds=function testleds(){//sends LED on messages to all
 //initialize control object function - iterates through buttons and sets up empty slots for command arrays - unset controls are "false"
 NK2.initControls = function initControls(obj) {//initialize controls array
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    
+
     for (var x in obj){
         NK2.Controls[obj[x]]={"LEDstate":0, "LEDstateType":false, "LEDstateEval":false, "LEDhookControl":false, "LEDhookFunction":false, "LEDhookGroup":false};//init with empty LED tracking properties
-        
+
         for (var y in NK2.Banks){//iterate through bank modes
             NK2.Controls[obj[x]][NK2.Banks[y]]={};//init empty
-            
+
             for (var z=0;z<16;z++){//iterate through mod codes
                 NK2.Controls[obj[x]][NK2.Banks[y]][z]={"isset":false, "pressEval":false, "releaseEval":false, "LEDstateType":false, "LEDstateEval":false, "LEDhookControl":false, "LEDhookFunction":false, "LEDhookGroup":false};
                 };//end for z
@@ -907,7 +907,7 @@ NK2.initControls = function initControls(obj) {//initialize controls array
 NK2.setup = function setup(obj) {//initialize controls array
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
 
-    
+
 //initialize control object for buttons, knobs, etc.
 NK2.Controls={};
 
@@ -919,18 +919,18 @@ NK2.initControls(NK2.leftButton);
 
 //CONTROL SYNTAX
 //NK2.Controls[midino]["N" (none), "S", "M", or "R"][MOD state: no mod = 0, bank select = 1, MOD 1 on = 2, MOD 2 on = 3]
-//'PressEval', 'ReleaseEval' = code eval'd when button is pressed or released 
+//'PressEval', 'ReleaseEval' = code eval'd when button is pressed or released
 
 /* MOD STATE - binary based
  * 1st digit - cycle button - this is a toggle (others are momentary on), and has a LED (others don't)
  * 2nd digit - bank select (marker set) button
  * 3rd digit - MOD 1 - track down
  * 4th digit - MOD 2 - track up
- * 
+ *
  * eg:
  * 0100 - (dec. 4) - bank select only
  * 1101 - (dec. 5) - cycle, bank sel. and MOD 2
- * 
+ *
  * decimal equivalents - 3 buttons = 8 states - 4 buttons, 16 states
 0000 - 0
 0001 - 1
@@ -983,7 +983,7 @@ NK2.Controls[NK2.leftButton["ff"]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pr
 NK2.Controls[NK2.leftButton["stop"]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.toggleBinaryControlAll("slip_enabled");', "releaseEval":false, "LEDstateType":"off"};
 NK2.Controls[NK2.leftButton["play"]]["N"][0]={"isset":true, "pressEval":'NK2.mutePress("[Master]");', "releaseEval":'NK2.muteRelease("[Master]");', "LEDstateType":"hook", "LEDhookControl":'volume', "LEDhookFunction":'NK2.muteLEDs', "LEDhookGroup":"[Master]"};
 
-//set common left button controls for S, M, and R modes (these controls can be overridden by resetting them later in the script)     
+//set common left button controls for S, M, and R modes (these controls can be overridden by resetting them later in the script)
 for (var j=1;j<4;j++){
     NK2.Controls[NK2.leftButton["rev"]][NK2.Banks[j]][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.binControlPress("default", "quantize");', "releaseEval":false, "LEDstateType":"hook", "LEDhookControl":'quantize', "LEDhookFunction":'NK2.binaryHookLEDs', "LEDhookGroup":"default"};
     NK2.Controls[NK2.leftButton["ff"]][NK2.Banks[j]][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.binControlPress("default", "keylock");', "releaseEval":false, "LEDstateType":"hook", "LEDhookControl":'keylock', "LEDhookFunction":'NK2.binaryHookLEDs', "LEDhookGroup":"default"};
@@ -1006,7 +1006,7 @@ for (var j=1;j<4;j++){
     NK2.Controls[NK2.leftButton["trdown"]][NK2.Banks[j]][NK2.MODcodes["0001"]]={"isset":true, "pressEval":'NK2.binControlPress("default", "rate_perm_down");', "releaseEval":'NK2.binControlRelease("default", "rate_perm_down");', "LEDstateType":"off"};
     NK2.Controls[NK2.leftButton["trup"]][NK2.Banks[j]][NK2.MODcodes["0001"]]={"isset":true, "pressEval":'NK2.binControlPress("default", "rate_perm_up");', "releaseEval":'NK2.binControlRelease("default", "rate_perm_up");', "LEDstateType":"off"};
     };
-    
+
 //NO BANK/TRACK SELECTED - bank select button off - set slip mode, mute and pfl buttons
 for (var i=1;i<9;i++){
     NK2.Controls[NK2.Sbutton[i]]["N"][0]={"isset":true, "pressEval":'NK2.binControlPress("'+NK2.Deck[i]+'", "slip_enabled");', "releaseEval":false, "LEDstateType":"hook", "LEDhookControl":'slip_enabled', "LEDhookFunction":'NK2.binaryHookLEDs', "LEDhookGroup":NK2.Deck[i]};
@@ -1172,7 +1172,7 @@ for (var i=2;i<9;i++){
     NK2.Controls[NK2.Rbutton[i]]["S"][NK2.MODcodes["1000"]]={"isset":true, "pressEval":false, "releaseEval":false, "LEDstateType":"off"};
     };
 
-//master VU meter - 
+//master VU meter -
 NK2.Controls[NK2.Sbutton[1]]["N"][NK2.MODcodes["0011"]]={"isset":true, "pressEval":false, "releaseEval":false, "LEDstateType":"hook", "LEDhookControl":'VuMeterL', "LEDhookFunction":'NK2.vuMeterL', "LEDhookGroup":"[Master]"};
 NK2.Controls[NK2.Mbutton[1]]["N"][NK2.MODcodes["0011"]]={"isset":true, "pressEval":'NK2.binControlPress("'+NK2.Deck[1]+'", "bpm_tap");', "releaseEval":false, "LEDstateType":"hook", "LEDhookControl":'VuMeterR', "LEDhookFunction":'NK2.vuMeterR', "LEDhookGroup":"[Master]"};
 
@@ -1185,7 +1185,7 @@ for (var i=2;i<9;i++){
 for (var i=1;i<9;i++){
     NK2.Controls[NK2.Rbutton[i]]["N"][NK2.MODcodes["0011"]]={"isset":true, "pressEval":'NK2.binControlPress("'+NK2.Deck[i]+'", "beatsync");', "releaseEval":'NK2.binControlPress("'+NK2.Deck[i]+'", "beatsync");', "LEDstateType":"hook", "LEDhookControl":'beat_active', "LEDhookFunction":'NK2.binaryHookLEDs', "LEDhookGroup":NK2.Deck[i]};
     };
-    
+
 //############# KNOBS
 //N mode
 NK2.Controls[NK2.Knob[1]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.wavezoomAll(value);', "LEDstateType":"off"};
@@ -1215,10 +1215,10 @@ NK2.Controls[NK2.Knob[8]]["R"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":
 //M mode - loop dial
 NK2.Controls[NK2.Knob[8]]["M"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.loopDial(value, "default");', "LEDstateType":"off"};
 
-};//end setup function 
+};//end setup function
 
 
 /*
 NOTES:
-* 
+*
 */

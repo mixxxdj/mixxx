@@ -28,6 +28,7 @@
 class PlayerInfo : public QObject {
     Q_OBJECT
   public:
+    static PlayerInfo& create();
     static PlayerInfo& instance();
     static void destroy();
     TrackPointer getTrackInfo(const QString& group);
