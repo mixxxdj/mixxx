@@ -160,7 +160,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
         qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
         return true;
     }
-    if (pBeats->findNextBeat(mixxx::FramePos(0)) <= mixxx::FramePos(0.0)) {
+    if (pBeats->findNextBeat(mixxx::FramePos(0)).getFramePosition() <= mixxx::FramePos(0.0)) {
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
         return true;
     }

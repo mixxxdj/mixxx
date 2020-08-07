@@ -51,9 +51,9 @@ class BeatsInternal {
     static const QString BEAT_GRID_1_VERSION;
     static const QString BEAT_GRID_2_VERSION;
     static const QString BEATS_VERSION;
-    FramePos findNthBeat(FramePos frame, int offset) const;
-    FramePos findNextBeat(FramePos frame) const;
-    FramePos findPrevBeat(FramePos frame) const;
+    Beat findNthBeat(FramePos frame, int offset) const;
+    Beat findNextBeat(FramePos frame) const;
+    Beat findPrevBeat(FramePos frame) const;
     Bpm getBpm() const;
     bool isValid() const;
     void setSampleRate(int sampleRate);
@@ -159,15 +159,15 @@ class Beats final : public QObject {
     // TODO: We may want to implement these with common code that returns
     //       the triple of closest, next, and prev.
 
-    /// Starting from frame, return the frame number of the next beat
-    /// in the track, or -1 if none exists. If frame refers to the location
-    /// of a beat, frame is returned.
-    FramePos findNextBeat(FramePos frame) const;
+    /// Starting from frame, return the next beat
+    /// in the track, or invalid beat if none exists. If frame refers to the location
+    /// of a beat, the same beat is returned.
+    Beat findNextBeat(FramePos frame) const;
 
-    /// Starting from frame frame, return the frame number of the previous
-    /// beat in the track, or -1 if none exists. If frame refers to the
-    /// location of beat, frame is returned.
-    FramePos findPrevBeat(FramePos frame) const;
+    /// Starting from frame frame, return the previous
+    /// beat in the track, or invalid beat if none exists. If frame refers to the
+    /// location of beat, the same beat is returned.
+    Beat findPrevBeat(FramePos frame) const;
 
     /// Starting from frame, fill the frame numbers of the previous beat
     /// and next beat.  Either can be -1 if none exists.  If frame refers
@@ -186,8 +186,8 @@ class Beats final : public QObject {
 
     /// Find the Nth beat from frame. Works with both positive and
     /// negative values of n. If frame refers to the location of a beat,
-    /// then frame is returned. If no beat can be found, returns -1.
-    FramePos findNthBeat(FramePos frame, int offset) const;
+    /// then the same beat is returned. If no beat can be found, returns kInvalidBeat.
+    Beat findNthBeat(FramePos frame, int offset) const;
 
     int numBeatsInRange(FramePos startFrame, FramePos endFrame);
 

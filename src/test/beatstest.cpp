@@ -88,17 +88,17 @@ TEST_F(BeatsTest, Scale) {
 TEST_F(BeatsTest, NthBeat) {
     // Check edge cases
     EXPECT_EQ(m_pBeats1->getLastBeatPosition(),
-            m_pBeats1->findNthBeat(m_pBeats1->getLastBeatPosition(), 1));
+            m_pBeats1->findNthBeat(m_pBeats1->getLastBeatPosition(), 1).getFramePosition());
     EXPECT_EQ(m_pBeats1->getLastBeatPosition(),
-            m_pBeats1->findNextBeat(m_pBeats1->getLastBeatPosition()));
+            m_pBeats1->findNextBeat(m_pBeats1->getLastBeatPosition()).getFramePosition());
     EXPECT_EQ(kInvalidFramePos,
-            m_pBeats1->findNthBeat(m_pBeats1->getLastBeatPosition(), 2));
+            m_pBeats1->findNthBeat(m_pBeats1->getLastBeatPosition(), 2).getFramePosition());
     EXPECT_EQ(m_pBeats1->getFirstBeatPosition(),
-            m_pBeats1->findNthBeat(m_pBeats1->getFirstBeatPosition(), -1));
+            m_pBeats1->findNthBeat(m_pBeats1->getFirstBeatPosition(), -1).getFramePosition());
     EXPECT_EQ(m_pBeats1->getFirstBeatPosition(),
-            m_pBeats1->findPrevBeat(m_pBeats1->getFirstBeatPosition()));
+            m_pBeats1->findPrevBeat(m_pBeats1->getFirstBeatPosition()).getFramePosition());
     EXPECT_EQ(kInvalidFramePos,
-            m_pBeats1->findNthBeat(m_pBeats1->getFirstBeatPosition(), -2));
+            m_pBeats1->findNthBeat(m_pBeats1->getFirstBeatPosition(), -2).getFramePosition());
 
     // TODO(JVC) Add some tests in the middle
 }
@@ -130,17 +130,17 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat) {
     FramePos position = m_startOffsetFrames + getBeatLengthFrames(m_bpm) * curBeat;
 
     // The spec dictates that a value of 0 is always invalid
-    EXPECT_EQ(kInvalidFramePos, m_pBeats1->findNthBeat(position, 0));
+    EXPECT_EQ(kInvalidFramePos, m_pBeats1->findNthBeat(position, 0).getFramePosition());
 
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < curBeat; ++i) {
         EXPECT_DOUBLE_EQ(
                 (position + getBeatLengthFrames(m_bpm) * (i - 1)).getValue(),
-                m_pBeats1->findNthBeat(position, i).getValue());
+                m_pBeats1->findNthBeat(position, i).getFramePosition().getValue());
         EXPECT_DOUBLE_EQ(
                 (position + getBeatLengthFrames(m_bpm) * (-i + 1)).getValue(),
-                m_pBeats1->findNthBeat(position, -i).getValue());
+                m_pBeats1->findNthBeat(position, -i).getFramePosition().getValue());
     }
 
     // Also test prev/next beat calculation.
@@ -150,8 +150,8 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat) {
     EXPECT_EQ(position + getBeatLengthFrames(m_bpm), nextBeat);
 
     // Both previous and next beat should return the current position.
-    EXPECT_EQ(position, m_pBeats1->findNextBeat(position));
-    EXPECT_EQ(position, m_pBeats1->findPrevBeat(position));
+    EXPECT_EQ(position, m_pBeats1->findNextBeat(position).getFramePosition());
+    EXPECT_EQ(position, m_pBeats1->findPrevBeat(position).getFramePosition());
 }
 
 TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
@@ -160,16 +160,16 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
     const FramePos kClosestBeat = m_startOffsetFrames + curBeat * getBeatLengthFrames(m_bpm);
     FramePos position = kClosestBeat - getBeatLengthFrames(m_bpm) * 0.005;
 
-    // The spec dictates that a value of 0 is always invalid and returns -1
-    EXPECT_EQ(kInvalidFramePos, m_pBeats1->findNthBeat(position, 0));
+    // The spec dictates that a value of 0 is always invalid and returns invalid beat.
+    EXPECT_EQ(kInvalidBeat, m_pBeats1->findNthBeat(position, 0));
 
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < curBeat; ++i) {
         EXPECT_DOUBLE_EQ((kClosestBeat + getBeatLengthFrames(m_bpm) * (i - 1)).getValue(),
-                m_pBeats1->findNthBeat(position, i).getValue());
+                m_pBeats1->findNthBeat(position, i).getFramePosition().getValue());
         EXPECT_DOUBLE_EQ((kClosestBeat + getBeatLengthFrames(m_bpm) * (-i + 1)).getValue(),
-                m_pBeats1->findNthBeat(position, -i).getValue());
+                m_pBeats1->findNthBeat(position, -i).getFramePosition().getValue());
     }
 
     // Also test prev/next beat calculation
@@ -179,8 +179,8 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
     EXPECT_EQ(kClosestBeat + getBeatLengthFrames(m_bpm), nextBeat);
 
     // Both previous and next beat should return the closest beat.
-    EXPECT_EQ(kClosestBeat, m_pBeats1->findNextBeat(position));
-    EXPECT_EQ(kClosestBeat, m_pBeats1->findPrevBeat(position));
+    EXPECT_EQ(kClosestBeat, m_pBeats1->findNextBeat(position).getFramePosition());
+    EXPECT_EQ(kClosestBeat, m_pBeats1->findPrevBeat(position).getFramePosition());
 }
 
 TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
@@ -191,7 +191,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
             kClosestBeat + getBeatLengthFrames(m_bpm) * 0.005;
 
     // The spec dictates that a value of 0 is always invalid
-    EXPECT_EQ(kInvalidFramePos, m_pBeats1->findNthBeat(position, 0));
+    EXPECT_EQ(kInvalidFramePos, m_pBeats1->findNthBeat(position, 0).getFramePosition());
 
     EXPECT_EQ(kClosestBeat, m_pBeats1->findClosestBeat(position));
 
@@ -200,10 +200,10 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
     for (int i = 1; i < curBeat; ++i) {
         EXPECT_DOUBLE_EQ(
                 (kClosestBeat + getBeatLengthFrames(m_bpm) * (i - 1)).getValue(),
-                m_pBeats1->findNthBeat(position, i).getValue());
+                m_pBeats1->findNthBeat(position, i).getFramePosition().getValue());
         EXPECT_DOUBLE_EQ(
                 (kClosestBeat + getBeatLengthFrames(m_bpm) * (-i + 1)).getValue(),
-                m_pBeats1->findNthBeat(position, -i).getValue());
+                m_pBeats1->findNthBeat(position, -i).getFramePosition().getValue());
     }
 
     // Also test prev/next beat calculation.
@@ -213,8 +213,8 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
     EXPECT_EQ(kClosestBeat + getBeatLengthFrames(m_bpm), nextBeat);
 
     // Both previous and next beat should return the closest beat.
-    EXPECT_EQ(kClosestBeat, m_pBeats1->findNextBeat(position));
-    EXPECT_EQ(kClosestBeat, m_pBeats1->findPrevBeat(position));
+    EXPECT_EQ(kClosestBeat, m_pBeats1->findNextBeat(position).getFramePosition());
+    EXPECT_EQ(kClosestBeat, m_pBeats1->findPrevBeat(position).getFramePosition());
 }
 
 TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
@@ -226,7 +226,7 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
     FramePos position = FramePos((previousBeat.getValue() + nextBeat.getValue()) / 2);
 
     // The spec dictates that a value of 0 is always invalid
-    EXPECT_EQ(kInvalidFramePos, m_pBeats1->findNthBeat(position, 0));
+    EXPECT_EQ(kInvalidFramePos, m_pBeats1->findNthBeat(position, 0).getFramePosition());
 
     // findNthBeat should return multiples of beats starting from the next or
     // previous beat, depending on whether N is positive or negative.
@@ -234,11 +234,11 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
         EXPECT_DOUBLE_EQ(
                 (nextBeat + getBeatLengthFrames(m_bpm) * (i - 1))
                         .getValue(),
-                m_pBeats1->findNthBeat(position, i).getValue());
+                m_pBeats1->findNthBeat(position, i).getFramePosition().getValue());
         EXPECT_DOUBLE_EQ(
                 (previousBeat - getBeatLengthFrames(m_bpm) * (i - 1))
                         .getValue(),
-                m_pBeats1->findNthBeat(position, -i).getValue());
+                m_pBeats1->findNthBeat(position, -i).getFramePosition().getValue());
     }
 
     // Also test prev/next beat calculation

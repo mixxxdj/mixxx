@@ -77,6 +77,21 @@ inline bool operator>(Beat beat1, Beat beat2) {
     return beat1.getFramePosition() > beat2.getFramePosition();
 }
 
+inline bool operator==(Beat beat1, Beat beat2) {
+    return beat1.getFramePosition() == beat2.getFramePosition() &&
+            beat1.getBeatIndex() == beat2.getBeatIndex() &&
+            beat1.hasMarker() == beat2.hasMarker() &&
+            beat1.getBarIndex() == beat2.getBarIndex() &&
+            beat1.getBarRelativeBeatIndex() ==
+            beat2.getBarRelativeBeatIndex() &&
+            beat1.getType() == beat2.getType() &&
+            beat1.getTimeSignature() == beat2.getTimeSignature();
+}
+
+inline bool operator!=(Beat beat1, Beat beat2) {
+    return !(beat1 == beat2);
+}
+
 inline QDebug operator<<(QDebug dbg, Beat beat) {
     dbg << "[ Position:" << beat.getFramePosition()
         << " | Signature:" << beat.getTimeSignature()
@@ -86,7 +101,5 @@ inline QDebug operator<<(QDebug dbg, Beat beat) {
     return dbg;
 }
 
-//
-//bool operator<(const Beat& beat1, const Beat& beat2) {
-//}
+const Beat kInvalidBeat = Beat(kInvalidFramePos);
 }; // namespace mixxx
