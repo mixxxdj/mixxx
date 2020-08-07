@@ -1,28 +1,13 @@
-#include <gtest/gtest.h>
+#include "macros_test.h"
 
 #include <QtConcurrent>
-
-#include "macros/macrorecorder.h"
-#include "signalpathtest.h"
-
-namespace {
-const QString kConfigGroup = QStringLiteral("[MacroRecording]");
-
-const MacroAction s_action(500, 15);
-void checkRecordedAction(MacroRecorder* recorder, MacroAction action = s_action) {
-    EXPECT_EQ(recorder->getRecordingSize(), 1);
-    auto recordedAction = recorder->fetchRecordedActions().first();
-    EXPECT_EQ(recordedAction.position, action.position);
-    EXPECT_EQ(recordedAction.target, action.target);
-}
-}
 
 TEST(MacrosTest, SerializeMacroActions) {
     QVector<MacroAction> actions;
     actions.append(MacroAction(0, 1));
     ASSERT_EQ(actions.length(), 1);
 
-    QString filename(QDir::currentPath() % "/src/test/macro_proto");
+    QString filename(QDir::currentPath() % "/src/test/macros/macro_proto");
     ASSERT_TRUE(QFile::exists(filename));
     QFile file(filename);
     file.open(QIODevice::OpenModeFlag::ReadOnly);
@@ -88,58 +73,4 @@ TEST(MacroRecordingTest, RecordingToggleControl) {
     ControlObject::toggle(
             ConfigKey(kConfigGroup, "recording_toggle"));
     ASSERT_EQ(recorder.isRecordingActive(), false);
-}
-
-// Integration Tests
-
-class MacroRecorderTest : public SignalPathTest {
-  public:
-    MacroRecorderTest()
-            : SignalPathTest(new MacroRecorder()) {
-    }
-
-    void checkRecordedAction(MacroAction action = s_action) {
-        return ::checkRecordedAction(m_pMacroRecorder, action);
-    }
-};
-
-TEST_F(MacroRecorderTest, RecordSeek) {
-    ControlObject::toggle(
-            ConfigKey(kConfigGroup, "recording_toggle"));
-    ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
-    EXPECT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
-            MacroRecorder::Status::Armed);
-
-    m_pChannel1->getEngineBuffer()->slotControlSeekExact(
-            s_action.position * mixxx::kEngineChannelCount);
-    ProcessBuffer();
-    EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 0);
-
-    m_pChannel1->getEngineBuffer()->slotControlSeekAbs(
-            s_action.target * mixxx::kEngineChannelCount);
-    ProcessBuffer();
-    checkRecordedAction();
-}
-
-TEST_F(MacroRecorderTest, RecordHotcueActivation) {
-    MacroAction action(100, 0);
-    ControlObject::toggle(ConfigKey(kConfigGroup, "recording_toggle"));
-    ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
-
-    // Place hotcue 1 at position 0
-    ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
-
-    ProcessBuffer();
-    m_pChannel1->getEngineBuffer()->slotControlSeekExact(
-            action.position * mixxx::kEngineChannelCount);
-    ProcessBuffer();
-    EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 0);
-
-    ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
-    ProcessBuffer();
-    checkRecordedAction(action);
-
-    // Eject track and check that recording was stopped
-    m_pChannel1->getEngineBuffer()->slotEjectTrack(1);
-    EXPECT_EQ(m_pMacroRecorder->isRecordingActive(), false);
 }

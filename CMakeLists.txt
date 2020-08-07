@@ -1272,8 +1272,9 @@ add_executable(mixxx-test
   src/test/libraryscannertest.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
-  src/test/macrodao_test.cpp
-  src/test/macros_test.cpp
+  src/test/macros/macrodao_test.cpp
+  src/test/macros/macrorecorder_test.cpp
+  src/test/macros/macros_test.cpp
   src/test/main.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp
