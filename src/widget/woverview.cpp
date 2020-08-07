@@ -573,6 +573,8 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackBackground(&painter);
         drawAxis(&painter);
         drawWaveformPixmap(&painter);
+        drawPlayedOverlay(&painter);
+        drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
 
@@ -643,16 +645,24 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         }
 
         pPainter->drawImage(rect(), m_waveformImageScaled);
+    }
+}
 
-        // Overlay the played part of the overview-waveform with a skin defined color
-        if (m_playedOverlayColor.alpha() > 0) {
-            if (m_orientation == Qt::Vertical) {
-                pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPlayPos, m_playedOverlayColor);
-            } else {
-                pPainter->fillRect(0, 0, m_iPlayPos, m_waveformImageScaled.height(), m_playedOverlayColor);
-            }
+void WOverview::drawPlayedOverlay(QPainter* pPainter) {
+    // Overlay the played part of the overview-waveform with a skin defined color
+    if (!m_waveformSourceImage.isNull() && m_playedOverlayColor.alpha() > 0) {
+        if (m_orientation == Qt::Vertical) {
+            pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPlayPos, m_playedOverlayColor);
+        } else {
+            pPainter->fillRect(0, 0, m_iPlayPos, m_waveformImageScaled.height(), m_playedOverlayColor);
         }
     }
+}
+
+void WOverview::drawPlayPosition(QPainter* pPainter) {
+    // When the position line is currently dragged with the left mouse button
+    // draw a thin line -without triangles or shadow- at the playposition.
+    // The new playposition is drawn by drawPickupPosition()
     if (m_bLeftClickDragging) {
         PainterScope painterScope(pPainter);
         QLineF line;
