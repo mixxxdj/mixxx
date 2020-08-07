@@ -116,9 +116,6 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
 
     while (m_currentVersion < targetVersion) {
         int nextVersion = m_currentVersion + 1;
-
-        // With the packaged schema.xml it is an error if it does not have
-        // information on how to get all the way to targetVersion.
         VERIFY_OR_DEBUG_ASSERT(revisionMap.contains(nextVersion)) {
             kLogger.critical()
                      << "Migration path for upgrading database schema"
