@@ -740,11 +740,11 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
         PainterScope painterScope(pPainter);
 
         if (markRange.enabled()) {
-            pPainter->setOpacity(0.4);
+            pPainter->setOpacity(markRange.m_enabledOpacity);
             pPainter->setPen(markRange.m_activeColor);
             pPainter->setBrush(markRange.m_activeColor);
         } else {
-            pPainter->setOpacity(0.2);
+            pPainter->setOpacity(markRange.m_disabledOpacity);
             pPainter->setPen(markRange.m_disabledColor);
             pPainter->setBrush(markRange.m_disabledColor);
         }

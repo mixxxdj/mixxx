@@ -60,6 +60,8 @@ class WaveformMarkRange {
 
     QColor m_activeColor;
     QColor m_disabledColor;
+    double m_enabledOpacity;
+    double m_disabledOpacity;
     QColor m_durationTextColor;
 
     QImage m_activeImage;
