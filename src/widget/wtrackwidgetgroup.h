@@ -42,7 +42,7 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
     void updateColor();
 
     const QString m_group;
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QColor m_trackColor;
     int m_trackColorAlpha;

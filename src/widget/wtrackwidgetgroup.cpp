@@ -103,7 +103,7 @@ void WTrackWidgetGroup::paintEvent(QPaintEvent* pe) {
 }
 
 void WTrackWidgetGroup::mouseMoveEvent(QMouseEvent* event) {
-    if ((event->buttons().testFlag(Qt::LeftButton)) && m_pCurrentTrack) {
+    if (event->buttons().testFlag(Qt::LeftButton) && m_pCurrentTrack) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
