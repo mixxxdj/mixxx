@@ -789,16 +789,18 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 static_cast<qreal>(width()));
         pMark->m_linePosition = markPosition;
 
-        QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
-
         QLineF line;
+        QLineF bgLine;
         if (m_orientation == Qt::Horizontal) {
             line.setLine(markPosition, 0.0, markPosition, height());
+            bgLine.setLine(markPosition - 1.0, 0.0, markPosition - 1.0, height());
         } else {
             line.setLine(0.0, markPosition, width(), markPosition);
+            bgLine.setLine(0.0, markPosition - 1.0, width(), markPosition - 1.0);
         }
-        pPainter->setPen(shadowPen);
-        pPainter->drawLine(line);
+
+        pPainter->setPen(pMark->borderColor());
+        pPainter->drawLine(bgLine);
 
         pPainter->setPen(pMark->fillColor());
         pPainter->drawLine(line);
