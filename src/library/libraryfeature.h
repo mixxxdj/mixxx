@@ -6,6 +6,7 @@
 
 #include <QtDebug>
 #include <QIcon>
+#include <QList>
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
@@ -20,20 +21,19 @@
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 
-class TrackModel;
-class WLibrarySidebar;
-class WLibrary;
 class KeyboardEventFilter;
+class Library;
+class TrackModel;
+class WLibrary;
+class WLibrarySidebar;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
   Q_OBJECT
   public:
-    explicit LibraryFeature(
-          QObject* parent = nullptr);
-    explicit LibraryFeature(
-            UserSettingsPointer pConfig,
-            QObject* parent = nullptr);
+    LibraryFeature(
+            Library* pLibrary,
+            UserSettingsPointer pConfig);
     ~LibraryFeature() override = default;
 
     virtual QVariant title() = 0;
@@ -83,7 +83,10 @@ class LibraryFeature : public QObject {
             return playListFiles.first();
         }
     }
-    UserSettingsPointer m_pConfig;
+
+    Library* const m_pLibrary;
+
+    const UserSettingsPointer m_pConfig;
 
   public slots:
     // called when you single click on the root item
@@ -124,7 +127,15 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
 
-  private: 
+  protected:
+    // TODO: Move common crate/playlist functions into
+    // a separate base class
+    static bool exportPlaylistItemsIntoFile(
+            QString playlistFilePath,
+            const QList<QString>& playlistItemLocations,
+            bool useRelativePath);
+
+  private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 };
 

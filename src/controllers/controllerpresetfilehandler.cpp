@@ -1,10 +1,7 @@
-/**
-* @file controllerpresetfilehandler.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Mon 9 Apr 2012
-* @brief Handles loading and saving of Controller presets.
-*
-*/
+/// @file controllerpresetfilehandler.cpp
+/// @author Sean Pappalardo spappalardo@mixxx.org
+/// @date Mon 9 Apr 2012
+/// @brief Handles loading and saving of Controller presets.
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllermanager.h"
@@ -12,63 +9,75 @@
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
+namespace {
+
+/// Find script file in the preset or system path.
+///
+/// @param preset The controller preset the script belongs to.
+/// @param filename The script filename.
+/// @param systemPresetsPath The system presets path to use as fallback.
+/// @return Returns a QFileInfo object. If the script was not found in either
+/// of the search directories, the QFileInfo object might point to a
+/// non-existing file.
+QFileInfo findScriptFile(ControllerPreset* preset,
+        const QString& filename,
+        const QDir& systemPresetsPath) {
+    // Always try to load script from the mapping's directory first
+    QFileInfo file = QFileInfo(preset->dirPath().absoluteFilePath(filename));
+
+    // If the script does not exist, try to find it in the fallback dir
+    if (!file.exists()) {
+        file = QFileInfo(systemPresetsPath.absoluteFilePath(filename));
+    }
+    return file;
+}
+
+} // namespace
+
 // static
-ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& pathOrFilename,
-                                                                const QStringList& presetPaths) {
-    qDebug() << "Searching for controller preset" << pathOrFilename
-             << "in paths:" << presetPaths.join(",");
-    QString scriptPath = ControllerManager::getAbsolutePath(pathOrFilename,
-                                                            presetPaths);
-
-    if (scriptPath.isEmpty()) {
-        qDebug() << "Could not find" << pathOrFilename
-                 << "in any preset path.";
+ControllerPresetPointer ControllerPresetFileHandler::loadPreset(
+        const QFileInfo& presetFile, const QDir& systemPresetsPath) {
+    if (!presetFile.exists() || !presetFile.isReadable()) {
+        qDebug() << "Preset" << presetFile.absoluteFilePath()
+                 << "does not exist or is unreadable.";
         return ControllerPresetPointer();
     }
 
-    QFileInfo scriptPathInfo(scriptPath);
-    if (!scriptPathInfo.exists() || !scriptPathInfo.isReadable()) {
-        qDebug() << "Preset" << scriptPath << "does not exist or is unreadable.";
-        return ControllerPresetPointer();
-    }
-
-    // TODO(XXX): This means filenames can't have .foo.midi.xml filenames. We
-    // should regex match against the end.
-    // NOTE(rryan): We prepend a dot because all the XXX_PRESET_EXTENSION
-    // defines include the dot.
-    QString extension = "." + scriptPathInfo.completeSuffix();
-
-    ControllerPresetFileHandler* pHandler = NULL;
-    if (scriptPath.endsWith(MIDI_PRESET_EXTENSION, Qt::CaseInsensitive)) {
+    ControllerPresetFileHandler* pHandler = nullptr;
+    if (presetFile.fileName().endsWith(
+                MIDI_PRESET_EXTENSION, Qt::CaseInsensitive)) {
         pHandler = new MidiControllerPresetFileHandler();
-    } else if (scriptPath.endsWith(HID_PRESET_EXTENSION, Qt::CaseInsensitive) ||
-               scriptPath.endsWith(BULK_PRESET_EXTENSION, Qt::CaseInsensitive)) {
+    } else if (presetFile.fileName().endsWith(
+                       HID_PRESET_EXTENSION, Qt::CaseInsensitive) ||
+            presetFile.fileName().endsWith(
+                    BULK_PRESET_EXTENSION, Qt::CaseInsensitive)) {
         pHandler = new HidControllerPresetFileHandler();
     }
 
-    if (pHandler == NULL) {
-        qDebug() << "Preset" << scriptPath << "has an unrecognized extension.";
+    if (pHandler == nullptr) {
+        qDebug() << "Preset" << presetFile.absoluteFilePath()
+                 << "has an unrecognized extension.";
         return ControllerPresetPointer();
     }
 
-    // NOTE(rryan): We don't provide a device name. It's unused currently.
-    // TODO(rryan): Delete pHandler.
-    return pHandler->load(scriptPath, QString());
-}
-
-ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
-                                                          const QString deviceName) {
-    qDebug() << "Loading controller preset from" << path;
-    ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
-                                           deviceName);
+    ControllerPresetPointer pPreset = pHandler->load(
+            presetFile.absoluteFilePath(), systemPresetsPath);
     if (pPreset) {
-        pPreset->setFilePath(path);
+        pPreset->setDirty(false);
     }
     return pPreset;
 }
 
-void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
-                                                  ControllerPreset* preset) const {
+ControllerPresetPointer ControllerPresetFileHandler::load(
+        const QString& path, const QDir& systemPresetsPath) {
+    qDebug() << "Loading controller preset from" << path;
+    ControllerPresetPointer pPreset = load(
+            XmlParse::openXMLFile(path, "controller"), path, systemPresetsPath);
+    return pPreset;
+}
+
+void ControllerPresetFileHandler::parsePresetInfo(
+        const QDomElement& root, ControllerPreset* preset) const {
     if (root.isNull() || !preset) {
         return;
     }
@@ -94,9 +103,8 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
     preset->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }
 
-QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
-                                                           const QString deviceName) {
-    Q_UNUSED(deviceName);
+QDomElement ControllerPresetFileHandler::getControllerNode(
+        const QDomElement& root) {
     if (root.isNull()) {
         return QDomElement();
     }
@@ -108,7 +116,9 @@ QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& ro
 }
 
 void ControllerPresetFileHandler::addScriptFilesToPreset(
-    const QDomElement& controller, ControllerPreset* preset) const {
+        const QDomElement& controller,
+        ControllerPreset* preset,
+        const QDir& systemPresetsPath) const {
     if (controller.isNull())
         return;
 
@@ -117,22 +127,41 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
 
     // Build a list of script files to load
     QDomElement scriptFile = controller.firstChildElement("scriptfiles")
-            .firstChildElement("file");
+                                     .firstChildElement("file");
 
     // Default currently required file
-    preset->addScriptFile(REQUIRED_SCRIPT_FILE, "", true);
+    preset->addScriptFile(REQUIRED_SCRIPT_FILE,
+            "",
+            findScriptFile(preset, REQUIRED_SCRIPT_FILE, systemPresetsPath),
+            true);
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
-        QString functionPrefix = scriptFile.attribute("functionprefix","");
-        QString filename = scriptFile.attribute("filename","");
-        preset->addScriptFile(filename, functionPrefix);
+        QString functionPrefix = scriptFile.attribute("functionprefix", "");
+        QString filename = scriptFile.attribute("filename", "");
+        QFileInfo file = findScriptFile(preset, filename, systemPresetsPath);
+
+        preset->addScriptFile(filename, functionPrefix, file);
         scriptFile = scriptFile.nextSiblingElement("file");
     }
+
+    QString moduleFileName = controller.firstChildElement("module").text();
+
+    if (moduleFileName.isEmpty()) {
+        return;
+    }
+
+    QFileInfo moduleFileInfo(preset->dirPath().absoluteFilePath(moduleFileName));
+    if (!moduleFileInfo.isFile()) {
+        qWarning() << "Controller Module is not a file:" << moduleFileInfo.absoluteFilePath();
+        return;
+    }
+
+    preset->setModuleFileInfo(moduleFileInfo);
 }
 
-bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
-                                                const QString fileName) const {
+bool ControllerPresetFileHandler::writeDocument(
+        QDomDocument root, const QString fileName) const {
     // Need to do this on Windows
     QDir directory;
     if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
@@ -156,16 +185,18 @@ bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
     return true;
 }
 
-void addTextTag(QDomDocument& doc, QDomElement& holder,
-                QString tagName, QString tagText) {
+void addTextTag(QDomDocument& doc,
+        QDomElement& holder,
+        QString tagName,
+        QString tagText) {
     QDomElement tag = doc.createElement(tagName);
     QDomText textNode = doc.createTextNode(tagText);
     tag.appendChild(textNode);
     holder.appendChild(tag);
 }
 
-QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerPreset& preset,
-                                                               const QString deviceName) const {
+QDomDocument ControllerPresetFileHandler::buildRootWithScripts(
+        const ControllerPreset& preset) const {
     QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
         "<MixxxControllerPreset>\n"
@@ -196,13 +227,13 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
 
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
-    controller.setAttribute("id", rootDeviceName(deviceName));
+    controller.setAttribute("id", rootDeviceName(preset.deviceId()));
     rootNode.appendChild(controller);
 
     QDomElement scriptFiles = doc.createElement("scriptfiles");
     controller.appendChild(scriptFiles);
 
-    foreach (const ControllerPreset::ScriptFileInfo& script, preset.scripts) {
+    for (const ControllerPreset::ScriptFileInfo& script : preset.getScriptFiles()) {
         QString filename = script.name;
         // Don't need to write anything for built-in files.
         if (script.builtin) {

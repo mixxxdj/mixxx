@@ -26,9 +26,6 @@ Battery::Battery(QObject* parent)
     m_timer.start(mixxx::Duration::fromMillis(kiUpdateInterval));
 }
 
-Battery::~Battery() {
-}
-
 Battery* Battery::getBattery(QObject* parent) {
 #ifdef __BATTERY__
 #if defined(Q_OS_WIN)
@@ -53,6 +50,6 @@ void Battery::update() {
     if (fabs(lastPercentage - m_dPercentage) > kPercentageEpsilon ||
         lastChargingState != m_chargingState ||
         lastMinutesLeft != m_iMinutesLeft) {
-        emit(stateChanged());
+        emit stateChanged();
     }
 }

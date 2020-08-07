@@ -25,7 +25,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
         return;
     }
 
-    QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().toList();
+    QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().values();
     // Display them alphabetically
     std::sort(allPlugins.begin(), allPlugins.end());
 
@@ -109,6 +109,16 @@ void DlgPrefLV2::slotDisplayParameters() {
         m_iCheckedParameters = 0;
     }
     lv2_vertical_layout_params->addStretch();
+}
+
+void DlgPrefLV2::slotUpdate() {
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
+}
+
+void DlgPrefLV2::slotResetToDefaults() {
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
 }
 
 void DlgPrefLV2::slotApply() {

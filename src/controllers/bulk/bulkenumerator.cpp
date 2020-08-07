@@ -11,9 +11,10 @@
 #include "controllers/bulk/bulkenumerator.h"
 #include "controllers/bulk/bulksupported.h"
 
-BulkEnumerator::BulkEnumerator()
+BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
         : ControllerEnumerator(),
-          m_context(NULL) {
+          m_context(nullptr),
+          m_pConfig(pConfig) {
     libusb_init(&m_context);
 }
 
@@ -55,7 +56,8 @@ QList<Controller*> BulkEnumerator::queryDevices() {
                 continue;
             }
 
-            BulkController* currentDevice = new BulkController(m_context, handle, &desc);
+            BulkController* currentDevice =
+                    new BulkController(m_context, handle, &desc);
             m_devices.push_back(currentDevice);
         }
     }

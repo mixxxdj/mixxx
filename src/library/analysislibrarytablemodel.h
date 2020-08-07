@@ -1,20 +1,17 @@
-#ifndef ANALYSISLIBRARYTABLEMODEL_H_
-#define ANALYSISLIBRARYTABLEMODEL_H_
+#pragma once
 
-#include <QModelIndexList>
-#include "librarytablemodel.h"
+#include "library/librarytablemodel.h"
 
 class AnalysisLibraryTableModel : public LibraryTableModel
 {
     Q_OBJECT
   public:
-    AnalysisLibraryTableModel(QObject* parent,
-                             TrackCollection* pTrackCollection);
-    virtual ~AnalysisLibraryTableModel();
+    AnalysisLibraryTableModel(
+            QObject* parent,
+            TrackCollectionManager* pTrackCollectionManager);
+    ~AnalysisLibraryTableModel() override = default;
 
   public slots:
     void showRecentSongs();
     void showAllSongs();
 };
-
-#endif

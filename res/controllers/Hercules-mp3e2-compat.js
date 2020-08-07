@@ -21,7 +21,7 @@ MP3e2.incomingData = function(data, length) {
         var f = null;
 
         if (status == 0xb0) {
-            if ((midino > 0x38) || 
+            if ((midino > 0x38) ||
                 ((midino < 0x34) && (midino & 1))) {
                 group = c2;
             } else {

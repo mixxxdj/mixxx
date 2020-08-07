@@ -27,6 +27,7 @@
 
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title(Version::applicationName()),
+          m_detailsUseMonospaceFont(false),
           m_modal(true),
           m_shouldQuit(false),
           m_type(DLG_NONE),
@@ -75,11 +76,7 @@ void ErrorDialogHandler::setEnabled(bool enabled) {
     s_bEnabled = enabled;
 }
 
-ErrorDialogHandler::ErrorDialogHandler()
-        : m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(QString)),
-            this, SLOT(boxClosed(QString)));
-
+ErrorDialogHandler::ErrorDialogHandler() {
     m_errorCondition = false;
     connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)),
             this, SLOT(errorDialog(ErrorDialogProperties*)));
@@ -140,7 +137,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
         return false;
     }
 
-    emit(showErrorDialog(props));
+    emit showErrorDialog(props);
     return true;
 }
 
@@ -156,26 +153,29 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         return;
     }
 
-    QMessageBox* msgBox = new QMessageBox();
-    msgBox->setIcon(props->m_icon);
-    msgBox->setWindowTitle(props->m_title);
-    msgBox->setText(props->m_text);
+    QMessageBox* pMsgBox = new QMessageBox();
+    pMsgBox->setIcon(props->m_icon);
+    pMsgBox->setWindowTitle(props->m_title);
+    pMsgBox->setText(props->m_text);
     if (!props->m_infoText.isEmpty()) {
-        msgBox->setInformativeText(props->m_infoText);
+        pMsgBox->setInformativeText(props->m_infoText);
     }
     if (!props->m_details.isEmpty()) {
-        msgBox->setDetailedText(props->m_details);
+        pMsgBox->setDetailedText(props->m_details);
+        if (props->m_detailsUseMonospaceFont) {
+            pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+        }
     }
 
     while (!props->m_buttons.isEmpty()) {
-        msgBox->addButton(props->m_buttons.takeFirst());
+        pMsgBox->addButton(props->m_buttons.takeFirst());
     }
-    msgBox->setDefaultButton(props->m_defaultButton);
-    msgBox->setEscapeButton(props->m_escapeButton);
-    msgBox->setModal(props->m_modal);
+    pMsgBox->setDefaultButton(props->m_defaultButton);
+    pMsgBox->setEscapeButton(props->m_escapeButton);
+    pMsgBox->setModal(props->m_modal);
 
     // This deletes the msgBox automatically, avoiding a memory leak
-    msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+    pMsgBox->setAttribute(Qt::WA_DeleteOnClose, true);
 
     QMutexLocker locker(&m_mutex);
     // To avoid duplicate dialogs on the same error
@@ -183,17 +183,19 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
-    connect(msgBox, SIGNAL(finished(int)),
-            &m_signalMapper, SLOT(map()));
-    m_signalMapper.setMapping(msgBox, props->m_key);
+    QString key = props->m_key;
+    connect(pMsgBox,
+            &QMessageBox::finished,
+            this,
+            [this, key, pMsgBox] { boxClosed(key, pMsgBox); });
 
     locker.unlock();
 
     if (props->m_modal) {
         // Blocks so the user has a chance to read it before application exit
-        msgBox->exec();
+        pMsgBox->exec();
     } else {
-        msgBox->show();
+        pMsgBox->show();
     }
 
     // If critical/fatal, gracefully exit application if possible
@@ -212,13 +214,12 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
 }
 
-void ErrorDialogHandler::boxClosed(QString key) {
+void ErrorDialogHandler::boxClosed(QString key, QMessageBox* msgBox) {
     QMutexLocker locker(&m_mutex);
-    QMessageBox* msgBox = (QMessageBox*)m_signalMapper.mapping(key);
     locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
-    emit(stdButtonClicked(key, whichStdButton));
+    emit stdButtonClicked(key, whichStdButton);
 
     // If the user clicks "Ignore," we leave the key in the list so the same
     // error is not displayed again for the duration of the session

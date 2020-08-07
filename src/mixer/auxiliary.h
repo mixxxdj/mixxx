@@ -5,7 +5,9 @@
 #include <QString>
 
 #include "mixer/baseplayer.h"
+#include "util/parented_ptr.h"
 
+class ControlProxy;
 class EffectsManager;
 class EngineMaster;
 class SoundManager;
@@ -19,7 +21,17 @@ class Auxiliary : public BasePlayer {
               SoundManager* pSoundManager,
               EngineMaster* pMixingEngine,
               EffectsManager* pEffectsManager);
-    virtual ~Auxiliary();
+    ~Auxiliary() override;
+
+  signals:
+    void noAuxiliaryInputConfigured();
+
+  private slots:
+    void slotAuxMasterEnabled(double v);
+
+  private:
+    parented_ptr<ControlProxy> m_pInputConfigured;
+    parented_ptr<ControlProxy> m_pAuxMasterEnabled;
 };
 
 #endif /* MIXER_AUXILIARY_H */

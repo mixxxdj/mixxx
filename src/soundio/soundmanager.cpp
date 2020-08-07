@@ -254,7 +254,7 @@ void SoundManager::queryDevices() {
     queryDevicesMixxx();
 
     // now tell the prefs that we updated the device list -- bkgood
-    emit(devicesUpdated());
+    emit devicesUpdated();
 }
 
 void SoundManager::clearAndQueryDevices() {
@@ -387,7 +387,7 @@ SoundDeviceError SoundManager::setupDevices() {
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
             err = pDevice->addInput(aib);
             if (err != SOUNDDEVICE_ERROR_OK) {
-                delete [] aib.getBuffer();
+                SampleUtil::free(aib.getBuffer());
                 goto closeAndError;
             }
 
@@ -506,7 +506,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
     // returns OK if we were able to open all the devices the user wanted
     if (devicesNotFound.isEmpty()) {
-        emit(devicesSetup());
+        emit devicesSetup();
         return SOUNDDEVICE_ERROR_OK;
     }
     m_pErrorDevice = SoundDevicePointer(
@@ -635,7 +635,7 @@ void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
         qDebug() << "WARNING: AudioOutput already registered!";
     }
     m_registeredSources.insert(output, src);
-    emit(outputRegistered(output, src));
+    emit outputRegistered(output, src);
 }
 
 void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
@@ -645,9 +645,9 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
         qDebug() << "WARNING: AudioInput already registered!";
     }
 
-    m_registeredDestinations.insertMulti(input, dest);
+    m_registeredDestinations.insert(input, dest);
 
-    emit(inputRegistered(input, dest));
+    emit inputRegistered(input, dest);
 }
 
 QList<AudioOutput> SoundManager::registeredOutputs() const {
@@ -682,6 +682,10 @@ void SoundManager::setJACKName() const {
 }
 
 void SoundManager::setConfiguredDeckCount(int count) {
+    if (getConfiguredDeckCount() == count) {
+        // Unchanged
+        return;
+    }
     m_config.setDeckCount(count);
     checkConfig();
     m_config.writeToDisk();
@@ -693,7 +697,7 @@ int SoundManager::getConfiguredDeckCount() const {
 
 void SoundManager::processUnderflowHappened() {
     if (m_underflowUpdateCount == 0) {
-        if (m_underflowHappened.load()) {
+        if (atomicLoadRelaxed(m_underflowHappened)) {
             m_pMasterAudioLatencyOverload->set(1.0);
             m_pMasterAudioLatencyOverloadCount->set(
                     m_pMasterAudioLatencyOverloadCount->get() + 1);

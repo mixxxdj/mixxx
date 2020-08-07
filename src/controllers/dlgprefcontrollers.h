@@ -1,8 +1,6 @@
-#ifndef DLGPREFCONTROLLERS_H
-#define DLGPREFCONTROLLERS_H
+#pragma once
 
 #include <QTreeWidgetItem>
-#include <QSignalMapper>
 
 #include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
@@ -11,6 +9,10 @@
 class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
+
+/// Controllers Overview in the preferences
+///
+/// This dialog allows selecting controllers for configuration.
 
 class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControllersDlg {
     Q_OBJECT
@@ -22,20 +24,26 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     virtual ~DlgPrefControllers();
 
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
+    QUrl helpUrl() const override;
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotCancel();
+    /// Called when the preference dialog (not this page) is shown to the user.
+    void slotUpdate() override;
+    /// Called when the user clicks the global "Apply" button.
+    void slotApply() override;
+    /// Called when the user clicks the global "Cancel" button.
+    void slotCancel() override;
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults() override;
 
   private slots:
     void rescanControllers();
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
-    void slotOpenLocalFile(const QString& file);
 
   private:
     void destroyControllerWidgets();
     void setupControllerWidgets();
+    void openLocalFile(const QString& file);
 
     DlgPreferences* m_pDlgPreferences;
     UserSettingsPointer m_pConfig;
@@ -43,7 +51,4 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<DlgPrefController*> m_controllerWindows;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
-    QSignalMapper m_buttonMapper;
 };
-
-#endif /* DLGPREFCONTROLLERS_H */

@@ -1,8 +1,80 @@
 #include "track/trackmetadata.h"
 
+#include "audio/streaminfo.h"
+#include "util/logger.h"
+
 namespace mixxx {
 
+namespace {
+
+const Logger kLogger("TrackMetadata");
+
+} // anonymous namespace
+
 /*static*/ constexpr int TrackMetadata::kCalendarYearInvalid;
+
+bool TrackMetadata::updateAudioPropertiesFromStream(
+        const audio::StreamInfo& streamInfo) {
+    bool changed = false;
+    const auto streamChannelCount =
+            streamInfo.getSignalInfo().getChannelCount();
+    if (streamChannelCount.isValid() &&
+        streamChannelCount != getChannelCount()) {
+        if (getChannelCount().isValid()) {
+            kLogger.debug()
+                    << "Modifying channel count:"
+                    << getChannelCount()
+                    << "->"
+                    << streamChannelCount;
+        }
+        setChannelCount(streamChannelCount);
+        changed = true;
+    }
+    const auto streamSampleRate =
+            streamInfo.getSignalInfo().getSampleRate();
+    if (streamSampleRate.isValid() &&
+        streamSampleRate != getSampleRate()) {
+        if (getSampleRate().isValid()) {
+            kLogger.debug()
+                    << "Modifying sample rate:"
+                    << getSampleRate()
+                    << "->"
+                    << streamSampleRate;
+        }
+        setSampleRate(streamSampleRate);
+        changed = true;
+    }
+    const auto streamBitrate =
+            streamInfo.getBitrate();
+    if (streamBitrate.isValid() &&
+        streamBitrate != getBitrate()) {
+        if (getBitrate().isValid()) {
+            kLogger.debug()
+                    << "Modifying bitrate:"
+                    << getBitrate()
+                    << "->"
+                    << streamBitrate;
+        }
+        setBitrate(streamBitrate);
+        changed = true;
+    }
+    const auto streamDuration =
+            streamInfo.getDuration();
+    if (streamDuration > Duration::empty() &&
+        streamDuration != getDuration()) {
+        if (getDuration() > Duration::empty()) {
+            kLogger.debug()
+                    << "Modifying duration:"
+                    << getDuration()
+                    << "->"
+                    << streamDuration;
+        }
+        setDuration(streamDuration);
+        changed = true;
+    }
+    return changed;
+}
+
 
 int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     const QDateTime dateTime(parseDateTime(year));
@@ -66,25 +138,41 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
+void TrackMetadata::normalizeBeforeExport() {
+    m_albumInfo.normalizeBeforeExport();
+    m_trackInfo.normalizeBeforeExport();
+}
+
+bool TrackMetadata::anyFileTagsModified(
+        const TrackMetadata& importedFromFile,
+        Bpm::Comparison cmpBpm) const {
+    // NOTE(uklotzde): The read-only audio properties that are stored
+    // directly as members of this class might differ after they have
+    // been updated while decoding audio data. They are read-only and
+    // must not be considered when exporting metadata!
+    return getAlbumInfo() != importedFromFile.getAlbumInfo() ||
+            !getTrackInfo().compareEq(importedFromFile.getTrackInfo(), cmpBpm);
+}
+
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
-    return (lhs.getAlbumInfo() == rhs.getAlbumInfo()) &&
-            (lhs.getTrackInfo() == rhs.getTrackInfo()) &&
-            (lhs.getBitrate() == rhs.getBitrate()) &&
-            (lhs.getChannels() == rhs.getChannels()) &&
-            (lhs.getDuration() == rhs.getDuration()) &&
-            (lhs.getSampleRate() == rhs.getSampleRate());
+    return lhs.getAlbumInfo() == rhs.getAlbumInfo() &&
+            lhs.getTrackInfo() == rhs.getTrackInfo() &&
+            lhs.getChannelCount() == rhs.getChannelCount() &&
+            lhs.getSampleRate() == rhs.getSampleRate() &&
+            lhs.getBitrate() == rhs.getBitrate() &&
+            lhs.getDuration() == rhs.getDuration();
 }
 
 QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
-    dbg << '{';
+    dbg << "TrackMetadata{";
     arg.dbgTrackInfo(dbg);
     arg.dbgAlbumInfo(dbg);
     arg.dbgBitrate(dbg);
-    arg.dbgChannels(dbg);
+    arg.dbgChannelCount(dbg);
     arg.dbgDuration(dbg);
     arg.dbgSampleRate(dbg);
     dbg << '}';
     return dbg;
 }
 
-} //namespace mixxx
+} // namespace mixxx

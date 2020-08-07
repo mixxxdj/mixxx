@@ -6,26 +6,22 @@
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
 #include "library/library.h"
-#include "library/trackcollection.h"
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "recording/recordingmanager.h"
 
-const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
+namespace {
+
+const QString kViewName = QStringLiteral("Recording");
+
+} // anonymous namespace
 
 RecordingFeature::RecordingFeature(Library* pLibrary,
                                    UserSettingsPointer pConfig,
-                                   TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pTrackCollection(pTrackCollection),
+        : LibraryFeature(pLibrary, pConfig),
           m_pRecordingManager(pRecordingManager),
           m_icon(":/images/library/ic_library_recordings.svg") {
-}
-
-RecordingFeature::~RecordingFeature() {
-
 }
 
 QVariant RecordingFeature::title() {
@@ -45,12 +41,11 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
                                                     m_pConfig,
                                                     m_pLibrary,
-                                                    m_pTrackCollection,
                                                     m_pRecordingManager,
                                                     keyboard);
 
     pRecordingView->installEventFilter(keyboard);
-    pLibraryWidget->registerView(m_sRecordingViewName, pRecordingView);
+    pLibraryWidget->registerView(kViewName, pRecordingView);
     connect(pRecordingView,
             &DlgRecording::loadTrack,
             this,
@@ -75,9 +70,9 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 
 
 void RecordingFeature::activate() {
-    emit(refreshBrowseModel());
-    emit(switchToView(m_sRecordingViewName));
+    emit refreshBrowseModel();
+    emit switchToView(kViewName);
     // Ask the view to emit a restoreSearch signal.
-    emit(requestRestoreSearch());
-    emit(enableCoverArtDisplay(false));
+    emit requestRestoreSearch();
+    emit enableCoverArtDisplay(false);
 }

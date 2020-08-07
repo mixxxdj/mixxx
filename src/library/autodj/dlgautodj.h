@@ -14,18 +14,17 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 
 class PlaylistTableModel;
+class WLibrary;
 class WTrackTableView;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent,
+    DlgAutoDJ(WLibrary* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
             AutoDJProcessor* pProcessor,
-            TrackCollection* pTrackCollection,
-            KeyboardEventFilter* pKeyboard,
-            bool showButtonText);
+            KeyboardEventFilter* pKeyboard);
     ~DlgAutoDJ() override;
 
     void onShow() override;
@@ -58,11 +57,16 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
             void (DlgAutoDJ::*pSlot)(bool),
             QString fallbackText);
 
-    AutoDJProcessor* m_pAutoDJProcessor;
-    WTrackTableView* m_pTrackTableView;
+    const UserSettingsPointer m_pConfig;
+
+    AutoDJProcessor* const m_pAutoDJProcessor;
+    WTrackTableView* const m_pTrackTableView;
+    const bool m_bShowButtonText;
+
     PlaylistTableModel* m_pAutoDJTableModel;
-    UserSettingsPointer m_pConfig;
-    bool m_bShowButtonText;
+
+    QString m_enableBtnTooltip;
+    QString m_disableBtnTooltip;
 };
 
 #endif //DLGAUTODJ_H

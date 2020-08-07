@@ -362,9 +362,9 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    m_format_is_mp3 = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_MP3);
-    m_format_is_ov = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OV);
-    m_format_is_opus = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OPUS);
+    m_format_is_mp3 = !qstrcmp(baFormat.constData(), ENCODING_MP3);
+    m_format_is_ov = !qstrcmp(baFormat.constData(), ENCODING_OGG);
+    m_format_is_opus = !qstrcmp(baFormat.constData(), ENCODING_OPUS);
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
     } else if (m_format_is_ov || m_format_is_opus) {
@@ -437,28 +437,10 @@ void ShoutConnection::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    EncoderBroadcastSettings broadcastSettings(m_pProfile);
-    if (m_format_is_mp3) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_MP3), m_pConfig, this);
-        m_encoder->setEncoderSettings(broadcastSettings);
-    } else if (m_format_is_ov) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
-        m_encoder->setEncoderSettings(broadcastSettings);
-    }
-#ifdef __OPUS__
-    else if (m_format_is_opus) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_OPUS), m_pConfig, this);
-    }
-#endif
-    else {
-        kLogger.warning() << "**** Unknown Encoder Format";
-        setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_lastErrorStr = "Encoder format error";
-        return;
-    }
+    EncoderSettingsPointer pBroadcastSettings =
+            std::make_shared<EncoderBroadcastSettings>(m_pProfile);
+    m_encoder = EncoderFactory::getFactory().createEncoder(
+                    pBroadcastSettings, this);
 
     QString errorMsg;
     if(m_encoder->initEncoder(iMasterSamplerate, errorMsg) < 0) {
@@ -593,7 +575,7 @@ bool ShoutConnection::processConnect() {
             m_threadWaiting = true;
 
             setStatus(BroadcastProfile::STATUS_CONNECTED);
-            emit(broadcastConnected());
+            emit broadcastConnected();
 
             kLogger.debug() << "processConnect() returning true";
             return true;
@@ -634,7 +616,7 @@ bool ShoutConnection::processDisconnect() {
         shout_close(m_pShout);
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
 
-        emit(broadcastDisconnected());
+        emit broadcastDisconnected();
         disconnected = true;
     }
     // delete m_encoder calls write() check if it will be exit early
@@ -790,7 +772,7 @@ void ShoutConnection::updateMetaData() {
      * Also note: Do not try to include Vorbis comments in OGG packages and send them to stream.
      * This was done in EncoderVorbis previously and caused interruptions on track change as well
      * which sounds awful to listeners.
-     * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
+     * To conclude: Only write OGG metadata one time, i.e., if static metadata is used.
      */
 
 
@@ -972,7 +954,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return m_threadWaiting.load();
+    return atomicLoadRelaxed(m_threadWaiting);
 }
 
 void ShoutConnection::run() {

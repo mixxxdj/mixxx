@@ -15,12 +15,13 @@
 #include "sleep.h"
 
 #include <cerrno>
+#include <cstdlib>
 #include <ctime>
 
 #include "internal_macros.h"
 
 #ifdef BENCHMARK_OS_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 namespace benchmark {
@@ -40,7 +41,7 @@ void SleepForMicroseconds(int microseconds) {
 }
 
 void SleepForMilliseconds(int milliseconds) {
-  SleepForMicroseconds(static_cast<int>(milliseconds) * kNumMicrosPerMilli);
+  SleepForMicroseconds(milliseconds * kNumMicrosPerMilli);
 }
 
 void SleepForSeconds(double seconds) {

@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2019 Mixxx Development Team
+# Copyright (C) 2001-2020 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -29,7 +29,7 @@ This will define the following variables:
 ``Ebur128_LIBRARIES``
   Libraries needed to link to Ebur128.
 ``Ebur128_DEFINITIONS``
-  Compile defitions needed to use Ebur128.
+  Compile definitions needed to use Ebur128.
 
 Cache Variables
 ^^^^^^^^^^^^^^^
@@ -45,7 +45,7 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_Ebur128 QUIET libebur128)
+  pkg_check_modules(PC_Ebur128 QUIET libebur128>=1.2.4)
 endif()
 
 find_path(Ebur128_INCLUDE_DIR

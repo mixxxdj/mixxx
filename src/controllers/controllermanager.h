@@ -33,40 +33,31 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    QSharedPointer<PresetInfoEnumerator> getMainThreadPresetEnumerator() {
-        return m_pMainThreadPresetEnumerator;
+    QSharedPointer<PresetInfoEnumerator> getMainThreadUserPresetEnumerator() {
+        return m_pMainThreadUserPresetEnumerator;
     }
+    QSharedPointer<PresetInfoEnumerator> getMainThreadSystemPresetEnumerator() {
+        return m_pMainThreadSystemPresetEnumerator;
+    }
+    QString getConfiguredPresetFileForDevice(QString name);
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
-    void setUpDevices() { emit(requestSetUpDevices()); };
-    void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
+    void setUpDevices() { emit requestSetUpDevices(); };
 
     static QList<QString> getPresetPaths(UserSettingsPointer pConfig);
-
-    // If pathOrFilename is an absolute path, returns it. If it is a relative
-    // path and it is contained within any of the directories in presetPaths,
-    // returns the path to the first file in the path that exists.
-    static QString getAbsolutePath(const QString& pathOrFilename,
-                                   const QStringList& presetPaths);
-
-    bool importScript(const QString& scriptPath, QString* newScriptFileName);
-    static bool checksumFile(const QString& filename, quint16* pChecksum);
 
   signals:
     void devicesChanged();
     void requestSetUpDevices();
     void requestShutdown();
-    void requestSave(bool onlyActive);
     void requestInitialize();
 
   public slots:
     void updateControllerList();
 
+    void slotApplyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
     void openController(Controller* pController);
     void closeController(Controller* pController);
-
-    // Writes out presets for currently connected input devices
-    void slotSavePresets(bool onlyActive=false);
 
   private slots:
     // Perform initialization that should be delayed until the ControllerManager
@@ -77,17 +68,11 @@ class ControllerManager : public QObject {
     // preferences dialog on apply, and only open/close changed devices
     void slotSetUpDevices();
     void slotShutdown();
-    bool loadPreset(Controller* pController,
-                    ControllerPresetPointer preset);
     // Calls poll() on all devices that have isPolling() true.
     void pollDevices();
     void startPolling();
     void stopPolling();
     void maybeStartOrStopPolling();
-
-    static QString presetFilenameFromName(QString name) {
-        return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
-    }
 
   private:
     UserSettingsPointer m_pConfig;
@@ -97,7 +82,8 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
-    QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
+    QSharedPointer<PresetInfoEnumerator> m_pMainThreadUserPresetEnumerator;
+    QSharedPointer<PresetInfoEnumerator> m_pMainThreadSystemPresetEnumerator;
     bool m_skipPoll;
 };
 

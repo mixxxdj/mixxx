@@ -27,7 +27,8 @@ WLabel::WLabel(QWidget* pParent)
           m_skinText(),
           m_longText(),
           m_elideMode(Qt::ElideNone),
-          m_scaleFactor(1.0) {
+          m_scaleFactor(1.0),
+          m_highlight(0) {
 }
 
 void WLabel::setup(const QDomNode& node, const SkinContext& context) {
@@ -95,7 +96,7 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
         } else if (elide == "none") {
             m_elideMode = Qt::ElideNone;
         } else {
-            qDebug() << "WLabel::setup(): Alide =" << elide <<
+            qDebug() << "WLabel::setup(): Elide =" << elide <<
                     "unknown, use right, middle, left or none.";
         }
     }
@@ -147,4 +148,16 @@ void WLabel::resizeEvent(QResizeEvent* event) {
 void WLabel::fillDebugTooltip(QStringList* debug) {
     WBaseWidget::fillDebugTooltip(debug);
     *debug << QString("Text: \"%1\"").arg(text());
+}
+
+int WLabel::getHighlight() const {
+    return m_highlight;
+}
+
+void WLabel::setHighlight(int highlight) {
+    if (m_highlight == highlight) {
+        return;
+    }
+    m_highlight = highlight;
+    emit highlightChanged(m_highlight);
 }

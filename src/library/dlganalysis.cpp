@@ -5,23 +5,27 @@
 #include "widget/wanalysislibrarytableview.h"
 #include "analyzer/analyzerprogress.h"
 #include "library/dao/trackschema.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
+#include "widget/wlibrary.h"
 #include "util/assert.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent,
+DlgAnalysis::DlgAnalysis(WLibrary* parent,
                        UserSettingsPointer pConfig,
                        Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(&pLibrary->trackCollection()),
           m_bAnalysisActive(false) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, m_pTrackCollection);
+    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(
+            this,
+            pConfig,
+            pLibrary->trackCollections(),
+            parent->getTrackTableBackgroundColorOpacity());
     connect(m_pAnalysisLibraryTableView,
             &WAnalysisLibraryTableView::loadTrack,
             this,
@@ -44,7 +48,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
         box->insertWidget(1, m_pAnalysisLibraryTableView);
     }
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, m_pTrackCollection);
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pLibrary->trackCollections());
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded,
@@ -55,15 +59,14 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             &QRadioButton::clicked,
             this,
             &DlgAnalysis::showAllSongs);
-
-    // TODO(rryan): This triggers a library search before the UI has even
-    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
-    radioButtonRecentlyAdded->click();
+    // Don't click those radio buttons now reduce skin loading time.
+    // 'RecentlyAdded' is clicked in onShow()
 
     connect(pushButtonAnalyze,
             &QPushButton::clicked,
             this,
             &DlgAnalysis::analyze);
+    pushButtonAnalyze->setEnabled(false);
 
     connect(pushButtonSelectAll,
             &QPushButton::clicked,
@@ -92,13 +95,17 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
 }
 
 void DlgAnalysis::onShow() {
+    if (!radioButtonRecentlyAdded->isChecked() &&
+            !radioButtonAllSongs->isChecked()) {
+        radioButtonRecentlyAdded->click();
+    }
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
 }
 
 bool DlgAnalysis::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pAnalysisLibraryTableView->hasFocus();
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
@@ -113,17 +120,17 @@ void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
     m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
-void DlgAnalysis::slotSendToAutoDJBottom() {
+void DlgAnalysis::slotAddToAutoDJBottom() {
     // append to auto DJ
-    m_pAnalysisLibraryTableView->slotSendToAutoDJBottom();
+    m_pAnalysisLibraryTableView->slotAddToAutoDJBottom();
 }
 
-void DlgAnalysis::slotSendToAutoDJTop() {
-    m_pAnalysisLibraryTableView->slotSendToAutoDJTop();
+void DlgAnalysis::slotAddToAutoDJTop() {
+    m_pAnalysisLibraryTableView->slotAddToAutoDJTop();
 }
 
-void DlgAnalysis::slotSendToAutoDJReplace() {
-    m_pAnalysisLibraryTableView->slotSendToAutoDJReplace();
+void DlgAnalysis::slotAddToAutoDJReplace() {
+    m_pAnalysisLibraryTableView->slotAddToAutoDJReplace();
 }
 
 void DlgAnalysis::moveSelection(int delta) {
@@ -145,7 +152,7 @@ void DlgAnalysis::selectAll() {
 void DlgAnalysis::analyze() {
     //qDebug() << this << "analyze()";
     if (m_bAnalysisActive) {
-        emit(stopAnalysis());
+        emit stopAnalysis();
     } else {
         QList<TrackId> trackIds;
 
@@ -158,7 +165,7 @@ void DlgAnalysis::analyze() {
                 trackIds.append(trackId);
             }
         }
-        emit(analyzeTracks(trackIds));
+        emit analyzeTracks(trackIds);
     }
 }
 
@@ -166,10 +173,11 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
     //qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
-        pushButtonAnalyze->setEnabled(true);
+        pushButtonAnalyze->setChecked(true);
         pushButtonAnalyze->setText(tr("Stop Analysis"));
         labelProgress->setEnabled(true);
     } else {
+        pushButtonAnalyze->setChecked(false);
         pushButtonAnalyze->setText(tr("Analyze"));
         labelProgress->setText("");
         labelProgress->setEnabled(false);

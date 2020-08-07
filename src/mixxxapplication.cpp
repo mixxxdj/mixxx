@@ -1,14 +1,17 @@
-#include <QtDebug>
-#include <QTouchEvent>
-#include <QThreadPool>
-
 #include "mixxxapplication.h"
 
+#include <QThreadPool>
+#include <QTouchEvent>
+#include <QtDebug>
+
+#include "audio/types.h"
 #include "control/controlproxy.h"
-#include "library/crate/crateid.h"
+#include "library/trackset/crate/crateid.h"
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
+#include "util/cache.h"
+#include "util/color/rgbcolor.h"
 #include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
@@ -53,7 +56,16 @@ MixxxApplication::~MixxxApplication() {
 }
 
 void MixxxApplication::registerMetaTypes() {
-    // Register custom data types for signal processing
+    // Register custom data types
+
+    // PCM audio types
+    qRegisterMetaType<mixxx::audio::ChannelCount>("mixxx::audio::ChannelCount");
+    qRegisterMetaType<mixxx::audio::OptionalChannelLayout>("mixxx::audio::OptionalChannelLayout");
+    qRegisterMetaType<mixxx::audio::OptionalSampleLayout>("mixxx::audio::OptionalSampleLayout");
+    qRegisterMetaType<mixxx::audio::SampleRate>("mixxx::audio::SampleRate");
+    qRegisterMetaType<mixxx::audio::Bitrate>("mixxx::audio::Bitrate");
+
+    // TrackId
     qRegisterMetaType<TrackId>();
     qRegisterMetaType<QSet<TrackId>>();
     qRegisterMetaType<QList<TrackId>>();
@@ -65,8 +77,10 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<QList<CrateId>>();
     qRegisterMetaType<TrackPointer>();
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
+    qRegisterMetaType<mixxx::cache_key_t>("mixxx::cache_key_t");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
     qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
     QMetaType::registerComparators<SoundDeviceId>();
 }

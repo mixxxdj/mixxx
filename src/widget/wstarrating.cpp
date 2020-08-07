@@ -7,20 +7,25 @@
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
         : WWidget(pParent),
-          m_starRating(0,5),
-          m_pGroup(group),
+          m_starRating(0, 5),
+          m_group(group),
           m_focused(false) {
-  // Controls to change the star rating with controllers
-  m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_up"));
-  m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_down"));
-  connect(m_pStarsUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotStarsUp(double)));
-  connect(m_pStarsDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotStarsDown(double)));
+    // Controls to change the star rating with controllers.
+    // Note that 'group' maybe NULLPTR, e.g. when called from DlgTrackInfo,
+    // so only create rate change COs if there's a group passed when creating deck widgets.
+    if (!m_group.isEmpty()) {
+        m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_up"));
+        m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_down"));
+        connect(m_pStarsUp.get(), SIGNAL(valueChanged(double)), this, SLOT(slotStarsUp(double)));
+        connect(m_pStarsDown.get(), SIGNAL(valueChanged(double)), this, SLOT(slotStarsDown(double)));
+    }
 }
 
 void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 QSize WStarRating::sizeHint() const {
@@ -46,8 +51,10 @@ void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
             m_pCurrentTrack.reset();
         }
         if (pTrack) {
-            connect(pTrack.get(), SIGNAL(changed(Track*)),
-                    this, SLOT(updateRating(Track*)));
+            connect(pTrack.get(),
+                    &Track::changed,
+                    this,
+                    &WStarRating::slotTrackChanged);
             m_pCurrentTrack = pTrack;
         }
         updateRating();
@@ -63,7 +70,8 @@ void WStarRating::updateRating() {
     update();
 }
 
-void WStarRating::updateRating(Track* /*unused*/) {
+void WStarRating::slotTrackChanged(TrackId trackId) {
+    Q_UNUSED(trackId);
     updateRating();
 }
 

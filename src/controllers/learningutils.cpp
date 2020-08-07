@@ -219,7 +219,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // reset control.
         ConfigKey resetControl = control;
         resetControl.item.append("_set_default");
-        bool hasResetControl = ControlObject::getControl(resetControl) != NULL;
+        bool hasResetControl = ControlObject::getControl(resetControl,
+                                       ControlFlag::NoWarnIfMissing) != nullptr;
 
         // Find the CC control (based on the predicate one must exist) and add a
         // binding for it.
@@ -244,9 +245,9 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
             }
         }
     } else if (one_channel && only_cc && stats.controls.size() == 2 &&
-               stats_by_control.begin()->message_count > 10 &&
-               stats_by_control.begin()->message_count ==
-               (stats_by_control.begin() + 1)->message_count) {
+            stats_by_control.begin()->message_count > 10 &&
+            stats_by_control.begin()->message_count ==
+                    (++stats_by_control.begin())->message_count) {
         // If there are two CC controls with the same number of messages then we
         // assume this is a 14-bit CC knob. Now we need to determine which
         // control is the LSB and which is the MSB.
@@ -257,7 +258,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // between messages. We expect to see many high/low wrap-arounds for the
         // LSB.
         int control1 = *stats.controls.begin();
-        int control2 = *(stats.controls.begin() + 1);
+        int control2 = *(++stats.controls.begin());
 
         int control1_max_abs_diff =
                 (stats_by_control[control1].abs_diff_histogram.end() - 1).key();

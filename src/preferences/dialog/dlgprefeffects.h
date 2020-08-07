@@ -1,10 +1,12 @@
 #ifndef DLGPREFEFFECTS_H
 #define DLGPREFEFFECTS_H
 
-#include "preferences/usersettings.h"
+#include <QButtonGroup>
+
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/effectsettingsmodel.h"
+#include "preferences/usersettings.h"
 
 class EffectsManager;
 
@@ -16,9 +18,9 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
                    EffectsManager* pEffectsManager);
     virtual ~DlgPrefEffects();
 
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void availableEffectsListItemSelected(const QModelIndex& selected);

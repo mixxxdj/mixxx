@@ -14,13 +14,14 @@
 
 class PlaylistTableModel;
 class QSqlTableModel;
+class WLibrary;
 class WTrackTableView;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
-                 Library* pLibrary, TrackCollection* pTrackCollection,
+    DlgRecording(WLibrary *parent, UserSettingsPointer pConfig,
+                 Library* pLibrary,
                  RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;
 
@@ -28,16 +29,15 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void onShow() override;
     bool hasFocus() const override;
     void loadSelectedTrack() override;
-    void slotSendToAutoDJBottom() override;
-    void slotSendToAutoDJTop() override;
-    void slotSendToAutoDJReplace() override;
+    void slotAddToAutoDJBottom() override;
+    void slotAddToAutoDJTop() override;
+    void slotAddToAutoDJReplace() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
   public slots:
-    void toggleRecording(bool toggle);
-    void slotRecordingEnabled(bool);
+    void slotRecordingStateChanged(bool);
     void slotBytesRecorded(int);
     void refreshBrowseModel();
     void slotRestoreSearch();
@@ -50,13 +50,13 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   private:
     UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
     QString m_recordingDir;
 
-    void refreshLabel();
+    void refreshLabels();
+    void slotRecButtonClicked(bool checked);
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;
 

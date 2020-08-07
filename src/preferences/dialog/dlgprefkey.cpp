@@ -95,6 +95,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 DlgPrefKey::~DlgPrefKey() {
 }
 
+QUrl DlgPrefKey::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_KEY_URL);
+}
+
 void DlgPrefKey::loadSettings() {
     m_selectedAnalyzerId = m_keySettings.getKeyPluginId();
     qDebug() << "Key plugin ID:" << m_selectedAnalyzerId;
@@ -213,7 +217,7 @@ void DlgPrefKey::slotApply() {
         notation_name = KEY_NOTATION_CUSTOM;
         notation_type = KeyUtils::KeyNotation::Custom;
         for (auto it = m_keyLineEdits.constBegin();
-                it != m_keyLineEdits.end(); ++it) {
+                it != m_keyLineEdits.constEnd(); ++it) {
             notation[it.key()] = it.value()->text();
             m_keySettings.setCustomKeyNotation(it.key(), it.value()->text());
         }
@@ -266,6 +270,7 @@ void DlgPrefKey::slotUpdate() {
             const auto& info = m_availablePlugins.at(i);
             if (info.id == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
+                found = true;
                 break;
             }
         }

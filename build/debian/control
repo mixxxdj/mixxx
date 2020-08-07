@@ -16,8 +16,9 @@ Build-Depends: debhelper (>= 9),
 # QtSql
 # QtWidgets
 # QtXml
-               qt5-default (>= 5.4.0),
-# We additionally need headers for QtOpenGL, QtScript, and QtSvg.
+               qt5-default (>= 5.5.0),
+# We additionally need headers for QtOpenGL, QtScript, QtQml, and QtSvg.
+               qtdeclarative5-dev,
                qtscript5-dev,
                libqt5opengl5-dev,
                libqt5svg5-dev,
@@ -33,11 +34,11 @@ Build-Depends: debhelper (>= 9),
                libsndfile1-dev,
                libasound2-dev,
                libvorbis-dev,
-               libmp4v2-dev,
                libfaad-dev,
                libportmidi-dev,
                libtag1-dev,
                libshout-dev,
+               libssl-dev,
                libprotobuf-dev,
                protobuf-compiler,
                libusb-1.0-0-dev,
@@ -51,6 +52,7 @@ Build-Depends: debhelper (>= 9),
                liblilv-dev,
                libmodplug-dev,
                libmp3lame-dev,
+               libebur128-dev,
 # for running mixxx-test
                xvfb
 Standards-Version: 3.9.8

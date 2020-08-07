@@ -12,10 +12,9 @@
 
 #include "util/performancetimer.h"
 
-GLRGBWaveformWidget::GLRGBWaveformWidget(const char* group, QWidget* parent)
+GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
-
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
@@ -27,7 +26,9 @@ GLRGBWaveformWidget::GLRGBWaveformWidget(const char* group, QWidget* parent)
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<GLWaveformRendererRGB>();
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 

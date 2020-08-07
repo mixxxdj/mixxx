@@ -156,4 +156,4 @@ CSAMPLE ReplayGain::normalizePeak(CSAMPLE peak) {
     }
 }
 
-} //namespace mixxx
+} // namespace mixxx

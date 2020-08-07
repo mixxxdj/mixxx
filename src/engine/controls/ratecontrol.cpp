@@ -41,7 +41,7 @@ RateControl::RateControl(QString group,
       m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
-    // This is the resulting rate ratio that can used for dispaly or calculations.
+    // This is the resulting rate ratio that can be used for display or calculations.
     // The track original rate ratio is 1.
     m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
                   true, false, false, 1.0);
@@ -351,6 +351,7 @@ void RateControl::slotControlRatePermDown(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100 * m_pRateRange->get()));
+        slotRateSliderChanged();
     }
 }
 
@@ -359,6 +360,7 @@ void RateControl::slotControlRatePermDownSmall(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged();
     }
 }
 
@@ -367,6 +369,7 @@ void RateControl::slotControlRatePermUp(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged();
     }
 }
 
@@ -374,7 +377,9 @@ void RateControl::slotControlRatePermUpSmall(double v) {
     // Adjusts temp rate up if button pressed
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
-                           m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+                m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() /
+                        (100. * m_pRateRange->get()));
+        slotRateSliderChanged();
     }
 }
 
@@ -615,6 +620,7 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+    EngineControl::notifySeek(playPos);
 }
 
 bool RateControl::isReverseButtonPressed() {

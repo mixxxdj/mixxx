@@ -4,17 +4,28 @@
 #include "track/beatgrid.h"
 #include "util/memory.h"
 
+using namespace mixxx;
+
 namespace {
 
 const double kMaxBeatError = 1e-9;
 
-TEST(BeatGridTest, Scale) {
+TrackPointer newTrack(int sampleRate) {
     TrackPointer pTrack(Track::newTemporary());
+    pTrack->setAudioProperties(
+            mixxx::audio::ChannelCount(2),
+            mixxx::audio::SampleRate(sampleRate),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(180));
+    return pTrack;
+}
 
+TEST(BeatGridTest, Scale) {
     int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
     double bpm = 60.0;
     pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
 
     auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
     pGrid->setBpm(bpm);
@@ -40,13 +51,12 @@ TEST(BeatGridTest, Scale) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
-    TrackPointer pTrack(Track::newTemporary());
-
     int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
     double bpm = 60.1;
     const int kFrameSize = 2;
     pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
@@ -76,13 +86,12 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
-    TrackPointer pTrack(Track::newTemporary());
-
     int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
     double bpm = 60.1;
     const int kFrameSize = 2;
     pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
@@ -114,13 +123,12 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
-    TrackPointer pTrack(Track::newTemporary());
-
     int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
     double bpm = 60.1;
     const int kFrameSize = 2;
     pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
@@ -152,12 +160,12 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
-    TrackPointer pTrack(Track::newTemporary());
     int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
     double bpm = 60.1;
     const int kFrameSize = 2;
     pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);

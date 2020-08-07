@@ -78,10 +78,12 @@ AnalyzerThread::AnalyzerThread(
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         UserSettingsPointer pConfig,
         AnalyzerModeFlags modeFlags)
-        : WorkerThread(QString("AnalyzerThread %1").arg(id)),
+        : WorkerThread(
+            QString("AnalyzerThread %1").arg(id),
+            (modeFlags & AnalyzerModeFlags::LowPriority ? QThread::LowPriority : QThread::InheritPriority)),
           m_id(id),
           m_dbConnectionPool(std::move(dbConnectionPool)),
-          m_pConfig(std::move(pConfig)),
+          m_pConfig(pConfig),
           m_modeFlags(modeFlags),
           m_nextTrack(2), // minimum capacity
           m_sampleBuffer(mixxx::kAnalysisSamplesPerChunk),
@@ -125,7 +127,7 @@ void AnalyzerThread::doRun() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(mixxx::kAnalysisChannels);
 
-    while (waitUntilWorkItemsFetched()) {
+    while (awaitWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack);
         kLogger.debug() << "Analyzing" << m_currentTrack->getFileInfo();
 
@@ -145,7 +147,7 @@ void AnalyzerThread::doRun() {
             // Make sure not to short-circuit initialize(...)
             if (analyzer.initialize(
                         m_currentTrack,
-                        audioSource->sampleRate(),
+                        audioSource->getSignalInfo().getSampleRate(),
                         audioSource->frameLength() * mixxx::kAnalysisChannels)) {
                 processTrack = true;
             }
@@ -203,7 +205,7 @@ bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     return false;
 }
 
-WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
+WorkerThread::TryFetchWorkItemsResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
     TrackPointer* pFront = m_nextTrack.front();
     if (pFront) {
@@ -212,10 +214,10 @@ WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
         kLogger.debug()
                 << "Dequeued next track"
                 << m_currentTrack->getId();
-        return FetchWorkResult::Ready;
+        return TryFetchWorkItemsResult::Ready;
     } else {
         emitProgress(AnalyzerThreadState::Idle);
-        return FetchWorkResult::Idle;
+        return TryFetchWorkItemsResult::Idle;
     }
 }
 
@@ -226,7 +228,9 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             audioSource,
             mixxx::kAnalysisFramesPerChunk);
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == mixxx::kAnalysisChannels);
+    DEBUG_ASSERT(
+            audioSourceProxy.getSignalInfo().getChannelCount() ==
+            mixxx::kAnalysisChannels);
 
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);
@@ -348,6 +352,7 @@ void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
     // thread that might trigger database actions! The TrackAnalysisScheduler
     // must store a TrackPointer until receiving the Done signal.
     TrackId trackId = m_currentTrack->getId();
+    m_currentTrack->analysisFinished();
     m_currentTrack.reset();
     emitProgress(AnalyzerThreadState::Done, trackId, doneProgress);
 }

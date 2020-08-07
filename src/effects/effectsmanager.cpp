@@ -19,9 +19,9 @@ const QString kGroupClose = "]";
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
-
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                               ChannelHandleFactory* pChannelHandleFactory)
+EffectsManager::EffectsManager(QObject* pParent,
+        UserSettingsPointer pConfig,
+        ChannelHandleFactoryPointer pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
@@ -106,16 +106,16 @@ void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
-void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerInputChannel(handle_group);
+void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
+    m_pEffectChainManager->registerInputChannel(handleGroup);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectsManager::registeredInputChannels() const {
     return m_pEffectChainManager->registeredInputChannels();
 }
 
-void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerOutputChannel(handle_group);
+void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handleGroup) {
+    m_pEffectChainManager->registerOutputChannel(handleGroup);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectsManager::registeredOutputChannels() const {
@@ -321,10 +321,10 @@ void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool v
                                                 m_visibleEffectManifests.end(),
                                                 pManifest, alphabetizeEffectManifests);
         m_visibleEffectManifests.insert(insertion_point, pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     } else if (!visible) {
         m_visibleEffectManifests.removeOne(pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     }
 }
 

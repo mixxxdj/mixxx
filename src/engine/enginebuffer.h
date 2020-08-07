@@ -88,20 +88,19 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        SEEK_NONE = 0x00,
-        SEEK_PHASE = 0x01, // This is set to force an in-phase seek.
-        SEEK_EXACT = 0x02, // This is used to seek to position regardless of
-                           // if Quantize is enabled.
+        SEEK_NONE = 0u,
+        /// Force an in-phase seek
+        SEEK_PHASE = 1u,
+        /// Bypass Quantization
+        SEEK_EXACT = 2u,
+        /// This is an artificial state that happens if an exact seek and a
+        /// phase seek are scheduled at the same time.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
-						   // This is an artificial state that happens if
-                           // an exact seek and a phase seek are scheduled
-                           // at the same time.
-        SEEK_STANDARD = 0x04, // This seeks to the exact position if Quantize is
-                              // disabled or performs an in-phase seek if it is enabled.
+        /// #SEEK_PHASE if Quantize enables, otherwise SEEK_EXACT
+        SEEK_STANDARD = 4u,
+        /// This is an artificial state that happens if a standard seek and a
+        /// phase seek are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
-                              // This is an artificial state that happens if
-                              // a standard seek and a phase seek are scheduled
-                              // at the same time.
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
@@ -153,6 +152,8 @@ class EngineBuffer : public EngineObject {
     double getTrackSamples();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+
+    double getRateRatio() const;
 
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
@@ -206,6 +207,7 @@ class EngineBuffer : public EngineObject {
                              QString reason);
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
+    void slotUpdatedTrackBeats();
 
   private:
     // Add an engine control to the EngineBuffer
@@ -246,7 +248,7 @@ class EngineBuffer : public EngineObject {
     void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
 
     // Holds the name of the control group
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
 
     friend class CueControlTest;
@@ -262,6 +264,8 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
@@ -371,6 +375,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineBufferTest, VinylScalerRampZero);
     FRIEND_TEST(EngineBufferTest, ReadFadeOut);
     FRIEND_TEST(EngineBufferTest, RateTempTest);
+    FRIEND_TEST(EngineBufferTest, RatePermTest);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.

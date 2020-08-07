@@ -20,19 +20,22 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 
-EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
-                             EngineChannel::ChannelOrientation defaultOrientation,
-                             EffectsManager* pEffectsManager, bool isTalkoverChannel)
-        : m_group(handle_group),
+EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
+        EngineChannel::ChannelOrientation defaultOrientation,
+        EffectsManager* pEffectsManager,
+        bool isTalkoverChannel,
+        bool isPrimaryDeck)
+        : m_group(handleGroup),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
           m_sampleBuffer(nullptr),
+          m_bIsPrimaryDeck(isPrimaryDeck),
           m_bIsTalkoverChannel(isTalkoverChannel) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
-    m_pMaster->setButtonMode(ControlPushButton::TOGGLE);
+    m_pMaster->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);
@@ -50,7 +53,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
     m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 
     if (m_pEffectsManager != nullptr) {
-        m_pEffectsManager->registerInputChannel(handle_group);
+        m_pEffectsManager->registerInputChannel(handleGroup);
     }
 }
 

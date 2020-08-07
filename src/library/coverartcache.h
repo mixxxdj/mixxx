@@ -1,8 +1,10 @@
-#ifndef COVERARTCACHE_H
-#define COVERARTCACHE_H
+#pragma once
 
 #include <QObject>
+#include <QPair>
 #include <QPixmap>
+#include <QSet>
+#include <QtDebug>
 
 #include "library/coverart.h"
 #include "util/singleton.h"
@@ -11,6 +13,15 @@
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT
   public:
+    static void requestCover(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo) {
+        requestCover(pRequestor, coverInfo, TrackPointer());
+    }
+    static void requestTrackCover(
+            const QObject* pRequestor,
+            const TrackPointer& pTrack);
+
     /* This method is used to request a cover art pixmap.
      *
      * @param pRequestor : an arbitrary pointer (can be any number you'd like,
@@ -23,58 +34,92 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
      *      In this way, the method will just look into CoverCache and return
      *      a Pixmap if it is already loaded in the QPixmapCache.
      */
-    QPixmap requestCover(const CoverInfo& info,
-                         const QObject* pRequestor,
-                         const int desiredWidth,
-                         const bool onlyCached,
-                         const bool signalWhenDone);
+    enum class Loading {
+        CachedOnly,
+        NoSignal,
+        Default, // signal when done
+    };
+    QPixmap tryLoadCover(
+            const QObject* pRequestor,
+            const CoverInfo& info,
+            int desiredWidth = 0, // <= 0: original size
+            Loading loading = Loading::Default) {
+        return tryLoadCover(
+                pRequestor,
+                TrackPointer(),
+                info,
+                desiredWidth,
+                loading);
+    }
 
-    static void requestCover(const Track& track,
-                             const QObject* pRequestor);
-
-    // Guesses the cover art for the provided tracks by searching the tracks'
-    // metadata and folders for image files. All I/O is done in a separate
-    // thread.
-    void requestGuessCovers(QList<TrackPointer> tracks);
-    void requestGuessCover(TrackPointer pTrack);
-
+    // Only public for testing
     struct FutureResult {
         FutureResult()
-                : pRequestor(NULL),
-                  signalWhenDone(false) {
+                : pRequestor(nullptr),
+                  requestedCacheKey(CoverImageUtils::defaultCacheKey()),
+                  signalWhenDone(false),
+                  coverInfoUpdated(false) {
+        }
+        FutureResult(
+                const QObject* pRequestorArg,
+                mixxx::cache_key_t requestedCacheKeyArg,
+                bool signalWhenDoneArg)
+                : pRequestor(pRequestorArg),
+                  requestedCacheKey(requestedCacheKeyArg),
+                  signalWhenDone(signalWhenDoneArg),
+                  coverInfoUpdated(false) {
         }
 
-        CoverArt cover;
         const QObject* pRequestor;
+        mixxx::cache_key_t requestedCacheKey;
         bool signalWhenDone;
-    };
 
-  public slots:
+        CoverArt coverArt;
+        bool coverInfoUpdated;
+    };
+    // Load cover from path indicated in coverInfo. WARNING: This is run in a
+    // worker thread.
+    static FutureResult loadCover(
+            const QObject* pRequestor,
+            TrackPointer pTrack,
+            CoverInfo coverInfo,
+            int desiredWidth,
+            bool emitSignals);
+
+  private slots:
     // Called when loadCover is complete in the main thread.
     void coverLoaded();
 
   signals:
-    void coverFound(const QObject* requestor,
-                    const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void coverFound(
+            const QObject* requestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            mixxx::cache_key_t requestedCacheKey,
+            bool coverInfoUpdated);
 
   protected:
     CoverArtCache();
-    virtual ~CoverArtCache();
+    ~CoverArtCache() override = default;
     friend class Singleton<CoverArtCache>;
 
-    // Load cover from path indicated in coverInfo. WARNING: This is run in a
-    // worker thread.
-    FutureResult loadCover(const CoverInfo& coverInfo,
-                           const QObject* pRequestor,
-                           const int desiredWidth,
-                           const bool emitSignals);
-
-    // Guesses the cover art for each track.
-    void guessCovers(QList<TrackPointer> tracks);
-    void guessCover(TrackPointer pTrack);
-
   private:
-    QSet<QPair<const QObject*, quint16> > m_runningRequests;
+    static void requestCover(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const TrackPointer& /*optional*/ pTrack);
+
+    QPixmap tryLoadCover(
+            const QObject* pRequestor,
+            const TrackPointer& pTrack,
+            const CoverInfo& info,
+            int desiredWidth,
+            Loading loading);
+
+    QSet<QPair<const QObject*, mixxx::cache_key_t>> m_runningRequests;
 };
 
-#endif // COVERARTCACHE_H
+inline
+QDebug operator<<(QDebug dbg, CoverArtCache::Loading loading) {
+    return dbg << static_cast<int>(loading);
+}

@@ -28,9 +28,7 @@ class SchemaManager {
 
     bool isBackwardsCompatibleWithVersion(int targetVersion) const;
 
-    Result upgradeToSchemaVersion(
-            const QString& schemaFilename,
-            int targetVersion);
+    Result upgradeToSchemaVersion(int targetVersion, const QString& schemaFilename);
 
   private:
     QSqlDatabase m_database;

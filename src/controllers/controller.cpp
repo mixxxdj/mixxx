@@ -6,7 +6,7 @@
 */
 
 #include <QApplication>
-#include <QScriptValue>
+#include <QJSValue>
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
@@ -14,18 +14,21 @@
 #include "util/screensaver.h"
 
 Controller::Controller()
-        : QObject(),
-          m_pEngine(NULL),
+        : m_pEngine(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
           m_bLearning(false) {
-        m_userActivityInhibitTimer.start();
+    m_userActivityInhibitTimer.start();
 }
 
 Controller::~Controller() {
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
+}
+
+ControllerJSProxy* Controller::jsProxy() {
+    return new ControllerJSProxy(this);
 }
 
 void Controller::startEngine()
@@ -49,7 +52,7 @@ void Controller::stopEngine() {
     m_pEngine = NULL;
 }
 
-bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
+bool Controller::applyPreset(bool initializeScripts) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -60,14 +63,23 @@ bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts)
         return false;
     }
 
-    if (pPreset->scripts.isEmpty()) {
+    QList<ControllerPreset::ScriptFileInfo> scriptFiles = pPreset->getScriptFiles();
+    if (scriptFiles.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return true;
     }
 
-    bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
-    if (initializeScripts) {
-        m_pEngine->initializeScripts(pPreset->scripts);
+    bool success = m_pEngine->loadScriptFiles(scriptFiles);
+    if (success && initializeScripts) {
+        m_pEngine->initializeScripts(scriptFiles);
+    }
+
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    if (initializeScripts && !pPreset->moduleFileInfo().filePath().isEmpty()) {
+        m_pEngine->loadModule(pPreset->moduleFileInfo());
     }
     return success;
 }
@@ -136,9 +148,9 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
             continue;
         }
         function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
-        if (!m_pEngine->execute(incomingData, data, timestamp)) {
-            qWarning() << "Controller: Invalid script function" << function;
-        }
+        QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
+        m_pEngine->executeFunction(incomingDataFunction, data);
     }
+
+    m_pEngine->handleInput(data, timestamp);
 }

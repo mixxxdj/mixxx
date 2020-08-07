@@ -10,7 +10,7 @@
 //
 // This class is intended to be used as a simple, almost immutable
 // value object. Only the id can be set once.
-class TrackRef {
+class TrackRef final {
 public:
     // Converts a TrackFile and an optional TrackId into a TrackRef. This
     // involves obtaining the file-related track properties from QFileInfo
@@ -76,6 +76,7 @@ public:
     bool isValid() const {
         return hasId() || hasCanonicalLocation();
     }
+
 protected:
     // Initializing constructor
     TrackRef(
@@ -114,3 +115,11 @@ Q_DECLARE_METATYPE(TrackRef)
 std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef);
 
 QDebug operator<<(QDebug debug, const TrackRef& trackRef);
+
+inline uint qHash(
+        const TrackRef& key,
+        uint seed = 0) {
+    return qHash(
+            key.getLocation(), seed) ^
+            qHash(key.getId(), seed);
+}

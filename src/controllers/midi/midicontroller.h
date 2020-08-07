@@ -23,8 +23,10 @@
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    MidiController();
+    explicit MidiController();
     ~MidiController() override;
+
+    ControllerJSProxy* jsProxy() override;
 
     QString presetExtension() override;
 
@@ -33,8 +35,6 @@ class MidiController : public Controller {
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
-
-    bool savePreset(const QString fileName) const override;
 
     void visit(const MidiControllerPreset* preset) override;
     void visit(const HidControllerPreset* preset) override;
@@ -56,13 +56,14 @@ class MidiController : public Controller {
                          unsigned char value);
 
   protected:
-    Q_INVOKABLE virtual void sendShortMsg(unsigned char status,
-                                          unsigned char byte1, unsigned char byte2) = 0;
+    virtual void sendShortMsg(unsigned char status,
+            unsigned char byte1,
+            unsigned char byte2) = 0;
 
-    // Alias for send()
-    // The length parameter is here for backwards compatibility for when scripts
-    // were required to specify it.
-    Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+    /// Alias for send()
+    /// The length parameter is here for backwards compatibility for when scripts
+    /// were required to specify it.
+    inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
         Q_UNUSED(length);
         send(data);
     }
@@ -75,8 +76,13 @@ class MidiController : public Controller {
     int close() override;
 
   private slots:
-    // Initializes the engine and static output mappings.
-    bool applyPreset(QList<QString> scriptPaths, bool initializeScripts) override;
+    /// Apply the preset to the controller.
+    /// @brief Initializes both controller engine and static output mappings.
+    ///
+    /// @param initializeScripts Can be set to false to skip script
+    /// initialization for unit tests.
+    /// @return Returns whether it was successful.
+    bool applyPreset(bool initializeScripts = false) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
@@ -97,8 +103,8 @@ class MidiController : public Controller {
     void updateAllOutputs();
     void destroyOutputHandlers();
 
-    // Returns a pointer to the currently loaded controller preset. For internal
-    // use only.
+    /// Returns a pointer to the currently loaded controller preset. For internal
+    /// use only.
     ControllerPreset* preset() override {
         return &m_preset;
     }
@@ -112,6 +118,29 @@ class MidiController : public Controller {
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;
     friend class MidiControllerTest;
+    friend class MidiControllerJSProxy;
+};
+
+class MidiControllerJSProxy : public ControllerJSProxy {
+    Q_OBJECT
+  public:
+    MidiControllerJSProxy(MidiController* m_pController)
+            : ControllerJSProxy(m_pController),
+              m_pMidiController(m_pController) {
+    }
+
+    Q_INVOKABLE void sendShortMsg(unsigned char status,
+            unsigned char byte1,
+            unsigned char byte2) {
+        m_pMidiController->sendShortMsg(status, byte1, byte2);
+    }
+
+    Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+        m_pMidiController->sendSysexMsg(data, length);
+    }
+
+  private:
+    MidiController* m_pMidiController;
 };
 
 #endif

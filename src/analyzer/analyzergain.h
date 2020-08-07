@@ -16,7 +16,7 @@ class ReplayGain;
 class AnalyzerGain : public Analyzer {
   public:
     AnalyzerGain(UserSettingsPointer pConfig);
-    virtual ~AnalyzerGain();
+    ~AnalyzerGain() override;
 
     static bool isEnabled(const ReplayGainSettings& rgSettings) {
         return rgSettings.isAnalyzerEnabled(1);

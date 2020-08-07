@@ -23,6 +23,7 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
+#include "util/color/color.h"
 #include "widget/wbasewidget.h"
 
 class ControlProxy;
@@ -40,7 +41,7 @@ class ControlProxy;
 class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
   public:
-    explicit WWidget(QWidget *parent=nullptr, Qt::WindowFlags flags=nullptr);
+    explicit WWidget(QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~WWidget() override;
 
     Q_PROPERTY(double value READ getControlParameterDisplay);

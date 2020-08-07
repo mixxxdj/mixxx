@@ -69,7 +69,14 @@ bool SongDownloader::downloadFromQueue() {
             &QNetworkReply::readyRead,
             this,
             &SongDownloader::slotReadyRead);
-    connect(m_pReply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &SongDownloader::slotError);
+    connect(m_pReply,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            &QNetworkReply::errorOccurred,
+#else
+            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+#endif
+            this,
+            &SongDownloader::slotError);
     connect(m_pReply,
             &QNetworkReply::downloadProgress,
             this,
@@ -105,12 +112,12 @@ void SongDownloader::slotError(QNetworkReply::NetworkError error) {
     //Delete partial file
     m_pDownloadedFile->remove();
 
-    emit(downloadError());
+    emit downloadError();
 }
 
 void SongDownloader::slotProgress(qint64 bytesReceived, qint64 bytesTotal) {
     qDebug() << bytesReceived << "/" << bytesTotal;
-    emit(downloadProgress(bytesReceived, bytesTotal));
+    emit downloadProgress(bytesReceived, bytesTotal);
 }
 
 void SongDownloader::slotDownloadFinished() {
@@ -135,5 +142,5 @@ void SongDownloader::slotDownloadFinished() {
 
     //XXX: Add the song to the My Downloads crate
     //Emit this signal when all the files have been downloaded.
-    emit(downloadFinished());
+    emit downloadFinished();
 }

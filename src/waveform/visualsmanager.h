@@ -26,7 +26,7 @@ class DeckVisuals {
     void process(double remainingTimeTriggerSeconds);
 
   private:
-    QString m_group;
+    const QString m_group;
     int m_SlowTickCnt;
     bool m_trackLoaded;
 

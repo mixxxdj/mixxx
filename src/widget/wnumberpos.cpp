@@ -1,19 +1,19 @@
 // Tue Haste Andersen <haste@diku.dk>, (C) 2003
 
-#include <QStringBuilder>
-
 #include "widget/wnumberpos.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
 #include "util/duration.h"
 
-WNumberPos::WNumberPos(const char* group, QWidget* parent)
+WNumberPos::WNumberPos(const QString& group, QWidget* parent)
         : WNumber(parent),
+          m_displayFormat(TrackTime::DisplayFormat::TRADITIONAL),
           m_dOldTimeElapsed(0.0) {
-    m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this);
+    m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this, ControlFlag::NoAssertIfMissing);
     m_pTimeElapsed->connectValueChanged(this, &WNumberPos::slotSetTimeElapsed);
-    m_pTimeRemaining = new ControlProxy(group, "time_remaining", this);
+    m_pTimeRemaining = new ControlProxy(
+            group, "time_remaining", this, ControlFlag::NoAssertIfMissing);
     m_pTimeRemaining->connectValueChanged(
             this, &WNumberPos::slotTimeRemainingUpdated);
 

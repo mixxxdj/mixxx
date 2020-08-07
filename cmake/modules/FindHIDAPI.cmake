@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2019 Mixxx Development Team
+# Copyright (C) 2001-2020 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -29,7 +29,7 @@ This will define the following variables:
 ``HIDAPI_LIBRARIES``
   Libraries needed to link to HIDAPI.
 ``HIDAPI_DEFINITIONS``
-  Compile defitions needed to use HIDAPI.
+  Compile definitions needed to use HIDAPI.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

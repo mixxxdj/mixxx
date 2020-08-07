@@ -2,6 +2,7 @@
 
 #include "analyzer/analyzerbeats.h"
 #include "control/controlobject.h"
+#include "defs_urls.h"
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -45,6 +46,10 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
+}
+
+QUrl DlgPrefBeats::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_BEATS_URL);
 }
 
 void DlgPrefBeats::loadSettings() {

@@ -4,6 +4,8 @@
 #include "track/beatmap.h"
 #include "util/memory.h"
 
+using namespace mixxx;
+
 namespace {
 
 class BeatMapTest : public testing::Test {
@@ -13,7 +15,11 @@ class BeatMapTest : public testing::Test {
             : m_pTrack(Track::newTemporary()),
               m_iSampleRate(100),
               m_iFrameSize(2) {
-
+        m_pTrack->setAudioProperties(
+                mixxx::audio::ChannelCount(2),
+                mixxx::audio::SampleRate(m_iSampleRate),
+                mixxx::audio::Bitrate(),
+                mixxx::Duration::fromSeconds(180));
     }
 
     double getBeatLengthFrames(double bpm) {
@@ -42,7 +48,6 @@ class BeatMapTest : public testing::Test {
 TEST_F(BeatMapTest, Scale) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);
-    m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     const int numBeats = 100;
@@ -73,7 +78,6 @@ TEST_F(BeatMapTest, Scale) {
 TEST_F(BeatMapTest, TestNthBeat) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);
-    m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -106,7 +110,6 @@ TEST_F(BeatMapTest, TestNthBeat) {
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);
-    m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -144,7 +147,6 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);
-    m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -184,7 +186,6 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);
-    m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -225,7 +226,6 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);
-    m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -263,7 +263,6 @@ TEST_F(BeatMapTest, TestBpmAround) {
     const double filebpm = 60.0;
     double approx_beat_length = getBeatLengthSamples(filebpm);
     m_pTrack->setBpm(filebpm);
-    m_pTrack->setSampleRate(m_iSampleRate);
     const int numBeats = 64;
 
     QVector<double> beats;

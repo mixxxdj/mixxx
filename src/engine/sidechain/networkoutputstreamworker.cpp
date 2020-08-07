@@ -20,9 +20,6 @@ NetworkOutputStreamWorker::NetworkOutputStreamWorker()
       m_outputDrift(false) {
 }
 
-NetworkOutputStreamWorker::~NetworkOutputStreamWorker() {
-}
-
 void NetworkOutputStreamWorker::outputAvailable() {
 }
 

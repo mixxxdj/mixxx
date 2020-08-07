@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <QStringBuilder>
 #include <QFileInfo>
 
 #include "library/coverartcache.h"
@@ -13,41 +12,41 @@
 class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
     void loadCoverFromMetadata(QString trackLocation) {
+        const QImage img = SoundSourceProxy::importTemporaryCoverImage(
+                trackLocation,
+                Sandbox::openSecurityToken(QDir(trackLocation), true));
+        ASSERT_FALSE(img.isNull());
+
         CoverInfo info;
         info.type = CoverInfo::METADATA;
         info.source = CoverInfo::GUESSED;
-        info.coverLocation = QString();
+        ASSERT_TRUE(info.coverLocation.isNull());
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(info, NULL, 0, false);
-        EXPECT_QSTRING_EQ(QString(), res.cover.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.hash);
-
-        SecurityTokenPointer securityToken =
-                Sandbox::openSecurityToken(QDir(trackLocation), true);
-        QImage img = SoundSourceProxy::importTemporaryCoverImage(
-                trackLocation, securityToken);
-        EXPECT_FALSE(img.isNull());
-        EXPECT_EQ(img, res.cover.image);
+        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
+        EXPECT_TRUE(res.coverInfoUpdated);
+        EXPECT_EQ(img, res.coverArt.loadedImage.image);
+        EXPECT_EQ(CoverImageUtils::calculateDigest(img), res.coverArt.imageDigest());
+        EXPECT_TRUE(res.coverArt.coverLocation.isNull());
     }
 
     void loadCoverFromFile(QString trackLocation, QString coverLocation, QString absoluteCoverLocation) {
-        QImage img = QImage(absoluteCoverLocation);
+        const QImage img = QImage(absoluteCoverLocation);
+        ASSERT_FALSE(img.isNull());
 
         CoverInfo info;
         info.type = CoverInfo::FILE;
         info.source = CoverInfo::GUESSED;
         info.coverLocation = coverLocation;
         info.trackLocation = trackLocation;
-        info.hash = 4321; // fake cover hash
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(info, NULL, 0, false);
-        EXPECT_QSTRING_EQ(info.coverLocation, res.cover.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.hash);
-        EXPECT_FALSE(img.isNull());
-        EXPECT_EQ(img, res.cover.image);
+        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
+        EXPECT_TRUE(res.coverInfoUpdated); // hash updated
+        EXPECT_EQ(img, res.coverArt.loadedImage.image);
+        EXPECT_EQ(CoverImageUtils::calculateDigest(img), res.coverArt.imageDigest());
+        EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }
 };
 

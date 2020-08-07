@@ -1,9 +1,6 @@
-#ifndef MIXXX_DBCONNECTIONPOOLER_H
-#define MIXXX_DBCONNECTIONPOOLER_H
-
+#pragma once
 
 #include "util/db/dbconnectionpool.h"
-
 
 namespace mixxx {
 
@@ -31,6 +28,10 @@ class DbConnectionPooler final {
         return static_cast<bool>(m_pDbConnectionPool);
     }
 
+    operator const DbConnectionPoolPtr&() const {
+        return m_pDbConnectionPool;
+    }
+
     DbConnectionPooler& operator=(const DbConnectionPooler&) = delete;
     DbConnectionPooler& operator=(DbConnectionPooler&&) = default;
 
@@ -43,6 +44,3 @@ class DbConnectionPooler final {
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTIONPOOLER_H

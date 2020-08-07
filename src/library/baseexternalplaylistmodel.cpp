@@ -1,17 +1,18 @@
 #include "library/baseexternalplaylistmodel.h"
 
-#include "library/queryutil.h"
 #include "library/dao/trackschema.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
-                                                     TrackCollection* pTrackCollection,
-                                                     const char* settingsNamespace,
-                                                     const QString& playlistsTable,
-                                                     const QString& playlistTracksTable,
-                                                     QSharedPointer<BaseTrackCache> trackSource)
-        : BaseSqlTableModel(parent, pTrackCollection,
-                            settingsNamespace),
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace,
+        const QString& playlistsTable,
+        const QString& playlistTracksTable,
+        QSharedPointer<BaseTrackCache> trackSource)
+        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
           m_trackSource(trackSource) {
@@ -21,8 +22,7 @@ BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
-    QString nativeLocation = index.sibling(
-            index.row(), fieldIndex("location")).data().toString();
+    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
     QString location = QDir::fromNativeSeparators(nativeLocation);
 
     if (location.isEmpty()) {
@@ -31,35 +31,30 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     }
 
     bool track_already_in_library = false;
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, &track_already_in_library);
+    TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+            TrackRef::fromFileInfo(location),
+            &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from iTunes. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
     if (pTrack && !track_already_in_library) {
-        QString artist = index.sibling(
-                index.row(), fieldIndex("artist")).data().toString();
+        QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
         pTrack->setArtist(artist);
 
-        QString title = index.sibling(
-                index.row(), fieldIndex("title")).data().toString();
+        QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
         pTrack->setTitle(title);
 
-        QString album = index.sibling(
-                index.row(), fieldIndex("album")).data().toString();
+        QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
         pTrack->setAlbum(album);
 
-        QString year = index.sibling(
-                index.row(), fieldIndex("year")).data().toString();
+        QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
         pTrack->setYear(year);
 
-        QString genre = index.sibling(
-                index.row(), fieldIndex("genre")).data().toString();
+        QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
         pTrack->setGenre(genre);
 
-        float bpm = index.sibling(
-                index.row(), fieldIndex("bpm")).data().toString().toFloat();
+        float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
         pTrack->setBpm(bpm);
     }
     return pTrack;
@@ -75,15 +70,12 @@ TrackId BaseExternalPlaylistModel::getTrackId(const QModelIndex& index) const {
 }
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+    return column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
-        return true;
-    }
-    return false;
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW));
 }
 
-Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
@@ -101,8 +93,7 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlRecord finder_query_record = finder_query.record();
     while (finder_query.next()) {
-        playlistId = finder_query.value(
-                finder_query_record.indexOf("id")).toInt();
+        playlistId = finder_query.value(finder_query_record.indexOf("id")).toInt();
     }
 
     if (playlistId == -1) {
@@ -111,24 +102,24 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     }
 
     QString playlistViewTable = QString("%1_%2").arg(m_playlistTracksTable,
-                                                     QString::number(playlistId));
+            QString::number(playlistId));
 
     QStringList columns;
     columns << "track_id";
     columns << "position";
     columns << "'' AS " + LIBRARYTABLE_PREVIEW;
 
-
     QSqlQuery query(m_database);
     FieldEscaper f(m_database);
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(f.escapeString(playlistViewTable),
-                 columns.join(","),
-                 m_playlistTracksTable,
-                 QString::number(playlistId));
+    QString queryString =
+            QStringLiteral(
+                    "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM %3 WHERE playlist_id = :playlist_id")
+                    .arg(f.escapeString(playlistViewTable),
+                            columns.join(","),
+                            m_playlistTracksTable);
     query.prepare(queryString);
+    query.bindValue(":playlist_id", playlistId);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Error creating temporary view for playlist.";
@@ -138,47 +129,29 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     columns[2] = LIBRARYTABLE_PREVIEW;
     setTable(playlistViewTable, columns[0], columns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
-                   Qt::AscendingOrder);
+            Qt::AscendingOrder);
     setSearch("");
 }
 
-void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
-    if (group == m_previewDeckGroup) {
-        // If there was a previously loaded track, refresh its rows so the
-        // preview state will update.
-        if (m_previewDeckTrackId.isValid()) {
-            const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
-            m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
-                QModelIndex left = index(row, 0);
-                QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
-            }
-        }
-        if (pTrack) {
-            // The external table has foreign Track IDs, so we need to compare
-            // by location
-            for (int row = 0; row < rowCount(); ++row) {
-                QString nativeLocation = index(row, fieldIndex("location")).data().toString();
-                QString location = QDir::fromNativeSeparators(nativeLocation);
-                if (location == pTrack->getLocation()) {
-                    m_previewDeckTrackId = TrackId(index(row, 0).data());
-                    //Debug() << "foreign track id" << m_previewDeckTrackId;
-                    break;
-                }
+TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
+    if (pTrack) {
+        // The external table has foreign Track IDs, so we need to compare
+        // by location
+        for (int row = 0; row < rowCount(); ++row) {
+            QString nativeLocation = index(row, fieldIndex("location")).data().toString();
+            QString location = QDir::fromNativeSeparators(nativeLocation);
+            if (location == pTrack->getLocation()) {
+                return TrackId(index(row, 0).data());
             }
         }
     }
+    return TrackId();
 }
 
-TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {
-    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
-    return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_LOADTOSAMPLER;
+TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
+    return Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToPreviewDeck |
+            Capability::LoadToSampler;
 }

@@ -45,7 +45,7 @@ class HSS1394(Feature):
 
 class HID(Feature):
     INTERNAL_LINK = False
-    HIDAPI_INTERNAL_PATH = 'lib/hidapi-0.8.0-rc1'
+    HIDAPI_INTERNAL_PATH = 'lib/hidapi'
 
     def description(self):
         return "HID controller support"
@@ -100,6 +100,7 @@ class HID(Feature):
 
     def sources(self, build):
         sources = ['src/controllers/hid/hidcontroller.cpp',
+                   'src/controllers/hid/hidcontrollerpreset.cpp',
                    'src/controllers/hid/hidenumerator.cpp',
                    'src/controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
@@ -156,7 +157,8 @@ class Bulk(Feature):
                    'src/controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
             sources.append(
-                'src/controllers/hid/hidcontrollerpresetfilehandler.cpp')
+                ['src/controllers/hid/hidcontrollerpresetfilehandler.cpp',
+                 'src/controllers/hid/hidcontrollerpreset.cpp'])
         return sources
 
 
@@ -648,35 +650,42 @@ class TestSuite(Feature):
 
         # Clone our main environment so we don't change any settings in the
         # Mixxx environment
-        test_env = build.env.Clone()
+        env = build.env.Clone()
+        SCons.Export('env')
+        SCons.Export('build')
 
         # -pthread tells GCC to do the right thing regardless of system
         if build.toolchain_is_gnu:
-            test_env.Append(CCFLAGS='-pthread')
-            test_env.Append(LINKFLAGS='-pthread')
+            env.Append(CCFLAGS='-pthread')
+            env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
-        gtest_dir = test_env.Dir("lib/gtest-1.7.0")
-
-        env = test_env
-        SCons.Export('env')
-        SCons.Export('build')
+        # Build gtest
+        env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
+        gtest_dir = env.Dir("lib/googletest-1.8.x/googletest")
         env.SConscript(env.File('SConscript', gtest_dir))
+        build.env.Append(LIBPATH=gtest_dir)
+        build.env.Append(LIBS=['gtest'])
 
-        # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        gmock_dir = test_env.Dir("lib/gmock-1.7.0")
+        # Build gmock
+        env.Append(CPPPATH="#lib/googletest-1.8.x/googlemock/include")
+        gmock_dir = env.Dir("lib/googletest-1.8.x/googlemock")
         env.SConscript(env.File('SConscript', gmock_dir))
+        build.env.Append(LIBPATH=gmock_dir)
+        build.env.Append(LIBS=['gmock'])
 
         # Build the benchmark library
-        test_env.Append(CPPPATH="#lib/benchmark/include")
-        benchmark_dir = test_env.Dir("lib/benchmark")
+        env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = env.Dir("lib/benchmark")
         env.SConscript(env.File('SConscript', benchmark_dir))
+        build.env.Append(LIBPATH=benchmark_dir)
+        build.env.Append(LIBS=['benchmark'])
 
         return []
 
 
 class LiveBroadcasting(Feature):
+    INTERNAL_LINK = False
+
     def description(self):
         return "Live Broadcasting Support"
 
@@ -693,11 +702,22 @@ class LiveBroadcasting(Feature):
         if not self.enabled(build):
             return
 
-        libshout_found = conf.CheckLib(['libshout', 'shout'])
         build.env.Append(CPPDEFINES='__BROADCAST__')
 
-        if not libshout_found:
-            raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
+        if build.platform_is_linux:
+            # Check if system lib is lower at least 2.4.4 and not suffering bug
+            # https://bugs.launchpad.net/mixxx/+bug/1833225
+            if not conf.CheckForPKG('shout', '2.4.4'):
+                self.INTERNAL_LINK = True
+
+        if not self.INTERNAL_LINK:
+            self.INTERNAL_LINK = not conf.CheckLib(['libshout', 'shout'])
+
+        if self.INTERNAL_LINK:
+            print("Using internal shout_mixxx from lib/libshout")
+            build.env.Append(CPPPATH='include')
+            build.env.Append(CPPPATH='src')
+            return
 
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
@@ -705,6 +725,32 @@ class LiveBroadcasting(Feature):
             conf.CheckLib('gdi32')
 
     def sources(self, build):
+        if self.INTERNAL_LINK:
+            # Clone our main environment so we don't change any settings in the
+            # Mixxx environment
+            libshout_env = build.env.Clone()
+            libshout_env['LIB_OUTPUT'] = '#lib/libshout/lib'
+
+            if build.toolchain_is_gnu:
+                libshout_env.Append(CCFLAGS='-pthread')
+                libshout_env.Append(LINKFLAGS='-pthread')
+
+            libshout_env.Append(CPPPATH="#lib/libshout")
+            libshout_dir = libshout_env.Dir("#lib/libshout")
+
+            env = libshout_env
+            SCons.Export('env')
+            SCons.Export('build')
+            env.SConscript(
+                env.File('SConscript', libshout_dir),
+                variant_dir="lib/libshout2",
+                duplicate=0,
+                exports=['build'])
+
+            build.env.Append(CPPPATH="#lib/libshout/include")
+            build.env.Append(LIBPATH='#lib/libshout/lib')
+            build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
+
         depends.Qt.uic(build)('src/preferences/dialog/dlgprefbroadcastdlg.ui')
         return ['src/preferences/dialog/dlgprefbroadcast.cpp',
                 'src/broadcast/broadcastmanager.cpp',
@@ -1013,17 +1059,10 @@ class Optimize(Feature):
                 self.status = self.build_status(
                     optimize_level, "tuned for this CPU (%s)" % build.machine)
                 build.env.Append(CCFLAGS='-march=native')
-                # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automatically
-                if build.architecture_is_x86 and not build.machine_is_64bit:
-                    # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
-                    # not set by default (not supported on arm builds)
-                    # If -msse is not implicitly set, it falls back to mfpmath=387
-                    # and a compiler warning is issued (tested with gcc 4.8.4)
-                    build.env.Append(CCFLAGS='-mfpmath=sse')
-                elif build.architecture_is_arm:
+                if build.architecture_is_arm:
                     self.status = self.build_status(optimize_level)
                     build.env.Append(CCFLAGS='-mfloat-abi=hard')
                     build.env.Append(CCFLAGS='-mfpu=neon')
@@ -1174,7 +1213,7 @@ class QtKeychain(Feature):
         return "Secure credentials storage support for Live Broadcasting profiles"
 
     def enabled(self, build):
-        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 0)
+        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 1)
         if int(build.flags['qtkeychain']):
             return True
         return False

@@ -1,6 +1,6 @@
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 
-#include <BPMDetect.h>
+#include <soundtouch/BPMDetect.h>
 
 #include "analyzer/constants.h"
 #include "util/sample.h"

@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QMap>
 #include <QList>
-#include <QSignalMapper>
 
 #include "engine/channelhandle.h"
 #include "util/class.h"
@@ -35,7 +34,7 @@ class EffectChainSlot : public QObject {
     EffectChainPointer getEffectChain() const;
     EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
 
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handleGroup);
 
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
@@ -148,26 +147,25 @@ class EffectChainSlot : public QObject {
       object than the mapping.
     **/
     ControlPushButton* m_pControlChainShowFocus;
+    ControlPushButton* m_pControlChainHasControllerFocus;
     ControlPushButton* m_pControlChainShowParameters;
     ControlPushButton* m_pControlChainFocusedEffect;
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.
-        ChannelInfo(const ChannelHandleAndGroup& handle_group, ControlObject* pEnabled)
-                : handle_group(handle_group),
+        ChannelInfo(const ChannelHandleAndGroup& handleGroup, ControlObject* pEnabled)
+                : handleGroup(handleGroup),
                   pEnabled(pEnabled) {
-
         }
         ~ChannelInfo() {
             delete pEnabled;
         }
-        ChannelHandleAndGroup handle_group;
+        ChannelHandleAndGroup handleGroup;
         ControlObject* pEnabled;
     };
     QMap<QString, ChannelInfo*> m_channelInfoByName;
 
     QList<EffectSlotPointer> m_slots;
-    QSignalMapper m_channelStatusMapper;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

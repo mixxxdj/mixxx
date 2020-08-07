@@ -107,12 +107,12 @@ def define_test_targets(default=False):
         test_files = Glob('src/test/*.cpp', strings=True)
         test_env = env.Clone()
 
-        test_env.Append(CPPPATH="lib/gtest-1.7.0/include")
-        test_env.Append(LIBPATH="lib/gtest-1.7.0")
+        test_env.Append(CPPPATH="lib/googletest-1.8.x/googletest/include")
+        test_env.Append(LIBPATH="lib/googletest-1.8.x/googletest")
         test_env.Append(LIBS=['gtest'])
 
-        test_env.Append(CPPPATH="lib/gmock-1.7.0/include")
-        test_env.Append(LIBPATH="lib/gmock-1.7.0")
+        test_env.Append(CPPPATH="lib/googletest-1.8.x/googlemock/include")
+        test_env.Append(LIBPATH="lib/googletest-1.8.x/googlemock")
         test_env.Append(LIBS=['gmock'])
 
         test_env.Append(CPPPATH="lib/benchmark/include")
@@ -267,7 +267,9 @@ skin_files = Glob('#res/skins/*')
 controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
-translation_files = Glob('#res/translations/*.qm') + Glob(os.path.join(build.env['QTDIR'], 'translations/qt_*.qm'))
+# QT 5 translations have been separated into several files, and most of the qt_xx.qm files contain just shortcuts to load the qtbase, qtmultimedia etc files.
+translation_files = Glob('#res/translations/*.qm') + Glob(os.path.join(build.env['QTDIR'], 'translations/qt_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtbase_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtmultimedia_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtscript_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtxmlpatterns_*.qm'))
+
 
 # Font files
 font_files = Glob('#res/fonts/*')
@@ -287,7 +289,7 @@ dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 
 #udev rule file for USB HID and Bulk controllers
-hidudev_files = Glob('#res/linux/mixxx.usb.rules')
+hidudev_files = Glob('#res/linux/mixxx-usb-uaccess.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx_icon.svg')
@@ -1009,7 +1011,7 @@ def BuildUbuntuPackage(target, source, env):
         print("* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd())
         print()
         os.system('cp -r build/debian .')
-        os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
+        os.system('cp res/linux/mixxx-usb-uaccess.rules ./debian/mixxx.mixxx-usb.udev')
 
         scons_flags = ' '.join([
                 'optimize=portable',

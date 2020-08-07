@@ -7,13 +7,13 @@ class PreviewDeck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
     PreviewDeck(QObject* pParent,
-                UserSettingsPointer pConfig,
-                EngineMaster* pMixingEngine,
-                EffectsManager* pEffectsManager,
-                VisualsManager* pVisualsManager,
-                EngineChannel::ChannelOrientation defaultOrientation,
-                QString group);
-    virtual ~PreviewDeck();
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            const ChannelHandleAndGroup& handleGroup);
+    ~PreviewDeck() override = default;
 };
 
 #endif /* MIXER_PREVIEWDECK_H */

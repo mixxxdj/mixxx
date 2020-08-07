@@ -26,8 +26,9 @@ class EffectsManager : public QObject {
   public:
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
-    EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                   ChannelHandleFactory* pChannelHandleFactory);
+    EffectsManager(QObject* pParent,
+            UserSettingsPointer pConfig,
+            ChannelHandleFactoryPointer pChannelHandleFactory);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -46,8 +47,8 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
-    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handleGroup);
+    void registerOutputChannel(const ChannelHandleAndGroup& handleGroup);
     const QSet<ChannelHandleAndGroup>& registeredInputChannels() const;
     const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const;
 
@@ -92,7 +93,7 @@ class EffectsManager : public QObject {
     EffectPointer instantiateEffect(const QString& effectId);
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
-    bool getEffectVisibility(EffectManifestPointer pManifest); 
+    bool getEffectVisibility(EffectManifestPointer pManifest);
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setup();
@@ -120,7 +121,7 @@ class EffectsManager : public QObject {
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;

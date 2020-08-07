@@ -9,7 +9,13 @@ enum SyncMode {
     SYNC_INVALID = -1,
     SYNC_NONE = 0,
     SYNC_FOLLOWER = 1,
-    SYNC_MASTER = 2,
+    // SYNC_MASTER_SOFT is a master that Mixxx has chosen automatically.
+    // depending on how decks stop and start, it may reassign soft master at will.
+    SYNC_MASTER_SOFT = 2,
+    // SYNC_MASTER_EXPLICIT represents an explicit request that the synacable be
+    // master. Mixxx will only remove a SYNC_MASTER_SOFT if the track is stopped or
+    // ejected.
+    SYNC_MASTER_EXPLICIT = 3,
     SYNC_NUM_MODES
 };
 
@@ -26,16 +32,21 @@ inline bool toSynchronized(SyncMode mode) {
     return mode > SYNC_NONE;
 }
 
+inline bool isMaster(SyncMode mode) {
+    return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
+}
+
+/// Syncable is an abstract base class for any object that wants to participate
+/// in Master Sync.
 class Syncable {
   public:
-    virtual ~Syncable() { }
+    virtual ~Syncable() = default;
     virtual const QString& getGroup() const = 0;
     virtual EngineChannel* getChannel() const = 0;
 
     // Notify a Syncable that their mode has changed. The Syncable must record
-    // this mode and return the latest mode received via notifySyncModeChanged
-    // in response to getMode().
-    virtual void notifySyncModeChanged(SyncMode mode) = 0;
+    // this mode and return the latest mode in response to getMode().
+    virtual void setSyncMode(SyncMode mode) = 0;
 
     // Notify a Syncable that it is now the only currently-playing syncable.
     virtual void notifyOnlyPlayingSyncable() = 0;
@@ -58,6 +69,7 @@ class Syncable {
     // include scratch or FF/REW values.
     virtual double getBpm() const = 0;
 
+    // Gets the beat distance as a fraction from 0 to 1
     virtual double getBeatDistance() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
     virtual double getBaseBpm() const = 0;
@@ -67,11 +79,7 @@ class Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     virtual void setMasterBeatDistance(double beatDistance) = 0;
-    // Reports what the bpm of the master would be if it were playing back at
-    // a rate of 1.0x.  This is used by syncables to decide if they should
-    // match rates at x2 or /2 speed.  If we were to use the regular BPM, the
-    // change of a rate slider might suddenly change the sync multiplier.
-    virtual void setMasterBaseBpm(double) = 0;
+
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
     virtual void setMasterBpm(double bpm) = 0;
@@ -87,9 +95,11 @@ class Syncable {
     virtual void setInstantaneousBpm(double bpm) = 0;
 };
 
+/// SyncableListener is an interface class used by EngineSync to receive
+/// information about sync change requests.
 class SyncableListener {
   public:
-    virtual ~SyncableListener() {}
+    virtual ~SyncableListener() = default;
 
     // Used by Syncables to tell EngineSync it wants to be enabled in a
     // specific mode. If the state change is accepted, EngineSync calls
@@ -119,11 +129,8 @@ class SyncableListener {
             Syncable* pSyncable, double beatDistance) = 0;
 
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
-    // A syncable can notify that a track has been loaded, and passes in the bpm
-    // that it would be set at if the rate slider were left alone.  This allows
-    // the master sync engine to either use that rate, if it pleases, or sets
-    // the syncable to the existing master bpm.
-    virtual void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) = 0;
+
+    virtual Syncable* getMasterSyncable() = 0;
 };
 
 #endif /* SYNCABLE_H */
