@@ -11,13 +11,14 @@
 class MacroManager : public QObject {
     Q_OBJECT
   public:
-    MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool, PlayerManager* pPlayerManager);
+    MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool);
 
     MacroRecorder* getRecorder();
+    void setPlayerManager(PlayerManager*);
 
   public slots:
-    void slotSaveMacroFromChannel(QVector<MacroAction> actions, ChannelHandle channel);
-    void slotSaveMacro(QVector<MacroAction> actions, TrackPointer pTrack);
+    void slotSaveMacroFromChannel(QVector<MacroAction>, ChannelHandle);
+    void slotSaveMacro(QVector<MacroAction>, TrackId);
 
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;

@@ -286,7 +286,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
-    m_pMacroManager = new MacroManager(m_pDbConnectionPool, m_pPlayerManager);
+    m_pMacroManager = new MacroManager(m_pDbConnectionPool);
 
     // Create the player manager (long)
     m_pPlayerManager = new PlayerManager(pConfig,
@@ -295,6 +295,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pMacroManager->getRecorder(),
             m_pEffectsManager,
             m_pVisualsManager);
+    m_pMacroManager->setPlayerManager(m_pPlayerManager);
     connect(m_pPlayerManager,
             &PlayerManager::noMicrophoneInputConfigured,
             this,

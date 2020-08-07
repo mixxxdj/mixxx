@@ -101,6 +101,6 @@ void MacroRecorder::notifyTrackChange(ChannelHandle* channel, TrackPointer track
         m_pStartRecordingTimer.stop();
         m_CORecStatus.set(Status::Disabled);
 
-        emit saveMacro(fetchRecordedActions(), track);
+        emit saveMacro(fetchRecordedActions(), track->getId());
     }
 }
