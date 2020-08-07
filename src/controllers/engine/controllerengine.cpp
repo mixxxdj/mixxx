@@ -149,6 +149,10 @@ void ControllerEngine::gracefulShutdown() {
     qDebug() << "Invoking shutdown() hook in scripts";
     callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 
+    if (m_shutdownFunction.isCallable()) {
+        executeFunction(m_shutdownFunction, QJSValueList{});
+    }
+
     // Prevents leaving decks in an unstable state
     //  if the controller is shut down while scratching
     QHashIterator<int, int> i(m_scratchTimers);
@@ -190,6 +194,8 @@ void ControllerEngine::initializeScriptEngine() {
     // Create the Script Engine
     m_pScriptEngine = new QJSEngine(this);
 
+    m_pScriptEngine->installExtensions(QJSEngine::ConsoleExtension);
+
     // Make this ControllerEngine instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pScriptEngine->globalObject();
     ControllerEngineJSProxy* proxy = new ControllerEngineJSProxy(this);
@@ -220,6 +226,66 @@ void ControllerEngine::uninitializeScriptEngine() {
         QJSEngine* engine = m_pScriptEngine;
         m_pScriptEngine = nullptr;
         engine->deleteLater();
+    }
+}
+
+void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    VERIFY_OR_DEBUG_ASSERT(!moduleFileInfo.filePath().isEmpty()) {
+        return;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(moduleFileInfo.isFile()) {
+        return;
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    m_moduleFileInfo = moduleFileInfo;
+
+    QJSValue mod = m_pScriptEngine->importModule(moduleFileInfo.absoluteFilePath());
+    if (mod.isError()) {
+        showScriptExceptionDialog(mod);
+        return;
+    }
+
+    connect(&m_scriptWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerEngine::scriptHasChanged);
+    m_scriptWatcher.addPath(moduleFileInfo.absoluteFilePath());
+
+    QJSValue initFunction = mod.property("init");
+    executeFunction(initFunction, QJSValueList{});
+
+    QJSValue handleInputFunction = mod.property("handleInput");
+    if (handleInputFunction.isCallable()) {
+        m_handleInputFunction = handleInputFunction;
+    } else {
+        scriptErrorDialog(
+                "Controller JavaScript module exports no handleInput function.",
+                QStringLiteral("handleInput"),
+                true);
+    }
+
+    QJSValue shutdownFunction = mod.property("shutdown");
+    if (shutdownFunction.isCallable()) {
+        m_shutdownFunction = shutdownFunction;
+    } else {
+        qDebug() << "Module exports no shutdown function.";
+    }
+#else
+    Q_UNUSED(moduleFileInfo);
+#endif
+}
+
+void ControllerEngine::handleInput(QByteArray data, mixxx::Duration timestamp) {
+    if (m_handleInputFunction.isCallable()) {
+        QJSValueList args;
+        args << byteArrayToScriptValue(data);
+        args << timestamp.toDoubleMillis();
+        executeFunction(m_handleInputFunction, args);
     }
 }
 
@@ -263,6 +329,14 @@ void ControllerEngine::reloadScripts() {
 
     qDebug() << "Re-initializing scripts";
     initializeScripts(m_lastScriptFiles);
+
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    if (!m_moduleFileInfo.filePath().isEmpty()) {
+        loadModule(m_moduleFileInfo);
+    }
 }
 
 void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts) {

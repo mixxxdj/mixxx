@@ -38,10 +38,8 @@ class SchemaManager {
     /// Tries to update the database schema to targetVersion.
     /// Pending changes are rolled back upon failure.
     /// No-op if the versions are incompatible or the targetVersion is older.
-    Result upgradeToSchemaVersion(
-            const QString& schemaFilename,
-            int targetVersion);
-
+    Result upgradeToSchemaVersion(int targetVersion, const QString& schemaFilename);
+  
   private:
     QSqlDatabase m_database;
     SettingsDAO m_settingsDao;
