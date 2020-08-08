@@ -718,17 +718,11 @@ WBeatSpinBox::down-button,
 
   #CrossfaderButtonContainer_Deck {
     padding: 1px;
-    border-bottom: 1px solid #333;
-    border-right: 1px solid #333;
-    border-bottom-right-radius: 1px;
+    margin: 0px 1px 1px 0px;
     }
   #CrossfaderButtonContainer_Aux {
-    padding: 1px 1px 0px 1px;
+    padding: 1px;
     margin-left: 5px;
-    border-right: 1px solid #333;
-    }
-    #CrossfaderButton[value="1"] {
-      background-color: #262626;
     }
 
 #MixerMasterHeadphone {
@@ -1471,7 +1465,6 @@ WPushButton#QuickEffectButton[displayValue="0"],
 #FxToggleButton[displayValue="0"],
 #SamplerContainer WPushButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
-#MicAuxUnit WPushButton#CrossfaderButton[value="1"],
 #MicDuckingContainer WPushButton[displayValue="0"],
 /* Beatsize up/down buttons */
 WBeatSpinBox::up-button,
@@ -1482,7 +1475,6 @@ WBeatSpinBox::down-button {
   #LoopControls WPushButton[displayValue="0"],
   #BeatjumpControls WPushButton[displayValue="0"],
   #SyncDeck[value="0"],
-  #MixerDecks WPushButton#CrossfaderButton[value="1"],
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
@@ -1532,10 +1524,6 @@ WBeatSpinBox::down-button {
   #ToolBar WPushButton[displayValue="0"] {
     background-color: #151517;
   }
-
-WPushButton#CrossfaderButton[value="0"] {
-  background-color: #222225;
-}
 
 /* Orange for 'active' status */
 WPushButton#PlayDeck[displayValue="1"],
@@ -1723,6 +1711,8 @@ WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
 WPushButton#FxExpand[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
+WPushButton#CrossfaderButton[displayValue="0"],
+WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
 #RecDot {
@@ -2711,8 +2701,6 @@ WTrackMenu QMenu {
 #SkinContainer {
   background-color: #080808;
 }
-#CrossfaderButtonContainer_Deck,
-#CrossfaderButtonContainer_Aux,
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView,

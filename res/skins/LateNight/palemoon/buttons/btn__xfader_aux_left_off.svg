@@ -23,14 +23,13 @@
   </metadata>
   <defs
      id="defs8" />
-  <g
-     transform="translate(0,-1)"
-     aria-label="L"
-     id="text838-3"
-     style="font-style:normal;font-weight:normal;font-size:40.0002px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#555555;fill-opacity:1;stroke:none;stroke-width:1.00001">
-    <path
-       d="M 2.9999872,12.018282 3,3 h 1.5559974 l -1.28e-5,7.68364 h 4.029968 v 1.334642 z"
-       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:13.3334px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#555555;fill-opacity:1;stroke-width:1.00001"
-       id="path877" />
-  </g>
+  <rect
+     style="fill:#0f0f0f;fill-opacity:1;stroke:none;stroke-width:0.845999;stroke-linecap:round;stroke-linejoin:round"
+     id="rect868"
+     width="14.764685"
+     height="8"
+     x="0"
+     y="2"
+     rx="4"
+     ry="4" />
 </svg>
