@@ -191,10 +191,11 @@ for:
     - python -m pip install git+https://github.com/frerich/clcache.git
     # Decrypt the code signing certificate.
     - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
-    - IF [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
         appveyor-tools\secure-file -decrypt %CODESIGN_CERTIFICATE_PATH%.enc -secret %CODESIGN_CERTIFICATE_SECURE_FILE_SECRET% -salt %CODESIGN_CERTIFICATE_SECURE_FILE_SALT%
       ) else (
-        echo "Skipping certificate decryption because we are in a pull request."
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
 
   before_build:
@@ -248,17 +249,19 @@ for:
       ..
     - cmake --build .
     - cmake --build . --target install
-    - IF [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
         signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.exe
       ) else (
-        echo "Skipping codesigning *.exe because we are in a pull request."
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
     # Generate WIX installer
     - cpack -G "WIX"
-    - IF [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
         signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi
       ) else (
-        echo "Skipping codesigning *.msi because we are in a pull request."
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
 
   test_script:
