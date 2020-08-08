@@ -155,6 +155,10 @@ void handleMessage(
         writeFlags = WriteFlag::All;
         break;
     }
+    if (!writeFlags) {
+        // Ignore message for disabled log level
+        return;
+    }
     VERIFY_OR_DEBUG_ASSERT(levelName) {
         return;
     }
