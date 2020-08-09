@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                                          //
 ///////////////////////////////////////////////////////////////////////////////////
-/* global engine                                                                 */
-/* global script                                                                 */
+// /* global engine                                                                 */
+// /* global script                                                                 */
 /* global HIDDebug                                                               */
 /* global HIDPacket                                                              */
 /* global HIDController                                                          */
@@ -45,7 +45,7 @@ var TraktorS3 = new function() {
     this.padModeState = {"deck1": 0, "deck2": 0}; // 0 = Hotcues Mode, 1 = Samples Mode
 
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
-    this.freeze_lights = false;
+    this.batchingOutputs = false;
 
     // Active deck switches -- common-hid-packet-parser only has one active deck status per
     // Controller object.
@@ -703,11 +703,11 @@ TraktorS3.selectBeatjumpHandler = function(field) {
     }
 
     if (TraktorS3.shiftPressed[field.group]) {
-        var beatjump_size = engine.getValue(activeGroup, "beatjump_size");
+        var beatjumpSize = engine.getValue(activeGroup, "beatjump_size");
         if (delta > 0) {
-            engine.setValue(activeGroup, "beatjump_size", beatjump_size * 2);
+            engine.setValue(activeGroup, "beatjump_size", beatjumpSize * 2);
         } else {
-            engine.setValue(activeGroup, "beatjump_size", beatjump_size / 2);
+            engine.setValue(activeGroup, "beatjump_size", beatjumpSize / 2);
         }
     } else {
         if (delta < 0) {
@@ -793,7 +793,7 @@ TraktorS3.jogTouchHandler = function(field) {
         return;
     }
     HIDDebug("jog active group " + activeGroup);
-    if (TraktorS3.wheelTouchInertiaTimer[activeGroup] != 0) {
+    if (TraktorS3.wheelTouchInertiaTimer[activeGroup] !== 0) {
     // The wheel was touched again, reset the timer.
         engine.stopTimer(TraktorS3.wheelTouchInertiaTimer[activeGroup]);
         TraktorS3.wheelTouchInertiaTimer[activeGroup] = 0;
@@ -829,20 +829,20 @@ TraktorS3.jogHandler = function(field) {
     }
     var deltas = TraktorS3.wheelDeltas(activeGroup, field.value);
     HIDDebug("delta: " + deltas);
-    var tick_delta = deltas[0];
-    var time_delta = deltas[1] / 0x100;
-    HIDDebug("time delt: " + time_delta.toString(16));
+    var tickDelta = deltas[0];
+    var timeDelta = deltas[1] / 0x100;
+    HIDDebug("time delt: " + timeDelta.toString(16));
 
-    var velocity = TraktorS3.scalerJog(activeGroup, tick_delta, time_delta);
+    var velocity = TraktorS3.scalerJog(activeGroup, tickDelta, timeDelta);
     HIDDebug("VELO: " + velocity);
     engine.setValue(activeGroup, "jog", velocity);
     if (engine.getValue(activeGroup, "scratch2_enable")) {
-        var deckNumber = TraktorS3.controller.resolveDeck(group);
-        engine.scratchTick(deckNumber, tick_delta);
+        var deckNumber = TraktorS3.controller.resolveDeck(field.group);
+        engine.scratchTick(deckNumber, tickDelta);
     }
 };
 
-TraktorS3.scalerJog = function(group, tick_delta, time_delta) {
+TraktorS3.scalerJog = function(group, tickDelta, timeDelta) {
     // If it's playing nudge
     var multiplier = 1.0;
     if (TraktorS3.shiftPressed["deck1"] || TraktorS3.shiftPressed["deck2"]) {
@@ -850,10 +850,10 @@ TraktorS3.scalerJog = function(group, tick_delta, time_delta) {
     }
 
     if (engine.getValue(group, "play")) {
-        return multiplier * (tick_delta / time_delta) / 3;
+        return multiplier * (tickDelta / timeDelta) / 3;
     }
 
-    return (tick_delta / time_delta) * multiplier * 2.0;
+    return (tickDelta / timeDelta) * multiplier * 2.0;
 };
 
 TraktorS3.wheelDeltas = function(deckNumber, value) {
@@ -907,7 +907,7 @@ TraktorS3.finishJogTouch = function(group) {
     return;
   }*/
     var play = engine.getValue(group, "play");
-    if (play != 0) {
+    if (play !== 0) {
     // If we are playing, just hand off to the engine.
         engine.scratchDisable(deckNumber, true);
     } else {
@@ -952,7 +952,7 @@ TraktorS3.fxHandler = function(field) {
     } else {
         ledValue += TraktorS3.LEDDimValue;
     }
-    TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.freeze_lights);
+    TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
     // TraktorS3.colorOutputHandler(TraktorS3.fxButtonState[fxNumber], field.group, "!fxButton" + fxNumber);
     TraktorS3.toggleFX();
 };
@@ -1041,7 +1041,7 @@ TraktorS3.init = function(_id) {
 TraktorS3.debugLights = function() {
     // Call this if you want to just send raw packets to the controller (good for figuring out what
     // bytes do what).
-    var data_strings = [
+    var dataStrings = [
         "      7C 00  35 2C 2C FF  2C 39 FF 00  FF FF 00 35 " +
         "00 2C 7E 00  00 FF FF FF  2C 2C 20 7C  7C 00 FF 00 " +
         "FF 00 00 00  FF 00 FF 2C  00 FF 2C 7C  FF 00 00 00 " +
@@ -1058,24 +1058,24 @@ TraktorS3.debugLights = function() {
     var data = [Object(), Object()];
 
 
-    for (i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
         var ok = true;
-        var splitted = data_strings[i].split(/\s+/);
+        var splitted = dataStrings[i].split(/\s+/);
         HIDDebug("i " + i + " " + splitted);
         data[i].length = splitted.length;
-        for (j = 0; j < splitted.length; j++) {
-            var byte_str = splitted[j];
-            if (byte_str.length === 0) {
+        for (var j = 0; j < splitted.length; j++) {
+            var byteStr = splitted[j];
+            if (byteStr.length === 0) {
                 continue;
             }
-            if (byte_str.length !== 2) {
+            if (byteStr.length !== 2) {
                 ok = false;
-                HIDDebug("not two characters?? " + byte_str);
+                HIDDebug("not two characters?? " + byteStr);
             }
-            var b = parseInt(byte_str, 16);
+            var b = parseInt(byteStr, 16);
             if (b < 0 || b > 255) {
                 ok = false;
-                HIDDebug("number out of range: " + byte_str + " " + b);
+                HIDDebug("number out of range: " + byteStr + " " + b);
             }
             data[i][j] = b;
         }
@@ -1091,7 +1091,7 @@ TraktorS3.debugLights = function() {
         //     data[0][0x2A + d] = (d + 1) * 4 + 32 + 2;
         // }
         if (ok) {
-            controller.send(data[i], data[i].length, 0x80 + i);
+            TraktorS3.controller.send(data[i], data[i].length, 0x80 + i);
         }
     }
 };
@@ -1189,8 +1189,8 @@ TraktorS3.registerOutputPackets = function() {
         "deck1": 0x43,
         "deck2": 0x4A
     };
-    for (ch in wheelOffsets) {
-        for (i = 0; i < 8; i++) {
+    for (var ch in wheelOffsets) {
+        for (var i = 0; i < 8; i++) {
             outputA.addOutput(ch, "!" + "wheel" + i, wheelOffsets[ch] + i, "B");
         }
     }
@@ -1246,7 +1246,7 @@ TraktorS3.registerOutputPackets = function() {
     // this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // Channel VuMeters
-    for (var i = 1; i <= 4; i++) {
+    for (i = 1; i <= 4; i++) {
         this.vuConnections[i] = engine.makeConnection("[Channel" + i + "]", "VuMeter", this.channelVuMeterHandler);
         this.clipConnections[i] = engine.makeConnection("[Channel" + i + "]", "PeakIndicator", this.peakOutputHandler);
     }
@@ -1327,16 +1327,16 @@ TraktorS3.resolveDeckIfActive = function(group) {
     return undefined;
 };
 
-TraktorS3.lightGroup = function(packet, output_group_name, co_group_name) {
-    var group_ob = packet.groups[output_group_name];
-    for (var field_name in group_ob) {
-        field = group_ob[field_name];
+TraktorS3.lightGroup = function(packet, outputGroupName, coGroupName) {
+    var groupOb = packet.groups[outputGroupName];
+    for (var fieldName in groupOb) {
+        var field = groupOb[fieldName];
         if (field.name[0] === "!") {
             continue;
         }
         if (field.mapped_callback !== undefined) {
-            var value = engine.getValue(co_group_name, field.name);
-            field.mapped_callback(value, co_group_name, field.name);
+            var value = engine.getValue(coGroupName, field.name);
+            field.mapped_callback(value, coGroupName, field.name);
         }
     // No callback, no light!
     }
@@ -1357,7 +1357,7 @@ TraktorS3.lightHotcue = function(group, number) {
     } else {
         ledValue += TraktorS3.LEDDimValue;
     }
-    TraktorS3.controller.setOutput(deck, "!pad_" + number, ledValue, !TraktorS3.freeze_lights);
+    TraktorS3.controller.setOutput(deck, "!pad_" + number, ledValue, !TraktorS3.batchingOutputs);
 };
 
 TraktorS3.lightPads = function(group) {
@@ -1377,7 +1377,7 @@ TraktorS3.lightPads = function(group) {
     } else {
         TraktorS3.colorDeckOutputHandler(1, activeGroup, "hotcues");
         TraktorS3.colorDeckOutputHandler(0, activeGroup, "samples");
-        for (var i = 1; i <= 8; ++i) {
+        for (i = 1; i <= 8; ++i) {
             TraktorS3.lightHotcue(activeGroup, i);
         }
     }
@@ -1395,35 +1395,35 @@ TraktorS3.lightFX = function() {
         } else {
             ledValue += TraktorS3.LEDDimValue;
         }
-        TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.freeze_lights);
+        TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
     }
 };
 
-TraktorS3.lightDeck = function(group, send_packets) {
-    if (send_packets === undefined) {
-        send_packets = true;
+TraktorS3.lightDeck = function(group, sendPackets) {
+    if (sendPackets === undefined) {
+        sendPackets = true;
     }
     // Freeze the lights while we do this update so we don't spam HID.
-    TraktorS3.freeze_lights = true;
-    for (var packet_name in this.controller.OutputPackets) {
-        packet = this.controller.OutputPackets[packet_name];
-        var deck_group_name = "deck1";
+    TraktorS3.batchingOutputs = true;
+    for (var packetName in this.controller.OutputPackets) {
+        var packet = this.controller.OutputPackets[packetName];
+        var deckGroupName = "deck1";
         if (group === "[Channel2]" || group === "[Channel4]") {
-            deck_group_name = "deck2";
+            deckGroupName = "deck2";
         }
 
-        TraktorS3.lightGroup(packet, deck_group_name, group);
+        TraktorS3.lightGroup(packet, deckGroupName, group);
         TraktorS3.lightGroup(packet, group, group);
 
-        TraktorS3.lightPads(deck_group_name);
+        TraktorS3.lightPads(deckGroupName);
 
         // These lights are different because either they aren't associated with a CO, or
         // there are two buttons that point to the same CO.
-        TraktorS3.deckOutputHandler(0, deck_group_name, "!shift");
-        TraktorS3.colorDeckOutputHandler(0, deck_group_name, "!PreviewTrack");
-        TraktorS3.colorDeckOutputHandler(0, deck_group_name, "!AddTrack");
-        TraktorS3.colorDeckOutputHandler(0, deck_group_name, "!LibraryFocus");
-        TraktorS3.deckOutputHandler(0, deck_group_name, "!reverse");
+        TraktorS3.deckOutputHandler(0, deckGroupName, "!shift");
+        TraktorS3.colorDeckOutputHandler(0, deckGroupName, "!PreviewTrack");
+        TraktorS3.colorDeckOutputHandler(0, deckGroupName, "!AddTrack");
+        TraktorS3.colorDeckOutputHandler(0, deckGroupName, "!LibraryFocus");
+        TraktorS3.deckOutputHandler(0, deckGroupName, "!reverse");
     }
     TraktorS3.lightFX();
 
@@ -1443,12 +1443,11 @@ TraktorS3.lightDeck = function(group, send_packets) {
         ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]] + TraktorS3.LEDDimValue, false);
     }
 
-    TraktorS3.freeze_lights = false;
+    TraktorS3.batchingOutputs = false;
     // And now send them all.
-    if (send_packets) {
-        for (packet_name in this.controller.OutputPackets) {
-            var packet_ob = this.controller.OutputPackets[packet_name];
-            packet_ob.send();
+    if (sendPackets) {
+        for (packetName in this.controller.OutputPackets) {
+            this.controller.OutputPackets[packetName].send();
         }
     }
 };
@@ -1470,12 +1469,12 @@ TraktorS3.vuMeterHandler = function(value, group, key, segments) {
     // Figure out how much the partially-illuminated segment is illuminated.
     var partialIllum = (scaledValue - fullIllumCount) * 0x7F;
 
-    for (i = 0; i < segments; i++) {
+    for (var i = 0; i < segments; i++) {
         var segmentKey = "!" + key + i;
         if (i < fullIllumCount) {
             // Don't update lights until they're all done, so the last term is false.
             TraktorS3.controller.setOutput(group, segmentKey, 0x7F, false);
-        } else if (i == fullIllumCount) {
+        } else if (i === fullIllumCount) {
             TraktorS3.controller.setOutput(group, segmentKey, partialIllum, false);
         } else {
             TraktorS3.controller.setOutput(group, segmentKey, 0x00, false);
@@ -1490,7 +1489,7 @@ TraktorS3.peakOutputHandler = function(value, group, key) {
         ledValue = 0x7E;
     }
 
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.freeze_lights);
+    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
 };
 
 // outputHandler drives lights that only have one color.
@@ -1504,7 +1503,7 @@ TraktorS3.outputHandler = function(value, group, key) {
         ledValue = 0xFF;
     }
 
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.freeze_lights);
+    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
 };
 
 // deckOutputHandler drives lights that only have one color.
@@ -1516,7 +1515,7 @@ TraktorS3.deckOutputHandler = function(value, group, key) {
         // On value
         ledValue = 0x77;
     }
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.freeze_lights);
+    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
 };
 
 TraktorS3.wheelOutputHandler = function(value, group, key) {
@@ -1530,20 +1529,19 @@ TraktorS3.wheelOutputHandler = function(value, group, key) {
         return;
     }
 
-    var sendPacket = !TraktorS3.freeze_lights;
-    TraktorS3.freeze_lights = true;
+    var sendPacket = !TraktorS3.batchingOutputs;
+    TraktorS3.batchingOutputs = true;
     for (var i = 0; i < 8; i++) {
         // HIDDebug("wheel! " + ledValue.toString(16));
         TraktorS3.colorDeckOutputHandler(value, group, "!wheel" + i);
     }
     if (sendPacket) {
-        for (packet_name in TraktorS3.controller.OutputPackets) {
-            var packet_ob = TraktorS3.controller.OutputPackets[packet_name];
-            packet_ob.send();
+        for (var packetName in TraktorS3.controller.OutputPackets) {
+            TraktorS3.controller.OutputPackets[packetName].send();
         }
-        // Only unset freeze_lights if it wasn't already true when we
+        // Only unset batchingOutputs if it wasn't already true when we
         // entered this function.
-        TraktorS3.freeze_lights = false;
+        TraktorS3.batchingOutputs = false;
     }
 };
 
@@ -1558,20 +1556,20 @@ TraktorS3.colorOutputHandler = function(value, group, key) {
         ledValue += TraktorS3.LEDDimValue;
     }
     HIDDebug("VALUE: " + ledValue);
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.freeze_lights);
+    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
 };
 
 // colorDeckOutputHandler drives lights that have the palettized multicolor lights.
 TraktorS3.colorDeckOutputHandler = function(value, group, key) {
     // Reject update if it's for a specific channel that's not selected.
     var updatedDeck = TraktorS3.controller.resolveDeck(group);
-    if (updatedDeck != undefined) {
+    if (updatedDeck !== undefined) {
         if (!TraktorS3.activeDecks[updatedDeck]) {
             return;
         }
-        if (updatedDeck == 1 || updatedDeck == 3) {
+        if (updatedDeck === "1" || updatedDeck === "3") {
             group = "deck1";
-        } else if (updatedDeck == 2 || updatedDeck == 4) {
+        } else if (updatedDeck === "2" || updatedDeck === "4") {
             group = "deck2";
         }
     } else {
@@ -1586,7 +1584,7 @@ TraktorS3.colorDeckOutputHandler = function(value, group, key) {
     } else {
         ledValue += TraktorS3.LEDDimValue;
     }
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.freeze_lights);
+    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
 };
 
 TraktorS3.hotcueOutputHandler = function(value, group, key) {
@@ -1642,7 +1640,7 @@ TraktorS3.resolveSampler = function(group) {
 
 TraktorS3.messageCallback = function(_packet, data) {
     for (var name in data) {
-        if (data.hasOwnProperty(name)) {
+        if (Object.prototype.hasOwnProperty.call(data, name)) {
             TraktorS3.controller.processButton(data[name]);
         }
     }
@@ -1650,7 +1648,7 @@ TraktorS3.messageCallback = function(_packet, data) {
 
 TraktorS3.shutdown = function() {
     // Deactivate all LEDs
-    var data_strings = [
+    var dataStrings = [
         "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
         "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
         "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
@@ -1667,18 +1665,17 @@ TraktorS3.shutdown = function() {
     var data = [Object(), Object()];
 
 
-    for (i = 0; i < data.length; i++) {
-        var ok = true;
-        var splitted = data_strings[i].split(/\s+/);
+    for (var i = 0; i < data.length; i++) {
+        var splitted = dataStrings[i].split(/\s+/);
         data[i].length = splitted.length;
-        for (j = 0; j < splitted.length; j++) {
-            var byte_str = splitted[j];
-            if (byte_str.length === 0) {
+        for (var j = 0; j < splitted.length; j++) {
+            var byteStr = splitted[j];
+            if (byteStr.length === 0) {
                 continue;
             }
-            data[i][j] = parseInt(byte_str, 16);
+            data[i][j] = parseInt(byteStr, 16);
         }
-        controller.send(data[i], data[i].length, 0x80 + i);
+        TraktorS3.controller.send(data[i], data[i].length, 0x80 + i);
     }
 
     HIDDebug("TraktorS3: Shutdown done!");
