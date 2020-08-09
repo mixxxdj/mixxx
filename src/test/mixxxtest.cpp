@@ -24,9 +24,14 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     s_pApplication.reset(new MixxxApplication(argc, argv));
 
     SoundSourceProxy::registerSoundSourceProviders();
+
     // Log level Debug would produce too many log messages that
     // might abort and fail the CI builds.
-    mixxx::Logging::initialize(QDir::temp(), mixxx::LogLevel::Info, mixxx::LogLevel::Info, true);
+    mixxx::Logging::initialize(
+            QDir(), // No log file should be written during tests, only output to stderr
+            mixxx::LogLevel::Info,
+            mixxx::LogLevel::Info,
+            true);
 
     // All guessing of cover art should be done synchronously
     // in the same thread during tests to prevent test failures
