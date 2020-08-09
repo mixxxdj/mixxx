@@ -1428,7 +1428,7 @@ TraktorS4MK2.scalerSlider = function(group, name, value) {
 }
 
 TraktorS4MK2.resolveDeckIfActive = function(group) {
-  var controller = TraktorS4MK2.controllger;
+  var controller = TraktorS4MK2.controller;
   if (group === "[Channel1]") {
     if (controller.left_deck_C) {
       return undefined;
