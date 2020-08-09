@@ -15,8 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* TODO:  */
-/*   * slider relative mode */
-/*   * wheel animations */
+/*   * wheel blink for end of track */
 /*   * touch for track browse, loop control, beatjump?                            */
 /*   * jog button                                                                */
 /*   * star button */
@@ -148,8 +147,8 @@ var TraktorS3 = new function() {
     this.controller.deckOutputColors = {
         1: "CARROT",
         2: "CARROT",
-        3: "SKY",
-        4: "SKY"
+        3: "BLUE",
+        4: "BLUE"
     };
 
     this.fxLEDValue = {
@@ -384,6 +383,11 @@ TraktorS3.registerInputPackets = function() {
     for (var i = 1; i <= 16; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
+
+    engine.connectControl("[Channel1]", "playposition", TraktorS3.spinnyAngleChanged);
+    engine.connectControl("[Channel2]", "playposition", TraktorS3.spinnyAngleChanged);
+    engine.connectControl("[Channel3]", "playposition", TraktorS3.spinnyAngleChanged);
+    engine.connectControl("[Channel4]", "playposition", TraktorS3.spinnyAngleChanged);
 };
 
 TraktorS3.registerInputJog = function(message, group, name, offset, bitmask, callback) {
@@ -1544,6 +1548,54 @@ TraktorS3.deckOutputHandler = function(value, group, key) {
         ledValue = 0x77;
     }
     TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
+};
+
+TraktorS3.spinnyAngleChanged = function(value, group) {
+    var deck = TraktorS3.resolveDeckIfActive(group);
+    if (deck === undefined) {
+        return;
+    }
+
+    var deckNum = TraktorS3.controller.resolveDeck(group);
+
+    // How many segments away from the actual angle should we light?
+    // (in both directions, so "2" will light up to four segments)
+    var dimDistance = 2.5;
+    // ugly hack just for testing -- assume 5 minute track for now
+    var elapsed = value * 6 * 60;
+
+    var rotations = elapsed * (1 / 1.8);  // 1/1.8 is rotations per second
+    // Calculate angle from 0-1.0
+    var angle = rotations - Math.floor(rotations);
+    // The wheel has 8 segments
+    var wheelAngle = 8.0 * angle;
+    for (var seg = 0; seg < 8; seg++) {
+        var distance = TraktorS3.wheelSegmentDistance(seg, wheelAngle);
+        var ledValue = TraktorS3.controller.LEDColors[TraktorS3.controller.deckOutputColors[deckNum]];
+        // We have 5 levels of brightness to choose from, including "off".
+        var brightVal = Math.round(4 * (1.0 - (distance / dimDistance)));
+        if (brightVal <= 0) {
+            TraktorS3.controller.setOutput(deck, "!wheel" + seg, 0x00, false);
+        } else {
+            brightVal -= 1;
+            TraktorS3.controller.setOutput(deck, "!wheel" + seg, ledValue + brightVal, false);
+        }
+    }
+    TraktorS3.controller.OutputPackets["outputA"].send();
+};
+
+// Finds the shortest distance between two angles on the wheel, assuming
+// 0-8.0 angle value.
+TraktorS3.wheelSegmentDistance = function(segNum, angle) {
+    // Account for wraparound
+    if (Math.abs(segNum - angle) > 4) {
+        if (angle > segNum) {
+            segNum += 8;
+        } else {
+            angle += 8;
+        }
+    }
+    return Math.abs(angle - segNum);
 };
 
 TraktorS3.wheelOutputHandler = function(value, group, key) {
