@@ -1,8 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                                          //
 ///////////////////////////////////////////////////////////////////////////////////
-// /* global engine                                                                 */
-// /* global script                                                                 */
 /* global HIDDebug                                                               */
 /* global HIDPacket                                                              */
 /* global HIDController                                                          */
@@ -10,14 +8,14 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* Traktor Kontrol S3 HID controller script v1.00                                */
-/* Last modification: August 2020                                                  */
+/* Last modification: August 2020                                                */
 /* Author: Owen Williams                                                         */
 /* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3     */
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
-/* TODO:
-/*   * scratching still fucked up */
+/* TODO:  */
+/*   * scratching still fucked up                                                */
 /*   * wheel animations */
 /*   * touch for track browse, loop control, beatjump                            */
 /*   * jog button                                                                */
@@ -69,9 +67,10 @@ var TraktorS3 = new function() {
     this.syncPressedTimer = {"deck1": 0, "deck2": 0}; // Timer to distinguish between short and long press
 
     // Jog wheels
-    this.pitchBendMultiplier = 1.1;
+    // tickReceived is used to detect when the platter has stopped moving.
+    this.tickReceived = [false, false];
     this.lastTickVal = [0, 0];
-    this.lastTickTime = [0.0, 0.0];
+    this.lastTickTime = [0, 0];
     this.wheelTouchInertiaTimer = {
         "[Channel1]": 0,
         "[Channel2]": 0,
@@ -787,25 +786,21 @@ TraktorS3.samplerPregainHandler = function(field) {
 };
 
 TraktorS3.jogTouchHandler = function(field) {
-    HIDDebug("jogtouch! " + field.group);
     var activeGroup = TraktorS3.deckToGroup(field.group);
     if (!activeGroup) {
         return;
     }
-    HIDDebug("jog active group " + activeGroup);
     if (TraktorS3.wheelTouchInertiaTimer[activeGroup] !== 0) {
-    // The wheel was touched again, reset the timer.
+        // The wheel was touched again, reset the timer.
         engine.stopTimer(TraktorS3.wheelTouchInertiaTimer[activeGroup]);
         TraktorS3.wheelTouchInertiaTimer[activeGroup] = 0;
     }
     if (field.value !== 0) {
         var deckNumber = TraktorS3.controller.resolveDeck(activeGroup);
         if (deckNumber === undefined) {
-            HIDDebug("############################## error, deck 0???");
             return;
         }
-        HIDDebug("scratchen " + deckNumber);
-        engine.scratchEnable(deckNumber, 768, 33.3333, 0.125, 0.125/32, true);
+        engine.setValue(activeGroup, "scratch2_enable", true);
     } else {
         // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
         // Depending on how fast the platter was moving, lengthen the time we'll wait.
@@ -816,7 +811,7 @@ TraktorS3.jogTouchHandler = function(field) {
             // Just do it now.
             TraktorS3.finishJogTouch(activeGroup);
         } else {
-            TraktorS3.controller.wheelTouchInertiaTimer[activeGroup] = engine.beginTimer(
+            TraktorS3.wheelTouchInertiaTimer[activeGroup] = engine.beginTimer(
                 inertiaTime, "TraktorS3.finishJogTouch(\"" + activeGroup + "\")", true);
         }
     }
@@ -827,33 +822,34 @@ TraktorS3.jogHandler = function(field) {
     if (!activeGroup) {
         return;
     }
+    TraktorS3.tickReceived[activeGroup] = true;
     var deltas = TraktorS3.wheelDeltas(activeGroup, field.value);
-    HIDDebug("delta: " + deltas);
     var tickDelta = deltas[0];
-    var timeDelta = deltas[1] / 0x100;
-    HIDDebug("time delt: " + timeDelta.toString(16));
+    var timeDelta = deltas[1];
 
-    var velocity = TraktorS3.scalerJog(activeGroup, tickDelta, timeDelta);
-    HIDDebug("VELO: " + velocity);
-    engine.setValue(activeGroup, "jog", velocity);
+    // The scratch rate is the ratio of the wheel's speed to "regular" speed,
+    // which we're going to call 33.33 RPM.  It's 768 ticks for a circle, and
+    // 400000 ticks per second, and 33.33 RPM is 1.8 seconds per rotation, so
+    // the standard speend is 768 / (400000 * 1.8)
+    var thirtyThree = 768 / 720000;
+
+    // Our actual speed is tickDelta / timeDelta.  Take the ratio of those to get the
+    // rate ratio.
+    var velocity = (tickDelta / timeDelta) / thirtyThree;
+
+    // The Mixxx scratch code tries to do accumulation and time calculation itself.
+    // This controller is better, so just use its values.
     if (engine.getValue(activeGroup, "scratch2_enable")) {
-        var deckNumber = TraktorS3.controller.resolveDeck(field.group);
-        engine.scratchTick(deckNumber, tickDelta);
+        engine.setValue(activeGroup, "scratch2", velocity);
+    } else {
+        // If we're playing, just nudge.
+        if (engine.getValue(activeGroup, "play")) {
+            velocity /= 4;
+        } else {
+            velocity *= 2;
+        }
+        engine.setValue(activeGroup, "jog", velocity);
     }
-};
-
-TraktorS3.scalerJog = function(group, tickDelta, timeDelta) {
-    // If it's playing nudge
-    var multiplier = 1.0;
-    if (TraktorS3.shiftPressed["deck1"] || TraktorS3.shiftPressed["deck2"]) {
-        multiplier = 100.0;
-    }
-
-    if (engine.getValue(group, "play")) {
-        return multiplier * (tickDelta / timeDelta) / 3;
-    }
-
-    return (tickDelta / timeDelta) * multiplier * 2.0;
 };
 
 TraktorS3.wheelDeltas = function(deckNumber, value) {
@@ -862,8 +858,6 @@ TraktorS3.wheelDeltas = function(deckNumber, value) {
     HIDDebug("VALUE: 0x" + value.toString(16));
     var tickval = value & 0xFF;
     var timeval = value >>> 8;
-    // HIDDebug("tick: " + tickval.toString(16));
-    HIDDebug("time: " + timeval.toString(16));
     var prevTick = 0;
     var prevTime = 0;
 
@@ -875,16 +869,18 @@ TraktorS3.wheelDeltas = function(deckNumber, value) {
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.
-        HIDDebug("LOOP---------------------------------------------------------------");
         timeval += 0x100000;
     }
     var timeDelta = timeval - prevTime;
     if (timeDelta === 0) {
         // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
+        // This is almost certainly not going to happen on this controller.
         timeDelta = 1;
     }
 
     var tickDelta = 0;
+
+    // Very generous 8bit loop-around detection.
     if (prevTick >= 200 && tickval <= 100) {
         tickDelta = tickval + 256 - prevTick;
     } else if (prevTick <= 100 && tickval >= 200) {
@@ -898,31 +894,17 @@ TraktorS3.wheelDeltas = function(deckNumber, value) {
 
 TraktorS3.finishJogTouch = function(group) {
     TraktorS3.wheelTouchInertiaTimer[group] = 0;
-    var deckNumber = TraktorS3.controller.resolveDeck(group);
-    // No vinyl button (yet)
-    /*if (this.vinylActive) {
-    // Vinyl button still being pressed, don't disable scratch mode yet.
-    this.wheelTouchInertiaTimer[group] = engine.beginTimer(
-        100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishJogTouch()", true);
-    return;
-  }*/
-    var play = engine.getValue(group, "play");
-    if (play !== 0) {
-    // If we are playing, just hand off to the engine.
-        engine.scratchDisable(deckNumber, true);
+
+    // If we've received no ticks since the last call, we are stopped.
+    if (!TraktorS3.tickReceived[group]) {
+        engine.setValue(group, "scratch2", 0.0);
+        engine.setValue(group, "scratch2_enable", false);
     } else {
-    // If things are paused, there will be a non-smooth handoff between scratching and jogging.
-    // Instead, keep scratch on until the platter is not moving.
-        var scratchRate = Math.abs(engine.getValue(group, "scratch2"));
-        if (scratchRate < 0.01) {
-            // The platter is basically stopped, now we can disable scratch and hand off to jogging.
-            engine.scratchDisable(deckNumber, false);
-        } else {
-            // Check again soon.
-            TraktorS3.wheelTouchInertiaTimer[group] = engine.beginTimer(
-                100, "TraktorS3.finishJogTouch(\"" + group + "\")", true);
-        }
+        // Check again soon.
+        TraktorS3.wheelTouchInertiaTimer[group] = engine.beginTimer(
+            100, "TraktorS3.finishJogTouch(\"" + group + "\")", true);
     }
+    TraktorS3.tickReceived[group] = false;
 };
 
 TraktorS3.superHandler = function(field) {

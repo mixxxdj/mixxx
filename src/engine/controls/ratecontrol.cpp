@@ -440,7 +440,6 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
 
                 // New scratch behavior - overrides playback speed (and old behavior)
                 if (useScratch2Value) {
-                    qDebug() << "scratch val" << scratchFactor;
                     rate = scratchFactor;
                 } else {
                     // add temp rate, but don't go backwards
