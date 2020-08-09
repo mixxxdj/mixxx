@@ -1303,7 +1303,8 @@ ExportTrackMetadataResult Track::exportMetadata(
             << m_record.getMetadata();
     const auto trackMetadataExported =
             pMetadataSource->exportTrackMetadata(m_record.getMetadata());
-    if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
+    switch (trackMetadataExported.first) {
+    case mixxx::MetadataSource::ExportResult::Succeeded:
         // After successfully exporting the metadata we record the fact
         // that now the file tags and the track's metadata are in sync.
         // This information (flag or time stamp) is stored in the database.
@@ -1319,12 +1320,16 @@ ExportTrackMetadataResult Track::exportMetadata(
                     << getLocation();
         }
         return ExportTrackMetadataResult::Succeeded;
-    } else {
+    case mixxx::MetadataSource::ExportResult::Unsupported:
+        return ExportTrackMetadataResult::Skipped;
+    case mixxx::MetadataSource::ExportResult::Failed:
         kLogger.warning()
                 << "Failed to export track metadata:"
                 << getLocation();
         return ExportTrackMetadataResult::Failed;
     }
+    DEBUG_ASSERT(!"unhandled case in switch statement");
+    return ExportTrackMetadataResult::Skipped;
 }
 
 void Track::setAudioProperties(
