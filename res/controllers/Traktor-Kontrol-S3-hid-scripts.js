@@ -40,17 +40,10 @@ var TraktorS3 = new function() {
     // * Hold shift to move the pitch slider without adjusting the rate
     // * Hold keylock and move the pitch slider to adjust musical pitch
     // * keylock will still toggle on, but on release, not press.
-    this.pitchSliderRelativeMode = true;
+    this.pitchSliderRelativeMode = false;
 
     // State for relative mode
-    this.pitchSliderLastValue = {"deck1": -1, "deck2": -1};
-    this.keylockPressed = {"deck1": false, "deck2": false};
-    this.keyAdjusted = {"deck1": false, "deck2": false};
 
-    // State for other controls.
-    this.shiftPressed = {"deck1": false, "deck2": false};
-    this.syncPressedTimer = {"deck1": 0, "deck2": 0};
-    this.previewPressed = {"deck1": false, "deck2": false};
     // "5" is the "filter" button below the other 4.
     this.fxButtonState = {1: false, 2: false, 3: false, 4: false, 5: true};
     this.fxEnabledState = {
@@ -59,14 +52,12 @@ var TraktorS3 = new function() {
         "[Channel3]": true,
         "[Channel4]": true,
     };
-    // 0 = Hotcues Mode, 1 = Samples Mode
-    this.padModeState = {"deck1": 0, "deck2": 0};
 
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
     this.batchingOutputs = false;
 
-    // Active deck switches -- common-hid-packet-parser only has one active deck status per
-    // Controller object.
+    // // Active deck switches -- common-hid-packet-parser only has one active deck status per
+    // // Controller object.
     this.activeDecks = {
         1: true,
         2: true,
@@ -74,29 +65,8 @@ var TraktorS3 = new function() {
         4: false
     };
 
-    // Knob encoder states (hold values between 0x0 and 0xF)
-    // Rotate to the right is +1 and to the left is means -1
-    this.browseKnobEncoderState = {"deck1": 0, "deck2": 0};
-    this.loopKnobEncoderState = {"deck1": 0, "deck2": 0};
-    this.moveKnobEncoderState = {"deck1": 0, "deck2": 0};
-
     // Microphone button
     this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
-
-    // Sync buttons
-    this.syncPressedTimer = {"deck1": 0, "deck2": 0}; // Timer to distinguish between short and long press
-
-    // Jog wheels
-    // tickReceived is used to detect when the platter has stopped moving.
-    this.tickReceived = [false, false];
-    this.lastTickVal = [0, 0];
-    this.lastTickTime = [0, 0];
-    this.wheelTouchInertiaTimer = {
-        "[Channel1]": 0,
-        "[Channel2]": 0,
-        "[Channel3]": 0,
-        "[Channel4]": 0
-    };
 
     // VuMeter
     this.vuConnections = {
@@ -145,10 +115,10 @@ var TraktorS3 = new function() {
     this.LEDBrightValue = 0x02;
 
     this.controller.deckOutputColors = {
-        1: "CARROT",
-        2: "CARROT",
-        3: "BLUE",
-        4: "BLUE"
+        "[Channel1]": "CARROT",
+        "[Channel2]": "CARROT",
+        "[Channel3]": "BLUE",
+        "[Channel4]": "BLUE"
     };
 
     this.fxLEDValue = {
@@ -187,54 +157,648 @@ var TraktorS3 = new function() {
     this.samplerCallbacks = [];
 };
 
+TraktorS3.bind = function(fn, obj) {
+    return function() {
+        return fn.apply(obj, arguments);
+    };
+};
+
+//// Deck Objects ////
+
+TraktorS3.Deck = function(parentS3, deckNumber, group) {
+    this.parentS3 = parentS3;
+    this.deckNumber = deckNumber;
+    this.group = group;
+    this.activeChannel = "[Channel" + deckNumber + "]";
+    this.shiftPressed = false;
+
+    this.pitchSliderLastValue = -1;
+    this.keylockPressed = false;
+    this.keyAdjusted = false;
+
+    // State for other controls.
+    this.syncPressedTimer = 0;
+    this.previewPressed = false;
+    this.padModeState = 0;
+
+    // Jog wheels
+    // tickReceived is used to detect when the platter has stopped moving.
+    this.tickReceived = false;
+    this.lastTickVal = 0;
+    this.lastTickTime = 0;
+    this.wheelTouchInertiaTimer = 0;
+
+    // Knob encoder states (hold values between 0x0 and 0xF)
+    // Rotate to the right is +1 and to the left is means -1
+    this.browseKnobEncoderState = 0;
+    this.loopKnobEncoderState = 0;
+    this.moveKnobEncoderState = 0;
+    // Sync buttons
+    // Timer to distinguish between short and long press
+    this.syncPressedTimer = 0;
+};
+
+TraktorS3.Deck.prototype.defineButton = function(msg, name, deckOffset, deckBitmask, deck2Offset, deck2Bitmask, fn) {
+    if (this.deckNumber === 2) {
+        deckOffset = deck2Offset;
+        deckBitmask = deck2Bitmask;
+    }
+    TraktorS3.registerInputButton(msg, this.group, name, deckOffset, deckBitmask, TraktorS3.bind(fn, this));
+};
+
+TraktorS3.Deck.prototype.defineJog = function(message, group, name, deckOffset, deck2Offset, callback) {
+    // Jog wheels have 4 byte input
+    if (this.deckNumber === 2) {
+        deckOffset = deck2Offset;
+    }
+    message.addControl(group, name, deckOffset, "I", 0xFFFFFFFF);
+    message.setCallback(group, name, callback);
+};
+
+TraktorS3.Deck.prototype.defineScaler = function(msg, name, deckOffset, deckBitmask, deck2Offset, deck2Bitmask, fn) {
+    if (this.deckNumber === 2) {
+        deckOffset = deck2Offset;
+        deckBitmask = deck2Bitmask;
+    }
+    TraktorS3.registerInputScaler(msg, this.group, name, deckOffset, deckBitmask, TraktorS3.bind(fn, this));
+};
+
+TraktorS3.Deck.prototype.registerInputButtons = function(messageShort, messageLong) {
+    var deckFn = TraktorS3.Deck.prototype;
+    this.defineButton(messageShort, "!play", 0x03, 0x01, 0x06, 0x02, deckFn.playHandler);
+    this.defineButton(messageShort, "!cue_default", 0x02, 0x80, 0x06, 0x01, deckFn.cueHandler);
+    this.defineButton(messageShort, "!shift", 0x01, 0x01, 0x04, 0x02, deckFn.shiftHandler);
+    this.defineButton(messageShort, "!sync", 0x02, 0x08, 0x05, 0x10, deckFn.syncHandler);
+    this.defineButton(messageShort, "!keylock", 0x02, 0x10, 0x05, 0x20, deckFn.keylockHandler);
+    this.defineButton(messageShort, "!hotcues", 0x02, 0x20, 0x05, 0x40, deckFn.padModeHandler);
+    this.defineButton(messageShort, "!samples", 0x02, 0x40, 0x05, 0x80, deckFn.padModeHandler);
+
+    this.defineButton(messageShort, "!pad_1", 0x03, 0x02, 0x06, 0x04, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_2", 0x03, 0x04, 0x06, 0x08, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_3", 0x03, 0x08, 0x06, 0x10, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_4", 0x03, 0x10, 0x06, 0x20, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_5", 0x03, 0x20, 0x06, 0x40, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_6", 0x03, 0x40, 0x06, 0x80, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_7", 0x03, 0x80, 0x07, 0x01, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_8", 0x04, 0x01, 0x07, 0x02, deckFn.numberButtonHandler);
+
+    // TODO: bind touch: 0x09/0x40, 0x0A/0x02
+    this.defineButton(messageShort, "!SelectTrack", 0x0B, 0x0F, 0x0C, 0xF0, deckFn.selectTrackHandler);
+    this.defineButton(messageShort, "!LoadSelectedTrack", 0x09, 0x01, 0x09, 0x08, deckFn.loadTrackHandler);
+    this.defineButton(messageShort, "!PreviewTrack", 0x01, 0x08, 0x04, 0x10, deckFn.previewTrackHandler);
+    this.defineButton(messageShort, "!LibraryFocus", 0x01, 0x40, 0x04, 0x80, deckFn.LibraryFocusHandler);
+    this.defineButton(messageShort, "!AddTrack", 0x01, 0x20, 0x04, 0x40, deckFn.cueAutoDJHandler);
+
+    // Loop control
+    // TODO: bind touch detections: 0x0A/0x01, 0x0A/0x08
+    this.defineButton(messageShort, "!SelectLoop", 0x0C, 0x0F, 0x0D, 0xF0, deckFn.selectLoopHandler);
+    this.defineButton(messageShort, "!ActivateLoop", 0x09, 0x04, 0x09, 0x20, deckFn.activateLoopHandler);
+
+    // Rev / FLUX / GRID
+    this.defineButton(messageShort, "!reverse", 0x01, 0x04, 0x04, 0x08, deckFn.reverseHandler);
+    this.defineButton(messageShort, "!slip_enabled", 0x01, 0x02, 0x04, 0x04, deckFn.fluxHandler);
+    this.defineButton(messageShort, "quantize", 0x01, 0x80, 0x05, 0x01, deckFn.quantizeHandler);
+
+    // Beatjump
+    // TODO: bind touch detections: 0x09/0x80, 0x0A/0x04
+    this.defineButton(messageShort, "!SelectBeatjump", 0x0B, 0xF0, 0x0D, 0x0F, deckFn.selectBeatjumpHandler);
+    this.defineButton(messageShort, "!ActivateBeatjump", 0x09, 0x02, 0x09, 0x10, deckFn.activateBeatjumpHandler);
+
+    // Jog wheels
+    this.defineButton(messageShort, "!jog_touch", 0x0A, 0x10, 0x0A, 0x20, deckFn.jogTouchHandler);
+    this.defineJog(messageShort, "!jog", 0x0E, 0x12, deckFn.jogHandler);
+
+    this.defineScaler(messageLong, "rate", 0x01, 0xFFFF, 0x0D, 0xFFFF, deckFn.pitchSliderHandler);
+};
+
+TraktorS3.Deck.prototype.playHandler = function(field) {
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "start_stop", field.value);
+    } else if (field.value === 1) {
+        script.toggleControl(this.activeChannel, "play");
+    }
+};
+
+TraktorS3.Deck.prototype.cueHandler = function(field) {
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "cue_gotoandstop", field.value);
+    } else {
+        engine.setValue(this.activeChannel, "cue_default", field.value);
+    }
+};
+
+TraktorS3.Deck.prototype.shiftHandler = function(field) {
+    engine.setValue("[Controls]", "touch_shift", field.value);
+    this.shiftPressed = field.value;
+    TraktorS3.outputHandler(field.value, field.group, "!shift");
+};
+
+TraktorS3.Deck.prototype.syncHandler = function(field) {
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "beatsync_phase", field.value);
+        // Light LED while pressed
+        this.colorOutputHandler(field.value, "sync_enabled");
+    } else {
+        if (field.value) {
+            if (engine.getValue(this.activeChannel, "sync_enabled") === 0) {
+                script.triggerControl(this.activeChannel, "beatsync");
+                // Start timer to measure how long button is pressed
+                this.syncPressedTimer = engine.beginTimer(300, function() {
+                    engine.setValue(this.activeChannel, "sync_enabled", 1);
+                    // Reset sync button timer state if active
+                    if (this.syncPressedTimer !== 0) {
+                        this.syncPressedTimer = 0;
+                    }
+                }, true);
+
+                // Light corresponding LED when button is pressed
+                this.colorOutputHandler(1, "sync_enabled");
+            } else {
+                // Deactivate sync lock
+                // LED is turned off by the callback handler for sync_enabled
+                engine.setValue(this.activeChannel, "sync_enabled", 0);
+            }
+        } else {
+            if (this.syncPressedTimer !== 0) {
+                // Timer still running -> stop it and unlight LED
+                engine.stopTimer(this.syncPressedTimer);
+                this.colorOutputHandler(0, "sync_enabled");
+            }
+        }
+    }
+};
+
+TraktorS3.Deck.prototype.keylockHandler = function(field) {
+    if (TraktorS3.pitchSliderRelativeMode) {
+        if (field.value) {
+            this.keylockPressed = true;
+            this.keyAdjusted = false;
+            return;
+        }
+        this.keylockPressed = false;
+        if (!this.keyAdjusted) {
+            script.toggleControl(this.activeChannel, "keylock");
+        }
+        return;
+    }
+
+    if (field.value === 0) {
+        return;
+    }
+    script.toggleControl(this.activeChannel, "keylock");
+};
+
+// This handles when the mode buttons for the pads is pressed.
+TraktorS3.Deck.prototype.padModeHandler = function(field) {
+    if (field.value === 0) {
+        return;
+    }
+
+    if (this.padModeState === 0 && field.name === "!samples") {
+        // If we are in hotcues mode and samples mode is activated
+        engine.setValue("[Samplers]", "show_samplers", 1);
+        this.padModeState = 1;
+    } else if (field.name === "!hotcues") {
+        // If we are in samples mode and hotcues mode is activated
+        this.padModeState = 0;
+    }
+    TraktorS3.lightPads(field.group);
+};
+
+TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
+    var padNumber = parseInt(field.id[field.id.length - 1]);
+
+    if (this.padModeState === 0) {
+        TraktorS3.lightHotcue(this.activeChannel, padNumber);
+
+        // Hotcues mode
+        if (this.shiftPressed) {
+            engine.setValue(this.activeChannel, "hotcue_" + padNumber + "_clear", field.value);
+        } else {
+            engine.setValue(this.activeChannel, "hotcue_" + padNumber + "_activate", field.value);
+        }
+    } else {
+        // Samples mode
+        var sampler = padNumber;
+        if (field.group === "deck2") {
+            sampler += 8;
+        }
+
+        var ledValue = field.value;
+        if (!field.value) {
+            ledValue = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
+        }
+        this.colorOutputHandler(ledValue, "!pad_" + padNumber);
+
+        if (this.shiftPressed) {
+            var playing = engine.getValue("[Sampler" + sampler + "]", "play");
+            if (playing) {
+                engine.setValue("[Sampler" + sampler + "]", "cue_default", field.value);
+            } else {
+                engine.setValue("[Sampler" + sampler + "]", "eject", field.value);
+            }
+        } else {
+            var loaded = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
+            if (loaded) {
+                if (field.value) {
+                    engine.setValue("[Sampler" + sampler + "]", "cue_gotoandplay", field.value);
+                } else {
+                    engine.setValue("[Sampler" + sampler + "]", "stop", 1);
+                }
+            } else {
+                engine.setValue("[Sampler" + sampler + "]", "LoadSelectedTrack", field.value);
+            }
+        }
+    }
+};
+
+TraktorS3.Deck.prototype.selectTrackHandler = function(field) {
+    var delta = 1;
+    if ((field.value + 1) % 16 === this.browseKnobEncoderState) {
+        delta = -1;
+    }
+    this.browseKnobEncoderState = field.value;
+
+    // When preview is held, rotating the library encoder scrolls through the previewing track.
+    if (this.previewPressed) {
+        var playPosition = engine.getValue("[PreviewDeck1]", "playposition");
+        if (delta > 0) {
+            playPosition += 0.0125;
+        } else {
+            playPosition -= 0.0125;
+        }
+        engine.setValue("[PreviewDeck1]", "playposition", playPosition);
+        return;
+    }
+
+    if (this.shiftPressed) {
+        engine.setValue("[Library]", "MoveHorizontal", delta);
+    } else {
+        engine.setValue("[Library]", "MoveVertical", delta);
+    }
+};
+
+TraktorS3.Deck.prototype.loadTrackHandler = function(field) {
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "eject", field.value);
+    } else {
+        engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+    }
+};
+
+TraktorS3.Deck.prototype.previewTrackHandler = function(field) {
+    if (field.value === 1) {
+        this.previewPressed = true;
+        engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+    } else {
+        this.previewPressed = false;
+        engine.setValue("[PreviewDeck1]", "play", 0);
+    }
+    this.colorOutputHandler(field.value, "!PreviewTrack");
+};
+
+TraktorS3.Deck.prototype.LibraryFocusHandler = function(field) {
+    this.colorOutputHandler(field.value, "!LibraryFocus");
+    if (field.value === 0) {
+        return;
+    }
+
+    script.toggleControl("[Library]", "MoveFocus");
+};
+
+TraktorS3.Deck.prototype.cueAutoDJHandler = function(field) {
+    this.colorOutputHandler(field.value, "!AddTrack");
+
+    if (this.shiftPressed) {
+        engine.setValue("[Library]", "AutoDjAddTop", field.value);
+    } else {
+        engine.setValue("[Library]", "AutoDjAddBottom", field.value);
+    }
+};
+
+
+TraktorS3.Deck.prototype.selectLoopHandler = function(field) {
+    if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+        script.triggerControl(this.activeChannel, "loop_halve");
+    } else {
+        script.triggerControl(this.activeChannel, "loop_double");
+    }
+
+    this.loopKnobEncoderState = field.value;
+};
+
+TraktorS3.Deck.prototype.activateLoopHandler = function(field) {
+    if (field.value === 0) {
+        return;
+    }
+    var isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
+
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "reloop_toggle", field.value);
+    } else {
+        if (isLoopActive) {
+            engine.setValue(this.activeChannel, "reloop_toggle", field.value);
+        } else {
+            engine.setValue(this.activeChannel, "beatloop_activate", field.value);
+        }
+    }
+};
+
+TraktorS3.Deck.prototype.selectBeatjumpHandler = function(field) {
+    var delta = 1;
+    if ((field.value + 1) % 16 === this.moveKnobEncoderState) {
+        delta = -1;
+    }
+
+    if (this.shiftPressed) {
+        var beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
+        if (delta > 0) {
+            engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize * 2);
+        } else {
+            engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize / 2);
+        }
+    } else {
+        if (delta < 0) {
+            script.triggerControl(this.activeChannel, "beatjump_backward");
+        } else {
+            script.triggerControl(this.activeChannel, "beatjump_forward");
+        }
+    }
+
+    this.moveKnobEncoderState = field.value;
+};
+
+TraktorS3.Deck.prototype.activateBeatjumpHandler = function(field) {
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "reloop_andstop", field.value);
+    } else {
+        engine.setValue(this.activeChannel, "beatlooproll_activate", field.value);
+    }
+};
+
+TraktorS3.Deck.prototype.reverseHandler = function(field) {
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "reverseroll", field.value);
+    } else {
+        engine.setValue(this.activeChannel, "reverse", field.value);
+    }
+
+    TraktorS3.deckOutputHandler(field.value, field.group, "!reverse");
+};
+
+TraktorS3.Deck.prototype.fluxHandler = function(field) {
+    if (field.value === 0) {
+        return;
+    }
+    script.toggleControl(this.activeChannel, "slip_enabled");
+};
+
+TraktorS3.Deck.prototype.quantizeHandler = function(field) {
+    if (field.value === 0) {
+        return;
+    }
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "beats_translate_curpos", field.value);
+    } else {
+        script.toggleControl(this.activeChannel, "quantize");
+        // engine.setValue(this.activeChannel, "quantize", newState);
+        // TraktorS3.colorDeckOutputHandler(newState, field.group, "quantize");
+    }
+};
+
+TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
+    if (this.wheelTouchInertiaTimer !== 0) {
+        // The wheel was touched again, reset the timer.
+        engine.stopTimer(this.wheelTouchIntertiaTimer);
+        this.wheelTouchIntertiaTimer = 0;
+    }
+    if (field.value !== 0) {
+        engine.setValue(this.activeChannel, "scratch2_enable", true);
+    } else {
+        // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
+        // Depending on how fast the platter was moving, lengthen the time we'll wait.
+        var scratchRate = Math.abs(engine.getValue(this.activeChannel, "scratch2"));
+        // Note: inertiaTime multiplier is controller-specific and should be factored out.
+        var inertiaTime = Math.pow(1.8, scratchRate) * 2;
+        if (inertiaTime < 100) {
+            // Just do it now.
+            TraktorS3.finishJogTouch(this.group);
+        } else {
+            this.wheelTouchIntertiaTimer = engine.beginTimer(
+                inertiaTime, "TraktorS3.finishJogTouch(\"" + this.group + "\")", true);
+        }
+    }
+};
+
+TraktorS3.Deck.prototype.wheelDeltas = function(value) {
+    // When the wheel is touched, four bytes change, but only the first behaves predictably.
+    // It looks like the wheel is 1024 ticks per revolution.
+    var tickval = value & 0xFF;
+    var timeval = value >>> 8;
+    var prevTick = 0;
+    var prevTime = 0;
+
+    // Group 1 and 2 -> Array index 0 and 1
+    prevTick = this.lastTickVal;
+    prevTime = this.lastTickTime;
+    this.lastTickVal = tickval;
+    this.lastTickTime = timeval;
+
+    if (prevTime > timeval) {
+        // We looped around.  Adjust current time so that subtraction works.
+        timeval += 0x100000;
+    }
+    var timeDelta = timeval - prevTime;
+    if (timeDelta === 0) {
+        // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
+        // This is almost certainly not going to happen on this controller.
+        timeDelta = 1;
+    }
+
+    var tickDelta = 0;
+
+    // Very generous 8bit loop-around detection.
+    if (prevTick >= 200 && tickval <= 100) {
+        tickDelta = tickval + 256 - prevTick;
+    } else if (prevTick <= 100 && tickval >= 200) {
+        tickDelta = tickval - prevTick - 256;
+    } else {
+        tickDelta = tickval - prevTick;
+    }
+
+    return [tickDelta, timeDelta];
+};
+
+// NOTE: this a global function because it gets called by timers!
+TraktorS3.finishJogTouch = function(group) {
+    var deck = TraktorS3.Decks[group];
+
+    deck.wheelTouchInertiaTimer = 0;
+
+    // If we've received no ticks since the last call, we are stopped.
+    if (!deck.tickReceived) {
+        engine.setValue(group, "scratch2", 0.0);
+        engine.setValue(group, "scratch2_enable", false);
+    } else {
+        // Check again soon.
+        deck.wheelTouchInertiaTimer = engine.beginTimer(
+            100, "TraktorS3.finishJogTouch(\"" + group + "\")", true);
+    }
+    this.tickReceived = false;
+};
+
+TraktorS3.Deck.prototype.jogHandler = function(field) {
+    this.tickReceived = true;
+    var deltas = this.wheelDeltas(field.value);
+    var tickDelta = deltas[0];
+    var timeDelta = deltas[1];
+
+    // The scratch rate is the ratio of the wheel's speed to "regular" speed,
+    // which we're going to call 33.33 RPM.  It's 768 ticks for a circle, and
+    // 400000 ticks per second, and 33.33 RPM is 1.8 seconds per rotation, so
+    // the standard speend is 768 / (400000 * 1.8)
+    var thirtyThree = 768 / 720000;
+
+    // Our actual speed is tickDelta / timeDelta.  Take the ratio of those to get the
+    // rate ratio.
+    var velocity = (tickDelta / timeDelta) / thirtyThree;
+
+    // The Mixxx scratch code tries to do accumulation and time calculation itself.
+    // This controller is better, so just use its values.
+    if (engine.getValue(this.activeChannel, "scratch2_enable")) {
+        engine.setValue(this.activeChannel, "scratch2", velocity);
+    } else {
+        // If we're playing, just nudge.
+        if (engine.getValue(this.activeChannel, "play")) {
+            velocity /= 4;
+        } else {
+            velocity *= 2;
+        }
+        engine.setValue(this.activeChannel, "jog", velocity);
+    }
+};
+
+TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
+    var value = field.value / 4095;
+    if (this.pitchSliderRelativeMode) {
+        if (this.pitchSliderLastValue === -1) {
+            this.pitchSliderLastValue = value;
+        } else {
+            // If shift is pressed, don't update any values.
+            if (this.shiftPressed) {
+                this.pitchSliderLastValue = value;
+                return;
+            }
+
+            var relVal;
+            if (this.keylockPressed) {
+                relVal = 1.0 - engine.getParameter(this.activeChannel, "pitch_adjust");
+            } else {
+                relVal = engine.getParameter(this.activeChannel, "rate");
+            }
+            relVal += value - this.pitchSliderLastValue;
+            this.pitchSliderLastValue = value;
+            value = Math.max(0.0, Math.min(1.0, relVal));
+
+            if (this.keylockPressed) {
+                // To match the pitch change from adjusting the rate, flip the pitch
+                // adjustment.
+                engine.setParameter(this.activeChannel, "pitch_adjust", 1.0 - value);
+                this.keyAdjusted = true;
+            } else {
+                engine.setParameter(this.activeChannel, "rate", value);
+            }
+        }
+        return;
+    }
+
+    HIDDebug("pitch slider: " + field.value + " " + value);
+
+    if (this.shiftPressed) {
+        // To match the pitch change from adjusting the rate, flip the pitch
+        // adjustment.
+        engine.setParameter(this.activeChannel, "pitch_adjust", 1.0 - value);
+    } else {
+        engine.setParameter(this.activeChannel, "rate", value);
+    }
+};
+
+
+//// Deck Outputs ////
+
+TraktorS3.Deck.prototype.defineOutput = function(packet, name, offsetA, offsetB) {
+    switch (this.deckNumber) {
+    case 1:
+        packet.addOutput(this.group, name, offsetA, "B");
+        break;
+    case 2:
+        packet.addOutput(this.group, name, offsetB, "B");
+        break;
+    }
+};
+
+TraktorS3.Deck.prototype.registerOutputs = function(outputA, _outputB) {
+    // this.defineButton(messageShort, "!play", 0x03, 0x01, 0x06, 0x02, deckFn.playHandler);
+    this.defineOutput(outputA, "!shift", 0x01, 0x1A);
+    this.defineOutput(outputA, "slip_enabled", 0x02, 0x1B);
+    this.defineOutput(outputA, "!reverse", 0x03, 0x1C);
+    this.defineOutput(outputA, "!PreviewTrack", 0x04,  0x1D);
+    this.defineOutput(outputA, "!AddTrack", 0x06, 0x1);
+    this.defineOutput(outputA, "!LibraryFocus", 0x07, 0x20);
+    this.defineOutput(outputA, "keylock", 0x0D, 0x26);
+    this.defineOutput(outputA, "hotcues", 0x0E, 0x27);
+    this.defineOutput(outputA, "samples", 0x0F, 0x28);
+    this.defineOutput(outputA, "cue_indicator", 0x10, 0x29);
+    this.defineOutput(outputA, "play_indicator", 0x11, 0x2A);
+    this.defineOutput(outputA, "sync_enabled", 0x0C, 0x25);
+    this.defineOutput(outputA, "!pad_1", 0x12, 0x2B);
+    this.defineOutput(outputA, "!pad_2", 0x13, 0x2C);
+    this.defineOutput(outputA, "!pad_3", 0x14, 0x2D);
+    this.defineOutput(outputA, "!pad_4", 0x15, 0x2E);
+    this.defineOutput(outputA, "!pad_5", 0x16, 0x2F);
+    this.defineOutput(outputA, "!pad_6", 0x17, 0x30);
+    this.defineOutput(outputA, "!pad_7", 0x18, 0x31);
+    this.defineOutput(outputA, "!pad_8", 0x19, 0x32);
+
+};
+
+TraktorS3.Deck.prototype.deckBaseColor = function() {
+    return TraktorS3.controller.LEDColors[TraktorS3.controller.deckOutputColors[this.activeChannel]];
+};
+
+// colorDeckOutputHandler drives lights that have the palettized multicolor lights.
+TraktorS3.Deck.prototype.colorOutputHandler = function(value, key) {
+    var ledValue = this.deckBaseColor();
+
+    if (value === 1 || value === true) {
+        ledValue += TraktorS3.LEDBrightValue;
+    } else {
+        ledValue += TraktorS3.LEDDimValue;
+    }
+    TraktorS3.controller.setOutput(this.group, key, ledValue, !TraktorS3.batchingOutputs);
+};
+
+//// Channel Objects ////
+
+TraktorS3.Channel = function(parentS3, parentDeck, group) {
+    this.parentS3 = parentS3;
+    this.parentDeck = parentDeck;
+    this.group = group;
+};
+
 TraktorS3.registerInputPackets = function() {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
     var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
+
+    for (var idx in TraktorS3.Decks) {
+        var deck = TraktorS3.Decks[idx];
+        deck.registerInputButtons(messageShort, messageLong);
+    }
 
     this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, this.deckSwitchHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, this.deckSwitchHandler);
     this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, this.deckSwitchHandler);
     this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, this.deckSwitchHandler);
-
-    this.registerInputButton(messageShort, "deck1", "!play", 0x03, 0x01, this.playHandler);
-    this.registerInputButton(messageShort, "deck2", "!play", 0x06, 0x02, this.playHandler);
-
-    this.registerInputButton(messageShort, "deck1", "!cue_default", 0x02, 0x80, this.cueHandler);
-    this.registerInputButton(messageShort, "deck2", "!cue_default", 0x06, 0x01, this.cueHandler);
-
-    this.registerInputButton(messageShort, "deck1", "!shift", 0x01, 0x01, this.shiftHandler);
-    this.registerInputButton(messageShort, "deck2", "!shift", 0x04, 0x02, this.shiftHandler);
-
-    this.registerInputButton(messageShort, "deck1", "!sync", 0x02, 0x08, this.syncHandler);
-    this.registerInputButton(messageShort, "deck2", "!sync", 0x05, 0x10, this.syncHandler);
-
-    this.registerInputButton(messageShort, "deck1", "!keylock", 0x02, 0x10, this.keylockHandler);
-    this.registerInputButton(messageShort, "deck2", "!keylock", 0x05, 0x20, this.keylockHandler);
-
-    this.registerInputButton(messageShort, "deck1", "!hotcues", 0x02, 0x20, this.padModeHandler);
-    this.registerInputButton(messageShort, "deck2", "!hotcues", 0x05, 0x40, this.padModeHandler);
-
-    this.registerInputButton(messageShort, "deck1", "!samples", 0x02, 0x40, this.padModeHandler);
-    this.registerInputButton(messageShort, "deck2", "!samples", 0x05, 0x80, this.padModeHandler);
-
-    // // Number pad buttons (Hotcues or Samplers depending on current mode)
-    this.registerInputButton(messageShort, "deck1", "!pad_1", 0x03, 0x02, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck1", "!pad_2", 0x03, 0x04, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck1", "!pad_3", 0x03, 0x08, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck1", "!pad_4", 0x03, 0x10, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck1", "!pad_5", 0x03, 0x20, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck1", "!pad_6", 0x03, 0x40, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck1", "!pad_7", 0x03, 0x80, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck1", "!pad_8", 0x04, 0x01, this.numberButtonHandler);
-
-    this.registerInputButton(messageShort, "deck2", "!pad_1", 0x06, 0x04, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck2", "!pad_2", 0x06, 0x08, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck2", "!pad_3", 0x06, 0x10, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck2", "!pad_4", 0x06, 0x20, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck2", "!pad_5", 0x06, 0x40, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck2", "!pad_6", 0x06, 0x80, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck2", "!pad_7", 0x07, 0x01, this.numberButtonHandler);
-    this.registerInputButton(messageShort, "deck2", "!pad_8", 0x07, 0x02, this.numberButtonHandler);
 
     // // Headphone buttons
     this.registerInputButton(messageShort, "[Channel1]", "!pfl", 0x08, 0x01, this.headphoneHandler);
@@ -242,35 +806,9 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputButton(messageShort, "[Channel3]", "!pfl", 0x07, 0x80, this.headphoneHandler);
     this.registerInputButton(messageShort, "[Channel4]", "!pfl", 0x08, 0x04, this.headphoneHandler);
 
-    // // Track browsing
-    // TODO: bind touch: 0x09/0x40, 0x0A/0x02
-    this.registerInputButton(messageShort, "deck1", "!SelectTrack", 0x0B, 0x0F, this.selectTrackHandler);
-    this.registerInputButton(messageShort, "deck2", "!SelectTrack", 0x0C, 0xF0, this.selectTrackHandler);
-    this.registerInputButton(messageShort, "deck1", "!LoadSelectedTrack", 0x09, 0x01, this.loadTrackHandler);
-    this.registerInputButton(messageShort, "deck2", "!LoadSelectedTrack", 0x09, 0x08, this.loadTrackHandler);
 
-    this.registerInputButton(messageShort, "deck1", "!PreviewTrack", 0x01, 0x08, this.previewTrackHandler);
-    this.registerInputButton(messageShort, "deck2", "!PreviewTrack", 0x04, 0x10, this.previewTrackHandler);
 
-    this.registerInputButton(messageShort, "deck1", "!LibraryFocus", 0x01, 0x40, this.LibraryFocusHandler);
-    this.registerInputButton(messageShort, "deck2", "!LibraryFocus", 0x04, 0x80, this.LibraryFocusHandler);
 
-    this.registerInputButton(messageShort, "deck1", "!AddTrack", 0x01, 0x20, this.cueAutoDJHandler);
-    this.registerInputButton(messageShort, "deck2", "!AddTrack", 0x04, 0x40, this.cueAutoDJHandler);
-
-    // // Loop control
-    // TODO: bind touch detections: 0x0A/0x01, 0x0A/0x08
-    this.registerInputButton(messageShort, "deck1", "!SelectLoop", 0x0C, 0x0F, this.selectLoopHandler);
-    this.registerInputButton(messageShort, "deck2", "!SelectLoop", 0x0D, 0xF0, this.selectLoopHandler);
-    this.registerInputButton(messageShort, "deck1", "!ActivateLoop", 0x09, 0x04, this.activateLoopHandler);
-    this.registerInputButton(messageShort, "deck2", "!ActivateLoop", 0x09, 0x20, this.activateLoopHandler);
-
-    // // Beatjump
-    // TODO: bind touch detections: 0x09/0x80, 0x0A/0x04
-    this.registerInputButton(messageShort, "deck1", "!SelectBeatjump", 0x0B, 0xF0, this.selectBeatjumpHandler);
-    this.registerInputButton(messageShort, "deck2", "!SelectBeatjump", 0x0D, 0x0F, this.selectBeatjumpHandler);
-    this.registerInputButton(messageShort, "deck1", "!ActivateBeatjump", 0x09, 0x02, this.activateBeatjumpHandler);
-    this.registerInputButton(messageShort, "deck2", "!ActivateBeatjump", 0x09, 0x10, this.activateBeatjumpHandler);
 
     // // There is only one button on the controller, we use to toggle quantization for all channels
     // this.registerInputButton(messageShort, "[Channel1]", "!quantize", 0x06, 0x40, this.quantizeHandler);
@@ -278,11 +816,7 @@ TraktorS3.registerInputPackets = function() {
     // // Microphone
     // this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x06, 0x80, this.microphoneHandler);
 
-    // // Jog wheels
-    this.registerInputButton(messageShort, "deck1", "!jog_touch", 0x0A, 0x10, this.jogTouchHandler);
-    this.registerInputButton(messageShort, "deck2", "!jog_touch", 0x0A, 0x20, this.jogTouchHandler);
-    this.registerInputJog(messageShort, "deck1", "!jog", 0x0E, 0xFFFFFFFF, this.jogHandler);
-    this.registerInputJog(messageShort, "deck2", "!jog", 0x12, 0xFFFFFFFF, this.jogHandler);
+
 
     // // FX Buttons
     this.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, this.fxHandler);
@@ -296,20 +830,11 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, this.fxEnableHandler);
     this.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x48, this.fxEnableHandler);
 
-    // // Rev / FLUX / GRID
-    this.registerInputButton(messageShort, "deck1", "!reverse", 0x01, 0x04, this.reverseHandler);
-    this.registerInputButton(messageShort, "deck2", "!reverse", 0x04, 0x08, this.reverseHandler);
 
-    this.registerInputButton(messageShort, "deck1", "!slip_enabled", 0x01, 0x02, this.fluxHandler);
-    this.registerInputButton(messageShort, "deck2", "!slip_enabled", 0x04, 0x04, this.fluxHandler);
-
-    this.registerInputButton(messageShort, "deck1", "quantize", 0x01, 0x80, this.quantizeHandler);
-    this.registerInputButton(messageShort, "deck2", "quantize", 0x05, 0x01, this.quantizeHandler);
 
     this.controller.registerInputPacket(messageShort);
 
-    this.registerInputScaler(messageLong, "deck1", "rate", 0x01, 0xFFFF, this.pitchSliderHandler);
-    this.registerInputScaler(messageLong, "deck2", "rate", 0x0D, 0xFFFF, this.pitchSliderHandler);
+
 
     this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x05, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x07, 0xFFFF, this.parameterHandler);
@@ -356,9 +881,8 @@ TraktorS3.registerInputPackets = function() {
             engine.softTakeover(group, "rate", true);
         }
         engine.softTakeover(group, "pitch_adjust", true);
-        engine.softTakeover(group, "volume", true);
-        engine.softTakeover(group, "pregain", true);
-        engine.softTakeover(group, "pregain", true);
+        // engine.softTakeover(group, "volume", true);
+        // engine.softTakeover(group, "pregain", true);
         engine.softTakeover("[QuickEffectRack1_" +group + "]", "super1", true);
     }
 
@@ -375,7 +899,7 @@ TraktorS3.registerInputPackets = function() {
     engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]", "parameter2", true);
     engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]", "parameter3", true);
 
-    engine.softTakeover("[Master]", "crossfader", true);
+    // engine.softTakeover("[Master]", "crossfader", true);
     engine.softTakeover("[Master]", "gain", true);
     engine.softTakeover("[Master]", "headMix", true);
     engine.softTakeover("[Master]", "headGain", true);
@@ -430,174 +954,6 @@ TraktorS3.deckSwitchHandler = function(field) {
     TraktorS3.lightDeck(field.group);
 };
 
-TraktorS3.playHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "start_stop", field.value);
-    } else if (field.value === 1) {
-        script.toggleControl(activeGroup, "play");
-    }
-};
-
-TraktorS3.cueHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "cue_gotoandstop", field.value);
-    } else {
-        engine.setValue(activeGroup, "cue_default", field.value);
-    }
-};
-
-
-TraktorS3.shiftHandler = function(field) {
-    engine.setValue("[Controls]", "touch_shift", field.value);
-    TraktorS3.shiftPressed[field.group] = field.value;
-    TraktorS3.outputHandler(field.value, field.group, "!shift");
-};
-
-TraktorS3.keylockHandler = function(field) {
-    var activeGroup;
-    if (TraktorS3.pitchSliderRelativeMode) {
-        if (field.value) {
-            TraktorS3.keylockPressed[field.group] = true;
-            TraktorS3.keyAdjusted[field.group] = false;
-            return;
-        }
-        TraktorS3.keylockPressed[field.group] = false;
-        activeGroup = TraktorS3.deckToGroup(field.group);
-        if (!activeGroup) {
-            return;
-        }
-        if (!TraktorS3.keyAdjusted[field.group]) {
-            script.toggleControl(activeGroup, "keylock");
-        }
-        return;
-    }
-    activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-
-    if (field.value === 0) {
-        return;
-    }
-    script.toggleControl(activeGroup, "keylock");
-};
-
-TraktorS3.syncHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "beatsync_phase", field.value);
-        // Light LED while pressed
-        TraktorS3.colorDeckOutputHandler(field.value, field.group, "sync_enabled");
-    } else {
-        if (field.value) {
-            if (engine.getValue(activeGroup, "sync_enabled") === 0) {
-                script.triggerControl(activeGroup, "beatsync");
-                // Start timer to measure how long button is pressed
-                TraktorS3.syncPressedTimer[field.group] = engine.beginTimer(300, function() {
-                    engine.setValue(activeGroup, "sync_enabled", 1);
-                    // Reset sync button timer state if active
-                    if (TraktorS3.syncPressedTimer[field.group] !== 0) {
-                        TraktorS3.syncPressedTimer[field.group] = 0;
-                    }
-                }, true);
-
-                // Light corresponding LED when button is pressed
-                TraktorS3.colorDeckOutputHandler(1, field.group, "sync_enabled");
-            } else {
-                // Deactivate sync lock
-                // LED is turned off by the callback handler for sync_enabled
-                engine.setValue(activeGroup, "sync_enabled", 0);
-            }
-        } else {
-            if (TraktorS3.syncPressedTimer[field.group] !== 0) {
-                // Timer still running -> stop it and unlight LED
-                engine.stopTimer(TraktorS3.syncPressedTimer[field.group]);
-                TraktorS3.colorDeckOutputHandler(0, field.group, "sync_enabled");
-            }
-        }
-    }
-};
-
-// This handles when the mode buttons for the pads is pressed.
-TraktorS3.padModeHandler = function(field) {
-    if (field.value === 0) {
-        return;
-    }
-
-    if (TraktorS3.padModeState[field.group] === 0 && field.name === "!samples") {
-        // If we are in hotcues mode and samples mode is activated
-        engine.setValue("[Samplers]", "show_samplers", 1);
-        TraktorS3.padModeState[field.group] = 1;
-    } else if (field.name === "!hotcues") {
-        // If we are in samples mode and hotcues mode is activated
-        TraktorS3.padModeState[field.group] = 0;
-    }
-    TraktorS3.lightPads(field.group);
-};
-
-TraktorS3.numberButtonHandler = function(field) {
-    var padNumber = parseInt(field.id[field.id.length - 1]);
-
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    if (TraktorS3.padModeState[field.group] === 0) {
-        TraktorS3.lightHotcue(activeGroup, padNumber);
-
-        // Hotcues mode
-        if (TraktorS3.shiftPressed[field.group]) {
-            engine.setValue(activeGroup, "hotcue_" + padNumber + "_clear", field.value);
-        } else {
-            engine.setValue(activeGroup, "hotcue_" + padNumber + "_activate", field.value);
-        }
-    } else {
-        // Samples mode
-        var sampler = padNumber;
-        if (field.group === "deck2") {
-            sampler += 8;
-        }
-
-        var ledValue = field.value;
-        if (!field.value) {
-            ledValue = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
-        }
-        TraktorS3.colorDeckOutputHandler(ledValue, field.group, "!pad_" + padNumber);
-
-        if (TraktorS3.shiftPressed[field.group]) {
-            var playing = engine.getValue("[Sampler" + sampler + "]", "play");
-            if (playing) {
-                engine.setValue("[Sampler" + sampler + "]", "cue_default", field.value);
-            } else {
-                engine.setValue("[Sampler" + sampler + "]", "eject", field.value);
-            }
-        } else {
-            var loaded = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
-            if (loaded) {
-                if (field.value) {
-                    engine.setValue("[Sampler" + sampler + "]", "cue_gotoandplay", field.value);
-                } else {
-                    engine.setValue("[Sampler" + sampler + "]", "stop", 1);
-                }
-            } else {
-                engine.setValue("[Sampler" + sampler + "]", "LoadSelectedTrack", field.value);
-            }
-        }
-    }
-};
-
 TraktorS3.headphoneHandler = function(field) {
     if (field.value === 0) {
         return;
@@ -605,361 +961,38 @@ TraktorS3.headphoneHandler = function(field) {
     script.toggleControl(field.group, "pfl");
 };
 
-TraktorS3.selectTrackHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    var delta = 1;
-    if ((field.value + 1) % 16 === TraktorS3.browseKnobEncoderState[activeGroup]) {
-        delta = -1;
-    }
-    TraktorS3.browseKnobEncoderState[activeGroup] = field.value;
+// TraktorS3.microphoneHandler = function(field) {
+//     if (field.value) {
+//         if (TraktorS3.microphonePressedTimer === 0) {
+//             // Start timer to measure how long button is pressed
+//             TraktorS3.microphonePressedTimer = engine.beginTimer(300, function() {
+//                 // Reset microphone button timer status if active
+//                 if (TraktorS3.microphonePressedTimer !== 0) {
+//                     TraktorS3.microphonePressedTimer = 0;
+//                 }
+//             }, true);
+//         }
 
-    // When preview is held, rotating the library encoder scrolls through the previewing track.
-    if (TraktorS3.previewPressed[field.group]) {
-        var playPosition = engine.getValue("[PreviewDeck1]", "playposition");
-        if (delta > 0) {
-            playPosition += 0.0125;
-        } else {
-            playPosition -= 0.0125;
-        }
-        engine.setValue("[PreviewDeck1]", "playposition", playPosition);
-        return;
-    }
+//         script.toggleControl("[Microphone]", "talkover");
+//     } else {
+//         // Button is released, check if timer is still running
+//         if (TraktorS3.microphonePressedTimer !== 0) {
+//             // short klick -> permanent activation
+//             TraktorS3.microphonePressedTimer = 0;
+//         } else {
+//             engine.setValue("[Microphone]", "talkover", 0);
+//         }
+//     }
+// };
 
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue("[Library]", "MoveHorizontal", delta);
-    } else {
-        engine.setValue("[Library]", "MoveVertical", delta);
-    }
-};
 
-TraktorS3.loadTrackHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "eject", field.value);
-    } else {
-        engine.setValue(activeGroup, "LoadSelectedTrack", field.value);
-    }
-};
-
-TraktorS3.previewTrackHandler = function(field) {
-    if (field.value === 1) {
-        TraktorS3.previewPressed[field.group] = true;
-        engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
-    } else {
-        TraktorS3.previewPressed[field.group] = false;
-        engine.setValue("[PreviewDeck1]", "play", 0);
-    }
-    TraktorS3.colorDeckOutputHandler(field.value, field.group, "!PreviewTrack");
-};
-
-TraktorS3.cueAutoDJHandler = function(field) {
-    TraktorS3.colorDeckOutputHandler(field.value, field.group, "!AddTrack");
-
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue("[Library]", "AutoDjAddTop", field.value);
-    } else {
-        engine.setValue("[Library]", "AutoDjAddBottom", field.value);
-    }
-};
-
-TraktorS3.LibraryFocusHandler = function(field) {
-    TraktorS3.colorDeckOutputHandler(field.value, field.group, "!LibraryFocus");
-    if (field.value === 0) {
-        return;
-    }
-
-    script.toggleControl("[Library]", "MoveFocus");
-};
-
-TraktorS3.selectLoopHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    if ((field.value + 1) % 16 === TraktorS3.loopKnobEncoderState[activeGroup]) {
-        script.triggerControl(activeGroup, "loop_halve");
-    } else {
-        script.triggerControl(activeGroup, "loop_double");
-    }
-
-    TraktorS3.loopKnobEncoderState[activeGroup] = field.value;
-};
-
-TraktorS3.activateLoopHandler = function(field) {
-    if (field.value === 0) {
-        return;
-    }
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    var isLoopActive = engine.getValue(activeGroup, "loop_enabled");
-
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "reloop_toggle", field.value);
-    } else {
-        if (isLoopActive) {
-            engine.setValue(activeGroup, "reloop_toggle", field.value);
-        } else {
-            engine.setValue(activeGroup, "beatloop_activate", field.value);
-        }
-    }
-};
-
-TraktorS3.selectBeatjumpHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    var delta = 1;
-    if ((field.value + 1) % 16 === TraktorS3.moveKnobEncoderState[activeGroup]) {
-        delta = -1;
-    }
-
-    if (TraktorS3.shiftPressed[field.group]) {
-        var beatjumpSize = engine.getValue(activeGroup, "beatjump_size");
-        if (delta > 0) {
-            engine.setValue(activeGroup, "beatjump_size", beatjumpSize * 2);
-        } else {
-            engine.setValue(activeGroup, "beatjump_size", beatjumpSize / 2);
-        }
-    } else {
-        if (delta < 0) {
-            script.triggerControl(activeGroup, "beatjump_backward");
-        } else {
-            script.triggerControl(activeGroup, "beatjump_forward");
-        }
-    }
-
-    TraktorS3.moveKnobEncoderState[activeGroup] = field.value;
-};
-
-TraktorS3.activateBeatjumpHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "reloop_andstop", field.value);
-    } else {
-        engine.setValue(activeGroup, "beatlooproll_activate", field.value);
-    }
-};
-
-TraktorS3.microphoneHandler = function(field) {
-    if (field.value) {
-        if (TraktorS3.microphonePressedTimer === 0) {
-            // Start timer to measure how long button is pressed
-            TraktorS3.microphonePressedTimer = engine.beginTimer(300, function() {
-                // Reset microphone button timer status if active
-                if (TraktorS3.microphonePressedTimer !== 0) {
-                    TraktorS3.microphonePressedTimer = 0;
-                }
-            }, true);
-        }
-
-        script.toggleControl("[Microphone]", "talkover");
-    } else {
-        // Button is released, check if timer is still running
-        if (TraktorS3.microphonePressedTimer !== 0) {
-            // short klick -> permanent activation
-            TraktorS3.microphonePressedTimer = 0;
-        } else {
-            engine.setValue("[Microphone]", "talkover", 0);
-        }
-    }
-};
-
-TraktorS3.pitchSliderHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    var value = field.value / 4095;
-    if (TraktorS3.pitchSliderRelativeMode) {
-        if (TraktorS3.pitchSliderLastValue[field.group] === -1) {
-            TraktorS3.pitchSliderLastValue[field.group] = value;
-        } else {
-            // If shift is pressed, don't update any values.
-            if (TraktorS3.shiftPressed[field.group]) {
-                TraktorS3.pitchSliderLastValue[field.group] = value;
-                return;
-            }
-
-            var relVal;
-            if (TraktorS3.keylockPressed[field.group]) {
-                relVal = 1.0 - engine.getParameter(activeGroup, "pitch_adjust");
-            } else {
-                relVal = engine.getParameter(activeGroup, "rate");
-            }
-            relVal += value - TraktorS3.pitchSliderLastValue[field.group];
-            TraktorS3.pitchSliderLastValue[field.group] = value;
-            value = Math.max(0.0, Math.min(1.0, relVal));
-
-            if (TraktorS3.keylockPressed[field.group]) {
-                // To match the pitch change from adjusting the rate, flip the pitch
-                // adjustment.
-                engine.setParameter(activeGroup, "pitch_adjust", 1.0 - value);
-                TraktorS3.keyAdjusted[field.group] = true;
-            } else {
-                engine.setParameter(activeGroup, "rate", value);
-            }
-        }
-        return;
-    }
-
-    if (TraktorS3.shiftPressed[field.group]) {
-        // To match the pitch change from adjusting the rate, flip the pitch
-        // adjustment.
-        engine.setParameter(activeGroup, "pitch_adjust", 1.0 - value);
-    } else {
-        engine.setParameter(activeGroup, "rate", value);
-    }
-};
 
 TraktorS3.parameterHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    engine.setParameter(activeGroup, field.name, field.value / 4095);
-};
-
-TraktorS3.jogTouchHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    if (TraktorS3.wheelTouchInertiaTimer[activeGroup] !== 0) {
-        // The wheel was touched again, reset the timer.
-        engine.stopTimer(TraktorS3.wheelTouchInertiaTimer[activeGroup]);
-        TraktorS3.wheelTouchInertiaTimer[activeGroup] = 0;
-    }
-    if (field.value !== 0) {
-        var deckNumber = TraktorS3.controller.resolveDeck(activeGroup);
-        if (deckNumber === undefined) {
-            return;
-        }
-        engine.setValue(activeGroup, "scratch2_enable", true);
-    } else {
-        // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
-        // Depending on how fast the platter was moving, lengthen the time we'll wait.
-        var scratchRate = Math.abs(engine.getValue(activeGroup, "scratch2"));
-        // Note: inertiaTime multiplier is controller-specific and should be factored out.
-        var inertiaTime = Math.pow(1.8, scratchRate) * 2;
-        if (inertiaTime < 100) {
-            // Just do it now.
-            TraktorS3.finishJogTouch(activeGroup);
-        } else {
-            TraktorS3.wheelTouchInertiaTimer[activeGroup] = engine.beginTimer(
-                inertiaTime, "TraktorS3.finishJogTouch(\"" + activeGroup + "\")", true);
-        }
-    }
-};
-
-TraktorS3.jogHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (!activeGroup) {
-        return;
-    }
-    TraktorS3.tickReceived[activeGroup] = true;
-    var deltas = TraktorS3.wheelDeltas(activeGroup, field.value);
-    var tickDelta = deltas[0];
-    var timeDelta = deltas[1];
-
-    // The scratch rate is the ratio of the wheel's speed to "regular" speed,
-    // which we're going to call 33.33 RPM.  It's 768 ticks for a circle, and
-    // 400000 ticks per second, and 33.33 RPM is 1.8 seconds per rotation, so
-    // the standard speend is 768 / (400000 * 1.8)
-    var thirtyThree = 768 / 720000;
-
-    // Our actual speed is tickDelta / timeDelta.  Take the ratio of those to get the
-    // rate ratio.
-    var velocity = (tickDelta / timeDelta) / thirtyThree;
-
-    // The Mixxx scratch code tries to do accumulation and time calculation itself.
-    // This controller is better, so just use its values.
-    if (engine.getValue(activeGroup, "scratch2_enable")) {
-        engine.setValue(activeGroup, "scratch2", velocity);
-    } else {
-        // If we're playing, just nudge.
-        if (engine.getValue(activeGroup, "play")) {
-            velocity /= 4;
-        } else {
-            velocity *= 2;
-        }
-        engine.setValue(activeGroup, "jog", velocity);
-    }
-};
-
-TraktorS3.wheelDeltas = function(deckNumber, value) {
-    // When the wheel is touched, four bytes change, but only the first behaves predictably.
-    // It looks like the wheel is 1024 ticks per revolution.
-    var tickval = value & 0xFF;
-    var timeval = value >>> 8;
-    var prevTick = 0;
-    var prevTime = 0;
-
-    // Group 1 and 2 -> Array index 0 and 1
-    prevTick = this.lastTickVal[deckNumber - 1];
-    prevTime = this.lastTickTime[deckNumber - 1];
-    this.lastTickVal[deckNumber - 1] = tickval;
-    this.lastTickTime[deckNumber - 1] = timeval;
-
-    if (prevTime > timeval) {
-        // We looped around.  Adjust current time so that subtraction works.
-        timeval += 0x100000;
-    }
-    var timeDelta = timeval - prevTime;
-    if (timeDelta === 0) {
-        // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
-        // This is almost certainly not going to happen on this controller.
-        timeDelta = 1;
-    }
-
-    var tickDelta = 0;
-
-    // Very generous 8bit loop-around detection.
-    if (prevTick >= 200 && tickval <= 100) {
-        tickDelta = tickval + 256 - prevTick;
-    } else if (prevTick <= 100 && tickval >= 200) {
-        tickDelta = tickval - prevTick - 256;
-    } else {
-        tickDelta = tickval - prevTick;
-    }
-
-    return [tickDelta, timeDelta];
-};
-
-TraktorS3.finishJogTouch = function(group) {
-    TraktorS3.wheelTouchInertiaTimer[group] = 0;
-
-    // If we've received no ticks since the last call, we are stopped.
-    if (!TraktorS3.tickReceived[group]) {
-        engine.setValue(group, "scratch2", 0.0);
-        engine.setValue(group, "scratch2_enable", false);
-    } else {
-        // Check again soon.
-        TraktorS3.wheelTouchInertiaTimer[group] = engine.beginTimer(
-            100, "TraktorS3.finishJogTouch(\"" + group + "\")", true);
-    }
-    TraktorS3.tickReceived[group] = false;
+    engine.setParameter(field.group, field.name, field.value / 4095);
 };
 
 TraktorS3.superHandler = function(field) {
     // The super knob drives all the supers!
-    // engine.setParameter(activeGroup, field.name, field.value / 4095);
     var group = field.group;
     var value = field.value / 4095.;
     engine.setParameter("[QuickEffectRack1_" + group + "]", "super1", value);
@@ -993,8 +1026,8 @@ TraktorS3.fxEnableHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    TraktorS3.fxEnabledState[field.group] = !TraktorS3.fxEnabledState[field.group];
-    TraktorS3.colorOutputHandler(TraktorS3.fxEnabledState[field.group], field.group, "!fxEnabled");
+    this.fxEnabledState = !this.fxEnabledState;
+    TraktorS3.colorOutputHandler(this.fxEnabledState, field.group, "!fxEnabled");
     TraktorS3.toggleFX();
 };
 
@@ -1018,46 +1051,21 @@ TraktorS3.toggleFX = function() {
 
 };
 
-TraktorS3.reverseHandler = function(field) {
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "reverseroll", field.value);
-    } else {
-        engine.setValue(activeGroup, "reverse", field.value);
-    }
 
-    TraktorS3.deckOutputHandler(field.value, field.group, "!reverse");
-};
-
-TraktorS3.fluxHandler = function(field) {
-    if (field.value === 0) {
-        return;
-    }
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-
-    script.toggleControl(activeGroup, "slip_enabled");
-};
-
-TraktorS3.quantizeHandler = function(field) {
-    if (field.value === 0) {
-        return;
-    }
-    var activeGroup = TraktorS3.deckToGroup(field.group);
-    if (TraktorS3.shiftPressed[field.group]) {
-        engine.setValue(activeGroup, "beats_translate_curpos", field.value);
-    } else {
-        script.toggleControl(activeGroup, "quantize");
-        // engine.setValue(activeGroup, "quantize", newState);
-        // TraktorS3.colorDeckOutputHandler(newState, field.group, "quantize");
-    }
-};
-
-// function sleepFor(sleepDuration) {
-//     var now = new Date().getTime();
-//     while (new Date().getTime() < now + sleepDuration) { /* do nothing */ }
-// }
 
 TraktorS3.init = function(_id) {
+    this.Decks = {
+        "deck1": new TraktorS3.Deck(this, 1, "deck1"),
+        "deck2": new TraktorS3.Deck(this, 2, "deck2"),
+    };
+
+    this.Channels = {
+        "[Channel1]": new TraktorS3.Channel(this, this.Decks.deck1, "[Channel1]"),
+        "[Channel2]": new TraktorS3.Channel(this, this.Decks.deck2, "[Channel2]"),
+        "[Channel3]": new TraktorS3.Channel(this, this.Decks.deck1, "[Channel3]"),
+        "[Channel4]": new TraktorS3.Channel(this, this.Decks.deck2, "[Channel4]")
+    };
+
     TraktorS3.registerInputPackets();
     TraktorS3.registerOutputPackets();
     HIDDebug("TraktorS3: Init done!");
@@ -1130,68 +1138,19 @@ TraktorS3.debugLights = function() {
 
 TraktorS3.registerOutputPackets = function() {
     var outputA = new HIDPacket("outputA", 0x80);
+    var outputB = new HIDPacket("outputB", 0x81);
 
-    outputA.addOutput("deck1", "!shift", 0x01, "B");
-    outputA.addOutput("deck2", "!shift", 0x1A, "B");
-
-    outputA.addOutput("deck1", "slip_enabled", 0x02, "B");
-    outputA.addOutput("deck2", "slip_enabled", 0x1B, "B");
-
-    outputA.addOutput("deck1", "!reverse", 0x03, "B");
-    outputA.addOutput("deck2", "!reverse", 0x1C, "B");
-
-    outputA.addOutput("deck1", "!PreviewTrack", 0x04, "B");
-    outputA.addOutput("deck2", "!PreviewTrack", 0x1D, "B");
-
-    outputA.addOutput("deck1", "!PreviewTrack", 0x04, "B");
-    outputA.addOutput("deck2", "!PreviewTrack", 0x1D, "B");
-
-    outputA.addOutput("deck1", "!AddTrack", 0x06, "B");
-    outputA.addOutput("deck2", "!AddTrack", 0x1F, "B");
-
-    outputA.addOutput("deck1", "!LibraryFocus", 0x07, "B");
-    outputA.addOutput("deck2", "!LibraryFocus", 0x20, "B");
+    for (var idx in TraktorS3.Decks) {
+        var deck = TraktorS3.Decks[idx];
+        deck.registerOutputs(outputA, outputB);
+    }
 
     outputA.addOutput("[Channel1]", "!deck_A", 0x0A, "B");
     outputA.addOutput("[Channel2]", "!deck_B", 0x23, "B");
     outputA.addOutput("[Channel3]", "!deck_C", 0x0B, "B");
     outputA.addOutput("[Channel4]", "!deck_D", 0x24, "B");
 
-    outputA.addOutput("deck1", "keylock", 0x0D, "B");
-    outputA.addOutput("deck2", "keylock", 0x26, "B");
 
-    outputA.addOutput("deck1", "hotcues", 0x0E, "B");
-    outputA.addOutput("deck2", "hotcues", 0x27, "B");
-
-    outputA.addOutput("deck1", "samples", 0x0F, "B");
-    outputA.addOutput("deck2", "samples", 0x28, "B");
-
-    outputA.addOutput("deck1", "cue_indicator", 0x10, "B");
-    outputA.addOutput("deck2", "cue_indicator", 0x29, "B");
-
-    outputA.addOutput("deck1", "play_indicator", 0x11, "B");
-    outputA.addOutput("deck2", "play_indicator", 0x2A, "B");
-
-    outputA.addOutput("deck1", "sync_enabled", 0x0C, "B");
-    outputA.addOutput("deck2", "sync_enabled", 0x25, "B");
-
-    outputA.addOutput("deck1", "!pad_1", 0x12, "B");
-    outputA.addOutput("deck1", "!pad_2", 0x13, "B");
-    outputA.addOutput("deck1", "!pad_3", 0x14, "B");
-    outputA.addOutput("deck1", "!pad_4", 0x15, "B");
-    outputA.addOutput("deck1", "!pad_5", 0x16, "B");
-    outputA.addOutput("deck1", "!pad_6", 0x17, "B");
-    outputA.addOutput("deck1", "!pad_7", 0x18, "B");
-    outputA.addOutput("deck1", "!pad_8", 0x19, "B");
-
-    outputA.addOutput("deck2", "!pad_1", 0x2B, "B");
-    outputA.addOutput("deck2", "!pad_2", 0x2C, "B");
-    outputA.addOutput("deck2", "!pad_3", 0x2D, "B");
-    outputA.addOutput("deck2", "!pad_4", 0x2E, "B");
-    outputA.addOutput("deck2", "!pad_5", 0x2F, "B");
-    outputA.addOutput("deck2", "!pad_6", 0x30, "B");
-    outputA.addOutput("deck2", "!pad_7", 0x31, "B");
-    outputA.addOutput("deck2", "!pad_8", 0x32, "B");
 
     outputA.addOutput("[Channel1]", "pfl", 0x39, "B");
     outputA.addOutput("[Channel2]", "pfl", 0x3A, "B");
@@ -1229,7 +1188,6 @@ TraktorS3.registerOutputPackets = function() {
 
     this.controller.registerOutputPacket(outputA);
 
-    var outputB = new HIDPacket("outputB", 0x81);
 
     var VuOffsets = {
         "[Channel3]": 0x01,
@@ -1393,11 +1351,12 @@ TraktorS3.lightHotcue = function(group, number) {
 };
 
 TraktorS3.lightPads = function(group) {
-    var activeGroup = TraktorS3.deckToGroup(group);
+    // var activeGroup = TraktorS3.deckToGroup(group);
+    var deck = TraktorS3.Decks[group];
     // Samplers
-    if (TraktorS3.padModeState[group] === 1) {
-        TraktorS3.colorDeckOutputHandler(0, activeGroup, "hotcues");
-        TraktorS3.colorDeckOutputHandler(1, activeGroup, "samples");
+    if (deck.padModeState === 1) {
+        TraktorS3.colorDeckOutputHandler(0, deck.activeChannel, "hotcues");
+        TraktorS3.colorDeckOutputHandler(1, deck.activeChannel, "samples");
         for (var i = 1; i <= 8; i++) {
             var idx = i;
             if (group === "deck2") {
@@ -1407,10 +1366,10 @@ TraktorS3.lightPads = function(group) {
             TraktorS3.colorDeckOutputHandler(loaded, group, "!pad_" + idx);
         }
     } else {
-        TraktorS3.colorDeckOutputHandler(1, activeGroup, "hotcues");
-        TraktorS3.colorDeckOutputHandler(0, activeGroup, "samples");
+        TraktorS3.colorDeckOutputHandler(1, deck.activeChannel, "hotcues");
+        TraktorS3.colorDeckOutputHandler(0, deck.activeChannel, "samples");
         for (i = 1; i <= 8; ++i) {
-            TraktorS3.lightHotcue(activeGroup, i);
+            TraktorS3.lightHotcue(deck.activeChannel, i);
         }
     }
 };
