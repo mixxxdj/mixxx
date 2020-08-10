@@ -2,6 +2,7 @@
 
 #include "library/coverartutils.h"
 #include "sources/soundsourceproxy.h"
+#include "util/cmdlineargs.h"
 #include "util/logging.h"
 
 namespace {
@@ -13,7 +14,7 @@ QString makeTestConfigFile(const QString& path) {
     return path;
 }
 
-}  // namespace
+} // namespace
 
 // Static initialization
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
@@ -25,12 +26,17 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
 
     SoundSourceProxy::registerSoundSourceProviders();
 
+    // Construct a list of strings based on the command line arguments
+    CmdlineArgs args;
+    DEBUG_ASSERT(args.Parse(argc, argv));
+    mixxx::LogLevel logLevel = args.getLogLevel();
+
     // Log level Debug would produce too many log messages that
     // might abort and fail the CI builds.
     mixxx::Logging::initialize(
             QDir(), // No log file should be written during tests, only output to stderr
-            mixxx::LogLevel::Info,
-            mixxx::LogLevel::Info,
+            logLevel,
+            logLevel,
             true);
 
     // All guessing of cover art should be done synchronously
