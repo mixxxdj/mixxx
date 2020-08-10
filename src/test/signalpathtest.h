@@ -14,7 +14,9 @@
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "engine/sync/enginesync.h"
 #include "mixer/deck.h"
+#include "mixer/playerinfo.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
 #include "preferences/usersettings.h"
@@ -123,6 +125,8 @@ class BaseSignalPathTest : public MixxxTest {
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
         ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
+
+        PlayerInfo::create();
     }
 
     ~BaseSignalPathTest() override {
@@ -141,6 +145,7 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pVisualsManager;
         delete m_pNumDecks;
         delete m_pMacroRecorder;
+        PlayerInfo::destroy();
     }
 
     void addDeck(EngineDeck* pDeck) {

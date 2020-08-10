@@ -25,7 +25,8 @@ class StreamUnitConverter final {
         // The stream units should actually be much shorter than
         // sample frames to minimize jitter and rounding. Even a
         // frame at 192 kHz has a length of about 5000 ns >> 100 ns.
-        DEBUG_ASSERT(m_fromStreamUnitsToSampleFrames >= 50);
+        DEBUG_ASSERT(m_fromSampleFramesToStreamUnits > 50);
+        DEBUG_ASSERT(m_fromStreamUnitsToSampleFrames < 0.02);
     }
 
     LONGLONG fromFrameIndex(SINT frameIndex) const {

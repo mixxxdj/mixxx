@@ -83,6 +83,13 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
+void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
+    Q_UNUSED(event);
+    if (m_pCurrentTrack) {
+        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->slotShowTrackInfo();
+    }
+}
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
     DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);

@@ -312,6 +312,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             &PlayerManager::noVinylControlInputConfigured,
             this,
             &MixxxMainWindow::slotNoVinylControlInputConfigured);
+    PlayerInfo::create();
 
     for (int i = 0; i < kMicrophoneCount; ++i) {
         m_pPlayerManager->addMicrophone();

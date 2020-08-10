@@ -65,8 +65,7 @@ bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
 }
 
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
-        const QString& schemaFilename,
-        int targetVersion) {
+        int targetVersion, const QString& schemaFilename) {
     VERIFY_OR_DEBUG_ASSERT(m_currentVersion >= 0) {
         return Result::UpgradeFailed;
     }
