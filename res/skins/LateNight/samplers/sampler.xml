@@ -129,6 +129,13 @@
                             <Layout>horizontal</Layout>
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
+                              <Template src="skin:/controls/button_2state.xml">
+                                <SetVariable name="TooltipId">keylock</SetVariable>
+                                <SetVariable name="ObjectName">KeylockButton12</SetVariable>
+                                <SetVariable name="BtnType"></SetVariable>
+                                <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
+                                <SetVariable name="Size">21f,18f</SetVariable>
+                              </Template>
                               <PushButton>
                                 <TooltipId>orientation</TooltipId>
                                 <Size>21f,18f</Size>
@@ -153,13 +160,6 @@
                                   <ButtonState>LeftButton</ButtonState>
                                 </Connection>
                               </PushButton>
-                              <Template src="skin:/controls/button_2state.xml">
-                                <SetVariable name="TooltipId">keylock</SetVariable>
-                                <SetVariable name="ObjectName">KeylockButton12</SetVariable>
-                                <SetVariable name="BtnType"></SetVariable>
-                                <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
-                                <SetVariable name="Size">21f,18f</SetVariable>
-                              </Template>
                             </Children>
                           </WidgetGroup>
                         </Children>
