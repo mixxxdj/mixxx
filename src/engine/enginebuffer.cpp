@@ -756,10 +756,12 @@ void EngineBuffer::processTrackLocked(
         double framePos = m_filepos_play / kSamplesPerFrame;
         MacroAction* nextAction = m_activeMacro.front();
         double nextActionPos = nextAction->position;
+        int bufFrames = iBufferSize / 2;
         // this method is called roughly every iBufferSize samples (double as often if you view frames)
-        // so use double that as the tolerance range
-        if (framePos > nextActionPos - iBufferSize && framePos < nextActionPos) {
-            slotControlSeekExact(m_activeMacro.front()->target * kSamplesPerFrame);
+        // so we use half that as tolerance range before and some extra afterwards:
+        // | bufferSizeFrames / 2 | recorded position | bufferSizeFrames |
+        if (framePos > nextActionPos - bufFrames / 2 && framePos < nextActionPos + bufFrames) {
+            slotControlSeekExact(nextAction->target * kSamplesPerFrame);
             m_activeMacro.pop();
         }
     }
