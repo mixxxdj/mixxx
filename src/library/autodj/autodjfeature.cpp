@@ -287,6 +287,11 @@ void AutoDJFeature::constructCrateChildModel() {
     }
 }
 
+void AutoDJFeature::activateChild(const QModelIndex& index) {
+    Q_UNUSED(index);
+    activate();
+}
+
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
