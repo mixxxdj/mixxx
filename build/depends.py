@@ -1008,6 +1008,7 @@ class MixxxCore(Feature):
                    "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wtimesignaturemenu.cpp",
+                   "src/widget/wtempomenu.cpp",
                    "src/widget/wmainmenubar.cpp",
 
                    "src/musicbrainz/tagfetcher.cpp",

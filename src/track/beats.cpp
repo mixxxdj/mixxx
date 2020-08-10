@@ -16,6 +16,11 @@ inline bool TimeSignatureMarkerEarlier(
         const track::io::TimeSignatureMarker& marker2) {
     return marker1.downbeat_index() < marker2.downbeat_index();
 }
+inline bool BpmMarkerEarlier(
+        const track::io::BpmMarker& marker1,
+        const track::io::BpmMarker& marker2) {
+    return marker1.beat_index() < marker2.beat_index();
+}
 constexpr int kSecondsPerMinute = 60;
 constexpr double kBeatVicinityFactor = 0.1;
 
@@ -147,7 +152,7 @@ void Beats::setSignature(TimeSignature sig, int beatIndex) {
     QMutexLocker locker(&m_mutex);
     m_beatsInternal.setSignature(sig, beatIndex);
     locker.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void Beats::translate(FrameDiff_t numFrames) {
@@ -164,8 +169,11 @@ void Beats::scale(enum BeatsInternal::BPMScale scale) {
     emit updated();
 }
 
-void Beats::setBpm(Bpm bpm) {
-    m_beatsInternal.setBpm(bpm);
+void Beats::setBpm(Bpm bpm, int beatIndex) {
+    QMutexLocker locker(&m_mutex);
+    m_beatsInternal.setBpm(bpm, beatIndex);
+    locker.unlock();
+    emit updated();
 }
 
 FramePos Beats::getFirstBeatPosition() const {
@@ -198,7 +206,7 @@ QDebug operator<<(QDebug dbg, const BeatsInternal& arg) {
         beatFramePositions.append(beat.getFramePosition());
     }
     dbg << "["
-        << "Cached BPM:" << arg.m_bpm << "|"
+        << "Aggregate BPM:" << arg.m_bpm << "|"
         << "Number of beats:" << arg.m_beats.size() << "|"
         << "Beats:" << beatFramePositions << "]";
     return dbg;
@@ -626,11 +634,9 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
             *pNextBeatFrame != kInvalidFramePos;
 }
 void BeatsInternal::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
-    clearMarkers();
+    m_beatsProto.clear_bpm_markers();
     m_beatsProto.set_first_frame_position(firstBeatFrame.getValue());
-    m_beatsProto.set_first_downbeat_index(0);
     track::io::BpmMarker bpmMarker;
-    bpmMarker.set_beat_index(0);
     bpmMarker.set_bpm(dBpm.getValue());
     m_beatsProto.add_bpm_markers()->CopyFrom(bpmMarker);
     generateBeatsFromMarkers();
@@ -758,12 +764,43 @@ void BeatsInternal::translate(FrameDiff_t numFrames) {
     generateBeatsFromMarkers();
 }
 
-void BeatsInternal::setBpm(Bpm dBpm) {
-    // Temporarily creating this adapter to generate beats from a given bpm assuming
-    // uniform bpm.
+void BeatsInternal::setBpm(Bpm bpm, int beatIndex) {
     // TODO(hacksdump): A check for preferences will be added to only allow setting bpm
     //  when "Assume Constant Tempo" is checked.
-    setGrid(dBpm, m_beats.first().getFramePosition());
+    if (!isValid()) {
+        return;
+    }
+    track::io::BpmMarker markerToInsert;
+    markerToInsert.set_beat_index(beatIndex);
+    markerToInsert.set_bpm(bpm.getValue());
+    QVector<track::io::BpmMarker> bpmMarkersMutableCopy;
+    copy(m_beatsProto.bpm_markers().cbegin(),
+            m_beatsProto.bpm_markers().cend(),
+            std::back_inserter(bpmMarkersMutableCopy));
+
+    track::io::BpmMarker searchBeforeMarker;
+    searchBeforeMarker.set_beat_index(beatIndex);
+    auto prevBpmMarker =
+            std::lower_bound(bpmMarkersMutableCopy.begin(),
+                    bpmMarkersMutableCopy.end(),
+                    searchBeforeMarker,
+                    BpmMarkerEarlier);
+    if (prevBpmMarker->beat_index() == beatIndex) {
+        prevBpmMarker->CopyFrom(markerToInsert);
+    } else {
+        bpmMarkersMutableCopy.insert(
+                prevBpmMarker, markerToInsert);
+    }
+    m_beatsProto.clear_bpm_markers();
+    for (const auto& bpmMarker : bpmMarkersMutableCopy) {
+        m_beatsProto.add_bpm_markers()->CopyFrom(
+                bpmMarker);
+    }
+    generateBeatsFromMarkers();
+    QList<int> indices;
+    for (const auto& bpmMarker : m_beatsProto.bpm_markers()) {
+        indices.append(bpmMarker.beat_index());
+    }
 
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
@@ -800,6 +837,8 @@ FramePos BeatsInternal::getLastBeatPosition() const {
                            : m_beats.back().getFramePosition();
 }
 void BeatsInternal::generateBeatsFromMarkers() {
+    // If the protobuf does not have any time signature markers, we add the default
+    // time signature marker.
     VERIFY_OR_DEBUG_ASSERT(m_beatsProto.time_signature_markers_size() > 0) {
         // This marker will get the default values from the protobuf definitions,
         // beatIndex = 0 and timeSignature = 4/4.
@@ -808,6 +847,8 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 generatedTimeSignatureMarker);
     }
 
+    // This assertion enforces the assumption that the initial downbeat offset
+    // is always less than the number of beats in the first measure.
     VERIFY_OR_DEBUG_ASSERT(m_beatsProto.first_downbeat_index() <
             m_beatsProto.time_signature_markers()
                     .Get(0)
@@ -840,8 +881,24 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 minimalTimeSignatureMarker);
     }
 
+    QList<track::io::BpmMarker> minimalBpmMarkers;
+    for (const auto& bpmMarker :
+            m_beatsProto.bpm_markers()) {
+        if (minimalBpmMarkers.empty() ||
+                Bpm(minimalBpmMarkers.constLast().bpm()) !=
+                        Bpm(bpmMarker.bpm())) {
+            minimalBpmMarkers.append(bpmMarker);
+        }
+    }
+    m_beatsProto.clear_bpm_markers();
+    for (const auto& minimalBpmMarker : minimalBpmMarkers) {
+        m_beatsProto.add_bpm_markers()->CopyFrom(
+                minimalBpmMarker);
+    }
+
     m_beats.clear();
 
+    // We keep generating beats until this frame.
     const FramePos trackLastFrame(m_iSampleRate * m_dDurationSeconds);
     int bpmMarkerIndex = 0;
     int timeSignatureMarkerIndex = 0;
@@ -853,12 +910,22 @@ void BeatsInternal::generateBeatsFromMarkers() {
     int barRelativeBeatIndex = (beatsPerBar -
                                        m_beatsProto.first_downbeat_index()) %
             beatsPerBar;
-    Beat addedBeat(kInvalidFramePos);
+    Beat addedBeat = kInvalidBeat;
     // TODO(hacksdump): Use markers for BPM and enable marker only on user edited markers.
-    bool beatHasMarker;
+    Beat::Markers markers;
     while (true) {
-        beatHasMarker = false;
+        markers = mixxx::Beat::Marker::NONE;
+        if (bpmMarkerIndex < m_beatsProto.bpm_markers_size() - 1 &&
+                m_beatsProto.bpm_markers()
+                                .Get(bpmMarkerIndex + 1)
+                                .beat_index() == m_beats.size()) {
+            bpmMarkerIndex++;
+        }
         auto currentBpmMarker = m_beatsProto.bpm_markers().Get(bpmMarkerIndex);
+
+        if (currentBpmMarker.beat_index() == m_beats.size()) {
+            markers |= Beat::Marker::BPM;
+        }
         Bpm currentBpm = Bpm(currentBpmMarker.bpm());
         auto currentTimeSignatureMarker =
                 m_beatsProto.time_signature_markers().Get(
@@ -870,6 +937,9 @@ void BeatsInternal::generateBeatsFromMarkers() {
 
         if (barRelativeBeatIndex % currentTimeSignature.getBeatsPerBar() == 0) {
             barIndex++;
+            if (m_beatsProto.first_downbeat_index() == m_beats.size()) {
+                markers |= Beat::Marker::TIME_SIGNATURE;
+            }
             if (timeSignatureMarkerIndex <
                             m_beatsProto.time_signature_markers_size() - 1 &&
                     m_beatsProto.time_signature_markers()
@@ -881,7 +951,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
                                 timeSignatureMarkerIndex);
                 currentTimeSignature = TimeSignature(
                         currentTimeSignatureMarker.time_signature());
-                beatHasMarker = true;
+                markers |= Beat::Marker::TIME_SIGNATURE;
             }
         }
 
@@ -890,22 +960,18 @@ void BeatsInternal::generateBeatsFromMarkers() {
                         0
                 ? Beat::DOWNBEAT
                 : Beat::BEAT;
-        if (bpmMarkerIndex < m_beatsProto.bpm_markers_size() - 1 &&
-                m_beatsProto.bpm_markers()
-                                .Get(bpmMarkerIndex + 1)
-                                .beat_index() == m_beats.size()) {
-            bpmMarkerIndex++;
-        }
+
         FramePos beatFramePosition = m_beats.empty()
                 ? FramePos(m_beatsProto.first_frame_position())
                 : (m_beats.last().getFramePosition() + beatLength);
         addedBeat = Beat(beatFramePosition,
                 beatType,
                 currentTimeSignature,
+                currentBpm,
                 m_beats.size(),
                 barIndex,
                 barRelativeBeatIndex,
-                beatHasMarker);
+                markers);
         barRelativeBeatIndex = (barRelativeBeatIndex + 1) %
                 currentTimeSignature.getBeatsPerBar();
         if (addedBeat.getFramePosition() <= trackLastFrame) {

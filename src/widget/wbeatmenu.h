@@ -7,6 +7,7 @@
 #include "track/track.h"
 #include "util/parented_ptr.h"
 #include "widget/wcuemenupopup.h"
+#include "widget/wtempomenu.h"
 #include "widget/wtimesignaturemenu.h"
 
 class WBeatMenu : public QMenu {
@@ -21,15 +22,9 @@ class WBeatMenu : public QMenu {
 
     ~WBeatMenu() override = default;
 
-    void setBeatgrid(mixxx::BeatsPointer pBeats) {
-        m_pBeats = pBeats;
-        m_pTimeSignatureMenu->setBeatsPointer(pBeats);
-    }
+    void setBeatsPointer(mixxx::BeatsPointer pBeats);
 
-    void setBeat(mixxx::Beat beat) {
-        m_beat = beat;
-        m_pTimeSignatureMenu->setBeat(beat);
-    }
+    void setBeat(mixxx::Beat beat);
 
     void setOptions(Options selectedOptions) {
         m_eSelectedOptions = selectedOptions;
@@ -40,12 +35,16 @@ class WBeatMenu : public QMenu {
 
     void removeOptions(Options removeOptions);
 
+  public slots:
+    void slotBeatsUpdated();
+
   signals:
     void cueButtonClicked();
 
   private slots:
     void slotDownbeatUpdated();
     void slotDisplayTimeSignatureMenu();
+    void slotDisplayTempoMenu();
 
   private:
     void updateMenu();
@@ -54,7 +53,9 @@ class WBeatMenu : public QMenu {
     parented_ptr<QAction> m_pSetAsDownbeat;
     parented_ptr<QAction> m_pCueMenu;
     parented_ptr<QAction> m_pTimeSignatureAction;
+    parented_ptr<QAction> m_pTempoAction;
     parented_ptr<WTimeSignatureMenu> m_pTimeSignatureMenu;
+    parented_ptr<WTempoMenu> m_pTempoMenu;
     mixxx::BeatsPointer m_pBeats;
     mixxx::Beat m_beat;
     Options m_eSelectedOptions;

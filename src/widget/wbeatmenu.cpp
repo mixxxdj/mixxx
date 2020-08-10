@@ -4,6 +4,7 @@ WBeatMenu::WBeatMenu(UserSettingsPointer pConfig, QWidget* parent)
         : QMenu(parent),
           m_pConfig(pConfig),
           m_pTimeSignatureMenu(make_parented<WTimeSignatureMenu>(this)),
+          m_pTempoMenu(make_parented<WTempoMenu>(this)),
           m_beat(mixxx::kInvalidFramePos) {
 }
 
@@ -35,6 +36,18 @@ void WBeatMenu::updateMenu() {
                 this,
                 &WBeatMenu::slotDisplayTimeSignatureMenu);
     }
+
+    if (m_beat.getType() == mixxx::Beat::DOWNBEAT ||
+            m_beat.getMarkers().testFlag(mixxx::Beat::Marker::BPM)) {
+        // TODO(hacksdump): Don't show this option when constant BPM is selected in preferences.
+        m_pTempoAction =
+                make_parented<QAction>(tr("Edit tempo ahead"), this);
+        addAction(m_pTempoAction);
+        connect(m_pTempoAction,
+                &QAction::triggered,
+                this,
+                &WBeatMenu::slotDisplayTempoMenu);
+    }
 }
 
 void WBeatMenu::slotDownbeatUpdated() {
@@ -54,4 +67,28 @@ void WBeatMenu::removeOptions(Options removeOptions) {
 
 void WBeatMenu::slotDisplayTimeSignatureMenu() {
     m_pTimeSignatureMenu->popup(pos());
+}
+
+void WBeatMenu::slotDisplayTempoMenu() {
+    m_pTempoMenu->popup(pos());
+}
+
+void WBeatMenu::setBeatsPointer(mixxx::BeatsPointer pBeats) {
+    if (pBeats) {
+        m_pBeats = pBeats;
+        m_pTimeSignatureMenu->setBeatsPointer(pBeats);
+        m_pTempoMenu->setBeatsPointer(pBeats);
+    }
+}
+
+void WBeatMenu::setBeat(mixxx::Beat beat) {
+    if (m_pBeats) {
+        m_beat = beat;
+        m_pTimeSignatureMenu->setBeat(beat);
+        m_pTempoMenu->setBeat(beat);
+    }
+}
+
+void WBeatMenu::slotBeatsUpdated() {
+    setBeat(m_pBeats->getBeatAtIndex(m_beat.getBeatIndex()));
 }

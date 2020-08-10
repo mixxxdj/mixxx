@@ -111,17 +111,23 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (beatMarkerCount >= m_beatMarkers.size()) {
             m_beatMarkers.resize(m_beatMarkers.size() * 2);
         }
-        if (beat.hasMarker()) {
+        if (beat.getMarkers()) {
             m_beatMarkers[beatMarkerCount].setPositionPixels(beatPixelPositionInWidgetSpace);
             m_beatMarkers[beatMarkerCount].setLength(
                     (orientation == Qt::Horizontal) ? rendererHeight
                                                     : rendererWidth);
             QStringList displayItems;
-            QString timeSignatureString =
-                    QString::number(beat.getTimeSignature().getBeatsPerBar()) +
-                    "/" +
-                    QString::number(beat.getTimeSignature().getNoteValue());
-            displayItems.append(timeSignatureString);
+            if (beat.getMarkers().testFlag(mixxx::Beat::Marker::TIME_SIGNATURE)) {
+                QString timeSignatureString =
+                        QString::number(beat.getTimeSignature().getBeatsPerBar()) +
+                        "/" +
+                        QString::number(beat.getTimeSignature().getNoteValue());
+                displayItems.append(timeSignatureString);
+            }
+            if (beat.getMarkers().testFlag(mixxx::Beat::Marker::BPM)) {
+                displayItems.append(QString("%1 BPM").arg(
+                        QString::number(beat.getBpm().getValue())));
+            }
             m_beatMarkers[beatMarkerCount].setTextDisplayItems(displayItems);
             beatMarkerCount++;
         }

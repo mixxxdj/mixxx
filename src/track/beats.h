@@ -79,7 +79,7 @@ class BeatsInternal {
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
     void setSignature(TimeSignature sig, int downbeatIndex);
     void translate(FrameDiff_t numFrames);
-    void setBpm(Bpm bpm);
+    void setBpm(Bpm bpm, int beatIndex = 0);
     inline int size() {
         return m_beats.size();
     }
@@ -233,8 +233,8 @@ class Beats final : public QObject {
     /// Scale the position of every beat in the song by dScalePercentage.
     void scale(enum BeatsInternal::BPMScale scale);
 
-    /// Adjust the beats so the global average BPM matches dBpm.
-    void setBpm(Bpm bpm);
+    /// Set bpm marker at a beat
+    void setBpm(Bpm bpm, int beatIndex = 0);
 
     /// Returns the number of beats
     inline int size() {

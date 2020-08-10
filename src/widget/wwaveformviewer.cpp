@@ -89,12 +89,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
         if (!isPlaying() && (m_pHoveredMark || m_hoveredBeat)) {
             bool hasBeat = false, hasCue = false;
-            // Conditionally initialize both menus.
-            //            if (m_hoveredBeat && m_hoveredBeat->getBeat().getType() == mixxx::Beat::BEAT) {
-            m_pBeatMenu->setBeatgrid(m_waveformWidget->getTrackInfo()->getBeats());
             m_pBeatMenu->setBeat(m_hoveredBeat->getBeat());
             hasBeat = true;
-            //            }
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
@@ -227,6 +223,13 @@ void WWaveformViewer::leaveEvent(QEvent*) {
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
+        if (track) {
+            m_pBeatMenu->setBeatsPointer(track->getBeats());
+            connect(track->getBeats().get(),
+                    &mixxx::Beats::updated,
+                    m_pBeatMenu,
+                    &WBeatMenu::slotBeatsUpdated);
+        }
     }
 }
 

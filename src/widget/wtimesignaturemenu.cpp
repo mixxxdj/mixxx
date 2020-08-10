@@ -18,7 +18,7 @@ WTimeSignatureMenu::WTimeSignatureMenu(QWidget* parent)
     setAttribute(Qt::WA_StyledBackground);
     setObjectName("WTimeSignatureMenu");
 
-    QHBoxLayout* pMainLayout = new QHBoxLayout();
+    parented_ptr<QHBoxLayout> pMainLayout = make_parented<QHBoxLayout>(this);
     pMainLayout->addWidget(m_pBeatCountBox);
     pMainLayout->addWidget(m_pBeatLengthBox);
     setLayout(pMainLayout);

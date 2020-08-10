@@ -907,6 +907,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wstatuslight.cpp
   src/widget/wtime.cpp
   src/widget/wtimesignaturemenu.cpp
+  src/widget/wtempomenu.cpp
   src/widget/wtrackmenu.cpp
   src/widget/wtrackproperty.cpp
   src/widget/wtracktableview.cpp
