@@ -28,8 +28,6 @@
 #include "engine/sync/synccontrol.h"
 #include "macros/macrorecorder.h"
 #include "preferences/usersettings.h"
-#include "track/beatfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"

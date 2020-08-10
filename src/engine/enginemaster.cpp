@@ -3,7 +3,6 @@
 #include <QList>
 #include <QPair>
 #include <QtDebug>
-#include <QtQml/QtQml>
 
 #include "control/controlaudiotaperpot.h"
 #include "control/controlpotmeter.h"

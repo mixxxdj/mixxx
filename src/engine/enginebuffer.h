@@ -7,7 +7,6 @@
 
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
-#include "engine/enginemaster.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "macros/macrorecorder.h"
@@ -35,10 +34,11 @@ class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
-class EngineSync;
-class EngineWorkerScheduler;
 class EngineChannel;
 class EngineControl;
+class EngineMaster;
+class EngineSync;
+class EngineWorkerScheduler;
 class KeyControl;
 class LoopingControl;
 class RateControl;
