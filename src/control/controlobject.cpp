@@ -126,14 +126,6 @@ void ControlObject::set(const ConfigKey& key, const double& value) {
     }
 }
 
-void ControlObject::toggle(const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
-    if (pCop) {
-        pCop->set(1, nullptr);
-        pCop->set(0, nullptr);
-    }
-}
-
 void ControlObject::setReadOnly() {
     connectValueChangeRequest(this, &ControlObject::readOnlyHandler,
                               Qt::DirectConnection);

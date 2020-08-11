@@ -20,17 +20,19 @@ TEST(MacrosTest, SerializeMacroActions) {
     EXPECT_EQ(deserialized, actions);
 }
 
-TEST(MacroRecordingTest, StartAndStopRecording) {
+TEST(MacroRecordingTest, StartAndStopRecordingCOs) {
     MacroRecorder recorder;
-    ASSERT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
+    ASSERT_EQ(ControlProxy(kConfigGroup, "status").get(),
             MacroRecorder::Status::Disabled);
     EXPECT_EQ(recorder.isRecordingActive(), false);
-    recorder.startRecording();
-    ASSERT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
+
+    ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
+    ASSERT_EQ(ControlProxy(kConfigGroup, "status").get(),
             MacroRecorder::Status::Armed);
     EXPECT_EQ(recorder.isRecordingActive(), true);
-    recorder.stopRecording();
-    ASSERT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
+
+    ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
+    ASSERT_EQ(ControlProxy(kConfigGroup, "status").get(),
             MacroRecorder::Status::Disabled);
     EXPECT_EQ(recorder.isRecordingActive(), false);
 }
@@ -61,16 +63,6 @@ TEST(MacroRecordingTest, RecordCueJump) {
     ::checkRecordedAction(&recorder, otherAction);
 
     recorder.pollRecordingStart();
-    EXPECT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
+    EXPECT_EQ(ControlProxy(kConfigGroup, "status").get(),
             MacroRecorder::Status::Recording);
-}
-
-TEST(MacroRecordingTest, RecordingToggleControl) {
-    MacroRecorder recorder;
-    ControlObject::toggle(
-            ConfigKey(kConfigGroup, "recording_toggle"));
-    ASSERT_EQ(recorder.isRecordingActive(), true);
-    ControlObject::toggle(
-            ConfigKey(kConfigGroup, "recording_toggle"));
-    ASSERT_EQ(recorder.isRecordingActive(), false);
 }

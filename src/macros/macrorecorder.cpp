@@ -12,13 +12,15 @@ const QString kConfigGroup = QStringLiteral("[MacroRecording]");
 } // namespace
 
 MacroRecorder::MacroRecorder()
-        : m_COToggleRecording(ConfigKey(kConfigGroup, "recording_toggle")),
-          m_CORecStatus(ConfigKey(kConfigGroup, "recording_status")),
+        : m_COToggleRecording(ConfigKey(kConfigGroup, "record")),
+          m_CORecStatus(ConfigKey(kConfigGroup, "status")),
           m_activeChannel(nullptr),
           m_pStartRecordingTimer(this),
           m_recordedActions(kMaxMacroSize) {
     qCDebug(macroLoggingCategory) << "MacroRecorder construct";
 
+    m_COToggleRecording.setButtonMode(ControlPushButton::TOGGLE);
+    m_CORecStatus.setReadOnly();
     connect(&m_COToggleRecording,
             &ControlPushButton::valueChanged,
             this,
@@ -51,19 +53,19 @@ void MacroRecorder::pollRecordingStart() {
         return;
     }
     m_pStartRecordingTimer.stop();
-    m_CORecStatus.set(Status::Recording);
+    m_CORecStatus.forceSet(Status::Recording);
 }
 
 void MacroRecorder::startRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording armed";
-    m_CORecStatus.set(Status::Armed);
+    m_CORecStatus.forceSet(Status::Armed);
     m_pStartRecordingTimer.start(kStartCheckInterval);
 }
 
 void MacroRecorder::stopRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording stop";
     m_pStartRecordingTimer.stop();
-    m_CORecStatus.set(Status::Disabled);
+    m_CORecStatus.forceSet(Status::Disabled);
 
     ChannelHandle* channel = m_activeChannel.exchange(nullptr);
     if (channel == nullptr) {
@@ -101,7 +103,7 @@ QVector<MacroAction> MacroRecorder::fetchRecordedActions() {
 void MacroRecorder::notifyTrackChange(ChannelHandle* channel, TrackPointer track) {
     if (m_activeChannel.compare_exchange_strong(channel, nullptr)) {
         m_pStartRecordingTimer.stop();
-        m_CORecStatus.set(Status::Disabled);
+        m_CORecStatus.forceSet(Status::Disabled);
 
         emit saveMacro(fetchRecordedActions(), track->getId());
     }

@@ -110,9 +110,6 @@ class ControlObject : public QObject {
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
 
-    // Instantly sets the value of the ControlObject to 1 and then to 0
-    static void toggle(const ConfigKey& key);
-
     // Sets the default value
     inline void reset() {
         if (m_pControl) {

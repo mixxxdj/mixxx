@@ -16,10 +16,9 @@ class MacroRecorderTest : public SignalPathTest {
 };
 
 TEST_F(MacroRecorderTest, RecordSeek) {
-    ControlObject::toggle(
-            ConfigKey(kConfigGroup, "recording_toggle"));
+    ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
     ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
-    EXPECT_EQ(ControlProxy(kConfigGroup, "recording_status").get(),
+    EXPECT_EQ(ControlProxy(kConfigGroup, "status").get(),
             MacroRecorder::Status::Armed);
 
     m_pEngineBuffer1->slotControlSeekExact(
@@ -35,20 +34,20 @@ TEST_F(MacroRecorderTest, RecordSeek) {
 
 TEST_F(MacroRecorderTest, RecordHotcueActivation) {
     MacroAction action(100, 0);
-    ControlObject::toggle(ConfigKey(kConfigGroup, "recording_toggle"));
+    ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
     ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
 
     // Place hotcue 1 at position 0
-    ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
+    ControlObject::set(ConfigKey("[Channel1]", "hotcue_1_set"), 1);
 
     ProcessBuffer();
-    m_pEngineBuffer1->slotControlSeekExact(
-            action.position * mixxx::kEngineChannelCount);
+    m_pEngineBuffer1->slotControlSeekExact(action.position * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 0);
 
-    ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
+    ControlObject::set(ConfigKey("[Channel1]", "hotcue_1_goto"), 1);
     ProcessBuffer();
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action.target * mixxx::kEngineChannelCount);
     checkRecordedAction(action);
 
     // Eject track and check that recording was stopped
