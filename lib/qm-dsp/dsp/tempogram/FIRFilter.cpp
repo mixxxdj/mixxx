@@ -55,7 +55,7 @@ FIRFilter::initialise()
     m_pFftFilteredImag = new double[m_lengthFIRFFT];
     m_pFftOutputReal = new double[m_lengthFIRFFT];
     m_pFftOutputImag = new double[m_lengthFIRFFT];
-    
+    m_fft = new FFT(m_lengthFIRFFT);
     for(int i = 0; i < (int)m_lengthFIRFFT; i++){
         m_pFftInput[i] = m_pFftCoefficients[i] = m_pFftReal1[i] = m_pFftImag1[i] = m_pFftReal2[i] = m_pFftImag2[i] = m_pFftFilteredReal[i] = m_pFftFilteredImag[i] = m_pFftOutputReal[i] = m_pFftOutputImag[i] = 0.0;
     }
@@ -71,10 +71,8 @@ FIRFilter::process(const float* pInput, const float* pCoefficients, float* pOutp
         m_pFftCoefficients[i] = i < (int)m_numberOfCoefficients ? pCoefficients[i] : 0.0;
     }
 
-    FFTReal *fft = new FFTReal(m_lengthFIRFFT);
-
-    fft->forward(m_pFftInput, m_pFftReal1, m_pFftImag1);
-    fft->forward(m_pFftCoefficients, m_pFftReal2, m_pFftImag2);
+    m_fft->process(false, m_pFftInput, 0, m_pFftReal1, m_pFftImag1);
+    m_fft->process(false, m_pFftCoefficients, 0 ,m_pFftReal2, m_pFftImag2);
     
     //Multiply FFT coefficients. Multiplication in freq domain is convolution in time domain.
     for (int i = 0; i < (int)m_lengthFIRFFT; i++){
@@ -82,7 +80,7 @@ FIRFilter::process(const float* pInput, const float* pCoefficients, float* pOutp
         m_pFftFilteredImag[i] = (m_pFftReal1[i] * m_pFftImag2[i]) + (m_pFftReal2[i] * m_pFftImag1[i]);
     }
     
-    fft->inverse(m_pFftFilteredReal, m_pFftFilteredImag, m_pFftOutputReal);
+    m_fft->process(true, m_pFftFilteredReal, m_pFftFilteredImag, m_pFftOutputReal, m_pFftOutputImag);
     
     //copy to output
     int offset = 0;
@@ -94,7 +92,6 @@ FIRFilter::process(const float* pInput, const float* pCoefficients, float* pOutp
     for (int i = 0; i < outputLength; i++){
         pOutput[i] = m_pFftOutputReal[i + offset];
     }
-    delete fft;
 }
 
 //remove memory allocations
@@ -111,5 +108,7 @@ FIRFilter::cleanup()
     delete []m_pFftFilteredImag;
     delete []m_pFftOutputReal;
     delete []m_pFftOutputImag;
+    delete m_fft;
+
     m_pFftInput = m_pFftCoefficients = m_pFftReal1 = m_pFftImag1 = m_pFftReal2 = m_pFftImag2 = m_pFftFilteredReal = m_pFftFilteredImag = m_pFftOutputReal = m_pFftOutputImag = 0;
 }

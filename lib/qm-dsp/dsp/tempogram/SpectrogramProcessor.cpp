@@ -33,6 +33,7 @@ SpectrogramProcessor::~SpectrogramProcessor(){
 }
 
 void SpectrogramProcessor::initialise(){
+    m_fft = new FFTReal(m_fftLength);
     m_pFftInput = new double [m_fftLength];
     m_pFftOutputReal = new double [m_fftLength];
     m_pFftOutputImag = new double [m_fftLength];
@@ -42,6 +43,7 @@ void SpectrogramProcessor::cleanup(){
     delete []m_pFftInput;
     delete []m_pFftOutputReal;
     delete []m_pFftOutputImag;
+    delete m_fft;
     
     m_pFftInput = m_pFftOutputReal = m_pFftOutputImag = 0;
 }
@@ -102,9 +104,9 @@ Spectrogram SpectrogramProcessor::process(const float * const pInput, const size
         for (int n = m_windowLength; n < (int)m_fftLength; n++){
             m_pFftInput[n] = 0.0;
         }
-        FFTReal *fft = new FFTReal(m_fftLength);
+        
         //cerr << m_fftLength << endl;
-        fft->forward(m_pFftInput,m_pFftOutputReal, m_pFftOutputImag);
+        m_fft->forward(m_pFftInput, m_pFftOutputReal, m_pFftOutputImag);
         
         vector<float> binValues;
         //@todo: sample at logarithmic spacing? Leave for host?
@@ -113,7 +115,6 @@ Spectrogram SpectrogramProcessor::process(const float * const pInput, const size
             //std::cout << spectrogram[k][writeBlockPointer] << std::endl;
         }
         spectrogram.push_back(binValues);
-        delete fft;
         readBlockPointerIndex += m_hopSize;
         writeBlockPointer++;
     }

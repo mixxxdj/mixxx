@@ -29,13 +29,13 @@ constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
 // tempogram resolution constants
-constexpr float kNoveltyCurveMinDB = -74.0;
-constexpr int kNoveltyCurveCompressionConstant = 1000;
-constexpr int kTempogramLog2WindowLength = 10;
-constexpr int kTempogramLog2HopSize = 6;
-constexpr int kTempogramLog2FftLength = 10;
-constexpr float kNoveltyCurveHop = 1024.0;
-constexpr float kNoveltyCurveWindow = 2048.0;
+constexpr float kNoveltyCurveMinDB = -54.0;
+constexpr float kNoveltyCurveCompressionConstant = 400.0;
+constexpr int kTempogramLog2WindowLength = 12;
+constexpr int kTempogramLog2HopSize = 8;
+constexpr int kTempogramLog2FftLength = 12;
+constexpr float kNoveltyCurveHop = 512.0;
+constexpr float kNoveltyCurveWindow = 1024.0;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
@@ -114,12 +114,12 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
 
     m_noveltyCurveProcessor.initialize(
         kNoveltyCurveWindow, kNoveltyCurveHop, [this](double* pWindow, size_t) {
-            int n = kNoveltyCurveWindow/2 + 1;
+            int n = kNoveltyCurveWindow;
             double *in = pWindow;
             //calculate magnitude of FrequencyDomain input
             std::vector<float> fftCoefficients;
             for (int i = 0; i < n; i++){
-                float magnitude = static_cast<float>(sqrt(in[2*i] * in[2*i] + in[2*i + 1] * in[2*i + 1]));
+                float magnitude = in[i];
                 magnitude = magnitude > m_noveltyCurveMinV ? magnitude : m_noveltyCurveMinV;
                 fftCoefficients.push_back(magnitude);
             }
@@ -185,10 +185,9 @@ void AnalyzerRhythm::cleanup() {
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
     std::vector<std::vector<double>> allBeats(kDfTypes);
-    qDebug() << m_detectionResults.size();
-    for (int dfType = 0; dfType < kDfTypes; dfType += 1) {
-        int nonZeroCount = m_detectionResults.size();
-        while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1).results[dfType] <= 0.0) {
+    for (int dfType = 0; dfType < 1; dfType += 1) {
+        int nonZeroCount = m_noveltyCurve.size();
+        while (nonZeroCount > 0 && m_noveltyCurve[nonZeroCount - 1] <= 0.0) {
             --nonZeroCount;
         }
 
@@ -201,11 +200,12 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
 
         // skip first 2 results as it might have detect noise as onset
         // that's how vamp does and seems works best this way
-        for (int i = 2; i < nonZeroCount; ++i) {
-            noteOnsets.push_back(m_detectionResults.at(i).results[dfType]);
+        for (int i = 0; i < nonZeroCount; ++i) {
+            noteOnsets.push_back(m_noveltyCurve[i]);
             beatPeriod.push_back(0.0);
+            
         }
-
+        
         TempoTrackV2 tt(m_iSampleRate, stepSize());
         tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
         //qDebug() << beatPeriod.size() << tempi.size();
@@ -215,6 +215,7 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
         //qDebug() << allBeats[dfType].size();
     }
     // Let's compare all beats positions and use the "best" one
+    /*
     double maxAgreement = 0.0;
     int maxAgreementIndex = 0;
     for (int thisOne = 0; thisOne < kDfTypes; thisOne += 1) {
@@ -240,7 +241,8 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
             maxAgreementIndex = thisOne;
         }
     }
-    return allBeats[maxAgreementIndex];
+    */
+    return allBeats[0];
 }
 
 std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<double> &beats) {
@@ -327,8 +329,8 @@ void AnalyzerRhythm::computeTempogramByDFT() {
     int bin;
     for (int block = 0; block < tempogramDFT.size(); block++) {
         // dft
-        qDebug() << "block" << block;
-        qDebug() << "DFT tempogram";
+        //qDebug() << "block" << block;
+        //qDebug() << "DFT tempogram";
         highest = .0;
         bestBpm = .0;
         bin = 0;
@@ -354,18 +356,18 @@ void AnalyzerRhythm::computeTempogramByACF() {
                 *m_iSampleRate)), 0);
     int tempogramMaxLag = std::min(static_cast<int>(floor((60/ (kNoveltyCurveHop * m_tempogramMinBPM))
                 *m_iSampleRate)), m_tempogramWindowLength-1);
-
+    qDebug() << tempogramMinLag << tempogramMaxLag;
     float highest;
     float bestBpm;
     int bin;
     for (int block = 0; block < tempogramACF.size(); block++) {
-        qDebug() << "block" << block;
-        qDebug() << "ACF tempogram";
+        //qDebug() << "block" << block;
+        //qDebug() << "ACF tempogram";
         highest = .0;
         bestBpm = .0;
         bin = 0;
         for (int lag = tempogramMaxLag; lag >= tempogramMinLag; lag--) {
-            float bpm = 60/((kNoveltyCurveHop) * (lag/static_cast<float>(m_iSampleRate)));
+            float bpm = 60/(kNoveltyCurveHop * (lag/static_cast<float>(m_iSampleRate)));
             //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramACF[block][lag];
             if (tempogramACF[block][lag] > highest) {
                 highest = tempogramACF[block][lag];
@@ -383,17 +385,17 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_noveltyCurveProcessor.finalize();
 
     setTempogramParameters();
-    computeNoveltyCurve();
+    computeNoveltyCurve();    
+    //for (auto nc : m_noveltyCurve) {qDebug() << nc;}
     computeTempogramByACF();
     computeTempogramByDFT();
-
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
     auto [bpb, firstDownbeat] = computeMeter(beatsSpecDiff);
     
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
-        double result = (beats.at(i) * stepSize()) - (stepSize() / mixxx::kEngineChannelCount);
+        double result = (beats.at(i) * kNoveltyCurveHop) - (kNoveltyCurveHop / mixxx::kEngineChannelCount);
         m_resultBeats.push_back(result);
     }
     // TODO(Cristiano&Harshit) THIS IS WHERE A BEAT VECTOR IS CREATED

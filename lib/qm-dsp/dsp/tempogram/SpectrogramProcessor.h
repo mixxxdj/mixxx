@@ -30,6 +30,7 @@ class SpectrogramProcessor{
     double * m_pFftInput;
     double * m_pFftOutputReal;
     double * m_pFftOutputImag;
+    FFTReal *m_fft;
     
     void initialise();
     void cleanup();

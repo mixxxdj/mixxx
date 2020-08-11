@@ -46,6 +46,7 @@ private:
     double *m_pFftFilteredImag;
     double *m_pFftOutputReal;
     double *m_pFftOutputImag;
+    FFT *m_fft;
     
     void initialise();
     void cleanup();
