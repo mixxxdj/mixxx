@@ -1,4 +1,4 @@
-#include "macromanager.h"
+#include "macros/macromanager.h"
 
 #include <QDebug>
 

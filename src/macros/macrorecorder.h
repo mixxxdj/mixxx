@@ -69,5 +69,5 @@ class MacroRecorder : public RecordingManagerBase {
     std::atomic<ChannelHandle*> m_activeChannel;
     QTimer m_pStartRecordingTimer;
 
-    rigtorp::SPSCQueue<MacroAction> m_pRecordedActions;
+    rigtorp::SPSCQueue<MacroAction> m_recordedActions;
 };

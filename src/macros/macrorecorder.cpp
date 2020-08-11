@@ -1,4 +1,4 @@
-#include "macrorecorder.h"
+#include "macros/macrorecorder.h"
 
 #include <QtConcurrentRun>
 
@@ -6,16 +6,17 @@
 #include "preferences/configobject.h"
 
 namespace {
-constexpr uint kMaxMacroSize = 1000;
+constexpr unsigned int kStartCheckInterval = 300;
+constexpr size_t kMaxMacroSize = 1000;
 const QString kConfigGroup = QStringLiteral("[MacroRecording]");
-}
+} // namespace
 
 MacroRecorder::MacroRecorder()
         : m_COToggleRecording(ConfigKey(kConfigGroup, "recording_toggle")),
           m_CORecStatus(ConfigKey(kConfigGroup, "recording_status")),
           m_activeChannel(nullptr),
           m_pStartRecordingTimer(this),
-          m_pRecordedActions(kMaxMacroSize) {
+          m_recordedActions(kMaxMacroSize) {
     qCDebug(macroLoggingCategory) << "MacroRecorder construct";
 
     connect(&m_COToggleRecording,
@@ -31,8 +32,9 @@ MacroRecorder::MacroRecorder()
 void MacroRecorder::notifyCueJump(
         ChannelHandle* channel, double sourceFramePos, double destFramePos) {
     qCDebug(macroLoggingCategory) << "Jump in channel" << channel->handle();
+    DEBUG_ASSERT(QThread::currentThread() != this->thread()); // Invoked from the real-time thread
     if (isRecordingActive() && checkOrClaimRecording(channel)) {
-        m_pRecordedActions.emplace(sourceFramePos, destFramePos);
+        m_recordedActions.try_emplace(sourceFramePos, destFramePos);
         qCDebug(macroLoggingCategory) << "Recorded jump in channel" << channel->handle();
     }
 }
@@ -55,7 +57,7 @@ void MacroRecorder::pollRecordingStart() {
 void MacroRecorder::startRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording armed";
     m_CORecStatus.set(Status::Armed);
-    m_pStartRecordingTimer.start(300);
+    m_pStartRecordingTimer.start(kStartCheckInterval);
 }
 
 void MacroRecorder::stopRecording() {
@@ -72,7 +74,7 @@ void MacroRecorder::stopRecording() {
 }
 
 size_t MacroRecorder::getRecordingSize() const {
-    return m_pRecordedActions.size();
+    return m_recordedActions.size();
 }
 
 const ChannelHandle* MacroRecorder::getActiveChannel() const {
@@ -89,9 +91,9 @@ bool MacroRecorder::isRecordingActive() const {
 
 QVector<MacroAction> MacroRecorder::fetchRecordedActions() {
     QVector<MacroAction> actions;
-    while (MacroAction* action = m_pRecordedActions.front()) {
+    while (MacroAction* action = m_recordedActions.front()) {
         actions.append(*action);
-        m_pRecordedActions.pop();
+        m_recordedActions.pop();
     }
     return actions;
 }
