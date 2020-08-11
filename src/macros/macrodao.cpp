@@ -9,9 +9,13 @@ void MacroDAO::initialize(const QSqlDatabase& database) {
     m_database = database;
 }
 
+void MacroDAO::saveMacro(TrackId trackId, const Macro& macro) {
+    saveMacro(trackId, macro.m_actions, macro.m_label, macro.m_state);
+}
+
 void MacroDAO::saveMacro(TrackId trackId,
-        QString label,
-        QVector<MacroAction> actions,
+        const QVector<MacroAction>& actions,
+        const QString& label,
         Macro::State state) {
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(

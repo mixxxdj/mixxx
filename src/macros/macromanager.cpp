@@ -36,8 +36,8 @@ void MacroManager::slotSaveMacro(QVector<MacroAction> actions, TrackId trackId) 
     } else {
         m_pMacroDao->saveMacro(
                 trackId,
-                "Unnamed Macro",
                 actions,
+                "Unnamed Macro",
                 Macro::StateFlag::Enabled);
     }
 }
