@@ -8,6 +8,15 @@
 #include <dsp/tempotracking/DownBeat.h>
 #include <dsp/onsets/DetectionFunction.h>
 #include <dsp/tempotracking/TempoTrackV2.h>
+#include <dsp/transforms/FFT.h>
+#include <dsp/chromagram/ConstantQ.h>
+#include <base/Window.h>
+
+#include <dsp/tempogram/FIRFilter.h>
+#include <dsp/tempogram/WindowFunction.h>
+#include <dsp/tempogram/NoveltyCurveProcessor.h>
+#include <dsp/tempogram/SpectrogramProcessor.h>
+#include <dsp/tempogram/AutocorrelationProcessor.h>
 
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
@@ -31,6 +40,8 @@ class AnalyzerRhythm : public Analyzer {
   private:
     // general methods
     bool shouldAnalyze(TrackPointer pTrack) const;
+    int stepSize();
+    int windowSize();
 
     // beats and bpms methods
 
@@ -58,7 +69,12 @@ class AnalyzerRhythm : public Analyzer {
     // downbeats and meter methods
     std::vector<double> computeBeatsSpectralDifference(std::vector<double>& beats);
     std::tuple<int, int> computeMeter(std::vector<double>& beatsSD);
-    
+    // tempogram methods
+    void setTempogramParameters();
+    void computeTempogramByDFT();
+    void computeTempogramByACF();
+    int computeNoveltyCurve();
+
     int m_iSampleRate;
     int m_iTotalSamples;
     int m_iMaxSamplesToProcess;
@@ -67,15 +83,30 @@ class AnalyzerRhythm : public Analyzer {
     int m_beatsPerBar;
     
     QVector<double> m_resultBeats;
-    QVector<double> m_downbeats;
+    std::vector<int> m_downbeats;
     QList<double> m_rawTempos;
     QMap<double, int> m_rawTemposFrenquency;
     QMap<int, double> m_stableTemposAndPositions;
 
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     std::unique_ptr<DownBeat> m_downbeat;
-    mixxx::DownmixAndOverlapHelper m_processor;
-    int m_windowSize;
-    int m_stepSize;
+    mixxx::DownmixAndOverlapHelper m_onsetsProcessor;
+    mixxx::DownmixAndOverlapHelper m_downbeatsProcessor;
+    mixxx::DownmixAndOverlapHelper m_noveltyCurveProcessor;
     std::vector<DFresults> m_detectionResults;
+    std::unique_ptr<FFTReal> m_fft;
+    Window<double> *m_window;
+    double *m_fftRealOut;
+    double *m_fftImagOut;
+    // tempogram
+    Spectrogram m_spectrogram;
+    float m_noveltyCurveMinV;
+    std::vector<float> m_noveltyCurve;
+    int m_tempogramWindowLength;
+    int m_tempogramHopSize;
+    int m_tempogramFftLength;
+    int m_tempogramMinBPM;
+    int m_tempogramMaxBPM;
+    float m_tempogramInputSampleRate;
+    
 };
