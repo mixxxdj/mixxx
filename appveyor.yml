@@ -132,7 +132,7 @@ for:
   test_script:
     - export CTEST_OUTPUT_ON_FAILURE=1
     - export QT_QPA_PLATFORM=offscreen
-    - ctest -T test --no-compress-output
+    - ctest -T test --no-compress-output --timeout 45
     - cmake --build . --target benchmark
 
   after_test:
@@ -268,7 +268,7 @@ for:
     # Calling mixxx-test under bash to have standard output and use stdbuf to
     # unbuffer standard & error output
     - set CTEST_OUTPUT_ON_FAILURE=1
-    - ctest -C "Release" -T test --no-compress-output
+    - ctest -C "Release" -T test --no-compress-output --timeout 45
     - cmake --build . --target benchmark
 
   after_test:
