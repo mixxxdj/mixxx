@@ -1079,6 +1079,19 @@ WBeatSpinBox,
   padding-right: 1px;
 }
 
+/* BPM lock next to BPM label */
+#BpmLocked[highlight="1"] {
+  padding-left: 1px;
+  padding-right: 5px;
+  image: url(skin:/icon/ic_library_bpm_locked.svg);
+}
+
+#BpmLocked[highlight="0"] {
+  padding-left: 1px;
+  padding-right: 5px;
+  image: url(skin:/icon/ic_library_bpm_unlocked.svg);
+}
+
 #BpmKeyInfoShow {
   image: url(skin:/icon/ic_chevron_left_24x48px.svg) center center;
 }

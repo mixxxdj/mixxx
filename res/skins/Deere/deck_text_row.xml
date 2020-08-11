@@ -128,7 +128,19 @@
                                   <BindProperty>visible</BindProperty>
                                 </Connection>
                               </NumberBpm>
-
+                              <Label>
+                                <TooltipId>bpm_locked</TooltipId>
+                                <Size>me,min</Size>
+                                <ObjectName>BpmLocked</ObjectName>
+                                <Connection>
+                                  <ConfigKey>[Deere],show_bpm_lock</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey><Variable name="group"/>,lock_bpm</ConfigKey>
+                                  <BindProperty>highlight</BindProperty>
+                                </Connection>
+                              </Label>
                               <Label>
                                 <TooltipId>visual_bpm</TooltipId>
                                 <Size>me,min</Size>
@@ -305,6 +317,20 @@
                                       <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                                     </Connection>
                                   </NumberBpm>
+
+                                  <Label>
+                                    <TooltipId>bpm_locked</TooltipId>
+                                    <Size>me,min</Size>
+                                    <ObjectName>BpmLocked</ObjectName>
+                                    <Connection>
+                                      <ConfigKey>[Deere],show_bpm_lock</ConfigKey>
+                                      <BindProperty>visible</BindProperty>
+                                    </Connection>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,lock_bpm</ConfigKey>
+                                      <BindProperty>highlight</BindProperty>
+                                    </Connection>
+                                  </Label>
                                 </Children>
                               </WidgetGroup>
 
