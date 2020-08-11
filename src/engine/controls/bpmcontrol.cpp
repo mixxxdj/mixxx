@@ -82,6 +82,11 @@ BpmControl::BpmControl(QString group,
     connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
             this, &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
+    m_pLockBPM = new ControlPushButton(ConfigKey(group, "lock_bpm"));
+    m_pLockBPM->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pLockBPM, &ControlObject::valueChanged,
+            this, &BpmControl::slotBpmLock,
+            Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -193,6 +198,13 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const double translate_dist = getSampleOfTrack().rate * .01;
         pBeats->translate(translate_dist);
+    }
+}
+
+void BpmControl::slotBpmLock(double v) {
+    TrackPointer track = getEngineBuffer()->getLoadedTrack();
+    if(track) {
+        track->setBpmLocked(v > 0);
     }
 }
 
@@ -948,8 +960,29 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
+        m_pLockBPM->forceSet(pNewTrack->isBpmLocked());
+        connect(
+                pNewTrack.get(),
+                &Track::bpmLockUpdated,
+                this,
+                &BpmControl::slotUpdateBPMLock,
+                Qt::DirectConnection);
     }
     trackBeatsUpdated(pBeats);
+}
+// called from an engine worker thread
+void BpmControl::trackUnloaded(TrackPointer pOldTrack) {
+    if (pOldTrack) {
+        disconnect(
+                pOldTrack.get(),
+                nullptr,
+                this,
+                nullptr);
+    }
+}
+
+void BpmControl::slotUpdateBPMLock(bool locked) {
+    m_pLockBPM->forceSet(locked ? 1.0 : 0.0);
 }
 
 void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {

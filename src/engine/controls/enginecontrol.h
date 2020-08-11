@@ -70,6 +70,7 @@ class EngineControl : public QObject {
     virtual void notifySeek(double dNewPlaypos);
     virtual void trackLoaded(TrackPointer pNewTrack);
     virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
+    virtual void trackUnloaded(TrackPointer pOldTrack);
 
   protected:
     struct SampleOfTrack {
