@@ -125,6 +125,10 @@ void DlgTrackInfo::init() {
             &QCheckBox::stateChanged,
             this,
             &DlgTrackInfo::slotBpmConstChanged);
+    connect(bpmLock,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgTrackInfo::slotBpmLockChanged);
 
     connect(spinBpm,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
@@ -282,10 +286,25 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
     if (track.isBpmLocked()) {
-        tabBPM->setEnabled(false);
+        enableBPMControls(false);
+        bpmLock->setChecked(true);
     } else {
-        tabBPM->setEnabled(true);
+        enableBPMControls(true);
+        bpmLock->setChecked(false);
     }
+}
+
+void DlgTrackInfo::enableBPMControls(bool enabled) {
+    spinBpm->setEnabled(enabled);
+    bpmConst->setEnabled(enabled);
+    bpmDouble->setEnabled(enabled);
+    bpmHalve->setEnabled(enabled);
+    bpmTwoThirds->setEnabled(enabled);
+    bpmThreeFourth->setEnabled(enabled);
+    bpmThreeHalves->setEnabled(enabled);
+    bpmFourThirds->setEnabled(enabled);
+    bpmTap->setEnabled(enabled);
+    bpmClear->setEnabled(enabled);
 }
 
 void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
@@ -393,6 +412,8 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setYear(txtYear->text());
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
+
+    m_pLoadedTrack->setBpmLocked(bpmLock->checkState() == Qt::Checked);
 
     if (!m_pLoadedTrack->isBpmLocked()) {
         m_pLoadedTrack->setBeats(m_pBeatsClone);
@@ -534,6 +555,14 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
     } else {
         // try to reload BeatMap from the Track
         reloadTrackBeats(*m_pLoadedTrack);
+    }
+}
+
+void DlgTrackInfo::slotBpmLockChanged(int state) {
+    if (state == Qt::Checked) {
+        enableBPMControls(false);
+    } else {
+        enableBPMControls(true);
     }
 }
 
