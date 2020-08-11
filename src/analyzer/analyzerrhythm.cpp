@@ -30,7 +30,9 @@ constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
 
-constexpr double thresshold_smoothing = 0.05;
+constexpr double kThressholDecay = 0.04;
+constexpr double kThressholRecover = 0.5;
+constexpr double kFloorFactor = 0.5;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
@@ -46,7 +48,6 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
 }
 
 } // namespace
-
 
 AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
         : m_iSampleRate(0),
@@ -85,7 +86,7 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
                 m_downbeat->pushAudioBlock(reinterpret_cast<float*>(pWindow));
                 return true;
             });
-    
+
     return true;
 }
 
@@ -98,8 +99,7 @@ bool AnalyzerRhythm::shouldAnalyze(TrackPointer pTrack) const {
     mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (!pBeats) {
         return true;
-    }
-    else if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
+    } else if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
         qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
         return true;
     } else {
@@ -109,13 +109,13 @@ bool AnalyzerRhythm::shouldAnalyze(TrackPointer pTrack) const {
     return true;
 }
 
-bool AnalyzerRhythm::processSamples(const CSAMPLE *pIn, const int iLen) {
-
+bool AnalyzerRhythm::processSamples(const CSAMPLE* pIn, const int iLen) {
     m_iCurrentSample += iLen;
     if (m_iCurrentSample > m_iMaxSamplesToProcess) {
         return true; // silently ignore all remaining samples
     }
-    return m_processor.processStereoSamples(pIn, iLen);;
+    return m_processor.processStereoSamples(pIn, iLen);
+    ;
 }
 
 void AnalyzerRhythm::cleanup() {
@@ -164,7 +164,7 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
                 continue;
             }
             for (size_t beat = 0; beat < allBeats[theOther].size(); beat += 1) {
-                if(thisOneAsSet.find(allBeats[theOther][beat]) != thisOneAsSet.end()) {
+                if (thisOneAsSet.find(allBeats[theOther][beat]) != thisOneAsSet.end()) {
                     agreement += 1;
                 }
                 maxPossibleAgreement += 1;
@@ -183,15 +183,6 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
 std::vector<double> AnalyzerRhythm::computeSnapGrid() {
     int size = m_detectionResults.size();
 
-    for (int i = 0; i < size; ++i) {
-        qDebug() << i
-                 << m_detectionResults[i].results[0]
-                 << m_detectionResults[i].results[1]
-                 << m_detectionResults[i].results[2]
-                 << m_detectionResults[i].results[3]
-                 << m_detectionResults[i].results[4];
-    }
-
     int dfType = 3; // ComplexSD
 
     std::vector<double> complexSdMinDiff;
@@ -201,18 +192,19 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
 
     // Calculate the change from the minimum of three previous SDs
     // This ensures we find the beat start and not the noisiest place within the beat.
-    for (int i = 0; i < size; ++i) {
+    complexSdMinDiff.push_back(m_detectionResults[0].results[3]);
+    for (int i = 1; i < size; ++i) {
         double result = m_detectionResults[i].results[3];
         double min = result;
-        for (int j = i - 3; j < i; ++j) {
-            if (j >= 0) {
+        for (int j = i - 3; j < i + 2; ++j) {
+            if (j >= 0 && j < size) {
                 double value = m_detectionResults[j].results[3];
                 if (value < min) {
                     min = value;
                 }
             }
         }
-        complexSdMinDiff.push_back(result - min);
+        complexSdMinDiff.push_back(result - min * kFloorFactor);
     }
 
     std::vector<double> allBeats;
@@ -224,6 +216,7 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
     // Find peak beats within a window of 9 SDs (100 ms)
     // This limits the detection result to 600 BPM
     for (int i = 0; i < size; ++i) {
+        double beat = 0;
         double result = complexSdMinDiff[i];
         if (result > threshold) {
             double max = result;
@@ -237,11 +230,17 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
             }
             if (max == result) {
                 // Beat found
-                threshold = max;
+                beat = threshold;
+                threshold = threshold * (1 - kThressholRecover) + result * kThressholRecover;
                 allBeats.push_back(i);
             }
         }
-        threshold = threshold * (1 - thresshold_smoothing) + result * thresshold_smoothing;
+        threshold = threshold * (1 - kThressholDecay) + result * kThressholDecay;
+
+        qDebug() << i
+                 << m_detectionResults[i].results[3]
+                 << complexSdMinDiff[i]
+                 << threshold << beat;
     }
 
     return allBeats;

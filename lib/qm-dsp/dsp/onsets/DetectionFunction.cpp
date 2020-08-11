@@ -119,7 +119,7 @@ void DetectionFunction::whiten()
     static int count = 0;
     static double oldPitch = 0;
 
-    if (count == 35 || count == 52 || count == 53 || count == 54) {
+    if (count >= 109 && count <= 120) {
         for (int i = 0; i < m_halfLength; ++i) {
                 double m = m_magnitude[i];
                 std::cout << m << " ";
@@ -128,9 +128,11 @@ void DetectionFunction::whiten()
     }
 
     for (int i = 1; i < m_halfLength; ++i) {
-        m_magnitude[i] *= log((i+400)/((double)i + 100));
+        m_magnitude[i] *= log((i+300)/((double)i+2));
     }
 
+
+    /*
 
     if (count == 35 || count == 52 || count == 53 || count == 54) {
         for (int i = 0; i < m_halfLength; ++i) {
@@ -139,6 +141,8 @@ void DetectionFunction::whiten()
         }
         std::cout << "\n";
     }
+    */
+
 
     /*
     for (int i = 0; i < m_halfLength; ++i) {
