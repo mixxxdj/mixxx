@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                                          //
 ///////////////////////////////////////////////////////////////////////////////////
+/* global controller                                                             */
 /* global HIDDebug                                                               */
 /* global HIDPacket                                                              */
 /* global HIDController                                                          */
@@ -15,13 +16,14 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* TODO:  */
+/*   * finish objecting refactor, esp channel-specific stuff
+/*     * and light
 /*   * wheel blink for end of track */
 /*   * touch for track browse, loop control, beatjump?                            */
 /*   * jog button                                                                */
 /*   * star button */
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
-
 
 var TraktorS3 = new function() {
     this.controller = new HIDController();
@@ -40,7 +42,7 @@ var TraktorS3 = new function() {
     // * Hold shift to move the pitch slider without adjusting the rate
     // * Hold keylock and move the pitch slider to adjust musical pitch
     // * keylock will still toggle on, but on release, not press.
-    this.pitchSliderRelativeMode = false;
+    this.pitchSliderRelativeMode = true;
 
     // State for relative mode
 
@@ -55,15 +57,6 @@ var TraktorS3 = new function() {
 
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
     this.batchingOutputs = false;
-
-    // // Active deck switches -- common-hid-packet-parser only has one active deck status per
-    // // Controller object.
-    this.activeDecks = {
-        1: true,
-        2: true,
-        3: false,
-        4: false
-    };
 
     // Microphone button
     this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
@@ -114,7 +107,7 @@ var TraktorS3 = new function() {
     this.LEDDimValue = 0x00;
     this.LEDBrightValue = 0x02;
 
-    this.controller.deckOutputColors = {
+    this.deckOutputColors = {
         "[Channel1]": "CARROT",
         "[Channel2]": "CARROT",
         "[Channel3]": "BLUE",
@@ -165,23 +158,22 @@ TraktorS3.bind = function(fn, obj) {
 
 //// Deck Objects ////
 
-TraktorS3.Deck = function(parentS3, deckNumber, group) {
-    this.parentS3 = parentS3;
+TraktorS3.Deck = function(deckNumber, group) {
     this.deckNumber = deckNumber;
     this.group = group;
     this.activeChannel = "[Channel" + deckNumber + "]";
     this.shiftPressed = false;
 
+    // State for pitch slider relative mode
     this.pitchSliderLastValue = -1;
     this.keylockPressed = false;
     this.keyAdjusted = false;
 
-    // State for other controls.
     this.syncPressedTimer = 0;
     this.previewPressed = false;
     this.padModeState = 0;
 
-    // Jog wheels
+    // Jog wheel state
     // tickReceived is used to detect when the platter has stopped moving.
     this.tickReceived = false;
     this.lastTickVal = 0;
@@ -193,9 +185,6 @@ TraktorS3.Deck = function(parentS3, deckNumber, group) {
     this.browseKnobEncoderState = 0;
     this.loopKnobEncoderState = 0;
     this.moveKnobEncoderState = 0;
-    // Sync buttons
-    // Timer to distinguish between short and long press
-    this.syncPressedTimer = 0;
 };
 
 TraktorS3.Deck.prototype.defineButton = function(msg, name, deckOffset, deckBitmask, deck2Offset, deck2Bitmask, fn) {
@@ -223,7 +212,7 @@ TraktorS3.Deck.prototype.defineScaler = function(msg, name, deckOffset, deckBitm
     TraktorS3.registerInputScaler(msg, this.group, name, deckOffset, deckBitmask, TraktorS3.bind(fn, this));
 };
 
-TraktorS3.Deck.prototype.registerInputButtons = function(messageShort, messageLong) {
+TraktorS3.Deck.prototype.registerInputs = function(messageShort, messageLong) {
     var deckFn = TraktorS3.Deck.prototype;
     this.defineButton(messageShort, "!play", 0x03, 0x01, 0x06, 0x02, deckFn.playHandler);
     this.defineButton(messageShort, "!cue_default", 0x02, 0x80, 0x06, 0x01, deckFn.cueHandler);
@@ -247,7 +236,7 @@ TraktorS3.Deck.prototype.registerInputButtons = function(messageShort, messageLo
     this.defineButton(messageShort, "!LoadSelectedTrack", 0x09, 0x01, 0x09, 0x08, deckFn.loadTrackHandler);
     this.defineButton(messageShort, "!PreviewTrack", 0x01, 0x08, 0x04, 0x10, deckFn.previewTrackHandler);
     this.defineButton(messageShort, "!LibraryFocus", 0x01, 0x40, 0x04, 0x80, deckFn.LibraryFocusHandler);
-    this.defineButton(messageShort, "!AddTrack", 0x01, 0x20, 0x04, 0x40, deckFn.cueAutoDJHandler);
+    this.defineButton(messageShort, "!QueueAutoDJ", 0x01, 0x20, 0x04, 0x40, deckFn.cueAutoDJHandler);
 
     // Loop control
     // TODO: bind touch detections: 0x0A/0x01, 0x0A/0x08
@@ -367,49 +356,53 @@ TraktorS3.Deck.prototype.padModeHandler = function(field) {
 
 TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
     var padNumber = parseInt(field.id[field.id.length - 1]);
+    var action = "";
 
+    // Hotcues mode
     if (this.padModeState === 0) {
         TraktorS3.lightHotcue(this.activeChannel, padNumber);
-
-        // Hotcues mode
         if (this.shiftPressed) {
-            engine.setValue(this.activeChannel, "hotcue_" + padNumber + "_clear", field.value);
+            action = "_clear";
         } else {
-            engine.setValue(this.activeChannel, "hotcue_" + padNumber + "_activate", field.value);
+            action  = "_activate";
         }
-    } else {
-        // Samples mode
-        var sampler = padNumber;
-        if (field.group === "deck2") {
-            sampler += 8;
-        }
-
-        var ledValue = field.value;
-        if (!field.value) {
-            ledValue = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
-        }
-        this.colorOutputHandler(ledValue, "!pad_" + padNumber);
-
-        if (this.shiftPressed) {
-            var playing = engine.getValue("[Sampler" + sampler + "]", "play");
-            if (playing) {
-                engine.setValue("[Sampler" + sampler + "]", "cue_default", field.value);
-            } else {
-                engine.setValue("[Sampler" + sampler + "]", "eject", field.value);
-            }
-        } else {
-            var loaded = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
-            if (loaded) {
-                if (field.value) {
-                    engine.setValue("[Sampler" + sampler + "]", "cue_gotoandplay", field.value);
-                } else {
-                    engine.setValue("[Sampler" + sampler + "]", "stop", 1);
-                }
-            } else {
-                engine.setValue("[Sampler" + sampler + "]", "LoadSelectedTrack", field.value);
-            }
-        }
+        engine.setValue(this.activeChannel, "hotcue_" + padNumber + action, field.value);
+        return;
     }
+
+    // Samples mode
+    var sampler = padNumber;
+    if (field.group === "deck2") {
+        sampler += 8;
+    }
+
+    var ledValue = field.value;
+    if (!field.value) {
+        ledValue = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
+    }
+    this.colorOutputHandler(ledValue, "!pad_" + padNumber);
+
+    if (this.shiftPressed) {
+        var playing = engine.getValue("[Sampler" + sampler + "]", "play");
+        if (playing) {
+            action = "cue_default";
+        } else {
+            action = "eject";
+        }
+        engine.setValue("[Sampler" + sampler + "]", action, field.value);
+        return;
+    }
+    var loaded = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
+    if (loaded) {
+        if (field.value) {
+            action = "cue_gotoandplay";
+        } else {
+            action = "stop";
+        }
+        engine.setValue("[Sampler" + sampler + "]", action, 1);
+        return;
+    }
+    engine.setValue("[Sampler" + sampler + "]", "LoadSelectedTrack", field.value);
 };
 
 TraktorS3.Deck.prototype.selectTrackHandler = function(field) {
@@ -467,7 +460,7 @@ TraktorS3.Deck.prototype.LibraryFocusHandler = function(field) {
 };
 
 TraktorS3.Deck.prototype.cueAutoDJHandler = function(field) {
-    this.colorOutputHandler(field.value, "!AddTrack");
+    this.colorOutputHandler(field.value, "!QueueAutoDJ");
 
     if (this.shiftPressed) {
         engine.setValue("[Library]", "AutoDjAddTop", field.value);
@@ -680,7 +673,7 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
 
 TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
     var value = field.value / 4095;
-    if (this.pitchSliderRelativeMode) {
+    if (TraktorS3.pitchSliderRelativeMode) {
         if (this.pitchSliderLastValue === -1) {
             this.pitchSliderLastValue = value;
         } else {
@@ -712,8 +705,6 @@ TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
         return;
     }
 
-    HIDDebug("pitch slider: " + field.value + " " + value);
-
     if (this.shiftPressed) {
         // To match the pitch change from adjusting the rate, flip the pitch
         // adjustment.
@@ -727,7 +718,6 @@ TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
 //// Deck Outputs ////
 
 TraktorS3.Deck.prototype.defineOutput = function(packet, name, offsetA, offsetB) {
-    HIDDebug("eh? " + this.group + " " + name);
     switch (this.deckNumber) {
     case 1:
         packet.addOutput(this.group, name, offsetA, "B");
@@ -739,19 +729,19 @@ TraktorS3.Deck.prototype.defineOutput = function(packet, name, offsetA, offsetB)
 };
 
 TraktorS3.Deck.prototype.registerOutputs = function(outputA, _outputB) {
-    HIDDebug("REGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
     this.defineOutput(outputA, "!shift", 0x01, 0x1A);
     this.defineOutput(outputA, "slip_enabled", 0x02, 0x1B);
     this.defineOutput(outputA, "!reverse", 0x03, 0x1C);
     this.defineOutput(outputA, "!PreviewTrack", 0x04,  0x1D);
-    this.defineOutput(outputA, "!AddTrack", 0x06, 0x1);
+    this.defineOutput(outputA, "!QueueAutoDJ", 0x06, 0x1F);
     this.defineOutput(outputA, "!LibraryFocus", 0x07, 0x20);
+    this.defineOutput(outputA, "quantize", 0x08, 0x21);
+    this.defineOutput(outputA, "sync_enabled", 0x0C, 0x25);
     this.defineOutput(outputA, "keylock", 0x0D, 0x26);
     this.defineOutput(outputA, "hotcues", 0x0E, 0x27);
     this.defineOutput(outputA, "samples", 0x0F, 0x28);
     this.defineOutput(outputA, "cue_indicator", 0x10, 0x29);
     this.defineOutput(outputA, "play_indicator", 0x11, 0x2A);
-    this.defineOutput(outputA, "sync_enabled", 0x0C, 0x25);
 
     this.defineOutput(outputA, "!pad_1", 0x12, 0x2B);
     this.defineOutput(outputA, "!pad_2", 0x13, 0x2C);
@@ -762,10 +752,9 @@ TraktorS3.Deck.prototype.registerOutputs = function(outputA, _outputB) {
     this.defineOutput(outputA, "!pad_7", 0x18, 0x31);
     this.defineOutput(outputA, "!pad_8", 0x19, 0x32);
 
-    this.defineOutput(outputA, "addTrack", 0x03, 0x2A);
-    this.defineOutput(outputA, "quantize", 0x08, 0x21);
+    // this.defineOutput(outputA, "addTrack", 0x03, 0x2A);
 
-    var wheelOffsets = [0x43, 0x4A];
+    var wheelOffsets = [0x43, 0x4B];
     for (var i = 0; i < 8; i++) {
         this.defineOutput(outputA, "!" + "wheel" + i, wheelOffsets[0] + i, wheelOffsets[1] + i);
     }
@@ -774,7 +763,6 @@ TraktorS3.Deck.prototype.registerOutputs = function(outputA, _outputB) {
 TraktorS3.Deck.prototype.defineLink = function(key, callback) {
     switch (this.deckNumber) {
     case 1:
-        HIDDebug("DEfINing LINK");
         TraktorS3.controller.linkOutput("deck1", key, "[Channel1]", key, callback);
         engine.connectControl("[Channel3]", key, callback);
         break;
@@ -787,15 +775,65 @@ TraktorS3.Deck.prototype.defineLink = function(key, callback) {
 
 TraktorS3.Deck.prototype.linkOutputs = function() {
     var deckFn = TraktorS3.Deck.prototype;
-    HIDDebug("LINK " + deckFn.wheelOutputHandler);
     this.defineLink("play_indicator", TraktorS3.bind(deckFn.wheelOutputHandler, this));
 };
 
 TraktorS3.Deck.prototype.deckBaseColor = function() {
-    return TraktorS3.controller.LEDColors[TraktorS3.controller.deckOutputColors[this.activeChannel]];
+    return TraktorS3.controller.LEDColors[TraktorS3.deckOutputColors[this.activeChannel]];
 };
 
-// colorDeckOutputHandler drives lights that have the palettized multicolor lights.
+TraktorS3.Deck.prototype.colorForHotcue = function(num) {
+    var colorCode = engine.getValue(this.activeChannel, "hotcue_" + num + "_color");
+    return TraktorS3.colorMap.getValueForNearestColor(colorCode);
+};
+
+TraktorS3.Deck.prototype.lightHotcue = function(number) {
+    var active = engine.getValue(this.activeChannel, "hotcue_" + number + "_enabled");
+    var ledValue = TraktorS3.controller.LEDColors.WHITE;
+    if (active) {
+        ledValue = this.colorForHotcue(number);
+        ledValue += TraktorS3.LEDDimValue;
+    } else {
+        ledValue += TraktorS3.LEDDimValue;
+    }
+    TraktorS3.controller.setOutput(this.group, "!pad_" + number, ledValue, !TraktorS3.batchingOutputs);
+};
+
+TraktorS3.Deck.prototype.lightPads = function() {
+    // Samplers
+    if (this.padModeState === 1) {
+        this.colorOutputHandler(0, "hotcues");
+        this.colorOutputHandler(1, "samples");
+        for (var i = 1; i <= 8; i++) {
+            var idx = i;
+            if (this.group === "deck2") {
+                idx += 8;
+            }
+            var loaded = engine.getValue("[Sampler" + idx + "]", "track_loaded");
+            this.colorOutputHandler(loaded, "!pad_" + i);
+        }
+    } else {
+        this.colorOutputHandler(1, "hotcues");
+        this.colorOutputHandler(0, "samples");
+        for (i = 1; i <= 8; ++i) {
+            this.lightHotcue(i);
+        }
+    }
+};
+
+// deckOutputHandler drives lights that only have one color.
+TraktorS3.Deck.prototype.outputHandler = function(value, key) {
+    // incoming value will be a channel, we have to resolve back to
+    // deck.
+    var ledValue = 0x20;
+    if (value === 1 || value === true) {
+        // On value
+        ledValue = 0x77;
+    }
+    TraktorS3.controller.setOutput(this.group, key, ledValue, !TraktorS3.batchingOutputs);
+};
+
+// colorOutputHandler drives lights that have the palettized multicolor lights.
 TraktorS3.Deck.prototype.colorOutputHandler = function(value, key) {
     var ledValue = this.deckBaseColor();
 
@@ -807,10 +845,9 @@ TraktorS3.Deck.prototype.colorOutputHandler = function(value, key) {
     TraktorS3.controller.setOutput(this.group, key, ledValue, !TraktorS3.batchingOutputs);
 };
 
-TraktorS3.Deck.prototype.wheelOutputHandler = function(value, group, _key) {
+TraktorS3.Deck.prototype.wheelOutputHandler = function(value, group, key) {
     // Also call regular handler
-    // TraktorS3.deckOutputHandler(value, group, key);
-    HIDDebug("WHEEL");
+    this.outputHandler(value, key);
 
     if (group !== this.activeChannel) {
         return;
@@ -831,12 +868,100 @@ TraktorS3.Deck.prototype.wheelOutputHandler = function(value, group, _key) {
     }
 };
 
+/////////////////////////
 //// Channel Objects ////
-
-TraktorS3.Channel = function(parentS3, parentDeck, group) {
-    this.parentS3 = parentS3;
+////
+//// Channels don't have much state, just the fx button state.
+TraktorS3.Channel = function(parentDeck, group) {
     this.parentDeck = parentDeck;
     this.group = group;
+    this.fxEnabledState = false;
+};
+
+TraktorS3.Channel.prototype.fxEnableHandler = function(field) {
+    if (field.value === 0) {
+        return;
+    }
+
+    this.fxEnabledState = !this.fxEnabledState;
+    TraktorS3.colorOutputHandler(this.fxEnabledState, this.group, "!fxEnabled");
+    TraktorS3.toggleFX();
+};
+
+// Finds the shortest distance between two angles on the wheel, assuming
+// 0-8.0 angle value.
+TraktorS3.wheelSegmentDistance = function(segNum, angle) {
+    // Account for wraparound
+    if (Math.abs(segNum - angle) > 4) {
+        if (angle > segNum) {
+            segNum += 8;
+        } else {
+            angle += 8;
+        }
+    }
+    return Math.abs(angle - segNum);
+};
+
+TraktorS3.Channel.prototype.spinnyAngleChanged = function(value) {
+    if (this.parentDeck.activeChannel !== this.group) {
+        return;
+    }
+
+    // How many segments away from the actual angle should we light?
+    // (in both directions, so "2" will light up to four segments)
+    var dimDistance = 2.5;
+    // ugly hack just for testing -- assume 5 minute track for now
+    var elapsed = value * 6 * 60;
+
+    var rotations = elapsed * (1 / 1.8);  // 1/1.8 is rotations per second
+    // Calculate angle from 0-1.0
+    var angle = rotations - Math.floor(rotations);
+    // The wheel has 8 segments
+    var wheelAngle = 8.0 * angle;
+    for (var seg = 0; seg < 8; seg++) {
+        var distance = TraktorS3.wheelSegmentDistance(seg, wheelAngle);
+        var ledValue = TraktorS3.controller.LEDColors[TraktorS3.deckOutputColors[this.group]];
+        // We have 5 levels of brightness to choose from, including "off".
+        var brightVal = Math.round(4 * (1.0 - (distance / dimDistance)));
+        if (brightVal <= 0) {
+            TraktorS3.controller.setOutput(this.parentDeck, "!wheel" + seg, 0x00, false);
+        } else {
+            brightVal -= 1;
+            TraktorS3.controller.setOutput(this.parentDeck, "!wheel" + seg, ledValue + brightVal, false);
+        }
+    }
+    TraktorS3.controller.OutputPackets["outputA"].send();
+};
+
+// colorOutputHandler drives lights that have the palettized multicolor lights.
+TraktorS3.Channel.prototype.colorOutputHandler = function(value, key) {
+    var ledValue = TraktorS3.controller.LEDColors[TraktorS3.deckOutputColors[this.group]];
+    if (value === 1 || value === true) {
+        ledValue += TraktorS3.LEDBrightValue;
+    } else {
+        ledValue += TraktorS3.LEDDimValue;
+    }
+    TraktorS3.controller.setOutput(this.group, key, ledValue, !TraktorS3.batchingOutputs);
+};
+
+TraktorS3.deckSwitchHandler = function(field) {
+    if (field.value === 0) {
+        return;
+    }
+
+    if (field.group === "[Channel1]") {
+        TraktorS3.Decks["deck1"].activeChannel = field.group;
+    } else if (field.group === "[Channel3]") {
+        TraktorS3.Decks["deck1"].activeChannel = field.group;
+    } else if (field.group === "[Channel2]") {
+        TraktorS3.Decks["deck2"].activeChannel = field.group;
+    } else if (field.group === "[Channel4]") {
+        TraktorS3.Decks["deck2"].activeChannel = field.group;
+    } else {
+        HIDDebug("Traktor S4MK2: Unrecognized packet group: " + field.group);
+    }
+    engine.softTakeoverIgnoreNextValue(field.group, "rate");
+    TraktorS3.lightDeck(field.group);
 };
 
 TraktorS3.registerInputPackets = function() {
@@ -845,7 +970,7 @@ TraktorS3.registerInputPackets = function() {
 
     for (var idx in TraktorS3.Decks) {
         var deck = TraktorS3.Decks[idx];
-        deck.registerInputButtons(messageShort, messageLong);
+        deck.registerInputs(messageShort, messageLong);
     }
 
     this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, this.deckSwitchHandler);
@@ -853,41 +978,33 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, this.deckSwitchHandler);
     this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, this.deckSwitchHandler);
 
-    // // Headphone buttons
-    this.registerInputButton(messageShort, "[Channel1]", "!pfl", 0x08, 0x01, this.headphoneHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!pfl", 0x08, 0x02, this.headphoneHandler);
-    this.registerInputButton(messageShort, "[Channel3]", "!pfl", 0x07, 0x80, this.headphoneHandler);
-    this.registerInputButton(messageShort, "[Channel4]", "!pfl", 0x08, 0x04, this.headphoneHandler);
+    var group = "[Channel1]";
+    TraktorS3.registerInputButton(messageShort, group, "!fxEnabled", 0x07, 0x10,
+        TraktorS3.bind(TraktorS3.Channel.prototype.fxEnableHandler, this.Channels[group]));
+    group = "[Channel2]";
+    TraktorS3.registerInputButton(messageShort, group, "!fxEnabled", 0x07, 0x08,
+        TraktorS3.bind(TraktorS3.Channel.prototype.fxEnableHandler, this.Channels[group]));
+    group = "[Channel3]";
+    TraktorS3.registerInputButton(messageShort, group, "!fxEnabled", 0x07, 0x20,
+        TraktorS3.bind(TraktorS3.Channel.prototype.fxEnableHandler, this.Channels[group]));
+    group = "[Channel4]";
+    TraktorS3.registerInputButton(messageShort, group, "!fxEnabled", 0x07, 0x40,
+        TraktorS3.bind(TraktorS3.Channel.prototype.fxEnableHandler, this.Channels[group]));
 
+    // Headphone buttons
+    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x08, 0x01, this.parameterHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x08, 0x02, this.parameterHandler);
+    this.registerInputButton(messageShort, "[Channel3]", "pfl", 0x07, 0x80, this.parameterHandler);
+    this.registerInputButton(messageShort, "[Channel4]", "pfl", 0x08, 0x04, this.parameterHandler);
 
-
-
-
-    // // There is only one button on the controller, we use to toggle quantization for all channels
-    // this.registerInputButton(messageShort, "[Channel1]", "!quantize", 0x06, 0x40, this.quantizeHandler);
-
-    // // Microphone
-    // this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x06, 0x80, this.microphoneHandler);
-
-
-
-    // // FX Buttons
+    // FX Buttons
     this.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x08, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x10, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx5", 0x08, 0x80, this.fxHandler);
 
-    this.registerInputButton(messageShort, "[Channel3]", "!fxEnabled", 0x07, 0x08, this.fxEnableHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!fxEnabled", 0x07, 0x10, this.fxEnableHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!fxEnabled", 0x07, 0x20, this.fxEnableHandler);
-    this.registerInputButton(messageShort, "[Channel4]", "!fxEnabled", 0x07, 0x48, this.fxEnableHandler);
-
-
-
     this.controller.registerInputPacket(messageShort);
-
-
 
     this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x05, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x07, 0xFFFF, this.parameterHandler);
@@ -898,6 +1015,7 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x13, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel3]", "pregain", 0x0F, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel4]", "pregain", 0x15, 0xFFFF, this.parameterHandler);
+
 
     this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x25, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x27, 0xFFFF, this.parameterHandler);
@@ -929,7 +1047,7 @@ TraktorS3.registerInputPackets = function() {
 
     // Soft takeover for all knobs
     for (var ch = 1; ch <= 4; ch++) {
-        var group = "[Channel" + ch + "]";
+        group = "[Channel" + ch + "]";
         if (!TraktorS3.pitchSliderRelativeMode) {
             engine.softTakeover(group, "rate", true);
         }
@@ -961,10 +1079,15 @@ TraktorS3.registerInputPackets = function() {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
 
-    engine.connectControl("[Channel1]", "playposition", TraktorS3.spinnyAngleChanged);
-    engine.connectControl("[Channel2]", "playposition", TraktorS3.spinnyAngleChanged);
-    engine.connectControl("[Channel3]", "playposition", TraktorS3.spinnyAngleChanged);
-    engine.connectControl("[Channel4]", "playposition", TraktorS3.spinnyAngleChanged);
+    for (ch in TraktorS3.Channels) {
+        var chanob = TraktorS3.Channels[ch];
+        engine.connectControl(ch, "playposition",
+            TraktorS3.bind(TraktorS3.Channel.prototype.spinnyAngleChanged, chanob));
+    }
+
+    // Dirty hack to set initial values in the packet parser
+    var data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    TraktorS3.incomingData(data);
 };
 
 TraktorS3.registerInputJog = function(message, group, name, offset, bitmask, callback) {
@@ -983,28 +1106,8 @@ TraktorS3.registerInputButton = function(message, group, name, offset, bitmask, 
     message.setCallback(group, name, callback);
 };
 
-TraktorS3.deckSwitchHandler = function(field) {
-    if (field.value === 0) {
-        return;
-    }
-
-    if (field.group === "[Channel1]") {
-        TraktorS3.activeDecks[1] = true;
-        TraktorS3.activeDecks[3] = false;
-    } else if (field.group === "[Channel3]") {
-        TraktorS3.activeDecks[3] = true;
-        TraktorS3.activeDecks[1] = false;
-    } else if (field.group === "[Channel2]") {
-        TraktorS3.activeDecks[2] = true;
-        TraktorS3.activeDecks[4] = false;
-    } else if (field.group === "[Channel4]") {
-        TraktorS3.activeDecks[4] = true;
-        TraktorS3.activeDecks[2] = false;
-    } else {
-        HIDDebug("Traktor S4MK2: Unrecognized packet group: " + field.group);
-    }
-    engine.softTakeoverIgnoreNextValue(field.group, "rate");
-    TraktorS3.lightDeck(field.group);
+TraktorS3.parameterHandler = function(field) {
+    engine.setParameter(field.group, field.name, field.value / 4095);
 };
 
 TraktorS3.headphoneHandler = function(field) {
@@ -1012,36 +1115,6 @@ TraktorS3.headphoneHandler = function(field) {
         return;
     }
     script.toggleControl(field.group, "pfl");
-};
-
-// TraktorS3.microphoneHandler = function(field) {
-//     if (field.value) {
-//         if (TraktorS3.microphonePressedTimer === 0) {
-//             // Start timer to measure how long button is pressed
-//             TraktorS3.microphonePressedTimer = engine.beginTimer(300, function() {
-//                 // Reset microphone button timer status if active
-//                 if (TraktorS3.microphonePressedTimer !== 0) {
-//                     TraktorS3.microphonePressedTimer = 0;
-//                 }
-//             }, true);
-//         }
-
-//         script.toggleControl("[Microphone]", "talkover");
-//     } else {
-//         // Button is released, check if timer is still running
-//         if (TraktorS3.microphonePressedTimer !== 0) {
-//             // short klick -> permanent activation
-//             TraktorS3.microphonePressedTimer = 0;
-//         } else {
-//             engine.setValue("[Microphone]", "talkover", 0);
-//         }
-//     }
-// };
-
-
-
-TraktorS3.parameterHandler = function(field) {
-    engine.setParameter(field.group, field.name, field.value / 4095);
 };
 
 TraktorS3.superHandler = function(field) {
@@ -1071,16 +1144,6 @@ TraktorS3.fxHandler = function(field) {
         ledValue += TraktorS3.LEDDimValue;
     }
     TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
-    // TraktorS3.colorOutputHandler(TraktorS3.fxButtonState[fxNumber], field.group, "!fxButton" + fxNumber);
-    TraktorS3.toggleFX();
-};
-
-TraktorS3.fxEnableHandler = function(field) {
-    if (field.value === 0) {
-        return;
-    }
-    this.fxEnabledState = !this.fxEnabledState;
-    TraktorS3.colorOutputHandler(this.fxEnabledState, field.group, "!fxEnabled");
     TraktorS3.toggleFX();
 };
 
@@ -1089,7 +1152,7 @@ TraktorS3.toggleFX = function() {
     // the fx is ON, we turn the effect ON. We turn OFF no matter what.
     for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
         for (var ch = 1; ch <= 4; ch++) {
-            var group = "[Channel" + ch + "]";
+            var channel = TraktorS3.Channels["[Channel" + ch + "]"];
             var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
             var fxKey = "group_[Channel1]_enable";
             if (fxNumber === 5) {
@@ -1097,96 +1160,11 @@ TraktorS3.toggleFX = function() {
                 fxKey = "enabled";
             }
 
-            var newState = TraktorS3.fxEnabledState[group] && TraktorS3.fxButtonState[fxNumber];
+            var newState = channel.fxEnabledState && TraktorS3.fxButtonState[fxNumber];
             engine.setValue(fxGroup, fxKey, newState);
         }
     }
 
-};
-
-
-
-TraktorS3.init = function(_id) {
-    this.Decks = {
-        "deck1": new TraktorS3.Deck(this, 1, "deck1"),
-        "deck2": new TraktorS3.Deck(this, 2, "deck2"),
-    };
-
-    this.Channels = {
-        "[Channel1]": new TraktorS3.Channel(this, this.Decks.deck1, "[Channel1]"),
-        "[Channel2]": new TraktorS3.Channel(this, this.Decks.deck2, "[Channel2]"),
-        "[Channel3]": new TraktorS3.Channel(this, this.Decks.deck1, "[Channel3]"),
-        "[Channel4]": new TraktorS3.Channel(this, this.Decks.deck2, "[Channel4]")
-    };
-
-    TraktorS3.registerInputPackets();
-    TraktorS3.registerOutputPackets();
-    HIDDebug("TraktorS3: Init done!");
-
-    TraktorS3.lightDeck("[Channel3]", false);
-    TraktorS3.lightDeck("[Channel4]", false);
-    TraktorS3.lightDeck("[Channel1]", false);
-    TraktorS3.lightDeck("[Channel2]", true);
-
-    // TraktorS3.debugLights();
-};
-
-TraktorS3.debugLights = function() {
-    // Call this if you want to just send raw packets to the controller (good for figuring out what
-    // bytes do what).
-    var dataStrings = [
-        "      7C 00  35 2C 2C FF  2C 39 FF 00  FF FF 00 35 " +
-        "00 2C 7E 00  00 FF FF FF  2C 2C 20 7C  7C 00 FF 00 " +
-        "FF 00 00 00  FF 00 FF 2C  00 FF 2C 7C  FF 00 00 00 " +
-        "00 00 00 00  7E 0C 0C FF  0C FF FF FF  FF FF FF FF " +
-        "FF FF 40 FF  FF FF 00 FF  FF 2E FF 00  00 FF 00 00 " +
-        "00 00 FF 00 ",
-        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  FF FF FF 00  FF 00 00 00  FF 00 00",
-    ];
-
-    var data = [Object(), Object()];
-
-
-    for (var i = 0; i < data.length; i++) {
-        var ok = true;
-        var splitted = dataStrings[i].split(/\s+/);
-        HIDDebug("i " + i + " " + splitted);
-        data[i].length = splitted.length;
-        for (var j = 0; j < splitted.length; j++) {
-            var byteStr = splitted[j];
-            if (byteStr.length === 0) {
-                continue;
-            }
-            if (byteStr.length !== 2) {
-                ok = false;
-                HIDDebug("not two characters?? " + byteStr);
-            }
-            var b = parseInt(byteStr, 16);
-            if (b < 0 || b > 255) {
-                ok = false;
-                HIDDebug("number out of range: " + byteStr + " " + b);
-            }
-            data[i][j] = b;
-        }
-        // if (i === 0) {
-        //     for (k = 0; k < data[0].length; k++) {
-        //         data[0][k] = 0x30;
-        //     }
-        // }
-        // for (d = 0; d < 8; d++) {
-        //     data[0][0x11+d] = (d+1) * 4 + 2;
-        // }
-        // for (d = 0; d < 8; d++) {
-        //     data[0][0x2A + d] = (d + 1) * 4 + 32 + 2;
-        // }
-        if (ok) {
-            TraktorS3.controller.send(data[i], data[i].length, 0x80 + i);
-        }
-    }
 };
 
 TraktorS3.registerOutputPackets = function() {
@@ -1223,7 +1201,6 @@ TraktorS3.registerOutputPackets = function() {
 
     this.controller.registerOutputPacket(outputA);
 
-
     var VuOffsets = {
         "[Channel3]": 0x01,
         "[Channel1]": 0x10,
@@ -1255,26 +1232,23 @@ TraktorS3.registerOutputPackets = function() {
 
     this.controller.registerOutputPacket(outputB);
 
-
     for (idx in TraktorS3.Decks) {
         deck = TraktorS3.Decks[idx];
         deck.linkOutputs(outputA, outputB);
     }
 
     // Play is always green
-    // TraktorS3.linkDeckOutputs("play_indicator", this.wheelOutputHandler);
-    TraktorS3.linkDeckOutputs("cue_indicator", this.colorDeckOutputHandler);
-    TraktorS3.linkDeckOutputs("sync_enabled", this.colorDeckOutputHandler);
-    TraktorS3.linkDeckOutputs("keylock", this.colorDeckOutputHandler);
-    TraktorS3.linkDeckOutputs("slip_enabled", this.deckOutputHandler);
-    TraktorS3.linkDeckOutputs("quantize", this.colorDeckOutputHandler);
+    // TraktorS3.linkDeckOutputs("play_indicator", TraktorS3.Deck.prototype.wheelOutputHandler);
+    TraktorS3.linkDeckOutputs("cue_indicator", TraktorS3.Deck.prototype.colorOutputHandler);
+    TraktorS3.linkDeckOutputs("sync_enabled", TraktorS3.Deck.prototype.colorOutputHandler);
+    TraktorS3.linkDeckOutputs("keylock", TraktorS3.Deck.prototype.colorOutputHandler);
+    TraktorS3.linkDeckOutputs("slip_enabled", TraktorS3.Deck.prototype.outputHandler);
+    TraktorS3.linkDeckOutputs("quantize", TraktorS3.Deck.prototype.colorOutputHandler);
 
     TraktorS3.linkChannelOutput("[Channel1]", "pfl", this.outputHandler);
     TraktorS3.linkChannelOutput("[Channel2]", "pfl", this.outputHandler);
     TraktorS3.linkChannelOutput("[Channel3]", "pfl", this.outputHandler);
     TraktorS3.linkChannelOutput("[Channel4]", "pfl", this.outputHandler);
-
-    // this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // Channel VuMeters
     for (i = 1; i <= 4; i++) {
@@ -1288,6 +1262,13 @@ TraktorS3.registerOutputPackets = function() {
     this.linkChannelOutput("[Master]", "PeakIndicatorL", this.peakOutputHandler);
     this.linkChannelOutput("[Master]", "PeakIndicatorR", this.peakOutputHandler);
 
+    // for (i = 1; i <= 8; ++i) {
+    //     TraktorS3.linkDeckOutputs("pad_" + i, "deck2", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
+    //     // TraktorS3.linkDeckOutputs("!pad_" + i, "deck1", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
+    //     // TraktorS3.linkDeckOutputs("!pad_" + i, "deck2", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
+    //     TraktorS3.linkDeckOutputs("pad_" + i, "deck1", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
+    // }
+
     // Sampler callbacks
     for (i = 1; i <= 16; ++i) {
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler));
@@ -1300,62 +1281,24 @@ TraktorS3.linkChannelOutput = function(group, name, callback) {
     TraktorS3.controller.linkOutput(group, name, group, name, callback);
 };
 
+TraktorS3.wrapOutput = function(callback) {
+    return function(value, _group, name) {
+        callback(value, name);
+    };
+};
+
 TraktorS3.linkDeckOutputs = function(key, callback) {
     // Linking outputs is a little tricky because the library doesn't quite do what I want.  But this
     // method works.
-    TraktorS3.controller.linkOutput("deck1", key, "[Channel1]", key, callback);
-    engine.connectControl("[Channel3]", key, callback);
-    TraktorS3.controller.linkOutput("deck2", key, "[Channel2]", key, callback);
-    engine.connectControl("[Channel4]", key, callback);
+    var deck = TraktorS3.Decks["deck1"];
 
-    // TraktorS3.controller.linkOutput("[Channel1]", key, "deck1", key, callback);
-    // TraktorS3.controller.linkOutput("[Channel2]", key, "deck2", key, callback);
-    // TraktorS3.controller.linkOutput("[Channel3]", key, "deck1", key, callback);
-    // TraktorS3.controller.linkOutput("[Channel4]", key, "deck2", key, callback);
-};
-
-TraktorS3.deckToGroup = function(deck) {
-    if (deck === "deck1") {
-        if (this.activeDecks[1]) {
-            return "[Channel1]";
-        } else if (this.activeDecks[3]) {
-            return "[Channel3]";
-        }
-    } else if (deck === "deck2") {
-        if (this.activeDecks[2]) {
-            return "[Channel2]";
-        } else if (this.activeDecks[4]) {
-            return "[Channel4]";
-        }
-    }
-    // Return original value, it's already a group
-    return deck;
-};
-
-TraktorS3.resolveDeckIfActive = function(group) {
-    var controller = TraktorS3.controller;
-    if (group === "[Channel1]") {
-        if (controller.left_deck_C) {
-            return undefined;
-        }
-        return "deck1";
-    } else if (group === "[Channel3]") {
-        if (!controller.left_deck_C) {
-            return undefined;
-        }
-        return "deck1";
-    } else if (group === "[Channel2]") {
-        if (controller.right_deck_D) {
-            return undefined;
-        }
-        return "deck2";
-    } else if (group === "[Channel4]") {
-        if (!controller.right_deck_D) {
-            return undefined;
-        }
-        return "deck2";
-    }
-    return undefined;
+    var wrapped = TraktorS3.wrapOutput(TraktorS3.bind(callback, deck));
+    TraktorS3.controller.linkOutput("deck1", key, "[Channel1]", key, wrapped);
+    engine.connectControl("[Channel3]", key, wrapped);
+    deck = TraktorS3.Decks["deck2"];
+    wrapped = TraktorS3.wrapOutput(TraktorS3.bind(callback, deck));
+    TraktorS3.controller.linkOutput("deck2", key, "[Channel2]", key, wrapped);
+    engine.connectControl("[Channel4]", key, wrapped);
 };
 
 TraktorS3.lightGroup = function(packet, outputGroupName, coGroupName) {
@@ -1365,60 +1308,20 @@ TraktorS3.lightGroup = function(packet, outputGroupName, coGroupName) {
         if (field.name[0] === "!") {
             continue;
         }
+        HIDDebug("field to light?: " + field.group + " " + field.name);
         if (field.mapped_callback !== undefined) {
             var value = engine.getValue(coGroupName, field.name);
+            HIDDebug("has callback " + value);
             field.mapped_callback(value, coGroupName, field.name);
         }
     // No callback, no light!
     }
 };
 
-TraktorS3.colorForHotcue = function(group, num) {
-    var colorCode = engine.getValue(group, "hotcue_" + num + "_color");
-    return TraktorS3.colorMap.getValueForNearestColor(colorCode);
-};
-
-TraktorS3.lightHotcue = function(group, number) {
-    var deck = TraktorS3.resolveDeckIfActive(group);
-    var active = engine.getValue(group, "hotcue_" + number + "_enabled");
-    var ledValue = TraktorS3.controller.LEDColors.WHITE;
-    if (active) {
-        ledValue = TraktorS3.colorForHotcue(group, number);
-        ledValue += TraktorS3.LEDDimValue;
-    } else {
-        ledValue += TraktorS3.LEDDimValue;
-    }
-    TraktorS3.controller.setOutput(deck, "!pad_" + number, ledValue, !TraktorS3.batchingOutputs);
-};
-
-TraktorS3.lightPads = function(group) {
-    // var activeGroup = TraktorS3.deckToGroup(group);
-    var deck = TraktorS3.Decks[group];
-    // Samplers
-    if (deck.padModeState === 1) {
-        TraktorS3.colorDeckOutputHandler(0, deck.activeChannel, "hotcues");
-        TraktorS3.colorDeckOutputHandler(1, deck.activeChannel, "samples");
-        for (var i = 1; i <= 8; i++) {
-            var idx = i;
-            if (group === "deck2") {
-                idx += 8;
-            }
-            var loaded = engine.getValue("[Sampler" + idx + "]", "track_loaded");
-            TraktorS3.colorDeckOutputHandler(loaded, group, "!pad_" + idx);
-        }
-    } else {
-        TraktorS3.colorDeckOutputHandler(1, deck.activeChannel, "hotcues");
-        TraktorS3.colorDeckOutputHandler(0, deck.activeChannel, "samples");
-        for (i = 1; i <= 8; ++i) {
-            TraktorS3.lightHotcue(deck.activeChannel, i);
-        }
-    }
-};
-
 TraktorS3.lightFX = function() {
-    for (var ch = 1; ch <= 4; ch++) {
-        var group = "[Channel" + ch + "]";
-        TraktorS3.colorOutputHandler(TraktorS3.fxEnabledState[group], group, "!fxEnabled");
+    for (var ch in TraktorS3.Channels) {
+        var chanob = TraktorS3.Channels[ch];
+        chanob.colorOutputHandler(chanob.fxEnabledState, "!fxEnabled");
     }
     for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
         var ledValue = TraktorS3.fxLEDValue[fxNumber];
@@ -1437,6 +1340,7 @@ TraktorS3.lightDeck = function(group, sendPackets) {
     }
     // Freeze the lights while we do this update so we don't spam HID.
     TraktorS3.batchingOutputs = true;
+    HIDDebug("lighting" + group);
     for (var packetName in this.controller.OutputPackets) {
         var packet = this.controller.OutputPackets[packetName];
         var deckGroupName = "deck1";
@@ -1444,35 +1348,39 @@ TraktorS3.lightDeck = function(group, sendPackets) {
             deckGroupName = "deck2";
         }
 
+        var deck = TraktorS3.Decks[deckGroupName];
+
+        HIDDebug("light deck group " + deckGroupName);
         TraktorS3.lightGroup(packet, deckGroupName, group);
+        HIDDebug("light channel group " + group);
         TraktorS3.lightGroup(packet, group, group);
 
-        TraktorS3.lightPads(deckGroupName);
+        deck.lightPads();
 
         // These lights are different because either they aren't associated with a CO, or
         // there are two buttons that point to the same CO.
-        TraktorS3.deckOutputHandler(0, deckGroupName, "!shift");
-        TraktorS3.colorDeckOutputHandler(0, deckGroupName, "!PreviewTrack");
-        TraktorS3.colorDeckOutputHandler(0, deckGroupName, "!AddTrack");
-        TraktorS3.colorDeckOutputHandler(0, deckGroupName, "!LibraryFocus");
-        TraktorS3.deckOutputHandler(0, deckGroupName, "!reverse");
+        deck.outputHandler(0, "!shift");
+        deck.colorOutputHandler(0, "!PreviewTrack");
+        deck.colorOutputHandler(0, "!QueueAutoDJ");
+        deck.colorOutputHandler(0, "!LibraryFocus");
+        deck.outputHandler(0, "!reverse");
     }
     TraktorS3.lightFX();
 
     // Selected deck lights
     var ctrlr = TraktorS3.controller;
     if (group === "[Channel1]") {
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[ctrlr.deckOutputColors[1]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[ctrlr.deckOutputColors[3]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel1]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel3]"]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel2]") {
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[ctrlr.deckOutputColors[4]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel2]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel4]"]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel3]") {
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[ctrlr.deckOutputColors[3]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[ctrlr.deckOutputColors[1]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel3]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel1]"]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel4]") {
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[ctrlr.deckOutputColors[4]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[ctrlr.deckOutputColors[2]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel4]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel2]"]] + TraktorS3.LEDDimValue, false);
     }
 
     TraktorS3.batchingOutputs = false;
@@ -1538,144 +1446,6 @@ TraktorS3.outputHandler = function(value, group, key) {
     TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
 };
 
-// deckOutputHandler drives lights that only have one color.
-TraktorS3.deckOutputHandler = function(value, group, key) {
-    // incoming value will be a channel, we have to resolve back to
-    // deck.
-    var ledValue = 0x20;
-    if (value === 1 || value === true) {
-        // On value
-        ledValue = 0x77;
-    }
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
-};
-
-TraktorS3.spinnyAngleChanged = function(value, group) {
-    var deck = TraktorS3.resolveDeckIfActive(group);
-    if (deck === undefined) {
-        return;
-    }
-
-    var deckNum = TraktorS3.controller.resolveDeck(group);
-
-    // How many segments away from the actual angle should we light?
-    // (in both directions, so "2" will light up to four segments)
-    var dimDistance = 2.5;
-    // ugly hack just for testing -- assume 5 minute track for now
-    var elapsed = value * 6 * 60;
-
-    var rotations = elapsed * (1 / 1.8);  // 1/1.8 is rotations per second
-    // Calculate angle from 0-1.0
-    var angle = rotations - Math.floor(rotations);
-    // The wheel has 8 segments
-    var wheelAngle = 8.0 * angle;
-    for (var seg = 0; seg < 8; seg++) {
-        var distance = TraktorS3.wheelSegmentDistance(seg, wheelAngle);
-        var ledValue = TraktorS3.controller.LEDColors[TraktorS3.controller.deckOutputColors[deckNum]];
-        // We have 5 levels of brightness to choose from, including "off".
-        var brightVal = Math.round(4 * (1.0 - (distance / dimDistance)));
-        if (brightVal <= 0) {
-            TraktorS3.controller.setOutput(deck, "!wheel" + seg, 0x00, false);
-        } else {
-            brightVal -= 1;
-            TraktorS3.controller.setOutput(deck, "!wheel" + seg, ledValue + brightVal, false);
-        }
-    }
-    TraktorS3.controller.OutputPackets["outputA"].send();
-};
-
-// Finds the shortest distance between two angles on the wheel, assuming
-// 0-8.0 angle value.
-TraktorS3.wheelSegmentDistance = function(segNum, angle) {
-    // Account for wraparound
-    if (Math.abs(segNum - angle) > 4) {
-        if (angle > segNum) {
-            segNum += 8;
-        } else {
-            angle += 8;
-        }
-    }
-    return Math.abs(angle - segNum);
-};
-
-
-
-// colorOutputHandler drives lights that have the palettized multicolor lights.
-TraktorS3.colorOutputHandler = function(value, group, key) {
-    var deck = TraktorS3.controller.resolveDeck(group);
-    var ledValue = TraktorS3.controller.LEDColors[TraktorS3.controller.deckOutputColors[deck]];
-    if (value === 1 || value === true) {
-        ledValue += TraktorS3.LEDBrightValue;
-    } else {
-        ledValue += TraktorS3.LEDDimValue;
-    }
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
-};
-
-// colorDeckOutputHandler drives lights that have the palettized multicolor lights.
-TraktorS3.colorDeckOutputHandler = function(value, group, key) {
-    // Reject update if it's for a specific channel that's not selected.
-    var updatedDeck = TraktorS3.controller.resolveDeck(group);
-    if (updatedDeck !== undefined) {
-        if (!TraktorS3.activeDecks[updatedDeck]) {
-            return;
-        }
-        if (updatedDeck === "1" || updatedDeck === "3") {
-            group = "deck1";
-        } else if (updatedDeck === "2" || updatedDeck === "4") {
-            group = "deck2";
-        }
-    } else {
-        // update was for a deck in general. Pick the color based on the appropriate channel
-        // for this deck.
-        updatedDeck = TraktorS3.controller.resolveDeck(TraktorS3.deckToGroup(group));
-    }
-    var ledValue = TraktorS3.controller.LEDColors[TraktorS3.controller.deckOutputColors[updatedDeck]];
-
-    if (value === 1 || value === true) {
-        ledValue += TraktorS3.LEDBrightValue;
-    } else {
-        ledValue += TraktorS3.LEDDimValue;
-    }
-    TraktorS3.controller.setOutput(group, key, ledValue, !TraktorS3.batchingOutputs);
-};
-
-TraktorS3.hotcueOutputHandler = function(value, group, key) {
-    // Light button LED only when we are in hotcue mode
-    if (TraktorS3.padModeState[group] === 0) {
-        TraktorS3.colorDeckOutputHandler(value, group, key);
-    }
-};
-
-TraktorS3.samplesOutputHandler = function(value, group, key) {
-    // Sampler 1-8 -> Channel1
-    // Samples 9-16 -> Channel2
-    var sampler = TraktorS3.resolveSampler(group);
-    var deck = "deck1";
-    var num = sampler;
-    if (sampler === undefined) {
-        return;
-    } else if (sampler > 8 && sampler < 17) {
-        deck = "deck2";
-        num = sampler - 8;
-    }
-
-    // If we are in samples modes light corresponding LED
-    if (this.padModeState === 1) {
-        if (key === "play" && engine.getValue(group, "track_loaded")) {
-            if (value) {
-                // Green light on play
-                TraktorS3.colorDeckOutputHandler(0x9E, deck, "!pad_" + num);
-            } else {
-                // Reset LED to full white light
-                TraktorS3.colorDeckOutputHandler(1, deck, "!pad_" + num);
-            }
-        } else if (key === "track_loaded") {
-            TraktorS3.colorDeckOutputHandler(value, deck, "!pad_" + num);
-        }
-    }
-};
-
 TraktorS3.resolveSampler = function(group) {
     if (group === undefined) {
         return undefined;
@@ -1691,10 +1461,101 @@ TraktorS3.resolveSampler = function(group) {
     return result[1];
 };
 
+TraktorS3.samplesOutputHandler = function(value, group, key) {
+    // Sampler 1-8 -> Channel1
+    // Samples 9-16 -> Channel2
+    var sampler = TraktorS3.resolveSampler(group);
+    var deck = TraktorS3.Decks["deck1"];
+    var num = sampler;
+    if (sampler === undefined) {
+        return;
+    } else if (sampler > 8 && sampler < 17) {
+        deck = TraktorS3.Decks["deck2"];
+        num = sampler - 8;
+    }
+
+    // If we are in samples modes light corresponding LED
+    if (this.padModeState === 1) {
+        if (key === "play" && engine.getValue(group, "track_loaded")) {
+            if (value) {
+                // Green light on play
+                deck.colorOutputHandler(0x9E, "!pad_" + num);
+            } else {
+                // Reset LED to full white light
+                deck.colorDeckOutputHandler(1, "!pad_" + num);
+            }
+        } else if (key === "track_loaded") {
+            deck.colorDeckOutputHandler(value, "!pad_" + num);
+        }
+    }
+};
+
 TraktorS3.messageCallback = function(_packet, data) {
     for (var name in data) {
         if (Object.prototype.hasOwnProperty.call(data, name)) {
             TraktorS3.controller.processButton(data[name]);
+        }
+    }
+};
+
+TraktorS3.incomingData = function(data, length) {
+    TraktorS3.controller.parsePacket(data, length);
+};
+
+TraktorS3.debugLights = function() {
+    // Call this if you want to just send raw packets to the controller (good for figuring out what
+    // bytes do what).
+    var dataStrings = [
+        "      7C 00  35 2C 2C FF  2C 39 FF 00  FF FF 00 35 " +
+        "00 2C 7E 00  00 FF FF FF  2C 2C 20 7C  7C 00 FF FF " +
+        "FF 00 00 00  FF FF FF 2C  00 FF 2C 7C  FF 00 00 00 " +
+        "00 00 00 00  7E 0C FF FF  0C FF FF FF  FF FF FF FF " +
+        "FF FF 40 FF  FF FF 00 FF  FF 2E FF 00  00 FF 00 00 " +
+        "00 00 FF 00 ",
+        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  FF FF FF 00  FF 00 00 00  FF 00 00",
+    ];
+
+    var data = [Object(), Object()];
+
+
+    for (var i = 0; i < data.length; i++) {
+        var ok = true;
+        var splitted = dataStrings[i].split(/\s+/);
+        HIDDebug("i " + i + " " + splitted);
+        data[i].length = splitted.length;
+        for (var j = 0; j < splitted.length; j++) {
+            var byteStr = splitted[j];
+            if (byteStr.length === 0) {
+                continue;
+            }
+            if (byteStr.length !== 2) {
+                ok = false;
+                HIDDebug("not two characters?? " + byteStr);
+            }
+            var b = parseInt(byteStr, 16);
+            if (b < 0 || b > 255) {
+                ok = false;
+                HIDDebug("number out of range: " + byteStr + " " + b);
+            }
+            data[i][j] = b;
+        }
+        // if (i === 0) {
+        //     for (k = 0; k < data[0].length; k++) {
+        //         data[0][k] = 0x30;
+        //     }
+        // }
+        // for (d = 0; d < 8; d++) {
+        //     data[0][0x11+d] = (d+1) * 4 + 2;
+        // }
+        // for (d = 0; d < 8; d++) {
+        //     data[0][0x2A + d] = (d + 1) * 4 + 32 + 2;
+        // }
+        if (ok) {
+            controller.send(data[i], data[i].length, 0x80 + i);
         }
     }
 };
@@ -1728,12 +1589,33 @@ TraktorS3.shutdown = function() {
             }
             data[i][j] = parseInt(byteStr, 16);
         }
-        TraktorS3.controller.send(data[i], data[i].length, 0x80 + i);
+        controller.send(data[i], data[i].length, 0x80 + i);
     }
 
     HIDDebug("TraktorS3: Shutdown done!");
 };
 
-TraktorS3.incomingData = function(data, length) {
-    TraktorS3.controller.parsePacket(data, length);
+TraktorS3.init = function(_id) {
+    this.Decks = {
+        "deck1": new TraktorS3.Deck(1, "deck1"),
+        "deck2": new TraktorS3.Deck(2, "deck2"),
+    };
+
+    this.Channels = {
+        "[Channel1]": new TraktorS3.Channel(this.Decks["deck1"], "[Channel1]"),
+        "[Channel2]": new TraktorS3.Channel(this.Decks["deck2"], "[Channel2]"),
+        "[Channel3]": new TraktorS3.Channel(this.Decks["deck1"], "[Channel3]"),
+        "[Channel4]": new TraktorS3.Channel(this.Decks["deck2"], "[Channel4]")
+    };
+
+    TraktorS3.registerInputPackets();
+    TraktorS3.registerOutputPackets();
+    HIDDebug("TraktorS3: Init done!");
+
+    TraktorS3.lightDeck("[Channel3]", false);
+    TraktorS3.lightDeck("[Channel4]", false);
+    TraktorS3.lightDeck("[Channel1]", false);
+    TraktorS3.lightDeck("[Channel2]", true);
+
+    // TraktorS3.debugLights();
 };
