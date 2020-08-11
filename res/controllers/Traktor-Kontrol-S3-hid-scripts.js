@@ -16,8 +16,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* TODO:  */
-/*   * finish objecting refactor, esp channel-specific stuff
-/*     * and light
 /*   * wheel blink for end of track */
 /*   * touch for track browse, loop control, beatjump?                            */
 /*   * jog button                                                                */
@@ -562,8 +560,8 @@ TraktorS3.Deck.prototype.quantizeHandler = function(field) {
 TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
     if (this.wheelTouchInertiaTimer !== 0) {
         // The wheel was touched again, reset the timer.
-        engine.stopTimer(this.wheelTouchIntertiaTimer);
-        this.wheelTouchIntertiaTimer = 0;
+        engine.stopTimer(this.wheelTouchInertiaTimer);
+        this.wheelTouchInertiaTimer = 0;
     }
     if (field.value !== 0) {
         engine.setValue(this.activeChannel, "scratch2_enable", true);
@@ -575,23 +573,23 @@ TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
         var inertiaTime = Math.pow(1.8, scratchRate) * 2;
         if (inertiaTime < 100) {
             // Just do it now.
-            TraktorS3.finishJogTouch(this.group);
+            this.finishJogTouch();
         } else {
-            this.wheelTouchIntertiaTimer = engine.beginTimer(
-                inertiaTime, "TraktorS3.finishJogTouch(\"" + this.group + "\")", true);
+            this.wheelTouchInertiaTimer = engine.beginTimer(
+                inertiaTime, this.finishJogTouch, true);
         }
     }
 };
 
 TraktorS3.Deck.prototype.wheelDeltas = function(value) {
-    // When the wheel is touched, four bytes change, but only the first behaves predictably.
-    // It looks like the wheel is 1024 ticks per revolution.
+    // When the wheel is touched, 1 byte measures distance ticks, the other
+    // three represent a timer value. We can use the amount of time required for
+    // the number of ticks to elapse to get a velocity.
     var tickval = value & 0xFF;
     var timeval = value >>> 8;
     var prevTick = 0;
     var prevTime = 0;
 
-    // Group 1 and 2 -> Array index 0 and 1
     prevTick = this.lastTickVal;
     prevTime = this.lastTickTime;
     this.lastTickVal = tickval;
@@ -604,7 +602,7 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
     var timeDelta = timeval - prevTime;
     if (timeDelta === 0) {
         // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
-        // This is almost certainly not going to happen on this controller.
+        // (This is almost certainly not going to happen on this controller.)
         timeDelta = 1;
     }
 
@@ -622,22 +620,19 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
     return [tickDelta, timeDelta];
 };
 
-// NOTE: this a global function because it gets called by timers!
-TraktorS3.finishJogTouch = function(group) {
-    var deck = TraktorS3.Decks[group];
-
-    deck.wheelTouchInertiaTimer = 0;
+TraktorS3.Deck.prototype.finishJogTouch = function() {
+    this.wheelTouchInertiaTimer = 0;
 
     // If we've received no ticks since the last call, we are stopped.
-    if (!deck.tickReceived) {
-        engine.setValue(deck.activeChannel, "scratch2", 0.0);
-        engine.setValue(deck.activeChannel, "scratch2_enable", false);
+    if (!this.tickReceived) {
+        engine.setValue(this.activeChannel, "scratch2", 0.0);
+        engine.setValue(this.activeChannel, "scratch2_enable", false);
     } else {
         // Check again soon.
-        deck.wheelTouchInertiaTimer = engine.beginTimer(
-            100, "TraktorS3.finishJogTouch(\"" + group + "\")", true);
+        this.wheelTouchInertiaTimer = engine.beginTimer(
+            100, this.finishJogTouch, true);
     }
-    deck.tickReceived = false;
+    this.tickReceived = false;
 };
 
 TraktorS3.Deck.prototype.jogHandler = function(field) {
