@@ -155,13 +155,18 @@ class BaseSignalPathTest : public MixxxTest {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
+    const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+    TrackPointer getTestTrack() const {
+        return Track::newTemporary(kTrackLocationTest);
+    }
+
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-        while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+        while (pEngineDeck->getEngineBuffer()->getLoadedTrack() != pTrack) {
             QTest::qSleep(1); // millis
         }
     }
@@ -268,9 +273,7 @@ class SignalPathTest : public BaseSignalPathTest {
   protected:
     SignalPathTest(MacroRecorder* pMacroRecorder = nullptr)
             : BaseSignalPathTest(pMacroRecorder) {
-        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-
+        TrackPointer pTrack = getTestTrack();
         loadTrack(m_pMixerDeck1, pTrack);
         loadTrack(m_pMixerDeck2, pTrack);
         loadTrack(m_pMixerDeck3, pTrack);

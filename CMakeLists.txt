@@ -1274,6 +1274,7 @@ add_executable(mixxx-test
   src/test/looping_control_test.cpp
   src/test/macros/macrodao_test.cpp
   src/test/macros/macrorecorder_test.cpp
+  src/test/macros/macroplayback_test.cpp
   src/test/macros/macros_test.cpp
   src/test/main.cpp
   src/test/mathutiltest.cpp
