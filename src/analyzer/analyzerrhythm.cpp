@@ -33,7 +33,7 @@ constexpr int kDfTypes = 5;
 constexpr float kNoveltyCurveMinDB = -54.0;
 constexpr float kNoveltyCurveCompressionConstant = 400.0;
 constexpr int kTempogramLog2WindowLength = 12;
-constexpr int kTempogramLog2HopSize = 8;
+constexpr int kTempogramLog2HopSize = 6;
 constexpr int kTempogramLog2FftLength = 12;
 constexpr float kNoveltyCurveHop = 512.0;
 constexpr float kNoveltyCurveWindow = 1024.0;
@@ -141,7 +141,7 @@ void AnalyzerRhythm::setTempogramParameters() {
 
     m_tempogramMinBPM = 60;
     m_tempogramMaxBPM = 180;
-    m_tempogramInputSampleRate = m_iSampleRate / kNoveltyCurveHop;
+    m_tempogramInputSampleRate = m_iSampleRate / stepSize();
 }
 
 
@@ -211,7 +211,7 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
         TempoTrackV2 tt(m_iSampleRate, stepSize());
         tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
         //qDebug() << beatPeriod.size() << tempi.size();
-        //qDebug() << tempi;
+        qDebug() << tempi;
 
         tt.calculateBeats(noteOnsets, beatPeriod, allBeats[dfType]);
         //qDebug() << allBeats[dfType].size();
@@ -420,9 +420,9 @@ void AnalyzerRhythm::computeTempogramByACF() {
     AutocorrelationProcessor autocorrelationProcessor(m_tempogramWindowLength, m_tempogramHopSize);
     Spectrogram tempogramACF = autocorrelationProcessor.process(&m_noveltyCurve[0], m_noveltyCurve.size());
     // Convert y axis to bpm
-    int tempogramMinLag = std::max(static_cast<int>(ceil((60/ (kNoveltyCurveHop * m_tempogramMaxBPM))
+    int tempogramMinLag = std::max(static_cast<int>(ceil((60/ static_cast<double>((stepSize()) * m_tempogramMaxBPM))
                 *m_iSampleRate)), 0);
-    int tempogramMaxLag = std::min(static_cast<int>(floor((60/ (kNoveltyCurveHop * m_tempogramMinBPM))
+    int tempogramMaxLag = std::min(static_cast<int>(floor((60/ static_cast<double>((stepSize()) * m_tempogramMinBPM))
                 *m_iSampleRate)), m_tempogramWindowLength-1);
     qDebug() << tempogramMinLag << tempogramMaxLag;
     float highest;
@@ -435,7 +435,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
         bestBpm = .0;
         bin = 0;
         for (int lag = tempogramMaxLag; lag >= tempogramMinLag; lag--) {
-            float bpm = 60/(kNoveltyCurveHop * (lag/static_cast<float>(m_iSampleRate)));
+            float bpm = 60/static_cast<double>((stepSize()) * (lag/static_cast<float>(m_iSampleRate)));
             //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramACF[block][lag];
             if (tempogramACF[block][lag] > highest) {
                 highest = tempogramACF[block][lag];
