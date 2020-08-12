@@ -74,6 +74,7 @@ class AnalyzerRhythm : public Analyzer {
     void computeTempogramByDFT();
     void computeTempogramByACF();
     int computeNoveltyCurve();
+    void computeMetergram();
 
     int m_iSampleRate;
     int m_iTotalSamples;
@@ -108,5 +109,7 @@ class AnalyzerRhythm : public Analyzer {
     int m_tempogramMinBPM;
     int m_tempogramMaxBPM;
     float m_tempogramInputSampleRate;
+    std::vector<QMap<double, double>> m_tempogramDFT;
+    std::vector<QMap<double, double>> m_tempogramACF;
     
 };

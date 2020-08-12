@@ -139,8 +139,8 @@ void AnalyzerRhythm::setTempogramParameters() {
     m_tempogramHopSize = pow(2,kTempogramLog2HopSize);
     m_tempogramFftLength = pow(2,kTempogramLog2FftLength);
 
-    m_tempogramMinBPM = 60;
-    m_tempogramMaxBPM = 180;
+    m_tempogramMinBPM = 10;
+    m_tempogramMaxBPM = 70;
     m_tempogramInputSampleRate = m_iSampleRate / stepSize();
 }
 
@@ -178,44 +178,47 @@ bool AnalyzerRhythm::processSamples(const CSAMPLE* pIn, const int iLen) {
 void AnalyzerRhythm::cleanup() {
     m_resultBeats.clear();
     m_detectionResults.clear();
-    m_pDetectionFunction.reset();
     m_noveltyCurve.clear();
+    m_tempogramDFT.clear();
+    m_tempogramACF.clear();
+    m_spectrogram.clear();
+    m_pDetectionFunction.reset();
+    m_fft.reset();
+    m_downbeat.reset();
     delete m_window;
     delete [] m_fftImagOut;
     delete [] m_fftRealOut;
 }
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
-    std::vector<std::vector<double>> allBeats(kDfTypes);
-    for (int dfType = 0; dfType < 1; dfType += 1) {
-        int nonZeroCount = m_noveltyCurve.size();
-        while (nonZeroCount > 0 && m_noveltyCurve[nonZeroCount - 1] <= 0.0) {
-            --nonZeroCount;
-        }
-
-        std::vector<double> noteOnsets;
-        std::vector<double> beatPeriod;
-        std::vector<double> tempi;
-        const auto required_size = std::max(0, nonZeroCount - 2);
-        noteOnsets.reserve(required_size);
-        beatPeriod.reserve(required_size);
-
-        // skip first 2 results as it might have detect noise as onset
-        // that's how vamp does and seems works best this way
-        for (int i = 0; i < nonZeroCount; ++i) {
-            noteOnsets.push_back(m_noveltyCurve[i]);
-            beatPeriod.push_back(0.0);
-            
-        }
-        
-        TempoTrackV2 tt(m_iSampleRate, stepSize());
-        tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
-        //qDebug() << beatPeriod.size() << tempi.size();
-        qDebug() << tempi;
-
-        tt.calculateBeats(noteOnsets, beatPeriod, allBeats[dfType]);
-        //qDebug() << allBeats[dfType].size();
+    std::vector<double> beats;
+    int nonZeroCount = m_noveltyCurve.size();
+    while (nonZeroCount > 0 && m_noveltyCurve[nonZeroCount - 1] <= 0.0) {
+        --nonZeroCount;
     }
+
+    std::vector<double> noteOnsets;
+    std::vector<double> beatPeriod;
+    std::vector<double> tempi;
+    const auto required_size = std::max(0, nonZeroCount - 2);
+    noteOnsets.reserve(required_size);
+    beatPeriod.reserve(required_size);
+
+    // skip first 2 results as it might have detect noise as onset
+    // that's how vamp does and seems works best this way
+    for (int i = 0; i < nonZeroCount; ++i) {
+        noteOnsets.push_back(m_noveltyCurve[i]);
+        beatPeriod.push_back(0.0);
+        
+    }
+    
+    TempoTrackV2 tt(m_iSampleRate, stepSize());
+    tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
+    //qDebug() << beatPeriod.size() << tempi.size();
+    //qDebug() << tempi;
+
+    tt.calculateBeats(noteOnsets, beatPeriod, beats);
+        //qDebug() << allBeats[dfType].size();
     // Let's compare all beats positions and use the "best" one
     /*
     double maxAgreement = 0.0;
@@ -244,7 +247,7 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
         }
     }
     */
-    return allBeats[0];
+    return beats;
 }
 
 std::vector<double> AnalyzerRhythm::computeSnapGrid() {
@@ -303,11 +306,12 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
             }
         }
         threshold = threshold * (1 - kThressholDecay) + result * kThressholDecay;
-
+        /*
         qDebug() << i
                  << m_detectionResults[i].results[3]
                  << complexSdMinDiff[i]
                  << threshold << beat;
+        */
     }
 
     return allBeats;
@@ -392,8 +396,8 @@ void AnalyzerRhythm::computeTempogramByDFT() {
     int tempogramMaxBin = (std::min(static_cast<int>(ceil(((m_tempogramMaxBPM/60.0)
             /m_tempogramInputSampleRate)*m_tempogramFftLength)), m_tempogramFftLength/2));
     int binCount = tempogramMaxBin - tempogramMinBin + 1;
-    float highest;
-    float bestBpm;
+    double highest;
+    double bestBpm;
     int bin;
     for (int block = 0; block < tempogramDFT.size(); block++) {
         // dft
@@ -402,16 +406,19 @@ void AnalyzerRhythm::computeTempogramByDFT() {
         highest = .0;
         bestBpm = .0;
         bin = 0;
+        QMap<double, double> dft;
         for (int k = tempogramMinBin; k <= tempogramMaxBin; k++){
-            float w = (k/static_cast<float>(m_tempogramFftLength))*(m_tempogramInputSampleRate);
-            float bpm = w*60;
+            double w = (k/static_cast<double>(m_tempogramFftLength))*(m_tempogramInputSampleRate);
+            double bpm = w*60;
+            dft[bpm] = tempogramDFT[block][k];
             //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramDFT[block][k];
             if (tempogramDFT[block][k] > highest) {
                 highest = tempogramDFT[block][k];
                 bestBpm = bpm;
             }
         }
-        qDebug() << "best bpm at block" << bestBpm << block;
+        m_tempogramDFT.push_back(dft);
+        //qDebug() << "best bpm at block" << bestBpm << block;
     }
 }
 
@@ -425,8 +432,8 @@ void AnalyzerRhythm::computeTempogramByACF() {
     int tempogramMaxLag = std::min(static_cast<int>(floor((60/ static_cast<double>((stepSize()) * m_tempogramMinBPM))
                 *m_iSampleRate)), m_tempogramWindowLength-1);
     qDebug() << tempogramMinLag << tempogramMaxLag;
-    float highest;
-    float bestBpm;
+    double highest;
+    double bestBpm;
     int bin;
     for (int block = 0; block < tempogramACF.size(); block++) {
         //qDebug() << "block" << block;
@@ -434,18 +441,79 @@ void AnalyzerRhythm::computeTempogramByACF() {
         highest = .0;
         bestBpm = .0;
         bin = 0;
+        QMap<double, double> acf;
         for (int lag = tempogramMaxLag; lag >= tempogramMinLag; lag--) {
-            float bpm = 60/static_cast<double>((stepSize()) * (lag/static_cast<float>(m_iSampleRate)));
+            double bpm = 60/static_cast<double>((stepSize()) * (lag/static_cast<double>(m_iSampleRate)));
             //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramACF[block][lag];
+            acf[bpm] = tempogramACF[block][lag];
             if (tempogramACF[block][lag] > highest) {
                 highest = tempogramACF[block][lag];
                 bestBpm = bpm;
             }
         }
-        qDebug() << "best bpm at block" << bestBpm << block;
+        m_tempogramACF.push_back(acf);
+        //qDebug() << "best bpm at block" << bestBpm << block;
     }
 }
 
+void AnalyzerRhythm::computeMetergram() {
+    // the metergram is the inner product of the dft and act tempograms but
+    // since they are mapped to different bpms first we need to interpolate
+    // one of them...The idea is that the dft tempogram contains the meter pulses
+    // with it's harmonics and others sporious peaks, while the acf has
+    // the meter pulses, the subharmonics and also spororious peak, by multiplying
+    // them we should enchance the meter pulses only..
+    std::vector<QMap<double, double>> metergram;
+    for (int i = 0; i < m_tempogramDFT.size(); i+=1) {
+        QMap<double, double> metergramBlock;
+        for (auto act = m_tempogramACF[i].begin(); act != m_tempogramACF[i].end(); act +=1) {
+            auto nextDFT = m_tempogramDFT[i].lowerBound(act.key());
+            auto previousDFT = nextDFT - 1;
+            double x0 = previousDFT.key();
+            double y0 = previousDFT.value();
+            double x1 = nextDFT.key();
+            double y1 = nextDFT.value();
+            double xp = act.key();
+            double yp = y0 + ((y1-y0)/(x1-x0)) * (xp - x0);
+            // we also reverse the key here so we can get the highest bpms easily..
+            metergramBlock[act.value() * yp] = xp;
+        }
+        metergram.push_back(metergramBlock);
+    }
+    // just for debuging now...
+    int blockCounter = 0;
+    for (auto block : metergram) {
+        auto strongestTempo = block.end();
+        int i = 1;
+        int j = 1;
+        auto lastStrongTempo = strongestTempo - j;
+        std::vector<double> strongestPulses;
+        strongestPulses.push_back(lastStrongTempo.value());
+        while (i <= 10) {
+            for (int k = 0; k < strongestPulses.size(); k += 1) {
+                // if the tempo diff is less than 1.5 assume it's the same pulse..
+                if (fabs((strongestTempo - j).value() - strongestPulses[k]) < 1.5) {
+                    j += 1;
+                    k = -1;
+                }
+            }
+            strongestPulses.push_back((strongestTempo - j).value());
+            i += 1;
+        }
+        double minute = ((m_tempogramHopSize * blockCounter * stepSize())/static_cast<double>(m_iSampleRate))/60.0;
+        double fractionalMinutes;
+        double intMinutes;
+        fractionalMinutes = std::modf(minute, &intMinutes);
+        double seconds = (fractionalMinutes*60.0)/100;
+        minute = intMinutes + seconds;
+        qDebug() << "At time" << minute;
+        int pulseCounter = 1;
+        for (auto pulse : strongestPulses) {
+            qDebug() << pulseCounter++ << "th strongest pulse is" << pulse;
+        } 
+        blockCounter += 1;
+    }
+}
 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_onsetsProcessor.finalize();
@@ -474,7 +542,7 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     //for (auto nc : m_noveltyCurve) {qDebug() << nc;}
     computeTempogramByACF();
     computeTempogramByDFT();
-
+    computeMetergram();
     auto beats = computeBeats();
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
