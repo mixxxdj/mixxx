@@ -23,10 +23,9 @@ PioneerXDJRX.init = function(id) {
     engine.softTakeover("[Channel2]", "beatsync", true);
     engine.softTakeover("[Playlist]", "ToggleSelectedSidebarItem", true);
 }
-PioneerXDJRX.shutdown = function(id) {}
 
 PioneerXDJRX.reverse_toggle = function(channel, control, value, status, group) {
-    if (value == 0)
+    if (value === 0)
         return;
     if (PioneerXDJRX.reverse_play)
         PioneerXDJRX.reverse_play = false;
@@ -36,12 +35,12 @@ PioneerXDJRX.reverse_toggle = function(channel, control, value, status, group) {
 }
 
 PioneerXDJRX.tempo_btn = function(channel, control, value, status, group) {
-    if (value == 0x00) {
+    if (value === 0x00) {
         return;
     }
 
-    oldValue = engine.getValue(group, "rateRange");
-    newValue = 0.06;
+    var oldValue = engine.getValue(group, "rateRange");
+    var newValue = 0.06;
 
     if (oldValue > 0.11) {
         newValue = 0.03;
@@ -76,7 +75,7 @@ PioneerXDJRX.select_track_knob = function(channel, control, value, status, group
     if (value >= 0x01 && value <= 0x1e) {
         value = value;
     } else if (value >= 0x62 && value <= 0x7F) {
-        value = 0 - (0x7F - value + 1);
+        value = value - 0x80);
     } else {
         return;
     }
@@ -91,7 +90,7 @@ PioneerXDJRX.toogleHeadPhone1 = function(channel, control, value, status) {
         return;
     }
     headPhone1lastclicked = thisClick;
-    if (headPhone1On == false) {
+    if (!headPhone1On) {
         midi.sendShortMsg(0x96, 0x54, 127); //headphone button 1 lights on
         engine.setValue("[Channel1]", "pfl", 1);
         headPhone1On = true;
@@ -110,7 +109,7 @@ PioneerXDJRX.toogleHeadPhone2 = function(channel, control, value, status) {
         return;
     }
     headPhone2lastclicked = thisClick;
-    if (headPhone2On == false) {
+    if (!headPhone2On) {
         midi.sendShortMsg(0x96, 0x55, 127); //headphone button 2 lights on
         engine.setValue("[Channel2]", "pfl", 1);
         headPhone2On = true;
@@ -123,13 +122,11 @@ PioneerXDJRX.toogleHeadPhone2 = function(channel, control, value, status) {
 
 
 PioneerXDJRX.PlayDecks = function(channel, control, value, status, group) {
-    if (value == 0x7F) return;
+    if (value === 0x7F) return;
     if (!engine.getValue(group, "play")) {
         engine.setValue(group, "play", 1);
-        midi.sendShortMsg(status, 0x0B, 127); //Play light on
     } else {
         engine.setValue(group, "play", 0);
-        midi.sendShortMsg(status, 0x0B, 0); //Play light Off
     }
 }
 
@@ -175,7 +172,7 @@ PioneerXDJRX.MasterTempo1 = function(channel, control, value, status) {
         return;
     }
     KeyLockLClk1 = thisClick;
-    if (KeyLock1On == false) {
+    if (!KeyLock1On) {
         midi.sendShortMsg(0x90, 0x1A, 127); //MasterTempo lights on
         engine.setValue("[Channel1]", "keylock", 1);
         KeyLock1On = true;
@@ -194,7 +191,7 @@ PioneerXDJRX.MasterTempo2 = function(channel, control, value, status) {
         return;
     }
     KeyLockLClk2 = thisClick;
-    if (KeyLock2On == false) {
+    if (!KeyLock2On) {
         midi.sendShortMsg(0x91, 0x1A, 127); //headphone button 2 lights on
         engine.setValue("[Channel2]", "keylock", 1);
         KeyLock2On = true;
@@ -241,7 +238,7 @@ PioneerXDJRX.select_turn = function(channel, control, value, status, group) {
 
 
 PioneerXDJRX.toggle_playlist = function(channel, control, value, status, group) {
-    if (value == 0x7F) {
+    if (value === 0x7F) {
         engine.setValue(group, "ToggleSelectedSidebarItem", 1);
         midi.sendShortMsg(0x96, 0x55, 127);
         return (true);
