@@ -19,7 +19,7 @@ ControlObject::ControlObject(const ConfigKey& key,
         bool bPersist,
         double defaultValue)
         : m_key(key) {
-    // Don't bother looking up the control if key is invalid. Prevents log spew.
+    // Don't bother looking up the control if key is invalid to prevent log spew.
     if (m_key.isValid()) {
         m_pControl = ControlDoublePrivate::getControl(m_key,
                 ControlFlag::None,
@@ -30,7 +30,7 @@ ControlObject::ControlObject(const ConfigKey& key,
                 defaultValue);
     }
 
-    // getControl can fail and return a NULL control even with the create flag.
+    // getControl can fail and return a nullptr control even with the create flag.
     if (m_pControl) {
         connect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,

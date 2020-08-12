@@ -1,38 +1,21 @@
-/***************************************************************************
-                          controlpushbutton.h  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef CONTROLPUSHBUTTON_H
-#define CONTROLPUSHBUTTON_H
+#pragma once
 
 #include "control/controlobject.h"
-
-/**
-  *@author Tue and Ken Haste Andersen
-  */
 
 class ControlPushButton : public ControlObject {
     Q_OBJECT
   public:
     enum ButtonMode {
-         PUSH = 0,
-         TOGGLE,
-         POWERWINDOW,
-         LONGPRESSLATCHING,
-         TRIGGER,
+        /// Default mode - the value is set to 1 on press and 0 on release
+        PUSH = 0,
+        /// Each press increments the value by one, wrapping back to 0 when the number of states is exceeded
+        TOGGLE,
+        /// Behaves like TOGGLE if released quickly, otherwise PUSH
+        POWERWINDOW,
+        /// Toggle if the button is held for a specific amount of time
+        LONGPRESSLATCHING,
+        /// Only emit on press
+        TRIGGER,
     };
 
     static QString buttonModeToString(int mode) {
@@ -65,5 +48,3 @@ class ControlPushButton : public ControlObject {
     enum ButtonMode m_buttonMode;
     int m_iNoStates;
 };
-
-#endif

@@ -326,28 +326,27 @@ void ControlPushButtonBehavior::setValueFromMidi(
         }
     } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {
         // This block makes push-buttons act as toggle buttons.
-        if (m_iNumStates > 1) { // multistate button
-            if (pressed) {
-                // This is a possibly race condition if another writer wants
-                // to change the value at the same time. We allow the race here,
-                // because this is possibly what the user expects if he changes
-                // the same control from different devices.
-                double value = pControl->get();
-                value = (int)(value + 1.) % m_iNumStates;
+        DEBUG_ASSERT(m_iNumStates > 1);
+        if (pressed) {
+            // This is a possibly race condition if another writer wants
+            // to change the value at the same time. We allow the race here,
+            // because this is possibly what the user expects if he changes
+            // the same control from different devices.
+            double value = pControl->get();
+            value = (int)(value + 1.) % m_iNumStates;
+            pControl->set(value, nullptr);
+            if (m_buttonMode == LONGPRESSLATCHING) {
+                auto* timer = getTimer();
+                timer->setSingleShot(true);
+                timer->start(kLongPressLatchingTimeMillis);
+            }
+        } else {
+            double value = pControl->get();
+            if (m_buttonMode == LONGPRESSLATCHING &&
+                    getTimer()->isActive() && value >= 1.) {
+                // revert toggle if button is released too early
+                value = (int)(value - 1.) % m_iNumStates;
                 pControl->set(value, nullptr);
-                if (m_buttonMode == LONGPRESSLATCHING) {
-                    auto* timer = getTimer();
-                    timer->setSingleShot(true);
-                    timer->start(kLongPressLatchingTimeMillis);
-                }
-            } else {
-                double value = pControl->get();
-                if (m_buttonMode == LONGPRESSLATCHING &&
-                        getTimer()->isActive() && value >= 1.) {
-                    // revert toggle if button is released too early
-                    value = (int)(value - 1.) % m_iNumStates;
-                    pControl->set(value, nullptr);
-                }
             }
         }
     } else { // Not a toggle button (trigger only when button pushed)
