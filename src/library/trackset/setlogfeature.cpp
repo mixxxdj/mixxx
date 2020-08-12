@@ -18,7 +18,9 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 
-const int kNumDirectHistoryEntries = 5;
+namespace {
+    constexpr int kNumDirectHistoryEntries = 5;
+}
 
 SetlogFeature::SetlogFeature(
         Library* pLibrary,
@@ -141,18 +143,14 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     menu.exec(globalPos);
 }
 
-QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
-    return QList<BasePlaylistFeature::IdAndLabel>();
-}
-
 /**
   * Purpose: When inserting or removing playlists,
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
-  * Use a custom model in the histroy for grouping by year
+  * Use a custom model in the history for grouping by year
+  * @param selectedId row which should be selected
 */
-QModelIndex SetlogFeature::constructChildModel(int selected_id) {
-    QList<TreeItem*> data_list;
+QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     int selected_row = -1;
 
     // Setup the sidebar playlist model
@@ -173,6 +171,9 @@ QModelIndex SetlogFeature::constructChildModel(int selected_id) {
 
     auto groups = QMap<int, TreeItem*>();
 
+    QList<TreeItem*> data_list;
+    data_list.reserve(playlistTableModel.rowCount());
+
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
                 playlistTableModel
@@ -187,29 +188,37 @@ QModelIndex SetlogFeature::constructChildModel(int selected_id) {
                         .data(playlistTableModel.index(row, createdColumn))
                         .toDateTime();
 
-        if (selected_id == id) {
+        if (selectedId == id) {
             // save index for selection
             selected_row = row;
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(name, id);
-        item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
-
-        decorateChild(item, id);
         if (row >= kNumDirectHistoryEntries ) {
             int year = created.date().year();
 
             QMap<int, TreeItem*>::const_iterator i = groups.find(year);
+            TreeItem* groupItem;
             if (i != groups.end() && i.key() == year) {
-                i.value()->insertChild(i.value()->childRows(), item);
+                groupItem = i.value();
             } else {
-                TreeItem* groupItem = new TreeItem(QString("%1").arg(year), -1);
-                groupItem->insertChild(0, item);
+                groupItem = new TreeItem(QString("%1").arg(year), -1);
                 groups.insert(year, groupItem);
                 data_list.append(groupItem);
             }
+
+            std::unique_ptr<TreeItem> item (new TreeItem(name, id));
+            item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
+
+            decorateChild(item.get(), id);
+
+            groupItem->appendChild(std::move(item));
         } else {
+            TreeItem* item = new TreeItem(name, id);
+            item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
+
+            decorateChild(item, id);
+
             data_list.append(item);
         }
     }

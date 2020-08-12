@@ -66,10 +66,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         QString label;
     };
 
-    virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
-    virtual QList<IdAndLabel> createPlaylistLabels() = 0;
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
@@ -97,13 +95,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QAction* m_pAnalyzePlaylistAction;
 
     PlaylistTableModel* m_pPlaylistTableModel;
+    QSet<int> m_playlistsSelectedTrackIsIn;
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
-
-  protected:
-    QSet<int> m_playlistsSelectedTrackIsIn;
 
   private:
     void initActions();

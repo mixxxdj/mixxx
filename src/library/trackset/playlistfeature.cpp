@@ -236,6 +236,44 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     return QString();
 }
 
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion
+  * @param selectedId entry which should be selected
+*/
+QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
+    QList<TreeItem*> data_list;
+    int selectedRow = -1;
+
+    int row = 0;
+    for (const IdAndLabel& idAndLabel : createPlaylistLabels()) {
+        int playlistId = idAndLabel.id;
+        QString playlistLabel = idAndLabel.label;
+
+        if (selectedId == playlistId) {
+            // save index for selection
+            selectedRow = row;
+        }
+
+        // Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(playlistLabel, playlistId);
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
+
+        decorateChild(item, playlistId);
+        data_list.append(item);
+
+        ++row;
+    }
+
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertTreeItemRows(data_list, 0);
+    if (selectedRow == -1) {
+        return QModelIndex();
+    }
+    return m_childModel.index(selectedRow, 0);
+}
+
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(
