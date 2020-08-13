@@ -21,7 +21,7 @@ PioneerXDJRX.init = function(id) {
     engine.softTakeover("[Channel2]", "keylock", true);
     engine.softTakeover("[Channel1]", "beatsync", true);
     engine.softTakeover("[Channel2]", "beatsync", true);
-}
+};
 
 PioneerXDJRX.reverse_toggle = function(channel, control, value, status, group) {
     if (value === 0)
@@ -30,8 +30,8 @@ PioneerXDJRX.reverse_toggle = function(channel, control, value, status, group) {
         PioneerXDJRX.reverse_play = false;
     else
         PioneerXDJRX.reverse_play = true;
-    engine.setValue(group, 'reverse', PioneerXDJRX.reverse_play);
-}
+    engine.setValue(group, "reverse", PioneerXDJRX.reverse_play);
+};
 
 PioneerXDJRX.tempo_btn = function(channel, control, value, status, group) {
     if (value === 0x00) {
@@ -58,27 +58,27 @@ PioneerXDJRX.jog_wheel = function(channel, control, value, status, group) {
 //Inactive
 PioneerXDJRX.jog_scratch = function(channel, control, value, status, group) {
     value = (value - 0x40) / PioneerXDJRX.scratch_sensitivity;
-    engine.setValue(group, 'jog', value);
+    engine.setValue(group, "jog", value);
 
 };
 
 PioneerXDJRX.ClearCue1 = function(channel, control, value, status, group) {
     engine.setValue("[Channel1]", "cue_point", 0);
-}
+};
 
 PioneerXDJRX.ClearCue2 = function(channel, control, value, status, group) {
     engine.setValue("[Channel2]", "cue_point", 0);
-}
+};
 
 PioneerXDJRX.select_track_knob = function(channel, control, value, status, group) {
     if (value >= 0x01 && value <= 0x1e) {
         value = value;
     } else if (value >= 0x62 && value <= 0x7F) {
-        value = value - 0x80);
+        value = value - 0x80;
     } else {
         return;
     }
-    engine.setValue(group, 'SelectTrackKnob', value);
+    engine.setValue(group, "SelectTrackKnob", value);
 };
 
 var headPhone1On = false;
@@ -98,7 +98,7 @@ PioneerXDJRX.toogleHeadPhone1 = function(channel, control, value, status) {
         engine.setValue("[Channel1]", "pfl", 0);
         headPhone1On = false;
     }
-}
+};
 
 var headPhone2On = false;
 var headPhone2lastclicked;
@@ -117,7 +117,7 @@ PioneerXDJRX.toogleHeadPhone2 = function(channel, control, value, status) {
         engine.setValue("[Channel2]", "pfl", 0);
         headPhone2On = false;
     }
-}
+};
 
 
 PioneerXDJRX.PlayDecks = function(channel, control, value, status, group) {
@@ -127,7 +127,7 @@ PioneerXDJRX.PlayDecks = function(channel, control, value, status, group) {
     } else {
         engine.setValue(group, "play", 0);
     }
-}
+};
 
 
 PioneerXDJRX.CueDecks = function(channel, control, value, status, group) {
@@ -142,7 +142,7 @@ PioneerXDJRX.CueDecks = function(channel, control, value, status, group) {
 
     }
 
-}
+};
 
 PioneerXDJRX.Sync1 = function(channel, control, value, status, group) {
     if (!engine.getValue(group, "beatsync")) {
@@ -152,7 +152,7 @@ PioneerXDJRX.Sync1 = function(channel, control, value, status, group) {
         engine.setValue(group, "beatsync", 0);
         midi.sendShortMsg(status, 0x58, 0); //Sync Light Off
     }
-}
+};
 PioneerXDJRX.Sync2 = function(channel, control, value, status, group) {
     if (!engine.getValue(group, "beatsync")) {
         engine.setValue(group, "beatsync", 1);
@@ -161,7 +161,7 @@ PioneerXDJRX.Sync2 = function(channel, control, value, status, group) {
         engine.setValue(group, "beatsync", 0);
         midi.sendShortMsg(status, 0x58, 0); //Sync Light Off
     }
-}
+};
 
 var KeyLock1On = false;
 var KeyLockLClk1;
@@ -180,7 +180,7 @@ PioneerXDJRX.MasterTempo1 = function(channel, control, value, status) {
         engine.setValue("[Channel1]", "keylock", 0);
         KeyLock1On = false;
     }
-}
+};
 
 var KeyLock2On = false;
 var KeyLockLClk2;
@@ -199,7 +199,7 @@ PioneerXDJRX.MasterTempo2 = function(channel, control, value, status) {
         engine.setValue("[Channel2]", "keylock", 0);
         KeyLock2On = false;
     }
-}
+};
 
 
 
