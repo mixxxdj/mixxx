@@ -1,7 +1,6 @@
 // Tue Haste Andersen <haste@diku.dk>, (C) 2003
 
-#ifndef WNUMBERPOS_H
-#define WNUMBERPOS_H
+#pragma once
 
 #include <QMouseEvent>
 
@@ -37,5 +36,3 @@ class WNumberPos : public WNumber {
     ControlProxy* m_pShowTrackTimeRemaining;
     ControlProxy* m_pTimeFormat;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef QUANTIZECONTROL_H
-#define QUANTIZECONTROL_H
+#pragma once
 
 #include <QObject>
 
@@ -39,5 +38,3 @@ class QuantizeControl : public EngineControl {
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
 };
-
-#endif // QUANTIZECONTROL_H

@@ -1,7 +1,6 @@
 // storage of setting for mp3 encoder
 
-#ifndef ENCODERMP3SETTINGS_H
-#define ENCODERMP3SETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
@@ -46,5 +45,3 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     QList<int> m_qualVBRList;
     UserSettingsPointer m_pConfig;
 };
-
-#endif // ENCODERMP3SETTINGS_H

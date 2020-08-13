@@ -1,8 +1,7 @@
 // Created on: 30/nov/2011
 // Author: vittorio
 
-#ifndef BEATUTILS_H_
-#define BEATUTILS_H_
+#pragma once
 
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
@@ -80,5 +79,3 @@ class BeatUtils {
         const int sampleRate, QMap<double, int>* frequencyHistogram);
 
 };
-
-#endif /* BEATUTILS_H_ */

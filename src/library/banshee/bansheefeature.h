@@ -1,6 +1,5 @@
 
-#ifndef BANSHEEFEATURE_H
-#define BANSHEEFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -58,5 +57,3 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     static const QString BANSHEE_MOUNT_KEY;
 };
-
-#endif // BANSHEEFEATURE_H

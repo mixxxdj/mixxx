@@ -16,8 +16,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENCODERFFMPEGMP3_H
-#define ENCODERFFMPEGMP3_H
+#pragma once
 
 #include "encoderffmpegcore.h"
 
@@ -27,5 +26,3 @@ class EncoderFfmpegMp3 : public EncoderFfmpegCore {
 public:
     EncoderFfmpegMp3(EncoderCallback* pCallback=NULL);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_BROADCASTSETTINGS_H
-#define PREFERENCES_BROADCASTSETTINGS_H
+#pragma once
 
 #include <QMap>
 #include <QSharedPointer>
@@ -49,5 +48,3 @@ class BroadcastSettings : public QObject {
 };
 
 typedef QSharedPointer<BroadcastSettings> BroadcastSettingsPointer;
-
-#endif /* PREFERENCES_BROADCASTSETTINGS_H */

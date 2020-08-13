@@ -1,8 +1,7 @@
 // sidebarmodel.h
 // Created 8/21/09 by RJ Ryan (rryan@mit.edu)
 
-#ifndef SIDEBARMODEL_H
-#define SIDEBARMODEL_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QList>
@@ -86,5 +85,3 @@ class SidebarModel : public QAbstractItemModel {
     void startPressedUntilClickedTimer(QModelIndex pressedIndex);
     void stopPressedUntilClickedTimer();
 };
-
-#endif /* SIDEBARMODEL_H */

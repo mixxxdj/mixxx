@@ -1,8 +1,7 @@
 // cuecontrol.h
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef CUECONTROL_H
-#define CUECONTROL_H
+#pragma once
 
 #include <QList>
 #include <QMutex>
@@ -264,6 +263,3 @@ class CueControl : public EngineControl {
 
     QMutex m_mutex;
 };
-
-
-#endif /* CUECONTROL_H */

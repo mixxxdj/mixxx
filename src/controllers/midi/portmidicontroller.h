@@ -9,8 +9,7 @@
  *
  */
 
-#ifndef PORTMIDICONTROLLER_H
-#define PORTMIDICONTROLLER_H
+#pragma once
 
 #include <portmidi.h>
 
@@ -100,5 +99,3 @@ class PortMidiController : public MidiController {
 
     friend class PortMidiControllerTest;
 };
-
-#endif

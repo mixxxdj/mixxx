@@ -5,8 +5,7 @@
  *      Author: Vittorio Colao
  */
 
-#ifndef ANALYZER_ANALYZERBEATS_H
-#define ANALYZER_ANALYZERBEATS_H
+#pragma once
 
 #include <QHash>
 #include <QList>
@@ -53,5 +52,3 @@ class AnalyzerBeats : public Analyzer {
     int m_iCurrentSample;
     int m_iMinBpm, m_iMaxBpm;
 };
-
-#endif /* ANALYZER_ANALYZERBEATS_H */

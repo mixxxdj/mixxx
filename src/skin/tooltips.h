@@ -1,5 +1,4 @@
-#ifndef TOOLTIPS_H
-#define TOOLTIPS_H
+#pragma once
 
 #include <QHash>
 #include <QStringList>
@@ -19,6 +18,3 @@ class Tooltips : public QObject {
 
     QHash<QString, QStringList> m_tooltips;
 };
-
-
-#endif /* TOOLTIPS_H */

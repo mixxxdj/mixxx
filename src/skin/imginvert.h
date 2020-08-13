@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IMGINVERT_H
-#define IMGINVERT_H
+#pragma once
 
 #include "imgsource.h"
 
@@ -26,6 +25,3 @@ public:
     inline ImgInvert(ImgSource* parent) : ImgColorProcessor(parent) {}
     QColor doColorCorrection(const QColor& c) const override;
 };
-
-#endif
-

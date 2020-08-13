@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEFILTER_H
-#define ENGINEFILTER_H
+#pragma once
 
 #define MIXXX
 #include <cstdio>
@@ -59,5 +58,3 @@ double processSampleDynamic(void *buf, const double sample);
 double processSampleHp(void *buf, const double sample);
 double processSampleBp(void *buf, const double sample);
 double processSampleLp(void *buf, const double sample);
-
-#endif

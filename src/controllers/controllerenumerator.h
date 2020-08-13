@@ -4,8 +4,7 @@
  *   must be inherited by a class that implements it on some API.
  */
 
-#ifndef CONTROLLERENUMERATOR_H
-#define CONTROLLERENUMERATOR_H
+#pragma once
 
 #include "controllers/controller.h"
 
@@ -25,5 +24,3 @@ class ControllerEnumerator : public QObject {
         return false;
     }
 };
-
-#endif

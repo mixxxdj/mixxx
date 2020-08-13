@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERIIR_H
-#define ENGINEFILTERIIR_H
+#pragma once
 
 #define MIXXX
 #include <cstdio>
@@ -616,6 +615,3 @@ inline double EngineFilterIIR<2, IIR_HP2>::processSample(double* coef,
 
     return val;
 }
-
-
-#endif // ENGINEFILTERIIR_H

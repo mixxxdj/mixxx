@@ -1,5 +1,4 @@
-#ifndef DLGTRACKEXPORT_H
-#define DLGTRACKEXPORT_H
+#pragma once
 
 #include <QDialog>
 #include <QScopedPointer>
@@ -50,5 +49,3 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
 };
-
-#endif  // DLGTRACKEXPORT_H

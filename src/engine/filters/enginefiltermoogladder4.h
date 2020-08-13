@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERMOOGLADDER4_H
-#define ENGINEFILTERMOOGLADDER4_H
+#pragma once
 
 // Filter based on the text "Non linear digital implementation of the moog ladder filter"
 // by Antti Houvilainen
@@ -270,5 +269,3 @@ class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<MoogMode::
   public:
     EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
 };
-
-#endif // ENGINEFILTERMOOGLADDER4_H

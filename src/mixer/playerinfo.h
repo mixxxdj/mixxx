@@ -14,8 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MIXER_PLAYERINFO_H
-#define MIXER_PLAYERINFO_H
+#pragma once
 
 #include <QMap>
 #include <QMutex>
@@ -78,5 +77,3 @@ class PlayerInfo : public QObject {
 
     static PlayerInfo* m_pPlayerinfo;
 };
-
-#endif /* MIXER_PLAYERINFO_H */

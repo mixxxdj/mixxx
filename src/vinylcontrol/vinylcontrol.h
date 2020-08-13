@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROL_H
-#define VINYLCONTROL_H
+#pragma once
 
 #include <QString>
 
@@ -79,5 +78,3 @@ class VinylControl : public QObject {
     // Whether this VinylControl instance is enabled.
     bool m_bIsEnabled;
 };
-
-#endif

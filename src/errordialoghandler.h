@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ERRORDIALOGHANDLER_H
-#define ERRORDIALOGHANDLER_H
+#pragma once
 
 #include <QObject>
 #include <QMessageBox>
@@ -177,5 +176,3 @@ class ErrorDialogHandler : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(ErrorDialogHandler);
 };
-
-#endif

@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IMGCOLOR_H
-#define IMGCOLOR_H
+#pragma once
 
 #include "imgsource.h"
 
@@ -88,5 +87,3 @@ class ImgHSVTweak : public ImgColorProcessor {
         m_hconst, m_sconst, m_vconst;
     float m_hfact, m_sfact, m_vfact;
 };
-#endif
-

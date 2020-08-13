@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFCONTROLS_H
-#define DLGPREFCONTROLS_H
+#pragma once
 
 #include <QWidget>
 
@@ -82,5 +81,3 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
     bool m_bRebootMixxxView;
 };
-
-#endif

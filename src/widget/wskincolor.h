@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WSKINCOLOR_H
-#define WSKINCOLOR_H
+#pragma once
 
 #include <QSharedPointer>
 #include "skin/imgsource.h"
@@ -28,6 +27,3 @@ class WSkinColor {
   private:
     static QSharedPointer<ImgSource> loader;
 };
-
-#endif
-

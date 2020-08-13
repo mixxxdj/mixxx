@@ -1,7 +1,6 @@
 // Blacklisted HID devices
 
-#ifndef HIDBLACKLIST_H
-#define HIDBLACKLIST_H
+#pragma once
 
 typedef struct hid_blacklist {
     unsigned short vendor_id;
@@ -17,5 +16,3 @@ hid_blacklist_t hid_blacklisted[] = {
     {0x1157, 0x300, 0x1, 0x2, -1},   // EKS Otus mouse pad (OS/X,windows)
     {0x1157, 0x300, 0x0, 0x0, 0x3},  // EKS Otus mouse pad (linux)
 };
-
-#endif

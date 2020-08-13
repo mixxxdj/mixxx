@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZERWAVEFORM_H
-#define ANALYZER_ANALYZERWAVEFORM_H
+#pragma once
 
 #include <QImage>
 #include <QSqlDatabase>
@@ -178,5 +177,3 @@ class AnalyzerWaveform : public Analyzer {
     QImage* test_heatMap;
 #endif
 };
-
-#endif /* ANALYZER_ANALYZERWAVEFORM_H */

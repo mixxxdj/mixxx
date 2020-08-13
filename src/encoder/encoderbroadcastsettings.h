@@ -1,7 +1,6 @@
 // storage of broadcast settings for the encoders.
 
-#ifndef ENCODERBROADCASTSETTINGS_H
-#define ENCODERBROADCASTSETTINGS_H
+#pragma once
 
 #include "encoder/encodersettings.h"
 #include "encoder/encoder.h"
@@ -24,5 +23,3 @@ class EncoderBroadcastSettings : public EncoderSettings {
     QList<int> m_qualList;
     BroadcastProfilePtr m_pProfile;
 };
-
-#endif // ENCODERBROADCASTSETTINGS_H

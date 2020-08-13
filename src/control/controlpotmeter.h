@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLPOTMETER_H
-#define CONTROLPOTMETER_H
+#pragma once
 
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
@@ -91,5 +90,3 @@ class ControlPotmeter : public ControlObject {
     bool m_bAllowOutOfBounds;
     PotmeterControls m_controls;
 };
-
-#endif

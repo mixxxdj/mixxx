@@ -1,5 +1,4 @@
-#ifndef CONTROLOBJECTSCRIPT_H
-#define CONTROLOBJECTSCRIPT_H
+#pragma once
 
 #include <QVector>
 
@@ -40,5 +39,3 @@ class ControlObjectScript : public ControlProxy {
   private:
     QList<ScriptConnection> m_scriptConnections;
 };
-
-#endif // CONTROLOBJECTSCRIPT_H

@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IMGLOADER_H
-#define IMGLOADER_H
+#pragma once
 
 #include "imgsource.h"
 
@@ -26,6 +25,3 @@ public:
     ImgLoader();
     QImage* getImage(const QString &fileName, double scaleFactor) const override;
 };
-
-#endif
-

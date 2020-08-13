@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WLABEL_H
-#define WLABEL_H
+#pragma once
 
 #include <QLabel>
 #include <QEvent>
@@ -60,5 +59,3 @@ class WLabel : public QLabel, public WBaseWidget {
     double m_scaleFactor;
     int m_highlight;
 };
-
-#endif

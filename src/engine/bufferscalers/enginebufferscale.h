@@ -1,5 +1,4 @@
-#ifndef ENGINEBUFFERSCALE_H
-#define ENGINEBUFFERSCALE_H
+#pragma once
 
 #include <QObject>
 
@@ -75,5 +74,3 @@ class EngineBufferScale : public QObject {
     double m_dTempoRatio;
     double m_dPitchRatio;
 };
-
-#endif

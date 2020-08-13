@@ -1,5 +1,4 @@
-#ifndef BULKCONTROLLER_H
-#define BULKCONTROLLER_H
+#pragma once
 
 #include <QAtomicInt>
 
@@ -101,5 +100,3 @@ class BulkController : public Controller {
     BulkReader* m_pReader;
     HidControllerPreset m_preset;
 };
-
-#endif

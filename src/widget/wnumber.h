@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WNUMBER_H
-#define WNUMBER_H
+#pragma once
 
 #include <QLabel>
 
@@ -39,5 +38,3 @@ class WNumber : public WLabel  {
     // Number of digits to round to.
     int m_iNoDigits;
 };
-
-#endif

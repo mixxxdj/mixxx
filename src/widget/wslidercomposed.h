@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WSLIDERCOMPOSED_H
-#define WSLIDERCOMPOSED_H
+#pragma once
 
 #include <QString>
 #include <QWidget>
@@ -98,5 +97,3 @@ class WSliderComposed : public WWidget  {
 
     friend class SliderEventHandler<WSliderComposed>;
 };
-
-#endif

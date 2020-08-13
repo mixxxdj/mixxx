@@ -24,8 +24,7 @@
  * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
  ***************************************************************************/
 
-#ifndef STAREDITOR_H
-#define STAREDITOR_H
+#pragma once
 
 #include <QWidget>
 #include <QMouseEvent>
@@ -74,5 +73,3 @@ class StarEditor : public QWidget {
     QStyleOptionViewItem m_styleOption;
     StarRating m_starRating;
 };
-
-#endif

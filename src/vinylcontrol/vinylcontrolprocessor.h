@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROLPROCESSOR_H
-#define VINYLCONTROLPROCESSOR_H
+#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -81,6 +80,3 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     volatile bool m_bQuit;
     volatile bool m_bReloadConfig;
 };
-
-
-#endif /* VINYLCONTROLPROCESSOR_H */

@@ -1,8 +1,6 @@
 // encoder for flac using libsndfile
 
-#ifndef ENCODERSNDFILEFLAC_H
-#define ENCODERSNDFILEFLAC_H
-
+#pragma once
 
 #include "encoder/encoderflacsettings.h"
 #ifdef Q_OS_WIN
@@ -30,5 +28,3 @@ class EncoderSndfileFlac : public EncoderWave {
   private:
     double m_compression;
 };
-
-#endif //ENCODERWAVE_H

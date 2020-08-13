@@ -1,5 +1,4 @@
-#ifndef HIDENUMERATOR_H
-#define HIDENUMERATOR_H
+#pragma once
 
 #include "controllers/controllerenumerator.h"
 
@@ -16,5 +15,3 @@ class HidEnumerator : public ControllerEnumerator {
     QList<Controller*> m_devices;
     UserSettingsPointer m_pConfig;
 };
-
-#endif

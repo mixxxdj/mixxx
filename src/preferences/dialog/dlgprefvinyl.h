@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFVINYL_H
-#define DLGPREFVINYL_H
+#pragma once
 
 #include <QSpinBox>
 #include <QWidget>
@@ -72,5 +71,3 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     QList<ControlProxy*> m_COSpeeds;
     ControlProxy* m_pNumDecks;
 };
-
-#endif

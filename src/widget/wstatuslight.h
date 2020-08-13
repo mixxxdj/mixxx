@@ -17,8 +17,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WSTATUSLIGHT_H
-#define WSTATUSLIGHT_H
+#pragma once
 
 #include <QPaintEvent>
 #include <QWidget>
@@ -57,5 +56,3 @@ class WStatusLight : public WWidget  {
     // Associated pixmaps
     QVector<PaintablePointer> m_pixmaps;
 };
-
-#endif

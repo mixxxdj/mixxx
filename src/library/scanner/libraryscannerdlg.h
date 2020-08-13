@@ -16,8 +16,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifndef LIBRARYSCANNERDLG_H
-#define LIBRARYSCANNERDLG_H
+#pragma once
 
 #include <QThread>
 #include <QWidget>
@@ -46,5 +45,3 @@ class LibraryScannerDlg : public QWidget {
     PerformanceTimer m_timer;
     bool m_bCancelled;
 };
-
-#endif

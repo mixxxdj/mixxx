@@ -7,9 +7,7 @@
                            (C) ???? Tobias Rafreider (broadcast and recording fixes)
  ***************************************************************************/
 
-
-#ifndef ENCODERFFMPEGCORE_H
-#define ENCODERFFMPEGCORE_H
+#pragma once
 
 #include <encoder/encoderffmpegresample.h>
 
@@ -113,5 +111,3 @@ private:
     EncoderFfmpegResample *m_pResample;
     AVStream *m_pStream;
 };
-
-#endif

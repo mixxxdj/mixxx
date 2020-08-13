@@ -1,5 +1,4 @@
-#ifndef SOUNDDEVICENOTFOUND_H
-#define SOUNDDEVICENOTFOUND_H
+#pragma once
 
 #include <QString>
 
@@ -38,5 +37,3 @@ class SoundDeviceNotFound : public SoundDevice {
         return 44100;
     }
 };
-
-#endif // SOUNDDEVICENOTFOUND_H

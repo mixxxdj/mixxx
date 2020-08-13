@@ -1,7 +1,6 @@
 // HID controller backend
 
-#ifndef HIDCONTROLLER_H
-#define HIDCONTROLLER_H
+#pragma once
 
 #include <hidapi.h>
 
@@ -90,5 +89,3 @@ class HidController final : public Controller {
     int m_iLastPollSize;
     int m_iPollingBufferIndex;
 };
-
-#endif

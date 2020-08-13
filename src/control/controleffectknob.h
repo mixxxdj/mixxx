@@ -1,5 +1,4 @@
-#ifndef CONTROLEFFECTKNOB_H
-#define CONTROLEFFECTKNOB_H
+#pragma once
 
 #include "control/controlpotmeter.h"
 #include "effects/effectmanifestparameter.h"
@@ -12,5 +11,3 @@ class ControlEffectKnob : public ControlPotmeter {
     void setBehaviour(EffectManifestParameter::ControlHint type,
             double dMinValue, double dMaxValue);
 };
-
-#endif // CONTROLLEFFECTKNOB_H

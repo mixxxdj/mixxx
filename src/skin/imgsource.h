@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef IMGSOURCE_H
-#define IMGSOURCE_H
+#pragma once
 
 #include <QImage>
 #include <QColor>
@@ -136,5 +135,3 @@ public:
 
     bool willCorrectColors() const override { return true; }
 };
-
-#endif

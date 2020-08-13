@@ -4,8 +4,7 @@
  * value.
  */
 
-#ifndef MIDIOUTPUTHANDLER_H
-#define MIDIOUTPUTHANDLER_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "controllers/midi/midimessage.h"
@@ -31,5 +30,3 @@ class MidiOutputHandler : public QObject {
     ControlProxy m_cos;
     int m_lastVal;
 };
-
-#endif

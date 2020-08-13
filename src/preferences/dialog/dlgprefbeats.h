@@ -1,8 +1,7 @@
 // Created on: 28/apr/2011
 //      Author: vittorio
 
-#ifndef DLGPREFBEATS_H
-#define DLGPREFBEATS_H
+#pragma once
 
 #include <QWidget>
 #include <QString>
@@ -54,5 +53,3 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     bool m_bReanalyze;
     bool m_bReanalyzeImported;
 };
-
-#endif // DLGPREFBEATS_H

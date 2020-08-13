@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERPREROLL_H
-#define WAVEFORMRENDERPREROLL_H
+#pragma once
 
 #include <QColor>
 
@@ -20,5 +19,3 @@ class WaveformRendererPreroll : public WaveformRendererAbstract {
     
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };
-
-#endif /* WAVEFORMRENDERPREROLL_H */

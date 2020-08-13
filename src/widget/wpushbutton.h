@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WPUSHBUTTON_H
-#define WPUSHBUTTON_H
+#pragma once
 
 #include <QPaintEvent>
 #include <QPixmap>
@@ -126,5 +125,3 @@ class WPushButton : public WWidget {
     QTimer m_clickTimer;
     QVector<int> m_align;
 };
-
-#endif

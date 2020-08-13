@@ -7,8 +7,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFSOUNDITEM_H
-#define DLGPREFSOUNDITEM_H
+#pragma once
 
 #include "preferences/dialog/ui_dlgprefsounditem.h"
 #include "soundio/soundmanagerutil.h"
@@ -63,5 +62,3 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     QPoint m_savedChannel;
     bool m_inhibitSettingChanged;
 };
-
-#endif

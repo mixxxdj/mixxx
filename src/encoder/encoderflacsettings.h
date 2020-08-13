@@ -1,7 +1,6 @@
 // storage of setting for flac encoder
 
-#ifndef ENCODERFLACSETTINGS_H
-#define ENCODERFLACSETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
@@ -42,5 +41,3 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
     QList<int> m_qualList;
     UserSettingsPointer m_pConfig;
 };
-
-#endif // ENCODERFLACSETTINGS_H

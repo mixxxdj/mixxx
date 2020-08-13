@@ -1,5 +1,4 @@
-#ifndef WCOVERART_H
-#define WCOVERART_H
+#pragma once
 
 #include <QColor>
 #include <QDomNode>
@@ -76,5 +75,3 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     DlgCoverArtFullSize* m_pDlgFullSize;
     QTimer m_clickTimer;
 };
-
-#endif // WCOVERART_H

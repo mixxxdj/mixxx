@@ -1,8 +1,7 @@
 // encoderopussettings.h
 // Create on August 15th 2017 by Palakis
 
-#ifndef ENCODER_ENCODEROPUSSETTINGS_H
-#define ENCODER_ENCODEROPUSSETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
@@ -51,5 +50,3 @@ class EncoderOpusSettings: public EncoderRecordingSettings {
     QList<int> m_qualList;
     QList<OptionsGroup> m_radioList;
 };
-
-#endif // ENCODER_ENCODEROPUSSETTINGS_H

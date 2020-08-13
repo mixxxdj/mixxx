@@ -1,5 +1,4 @@
-#ifndef CLOCKCONTROL_H
-#define CLOCKCONTROL_H
+#pragma once
 
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
@@ -30,5 +29,3 @@ class ClockControl: public EngineControl {
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
 };
-
-#endif /* CLOCKCONTROL_H */

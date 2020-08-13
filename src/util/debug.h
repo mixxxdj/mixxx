@@ -1,5 +1,4 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#pragma once
 
 #include <QtDebug>
 #include <QString>
@@ -44,5 +43,3 @@ inline void reportCriticalErrorAndQuit(QString message) {
         dialogHandler->requestErrorDialog(DLG_CRITICAL, message, true);
     }
 }
-
-#endif /* DEBUG_H */

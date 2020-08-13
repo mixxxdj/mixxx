@@ -9,8 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef PARSERPLS_H
-#define PARSERPLS_H
+#pragma once
 
 #include "library/parser.h"
 
@@ -35,5 +34,3 @@ class ParserPls : public Parser {
     QString getFilePath(QTextStream*, const QString& basePath);
 
 };
-
-#endif

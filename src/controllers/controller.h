@@ -5,8 +5,7 @@
 * subclass' destructor should call close() at a minimum.
 */
 
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include "controllers/controllerengine.h"
 #include "controllers/controllervisitor.h"
@@ -172,5 +171,3 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // For testing
     friend class ControllerPresetValidationTest;
 };
-
-#endif

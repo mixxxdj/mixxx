@@ -1,5 +1,4 @@
-#ifndef DLGPREFLIBRARY_H
-#define DLGPREFLIBRARY_H
+#pragma once
 
 #include <QFont>
 #include <QStandardItemModel>
@@ -68,5 +67,3 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
 };
-
-#endif

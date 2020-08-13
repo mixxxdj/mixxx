@@ -14,8 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DEFS_URLS_H
-#define DEFS_URLS_H
+#pragma once
 
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "https://www.mixxx.org/support/"
@@ -46,5 +45,3 @@
 #define MIXXX_MANUAL_VINYL_URL \
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#configuring-vinyl-control"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
-
-#endif

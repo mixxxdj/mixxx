@@ -9,8 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef WOVERVIEW_H
-#define WOVERVIEW_H
+#pragma once
 
 #include <QColor>
 #include <QList>
@@ -197,5 +196,3 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_trackLoaded;
     double m_scaleFactor;
 };
-
-#endif

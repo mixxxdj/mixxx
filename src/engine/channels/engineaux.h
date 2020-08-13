@@ -2,8 +2,7 @@
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // unapologetically copied from enginemicrophone.h from RJ
 
-#ifndef ENGINEAUX_H
-#define ENGINEAUX_H
+#pragma once
 
 #include <QScopedPointer>
 
@@ -51,5 +50,3 @@ class EngineAux : public EngineChannel, public AudioDestination {
     ControlAudioTaperPot* m_pPregain;
     bool m_wasActive;
 };
-
-#endif // ENGINEAUX_H

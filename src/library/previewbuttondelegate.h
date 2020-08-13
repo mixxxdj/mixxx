@@ -1,5 +1,4 @@
-#ifndef PREVIEWBUTTONDELEGATE_H
-#define PREVIEWBUTTONDELEGATE_H
+#pragma once
 
 #include <QPushButton>
 #include <QStyleOptionButton>
@@ -75,5 +74,3 @@ class PreviewButtonDelegate : public TableItemDelegate {
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;
 };
-
-#endif // PREVIEWBUTTONDELEGATE_H

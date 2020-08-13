@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFNOVINYL_H
-#define DLGPREFNOVINYL_H
+#pragma once
 
 #include <QWidget>
 
@@ -32,5 +31,3 @@ class DlgPrefNoVinyl : public DlgPreferencePage, Ui::DlgPrefNoVinylDlg  {
     DlgPrefNoVinyl(QWidget *parent, SoundManager* soundman, UserSettingsPointer _config);
     virtual ~DlgPrefNoVinyl();
 };
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef MIXXX_SQLQUERYFINISHER_H
-#define MIXXX_SQLQUERYFINISHER_H
-
+#pragma once
 
 #include <QSqlQuery>
 
@@ -33,6 +31,3 @@ private:
 
     QSqlQuery m_query; // implicitly shared
 };
-
-
-#endif // MIXXX_SQLQUERYFINISHER_H

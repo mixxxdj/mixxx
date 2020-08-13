@@ -6,8 +6,7 @@
 *   Note that the subclass' destructor should call close() at a minimum.
 */
 
-#ifndef MIDICONTROLLER_H
-#define MIDICONTROLLER_H
+#pragma once
 
 #include "controllers/controller.h"
 #include "controllers/midi/midicontrollerpreset.h"
@@ -113,5 +112,3 @@ class MidiController : public Controller {
     friend class MidiOutputHandler;
     friend class MidiControllerTest;
 };
-
-#endif

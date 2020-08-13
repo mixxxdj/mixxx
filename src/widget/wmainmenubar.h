@@ -1,5 +1,4 @@
-#ifndef WIDGET_WMAINMENUBAR
-#define WIDGET_WMAINMENUBAR
+#pragma once
 
 #include <QAction>
 #include <QList>
@@ -88,5 +87,3 @@ class WMainMenuBar : public QMenuBar {
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
 };
-
-#endif /* WIDGET_WMAINMENUBAR */

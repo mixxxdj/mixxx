@@ -1,5 +1,4 @@
-#ifndef WWIDGETGROUP_H
-#define WWIDGETGROUP_H
+#pragma once
 
 #include <QDomNode>
 #include <QFrame>
@@ -91,5 +90,3 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     PaintablePointer m_pPixmapBackHighlighted;
     int m_highlight;
 };
-
-#endif // WWIDGETGROUP_H

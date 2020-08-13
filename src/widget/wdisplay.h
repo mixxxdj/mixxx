@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WDISPLAY_H
-#define WDISPLAY_H
+#pragma once
 
 #include <QVector>
 #include <QPixmap>
@@ -78,5 +77,3 @@ class WDisplay : public WWidget {
     // List of disabled pixmaps.
     QVector<PaintablePointer> m_disabledPixmaps;
 };
-
-#endif

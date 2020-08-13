@@ -1,8 +1,7 @@
 // libraryfeature.h
 // Created 8/17/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef LIBRARYFEATURE_H
-#define LIBRARYFEATURE_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QDesktopServices>
@@ -138,5 +137,3 @@ class LibraryFeature : public QObject {
   private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 };
-
-#endif /* LIBRARYFEATURE_H */

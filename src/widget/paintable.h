@@ -1,6 +1,5 @@
 
-#ifndef PAINTABLE_H
-#define PAINTABLE_H
+#pragma once
 
 #include <QPixmap>
 #include <QHash>
@@ -61,5 +60,3 @@ class Paintable {
     DrawMode m_drawMode;
     PixmapSource m_source;
 };
-
-#endif // PAINTABLE

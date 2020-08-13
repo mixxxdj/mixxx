@@ -1,5 +1,4 @@
-#ifndef ECHOEFFECT_H
-#define ECHOEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -74,5 +73,3 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(EchoEffect);
 };
-
-#endif /* ECHOEFFECT_H */

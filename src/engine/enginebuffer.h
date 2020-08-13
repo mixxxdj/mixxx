@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEBUFFER_H
-#define ENGINEBUFFER_H
+#pragma once
 
 #include <gtest/gtest_prod.h>
 
@@ -420,5 +419,3 @@ class EngineBuffer : public EngineObject {
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)
-
-#endif

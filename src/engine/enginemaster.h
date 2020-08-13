@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEMASTER_H
-#define ENGINEMASTER_H
+#pragma once
 
 #include <QObject>
 #include <QVarLengthArray>
@@ -365,5 +364,3 @@ class EngineMaster : public QObject, public AudioSource {
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
 };
-
-#endif

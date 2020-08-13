@@ -6,9 +6,7 @@
     copyright            : (C) 2017 by Josep Maria Antolín
  ***************************************************************************/
 
-
-#ifndef ENCODER_H
-#define ENCODER_H
+#pragma once
 
 #include "util/memory.h"
 #include "util/types.h"
@@ -68,5 +66,3 @@ class EncoderFactory {
     static EncoderFactory factory;
     QList<Encoder::Format> m_formats;
 };
-
-#endif // ENCODER_H

@@ -1,5 +1,4 @@
-#ifndef BULKENUMERATOR_H
-#define BULKENUMERATOR_H
+#pragma once
 
 #include "controllers/controllerenumerator.h"
 
@@ -18,5 +17,3 @@ class BulkEnumerator : public ControllerEnumerator {
     libusb_context* m_context;
     UserSettingsPointer m_pConfig;
 };
-
-#endif

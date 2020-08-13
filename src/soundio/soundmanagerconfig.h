@@ -7,8 +7,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUNDMANAGERCONFIG_H
-#define SOUNDMANAGERCONFIG_H
+#pragma once
 
 #ifndef SOUNDMANAGERCONFIG_FILENAME
 #define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
@@ -97,4 +96,3 @@ private:
     bool m_bExternalRecordBroadcastConnected;
     SoundManager* m_pSoundManager;
 };
-#endif

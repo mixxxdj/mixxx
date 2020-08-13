@@ -1,5 +1,4 @@
-#ifndef COLORSCHEMEPARSER_H
-#define COLORSCHEMEPARSER_H
+#pragma once
 
 #include "preferences/usersettings.h"
 #include "skin/legacyskinparser.h"
@@ -19,5 +18,3 @@ class ColorSchemeParser {
     ColorSchemeParser() { }
     ~ColorSchemeParser() { }
 };
-
-#endif /* COLORSCHEMEPARSER_H */

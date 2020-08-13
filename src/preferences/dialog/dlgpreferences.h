@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFERENCES_H
-#define DLGPREFERENCES_H
+#pragma once
 
 #include <QDialog>
 #include <QEvent>
@@ -165,5 +164,3 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
     QSize m_pageSizeHint;
 };
-
-#endif

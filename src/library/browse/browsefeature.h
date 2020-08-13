@@ -1,8 +1,7 @@
 // browsefeature.h
 // Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef BROWSEFEATURE_H
-#define BROWSEFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
@@ -80,5 +79,3 @@ class BrowseFeature : public LibraryFeature {
     QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-#endif // BROWSEFEATURE_H

@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WWIDGET_H
-#define WWIDGET_H
+#pragma once
 
 #include <QWidget>
 #include <QEvent>
@@ -57,5 +56,3 @@ class WWidget : public QWidget, public WBaseWidget {
     ControlProxy* m_pTouchShift;
     double m_scaleFactor;
 };
-
-#endif

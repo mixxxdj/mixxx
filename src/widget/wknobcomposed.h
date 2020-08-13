@@ -1,5 +1,4 @@
-#ifndef WKNOBCOMPOSED_H
-#define WKNOBCOMPOSED_H
+#pragma once
 
 #include <QWidget>
 #include <QPaintEvent>
@@ -67,5 +66,3 @@ class WKnobComposed : public WWidget {
 
     friend class KnobEventHandler<WKnobComposed>;
 };
-
-#endif /* WKNOBCOMPOSED_H */

@@ -1,5 +1,4 @@
-#ifndef LIBRARYMIDICONTROL_H
-#define LIBRARYMIDICONTROL_H
+#pragma once
 
 #include <QObject>
 
@@ -170,5 +169,3 @@ class LibraryControl : public QObject {
     ControlProxy m_numPreviewDecks;
     std::map<QString, std::unique_ptr<LoadToGroupController>> m_loadToGroupControllers;
 };
-
-#endif //LIBRARYMIDICONTROL_H

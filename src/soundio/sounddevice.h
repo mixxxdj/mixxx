@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUNDDEVICE_H
-#define SOUNDDEVICE_H
+#pragma once
 
 #include <QString>
 #include <QList>
@@ -108,5 +107,3 @@ class SoundDevice {
 };
 
 typedef QSharedPointer<SoundDevice> SoundDevicePointer;
-
-#endif

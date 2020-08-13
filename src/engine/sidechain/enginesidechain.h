@@ -14,8 +14,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifndef ENGINESIDECHAIN_H
-#define ENGINESIDECHAIN_H
+#pragma once
 
 #include <QThread>
 #include <QMutex>
@@ -71,5 +70,3 @@ class EngineSideChain : public QThread, public AudioDestination {
     MMutex m_workerLock;
     QList<SideChainWorker*> m_workers GUARDED_BY(m_workerLock);
 };
-
-#endif

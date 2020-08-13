@@ -1,8 +1,6 @@
 // wave/aiff "encoder" for mixxx
 
-#ifndef ENCODERWAVE_H
-#define ENCODERWAVE_H
-
+#pragma once
 
 #include "encoder/encoderwavesettings.h"
 #ifdef Q_OS_WIN
@@ -43,5 +41,3 @@ class EncoderWave : public Encoder {
 
     SF_VIRTUAL_IO m_virtualIo;
 };
-
-#endif //ENCODERWAVE_H

@@ -16,8 +16,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifndef ENGINESYNC_H
-#define ENGINESYNC_H
+#pragma once
 
 #include "preferences/usersettings.h"
 #include "engine/sync/syncable.h"
@@ -86,5 +85,3 @@ class EngineSync : public BaseSyncableListener {
     // Unsets all sync state on a Syncable.
     void deactivateSync(Syncable* pSyncable);
 };
-
-#endif

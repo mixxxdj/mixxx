@@ -1,8 +1,7 @@
 // wlibrarytableview.h
 // Created 10/19/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef WLIBRARYTABLEVIEW_H
-#define WLIBRARYTABLEVIEW_H
+#pragma once
 
 #include <QFont>
 #include <QString>
@@ -69,6 +68,3 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     // executed
     int m_noSearchVScrollBarPos;
 };
-
-
-#endif /* WLIBRARYTABLEVIEW_H */

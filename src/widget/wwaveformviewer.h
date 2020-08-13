@@ -1,5 +1,4 @@
-#ifndef WWAVEFORMVIEWER_H
-#define WWAVEFORMVIEWER_H
+#pragma once
 
 #include <QDateTime>
 #include <QDragEnterEvent>
@@ -96,5 +95,3 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void unhighlightMark(WaveformMarkPointer pMark);
     bool isPlaying() const;
 };
-
-#endif

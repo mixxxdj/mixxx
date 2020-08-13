@@ -9,8 +9,7 @@ This is essentially just a C++ version of xwax's pitch.h,
     which is Copyright (C) 2010 Mark Hills <mark@pogo.org.uk>
 ***************************************************************************/
 
-#ifndef ALPHABETAFILTER_H
-#define ALPHABETAFILTER_H
+#pragma once
 
 // This is a simple alpha-beta filter. It follows the example from Wikipedia
 // closely: http://en.wikipedia.org/wiki/Alpha_beta_filter
@@ -77,5 +76,3 @@ class AlphaBetaFilter {
     // State of the rate calculation filter
     double m_dt, m_x, m_v, m_alpha, m_beta;
 };
-
-#endif

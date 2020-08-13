@@ -4,8 +4,7 @@
 /// LibraryView is an abstract interface that all views to be used with the
 /// Library widget should support.
 
-#ifndef LIBRARYVIEW_H
-#define LIBRARYVIEW_H
+#pragma once
 
 #include <QString>
 
@@ -47,5 +46,3 @@ class LibraryView {
     virtual void assignPreviousTrackColor(){};
     virtual void assignNextTrackColor(){};
 };
-
-#endif /* LIBRARYVIEW_H */

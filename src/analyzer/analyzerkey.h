@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZERKEY_H
-#define ANALYZER_ANALYZERKEY_H
+#pragma once
 
 #include <QHash>
 #include <QList>
@@ -43,5 +42,3 @@ class AnalyzerKey : public Analyzer {
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
 };
-
-#endif /* ANALYZER_ANALYZERKEY_H */

@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WPIXMAPSTORE_H
-#define WPIXMAPSTORE_H
+#pragma once
 
 #include <QPixmap>
 #include <QHash>
@@ -51,5 +50,3 @@ class WPixmapStore {
     static QHash<QString, WeakPaintablePointer> m_paintableCache;
     static QSharedPointer<ImgSource> m_loader;
 };
-
-#endif

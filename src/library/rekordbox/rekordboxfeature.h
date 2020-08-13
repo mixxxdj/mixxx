@@ -25,8 +25,7 @@
 
 //      https://github.com/Deep-Symmetry/crate-digger/blob/master/src/main/kaitai/rekordbox_pdb.ksy
 
-#ifndef REKORDBOX_FEATURE_H
-#define REKORDBOX_FEATURE_H
+#pragma once
 
 #include <QFuture>
 #include <QFutureWatcher>
@@ -96,5 +95,3 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QSharedPointer<BaseTrackCache> m_trackSource;
     QIcon m_icon;
 };
-
-#endif // REKORDBOX_FEATURE_H

@@ -1,7 +1,6 @@
 // storage of setting for wave/aiff encoder
 
-#ifndef ENCODERWAVESETTINGS_H
-#define ENCODERWAVESETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
@@ -32,12 +31,3 @@ class EncoderWaveSettings : public EncoderRecordingSettings {
     UserSettingsPointer m_pConfig;
     QString m_format;
 };
-
-
-
-
-
-
-
-
-#endif // ENCODERWAVESETTINGS_H

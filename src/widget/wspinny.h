@@ -1,6 +1,5 @@
 
-#ifndef _WSPINNY_H
-#define _WSPINNY_H
+#pragma once
 
 #include <QEvent>
 #include <QGLWidget>
@@ -137,5 +136,3 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     DlgCoverArtFullSize* m_pDlgCoverArt;
     WCoverArtMenu* m_pCoverMenu;
 };
-
-#endif //_WSPINNY_H

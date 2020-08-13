@@ -1,5 +1,4 @@
-#ifndef DLGANALYSIS_H
-#define DLGANALYSIS_H
+#pragma once
 
 #include <QButtonGroup>
 #include <QItemSelection>
@@ -63,5 +62,3 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     WAnalysisLibraryTableView* m_pAnalysisLibraryTableView;
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
 };
-
-#endif //DLGTRIAGE_H

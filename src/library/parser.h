@@ -11,8 +11,7 @@
 //
 //
 
-#ifndef PARSER_H
-#define PARSER_H
+#pragma once
 
 /**Developer Information:
 This is the rootclass for all parser classes for the Importer class.
@@ -61,5 +60,3 @@ protected:
             const QString& playlistEntry,
             const QString& basePath = QString());
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef DLGPREFLV2_H
-#define DLGPREFLV2_H
+#pragma once
 
 #include <QWidget>
 #include <QCheckBox>
@@ -37,5 +36,3 @@ class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     int m_iCheckedParameters;
     EffectsManager* m_pEffectsManager;
 };
-
-#endif

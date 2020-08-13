@@ -1,6 +1,5 @@
 // The controller mapping learning wizard
-#ifndef DLGCONTROLLERLEARNING_H
-#define DLGCONTROLLERLEARNING_H
+#pragma once
 
 #include <QDialog>
 #include <QList>
@@ -93,5 +92,3 @@ class DlgControllerLearning : public QDialog,
     QList<QPair<MidiKey, unsigned char> > m_messages;
     MidiInputMappings m_mappings;
 };
-
-#endif

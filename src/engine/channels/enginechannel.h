@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINECHANNEL_H
-#define ENGINECHANNEL_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effectsmanager.h"
@@ -104,5 +103,3 @@ class EngineChannel : public EngineObject {
     ControlPushButton* m_pTalkover;
     bool m_bIsTalkoverChannel;
 };
-
-#endif

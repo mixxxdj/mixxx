@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROLMANAGER_H
-#define VINYLCONTROLMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -63,5 +62,3 @@ class VinylControlManager : public QObject {
     ControlProxy* m_pNumDecks;
     int m_iNumConfiguredDecks;
 };
-
-#endif // VINYLCONTROLMANAGER_H

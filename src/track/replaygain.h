@@ -1,5 +1,4 @@
-#ifndef MIXXX_REPLAYGAIN_H
-#define MIXXX_REPLAYGAIN_H
+#pragma once
 
 #include "util/types.h"
 
@@ -123,5 +122,3 @@ QDebug operator<<(QDebug dbg, const ReplayGain& arg) {
 
 Q_DECLARE_TYPEINFO(mixxx::ReplayGain, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::ReplayGain)
-
-#endif // MIXXX_REPLAYGAIN_H

@@ -1,6 +1,4 @@
-#ifndef MIXXX_SQLSTORAGE_H
-#define MIXXX_SQLSTORAGE_H
-
+#pragma once
 
 #include <QSqlDatabase>
 
@@ -47,6 +45,3 @@ class SqlStorage {
     SqlStorage& operator=(const SqlStorage&) = delete;
 
 };
-
-
-#endif // MIXXX_SQLSTORAGE_H

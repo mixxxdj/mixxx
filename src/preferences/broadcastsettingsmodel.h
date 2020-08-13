@@ -1,8 +1,7 @@
 // broadcastsettingsmodel.h
 // Created on August 7th by Stéphane Lepin (Palakis)
 
-#ifndef PREFERENCES_BROADCASTSETTINGSMODEL_H
-#define PREFERENCES_BROADCASTSETTINGSMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QAbstractItemDelegate>
@@ -47,5 +46,3 @@ class BroadcastSettingsModel : public QAbstractTableModel {
 
     QMap<QString, BroadcastProfilePtr> m_profiles;
 };
-
-#endif // PREFERENCES_BROADCASTSETTINGSMODEL_H

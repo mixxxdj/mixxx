@@ -7,8 +7,7 @@
   * the device.
   */
 
-#ifndef HSS1394CONTROLLER_H
-#define HSS1394CONTROLLER_H
+#pragma once
 
 #include <hss1394/HSS1394.h>
 
@@ -64,5 +63,3 @@ class Hss1394Controller : public MidiController {
     hss1394::Channel* m_pChannel;
     DeviceChannelListener *m_pChannelListener;
 };
-
-#endif

@@ -15,8 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifndef PREFERENCES_UPGRADE_H
-#define PREFERENCES_UPGRADE_H
+#pragma once
 
 #include "preferences/usersettings.h"
 
@@ -35,5 +34,3 @@ class Upgrade {
     bool m_bFirstRun;
     bool m_bRescanLibrary;
 };
-
-#endif /* PREFERENCES_UPGRADE_H */

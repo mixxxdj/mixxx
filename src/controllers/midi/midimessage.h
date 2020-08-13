@@ -1,5 +1,4 @@
-#ifndef MIDIMESSAGE_H
-#define MIDIMESSAGE_H
+#pragma once
 
 #include <QList>
 #include <QPair>
@@ -193,5 +192,3 @@ struct MidiOutputMapping {
     QString description;
 };
 typedef QList<MidiOutputMapping> MidiOutputMappings;
-
-#endif

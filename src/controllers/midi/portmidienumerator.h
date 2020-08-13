@@ -1,5 +1,4 @@
-#ifndef PORTMIDIENUMERATOR_H
-#define PORTMIDIENUMERATOR_H
+#pragma once
 
 #include "controllers/midi/midienumerator.h"
 
@@ -20,5 +19,3 @@ class PortMidiEnumerator : public MidiEnumerator {
 // For testing.
 bool shouldLinkInputToOutput(const QString input_name,
                              const QString output_name);
-
-#endif

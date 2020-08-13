@@ -15,9 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#ifndef STARDELEGATE_H
-#define STARDELEGATE_H
+#pragma once
 
 #include "library/tableitemdelegate.h"
 
@@ -57,5 +55,3 @@ class StarDelegate : public TableItemDelegate {
     QPersistentModelIndex m_currentEditedCellIndex;
     bool m_isOneCellInEditMode;
 };
-
-#endif

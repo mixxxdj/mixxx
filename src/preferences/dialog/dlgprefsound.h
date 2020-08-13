@@ -7,8 +7,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFSOUND_H
-#define DLGPREFSOUND_H
+#pragma once
 
 #include "defs_urls.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
@@ -113,5 +112,3 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_bSkipConfigClear;
     bool m_loading;
 };
-
-#endif

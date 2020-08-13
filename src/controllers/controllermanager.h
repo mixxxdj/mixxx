@@ -1,7 +1,6 @@
 // Manages creation/enumeration/deletion of hardware controllers.
 
-#ifndef CONTROLLERMANAGER_H
-#define CONTROLLERMANAGER_H
+#pragma once
 
 #include <QSharedPointer>
 
@@ -83,5 +82,3 @@ class ControllerManager : public QObject {
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadSystemPresetEnumerator;
     bool m_skipPoll;
 };
-
-#endif  // CONTROLLERMANAGER_H

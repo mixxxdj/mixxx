@@ -1,6 +1,5 @@
 
-#ifndef CONSOLE_H_
-#define CONSOLE_H_
+#pragma once
 
 #ifdef __WINDOWS__
 #include <windows.h>
@@ -21,5 +20,3 @@ class Console {
     TCHAR m_oldTitle[MAX_PATH];
 #endif
 };
-
-#endif /* CONSOLE_H_ */

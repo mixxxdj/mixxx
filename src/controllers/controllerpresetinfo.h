@@ -5,8 +5,7 @@
 * show details for a mapping.
 */
 
-#ifndef CONTROLLERPRESETINFO_H
-#define CONTROLLERPRESETINFO_H
+#pragma once
 
 #include <QString>
 #include <QMap>
@@ -67,5 +66,3 @@ class PresetInfo {
     QString m_wikilink;
     QList<ProductInfo> m_products;
 };
-
-#endif

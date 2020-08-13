@@ -2,8 +2,7 @@
 // Created on Sep 23, 2008
 // Author: asantoni, rryan
 
-#ifndef LOOPINGCONTROL_H
-#define LOOPINGCONTROL_H
+#pragma once
 
 #include <QObject>
 #include <QStack>
@@ -250,5 +249,3 @@ class BeatLoopingControl : public QObject {
     ControlPushButton* m_pToggle;
     ControlObject* m_pEnabled;
 };
-
-#endif /* LOOPINGCONTROL_H */

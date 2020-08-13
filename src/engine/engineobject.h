@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEOBJECT_H
-#define ENGINEOBJECT_H
+#pragma once
 
 #include <QObject>
 
@@ -47,5 +46,3 @@ class EngineObjectConstIn : public QObject {
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut,
                          const int iBufferSize) = 0;
 };
-
-#endif

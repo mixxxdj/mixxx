@@ -1,8 +1,7 @@
 // shoutconnection.h
 // Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
-#ifndef ENGINE_SIDECHAIN_SHOUTCONNECTION_H
-#define ENGINE_SIDECHAIN_SHOUTCONNECTION_H
+#pragma once
 
 #include <engine/sidechain/networkoutputstreamworker.h>
 
@@ -166,5 +165,3 @@ class ShoutConnection
 };
 
 typedef QSharedPointer<ShoutConnection> ShoutConnectionPtr;
-
-#endif // ENGINE_SIDECHAIN_SHOUTCONNECTION_H

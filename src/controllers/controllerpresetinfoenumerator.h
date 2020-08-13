@@ -1,6 +1,5 @@
 // Enumerate list of available controller mapping presets
-#ifndef CONTROLLERPRESETINFOENUMERATOR_H
-#define CONTROLLERPRESETINFOENUMERATOR_H
+#pragma once
 
 #include <QList>
 #include <QString>
@@ -25,5 +24,3 @@ class PresetInfoEnumerator {
     QList<PresetInfo> m_midiPresets;
     QList<PresetInfo> m_bulkPresets;
 };
-
-#endif

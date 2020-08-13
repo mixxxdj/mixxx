@@ -1,7 +1,6 @@
 // Handles loading and saving of MIDI controller presets.
 
-#ifndef MIDICONTROLLERPRESETFILEHANDLER_H
-#define MIDICONTROLLERPRESETFILEHANDLER_H
+#pragma once
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/midi/midicontrollerpreset.h"
@@ -31,5 +30,3 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
     QDomElement outputMappingToXML(QDomDocument* doc,
                                    const MidiOutputMapping& mapping) const;
 };
-
-#endif

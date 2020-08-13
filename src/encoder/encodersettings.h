@@ -1,7 +1,6 @@
 // Encoder settings interface for encoders.
 
-#ifndef ENCODERSETTINGS_H
-#define ENCODERSETTINGS_H
+#pragma once
 
 #include <QList>
 #include <QObject>
@@ -49,5 +48,3 @@ class EncoderSettings {
 };
 
 typedef std::shared_ptr<EncoderSettings> EncoderSettingsPointer;
-
-#endif // ENCODERSETTINGS_H

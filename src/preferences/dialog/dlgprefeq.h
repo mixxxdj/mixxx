@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFEQ_H
-#define DLGPREFEQ_H
+#pragma once
 
 #include <QWidget>
 #include <QComboBox>
@@ -106,5 +105,3 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
 };
-
-#endif

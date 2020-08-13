@@ -1,5 +1,4 @@
-#ifndef DLGPREFWAVEFORM_H
-#define DLGPREFWAVEFORM_H
+#pragma once
 
 #include <QWidget>
 
@@ -47,6 +46,3 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     Library* m_pLibrary;
     MixxxMainWindow* m_pMixxx;
 };
-
-
-#endif /* DLGPREFWAVEFORM_H */

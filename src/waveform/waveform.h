@@ -1,5 +1,4 @@
-#ifndef WAVEFORM_H
-#define WAVEFORM_H
+#pragma once
 
 #include <vector>
 
@@ -185,5 +184,3 @@ class Waveform {
 
 typedef QSharedPointer<Waveform> WaveformPointer;
 typedef QSharedPointer<const Waveform> ConstWaveformPointer;
-
-#endif // WAVEFORM_H

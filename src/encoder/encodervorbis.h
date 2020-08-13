@@ -6,9 +6,7 @@
                            (C) 1994 Tobias Rafreider (broadcast and recording fixes)
  ***************************************************************************/
 
-
-#ifndef ENCODERVORBIS_H
-#define ENCODERVORBIS_H
+#pragma once
 
 // this also includes vorbis/codec.h
 #include <vorbis/vorbisenc.h>
@@ -61,5 +59,3 @@ class EncoderVorbis : public Encoder {
     int m_channels;
     QFile m_file;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef WSTARRATING_H
-#define WSTARRATING_H
+#pragma once
 
 #include <QEvent>
 #include <QMouseEvent>
@@ -50,5 +49,3 @@ class WStarRating : public WWidget {
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
 };
-
-#endif /* WSTARRATING_H */

@@ -1,5 +1,4 @@
-#ifndef BEATFACTORY_H
-#define BEATFACTORY_H
+#pragma once
 
 #include <QHash>
 
@@ -38,5 +37,3 @@ class BeatFactory {
   private:
     static void deleteBeats(mixxx::Beats* pBeats);
 };
-
-#endif /* BEATFACTORY_H */

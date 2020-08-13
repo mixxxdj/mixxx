@@ -1,5 +1,4 @@
-#ifndef BASEEXTERNALPLAYLISTMODEL_H
-#define BASEEXTERNALPLAYLISTMODEL_H
+#pragma once
 
 #include <QtSql>
 #include <QItemDelegate>
@@ -37,5 +36,3 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     QString m_playlistTracksTable;
     QSharedPointer<BaseTrackCache> m_trackSource;
 };
-
-#endif /* BASEEXTERNALPLAYLISTMODEL_H */

@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WVUMETER_H
-#define WVUMETER_H
+#pragma once
 
 #include <QPixmap>
 #include <QString>
@@ -84,5 +83,3 @@ class WVuMeter : public WWidget  {
 
     PerformanceTimer m_timer;
 };
-
-#endif

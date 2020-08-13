@@ -14,8 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEDELAY_H
-#define ENGINEDELAY_H
+#pragma once
 
 #include "engine/engineobject.h"
 #include "preferences/usersettings.h"
@@ -43,5 +42,3 @@ class EngineDelay : public EngineObject {
     int m_iDelayPos;
     int m_iDelay;
 };
-
-#endif
