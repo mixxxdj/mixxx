@@ -21,7 +21,6 @@ PioneerXDJRX.init = function(id) {
     engine.softTakeover("[Channel2]", "keylock", true);
     engine.softTakeover("[Channel1]", "beatsync", true);
     engine.softTakeover("[Channel2]", "beatsync", true);
-    engine.softTakeover("[Playlist]", "ToggleSelectedSidebarItem", true);
 }
 
 PioneerXDJRX.reverse_toggle = function(channel, control, value, status, group) {
