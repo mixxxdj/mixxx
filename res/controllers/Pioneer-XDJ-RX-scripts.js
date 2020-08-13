@@ -4,7 +4,7 @@ PioneerXDJRX.debug = true;
 PioneerXDJRX.jog_sensitivity = 2.0;
 PioneerXDJRX.scratch_sensitivity = 1.0;
 
-PioneerXDJRX.init = function(id) {
+PioneerXDJRX.init = function() {
     engine.softTakeover("[Channel1]", "rate", true);
     engine.softTakeover("[Channel2]", "rate", true);
     engine.softTakeover("[Channel1]", "cue_default", true);
