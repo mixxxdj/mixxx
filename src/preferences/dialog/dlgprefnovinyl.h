@@ -26,11 +26,6 @@
 
 class SoundManager;
 
-/**
-  *@author Stefan Langhammer
-  *@author Albert Santoni
-  */
-
 class DlgPrefNoVinyl : public DlgPreferencePage, Ui::DlgPrefNoVinylDlg  {
     Q_OBJECT
   public:

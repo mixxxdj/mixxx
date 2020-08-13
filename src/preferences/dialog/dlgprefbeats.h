@@ -1,6 +1,5 @@
-//  Created on: 28/apr/2011
+// Created on: 28/apr/2011
 //      Author: vittorio
-
 
 #ifndef DLGPREFBEATS_H
 #define DLGPREFBEATS_H

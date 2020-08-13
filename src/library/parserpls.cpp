@@ -19,10 +19,6 @@
 #include <QUrl>
 
 /**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
-
-/**
    ToDo:
     - parse ALL information from the pls file if available ,
           not only the filepath;

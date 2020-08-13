@@ -1,9 +1,4 @@
-/**
-* @file encoderwave.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief wave/aiff "encoder" for mixxx
-*/
+// wave/aiff "encoder" for mixxx
 
 #include <QtDebug>
 

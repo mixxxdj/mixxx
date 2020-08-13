@@ -1,9 +1,4 @@
-/**
-* @file bulksupported.h
-* @author Neale Picket  neale@woozle.org
-* @date Thu Jun 28 2012
-* @brief A list of supported USB bulk devices
-*/
+// A list of supported USB bulk devices
 
 #ifndef BULKSUPPORTED_H
 #define BULKSUPPORTED_H

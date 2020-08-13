@@ -1,8 +1,4 @@
-/**
-  * @file hss1394controller.h
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Thu 15 Mar 2012
-  * @brief HSS1394-based MIDI backend
+/** HSS1394-based MIDI backend
   *
   * This class represents a physical HSS1394 device.
   * (HSS1394 is simply a way to send MIDI messages at high speed over

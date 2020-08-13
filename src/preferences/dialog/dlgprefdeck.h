@@ -49,10 +49,6 @@ enum class KeyunlockMode {
     KeepLockedKey
 };
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     Q_OBJECT
   public:

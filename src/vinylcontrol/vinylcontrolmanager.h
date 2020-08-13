@@ -1,9 +1,3 @@
-/**
- * @file vinylcontrolmanager.h
- * @author Bill Good <bkgood@gmail.com>
- * @date April 15, 2011
- */
-
 #ifndef VINYLCONTROLMANAGER_H
 #define VINYLCONTROLMANAGER_H
 

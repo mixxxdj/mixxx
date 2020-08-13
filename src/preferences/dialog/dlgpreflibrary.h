@@ -12,10 +12,6 @@
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:

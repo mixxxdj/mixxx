@@ -1,9 +1,4 @@
-/**
-* @file controller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class representing a physical (or software) controller.
-*/
+// Base class representing a physical (or software) controller.
 
 #include <QApplication>
 #include <QScriptValue>

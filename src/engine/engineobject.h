@@ -23,10 +23,6 @@
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
 
-/**
-  *@author Tue and Ken Haste Andersen
-  */
-
 class EngineObject : public QObject {
     Q_OBJECT
   public:

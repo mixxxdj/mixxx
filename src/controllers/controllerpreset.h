@@ -1,8 +1,4 @@
 #pragma once
-/// @file controllerpreset.h
-/// @author Sean Pappalardo spappalardo@mixxx.org
-/// @date Mon 9 Apr 2012
-/// @brief Controller Preset
 
 #include <QDebug>
 #include <QDir>

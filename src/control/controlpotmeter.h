@@ -21,10 +21,6 @@
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
 
-/**
-  *@author Tue and Ken Haste Andersen
-  */
-
 class ControlPushButton;
 class ControlProxy;
 

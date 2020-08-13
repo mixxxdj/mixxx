@@ -28,16 +28,11 @@
 
 class ControlProxy;
 
-/**
-  * Abstract class used in widgets connected to ControlObjects. Derived
+/** Abstract class used in widgets connected to ControlObjects. Derived
   * widgets can implement the signal and slot for manipulating the widgets
   * value. The widgets internal value should match that of a MIDI control.
   * The ControlObject can contain another mapping of the MIDI/Widget
-  * value, but the mapping should always be done in the ControlObject.
-  *
-  *@author Tue & Ken Haste Andersen
-  */
-
+  * value, but the mapping should always be done in the ControlObject. */
 class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
   public:

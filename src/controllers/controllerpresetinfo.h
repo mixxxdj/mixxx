@@ -1,8 +1,4 @@
-/**
-* @file controllerpresetinfo.h
-* @author Ilkka Tuohela hile@iki.fi
-* @date Wed May 15 2012
-* @brief Base class handling enumeration and parsing of preset info headers
+/** Base class handling enumeration and parsing of preset info headers
 *
 * This class handles enumeration and parsing of controller XML description file
 * <info> header tags. It can be used to match controllers automatically or to

@@ -1,8 +1,4 @@
-/**
-* @file controller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class representing a physical (or software) controller.
+/** Base class representing a physical (or software) controller.
 *
 * This is a base class representing a physical (or software) controller.  It
 * must be inherited by a class that implements it on some API. Note that the
@@ -24,7 +20,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     explicit Controller(UserSettingsPointer pConfig);
-    ~Controller() override;  // Subclass should call close() at minimum.
+    ~Controller() override; // Subclass should call close() at minimum.
 
     /// Returns the extension for the controller (type) preset files.  This is
     /// used by the ControllerManager to display only relevant preset files for
@@ -84,7 +80,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     virtual void receive(const QByteArray data, mixxx::Duration timestamp);
 
     /// Apply the preset to the controller.
-    /// @brief Initializes both controller engine and static output mappings.
+    /// Initializes both controller engine and static output mappings.
     ///
     /// @param initializeScripts Can be set to false to skip script
     /// initialization for unit tests.

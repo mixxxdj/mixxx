@@ -1,10 +1,4 @@
-/**
-* @file encoderbroadcastsettings.h
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of broadcast settings for the encoders.
-*/
-
+// storage of broadcast settings for the encoders.
 
 #ifndef ENCODERBROADCASTSETTINGS_H
 #define ENCODERBROADCASTSETTINGS_H

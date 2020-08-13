@@ -1,9 +1,4 @@
-/**
-* @file encoderwave.h
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief wave/aiff "encoder" for mixxx
-*/
+// wave/aiff "encoder" for mixxx
 
 #ifndef ENCODERWAVE_H
 #define ENCODERWAVE_H

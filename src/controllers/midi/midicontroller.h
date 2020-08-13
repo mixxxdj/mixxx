@@ -1,8 +1,4 @@
-/**
-* @file midicontroller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Tue 7 Feb 2012
-* @brief MIDI Controller base class
+/** MIDI Controller base class
 *
 * This is a base class representing a MIDI controller.
 *   It must be inherited by a class that implements it on some API.
@@ -47,11 +43,10 @@ class MidiController : public Controller {
         return m_preset.isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset)  override;
+    bool matchPreset(const PresetInfo& preset) override;
 
   signals:
-    void messageReceived(unsigned char status, unsigned char control,
-                         unsigned char value);
+    void messageReceived(unsigned char status, unsigned char control, unsigned char value);
 
   protected:
     Q_INVOKABLE virtual void sendShortMsg(unsigned char status,
@@ -66,15 +61,17 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    virtual void receive(unsigned char status, unsigned char control,
-                         unsigned char value, mixxx::Duration timestamp);
+    virtual void receive(unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
     // For receiving System Exclusive messages
     void receive(const QByteArray data, mixxx::Duration timestamp) override;
     int close() override;
 
   private slots:
     /// Apply the preset to the controller.
-    /// @brief Initializes both controller engine and static output mappings.
+    /// Initializes both controller engine and static output mappings.
     ///
     /// @param initializeScripts Can be set to false to skip script
     /// initialization for unit tests.

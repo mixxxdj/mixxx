@@ -1,12 +1,8 @@
-/**
-* @file controllerenumerator.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class handling discovery and enumeration of DJ controllers.
-*
-* This class handles discovery and enumeration of DJ controllers and
-*   must be inherited by a class that implements it on some API.
-*/
+/** Base class handling discovery and enumeration of DJ controllers.
+ *
+ * This class handles discovery and enumeration of DJ controllers and
+ *   must be inherited by a class that implements it on some API.
+ */
 
 #ifndef CONTROLLERENUMERATOR_H
 #define CONTROLLERENUMERATOR_H

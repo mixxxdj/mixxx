@@ -1,9 +1,4 @@
-/**
-* @file encodersndfileflac.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief encoder for flac using libsndfile
-*/
+// encoder for flac using libsndfile
 
 #include <QtDebug>
 

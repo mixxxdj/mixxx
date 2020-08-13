@@ -156,7 +156,7 @@ void DlgPrefVinyl::slotVinylType4Changed(QString text) {
     LeadinTime4->setValue(getDefaultLeadIn(text));
 }
 
-/** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
+/// Performs any necessary actions that need to happen when the prefs dialog is opened.
 void DlgPrefVinyl::slotShow() {
     if (m_pVCManager) {
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -170,7 +170,7 @@ void DlgPrefVinyl::slotShow() {
     }
 }
 
-/** @brief Performs any necessary actions that need to happen when the prefs dialog is closed */
+/** Performs any necessary actions that need to happen when the prefs dialog is closed. */
 void DlgPrefVinyl::slotHide() {
     if (m_pVCManager) {
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {

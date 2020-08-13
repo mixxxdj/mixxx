@@ -1,9 +1,4 @@
-/**
-  * @file hidcontroller.h
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  */
+// HID controller backend
 
 #ifndef HIDCONTROLLER_H
 #define HIDCONTROLLER_H

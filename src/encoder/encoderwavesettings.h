@@ -1,9 +1,4 @@
-/**
-* @file encoderwavesettings.h
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for wave/aiff encoder
-*/
+// storage of setting for wave/aiff encoder
 
 #ifndef ENCODERWAVESETTINGS_H
 #define ENCODERWAVESETTINGS_H

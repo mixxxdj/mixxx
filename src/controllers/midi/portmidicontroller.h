@@ -1,9 +1,4 @@
-/**
- * @file portmidicontroller.h
- * @author Albert Santoni alberts@mixxx.org
- * @author Sean M. Pappalardo  spappalardo@mixxx.org
- * @date Thu 15 Mar 2012
- * @brief PortMidi-based MIDI backend
+/** PortMidi-based MIDI backend
  *
  * This class is represents a MIDI device, either physical or software.
  * It uses the PortMidi API to send and receive MIDI messages to/from the device.

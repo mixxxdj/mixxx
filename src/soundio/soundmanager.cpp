@@ -1,10 +1,3 @@
-/**
- * @file soundmanager.cpp
- * @author Albert Santoni <gamegod at users dot sf dot net>
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20070815
- */
-
 /***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *

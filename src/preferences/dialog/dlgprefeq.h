@@ -28,9 +28,6 @@
 #include "effects/effectsmanager.h"
 #include "effects/effectrack.h"
 
-/**
-  *@author John Sully
-  */
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:

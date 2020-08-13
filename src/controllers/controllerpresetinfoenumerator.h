@@ -1,9 +1,4 @@
-/**
-* @file controllerpresetinfoenumerator.h
-* @author Be be.0@gmx.com
-* @date Sat Jul 18 2015
-* @brief Enumerate list of available controller mapping presets
-*/
+// Enumerate list of available controller mapping presets
 #ifndef CONTROLLERPRESETINFOENUMERATOR_H
 #define CONTROLLERPRESETINFOENUMERATOR_H
 

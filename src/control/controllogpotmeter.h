@@ -21,10 +21,6 @@
 #include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
 
-/**
- *@author Tue and Ken Haste Andersen
- */
-
 class ControlLogpotmeter : public ControlPotmeter {
     Q_OBJECT
   public:

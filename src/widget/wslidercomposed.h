@@ -32,12 +32,7 @@
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 
-/**
-  * A widget for a slider composed of a background pixmap and a handle.
-  *
-  *@author Tue & Ken Haste Andersen
-  */
-
+/** A widget for a slider composed of a background pixmap and a handle. */
 class WSliderComposed : public WWidget  {
     Q_OBJECT
   public:

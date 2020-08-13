@@ -32,10 +32,6 @@ class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
   public:

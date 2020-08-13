@@ -1,10 +1,4 @@
-/**
-* @file encodersndfileflac.h
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief encoder for flac using libsndfile
-*/
-
+// encoder for flac using libsndfile
 
 #ifndef ENCODERSNDFILEFLAC_H
 #define ENCODERSNDFILEFLAC_H

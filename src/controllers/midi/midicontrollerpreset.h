@@ -1,8 +1,4 @@
 #pragma once
-/// @file midicontrollerpreset.h
-/// @author Sean Pappalardo spappalardo@mixxx.org
-/// @date Mon 9 Apr 2012
-/// @brief MIDI Controller preset
 
 #include <QMultiHash>
 

@@ -16,10 +16,6 @@
 // This took me ages to figure out.
 // -- Albert July 17, 2010.
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class EngineBufferScale : public QObject {
     Q_OBJECT
   public:

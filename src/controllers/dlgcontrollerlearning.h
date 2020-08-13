@@ -1,10 +1,4 @@
-/**
-* @file dlgcontrollerlearning.h
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
+// The controller mapping learning wizard
 #ifndef DLGCONTROLLERLEARNING_H
 #define DLGCONTROLLERLEARNING_H
 

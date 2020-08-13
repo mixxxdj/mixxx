@@ -1,12 +1,8 @@
-/**
-* @file encoderwavesettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for wave/aiff encoder
-*/
+// storage of setting for wave/aiff encoder
 
- #include "encoder/encoderwavesettings.h"
- #include "recording/defs_recording.h"
+#include "encoder/encoderwavesettings.h"
+
+#include "recording/defs_recording.h"
 
 const QString EncoderWaveSettings::BITS_GROUP = "BITS";
 

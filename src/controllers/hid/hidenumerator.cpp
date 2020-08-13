@@ -1,10 +1,3 @@
-/**
-* @file hidenumerator.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief This class handles discovery and enumeration of DJ controllers that use the USB-HID protocol
-*/
-
 #include <hidapi.h>
 
 #include "controllers/hid/hidcontroller.h"

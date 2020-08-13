@@ -1,9 +1,4 @@
-/**
-* @file dlgprefcontroller.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Mon May 2 2011
-* @brief Configuration dialog for a DJ controller
-*/
+// Configuration dialog for a DJ controller
 
 #include "controllers/dlgprefcontroller.h"
 

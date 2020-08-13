@@ -1,10 +1,4 @@
-/**
-* @file dlgcontrollerlearning.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
+// The controller mapping learning wizard
 
 #include <QCompleter>
 

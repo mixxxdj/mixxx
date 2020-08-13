@@ -1,9 +1,4 @@
-/**
-* @file encodersettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief Encoder settings interface for encoders.
-*/
+// Encoder settings interface for encoders.
 
 #ifndef ENCODERSETTINGS_H
 #define ENCODERSETTINGS_H

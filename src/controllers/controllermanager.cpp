@@ -1,9 +1,4 @@
-/**
-  * @file controllermanager.cpp
-  * @author Sean Pappalardo spappalardo@mixxx.org
-  * @date Sat Apr 30 2011
-  * @brief Manages creation/enumeration/deletion of hardware controllers.
-  */
+// Manages creation/enumeration/deletion of hardware controllers.
 
 #include <QSet>
 

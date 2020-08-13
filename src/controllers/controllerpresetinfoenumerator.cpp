@@ -1,9 +1,4 @@
-/**
-* @file controllerpresetinfoenumerator.cpp
-* @author Be be.0@gmx.com
-* @date Sat Jul 18 2015
-* @brief Enumerate list of available controller mapping presets
-*/
+// Enumerate list of available controller mapping presets
 #include "controllers/controllerpresetinfoenumerator.h"
 
 #include <QDirIterator>

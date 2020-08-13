@@ -1,9 +1,3 @@
-/**
- * @file soundmanagerconfig.h
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100709
- */
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *

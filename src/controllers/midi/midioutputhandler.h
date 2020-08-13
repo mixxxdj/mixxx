@@ -1,8 +1,4 @@
-/**
- * @file midioutputhandler.h
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Tue 11 Feb 2012
- * @brief Static MIDI output mapping handler
+/** Static MIDI output mapping handler
  *
  * This class listens to a control object and sends a midi message based on the
  * value.

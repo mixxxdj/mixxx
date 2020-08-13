@@ -1,9 +1,3 @@
-/**
-* @file hss1394enumerator.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Thu 15 Mar 2012
-*/
-
 #include <hss1394/HSS1394.h>
 
 #include "controllers/midi/hss1394controller.h"

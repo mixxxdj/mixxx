@@ -65,10 +65,6 @@ class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
 
-/**
-  *@author Tue and Ken Haste Andersen
-*/
-
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
 

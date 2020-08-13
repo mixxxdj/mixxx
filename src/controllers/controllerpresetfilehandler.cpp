@@ -1,7 +1,4 @@
-/// @file controllerpresetfilehandler.cpp
-/// @author Sean Pappalardo spappalardo@mixxx.org
-/// @date Mon 9 Apr 2012
-/// @brief Handles loading and saving of Controller presets.
+/// Handles loading and saving of Controller presets.
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllermanager.h"

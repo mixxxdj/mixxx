@@ -1,9 +1,4 @@
-/**
-* @file encoderwavesettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for vorbis encoder
-*/
+// storage of setting for vorbis encoder
 
 #include "encoder/encodervorbissettings.h"
 #include "recording/defs_recording.h"

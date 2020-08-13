@@ -1,7 +1,4 @@
-/// @file midicontrollerpreset.cpp
-/// @author Jan Holthuis holzhaus@mixxx.org
-/// @date Wed 8 Apr 2020
-/// @brief MIDI Controller Preset
+/// MIDI Controller Preset
 ///
 /// This class represents a MIDI controller preset, containing the data elements
 ///   that make it up.
