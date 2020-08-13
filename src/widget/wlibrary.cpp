@@ -1,6 +1,3 @@
-// wlibrary.cpp
-// Created 8/28/2009 by RJ Ryan (rryan@mit.edu)
-
 #include <QtDebug>
 #include <QMutexLocker>
 

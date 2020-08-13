@@ -1,9 +1,7 @@
-// proxytrackmodel.cpp
-// Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/proxytrackmodel.h"
 
 #include <QVariant>
 
-#include "library/proxytrackmodel.h"
 #include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,

@@ -1,6 +1,3 @@
-// legacyskinparser.cpp
-// Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "skin/legacyskinparser.h"
 
 #include <QDir>

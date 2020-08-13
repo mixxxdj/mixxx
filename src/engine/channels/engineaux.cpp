@@ -1,5 +1,3 @@
-// engineaux.cpp
-// created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // shameless stolen from enginemicrophone.cpp (from RJ)
 
 #include "engine/channels/engineaux.h"

@@ -1,6 +1,3 @@
-// recordingfeature.cpp
-// Created 03/26/2010 by Tobias Rafreider
-
 #include "library/recording/dlgrecording.h"
 #include "track/track.h"
 #include "library/treeitem.h"

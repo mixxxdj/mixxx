@@ -1,7 +1,3 @@
-// loopingcontrol.cpp
-// Created on Sep 23, 2008
-// Author: asantoni, rryan
-
 #include <QtDebug>
 
 #include "control/controlobject.h"

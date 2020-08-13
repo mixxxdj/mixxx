@@ -1,6 +1,3 @@
-// enginemicrophone.cpp
-// created 3/16/2011 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/channels/enginemicrophone.h"
 
 #include <QtDebug>

@@ -1,6 +1,3 @@
-// skinloader.cpp
-// Created 6/21/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "skin/skinloader.h"
 
 #include <QApplication>

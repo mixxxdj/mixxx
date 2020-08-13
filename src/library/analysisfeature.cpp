@@ -1,7 +1,3 @@
-// analysisfeature.cpp
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-// Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
-
 #include <QtDebug>
 
 #include "library/library.h"

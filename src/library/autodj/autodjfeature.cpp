@@ -1,7 +1,3 @@
-// autodjfeature.cpp
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "library/autodj/autodjfeature.h"
 
 #include <QMenu>

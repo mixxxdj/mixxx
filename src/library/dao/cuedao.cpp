@@ -1,6 +1,3 @@
-// cuedao.cpp
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "library/dao/cuedao.h"
 
 #include <QVariant>

@@ -1,6 +1,3 @@
-// rekordboxfeature.cpp
-// Created 05/24/2019 by Evan Dekker
-
 #include "library/rekordbox/rekordboxfeature.h"
 
 #include <mp3guessenc.h>

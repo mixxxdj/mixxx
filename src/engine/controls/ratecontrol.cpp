@@ -1,6 +1,3 @@
-// ratecontrol.cpp
-// Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"

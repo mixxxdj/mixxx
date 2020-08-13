@@ -1,6 +1,3 @@
-// seratofeature.cpp
-// Created 2020-01-31 by Jan Holthuis
-
 #include "library/serato/seratofeature.h"
 
 #include <QMap>

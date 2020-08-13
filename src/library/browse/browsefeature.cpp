@@ -1,6 +1,3 @@
-// browsefeature.cpp
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
-
 #include <QAction>
 #include <QDirModel>
 #include <QFileInfo>
