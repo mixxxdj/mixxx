@@ -44,13 +44,9 @@
 #include "widget/wtracktableview.h"
 
 namespace {
-
 const mixxx::Logger kLogger("Library");
-
-} // anonymous namespace
-
-//static
-const QString Library::kConfigGroup("[Library]");
+const QString kConfigGroup("[Library]");
+} // namespace
 
 // This is the name which we use to register the WTrackTableView with the
 // WLibrary
