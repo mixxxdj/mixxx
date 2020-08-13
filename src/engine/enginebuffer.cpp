@@ -28,8 +28,6 @@
 #include "engine/sync/synccontrol.h"
 #include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
-#include "track/beatfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
@@ -182,14 +180,12 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
-    // Quantization Controller for enabling and disabling the
-    // quantization (alignment) of loop in/out positions and (hot)cues with
-    // beats.
+    // Quantization Controller for enabling and disabling the quantization (alignment)
+    // of loop in/out positions and (hot)cues with beats.
     QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
     addControl(quantize_control);
     m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
-    // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
 
@@ -202,14 +198,11 @@ EngineBuffer::EngineBuffer(const QString& group,
     addControl(m_pVinylControlControl);
 #endif
 
-    // Create the Rate Controller
     m_pRateControl = new RateControl(group, pConfig);
-    // Add the Rate Controller
     addControl(m_pRateControl);
     // Looping Control needs Rate Control for Reverse Button
     m_pLoopingControl->setRateControl(m_pRateControl);
 
-    // Create the BPM Controller
     m_pBpmControl = new BpmControl(group, pConfig);
     addControl(m_pBpmControl);
 
@@ -225,11 +218,9 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pKeyControl = new KeyControl(group, pConfig);
     addControl(m_pKeyControl);
 
-    // Create the clock controller
     m_pClockControl = new ClockControl(group, pConfig);
     addControl(m_pClockControl);
 
-    // Create the cue controller
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
@@ -249,8 +240,7 @@ EngineBuffer::EngineBuffer(const QString& group,
             &CueControl::slotLoopEnabledChanged,
             Qt::DirectConnection);
 
-    m_pReadAheadManager = new ReadAheadManager(m_pReader,
-                                               m_pLoopingControl);
+    m_pReadAheadManager = new ReadAheadManager(m_pReader, m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
     // Construct scaling objects
@@ -268,8 +258,8 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_bScalerChanged = true;
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(this, &EngineBuffer::slotPassthroughChanged,
-                                               Qt::DirectConnection);
+    m_pPassthroughEnabled->connectValueChanged(
+            this, &EngineBuffer::slotPassthroughChanged, Qt::DirectConnection);
 
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
@@ -325,8 +315,8 @@ void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     m_pReader->setScheduler(pWorkerScheduler);
 }
 
-void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
-                                                      const int iBufferSize) {
+void EngineBuffer::enableIndependentPitchTempoScaling(
+        bool bEnable, const int iBufferSize) {
     // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // When no time-stretching or pitch-shifting is needed we use our own linear
@@ -377,7 +367,7 @@ void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
-    for (const auto& pControl: qAsConst(m_engineControls)) {
+    for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->setEngineMaster(pEngineMaster);
     }
 }
@@ -407,8 +397,8 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
         return;
     }
-    SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(atomicLoadRelaxed(m_iEnableSyncQueued));
+    SyncRequestQueued enable_request = static_cast<SyncRequestQueued>(
+            atomicLoadRelaxed(m_iEnableSyncQueued));
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
@@ -450,7 +440,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
         // Restore the original position that was lost due to scaleBuffer() above
         m_pReadAheadManager->notifySeek(m_filepos_play);
         m_bCrossfadeReady = true;
-     }
+    }
 }
 
 void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
@@ -461,7 +451,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << newpos;
+        kLogger.trace() << getGroup() << "EngineBuffer::setNewPlaypos" << newpos;
     }
 
     m_filepos_play = newpos;
@@ -479,7 +469,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_iSamplesSinceLastIndicatorUpdate = 1000000;
 
     // Must hold the engineLock while using m_engineControls
-    for (const auto& pControl: qAsConst(m_engineControls)) {
+    for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->notifySeek(m_filepos_play);
     }
 
@@ -520,14 +510,15 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     if (bPlay) {
         m_playButton->set((double)bPlay);
     }
-    slotTrackLoaded(pTrack, pTrack->getSampleRate(),
-                    pTrack->getSampleRate() * pTrack->getDurationInt());
+    slotTrackLoaded(pTrack,
+            pTrack->getSampleRate(),
+            pTrack->getSampleRate() * pTrack->getDurationInt());
 }
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
-                                   int iTrackSampleRate,
-                                   int iTrackNumSamples) {
+        int iTrackSampleRate,
+        int iTrackNumSamples) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
     }
@@ -722,38 +713,33 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
 
-void EngineBuffer::slotControlStart(double v)
-{
+void EngineBuffer::slotControlStart(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
     }
 }
 
-void EngineBuffer::slotControlEnd(double v)
-{
+void EngineBuffer::slotControlEnd(double v) {
     if (v > 0.0) {
         doSeekFractional(1., SEEK_EXACT);
     }
 }
 
-void EngineBuffer::slotControlPlayFromStart(double v)
-{
+void EngineBuffer::slotControlPlayFromStart(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(1);
     }
 }
 
-void EngineBuffer::slotControlJumpToStartAndStop(double v)
-{
+void EngineBuffer::slotControlJumpToStartAndStop(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(0);
     }
 }
 
-void EngineBuffer::slotControlStop(double v)
-{
+void EngineBuffer::slotControlStop(double v) {
     if (v > 0.0) {
         m_playButton->set(0);
     }

@@ -14,12 +14,12 @@ class EngineMaster;
 class ControlPushButton;
 class ControlProxy;
 
-/// The RecordingManager is a central class and manages
-/// the recording feature of Mixxx.
+/// The RecordingManager is a central class that manages
+/// the audio recording feature of Mixxx.
 ///
-/// There is exactly one instance of this class
+/// There is exactly one instance of this class.
 ///
-/// All methods in this class are thread-safe
+/// All methods in this class are thread-safe.
 ///
 /// Note: The RecordingManager lives in the GUI thread
 class RecordingManager : public QObject {

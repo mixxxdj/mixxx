@@ -73,10 +73,10 @@ QString joinTrackIdList(const QSet<TrackId>& trackIds) {
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
-                   PlaylistDAO& playlistDao,
-                   AnalysisDao& analysisDao,
-                   LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+        PlaylistDAO& playlistDao,
+        AnalysisDao& analysisDao,
+        LibraryHashDAO& libraryHashDao,
+        UserSettingsPointer pConfig)
         : m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),

@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QFileInfo>
+#include <QList>
 #include <QObject>
 #include <QSet>
-#include <QList>
 #include <QSqlDatabase>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"

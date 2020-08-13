@@ -8,8 +8,6 @@
 
 #include "util/class.h"
 
-/** Class used to allow all threads to display message boxes on error conditions
-  * with a custom list of standard buttons and to be able to react to them. */
 typedef enum {
     DLG_FATAL       = 5,
     DLG_CRITICAL    = 4,
@@ -19,6 +17,8 @@ typedef enum {
     DLG_NONE        = 0 // No icon (default)
 } DialogType;
 
+/** Class used to allow all threads to display message boxes on error conditions
+  * with a custom list of standard buttons and to be able to react to them. */
 class ErrorDialogProperties {
   public:
     /** Set the window title. ("Mixxx" is always prepended.) */

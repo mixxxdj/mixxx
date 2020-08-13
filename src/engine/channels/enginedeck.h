@@ -11,13 +11,13 @@
 
 #include "soundio/soundmanagerutil.h"
 
+class ControlPushButton;
 class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
 class EngineMaster;
 class EngineVuMeter;
 class EngineEffectsManager;
-class ControlPushButton;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
