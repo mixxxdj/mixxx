@@ -1,6 +1,3 @@
-// engineworker.h
-// Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <atomic>

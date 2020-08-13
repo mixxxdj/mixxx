@@ -1,7 +1,3 @@
-// loopingcontrol.h
-// Created on Sep 23, 2008
-// Author: asantoni, rryan
-
 #pragma once
 
 #include <QObject>

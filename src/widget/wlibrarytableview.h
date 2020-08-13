@@ -1,6 +1,3 @@
-// wlibrarytableview.h
-// Created 10/19/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QFont>

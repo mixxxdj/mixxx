@@ -1,6 +1,3 @@
-// sidebarmodel.h
-// Created 8/21/09 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QAbstractItemModel>

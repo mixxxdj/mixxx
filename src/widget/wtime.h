@@ -1,6 +1,5 @@
-// wtime.h
 // WTime is a widget showing the current time
-// In skin.xml, it is represented by a <Time> node.
+// In skins it is represented by a <Time> node.
 
 #pragma once
 

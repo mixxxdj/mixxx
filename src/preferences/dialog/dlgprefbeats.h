@@ -1,6 +1,3 @@
-// Created on: 28/apr/2011
-//      Author: vittorio
-
 #pragma once
 
 #include <QWidget>

@@ -1,5 +1,4 @@
-// dlgprefmodplug.h  -  modplug settings dialog
-// created 2013 by Stefan Nuernberger <kabelfrickler@gmail.com>
+// modplug settings dialog
 
 #pragma once
 

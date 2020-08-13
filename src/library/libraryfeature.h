@@ -1,6 +1,3 @@
-// libraryfeature.h
-// Created 8/17/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QAbstractItemModel>

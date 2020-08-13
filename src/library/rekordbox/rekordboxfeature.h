@@ -1,6 +1,3 @@
-// rekordboxfeature.h
-// Created 05/24/2019 by Evan Dekker
-
 // This feature reads tracks, playlists and folders from removable Recordbox
 // prepared devices (USB drives, etc), by parsing the binary *.PDB files
 // stored on each removable device. It does not read the locally stored

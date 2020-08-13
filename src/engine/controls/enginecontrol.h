@@ -1,6 +1,3 @@
-// enginecontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <gtest/gtest_prod.h>

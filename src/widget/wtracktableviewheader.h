@@ -1,6 +1,3 @@
-// wtracktableviewheader.h
-// Created 1/2/2010 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QAction>

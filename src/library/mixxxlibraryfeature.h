@@ -1,6 +1,3 @@
-// mixxxlibraryfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QStringListModel>

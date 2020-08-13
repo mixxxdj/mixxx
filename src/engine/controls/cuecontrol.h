@@ -1,6 +1,3 @@
-// cuecontrol.h
-// Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QList>

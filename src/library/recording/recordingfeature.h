@@ -1,6 +1,3 @@
-// recordingfeature.h
-// Created 03/26/2010 by Tobias Rafreider
-
 #pragma once
 
 #include <QStringListModel>

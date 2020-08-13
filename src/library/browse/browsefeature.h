@@ -1,6 +1,3 @@
-// browsefeature.h
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QStringListModel>

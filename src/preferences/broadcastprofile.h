@@ -1,6 +1,3 @@
-// broadcastprofile.h
-// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #pragma once
 
 #include <QSharedPointer>

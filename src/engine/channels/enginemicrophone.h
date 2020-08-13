@@ -1,6 +1,3 @@
-// enginemicrophone.h
-// created 3/16/2011 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QScopedPointer>

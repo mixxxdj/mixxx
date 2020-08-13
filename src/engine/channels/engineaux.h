@@ -1,5 +1,3 @@
-// engineaux.h
-// created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // unapologetically copied from enginemicrophone.h from RJ
 
 #pragma once

@@ -1,5 +1,3 @@
-// Tue Haste Andersen <haste@diku.dk>, (C) 2003
-
 #pragma once
 
 #include <QMouseEvent>

@@ -1,6 +1,3 @@
-// traktorfeature.h
-// Created 9/26/2010 by Tobias Rafreider
-
 #pragma once
 
 #include <QStringListModel>

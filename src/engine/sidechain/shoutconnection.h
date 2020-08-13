@@ -1,6 +1,3 @@
-// shoutconnection.h
-// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #pragma once
 
 #include <engine/sidechain/networkoutputstreamworker.h>

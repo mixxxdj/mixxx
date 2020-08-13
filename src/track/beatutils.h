@@ -1,6 +1,3 @@
-// Created on: 30/nov/2011
-// Author: vittorio
-
 #pragma once
 
 // to tell the msvs compiler about `isnan`

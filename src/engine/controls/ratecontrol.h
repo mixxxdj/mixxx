@@ -1,6 +1,3 @@
-// ratecontrol.h
-// Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QObject>

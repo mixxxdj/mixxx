@@ -1,6 +1,3 @@
-// encoderopussettings.h
-// Create on August 15th 2017 by Palakis
-
 #pragma once
 
 #include "encoder/encoderrecordingsettings.h"

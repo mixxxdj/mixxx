@@ -1,6 +1,3 @@
-// broadcastsettingsmodel.h
-// Created on August 7th by Stéphane Lepin (Palakis)
-
 #pragma once
 
 #include <QAbstractTableModel>

@@ -1,6 +1,3 @@
-// networkinputstreamworker.h
-// Create on August 11, 2017 by Palakis
-
 #pragma once
 
 #include "util/fifo.h"
