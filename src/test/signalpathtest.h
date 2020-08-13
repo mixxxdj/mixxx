@@ -14,7 +14,6 @@
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "engine/sync/enginesync.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/previewdeck.h"
@@ -28,11 +27,10 @@
 #include "util/types.h"
 #include "waveform/guitick.h"
 
-using ::testing::Return;
-using ::testing::_;
+class EngineSync;
 
-// Subclass of EngineMaster that provides access to the master buffer object
-// for comparison.
+/// Subclass of EngineMaster that provides access to the master buffer object
+/// for comparison.
 class TestEngineMaster : public EngineMaster {
   public:
     TestEngineMaster(UserSettingsPointer _config,
@@ -139,13 +137,18 @@ class BaseSignalPathTest : public MixxxTest {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
+    const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+    TrackPointer getTestTrack() const {
+        return Track::newTemporary(kTrackLocationTest);
+    }
+
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-        while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+        while (pEngineDeck->getEngineBuffer()->getLoadedTrack() != pTrack) {
             QTest::qSleep(1); // millis
         }
     }
@@ -224,6 +227,7 @@ class BaseSignalPathTest : public MixxxTest {
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
     EffectsManager* m_pEffectsManager;
+
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
     Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
@@ -245,10 +249,9 @@ class BaseSignalPathTest : public MixxxTest {
 
 class SignalPathTest : public BaseSignalPathTest {
   protected:
-    SignalPathTest() {
-        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-
+    SignalPathTest()
+            : BaseSignalPathTest() {
+        TrackPointer pTrack = getTestTrack();
         loadTrack(m_pMixerDeck1, pTrack);
         loadTrack(m_pMixerDeck2, pTrack);
         loadTrack(m_pMixerDeck3, pTrack);
