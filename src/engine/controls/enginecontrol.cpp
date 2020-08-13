@@ -15,9 +15,6 @@ EngineControl::EngineControl(const QString& group,
     setCurrentSample(0.0, 0.0, 0.0);
 }
 
-EngineControl::~EngineControl() {
-}
-
 void EngineControl::process(const double dRate,
                            const double dCurrentSample,
                            const int iBufferSize) {

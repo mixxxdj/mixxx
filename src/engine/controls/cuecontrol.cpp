@@ -73,10 +73,8 @@ inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
 
 } // namespace
 
-CueControl::CueControl(const QString& group,
-        UserSettingsPointer pConfig)
+CueControl::CueControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_pConfig(pConfig),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
           m_bPreviewing(false),
           m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),

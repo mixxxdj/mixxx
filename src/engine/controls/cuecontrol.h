@@ -177,8 +177,7 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(const QString& group,
-            UserSettingsPointer pConfig);
+    CueControl(const QString& group, UserSettingsPointer pConfig);
     ~CueControl() override;
 
     void hintReader(HintVector* pHintList) override;
@@ -264,7 +263,6 @@ class CueControl : public EngineControl {
     void setHotcueFocusIndex(int hotcueIndex);
     int getHotcueFocusIndex() const;
 
-    UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     bool m_bPreviewing;
     ControlObject* m_pPlay;
