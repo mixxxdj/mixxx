@@ -1,11 +1,3 @@
-/***************************************************************************
-                           softtakeover.h  -  description
-                           --------------
-    begin                : Thu Mar 17 2011
-    copyright            : (C) 2011 by Sean M. Pappalardo
-    email                : spappalardo@mixxx.org
- ***************************************************************************/
-
 #pragma once
 
 #include <QHash>

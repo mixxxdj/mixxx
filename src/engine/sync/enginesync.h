@@ -1,21 +1,3 @@
-/***************************************************************************
-                          enginesync.h  -  master sync control for
-                          maintaining beatmatching amongst n decks
-                             -------------------
-    begin                : Mon Mar 12 2012
-    copyright            : (C) 2012 by Owen Williams
-    email                : owilliams@mixxx.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #pragma once
 
 #include "preferences/usersettings.h"

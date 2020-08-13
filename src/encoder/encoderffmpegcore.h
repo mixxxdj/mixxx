@@ -1,12 +1,4 @@
-/***************************************************************************
-                     encoderffmpegcore.h  -  core code for ffmpeg encoders
-                             -------------------
-    copyright            : (C) 2012-2013 by Tuukka Pasanen
-                           (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) ???? Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
+// core code for ffmpeg encoders
 #pragma once
 
 #include <encoder/encoderffmpegresample.h>

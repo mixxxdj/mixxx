@@ -1,22 +1,12 @@
-/****************************************************************************
-                   encodervorbis.cpp  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
-/*
-Okay, so this is the vorbis encoder class...
-It's a real mess right now.
-
-When I get around to cleaning things up,
-I'll probably make an Encoder base class,
-so we can easily add in an EncoderLame (or something) too.
-
-A lot of stuff has been stolen from:
-http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
-*/
+// vorbis encoder for mixxx
+// It's a real mess right now.
+//
+// When I get around to cleaning things up,
+// I'll probably make an Encoder base class,
+// so we can easily add in an EncoderLame (or something) too.
+//
+// A lot of stuff has been stolen from:
+// http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 
 #include <stdlib.h> // needed for random num gen
 #include <time.h> // needed for random num gen
@@ -24,7 +14,6 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 
 #include "encoder/encodervorbis.h"
 #include "encoder/encodercallback.h"
-#include "errordialoghandler.h"
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number

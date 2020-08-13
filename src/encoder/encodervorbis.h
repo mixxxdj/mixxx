@@ -1,11 +1,4 @@
-/***************************************************************************
-                     encodervorbis.h  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
+// vorbis encoder for mixxx
 #pragma once
 
 // this also includes vorbis/codec.h

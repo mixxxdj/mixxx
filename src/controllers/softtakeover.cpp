@@ -1,11 +1,3 @@
-/***************************************************************************
-                          softtakeover.cpp  -  description
-                          ----------------
-    begin                : Sat Mar 26 2011
-    copyright            : (C) 2011 by Sean M. Pappalardo
-    email                : spappalardo@mixxx.org
- ***************************************************************************/
-
 #include "controllers/softtakeover.h"
 #include "control/controlpotmeter.h"
 #include "util/math.h"

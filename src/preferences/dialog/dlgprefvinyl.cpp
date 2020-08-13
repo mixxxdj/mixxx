@@ -1,22 +1,3 @@
-/***************************************************************************
-                          dlgprefvinyl.cpp  -  description
-                             -------------------
-    begin                : Thu Oct 23 2006
-    copyright            : (C) 2006 by Stefan Langhammer
-                           (C) 2007 by Albert Santoni
-    email                : stefan.langhammer@9elements.com
-                           gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include <QtDebug>
 
 #include "preferences/dialog/dlgprefvinyl.h"

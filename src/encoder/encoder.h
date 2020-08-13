@@ -1,10 +1,4 @@
-/****************************************************************************
-                   encoder.h  - encoder API for mixxx
-                             -------------------
-    copyright            : (C) 2009 by Phillip Whelan
-    copyright            : (C) 2010 by Tobias Rafreider
-    copyright            : (C) 2017 by Josep Maria Antolín
- ***************************************************************************/
+// encoder API for mixxx
 
 #pragma once
 
