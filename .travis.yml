@@ -94,7 +94,7 @@ jobs:
         - cpack -G DEB
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
 
     - name: OSX/clang/SCons build
@@ -200,7 +200,7 @@ jobs:
         - cpack -G DragNDrop
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
       before_cache:
         # Avoid indefinite cache growth

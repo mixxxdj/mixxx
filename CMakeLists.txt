@@ -1344,7 +1344,6 @@ gtest_add_tests(
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   TEST_LIST testsuite
 )
-set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
 
 # Benchmarking
 add_custom_target(mixxx-benchmark
