@@ -14,7 +14,7 @@ ControlProxy::ControlProxy(const char* g, const char* i, QObject* pParent, Contr
 ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags flags)
         : QObject(pParent),
           m_pControl(nullptr) {
-    DEBUG_ASSERT(key.isValid() || flags.testFlag(ControlFlag::AllowEmptyKey));
+    DEBUG_ASSERT(key.isValid() || flags.testFlag(ControlFlag::AllowInvalidKey));
     m_key = key;
 
     if (m_key.isValid()) {
@@ -27,7 +27,7 @@ void ControlProxy::initialize(ControlFlags flags) {
     DEBUG_ASSERT(!m_pControl);
 
     // Prevent empty keys
-    VERIFY_OR_DEBUG_ASSERT(m_key.isValid() || flags.testFlag(ControlFlag::AllowEmptyKey)) {
+    VERIFY_OR_DEBUG_ASSERT(m_key.isValid() || flags.testFlag(ControlFlag::AllowInvalidKey)) {
         return;
     }
 
