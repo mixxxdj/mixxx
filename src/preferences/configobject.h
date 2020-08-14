@@ -24,12 +24,8 @@ class ConfigKey final {
 
     static ConfigKey parseCommaSeparated(const QString& key);
 
-    bool isEmpty() const {
-        return group.isEmpty() && item.isEmpty();
-    }
-
-    bool isNull() const {
-        return group.isNull() && item.isNull();
+    bool isValid() const {
+        return !group.isEmpty() && !item.isEmpty();
     }
 
     QString group;
