@@ -214,30 +214,30 @@ bool parseSeratoMarkers2(
 TagLib::String dumpSeratoBeatGrid(
         const TrackMetadata& trackMetadata,
         FileType fileType) {
-    const QByteArray utf8Data =
+    const QByteArray seratoBeatGridData =
             trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(fileType);
     return TagLib::String(
-            utf8Data.constData(),
+            seratoBeatGridData.constData(),
             TagLib::String::UTF8);
 }
 
 TagLib::String dumpSeratoMarkers(
         const TrackMetadata& trackMetadata,
         FileType fileType) {
-    const QByteArray utf8Data =
+    const QByteArray seratoMarkersData =
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(fileType);
     return TagLib::String(
-            utf8Data.constData(),
+            seratoMarkersData.constData(),
             TagLib::String::UTF8);
 }
 
 TagLib::String dumpSeratoMarkers2(
         const TrackMetadata& trackMetadata,
         FileType fileType) {
-    const QByteArray utf8Data =
+    const QByteArray seratoMarkers2Data =
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(fileType);
     return TagLib::String(
-            utf8Data.constData(),
+            seratoMarkers2Data.constData(),
             TagLib::String::UTF8);
 }
 
