@@ -257,7 +257,7 @@
             <SetVariable name="ObjectName">RecButton</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
             <SetVariable name="Size">68f,20f</SetVariable>
-            <SetVariable name="ConfigKey">[MacroRecording],recording_toggle</SetVariable>
+            <SetVariable name="ConfigKey">[MacroRecording],record</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Dot with Status highlight -->
@@ -268,7 +268,7 @@
                 <ObjectName>RecDot</ObjectName>
                 <Size>15f,20f</Size>
                 <Connection>
-                  <ConfigKey>[MacroRecording],recording_status</ConfigKey>
+                  <ConfigKey>[MacroRecording],status</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </Label>
@@ -279,7 +279,7 @@
                 <Text>Macro</Text>
                 <Alignment>center</Alignment>
                 <Connection>
-                  <ConfigKey>[MacroRecording],recording_status</ConfigKey>
+                  <ConfigKey>[MacroRecording],status</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </Label>
@@ -291,8 +291,8 @@
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
             <SetVariable name="Size">72f,20f</SetVariable>
-            <SetVariable name="ConfigKey">[MacroRecording],recording_toggle</SetVariable>
-            <SetVariable name="ConfigKeyDisp">[MacroRecording],recording_status</SetVariable>
+            <SetVariable name="ConfigKey">[MacroRecording],record</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[MacroRecording],status</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- /Macro Recording Dot -->
