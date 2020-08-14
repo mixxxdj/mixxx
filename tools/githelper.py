@@ -121,6 +121,7 @@ def get_changed_lines_grouped(
                     grouped_linenumbers.append(
                         (start_linenumber, last_linenumber)
                     )
+                    start_linenumber = None
 
             if start_linenumber is None:
                 start_linenumber = line.number
