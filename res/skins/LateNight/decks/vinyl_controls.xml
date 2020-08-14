@@ -67,7 +67,7 @@
 
               <Template src="skin:/controls/button_2state.xml">
                 <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
-                <SetVariable name="ObjectName">VinylButton</SetVariable>
+                <SetVariable name="ObjectName">PassthroughButton</SetVariable>
                 <SetVariable name="Size">33f,20f</SetVariable>
                 <SetVariable name="state_0_text">&#8202;PASS</SetVariable>
                 <SetVariable name="state_1_text">&#8202;PASS</SetVariable>

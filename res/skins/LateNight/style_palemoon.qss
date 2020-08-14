@@ -1256,6 +1256,7 @@ WLibrary QLabel {
 #VinylButton[displayValue="0"],
 #VinylCueButton[displayValue="0"],
 #VinylModeButton,
+#PassthroughButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"] {
   color: #666;
   }
@@ -1269,6 +1270,7 @@ WLibrary QLabel {
 #VinylButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
 #FxAssignButtons WPushButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -1317,15 +1319,23 @@ WOverview #PassthroughLabel {
 /************** Button styles *************************************************
 *************** Button borders ************************************************/
 
+/* crop shadow on the left border for all buttons in Fx assign and vinyl control grid
+  (except leftmost button in each grid > overwritten in the block below) */
+#VinylModeButton,
+#VinylCueButton[displayValue="0"],
+#PassthroughButton[displayValue="0"],
+#FxAssignButtons WPushButton[displayValue="0"] {
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
+  }
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
-#VinylButton[displayValue="0"],
-#VinylModeButton,
-#VinylCueButton[displayValue="0"],
-#FxAssignButtons WPushButton[displayValue="0"],
+WPushButton#VinylButton[displayValue="0"],
+WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector,
 #DlgMissing > QPushButton:enabled,
 #DlgHidden > QPushButton:enabled,
@@ -1365,14 +1375,21 @@ WEffectSelector,
     border-width: 2px;
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
   }
+
+/* Active */
+#VinylCueButton[displayValue="1"],
+#VinylCueButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
+#FxAssignButtons WPushButton[displayValue="1"] {
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  }
   /*
   WPushButton#BpmTap[displayValue="1"], */
+  WPushButton#VinylButton[displayValue="1"],
+  WPushButton#FxAssignButton1[displayValue="1"],
   #KeyMatchReset[pressed="true"],
-  #VinylButton[displayValue="1"],
-  #VinylButton[displayValue="2"],
-  #VinylCueButton[displayValue="1"],
-  #VinylCueButton[displayValue="2"],
-  #FxAssignButtons WPushButton[displayValue="1"],
   #GuiToggleButton[displayValue="1"],
   #RecFeedback[displayValue="1"],
   #RecFeedback[displayValue="2"],
@@ -1540,6 +1557,7 @@ WPushButton#Reverse[pressed="true"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
 #VinylButton[displayValue="1"],
+#PassthroughButton[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 #DlgAnalysis > QPushButton:checked {
   background-color: #b24c12;

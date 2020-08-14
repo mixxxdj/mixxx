@@ -1056,6 +1056,7 @@ WLibrary QLabel, WLibrary QRadioButton {
 
 #VinylButton[displayValue="0"],
 #VinylModeButton,
+#PassthroughButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
@@ -1065,7 +1066,7 @@ WLibrary QLabel, WLibrary QRadioButton {
   }
 
 #VinylButton[displayValue="1"],
-#VinylButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
 #FxAssignButtons WPushButton[displayValue="1"],
@@ -1147,8 +1148,18 @@ WOverview #PassthroughLabel {
 
 /************** Button styles *************************************************
 *************** Button borders ************************************************/
-#FxAssignButtons WPushButton[displayValue="0"],
-#VinylButton[displayValue="0"], #VinylModeButton, #VinylCueButton[displayValue="0"],
+/* crop shadow on the left border for all buttons in Fx assign and vinyl control grid
+  (except leftmost button in each grid > overwritten in the block below) */
+#VinylModeButton,
+#VinylCueButton[displayValue="0"],
+#PassthroughButton[displayValue="0"],
+#FxAssignButtons WPushButton[displayValue="0"] {
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/classic/buttons/btn_embedded_grid.svg) 2 2 2 1;
+  }
+WPushButton#FxAssignButton1[displayValue="0"],
+#VinylButton[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
@@ -1164,30 +1175,36 @@ WEffectSelector:on {
   border-width: 2px;
   border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-  #FxAssignButtons WPushButton[displayValue="1"],
-  #VinylButton[displayValue="1"],
-  #VinylButton[displayValue="2"],
-  #VinylCueButton[displayValue="1"],
-  #VinylCueButton[displayValue="2"],
-  #KeyMatchReset[pressed="true"],
-  #GuiToggleButton[displayValue="1"],
-  #RecFeedback[displayValue="1"],
-  #RecFeedback[displayValue="2"],
-  #BroadcastButton[displayValue="1"],
-  #BroadcastButton[displayValue="2"],
-  #BroadcastButton[displayValue="3"],
-  #SkinSettingsToggle[displayValue="1"],
-  #DlgMissing > QPushButton:pressed,
-  #DlgHidden > QPushButton:pressed,
-  #DlgAutoDJ > QPushButton:pressed,
-  #DlgRecording > QPushButton:pressed,
-  #DlgAnalysis > QPushButton:pressed,
-  QPushButton#pushButtonAutoDJ:checked,
-  QPushButton#pushButtonRepeatPlaylist:checked,
-  #DlgAnalysis > QPushButton:checked,
-  QPushButton#pushButtonRecording:checked {
-    border-width: 2px;
-    border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
+/* Active */
+#VinylCueButton[displayValue="1"],
+#VinylCueButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
+#FxAssignButtons WPushButton[displayValue="1"] {
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  }
+WPushButton#VinylButton[displayValue="1"],
+WPushButton#FxAssignButton1[displayValue="1"],
+#KeyMatchReset[pressed="true"],
+#GuiToggleButton[displayValue="1"],
+#RecFeedback[displayValue="1"],
+#RecFeedback[displayValue="2"],
+#BroadcastButton[displayValue="1"],
+#BroadcastButton[displayValue="2"],
+#BroadcastButton[displayValue="3"],
+#SkinSettingsToggle[displayValue="1"],
+#DlgMissing > QPushButton:pressed,
+#DlgHidden > QPushButton:pressed,
+#DlgAutoDJ > QPushButton:pressed,
+#DlgRecording > QPushButton:pressed,
+#DlgAnalysis > QPushButton:pressed,
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonRepeatPlaylist:checked,
+#DlgAnalysis > QPushButton:checked,
+QPushButton#pushButtonRecording:checked {
+  border-width: 2px;
+  border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
   #KeyUp {
     border-width: 1px 2px 0px 2px;
@@ -1352,7 +1369,7 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 
 /* Golden */
 #VinylButton[displayValue="1"],
-#VinylButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"],   /* connecting: yellow */
