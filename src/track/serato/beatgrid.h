@@ -99,20 +99,20 @@ class SeratoBeatGrid final {
               m_footer(0) {
     }
 
+    /// Parse a binary Serato repesentation of the beatgrid data from a
+    /// `QByteArray` and write the results to the `SeratoBeatGrid` instance.
+    /// The `fileType` parameter determines the exact format of the data being
+    /// used.
     static bool parse(
             SeratoBeatGrid* seratoBeatGrid,
             const QByteArray& data,
             taglib::FileType fileType);
-    static bool parseID3(
-            SeratoBeatGrid* seratoBeatGrid,
-            const QByteArray& data);
-    static bool parseBase64Encoded(
-            SeratoBeatGrid* seratoBeatGrid,
-            const QByteArray& base64EncodedData);
 
+    /// Create a binary Serato repesentation of the beatgrid data suitable for
+    /// `fileType` and dump it into a `QByteArray`. The content of that byte
+    /// array can be used for round-trip tests or written to the appropriate
+    /// tag to make it accessible to Serato.
     QByteArray dump(taglib::FileType fileType) const;
-    QByteArray dumpID3() const;
-    QByteArray dumpBase64Encoded() const;
 
     bool isEmpty() const {
         return !m_pTerminalMarker && m_nonTerminalMarkers.isEmpty();
@@ -142,6 +142,16 @@ class SeratoBeatGrid final {
     QList<double> getBeatPositionsMillis(double trackLengthMillis, double timingOffsetMillis) const;
 
   private:
+    static bool parseID3(
+            SeratoBeatGrid* seratoBeatGrid,
+            const QByteArray& data);
+    static bool parseBase64Encoded(
+            SeratoBeatGrid* seratoBeatGrid,
+            const QByteArray& base64EncodedData);
+
+    QByteArray dumpID3() const;
+    QByteArray dumpBase64Encoded() const;
+
     SeratoBeatGridTerminalMarkerPointer m_pTerminalMarker;
     QList<SeratoBeatGridNonTerminalMarkerPointer> m_nonTerminalMarkers;
     quint8 m_footer;
