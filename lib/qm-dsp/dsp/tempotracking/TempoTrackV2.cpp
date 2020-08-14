@@ -117,7 +117,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     // accordingly.
     // note: 60*44100/512 is a magic number
     // this might (will?) break if a user specifies a different frame rate for the onset detection function
-    double rayparam = (60*44100/512)/120;
+    double rayparam = (60*m_rate/m_increment)/120;
 
     // make rayleigh weighting curve
     d_vec_t wv(wv_len);
@@ -200,7 +200,7 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
     }
 
     // now apply comb filtering
-    int numelem = 12;
+    int numelem = 4;
 
     for (int i = 2; i < rcf_len; i++) { // max beat period
         for (int a = 1; a <= numelem; a++) { // number of comb elements

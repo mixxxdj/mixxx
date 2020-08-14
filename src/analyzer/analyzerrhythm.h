@@ -68,7 +68,7 @@ class AnalyzerRhythm : public Analyzer {
 
     // downbeats and meter methods
     std::vector<double> computeBeatsSpectralDifference(std::vector<double>& beats);
-    std::tuple<int, int> computeMeter(std::vector<double>& beatsSD);
+    void computeMeter();
     // tempogram methods
     void setTempogramParameters();
     void computeTempogramByDFT();
@@ -111,5 +111,6 @@ class AnalyzerRhythm : public Analyzer {
     float m_tempogramInputSampleRate;
     std::vector<QMap<double, double>> m_tempogramDFT;
     std::vector<QMap<double, double>> m_tempogramACF;
+    std::vector<QMap<double, double>> m_metergram;
     
 };
