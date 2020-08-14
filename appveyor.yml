@@ -118,7 +118,6 @@ for:
       -DBULK=ON
       -DFFMPEG=ON
       -DHID=ON
-      -DKEYFINDER=ON
       -DLILV=ON
       -DLOCALECOMPARE=ON
       -DMAD=ON
