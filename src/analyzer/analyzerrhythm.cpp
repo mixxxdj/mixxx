@@ -32,8 +32,8 @@ constexpr float kNoveltyCurveCompressionConstant = 400.0;
 constexpr int kTempogramLog2WindowLength = 12;
 constexpr int kTempogramLog2HopSize = 8;
 constexpr int kTempogramLog2FftLength = 12;
-constexpr float kNoveltyCurveHop = 512.0;
-constexpr float kNoveltyCurveWindow = 1024.0;
+constexpr int kNoveltyCurveHop = 512;
+constexpr int kNoveltyCurveWindow = 1024;
 
 constexpr double kThressholDecay = 0.04;
 constexpr double kThressholRecover = 0.5;
@@ -63,7 +63,7 @@ AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
           m_iCurrentSample(0),
           m_iMinBpm(0),
           m_iMaxBpm(9999),
-          m_noveltyCurveMinV(pow(10,kNoveltyCurveMinDB/20.0)) {
+          m_noveltyCurveMinV(pow(10, kNoveltyCurveMinDB / 20.0)) {
 }
 
 inline int AnalyzerRhythm::stepSize() {
@@ -88,7 +88,7 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
     int factor = MathUtilities::nextPowerOfTwo(m_iSampleRate / 3000);
     m_downbeat = std::make_unique<DownBeat>(
             m_iSampleRate, factor, stepSize());
-    
+
     m_fft = std::make_unique<FFTReal>(windowSize());
     m_fftRealOut = new double[windowSize()];
     m_fftImagOut = new double[windowSize()];
@@ -96,7 +96,7 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
     m_window = new Window<double>(HammingWindow, windowSize());
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(stepSize(), windowSize()));
-    
+
     qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << stepSize();
 
     m_onsetsProcessor.initialize(
@@ -115,34 +115,43 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
                 return true;
             });
 
-    m_noveltyCurveProcessor.initialize(
-        kNoveltyCurveWindow, kNoveltyCurveHop, [this](double* pWindow, size_t) {
-            int n = kNoveltyCurveWindow;
-            double *in = pWindow;
-            //calculate magnitude of FrequencyDomain input
-            std::vector<float> fftCoefficients;
-            for (int i = 0; i < n; i++){
-                float magnitude = in[i];
-                magnitude = magnitude > m_noveltyCurveMinV ? magnitude : m_noveltyCurveMinV;
-                fftCoefficients.push_back(magnitude);
-            }
-            m_spectrogram.push_back(fftCoefficients);
-            return true;
-        });
-    
+    m_noveltyfft = std::make_unique<FFTReal>(kNoveltyCurveWindow);
+    m_noveltyfftRealOut = new double[kNoveltyCurveWindow];
+    m_noveltyfftImagOut = new double[kNoveltyCurveWindow];
+    m_noveltyWindow = new Window<double>(HammingWindow, kNoveltyCurveWindow);
+
+    m_noveltyCurveProcessor.initialize(kNoveltyCurveWindow,
+            kNoveltyCurveHop,
+            [this](double* pWindow, size_t) {
+                m_noveltyWindow->cut(pWindow);
+                m_noveltyfft->forward(pWindow, m_noveltyfftRealOut, m_noveltyfftImagOut);
+                //calculate magnitude of FrequencyDomain input
+                std::vector<float> fftCoefficients;
+                for (int i = 0; i < kNoveltyCurveWindow / 2 + 1; i++) {
+                    float magnitude = sqrt(
+                            m_noveltyfftRealOut[i] * m_noveltyfftRealOut[i] +
+                            m_noveltyfftImagOut[i] * m_noveltyfftImagOut[i]);
+                    magnitude = magnitude > m_noveltyCurveMinV
+                            ? magnitude
+                            : m_noveltyCurveMinV;
+                    fftCoefficients.push_back(magnitude);
+                }
+                m_spectrogram.push_back(fftCoefficients);
+                return true;
+            });
+
     return true;
 }
 
 void AnalyzerRhythm::setTempogramParameters() {
-    m_tempogramWindowLength = pow(2,kTempogramLog2WindowLength);
-    m_tempogramHopSize = pow(2,kTempogramLog2HopSize);
-    m_tempogramFftLength = pow(2,kTempogramLog2FftLength);
+    m_tempogramWindowLength = pow(2, kTempogramLog2WindowLength);
+    m_tempogramHopSize = pow(2, kTempogramLog2HopSize);
+    m_tempogramFftLength = pow(2, kTempogramLog2FftLength);
 
     m_tempogramMinBPM = 11;
     m_tempogramMaxBPM = 68;
     m_tempogramInputSampleRate = m_iSampleRate / kNoveltyCurveHop;
 }
-
 
 bool AnalyzerRhythm::shouldAnalyze(TrackPointer pTrack) const {
     bool bpmLock = pTrack->isBpmLocked();
@@ -154,7 +163,8 @@ bool AnalyzerRhythm::shouldAnalyze(TrackPointer pTrack) const {
     if (!pBeats) {
         return true;
     } else if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
-        qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
+        qDebug() << "Re-analyzing track with invalid BPM despite preference "
+                    "settings.";
         return true;
     } else {
         qDebug() << "Track already has beats, and won't re-analyze";
@@ -170,7 +180,8 @@ bool AnalyzerRhythm::processSamples(const CSAMPLE* pIn, const int iLen) {
     }
     bool onsetReturn = m_onsetsProcessor.processStereoSamples(pIn, iLen);
     bool downbeatsReturn = m_downbeatsProcessor.processStereoSamples(pIn, iLen);
-    bool noveltyCurvReturn = m_noveltyCurveProcessor.processStereoSamples(pIn, iLen);
+    bool noveltyCurvReturn =
+            m_noveltyCurveProcessor.processStereoSamples(pIn, iLen);
     return onsetReturn & downbeatsReturn & noveltyCurvReturn;
 }
 
@@ -186,14 +197,15 @@ void AnalyzerRhythm::cleanup() {
     m_fft.reset();
     m_downbeat.reset();
     delete m_window;
-    delete [] m_fftImagOut;
-    delete [] m_fftRealOut;
+    delete[] m_fftImagOut;
+    delete[] m_fftRealOut;
 }
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
     std::vector<double> beats;
     int nonZeroCount = m_detectionResults.size();
-    while (nonZeroCount > 0 && m_detectionResults[nonZeroCount - 1].t.complexSpecDiff <= 0.0) {
+    while (nonZeroCount > 0 &&
+            m_detectionResults[nonZeroCount - 1].t.complexSpecDiff <= 0.0) {
         --nonZeroCount;
     }
 
@@ -209,16 +221,15 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
     for (int i = 2; i < nonZeroCount; ++i) {
         noteOnsets.push_back(m_detectionResults[i].t.complexSpecDiff);
         beatPeriod.push_back(0.0);
-        
     }
-    
+
     TempoTrackV2 tt(m_iSampleRate, stepSize());
     tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
     //qDebug() << beatPeriod.size() << tempi.size();
     //qDebug() << tempi;
 
     tt.calculateBeats(noteOnsets, beatPeriod, beats);
-        //qDebug() << allBeats[dfType].size();
+    //qDebug() << allBeats[dfType].size();
     // Let's compare all beats positions and use the "best" one
     /*
     double maxAgreement = 0.0;
@@ -247,10 +258,24 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
         }
     }
     */
-   for (size_t i = 0; i < beats.size(); ++i) {
+
+    /*
+    for (size_t i = 0; i < beats.size(); ++i) {
         double result = (beats.at(i) * stepSize()) - (stepSize() / mixxx::kEngineChannelCount);
         m_resultBeats.push_back(result);
     }
+
+    */
+
+    int i = 1;
+    for (const auto& x : m_noveltyCurve) {
+        if (x) {
+            double result = i * kNoveltyCurveHop;
+            m_resultBeats.push_back(result);
+        }
+        i++;
+    }
+
     return beats;
 }
 
@@ -305,11 +330,13 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
             if (max == result) {
                 // Beat found
                 beat = threshold;
-                threshold = threshold * (1 - kThressholRecover) + result * kThressholRecover;
+                threshold = threshold * (1 - kThressholRecover) +
+                        result * kThressholRecover;
                 allBeats.push_back(i);
             }
         }
-        threshold = threshold * (1 - kThressholDecay) + result * kThressholDecay;
+        threshold =
+                threshold * (1 - kThressholDecay) + result * kThressholDecay;
         /*
         qDebug() << i
                  << m_detectionResults[i].results[3]
@@ -321,9 +348,10 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
     return allBeats;
 }
 
-std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<double> &beats) {
+std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(
+        std::vector<double>& beats) {
     size_t downLength = 0;
-    const float *downsampled = m_downbeat->getBufferedAudio(downLength);
+    const float* downsampled = m_downbeat->getBufferedAudio(downLength);
 
     std::vector<int> downbeats;
     m_downbeat->findDownBeats(downsampled, downLength, beats, m_downbeats);
@@ -333,13 +361,15 @@ std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<d
 }
 
 void AnalyzerRhythm::computeMeter() {
-    auto [tempoList, tempoFrequency] = computeRawTemposAndFrequency(m_resultBeats);
+    auto [tempoList, tempoFrequency] =
+            computeRawTemposAndFrequency(m_resultBeats);
     int blockCounter = 0;
     double tempoSum = 0;
     double tempoCounter = 0.0;
-    for (int i = 0; i < m_resultBeats.size(); i+=1) {
+    for (int i = 0; i < m_resultBeats.size(); i += 1) {
         double beatFramePos = m_resultBeats[i];
-        double blockEnd = m_tempogramHopSize * (blockCounter + 1) * kNoveltyCurveHop;
+        double blockEnd =
+                m_tempogramHopSize * (blockCounter + 1) * kNoveltyCurveHop;
         tempoSum += tempoList[i];
         tempoCounter += 1.0;
         if (blockEnd < beatFramePos) {
@@ -349,28 +379,31 @@ void AnalyzerRhythm::computeMeter() {
             QMap<int, double> pulsesLenghtsAndWeights;
             auto allPulses = m_metergram[blockCounter].keys();
             for (auto pulse : allPulses) {
-                double ratio = localTempo/pulse;
+                double ratio = localTempo / pulse;
                 double beatLenghtOfPulse;
                 double ratioDecimals = std::modf(ratio, &beatLenghtOfPulse);
                 if (ratioDecimals < kCloseToIntTolerance) {
-                    pulsesLenghtsAndWeights[static_cast<int>(beatLenghtOfPulse)]
-                            += m_metergram[blockCounter][pulse];
+                    pulsesLenghtsAndWeights[static_cast<int>(
+                            beatLenghtOfPulse)] +=
+                            m_metergram[blockCounter][pulse];
                 }
             }
             std::vector<int> metricalHierchy;
             double highestWeight = 0.0;
             //combine integer pulses into metrical hieranchies
             auto metricalPulses = pulsesLenghtsAndWeights.keys();
-            for (int j = 0; j < metricalPulses.size(); j+=1) {
+            for (int j = 0; j < metricalPulses.size(); j += 1) {
                 std::vector<int> metricalHierchyCanditade;
                 double metricalHierchyCanditadeWeight = 0.0;
                 metricalHierchyCanditade.push_back(metricalPulses[j]);
                 metricalHierchyCanditadeWeight += pulsesLenghtsAndWeights[metricalPulses[j]];
-                for (int k = 0; k < metricalPulses.size(); k+=1) {
-                    if (j == k) {continue;}
+                for (int k = 0; k < metricalPulses.size(); k += 1) {
+                    if (j == k) {
+                        continue;
+                    }
                     int size = metricalHierchyCanditade.size();
                     bool intergerDivisorOfAllUnits = false;
-                    for (int ij = 0; ij < size; ij+=1) {
+                    for (int ij = 0; ij < size; ij += 1) {
                         if (metricalPulses[k] % metricalHierchyCanditade[ij] != 0) {
                             intergerDivisorOfAllUnits = false;
                             break;
@@ -430,11 +463,14 @@ void AnalyzerRhythm::computeMeter() {
     */
 }
 
-
-
 int AnalyzerRhythm::computeNoveltyCurve() {
     NoveltyCurveProcessor nc(static_cast<float>(m_iSampleRate), kNoveltyCurveWindow, kNoveltyCurveCompressionConstant);
     m_noveltyCurve = nc.spectrogramToNoveltyCurve(m_spectrogram);
+
+    int i = 0;
+    for (const auto& x : m_noveltyCurve) {
+        qDebug() << i++ << x << "nnnnnnnnn";
+    }
     return m_spectrogram.size();
 }
 

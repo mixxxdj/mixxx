@@ -96,9 +96,14 @@ class AnalyzerRhythm : public Analyzer {
     mixxx::DownmixAndOverlapHelper m_noveltyCurveProcessor;
     std::vector<DFresults> m_detectionResults;
     std::unique_ptr<FFTReal> m_fft;
-    Window<double> *m_window;
-    double *m_fftRealOut;
-    double *m_fftImagOut;
+    std::unique_ptr<FFTReal> m_noveltyfft;
+    Window<double>* m_window;
+    Window<double>* m_noveltyWindow;
+    double* m_fftRealOut;
+    double* m_noveltyfftRealOut;
+    double* m_fftImagOut;
+    double* m_noveltyfftImagOut;
+    double* m_noveltyfftMagnitude;
     // tempogram
     Spectrogram m_spectrogram;
     float m_noveltyCurveMinV;
