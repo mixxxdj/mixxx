@@ -162,6 +162,13 @@ private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
     QMap<WaveformMarkPointer, int> m_markPositions;
+    // draw play position indicator triangles
+    void drawPlayPosmarker(QPainter* painter);
+    void drawTriangle(QPainter* painter,
+            QBrush fillColor,
+            QPointF p1,
+            QPointF p2,
+            QPointF p3);
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

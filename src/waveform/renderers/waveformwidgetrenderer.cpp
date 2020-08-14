@@ -1,13 +1,15 @@
-#include <QPainter>
-
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "widget/wwidget.h"
+
+#include <QPainter>
+#include <QPainterPath>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "waveform/visualplayposition.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
+#include "waveform/visualplayposition.h"
+#include "waveform/waveform.h"
+#include "widget/wwidget.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
 const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;
@@ -73,7 +75,6 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 }
 
 bool WaveformWidgetRenderer::init() {
-
     //qDebug() << "WaveformWidgetRenderer::init, m_group=" << m_group;
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
@@ -122,7 +123,6 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_audioSamplePerPixel = 0.0;
     }
 
-
     double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
@@ -163,7 +163,6 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 }
 
 void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
-
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_lastSystemFrameTime = m_timer->restart().toIntegerNanos();
 #endif
@@ -186,24 +185,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
             //qDebug() << i << " e " << timer.restart().formatNanosWithUnit();
         }
 
-        const int lineX = m_width * m_playMarkerPosition;
-        const int lineY = m_height * m_playMarkerPosition;
-
-        painter->setPen(m_colors.getPlayPosColor());
-        if (m_orientation == Qt::Horizontal) {
-            painter->drawLine(lineX, 0, lineX, m_height);
-        } else {
-            painter->drawLine(0, lineY, m_width, lineY);
-        }
-        painter->setOpacity(0.5);
-        painter->setPen(m_colors.getBgColor());
-        if (m_orientation == Qt::Horizontal) {
-            painter->drawLine(lineX + 1, 0, lineX + 1, m_height);
-            painter->drawLine(lineX - 1, 0, lineX - 1, m_height);
-        } else {
-            painter->drawLine(0, lineY + 1, m_width, lineY + 1);
-            painter->drawLine(0, lineY - 1, m_width, lineY - 1);
-        }
+        drawPlayPosmarker(painter);
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -215,31 +197,102 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     }
 
     // hud debug display
-    painter->drawText(1,12,
-                      QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
-                      QString::number(frameMax).rightJustified(2,'0') + ")" +
-                      QString::number(m_lastSystemFrameTime) + "(" +
-                      QString::number(systemMax) + ")" +
-                      QString::number(realtimeError));
+    painter->drawText(1,
+            12,
+            QString::number(m_lastFrameTime).rightJustified(2, '0') + "(" +
+                    QString::number(frameMax).rightJustified(2, '0') + ")" +
+                    QString::number(m_lastSystemFrameTime) + "(" +
+                    QString::number(systemMax) + ")" +
+                    QString::number(realtimeError));
 
-    painter->drawText(1,m_height-1,
-                      QString::number(m_playPos) + " [" +
-                      QString::number(m_firstDisplayedPosition) + "-" +
-                      QString::number(m_lastDisplayedPosition) + "]" +
-                      QString::number(m_rate) + " | " +
-                      QString::number(m_gain) + " | " +
-                      QString::number(m_rateDir) + " | " +
-                      QString::number(m_zoomFactor));
+    painter->drawText(1,
+            m_height - 1,
+            QString::number(m_playPos) + " [" +
+                    QString::number(m_firstDisplayedPosition) + "-" +
+                    QString::number(m_lastDisplayedPosition) + "]" +
+                    QString::number(m_rate) + " | " + QString::number(m_gain) +
+                    " | " + QString::number(m_rateDir) + " | " +
+                    QString::number(m_zoomFactor));
 
     m_lastFrameTime = m_timer->restart().toIntegerNanos();
 
     ++currentFrame;
-    currentFrame = currentFrame%100;
+    currentFrame = currentFrame % 100;
     m_lastSystemFramesTime[currentFrame] = m_lastSystemFrameTime;
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
 #endif
 
     //qDebug() << "draw() end" << timer.restart().formatNanosWithUnit();
+}
+
+void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
+    const int lineX = m_width * m_playMarkerPosition;
+    const int lineY = m_height * m_playMarkerPosition;
+
+    // draw dim outlines to increase playpos/waveform contrast
+    painter->setOpacity(0.5);
+    painter->setPen(m_colors.getBgColor());
+    QBrush bgFill = m_colors.getBgColor();
+    if (m_orientation == Qt::Horizontal) {
+        // lines next to playpos
+        // Note: don't draw lines where they would overlap the triangles,
+        // otherwise both translucent strokes add up to a darker tone.
+        painter->drawLine(lineX + 1, 4, lineX + 1, m_height);
+        painter->drawLine(lineX - 1, 4, lineX - 1, m_height);
+
+        // triangle at top edge
+        // Increase line/waveform contrast
+        painter->setOpacity(0.8);
+        QPointF t0 = QPointF(lineX - 5, 0);
+        QPointF t1 = QPointF(lineX + 5, 0);
+        QPointF t2 = QPointF(lineX, 6);
+        drawTriangle(painter, bgFill, t0, t1, t2);
+    } else { // vertical waveforms
+        painter->drawLine(4, lineY + 1, m_width, lineY + 1);
+        painter->drawLine(4, lineY - 1, m_width, lineY - 1);
+        // triangle at left edge
+        painter->setOpacity(0.8);
+        QPointF l0 = QPointF(0, lineY - 5.01);
+        QPointF l1 = QPointF(0, lineY + 4.99);
+        QPointF l2 = QPointF(6, lineY);
+        drawTriangle(painter, bgFill, l0, l1, l2);
+    }
+
+    // draw colored play position indicators
+    painter->setOpacity(1.0);
+    painter->setPen(m_colors.getPlayPosColor());
+    QBrush fgFill = m_colors.getPlayPosColor();
+    if (m_orientation == Qt::Horizontal) {
+        // play position line
+        painter->drawLine(lineX, 0, lineX, m_height);
+        // triangle at top edge
+        QPointF t0 = QPointF(lineX - 4, 0);
+        QPointF t1 = QPointF(lineX + 4, 0);
+        QPointF t2 = QPointF(lineX, 5);
+        drawTriangle(painter, fgFill, t0, t1, t2);
+    } else {
+        // vertical waveforms
+        painter->drawLine(0, lineY, m_width, lineY);
+        // triangle at left edge
+        QPointF l0 = QPointF(0, lineY - 4.01);
+        QPointF l1 = QPointF(0, lineY + 4);
+        QPointF l2 = QPointF(5, lineY);
+        drawTriangle(painter, fgFill, l0, l1, l2);
+    }
+}
+
+void WaveformWidgetRenderer::drawTriangle(QPainter* painter,
+        QBrush fillColor,
+        QPointF p0,
+        QPointF p1,
+        QPointF p2) {
+    QPainterPath triangle;
+    painter->setPen(Qt::NoPen);
+    triangle.moveTo(p0); // ° base 1
+    triangle.lineTo(p1); // > base 2
+    triangle.lineTo(p2); // > peak
+    triangle.lineTo(p0); // > base 1
+    painter->fillPath(triangle, fillColor);
 }
 
 void WaveformWidgetRenderer::resize(int width, int height, float devicePixelRatio) {
