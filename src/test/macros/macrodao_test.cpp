@@ -22,8 +22,9 @@ TEST_F(MacroDAOTest, SaveAndLoadMacro) {
 
     EXPECT_EQ(m_macroDAO.loadMacros(TrackId(2)).size(), 0);
 
-    QList<Macro> loaded = m_macroDAO.loadMacros(track);
+    QMap<int, Macro> loaded = m_macroDAO.loadMacros(track);
     ASSERT_EQ(loaded.size(), 1);
+    EXPECT_EQ(loaded.firstKey(), 1);
 
     Macro macro = loaded.first();
     EXPECT_EQ(macro.m_state.testFlag(Macro::StateFlag::Enabled), false);
@@ -33,5 +34,9 @@ TEST_F(MacroDAOTest, SaveAndLoadMacro) {
     EXPECT_EQ(macro.m_label, "Test");
 
     m_macroDAO.saveMacro(track, macro);
-    EXPECT_EQ(m_macroDAO.loadMacros(track).size(), 2);
+    loaded = m_macroDAO.loadMacros(track);
+    EXPECT_EQ(loaded.size(), 2);
+    auto expectedKeys = QList<int>{1, 2};
+    EXPECT_EQ(loaded.keys(), expectedKeys);
+    EXPECT_EQ(m_macroDAO.getFreeNumber(track), 3);
 }

@@ -49,7 +49,13 @@ class Macro {
 
     Macro(QVector<MacroAction> actions, QString label, State state);
 
-    const QVector<MacroAction> m_actions;
+    void operator=(const Macro& other) {
+        m_actions = other.m_actions;
+        m_label = other.m_label;
+        m_state = other.m_state;
+    }
+
+    QVector<MacroAction> m_actions;
     QString m_label;
     State m_state;
 };

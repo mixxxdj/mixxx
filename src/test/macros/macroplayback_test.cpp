@@ -10,7 +10,7 @@ TEST_F(MacroPlaybackTest, Playback) {
     Macro macro(actions, "Test1", Macro::StateFlag::Enabled);
 
     TrackPointer pTrack = getTestTrack();
-    pTrack->setMacros(QList{macro});
+    pTrack->setMacros({{1, macro}});
 
     loadTrack(m_pMixerDeck1, pTrack);
     EngineBuffer* pEngineBuffer = m_pMixerDeck1->getEngineDeck()->getEngineBuffer();

@@ -3,8 +3,7 @@
 #include <QtConcurrent>
 
 TEST(MacrosTest, SerializeMacroActions) {
-    QVector<MacroAction> actions;
-    actions.append(MacroAction(0, 1));
+    QVector<MacroAction> actions{MacroAction(0, 1)};
     ASSERT_EQ(actions.length(), 1);
 
     QString filename(QDir::currentPath() % "/src/test/macros/macro_proto");
@@ -50,7 +49,7 @@ TEST(MacroRecordingTest, RecordCueJump) {
     recorder.startRecording();
     recorder.notifyCueJump(&handle, s_action.position, s_action.target);
     EXPECT_EQ(recorder.getActiveChannel()->handle(), handle.handle());
-    ::checkRecordedAction(&recorder);
+    checkRecordedAction(&recorder);
 
     auto handle2 = factory.getOrCreateHandle("test-two");
     recorder.notifyCueJump(&handle2, 0, 2);
@@ -60,7 +59,7 @@ TEST(MacroRecordingTest, RecordCueJump) {
 
     MacroAction otherAction(3, 5);
     recorder.notifyCueJump(&handle, otherAction.position, otherAction.target);
-    ::checkRecordedAction(&recorder, otherAction);
+    checkRecordedAction(&recorder, otherAction);
 
     recorder.pollRecordingStart();
     EXPECT_EQ(ControlProxy(kConfigGroup, "status").get(),

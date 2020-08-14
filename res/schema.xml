@@ -512,6 +512,7 @@ METADATA
       CREATE TABLE IF NOT EXISTS macros (
         id INTEGER PRIMARY KEY,
         track_id INTEGER NOT NULL REFERENCES library(id),
+        number INTEGER,
         label TEXT,
         state INTEGER,
         content BLOB);
