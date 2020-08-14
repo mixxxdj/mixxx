@@ -380,12 +380,11 @@ class Track : public QObject {
     void slotBeatsUpdated();
 
   private:
-    // Set a unique identifier for the track. Only used by
-    // GlobalTrackCacheResolver!
+    /// Set a unique identifier for the track.
+    /// Only used by GlobalTrackCacheResolver when the track is saved to db for the first time
     void initId(TrackId id);
-    // Reset the unique identifier after purged from library
-    // which undos a previous add. Only used by
-    // GlobalTrackCacheResolver!
+    /// Remove the TrackId.
+    /// Only used by GlobalTrackCacheResolver when the track is purged from the library
     void resetId();
 
     void relocate(
