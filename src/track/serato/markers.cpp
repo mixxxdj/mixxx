@@ -13,6 +13,7 @@ constexpr int kNumEntries = 14;
 constexpr int kLoopEntryStartIndex = 5;
 constexpr int kEntrySizeID3 = 22;
 constexpr int kEntrySizeMP4 = 19;
+constexpr quint32 kNoPosition = 0x7F7F7F7F;
 constexpr quint16 kVersion = 0x0205;
 
 constexpr char kSeratoMarkersBase64EncodedPrefixStr[] =
@@ -85,11 +86,11 @@ QByteArray SeratoMarkersEntry::dumpID3() const {
     stream << static_cast<quint8>((m_hasStartPosition ? 0x00 : 0x7F))
            << static_cast<quint32>(
                       (m_hasStartPosition ? serato32fromUint24(m_startPosition)
-                                          : 0x7F7F7F7F))
+                                          : kNoPosition))
            << static_cast<quint8>((m_hasEndPosition ? 0x00 : 0x7F))
            << static_cast<quint32>(
                       (m_hasEndPosition ? serato32fromUint24(m_endPosition)
-                                        : 0x7F7F7F7F));
+                                        : kNoPosition));
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
     stream << serato32fromUint24(static_cast<quint32>(m_color))
            << static_cast<quint8>(m_type) << static_cast<quint8>(m_isLocked);
@@ -146,12 +147,15 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     // Parse Start Position
     bool hasStartPosition = (startPositionStatus != 0x7F);
-    quint32 startPosition = 0x7F7F7F7F;
+    quint32 startPosition = kNoPosition;
     if (!hasStartPosition) {
         // Start position not set
-        if (startPositionSerato32 != 0x7F7F7F7F) {
+        if (startPositionSerato32 != kNoPosition) {
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                              << "startPosition != 0x7F7F7F7F";
+                              << "startPosition"
+                              << startPosition
+                              << "!="
+                              << QString::number(kNoPosition, 16);
 
             return nullptr;
         }
@@ -161,14 +165,15 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     // Parse End Position
     bool hasEndPosition = (endPositionStatus != 0x7F);
-    quint32 endPosition = 0x7F7F7F7F;
+    quint32 endPosition = kNoPosition;
     if (!hasEndPosition) {
         // End position not set
-        if (endPositionSerato32 != 0x7F7F7F7F) {
+        if (endPositionSerato32 != kNoPosition) {
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
                               << "endPosition"
                               << endPositionSerato32
-                              << "!= 0x7F7F7F7F";
+                              << "!="
+                              << QString::number(kNoPosition, 16);
 
             return nullptr;
         }
