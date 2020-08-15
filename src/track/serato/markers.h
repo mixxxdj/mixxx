@@ -128,10 +128,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
 /// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md
 class SeratoMarkers final {
   public:
-    SeratoMarkers() = default;
-    explicit SeratoMarkers(QList<SeratoMarkersEntryPointer> entries)
-            : m_entries(std::move(entries)) {
-    }
+    SeratoMarkers(){};
 
     /// Parse a binary Serato repesentation of the "Markers_" data from a
     /// `QByteArray` and write the results to the `SeratoMarkers` instance.

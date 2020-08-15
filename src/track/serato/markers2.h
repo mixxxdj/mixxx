@@ -379,11 +379,6 @@ class SeratoMarkers2 final {
     SeratoMarkers2()
             : m_allocatedSize(0) {
     }
-    explicit SeratoMarkers2(
-            QList<std::shared_ptr<SeratoMarkers2Entry>> entries)
-            : m_allocatedSize(0),
-              m_entries(std::move(entries)) {
-    }
 
     /// Parse a binary Serato repesentation of the "Markers2" data from a
     /// `QByteArray` and write the results to the `SeratoMarkers2` instance.
