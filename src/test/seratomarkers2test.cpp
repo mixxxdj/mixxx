@@ -424,7 +424,7 @@ TEST_F(SeratoMarkers2Test, ParseEmptyDataMP4) {
 
 TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedXiph) {
     // No cue points from a FLAC file
-    const char* referenceData =
+    constexpr char referenceData[] =
             "YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtAABTZXJhdG8gTWFya2VyczIAAQFBUUZEVDB4UFVn\n"
             "QUFBQUFFQVAvLy8wSlFUVXhQUTBzQUFBQUFBUUFBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
@@ -436,12 +436,8 @@ TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedXiph) {
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
             "AAAAAAAAAAAAAAAAAAAAAA";
-    const auto inputData = QByteArray(referenceData);
-    mixxx::SeratoMarkers2 seratoMarkers2;
-    EXPECT_TRUE(mixxx::SeratoMarkers2::parseBase64Encoded(&seratoMarkers2, inputData));
-    const auto outputData = seratoMarkers2.dumpBase64Encoded();
-    EXPECT_EQ(inputData.size(), outputData.size());
-    EXPECT_EQ(inputData, outputData);
+    const auto inputData = QByteArray::fromRawData(referenceData, sizeof(referenceData) - 1);
+    EXPECT_TRUE(parseMarkers2Data(inputData, true, mixxx::taglib::FileType::FLAC));
 }
 
 } // namespace
