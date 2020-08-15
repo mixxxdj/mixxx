@@ -1504,8 +1504,8 @@ void Track::updateAudioPropertiesFromStream(
     auto bpmValue = mixxx::Bpm::kValueUndefined;
 
     if (importBeats) {
-        kLogger.debug()
-                << "Finishing deferred import of beats";
+        kLogger.debug() << "Finishing deferred import of beats because stream "
+                           "audio properties are available now";
         importBeats = importPendingBeatsWhileLocked();
         if (m_pBeats) {
             bpmValue = m_pBeats->getBpm();
@@ -1517,7 +1517,7 @@ void Track::updateAudioPropertiesFromStream(
         kLogger.debug()
                 << "Finishing deferred import of"
                 << m_pCueInfoImporterPending->size()
-                << "cue(s)";
+                << "cue(s) because stream audio properties are available now";
         importCueInfos = importPendingCueInfosWhileLocked();
     }
 
