@@ -444,8 +444,8 @@ class SeratoMarkers2 final {
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& base64EncodedData);
     /// The FLAC format is basically identical to MP4, but Serato seems to
-    /// randomly modify the last byte of the base64 encoding. This this will
-    /// store that byte so that we can roundtrip losslessly.
+    /// randomly modify the last byte of the base64 encoding. This will store
+    /// that byte so that we can roundtrip losslessly.
     static bool parseFLAC(
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& base64EncodedData);
