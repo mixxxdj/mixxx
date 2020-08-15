@@ -141,17 +141,12 @@ MC7000.padColor = {
 /* DECK INITIALIZATION */
 MC7000.init = function() {
 
-    // set default Master Volume to 85% to give a little head room for mixing
-    // engine.setValue("[Master]", "gain", 0.85);
+    var i;
 
-    // The SysEx message to send to the controller to force the midi controller
-    // to send the status of every item on the control surface.
-    var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
-
-    // After midi controller receive this Outbound Message request SysEx
-    // Message, midi controller will send the status of every item on the
-    // control surface. (Mixxx will be initialized with current values)
-    midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+    // Softtakeover for Pitch Faders
+    for (i = 1; i <= 4; i++) {
+        engine.softTakeover("[Channel" + i + "]", "rate", true);
+    }
 
     // VU meters
     engine.makeConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
@@ -176,7 +171,7 @@ MC7000.init = function() {
     midi.sendShortMsg(0x93, 0x07, MC7000.isVinylMode ? 0x7F: 0x01);
 
     // HotCue Mode LEDs
-    for (var i = 1; i <= 8; i++) {
+    for (i = 1; i <= 8; i++) {
         engine.makeConnection("[Channel1]", "hotcue_"+i+"_enabled", MC7000.HotCueLED);
         engine.makeConnection("[Channel2]", "hotcue_"+i+"_enabled", MC7000.HotCueLED);
         engine.makeConnection("[Channel3]", "hotcue_"+i+"_enabled", MC7000.HotCueLED);
@@ -189,32 +184,28 @@ MC7000.init = function() {
         engine.makeConnection("[Sampler"+i+"]", "play", MC7000.SamplerLED);
     }
 
-    // Sampler Volume Control
-    MC7000.samplerLevel = function(channel, control, value) {
-        // check if the Sampler Volume is at Zero and if so hide the sampler bank
-        if (value > 0x00) {
-            engine.setValue("[Samplers]", "show_samplers", true);
-        } else {
-            engine.setValue("[Samplers]", "show_samplers", false);
-        }
-        // get the Sampler Rows opened with its details
-        engine.setValue("[SamplerRow1]", "expanded", true);
-        engine.setValue("[SamplerRow2]", "expanded", true);
-
-        //control up to 16 sampler volumes with the one knob on the mixer
-        for (var i = 1; i <= 16; i++) {
-            engine.setValue("[Sampler"+i+"]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
-        }
-    };
-
     // Activate Timer for Softtakeover to avoid conflicts with ControllerStatusSysex
-    engine.beginTimer(2000, MC7000.delayedSoftTakeover, true);
+    engine.beginTimer(2000, MC7000.delayedSysEx, true);
 };
 
-// Activate Softtakeover for Pitch Faders
-MC7000.delayedSoftTakeover = function() {
-    for (var i = 1; i <= 4; i++) {
-        engine.softTakeover("[Channel" + i + "]", "rate", true);
+// SysEx message to receive all knob and fader positions
+MC7000.delayedSysEx = function() {
+    var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+    midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+};
+
+// Sampler Volume Control
+MC7000.samplerLevel = function(channel, control, value) {
+    // check if the Sampler Volume is at Zero and if so hide the sampler bank
+    if (value > 0x00) {
+        engine.setValue("[Samplers]", "show_samplers", true);
+    } else {
+        engine.setValue("[Samplers]", "show_samplers", false);
+    }
+
+    //control the 8 sampler volumes with the one knob on the mixer
+    for (var i = 1; i <= 8; i++) {
+        engine.setValue("[Sampler"+i+"]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
     }
 };
 
