@@ -9,9 +9,11 @@ namespace {
 mixxx::Logger kLogger("SeratoBeatGrid");
 constexpr quint16 kVersion = 0x0100;
 constexpr int kMarkerSizeID3 = 8;
-const QByteArray kSeratoBeatGridBase64EncodedPrefix = QByteArray(
-        "application/octet-stream\x00\x00Serato BeatGrid\x00",
-        24 + 2 + 15 + 1);
+constexpr char kSeratoBeatGridBase64EncodedPrefixStr[] =
+        "application/octet-stream\0\0Serato BeatGrid";
+const QByteArray kSeratoBeatGridBase64EncodedPrefix = QByteArray::fromRawData(
+        kSeratoBeatGridBase64EncodedPrefixStr,
+        sizeof(kSeratoBeatGridBase64EncodedPrefixStr));
 
 QByteArray base64encode(const QByteArray& data, bool chopPadding) {
     QByteArray dataBase64;
@@ -334,7 +336,10 @@ bool SeratoBeatGrid::parseBase64Encoded(
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
     if (!decodedData.startsWith(kSeratoBeatGridBase64EncodedPrefix)) {
         kLogger.warning() << "Decoding SeratoBeatGrid from base64 failed:"
-                          << "Unexpected prefix";
+                          << "Unexpected prefix"
+                          << decodedData.left(kSeratoBeatGridBase64EncodedPrefix.size())
+                          << "!="
+                          << kSeratoBeatGridBase64EncodedPrefix;
         return false;
     }
     DEBUG_ASSERT(decodedData.size() >= kSeratoBeatGridBase64EncodedPrefix.size());
