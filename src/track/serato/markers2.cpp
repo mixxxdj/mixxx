@@ -197,7 +197,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -306,7 +307,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 

@@ -166,7 +166,9 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
         // End position not set
         if (endPositionSerato32 != 0x7F7F7F7F) {
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                              << "endPosition != 0x7F7F7F7F";
+                              << "endPosition"
+                              << endPositionSerato32
+                              << "!= 0x7F7F7F7F";
 
             return nullptr;
         }
@@ -177,7 +179,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\x7F\x7F\x7F\x7F\x7F", sizeof(buffer)) != 0) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected value at offset 10";
+                          << "Unexpected value at offset 10"
+                          << QByteArray::fromRawData(buffer, sizeof(buffer));
         return nullptr;
     }
 
@@ -189,7 +192,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -237,7 +241,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\xFF\xFF\xFF\xFF\x00", sizeof(buffer)) != 0) {
         kLogger.warning() << "Parsing SeratoMarkersEntry (MP4) failed:"
-                          << "Unexpected value at offset 8";
+                          << "Unexpected value at offset 8"
+                          << QByteArray::fromRawData(buffer, sizeof(buffer));
         return nullptr;
     }
 
@@ -249,7 +254,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -356,7 +362,8 @@ bool SeratoMarkers::parseID3(
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkers_ failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return false;
     }
     seratoMarkers->setEntries(std::move(entries));
@@ -458,7 +465,8 @@ bool SeratoMarkers::parseMP4(
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkers_ failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return false;
     }
     seratoMarkers->setEntries(std::move(entries));
