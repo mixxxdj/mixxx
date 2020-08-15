@@ -12,14 +12,17 @@ namespace {
 
 class SeratoMarkers2Test : public testing::Test {
   protected:
-    void parseBpmlockEntry(const QByteArray& inputValue, bool valid, bool locked) {
-        const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2BpmlockEntry::parse(inputValue);
+    void parseBpmLockEntry(const QByteArray& inputValue, bool valid, bool locked) {
+        const mixxx::SeratoMarkers2EntryPointer parsedEntry =
+                mixxx::SeratoMarkers2BpmLockEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
             return;
         }
         EXPECT_TRUE(valid);
-        const mixxx::SeratoMarkers2BpmlockEntry *bpmlockEntry = static_cast<mixxx::SeratoMarkers2BpmlockEntry*>(parsedEntry.get());
+        const mixxx::SeratoMarkers2BpmLockEntry* bpmlockEntry =
+                static_cast<mixxx::SeratoMarkers2BpmLockEntry*>(
+                        parsedEntry.get());
 
         EXPECT_EQ(locked, bpmlockEntry->isLocked());
 
@@ -149,10 +152,10 @@ class SeratoMarkers2Test : public testing::Test {
     }
 };
 
-TEST_F(SeratoMarkers2Test, ParseBpmlockEntry) {
-    parseBpmlockEntry(QByteArray("\x00", 1), true, false);
-    parseBpmlockEntry(QByteArray("\x01", 1), true, true);
-    parseBpmlockEntry(QByteArray("\x00\x00", 2), false, false); // Invalid size
+TEST_F(SeratoMarkers2Test, ParseBpmLockEntry) {
+    parseBpmLockEntry(QByteArray("\x00", 1), true, false);
+    parseBpmLockEntry(QByteArray("\x01", 1), true, true);
+    parseBpmLockEntry(QByteArray("\x00\x00", 2), false, false); // Invalid size
 }
 
 TEST_F(SeratoMarkers2Test, ParseColorEntry) {

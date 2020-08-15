@@ -65,20 +65,20 @@ QByteArray base64encode(const QByteArray& data, bool chopPadding) {
 
 namespace mixxx {
 
-SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray& data) {
+SeratoMarkers2EntryPointer SeratoMarkers2BpmLockEntry::parse(const QByteArray& data) {
     if (data.length() != 1) {
-        kLogger.warning() << "Parsing SeratoMarkers2BpmlockEntry failed:"
+        kLogger.warning() << "Parsing SeratoMarkers2BpmLockEntry failed:"
                           << "Length" << data.length() << "!= 1";
         return nullptr;
     }
 
     const bool locked = data.at(0);
-    SeratoMarkers2BpmlockEntry* pEntry = new SeratoMarkers2BpmlockEntry(locked);
-    kLogger.trace() << "SeratoMarkers2BpmlockEntry" << *pEntry;
+    SeratoMarkers2BpmLockEntry* pEntry = new SeratoMarkers2BpmLockEntry(locked);
+    kLogger.trace() << "SeratoMarkers2BpmLockEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
-QByteArray SeratoMarkers2BpmlockEntry::dump() const {
+QByteArray SeratoMarkers2BpmLockEntry::dump() const {
     QByteArray data;
     data.resize(length());
 
@@ -89,7 +89,7 @@ QByteArray SeratoMarkers2BpmlockEntry::dump() const {
     return data;
 }
 
-quint32 SeratoMarkers2BpmlockEntry::length() const {
+quint32 SeratoMarkers2BpmLockEntry::length() const {
     return 1;
 }
 
@@ -433,7 +433,7 @@ bool SeratoMarkers2::parseCommon(
         // Entry Content
         SeratoMarkers2EntryPointer pEntry;
         if (entryType.compare("BPMLOCK") == 0) {
-            pEntry = SeratoMarkers2BpmlockEntry::parse(entryData);
+            pEntry = SeratoMarkers2BpmLockEntry::parse(entryData);
         } else if (entryType.compare("COLOR") == 0) {
             pEntry = SeratoMarkers2ColorEntry::parse(entryData);
         } else if (entryType.compare("CUE") == 0) {
@@ -684,11 +684,12 @@ bool SeratoMarkers2::isBpmLocked() const {
 
     for (auto& pEntry : m_entries) {
         DEBUG_ASSERT(pEntry);
-        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Bpmlock) {
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::BpmLock) {
             continue;
         }
-        const SeratoMarkers2BpmlockEntry* pBpmlockEntry = static_cast<SeratoMarkers2BpmlockEntry*>(pEntry.get());
-        return pBpmlockEntry->isLocked();
+        const SeratoMarkers2BpmLockEntry* pBpmLockEntry =
+                static_cast<SeratoMarkers2BpmLockEntry*>(pEntry.get());
+        return pBpmLockEntry->isLocked();
     }
 
     return false;

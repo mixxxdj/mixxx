@@ -21,7 +21,7 @@ class SeratoMarkers2Entry {
         Color,
         Cue,
         Loop,
-        Bpmlock,
+        BpmLock,
     };
 
     virtual ~SeratoMarkers2Entry() = default;
@@ -81,12 +81,12 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
     QByteArray m_data;
 };
 
-class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
+class SeratoMarkers2BpmLockEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2BpmlockEntry(bool locked)
+    SeratoMarkers2BpmLockEntry(bool locked)
             : m_locked(locked) {
     }
-    SeratoMarkers2BpmlockEntry() = delete;
+    SeratoMarkers2BpmLockEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -95,7 +95,7 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
     }
 
     SeratoMarkers2Entry::TypeId typeId() const override {
-        return SeratoMarkers2Entry::TypeId::Bpmlock;
+        return SeratoMarkers2Entry::TypeId::BpmLock;
     }
 
     QByteArray dump() const override;
@@ -114,17 +114,17 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
     bool m_locked;
 };
 
-inline bool operator==(const SeratoMarkers2BpmlockEntry& lhs,
-        const SeratoMarkers2BpmlockEntry& rhs) {
+inline bool operator==(const SeratoMarkers2BpmLockEntry& lhs,
+        const SeratoMarkers2BpmLockEntry& rhs) {
     return (lhs.isLocked() == rhs.isLocked());
 }
 
-inline bool operator!=(const SeratoMarkers2BpmlockEntry& lhs,
-        const SeratoMarkers2BpmlockEntry& rhs) {
+inline bool operator!=(const SeratoMarkers2BpmLockEntry& lhs,
+        const SeratoMarkers2BpmLockEntry& rhs) {
     return !(lhs == rhs);
 }
 
-inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmLockEntry& arg) {
     return dbg << "locked =" << arg.isLocked();
 }
 
