@@ -79,15 +79,12 @@ inline QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
                << "BPM =" << arg.bpm();
 }
 
-// DTO for storing information from the SeratoBeatGrid tags used by the Serato
-// DJ Pro software.
-//
-// Parsing & Formatting
-// --------------------
-// This class includes functions for formatting and parsing SeratoBeatGrid
-// metadata according to the specification:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_beatgrid.md
-//
+/// DTO for storing information from the SeratoBeatGrid tags used by the Serato
+/// DJ Pro software.
+///
+/// This class includes functions for formatting and parsing SeratoBeatGrid
+/// metadata according to the specification:
+/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_beatgrid.md
 class SeratoBeatGrid final {
   public:
     SeratoBeatGrid() = default;
