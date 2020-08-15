@@ -20,7 +20,7 @@ class BeatsImporter {
 
     /// Determines the timing offset and returns a Vector of frame positions
     /// to use as input for the BeatMap constructor
-    virtual QVector<double> importBeatsWithCorrectTiming(
+    virtual QVector<double> importBeatsAndApplyTimingOffset(
             const QString& filePath,
             const audio::StreamInfo& streamInfo) {
         Q_UNUSED(filePath);

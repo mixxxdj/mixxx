@@ -972,7 +972,7 @@ bool Track::importPendingBeatsWhileLocked() {
             m_record.getMetadata().getSampleRate());
     mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
             static_cast<SINT>(m_streamInfo->getSignalInfo().getSampleRate()),
-            m_pBeatsImporterPending->importBeatsWithCorrectTiming(
+            m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
                     getLocation(), *m_streamInfo)));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();

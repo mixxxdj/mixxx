@@ -17,7 +17,7 @@ bool SeratoBeatsImporter::isEmpty() const {
     return m_nonTerminalMarkers.isEmpty() && !m_pTerminalMarker;
 };
 
-QVector<double> SeratoBeatsImporter::importBeatsWithCorrectTiming(
+QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         const QString& filePath, const audio::StreamInfo& streamInfo) {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return {};
