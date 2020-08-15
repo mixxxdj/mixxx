@@ -12,8 +12,8 @@
 
 namespace mixxx {
 
-// Enum values need to appear in the same order as the corresponding entries
-// are written to the tag by Serato.
+/// Enum values need to appear in the same order as the corresponding entries
+/// are written to the tag by Serato.
 class SeratoMarkers2Entry {
   public:
     enum class TypeId {
@@ -368,15 +368,12 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
                << "label =" << arg.getLabel();
 }
 
-// DTO for storing information from the SeratoMarkers2 tags used by the Serato
-// DJ Pro software.
-//
-// Parsing & Formatting
-// --------------------
-// This class includes functions for formatting and parsing SeratoMarkers2
-// metadata according to the specification:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers2.md
-//
+/// DTO for storing information from the SeratoMarkers2 tags used by the Serato
+/// DJ Pro software.
+///
+/// This class includes functions for formatting and parsing SeratoMarkers2
+/// metadata according to the specification:
+/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers2.md
 class SeratoMarkers2 final {
   public:
     SeratoMarkers2()
@@ -388,26 +385,20 @@ class SeratoMarkers2 final {
               m_entries(std::move(entries)) {
     }
 
-    // Parsing and formatting of gain values according to the
-    // SeratoMarkers2 1.0/2.0 specification.
+    /// Parse a binary Serato repesentation of the "Markers2" data from a
+    /// `QByteArray` and write the results to the `SeratoMarkers2` instance.
+    /// The `fileType` parameter determines the exact format of the data being
+    /// used.
     static bool parse(
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& outerData,
             taglib::FileType fileType);
-    static bool parseCommon(
-            SeratoMarkers2* seratoMarkers2,
-            const QByteArray& data);
-    static bool parseID3(
-            SeratoMarkers2* seratoMarkers2,
-            const QByteArray& outerData);
-    static bool parseBase64Encoded(
-            SeratoMarkers2* seratoMarkers2,
-            const QByteArray& base64EncodedData);
 
+    /// Create a binary Serato repesentation of the "Markers2" data suitable
+    /// for `fileType` and dump it into a `QByteArray`. The content of that
+    /// byte array can be used for round-trip tests or written to the
+    /// appropriate tag to make it accessible to Serato.
     QByteArray dump(taglib::FileType fileType) const;
-    QByteArray dumpCommon() const;
-    QByteArray dumpID3() const;
-    QByteArray dumpBase64Encoded() const;
 
     int getAllocatedSize() const {
         return m_allocatedSize;
@@ -434,6 +425,20 @@ class SeratoMarkers2 final {
     bool isBpmLocked() const;
 
   private:
+    static bool parseCommon(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& data);
+    static bool parseID3(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& outerData);
+    static bool parseBase64Encoded(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& base64EncodedData);
+
+    QByteArray dumpCommon() const;
+    QByteArray dumpID3() const;
+    QByteArray dumpBase64Encoded() const;
+
     int m_allocatedSize;
     QList<std::shared_ptr<SeratoMarkers2Entry>> m_entries;
 };
