@@ -12,18 +12,27 @@ namespace {
 
 class SeratoBeatGridTest : public testing::Test {
   protected:
-    void parseBeatGridData(const QByteArray& inputValue,
+    bool parseBeatGridData(const QByteArray& inputValue,
             bool valid,
-            mixxx::taglib::FileType fileType) {
+            mixxx::taglib::FileType fileType,
+            QByteArray* output = nullptr) {
         mixxx::SeratoBeatGrid seratoBeatGrid;
         bool parseOk = mixxx::SeratoBeatGrid::parse(
                 &seratoBeatGrid, inputValue, fileType);
         EXPECT_EQ(valid, parseOk);
         if (!parseOk) {
-            return;
+            return false;
         }
-
-        EXPECT_EQ(inputValue, seratoBeatGrid.dump(fileType));
+        QByteArray outputValue = seratoBeatGrid.dump(fileType);
+        EXPECT_EQ(inputValue, outputValue);
+        if (inputValue != outputValue) {
+            if (output) {
+                output->clear();
+                output->append(outputValue);
+            }
+            return false;
+        }
+        return true;
     }
 
     void parseBeatGridDataInDirectory(
@@ -43,7 +52,16 @@ class SeratoBeatGridTest : public testing::Test {
                 continue;
             }
             QByteArray data = file.readAll();
-            parseBeatGridData(data, true, fileType);
+            QByteArray actualData;
+            if (!parseBeatGridData(data, true, fileType, &actualData)) {
+                QFile outfile(file.fileName() + QStringLiteral(".actual"));
+                openOk = outfile.open(QIODevice::WriteOnly);
+                EXPECT_TRUE(openOk);
+                if (!openOk) {
+                    continue;
+                }
+                EXPECT_EQ(actualData.size(), outfile.write(actualData));
+            }
         }
     }
 
@@ -56,7 +74,7 @@ class SeratoBeatGridTest : public testing::Test {
     }
 };
 
-TEST_F(SeratoBeatGridTest, ParseBeatGridDataMp3) {
+TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP3) {
     parseBeatGridDataInDirectory(QDir("src/test/serato/data/mp3/beatgrid"),
             mixxx::taglib::FileType::MP3);
 }
