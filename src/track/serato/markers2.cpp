@@ -488,7 +488,7 @@ bool SeratoMarkers2::parseFLAC(
         SeratoMarkers2* seratoMarkers2,
         const QByteArray& base64EncodedData) {
     if (!base64EncodedData.isEmpty() && parseBase64Encoded(seratoMarkers2, base64EncodedData)) {
-        seratoMarkers2->setLastBase64ByteFLAC(base64EncodedData.back());
+        seratoMarkers2->setLastBase64ByteFLAC(base64EncodedData.at(base64EncodedData.size() - 1));
         return true;
     };
 
