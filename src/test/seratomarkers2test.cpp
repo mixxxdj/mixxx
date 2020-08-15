@@ -12,7 +12,7 @@ namespace {
 
 class SeratoMarkers2Test : public testing::Test {
   protected:
-    void parseBpmlockEntry(const QByteArray inputValue, bool valid, bool locked) {
+    void parseBpmlockEntry(const QByteArray& inputValue, bool valid, bool locked) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2BpmlockEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -26,7 +26,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, bpmlockEntry->dump());
     }
 
-    void parseColorEntry(const QByteArray inputValue, bool valid, mixxx::RgbColor color) {
+    void parseColorEntry(const QByteArray& inputValue, bool valid, mixxx::RgbColor color) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2ColorEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -41,7 +41,7 @@ class SeratoMarkers2Test : public testing::Test {
     }
 
     void parseCueEntry(
-            const QByteArray inputValue,
+            const QByteArray& inputValue,
             bool valid,
             quint8 index,
             quint32 position,
@@ -63,7 +63,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, cueEntry->dump());
     }
 
-    void parseLoopEntry(const QByteArray inputValue,
+    void parseLoopEntry(const QByteArray& inputValue,
             bool valid,
             quint8 index,
             quint32 startposition,
@@ -87,7 +87,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, loopEntry->dump());
     }
 
-    bool parseMarkers2Data(const QByteArray inputValue,
+    bool parseMarkers2Data(const QByteArray& inputValue,
             bool valid,
             mixxx::taglib::FileType fileType,
             QByteArray* output = nullptr) {
