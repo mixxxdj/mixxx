@@ -36,7 +36,7 @@ EngineMaster::EngineMaster(
         ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)
         : m_pChannelHandleFactory(pChannelHandleFactory),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
