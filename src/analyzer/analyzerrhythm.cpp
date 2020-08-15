@@ -30,8 +30,8 @@ constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
 
-constexpr double kThressholDecay = 0.05;
-constexpr double kThressholRecover = 0.6;
+constexpr double kThresholdDecay = 0.05;
+constexpr double kThresholdRecover = 0.6;
 constexpr double kFloorFactor = 0.5;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
@@ -231,11 +231,11 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
             if (max == result) {
                 // Beat found
                 beat = threshold;
-                threshold = threshold * (1 - kThressholRecover) + result * kThressholRecover;
+                threshold = threshold * (1 - kThresholdRecover) + result * kThresholdRecover;
                 allBeats.push_back(i);
             }
         }
-        threshold = threshold * (1 - kThressholDecay) + result * kThressholDecay;
+        threshold = threshold * (1 - kThresholdDecay) + result * kThresholdDecay;
 
         qDebug() << i
                  << m_detectionResults[i].results[3]
