@@ -333,7 +333,14 @@ bool SeratoBeatGrid::parseID3(
 
 bool SeratoBeatGrid::parseBase64Encoded(
         SeratoBeatGrid* seratoBeatGrid, const QByteArray& base64EncodedData) {
-    const auto decodedData = QByteArray::fromBase64(base64EncodedData);
+    if (base64EncodedData.isEmpty()) {
+        kLogger.warning() << "Decoding SeratoBeatGrid from base64 failed:"
+                          << "No data";
+        return true;
+    }
+    char extraBase64Byte = base64EncodedData.at(base64EncodedData.size() - 1);
+    const auto decodedData = QByteArray::fromBase64(
+            base64EncodedData.left(base64EncodedData.size() - 1));
     if (!decodedData.startsWith(kSeratoBeatGridBase64EncodedPrefix)) {
         kLogger.warning() << "Decoding SeratoBeatGrid from base64 failed:"
                           << "Unexpected prefix"
@@ -349,6 +356,8 @@ bool SeratoBeatGrid::parseBase64Encoded(
         kLogger.warning() << "Parsing base64encoded SeratoBeatGrid failed!";
         return false;
     }
+
+    seratoBeatGrid->setExtraBase64Byte(extraBase64Byte);
 
     return true;
 }
@@ -403,7 +412,9 @@ QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
     QByteArray data = kSeratoBeatGridBase64EncodedPrefix;
     data.append(dumpID3());
 
-    return base64encode(data, false);
+    QByteArray base64EncodedData = base64encode(data, false);
+    base64EncodedData.append(extraBase64Byte());
+    return base64EncodedData;
 }
 
 } // namespace mixxx

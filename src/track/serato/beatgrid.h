@@ -93,7 +93,8 @@ class SeratoBeatGrid final {
             QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers)
             : m_pTerminalMarker(pTerminalMarker),
               m_nonTerminalMarkers(std::move(nonTerminalMarkers)),
-              m_footer(0) {
+              m_footer(0),
+              m_extraBase64Byte('A') {
     }
 
     /// Parse a binary Serato repesentation of the beatgrid data from a
@@ -136,6 +137,13 @@ class SeratoBeatGrid final {
         m_footer = footer;
     }
 
+    char extraBase64Byte() const {
+        return m_extraBase64Byte;
+    }
+    void setExtraBase64Byte(char extraBase64Byte) {
+        m_extraBase64Byte = extraBase64Byte;
+    }
+
     QList<double> getBeatPositionsMillis(double trackLengthMillis, double timingOffsetMillis) const;
 
   private:
@@ -152,6 +160,7 @@ class SeratoBeatGrid final {
     SeratoBeatGridTerminalMarkerPointer m_pTerminalMarker;
     QList<SeratoBeatGridNonTerminalMarkerPointer> m_nonTerminalMarkers;
     quint8 m_footer;
+    char m_extraBase64Byte;
 };
 
 inline bool operator==(const SeratoBeatGrid& lhs, const SeratoBeatGrid& rhs) {
