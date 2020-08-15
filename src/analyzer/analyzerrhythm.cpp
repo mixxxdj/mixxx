@@ -30,8 +30,8 @@ constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
 
-constexpr double kThressholDecay = 0.04;
-constexpr double kThressholRecover = 0.5;
+constexpr double kThressholDecay = 0.05;
+constexpr double kThressholRecover = 0.6;
 constexpr double kFloorFactor = 0.5;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
