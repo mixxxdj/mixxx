@@ -377,7 +377,8 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
 class SeratoMarkers2 final {
   public:
     SeratoMarkers2()
-            : m_allocatedSize(0) {
+            : m_allocatedSize(0),
+              m_lastBase64ByteFLAC('A') {
     }
 
     /// Parse a binary Serato repesentation of the "Markers2" data from a
@@ -404,6 +405,17 @@ class SeratoMarkers2 final {
         m_allocatedSize = size;
     }
 
+    /// The last byte of the FLAC tag data.The value is seemingly random and does
+    /// not influence the decoded data at all. We need to keep track of this to be
+    /// able to roundtrip losslessly.
+    char lastBase64ByteFLAC() const {
+        return m_lastBase64ByteFLAC;
+    }
+
+    void setLastBase64ByteFLAC(char value) {
+        m_lastBase64ByteFLAC = value;
+    }
+
     bool isEmpty() const {
         return m_entries.isEmpty();
     }
@@ -426,15 +438,32 @@ class SeratoMarkers2 final {
     static bool parseID3(
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& outerData);
+    /// The Base64 encoded format is used for MP4 tags and (except for a single
+    /// byte) for FLAC tags.
     static bool parseBase64Encoded(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& base64EncodedData);
+    /// The FLAC format is basically identical to MP4, but Serato seems to
+    /// randomly modify the last byte of the base64 encoding. This this will
+    /// store that byte so that we can roundtrip losslessly.
+    static bool parseFLAC(
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& base64EncodedData);
 
     QByteArray dumpCommon() const;
     QByteArray dumpID3() const;
+    /// The Base64 encoded format is used for MP4 tags and (except for a single
+    /// byte) for FLAC tags.
     QByteArray dumpBase64Encoded() const;
+    /// The FLAC format is basically identical to MP4, but Serato seems to
+    /// randomly modify the last byte of the base64 encoding. This creates the
+    /// regular base64 encoding that is also used for MP4 tags and then simply
+    /// overwrites the last byte with the value stored in
+    /// `m_lastBase64ByteFLAC`.
+    QByteArray dumpFLAC() const;
 
     int m_allocatedSize;
+    char m_lastBase64ByteFLAC;
     QList<std::shared_ptr<SeratoMarkers2Entry>> m_entries;
 };
 

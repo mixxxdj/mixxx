@@ -361,8 +361,9 @@ bool SeratoMarkers2::parse(
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers2, data);
     case taglib::FileType::MP4:
-    case taglib::FileType::FLAC:
         return parseBase64Encoded(seratoMarkers2, data);
+    case taglib::FileType::FLAC:
+        return parseFLAC(seratoMarkers2, data);
     case taglib::FileType::OGG:
         return parseCommon(seratoMarkers2, data);
     default:
@@ -482,14 +483,27 @@ bool SeratoMarkers2::parseBase64Encoded(
     return true;
 }
 
+//static
+bool SeratoMarkers2::parseFLAC(
+        SeratoMarkers2* seratoMarkers2,
+        const QByteArray& base64EncodedData) {
+    if (!base64EncodedData.isEmpty() && parseBase64Encoded(seratoMarkers2, base64EncodedData)) {
+        seratoMarkers2->setLastBase64ByteFLAC(base64EncodedData.back());
+        return true;
+    };
+
+    return false;
+}
+
 QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
     switch (fileType) {
     case taglib::FileType::MP3:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
-    case taglib::FileType::FLAC:
         return dumpBase64Encoded();
+    case taglib::FileType::FLAC:
+        return dumpFLAC();
     case taglib::FileType::OGG:
         return dumpCommon();
     default:
@@ -638,6 +652,16 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
 
     // Add padding and apply the weird double base64encoding
     return base64encode(outerData.leftJustified(size, '\0'), false);
+}
+
+QByteArray SeratoMarkers2::dumpFLAC() const {
+    QByteArray data = dumpBase64Encoded();
+
+    if (!data.isEmpty()) {
+        data[data.size() - 1] = lastBase64ByteFLAC();
+    }
+
+    return data;
 }
 
 RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
