@@ -1249,13 +1249,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
 
-    double ratio = m_tempo_ratio_old;
-    if (ratio == 0.0) {
-        // In case the track is slowed done to zero we will have INF remaining seconds.
-        // We jump back to a rate of 1.0 to show a useful time.
-        ratio = 1.0;
-    }
-
     const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame
             / m_trackSampleRateOld / m_tempo_ratio_old;
     if(speed > 0 && fFractionalPlaypos == 1.0) {
