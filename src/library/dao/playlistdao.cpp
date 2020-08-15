@@ -915,7 +915,6 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 
             trackBPosition = positions.at(randomShuffleSetIndex);
             trackBId = trackPositionIds.value(trackBPosition);
-            conflictFound = false;
             int trackDistance = -1;
             int playlistEnd = trackPositionIds.count();
 
