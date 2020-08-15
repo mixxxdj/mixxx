@@ -9,15 +9,17 @@ namespace {
 
 mixxx::Logger kLogger("SeratoMarkers");
 
-const int kNumEntries = 14;
-const int kLoopEntryStartIndex = 5;
-const int kEntrySizeID3 = 22;
-const int kEntrySizeMP4 = 19;
-const quint16 kVersion = 0x0205;
+constexpr int kNumEntries = 14;
+constexpr int kLoopEntryStartIndex = 5;
+constexpr int kEntrySizeID3 = 22;
+constexpr int kEntrySizeMP4 = 19;
+constexpr quint16 kVersion = 0x0205;
 
-const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray(
-        "application/octet-stream\x00\x00Serato Markers_\x00",
-        24 + 2 + 15 + 1);
+constexpr char kSeratoMarkersBase64EncodedPrefixStr[] =
+        "application/octet-stream\0\0Serato Markers_";
+const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray::fromRawData(
+        kSeratoMarkersBase64EncodedPrefixStr,
+        sizeof(kSeratoMarkersBase64EncodedPrefixStr));
 
 // These functions convert between a custom 4-byte format (that we'll call
 // "serato32" for brevity) and 3-byte plaintext (both quint32).
@@ -370,7 +372,10 @@ bool SeratoMarkers::parseMP4(
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
     if (!decodedData.startsWith(kSeratoMarkersBase64EncodedPrefix)) {
         kLogger.warning() << "Decoding SeratoMarkers_ from base64 failed:"
-                          << "Unexpected prefix";
+                          << "Unexpected prefix"
+                          << decodedData.left(kSeratoMarkersBase64EncodedPrefix.size())
+                          << "!="
+                          << kSeratoMarkersBase64EncodedPrefix;
         return false;
     }
 

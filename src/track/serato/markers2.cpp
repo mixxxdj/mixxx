@@ -12,9 +12,11 @@ constexpr quint32 kLoopUnknownField2ExpectedValue = 0xFFFFFFFF;
 constexpr quint8 kLoopUnknownField3ExpectedValue = 0x00;
 constexpr quint8 kLoopUnknownField4ExpectedValue = 0x00;
 
-const QByteArray kSeratoMarkers2Base64EncodedPrefix = QByteArray(
-        "application/octet-stream\x00\x00Serato Markers2\x00",
-        24 + 2 + 15 + 1);
+constexpr char kSeratoMarkers2Base64EncodedPrefixStr[] =
+        "application/octet-stream\0\0Serato Markers2";
+const QByteArray kSeratoMarkers2Base64EncodedPrefix = QByteArray::fromRawData(
+        kSeratoMarkers2Base64EncodedPrefixStr,
+        sizeof(kSeratoMarkers2Base64EncodedPrefixStr));
 
 QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
     DEBUG_ASSERT(stream);
@@ -460,7 +462,10 @@ bool SeratoMarkers2::parseBase64Encoded(
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
     if (!decodedData.startsWith(kSeratoMarkers2Base64EncodedPrefix)) {
         kLogger.warning() << "Decoding SeratoMarkers2 from base64 failed:"
-                          << "Unexpected prefix";
+                          << "Unexpected prefix"
+                          << decodedData.left(kSeratoMarkers2Base64EncodedPrefix.size())
+                          << "!="
+                          << kSeratoMarkers2Base64EncodedPrefix;
         return false;
     }
     DEBUG_ASSERT(decodedData.size() >= kSeratoMarkers2Base64EncodedPrefix.size());
