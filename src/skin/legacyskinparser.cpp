@@ -97,7 +97,7 @@ static bool sDebug = false;
 
 ControlObject* LegacySkinParser::controlFromConfigKey(
         const ConfigKey& key, bool bPersist, bool* pCreated) {
-    if (key.isEmpty()) {
+    if (!key.isValid()) {
         return nullptr;
     }
     // Don't warn if the control doesn't exist. Skins use this to create
