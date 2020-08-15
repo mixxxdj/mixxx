@@ -83,4 +83,22 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataMP3) {
     parseEmptyBeatGridData(mixxx::taglib::FileType::MP3);
 }
 
+TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP4) {
+    parseBeatGridDataInDirectory(QDir("src/test/serato/data/mp4/beatgrid"),
+            mixxx::taglib::FileType::MP4);
+}
+
+TEST_F(SeratoBeatGridTest, ParseEmptyDataMP4) {
+    parseEmptyBeatGridData(mixxx::taglib::FileType::MP4);
+}
+
+TEST_F(SeratoBeatGridTest, ParseBeatGridDataFLAC) {
+    parseBeatGridDataInDirectory(QDir("src/test/serato/data/flac/beatgrid"),
+            mixxx::taglib::FileType::FLAC);
+}
+
+TEST_F(SeratoBeatGridTest, ParseEmptyDataFLAC) {
+    parseEmptyBeatGridData(mixxx::taglib::FileType::FLAC);
+}
+
 } // namespace
