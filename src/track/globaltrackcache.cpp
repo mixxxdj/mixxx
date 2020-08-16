@@ -559,6 +559,8 @@ void GlobalTrackCache::resolve(
                         << "Found a different track with the same canonical location:"
                         << "expected =" << trackRef
                         << "actual =" << cachedRef;
+                // Replace expected with actual TrackRef to prevent inconcistencies
+                trackRef = cachedRef;
             }
             pCacheResolver->initLookupResult(
                     GlobalTrackCacheLookupResult::HIT,
