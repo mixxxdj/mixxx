@@ -929,13 +929,11 @@ Track::ImportStatus Track::importBeats(
         // points immediately
         importPendingBeatsMarkDirtyAndUnlock(&lock);
         return ImportStatus::Complete;
+    } else if (m_pBeatsImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        return ImportStatus::Complete;
     } else {
-        if (m_pBeatsImporterPending->isEmpty()) {
-            // Just return the current import status without clearing any
-            // existing cue points.
-            return ImportStatus::Complete;
-        }
-        DEBUG_ASSERT(!m_pBeatsImporterPending->isEmpty());
         kLogger.debug()
                 << "Import of beats is pending until the actual sample rate becomes available";
         // Clear all existing cue points, that are supposed
@@ -1005,13 +1003,11 @@ Track::ImportStatus Track::importCueInfos(
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
         return ImportStatus::Complete;
+    } else if (m_pCueInfoImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        return ImportStatus::Complete;
     } else {
-        if (m_pCueInfoImporterPending->isEmpty()) {
-            // Just return the current import status without clearing any
-            // existing cue points.
-            return ImportStatus::Complete;
-        }
-        DEBUG_ASSERT(!m_pCueInfoImporterPending->isEmpty());
         kLogger.debug()
                 << "Import of"
                 << m_pCueInfoImporterPending->size()
