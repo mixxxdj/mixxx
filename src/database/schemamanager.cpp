@@ -43,8 +43,19 @@ bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
     bool ok = false;
     int iBackwardsCompatibleVersion = backwardsCompatibleVersion.toInt(&ok);
 
+    // If the current backwards compatible schema version is not stored in the
+    // settings table, assume the current schema version is only backwards
+    // compatible with itself.
     if (backwardsCompatibleVersion.isNull() || !ok) {
-        iBackwardsCompatibleVersion = m_currentVersion;
+        if (m_currentVersion == 7) {
+            // We only added the backwards compatible flags in November 2010,
+            // and some people using the Mixxx trunk are already on schema
+            // version 7 by then. This special case is for them. Schema version
+            // 7 is backwards compatible with schema version 3.
+            iBackwardsCompatibleVersion = 3;
+        } else {
+            iBackwardsCompatibleVersion = m_currentVersion;
+        }
     }
 
     return iBackwardsCompatibleVersion <= targetVersion;
