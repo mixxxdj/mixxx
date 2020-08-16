@@ -35,15 +35,16 @@ WTrackText::~WTrackText() {
     // Required to allow forward declaration of WTrackMenu in header
 }
 
-void WTrackText::slotTrackLoaded(TrackPointer track) {
-    if (track) {
-        m_pCurrentTrack = track;
-        connect(track.get(),
-                &Track::changed,
-                this,
-                &WTrackText::slotTrackChanged);
-        updateLabel();
+void WTrackText::slotTrackLoaded(TrackPointer pTrack) {
+    if (!pTrack) {
+        return;
     }
+    m_pCurrentTrack = pTrack;
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &WTrackText::slotTrackChanged);
+    updateLabel();
 }
 
 void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -70,7 +71,7 @@ void WTrackText::updateLabel() {
 }
 
 void WTrackText::mouseMoveEvent(QMouseEvent *event) {
-    if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
+    if (event->buttons().testFlag(Qt::LeftButton) && m_pCurrentTrack) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
@@ -92,6 +93,7 @@ void WTrackText::dropEvent(QDropEvent *event) {
 }
 
 void WTrackText::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
     if (m_pCurrentTrack) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack);
         // Create the right-click menu
