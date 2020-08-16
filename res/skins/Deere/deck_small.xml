@@ -140,6 +140,7 @@
                       <Key>
                         <TooltipId>visual_key</TooltipId>
                         <ObjectName>BpmKeyTextSmall</ObjectName>
+                        <Group><Variable name="group"/></Group>
                         <Alignment>center</Alignment>
                         <Size>30min,22f</Size>
                         <Alignment>center</Alignment>
