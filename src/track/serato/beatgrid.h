@@ -19,13 +19,12 @@ class SeratoBeatGridTerminalMarker;
 typedef std::shared_ptr<SeratoBeatGridNonTerminalMarker> SeratoBeatGridNonTerminalMarkerPointer;
 typedef std::shared_ptr<SeratoBeatGridTerminalMarker> SeratoBeatGridTerminalMarkerPointer;
 
-class SeratoBeatGridNonTerminalMarker {
+class SeratoBeatGridNonTerminalMarker final {
   public:
     SeratoBeatGridNonTerminalMarker(float positionSecs, quint32 beatsTillNextMarker)
             : m_positionSecs(positionSecs),
               m_beatsTillNextMarker(beatsTillNextMarker) {
     }
-    ~SeratoBeatGridNonTerminalMarker() = default;
 
     QByteArray dumpID3() const;
     static SeratoBeatGridNonTerminalMarkerPointer parseID3(const QByteArray&);
@@ -49,13 +48,12 @@ inline QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg)
                << "BeatTillNextMarker = " << arg.beatsTillNextMarker();
 }
 
-class SeratoBeatGridTerminalMarker {
+class SeratoBeatGridTerminalMarker final {
   public:
     SeratoBeatGridTerminalMarker(float positionSecs, float bpm)
             : m_positionSecs(positionSecs),
               m_bpm(bpm) {
     }
-    ~SeratoBeatGridTerminalMarker() = default;
 
     QByteArray dumpID3() const;
     static mixxx::SeratoBeatGridTerminalMarkerPointer parseID3(const QByteArray&);
