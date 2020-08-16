@@ -19,7 +19,7 @@ SeratoBeatsImporter::SeratoBeatsImporter(
 }
 
 bool SeratoBeatsImporter::isEmpty() const {
-    return m_nonTerminalMarkers.isEmpty() && !m_pTerminalMarker;
+    return !m_pTerminalMarker;
 };
 
 QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
