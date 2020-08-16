@@ -676,7 +676,7 @@
             print("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
-        this.currentDeck = "[Channel" + deckNumbers[0] + "]";
+        this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
     };
     Deck.prototype = new ComponentContainer({
         setCurrentDeck: function(newGroup) {
