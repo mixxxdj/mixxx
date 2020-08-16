@@ -933,9 +933,7 @@ Track::ImportStatus Track::importBeats(
         if (m_pBeatsImporterPending->isEmpty()) {
             // Just return the current import status without clearing any
             // existing cue points.
-            return (!m_pBeatsImporterPending->isEmpty())
-                    ? ImportStatus::Complete
-                    : ImportStatus::Pending;
+            return ImportStatus::Complete;
         }
         DEBUG_ASSERT(!m_pBeatsImporterPending->isEmpty());
         kLogger.debug()
@@ -1011,9 +1009,7 @@ Track::ImportStatus Track::importCueInfos(
         if (m_pCueInfoImporterPending->isEmpty()) {
             // Just return the current import status without clearing any
             // existing cue points.
-            return (!m_pCueInfoImporterPending->isEmpty())
-                    ? ImportStatus::Complete
-                    : ImportStatus::Pending;
+            return ImportStatus::Complete;
         }
         DEBUG_ASSERT(!m_pCueInfoImporterPending->isEmpty());
         kLogger.debug()
