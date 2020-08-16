@@ -693,7 +693,7 @@ void Track::initId(TrackId id) {
         return; // abort
     }
     m_record.setId(id);
-    for (const auto pCue : qAsConst(m_cuePoints)) {
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->setTrackId(id);
     }
     // Changing the Id does not make the track dirty because the Id is always
@@ -703,7 +703,7 @@ void Track::initId(TrackId id) {
 void Track::resetId() {
     QMutexLocker lock(&m_qMutex);
     m_record.setId(TrackId());
-    for (const auto pCue : qAsConst(m_cuePoints)) {
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->setTrackId(TrackId());
     }
 }
