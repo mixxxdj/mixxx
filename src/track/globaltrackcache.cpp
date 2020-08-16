@@ -532,7 +532,8 @@ void GlobalTrackCache::resolve(
                     << "Resolving track by canonical location"
                     << trackRef.getCanonicalLocation();
         }
-        auto strongPtr = lookupByRef(trackRef);
+        auto strongPtr = lookupByCanonicalLocation(
+                trackRef.getCanonicalLocation());
         if (strongPtr) {
             // Cache hit
             if (debugLogEnabled()) {
