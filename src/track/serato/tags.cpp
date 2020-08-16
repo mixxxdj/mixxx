@@ -202,7 +202,7 @@ double SeratoTags::guessTimingOffsetMillis(
 
 BeatsImporterPointer SeratoTags::importBeats() const {
     if (m_seratoBeatGrid.isEmpty() || !m_seratoBeatGrid.terminalMarker()) {
-        return std::make_shared<BeatsImporter>();
+        return std::make_shared<SeratoBeatsImporter>();
     }
     return std::make_shared<SeratoBeatsImporter>(
             m_seratoBeatGrid.nonTerminalMarkers(),

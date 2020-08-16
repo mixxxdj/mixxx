@@ -9,6 +9,7 @@ namespace mixxx {
 
 class SeratoBeatsImporter : public BeatsImporter {
   public:
+    SeratoBeatsImporter();
     SeratoBeatsImporter(
             QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers,
             SeratoBeatGridTerminalMarkerPointer pTerminalMarker);

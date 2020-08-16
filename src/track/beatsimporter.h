@@ -14,19 +14,12 @@ class BeatsImporter {
     BeatsImporter() = default;
     virtual ~BeatsImporter() = default;
 
-    virtual bool isEmpty() const {
-        return true;
-    };
+    virtual bool isEmpty() const = 0;
 
     /// Determines the timing offset and returns a Vector of frame positions
     /// to use as input for the BeatMap constructor
     virtual QVector<double> importBeatsAndApplyTimingOffset(
-            const QString& filePath,
-            const audio::StreamInfo& streamInfo) {
-        Q_UNUSED(filePath);
-        Q_UNUSED(streamInfo);
-        return {};
-    };
+            const QString& filePath, const audio::StreamInfo& streamInfo) = 0;
 };
 
 typedef std::shared_ptr<BeatsImporter> BeatsImporterPointer;

@@ -4,6 +4,11 @@
 
 namespace mixxx {
 
+SeratoBeatsImporter::SeratoBeatsImporter()
+        : BeatsImporter(),
+          m_pTerminalMarker(nullptr) {
+}
+
 SeratoBeatsImporter::SeratoBeatsImporter(
         QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers,
         SeratoBeatGridTerminalMarkerPointer pTerminalMarker)
