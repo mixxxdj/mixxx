@@ -42,11 +42,7 @@ class SeratoBeatGridNonTerminalMarker final {
     quint32 m_beatsTillNextMarker;
 };
 
-inline QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg) {
-    return dbg << "SeratoBeatGridNonTerminalMarker"
-               << "PositionMillis =" << arg.positionSecs()
-               << "BeatTillNextMarker = " << arg.beatsTillNextMarker();
-}
+QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg);
 
 class SeratoBeatGridTerminalMarker final {
   public:
@@ -71,11 +67,7 @@ class SeratoBeatGridTerminalMarker final {
     float m_bpm;
 };
 
-inline QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
-    return dbg << "SeratoBeatGridTerminalMarker"
-               << "PositionMillis =" << arg.positionSecs()
-               << "BPM =" << arg.bpm();
-}
+QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg);
 
 /// DTO for storing information from the SeratoBeatGrid tags used by the Serato
 /// DJ Pro software.
@@ -170,12 +162,7 @@ inline bool operator!=(const SeratoBeatGrid& lhs, const SeratoBeatGrid& rhs) {
     return !(lhs == rhs);
 }
 
-inline QDebug operator<<(QDebug dbg, const SeratoBeatGrid& arg) {
-    // TODO: Improve debug output
-    return dbg << "number of markers ="
-               << (arg.nonTerminalMarkers().length() +
-                          (arg.terminalMarker() ? 1 : 0));
-}
+QDebug operator<<(QDebug dbg, const SeratoBeatGrid& arg);
 
 } // namespace mixxx
 

@@ -417,4 +417,23 @@ QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
     return base64EncodedData;
 }
 
+QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
+    return dbg << "SeratoBeatGridTerminalMarker"
+               << "PositionMillis =" << arg.positionSecs()
+               << "BPM =" << arg.bpm();
+}
+
+QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg) {
+    return dbg << "SeratoBeatGridNonTerminalMarker"
+               << "PositionMillis =" << arg.positionSecs()
+               << "BeatTillNextMarker = " << arg.beatsTillNextMarker();
+}
+
+QDebug operator<<(QDebug dbg, const SeratoBeatGrid& arg) {
+    // TODO: Improve debug output
+    return dbg << "number of markers ="
+               << (arg.nonTerminalMarkers().length() +
+                          (arg.terminalMarker() ? 1 : 0));
+}
+
 } // namespace mixxx
