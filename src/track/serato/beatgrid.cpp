@@ -419,13 +419,13 @@ QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
 
 QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
     return dbg << "SeratoBeatGridTerminalMarker"
-               << "PositionMillis =" << arg.positionSecs()
+               << "PositionSecs =" << arg.positionSecs()
                << "BPM =" << arg.bpm();
 }
 
 QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg) {
     return dbg << "SeratoBeatGridNonTerminalMarker"
-               << "PositionMillis =" << arg.positionSecs()
+               << "PositionSecs =" << arg.positionSecs()
                << "BeatTillNextMarker = " << arg.beatsTillNextMarker();
 }
 
