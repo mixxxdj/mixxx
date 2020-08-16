@@ -1227,7 +1227,20 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // Just to be safe, but this should never happen!!
         return pTrack;
     }
-    DEBUG_ASSERT(pTrack->getId() == trackId);
+    if (pTrack->getId() != trackId) {
+        // This happens if two different tracks are referencing
+        // the same (physical) file on the file system!! Due to
+        // symbolic links different locations may resolve to the
+        // same canonical location. We can only load each file
+        // once at a time.
+        kLogger.warning()
+                << "Returning already loaded track"
+                << pTrack->getId()
+                << "instead of"
+                << trackId
+                << "with the same canonical file location"
+                << pTrack->getFileInfo().canonicalFilePath();
+    }
     if (cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::HIT) {
         // Due to race conditions the track might have been reloaded
         // from the database in the meantime. In this case we abort
