@@ -11,7 +11,6 @@ namespace mixxx {
 /// signal info (channel number, sample rate, bitrate) is known.
 class BeatsImporter {
   public:
-    BeatsImporter() = default;
     virtual ~BeatsImporter() = default;
 
     virtual bool isEmpty() const = 0;
