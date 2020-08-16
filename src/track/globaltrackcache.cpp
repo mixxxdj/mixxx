@@ -403,12 +403,14 @@ TrackPointer GlobalTrackCache::lookupByRef(
     if (trackRef.hasCanonicalLocation()) {
         trackPtr = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
         if (trackPtr) {
-            if (trackRef.hasId() &&
-                    trackRef.getId() != trackPtr->getId()) {
+            const auto cachedRef = createTrackRef(*trackPtr);
+            if (cachedRef.hasId() &&
+                    trackRef.hasId() &&
+                    cachedRef.getId() != trackRef.getId()) {
                 kLogger.warning()
                         << "Found a different track with the same canonical location:"
                         << "expected =" << trackRef
-                        << "actual =" << createTrackRef(*trackPtr);
+                        << "actual =" << cachedRef;
             }
             return trackPtr;
         }
@@ -548,6 +550,15 @@ void GlobalTrackCache::resolve(
                         << "Cache hit - found track by canonical location"
                         << trackRef.getCanonicalLocation()
                         << strongPtr.get();
+            }
+            const auto cachedRef = createTrackRef(*strongPtr);
+            if (cachedRef.hasId() &&
+                    trackRef.hasId() &&
+                    cachedRef.getId() != trackRef.getId()) {
+                kLogger.warning()
+                        << "Found a different track with the same canonical location:"
+                        << "expected =" << trackRef
+                        << "actual =" << cachedRef;
             }
             pCacheResolver->initLookupResult(
                     GlobalTrackCacheLookupResult::HIT,
