@@ -1228,11 +1228,13 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         return pTrack;
     }
     if (pTrack->getId() != trackId) {
-        // This happens if two different tracks are referencing
-        // the same (physical) file on the file system!! Due to
-        // symbolic links different locations may resolve to the
-        // same canonical location. We can only load each file
-        // once at a time.
+        // The cacheResolver() failed to resolve the track by it's trackId,
+        // but has found a different track that has already been loaded and
+        // is stored in the cache. That track references the same (physical)
+        // file on the file system!! Due to symbolic links different locations
+        // may resolve to the same canonical location. We can only load and
+        // access each file once at a time to prevent corruption due to
+        // concurrent, non-exclusive (write) access.
         kLogger.warning()
                 << "Returning already loaded track"
                 << pTrack->getId()

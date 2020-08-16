@@ -226,12 +226,17 @@ private:
     void relocateTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator);
 
-    TrackPointer lookupByRef(
-            const TrackRef& trackRef);
     TrackPointer lookupById(
             const TrackId& trackId);
     TrackPointer lookupByCanonicalLocation(
             const QString& canonicalLocation);
+
+    /// Lookup the track either by id (primary) or by
+    /// canonical location (secondary). The id of the
+    /// returned track might differ from the requested
+    /// id due to file system aliasing!!
+    TrackPointer lookupByRef(
+            const TrackRef& trackRef);
 
     TrackPointer revive(GlobalTrackCacheEntryPointer entryPtr);
 
