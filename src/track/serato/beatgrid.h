@@ -86,7 +86,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
 class SeratoBeatGrid final {
   public:
     SeratoBeatGrid() = default;
-    explicit SeratoBeatGrid(
+    SeratoBeatGrid(
             SeratoBeatGridTerminalMarkerPointer pTerminalMarker,
             QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers)
             : m_pTerminalMarker(pTerminalMarker),
