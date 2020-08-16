@@ -121,7 +121,7 @@ class SeratoBeatGrid final {
         m_nonTerminalMarkers = nonTerminalMarkers;
     }
 
-    const SeratoBeatGridTerminalMarkerPointer terminalMarker() const {
+    SeratoBeatGridTerminalMarkerPointer terminalMarker() const {
         return m_pTerminalMarker;
     }
     void setTerminalMarker(SeratoBeatGridTerminalMarkerPointer pTerminalMarker) {
