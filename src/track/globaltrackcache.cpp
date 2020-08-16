@@ -391,8 +391,27 @@ bool GlobalTrackCache::isEmpty() const {
     return m_tracksById.empty() && m_tracksByCanonicalLocation.empty();
 }
 
+TrackPointer GlobalTrackCache::lookupByRef(
+        const TrackRef& trackRef) {
+    TrackPointer trackPtr;
+    if (trackRef.hasId()) {
+        trackPtr = lookupById(trackRef.getId());
+        if (trackPtr) {
+            return trackPtr;
+        }
+    }
+    if (trackRef.hasCanonicalLocation()) {
+        trackPtr = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
+        if (trackPtr) {
+            return trackPtr;
+        }
+    }
+    return trackPtr;
+}
+
 TrackPointer GlobalTrackCache::lookupById(
         const TrackId& trackId) {
+    TrackPointer trackPtr;
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
         // Cache hit
@@ -402,7 +421,8 @@ TrackPointer GlobalTrackCache::lookupById(
                     << trackId
                     << trackById->second->getPlainPtr();
         }
-        return revive(trackById->second);
+        trackPtr = revive(trackById->second);
+        DEBUG_ASSERT(trackPtr);
     } else {
         // Cache miss
         if (traceLogEnabled()) {
@@ -410,37 +430,34 @@ TrackPointer GlobalTrackCache::lookupById(
                     << "Cache miss for"
                     << trackId;
         }
-        return TrackPointer();
     }
+    return trackPtr;
 }
 
-TrackPointer GlobalTrackCache::lookupByRef(
-        const TrackRef& trackRef) {
-    if (trackRef.hasId()) {
-        return lookupById(trackRef.getId());
+TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
+        const QString& canonicalLocation) {
+    TrackPointer trackPtr;
+    const auto trackByCanonicalLocation(
+            m_tracksByCanonicalLocation.find(canonicalLocation));
+    if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
+        // Cache hit
+        if (traceLogEnabled()) {
+            kLogger.trace()
+                    << "Cache hit for"
+                    << canonicalLocation
+                    << trackByCanonicalLocation->second->getPlainPtr();
+        }
+        trackPtr = revive(trackByCanonicalLocation->second);
+        DEBUG_ASSERT(trackPtr);
     } else {
-        const auto canonicalLocation = trackRef.getCanonicalLocation();
-        const auto trackByCanonicalLocation(
-                m_tracksByCanonicalLocation.find(canonicalLocation));
-        if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
-            // Cache hit
-            if (traceLogEnabled()) {
-                kLogger.trace()
-                        << "Cache hit for"
-                        << canonicalLocation
-                        << trackByCanonicalLocation->second->getPlainPtr();
-            }
-            return revive(trackByCanonicalLocation->second);
-        } else {
-            // Cache miss
-            if (traceLogEnabled()) {
-                kLogger.trace()
-                        << "Cache miss for"
-                        << canonicalLocation;
-            }
-            return TrackPointer();
+        // Cache miss
+        if (traceLogEnabled()) {
+            kLogger.trace()
+                    << "Cache miss for"
+                    << canonicalLocation;
         }
     }
+    return trackPtr;
 }
 
 TrackPointer GlobalTrackCache::revive(
