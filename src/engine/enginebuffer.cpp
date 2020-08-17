@@ -108,56 +108,56 @@ EngineBuffer::EngineBuffer(const QString& group,
             Qt::DirectConnection);
 
     // Play button
-    m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
+    m_playButton = new ControlPushButton(ConfigKey(group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
     m_playButton->connectValueChangeRequest(
             this, &EngineBuffer::slotControlPlayRequest,
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
-    m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
+    m_playStartButton = new ControlPushButton(ConfigKey(group, "start_play"));
     connect(m_playStartButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlPlayFromStart,
             Qt::DirectConnection);
 
     // Jump to start and stop button
-    m_stopStartButton = new ControlPushButton(ConfigKey(m_group, "start_stop"));
+    m_stopStartButton = new ControlPushButton(ConfigKey(group, "start_stop"));
     connect(m_stopStartButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlJumpToStartAndStop,
             Qt::DirectConnection);
 
     //Stop playback (for sampler)
-    m_stopButton = new ControlPushButton(ConfigKey(m_group, "stop"));
+    m_stopButton = new ControlPushButton(ConfigKey(group, "stop"));
     connect(m_stopButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlStop,
             Qt::DirectConnection);
 
     // Start button
-    m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
+    m_startButton = new ControlPushButton(ConfigKey(group, "start"));
     m_startButton->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_startButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlStart,
             Qt::DirectConnection);
 
     // End button
-    m_endButton = new ControlPushButton(ConfigKey(m_group, "end"));
+    m_endButton = new ControlPushButton(ConfigKey(group, "end"));
     connect(m_endButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlEnd,
             Qt::DirectConnection);
 
-    m_pSlipButton = new ControlPushButton(ConfigKey(m_group, "slip_enabled"));
+    m_pSlipButton = new ControlPushButton(ConfigKey(group, "slip_enabled"));
     m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
 
     m_playposSlider = new ControlLinPotmeter(
-        ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
+            ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true);
     connect(m_playposSlider, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlSeek,
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
-    m_visualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
+    m_visualPlayPos = VisualPlayPosition::getVisualPlayPosition(group);
 
-    m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
+    m_pRepeat = new ControlPushButton(ConfigKey(group, "repeat"));
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
@@ -166,18 +166,18 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pKeylockEngine->connectValueChanged(this, &EngineBuffer::slotKeylockEngineChanged,
                                           Qt::DirectConnection);
 
-    m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
-    m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
+    m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
+    m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
-    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
+    m_pKeylock = new ControlPushButton(ConfigKey(group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
+    m_pEject = new ControlPushButton(ConfigKey(group, "eject"));
     connect(m_pEject, &ControlObject::valueChanged,
             this, &EngineBuffer::slotEjectTrack,
             Qt::DirectConnection);
 
-    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
+    m_pTrackLoaded = new ControlObject(ConfigKey(group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
     // Quantization Controller for enabling and disabling the quantization (alignment)
