@@ -236,6 +236,12 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
+    for (int i = 0; i < 8; ++i) {
+        auto control = new MacroControl(group, pConfig, i + 1);
+        m_macroControls.append(control);
+        addControl(control);
+    }
+
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);

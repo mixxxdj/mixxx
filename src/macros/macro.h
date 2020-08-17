@@ -48,7 +48,8 @@ class Macro {
     };
     Q_DECLARE_FLAGS(State, StateFlag);
 
-    Macro(QVector<MacroAction> actions, QString label, State state);
+    explicit Macro();
+    Macro(QVector<MacroAction> actions, QString label, State state = State());
 
     void operator=(const Macro& other) {
         m_actions = other.m_actions;

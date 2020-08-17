@@ -1,11 +1,13 @@
 #include "macros/macro.h"
 
 #include <QDebug>
-#include <utility>
+
+Macro::Macro() {
+}
 
 Macro::Macro(QVector<MacroAction> actions, QString label, State state)
-        : m_actions(std::move(actions)),
-          m_label(std::move(label)),
+        : m_actions(actions),
+          m_label(label),
           m_state(state) {
 }
 

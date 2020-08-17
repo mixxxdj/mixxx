@@ -7,6 +7,7 @@
 
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
+#include "engine/controls/macrocontrol.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "macros/macrorecorder.h"
@@ -262,6 +263,7 @@ class EngineBuffer : public EngineObject {
     KeyControl* m_pKeyControl;
     ClockControl* m_pClockControl;
     CueControl* m_pCueControl;
+    QList<MacroControl*> m_macroControls;
 
     QList<EngineControl*> m_engineControls;
 

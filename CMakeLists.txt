@@ -464,6 +464,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/controls/enginecontrol.cpp
   src/engine/controls/keycontrol.cpp
   src/engine/controls/loopingcontrol.cpp
+  src/engine/controls/macrocontrol.cpp
   src/engine/controls/quantizecontrol.cpp
   src/engine/controls/ratecontrol.cpp
   src/engine/effects/engineeffect.cpp
