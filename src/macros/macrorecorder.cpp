@@ -90,8 +90,8 @@ bool MacroRecorder::isRecordingActive() const {
     return getStatus() > 0;
 }
 
-QVector<MacroAction> MacroRecorder::fetchRecordedActions() {
-    QVector<MacroAction> actions;
+QList<MacroAction> MacroRecorder::fetchRecordedActions() {
+    QList<MacroAction> actions;
     while (MacroAction* action = m_recordedActions.front()) {
         actions.append(*action);
         m_recordedActions.pop();

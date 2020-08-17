@@ -10,11 +10,11 @@ void MacroDAO::initialize(const QSqlDatabase& database) {
 }
 
 void MacroDAO::saveMacro(TrackId trackId, const Macro& macro, int number) const {
-    return saveMacro(trackId, macro.m_actions, macro.m_label, macro.m_state, number);
+    return saveMacro(trackId, macro.getActions(), macro.getLabel(), macro.getState(), number);
 }
 
 void MacroDAO::saveMacro(TrackId trackId,
-        QVector<MacroAction> actions,
+        QList<MacroAction> actions,
         QString label,
         Macro::State state,
         int number) const {

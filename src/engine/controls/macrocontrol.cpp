@@ -37,7 +37,7 @@ ConfigKey MacroControl::getConfigKey(QString name) {
 
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     m_macro = pNewTrack ? pNewTrack->getMacros().value(m_number) : Macro();
-    if (m_macro.m_state.testFlag(Macro::StateFlag::Enabled)) {
+    if (m_macro.isEnabled()) {
         run();
     } else {
         stop();
@@ -50,7 +50,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
         return;
     }
     double framePos = dCurrentSample / mixxx::kEngineChannelCount;
-    const MacroAction& nextAction = m_macro.m_actions.at(m_iNextAction);
+    const MacroAction& nextAction = m_macro.getActions().at(m_iNextAction);
     double nextActionPos = nextAction.position;
     int bufFrames = iBufferSize / 2;
     // the process method is called roughly every iBufferSize samples (double as often if you view frames)
@@ -59,8 +59,8 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
         seekExact(nextAction.target * mixxx::kEngineChannelCount);
         m_iNextAction++;
-        if (m_iNextAction == m_macro.m_actions.size()) {
-            if (m_macro.m_state.testFlag(Macro::StateFlag::Looped)) {
+        if (m_iNextAction == m_macro.size()) {
+            if (m_macro.isLooped()) {
                 m_iNextAction = 0;
             } else {
                 stop();
@@ -70,7 +70,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
 }
 
 bool MacroControl::isRunning() const {
-    return m_iNextAction < m_macro.m_actions.size();
+    return m_iNextAction < m_macro.size();
 }
 
 void MacroControl::run() {
@@ -87,8 +87,14 @@ void MacroControl::controlSet() {
 }
 
 void MacroControl::controlClear() {
-    m_macro.m_actions.clear();
+    m_macro.clear();
 }
 
 void MacroControl::controlActivate() {
+    if (m_macro.isEmpty()) {
+        // TODO(xerus) start recording
+    } else {
+        m_iNextAction = 0;
+        m_macro.setState(Macro::StateFlag::Enabled);
+    }
 }

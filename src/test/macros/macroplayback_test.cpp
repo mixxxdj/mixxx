@@ -6,7 +6,7 @@ class MacroPlaybackTest : public BaseSignalPathTest {
 
 TEST_F(MacroPlaybackTest, Playback) {
     MacroAction action(0, 2000);
-    QVector<MacroAction> actions{action};
+    QList<MacroAction> actions{action};
     Macro macro(actions, "Test1", Macro::StateFlag::Enabled);
 
     TrackPointer pTrack = getTestTrack();

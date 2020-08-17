@@ -38,8 +38,8 @@ struct MacroAction {
 /// A Macro stores a list of MacroActions as well as its current state and label.
 class Macro {
   public:
-    static QByteArray serialize(const QVector<MacroAction>& actions);
-    static QVector<MacroAction> deserialize(const QByteArray& serialized);
+    static QByteArray serialize(QList<MacroAction> actions);
+    static QList<MacroAction> deserialize(QByteArray serialized);
     static int getFreeSlot(QList<int> taken);
 
     enum class StateFlag {
@@ -48,16 +48,32 @@ class Macro {
     };
     Q_DECLARE_FLAGS(State, StateFlag);
 
-    explicit Macro();
-    Macro(QVector<MacroAction> actions, QString label, State state = State());
+    explicit Macro() = default;
+    Macro(QList<MacroAction> actions, QString label, State state = State());
 
-    void operator=(const Macro& other) {
-        m_actions = other.m_actions;
-        m_label = other.m_label;
-        m_state = other.m_state;
-    }
+    bool isDirty() const;
 
-    QVector<MacroAction> m_actions;
+    QString getLabel() const;
+    void setLabel(QString);
+
+    bool isEnabled() const;
+    bool isLooped() const;
+    const State& getState() const;
+    void setState(StateFlag flag, bool enable = true);
+
+    bool isEmpty() const;
+    int size() const;
+
+    const QList<MacroAction>& getActions() const;
+    void addAction(const MacroAction& action);
+
+    void clear();
+
+  private:
+    bool m_bDirty;
+    int m_iId;
+
+    QList<MacroAction> m_actions;
     QString m_label;
     State m_state;
 };

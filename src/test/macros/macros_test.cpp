@@ -3,8 +3,7 @@
 #include <QtConcurrent>
 
 TEST(MacrosTest, SerializeMacroActions) {
-    QVector<MacroAction> actions{MacroAction(0, 1)};
-    ASSERT_EQ(actions.length(), 1);
+    QList<MacroAction> actions{MacroAction(0, 1)};
 
     QString filename(QDir::currentPath() % "/src/test/macros/macro_proto");
     ASSERT_TRUE(QFile::exists(filename));
@@ -14,7 +13,7 @@ TEST(MacrosTest, SerializeMacroActions) {
     QByteArray serialized = Macro::serialize(actions);
     EXPECT_EQ(serialized.length(), content.length());
     EXPECT_EQ(serialized, content);
-    QVector<MacroAction> deserialized = Macro::deserialize(serialized);
+    QList<MacroAction> deserialized = Macro::deserialize(serialized);
     EXPECT_EQ(deserialized.size(), 1);
     EXPECT_EQ(deserialized, actions);
 }

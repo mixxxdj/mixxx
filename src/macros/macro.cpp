@@ -2,29 +2,34 @@
 
 #include <QDebug>
 
-Macro::Macro() {
+proto::Macro_Action* MacroAction::serialize() const {
+    auto serialized = new proto::Macro_Action();
+    serialized->set_position(position);
+    serialized->set_target(target);
+    serialized->set_type(static_cast<uint>(Type::Jump));
+    return serialized;
 }
 
-Macro::Macro(QVector<MacroAction> actions, QString label, State state)
+Macro::Macro(QList<MacroAction> actions, QString label, State state)
         : m_actions(actions),
           m_label(label),
           m_state(state) {
 }
 
 // static
-QVector<MacroAction> Macro::deserialize(const QByteArray& serialized) {
+QList<MacroAction> Macro::deserialize(QByteArray serialized) {
     proto::Macro macroProto = proto::Macro();
     macroProto.ParseFromArray(serialized.data(), serialized.length());
-    QVector<MacroAction> result(macroProto.actions_size());
-    int i = 0;
+    QList<MacroAction> result;
+    result.reserve(macroProto.actions_size());
     for (const proto::Macro_Action& action : macroProto.actions()) {
-        result.replace(i++, MacroAction(action.position(), action.target()));
+        result.append(MacroAction(action.position(), action.target()));
     }
     return result;
 }
 
 // static
-QByteArray Macro::serialize(const QVector<MacroAction>& actions) {
+QByteArray Macro::serialize(QList<MacroAction> actions) {
     proto::Macro macroProto;
     auto actionsProto = macroProto.mutable_actions();
     for (const MacroAction& action : actions) {
@@ -42,12 +47,56 @@ int Macro::getFreeSlot(QList<int> taken) {
     return number;
 }
 
-proto::Macro_Action* MacroAction::serialize() const {
-    auto serialized = new proto::Macro_Action();
-    serialized->set_position(position);
-    serialized->set_target(target);
-    serialized->set_type(static_cast<uint>(Type::Jump));
-    return serialized;
+bool Macro::isDirty() const {
+    return m_bDirty;
+}
+
+QString Macro::getLabel() const {
+    return m_label;
+}
+
+void Macro::setLabel(QString label) {
+    m_bDirty = true;
+    m_label = label;
+}
+
+bool Macro::isEnabled() const {
+    return m_state.testFlag(StateFlag::Enabled);
+}
+
+bool Macro::isLooped() const {
+    return m_state.testFlag(StateFlag::Looped);
+}
+
+const Macro::State& Macro::getState() const {
+    return m_state;
+}
+
+void Macro::setState(StateFlag flag, bool enable) {
+    m_bDirty = true;
+    m_state.setFlag(flag, enable);
+}
+
+bool Macro::isEmpty() const {
+    return m_actions.isEmpty();
+}
+
+int Macro::size() const {
+    return m_actions.size();
+}
+
+const QList<MacroAction>& Macro::getActions() const {
+    return m_actions;
+}
+
+void Macro::addAction(const MacroAction& action) {
+    m_bDirty = true;
+    m_actions.append(action);
+}
+
+void Macro::clear() {
+    m_bDirty = true;
+    m_actions.clear();
 }
 
 QDebug operator<<(QDebug debug, const MacroAction& action) {
@@ -55,7 +104,7 @@ QDebug operator<<(QDebug debug, const MacroAction& action) {
     return debug;
 }
 QDebug operator<<(QDebug debug, const Macro& macro) {
-    debug << "Macro '" << macro.m_label << "' (" << macro.m_state << ")";
-    debug << macro.m_actions;
+    debug << "Macro '" << macro.getLabel();
+    debug << macro.getActions();
     return debug;
 }

@@ -17,8 +17,8 @@ class MacroManager : public QObject {
     void setPlayerManager(PlayerManager*);
 
   public slots:
-    void slotSaveMacroFromChannel(QVector<MacroAction>, ChannelHandle);
-    void slotSaveMacro(QVector<MacroAction>, TrackPointer);
+    void slotSaveMacroFromChannel(QList<MacroAction>, ChannelHandle);
+    void slotSaveMacro(QList<MacroAction>, TrackPointer);
 
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;

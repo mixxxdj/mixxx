@@ -11,7 +11,7 @@ class MacroDAO : public virtual DAO {
     void initialize(const QSqlDatabase& database) override;
 
     void saveMacro(TrackId trackId,
-            QVector<MacroAction> actions,
+            QList<MacroAction> actions,
             QString label,
             Macro::State state = Macro::State(),
             int number = 0) const;

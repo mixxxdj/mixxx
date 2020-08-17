@@ -43,14 +43,14 @@ class MacroRecorder : public RecordingManagerBase {
     void notifyTrackChange(ChannelHandle* channel, TrackPointer pTrack);
 
     /// Fetches all Actions recorded so far - note that this also clears them!
-    QVector<MacroAction> fetchRecordedActions();
+    QList<MacroAction> fetchRecordedActions();
 
     size_t getRecordingSize() const;
     const ChannelHandle* getActiveChannel() const;
 
   signals:
-    void saveMacroFromChannel(QVector<MacroAction>, ChannelHandle);
-    void saveMacro(QVector<MacroAction>, TrackPointer);
+    void saveMacroFromChannel(QList<MacroAction>, ChannelHandle);
+    void saveMacro(QList<MacroAction>, TrackPointer);
 
   private slots:
     void pollRecordingStart();

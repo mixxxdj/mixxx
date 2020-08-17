@@ -21,12 +21,12 @@ void MacroManager::setPlayerManager(PlayerManager* pPlayerManager) {
     m_pPlayerManager = pPlayerManager;
 }
 
-void MacroManager::slotSaveMacroFromChannel(QVector<MacroAction> actions, ChannelHandle channel) {
+void MacroManager::slotSaveMacroFromChannel(QList<MacroAction> actions, ChannelHandle channel) {
     qCDebug(macroLoggingCategory) << "Saving Macro from channel" << channel.handle();
     slotSaveMacro(actions, m_pPlayerManager->getPlayer(channel)->getLoadedTrack());
 }
 
-void MacroManager::slotSaveMacro(QVector<MacroAction> actions, TrackPointer track) {
+void MacroManager::slotSaveMacro(QList<MacroAction> actions, TrackPointer track) {
     qCDebug(macroLoggingCategory) << "Saving Macro for track" << track->getId();
     if (actions.empty()) {
         qCDebug(macroLoggingCategory) << "Macro empty, aborting save!";
