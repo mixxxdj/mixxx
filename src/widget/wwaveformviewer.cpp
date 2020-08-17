@@ -223,7 +223,7 @@ void WWaveformViewer::leaveEvent(QEvent*) {
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
-        if (track) {
+        if (track && track->getBeats()) {
             m_pBeatMenu->setBeatsPointer(track->getBeats());
             connect(track->getBeats().get(),
                     &mixxx::Beats::updated,

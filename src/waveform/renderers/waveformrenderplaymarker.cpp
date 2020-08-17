@@ -36,6 +36,9 @@ void WaveformRenderPlayMarker::draw(QPainter* painter, QPaintEvent* event) {
     const auto colors = m_waveformRenderer->getWaveformSignalColors();
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     const auto trackBeats = m_waveformRenderer->getTrackInfo()->getBeats();
+    if (!trackBeats) {
+        return;
+    }
     const auto currentTrackPosition = rendererPositionFractionToTrackPosition(
             m_waveformRenderer->getPlayPos(), trackSamples);
     const auto prevBeat = trackBeats->findPrevBeat(currentTrackPosition);
