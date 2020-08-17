@@ -1,24 +1,25 @@
 #pragma once
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QTest>
+#include <QtDebug>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "mixer/deck.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginebuffer.h"
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
+#include "mixer/deck.h"
+#include "mixer/playerinfo.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
 #include "util/defs.h"
 #include "util/memory.h"
@@ -115,6 +116,8 @@ class BaseSignalPathTest : public MixxxTest {
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
         ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
+
+        PlayerInfo::create();
     }
 
     ~BaseSignalPathTest() override {
@@ -132,6 +135,7 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pEffectsManager;
         delete m_pVisualsManager;
         delete m_pNumDecks;
+        PlayerInfo::destroy();
     }
 
     void addDeck(EngineDeck* pDeck) {

@@ -12,7 +12,7 @@ inline void mixxx_debug_assert(const char* assertion, const char* file, int line
 }
 
 inline bool mixxx_maybe_debug_assert_return_true(const char* assertion, const char* file, int line, const char* function) {
-#ifdef MIXXX_BUILD_DEBUG
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     mixxx_debug_assert(assertion, file, line, function);
 #else
     Q_UNUSED(assertion);
@@ -51,7 +51,7 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 //   DEBUG_ASSERT(doSomething());
 //
 // In release builds, doSomething() is never called!
-#ifdef MIXXX_BUILD_DEBUG
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define DEBUG_ASSERT(cond) ((!(cond)) ? mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION) : mixxx_noop())
 #else
 #define DEBUG_ASSERT(cond)
