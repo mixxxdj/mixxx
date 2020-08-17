@@ -34,7 +34,6 @@ MacroRecorder::MacroRecorder()
 void MacroRecorder::notifyCueJump(
         ChannelHandle* channel, double sourceFramePos, double destFramePos) {
     qCDebug(macroLoggingCategory) << "Jump in channel" << channel->handle();
-    DEBUG_ASSERT(QThread::currentThread() != this->thread()); // Invoked from the real-time thread
     if (isRecordingActive() && checkOrClaimRecording(channel)) {
         m_recordedActions.try_emplace(sourceFramePos, destFramePos);
         qCDebug(macroLoggingCategory) << "Recorded jump in channel" << channel->handle();
@@ -105,6 +104,6 @@ void MacroRecorder::notifyTrackChange(ChannelHandle* channel, TrackPointer track
         m_pStartRecordingTimer.stop();
         m_CORecStatus.forceSet(Status::Disabled);
 
-        emit saveMacro(fetchRecordedActions(), track->getId());
+        emit saveMacro(fetchRecordedActions(), track);
     }
 }

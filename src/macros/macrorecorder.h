@@ -49,8 +49,8 @@ class MacroRecorder : public RecordingManagerBase {
     const ChannelHandle* getActiveChannel() const;
 
   signals:
-    void saveMacroFromChannel(QVector<MacroAction> actions, ChannelHandle channel);
-    void saveMacro(QVector<MacroAction> actions, TrackId trackId);
+    void saveMacroFromChannel(QVector<MacroAction>, ChannelHandle);
+    void saveMacro(QVector<MacroAction>, TrackPointer);
 
   private slots:
     void pollRecordingStart();
