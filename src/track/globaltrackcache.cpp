@@ -404,12 +404,14 @@ TrackPointer GlobalTrackCache::lookupByRef(
         trackPtr = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
         if (trackPtr) {
             const auto cachedRef = createTrackRef(*trackPtr);
-            if (cachedRef.hasId() &&
-                    trackRef.hasId() &&
-                    cachedRef.getId() != trackRef.getId()) {
+            // If an id has been provided the caller expects that if a track
+            // is found it is supposed to have the exact same id. This cannot
+            // be guaranteed due to file system aliasing.
+            // The found track may or may not have a valid id.
+            if (trackRef.hasId() && trackRef.getId() != cachedRef.getId()) {
                 kLogger.warning()
-                        << "Found a different track with the same canonical location:"
-                        << "expected =" << trackRef
+                        << "Found a different track for the same canonical location:"
+                        << "requested =" << trackRef
                         << "actual =" << cachedRef;
             }
             return trackPtr;
@@ -552,14 +554,16 @@ void GlobalTrackCache::resolve(
                         << strongPtr.get();
             }
             const auto cachedRef = createTrackRef(*strongPtr);
-            if (cachedRef.hasId() &&
-                    trackRef.hasId() &&
-                    cachedRef.getId() != trackRef.getId()) {
+            // If an id has been provided the caller expects that if a track
+            // is found it is supposed to have the exact same id. This cannot
+            // be guaranteed due to file system aliasing.
+            // The found track may or may not have a valid id.
+            if (trackRef.hasId() && trackRef.getId() != cachedRef.getId()) {
                 kLogger.warning()
-                        << "Found a different track with the same canonical location:"
-                        << "expected =" << trackRef
+                        << "Found a different track for the same canonical location:"
+                        << "requested =" << trackRef
                         << "actual =" << cachedRef;
-                // Replace expected with actual TrackRef to prevent inconcistencies
+                // Replace requested with actual TrackRef to prevent inconcistencies
                 trackRef = cachedRef;
             }
             pCacheResolver->initLookupResult(
