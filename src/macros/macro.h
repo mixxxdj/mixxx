@@ -63,5 +63,5 @@ class Macro {
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(Macro::State)
 
-QDebug operator<<(QDebug debug, MacroAction action);
-QDebug operator<<(QDebug debug, Macro macro);
+QDebug operator<<(QDebug debug, const MacroAction& action);
+QDebug operator<<(QDebug debug, const Macro& macro);

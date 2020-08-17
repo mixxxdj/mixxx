@@ -40,7 +40,6 @@ TEST_F(MacroRecorderTest, RecordHotcueActivation) {
     // Place hotcue 1 at position 0
     ControlObject::set(ConfigKey("[Channel1]", "hotcue_1_set"), 1);
 
-    ProcessBuffer();
     m_pEngineBuffer1->slotControlSeekExact(action.position * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 0);
@@ -50,7 +49,7 @@ TEST_F(MacroRecorderTest, RecordHotcueActivation) {
     EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action.target * mixxx::kEngineChannelCount);
     checkRecordedAction(action);
 
-    // Eject track and check that recording was stopped
+    // Check that recording stops when ejecting
     m_pEngineBuffer1->slotEjectTrack(1);
     EXPECT_EQ(m_pMacroRecorder->isRecordingActive(), false);
 }

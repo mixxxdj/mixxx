@@ -50,11 +50,11 @@ proto::Macro_Action* MacroAction::serialize() const {
     return serialized;
 }
 
-QDebug operator<<(QDebug debug, MacroAction action) {
+QDebug operator<<(QDebug debug, const MacroAction& action) {
     debug << "Jump from" << action.position << "to" << action.target;
     return debug;
 }
-QDebug operator<<(QDebug debug, Macro macro) {
+QDebug operator<<(QDebug debug, const Macro& macro) {
     debug << "Macro '" << macro.m_label << "' (" << macro.m_state << ")";
     debug << macro.m_actions;
     return debug;
