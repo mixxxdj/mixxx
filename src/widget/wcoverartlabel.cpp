@@ -16,13 +16,11 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
-    setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SIGNAL(coverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-            this, SIGNAL(reloadCoverArt()));
+    connect(m_pCoverMenu,
+            &WCoverArtMenu::coverInfoSelected,
+            this,
+            &WCoverArtLabel::coverInfoSelected);
+    connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArtLabel::reloadCoverArt);
 
     m_defaultCover.setDevicePixelRatio(getDevicePixelRatioF(this));
     m_defaultCover = m_defaultCover.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
@@ -62,6 +60,11 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
     m_pCoverMenu->popup(mapToGlobal(pos));
+}
+
+void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
+    m_pCoverMenu->popup(event->globalPos());
 }
 
 void WCoverArtLabel::loadTrack(TrackPointer pTrack) {

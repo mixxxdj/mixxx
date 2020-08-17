@@ -42,7 +42,12 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
     ]
     assert line_arguments
 
-    logger.info("Reformatting %s...", file_to_format.filename)
+    logger.info(
+        "Reformatting %s [%s]...",
+        file_to_format.filename,
+        ", ".join("{}-{}".format(*x) for x in file_to_format.lines),
+    )
+
     filename = os.path.join(rootdir, file_to_format.filename)
     cmd = [
         "clang-format",

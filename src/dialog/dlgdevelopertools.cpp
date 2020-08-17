@@ -26,7 +26,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                       pControl->description());
 
             ConfigKey aliasKey = controlAliases[pControl->getKey()];
-            if (!aliasKey.isNull()) {
+            if (aliasKey.isValid()) {
                 m_controlModel.addControl(aliasKey, pControl->name(),
                                           "Alias for " + pControl->getKey().group + pControl->getKey().item);
             }
