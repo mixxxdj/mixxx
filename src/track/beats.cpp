@@ -106,10 +106,6 @@ FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
     return m_beatsInternal.findNBeatsFromFrame(fromFrame, beats);
 };
 
-bool Beats::isValid() const {
-    return m_beatsInternal.isValid();
-}
-
 Beat Beats::findPrevBeat(FramePos frame) const {
     return m_beatsInternal.findPrevBeat(frame);
 }

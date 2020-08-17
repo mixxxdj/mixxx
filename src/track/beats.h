@@ -149,7 +149,6 @@ class Beats final : public QObject {
     /// the beats object.
     QString getSubVersion() const;
     void setSubVersion(const QString& subVersion);
-    bool isValid() const;
 
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of firstBeatFrame. Does not generate an updated() signal, since it is
