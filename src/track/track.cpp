@@ -313,9 +313,6 @@ void Track::setBeats(mixxx::BeatsPointer pBeats) {
 }
 
 void Track::setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats) {
-    // This whole method is not so great. The fact that Beats is an ABC is
-    // limiting with respect to QObject and signals/slots.
-
     if (m_pBeats == pBeats) {
         pLock->unlock();
         return;
