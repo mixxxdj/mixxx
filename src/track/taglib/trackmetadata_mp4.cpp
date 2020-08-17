@@ -31,6 +31,7 @@ const TagLib::String kAtomKeyReplayGainAlbumGain = "----:com.apple.iTunes:replay
 const TagLib::String kAtomKeyReplayGainAlbumPeak = "----:com.apple.iTunes:replaygain_album_peak";
 
 // Serato atom keys
+const TagLib::String kAtomKeySeratoBeatGrid = "----:com.serato.dj:beatgrid";
 const TagLib::String kAtomKeySeratoMarkers = "----:com.serato.dj:markers";
 const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
 
@@ -311,6 +312,16 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     // Serato tags
+    TagLib::String seratoBeatGridData;
+    if (readAtom(
+                tag,
+                kAtomKeySeratoBeatGrid,
+                &seratoBeatGridData)) {
+        parseSeratoBeatGrid(
+                pTrackMetadata,
+                seratoBeatGridData,
+                FileType::MP4);
+    }
     TagLib::String seratoMarkersData;
     if (readAtom(
                 tag,
@@ -447,6 +458,10 @@ bool exportTrackMetadataIntoTag(
     // does not modify them.
 #if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
+    writeAtom(
+            pTag,
+            kAtomKeySeratoBeatGrid,
+            dumpSeratoBeatGrid(trackMetadata, FileType::MP4));
     writeAtom(
             pTag,
             kAtomKeySeratoMarkers,

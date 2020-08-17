@@ -26,7 +26,7 @@ class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
     static void initialize(
-            const QDir& settingsDir,
+            const QDir& logDir,
             LogLevel logLevel,
             LogLevel logFlushLevel,
             bool debugAssertBreak);
