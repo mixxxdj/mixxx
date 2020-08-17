@@ -40,6 +40,31 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     m_actionPosition = 0;
 }
 
+void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
+    Q_UNUSED(dRate);
+    if (!m_macro.m_state.testFlag(Macro::StateFlag::Enabled)) {
+        return;
+    }
+    if (m_actionPosition >= m_macro.m_actions.size()) {
+        if (m_macro.m_state.testFlag(Macro::StateFlag::Looped)) {
+            m_actionPosition = 0;
+        } else {
+            return;
+        }
+    }
+    double framePos = dCurrentSample / mixxx::kEngineChannelCount;
+    const MacroAction& nextAction = m_macro.m_actions.at(m_actionPosition);
+    double nextActionPos = nextAction.position;
+    int bufFrames = iBufferSize / 2;
+    // the process method is called roughly every iBufferSize samples (double as often if you view frames)
+    // so we use double that as tolerance range to be safe
+    // it triggers early because the seek will only be processed in the next EngineBuffer process call
+    if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
+        seekExact(nextAction.target * mixxx::kEngineChannelCount);
+        m_actionPosition++;
+    }
+}
+
 void MacroControl::controlSet() {
 }
 

@@ -17,5 +17,7 @@ TEST_F(MacroPlaybackTest, Playback) {
     EXPECT_EQ(pEngineBuffer->getExactPlayPos() / mixxx::kEngineChannelCount, action.position);
 
     ProcessBuffer();
+    // We have to do a second call: First one only queues the seek
+    ProcessBuffer();
     EXPECT_EQ(pEngineBuffer->getExactPlayPos() / mixxx::kEngineChannelCount, action.target);
 }

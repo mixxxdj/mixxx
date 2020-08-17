@@ -14,6 +14,7 @@ class MacroControl : public EngineControl {
     MacroControl(QString group, UserSettingsPointer pConfig, int number);
 
     void trackLoaded(TrackPointer pNewTrack) override;
+    void process(const double dRate, const double dCurrentSample, const int iBufferSize) override;
 
   private slots:
     void controlSet();
