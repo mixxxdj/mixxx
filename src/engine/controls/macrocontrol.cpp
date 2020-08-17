@@ -37,23 +37,20 @@ ConfigKey MacroControl::getConfigKey(QString name) {
 
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     m_macro = pNewTrack ? pNewTrack->getMacros().value(m_number) : Macro();
-    m_actionPosition = 0;
+    if (m_macro.m_state.testFlag(Macro::StateFlag::Enabled)) {
+        run();
+    } else {
+        stop();
+    }
 }
 
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
     Q_UNUSED(dRate);
-    if (!m_macro.m_state.testFlag(Macro::StateFlag::Enabled)) {
+    if (!isRunning()) {
         return;
     }
-    if (m_actionPosition >= m_macro.m_actions.size()) {
-        if (m_macro.m_state.testFlag(Macro::StateFlag::Looped)) {
-            m_actionPosition = 0;
-        } else {
-            return;
-        }
-    }
     double framePos = dCurrentSample / mixxx::kEngineChannelCount;
-    const MacroAction& nextAction = m_macro.m_actions.at(m_actionPosition);
+    const MacroAction& nextAction = m_macro.m_actions.at(m_iNextAction);
     double nextActionPos = nextAction.position;
     int bufFrames = iBufferSize / 2;
     // the process method is called roughly every iBufferSize samples (double as often if you view frames)
@@ -61,14 +58,36 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     // it triggers early because the seek will only be processed in the next EngineBuffer process call
     if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
         seekExact(nextAction.target * mixxx::kEngineChannelCount);
-        m_actionPosition++;
+        m_iNextAction++;
+        if (m_iNextAction == m_macro.m_actions.size()) {
+            if (m_macro.m_state.testFlag(Macro::StateFlag::Looped)) {
+                m_iNextAction = 0;
+            } else {
+                stop();
+            }
+        }
     }
+}
+
+bool MacroControl::isRunning() const {
+    return m_iNextAction < m_macro.m_actions.size();
+}
+
+void MacroControl::run() {
+    m_iNextAction = 0;
+    m_COStatus.forceSet(Status::Running);
+}
+
+void MacroControl::stop() {
+    m_iNextAction = INT_MAX;
+    m_COStatus.forceSet(Status::Recorded);
 }
 
 void MacroControl::controlSet() {
 }
 
 void MacroControl::controlClear() {
+    m_macro.m_actions.clear();
 }
 
 void MacroControl::controlActivate() {
