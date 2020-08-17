@@ -55,14 +55,14 @@
      rx="4.0000005"
      ry="4" />
   <circle
-     style="fill:#787878;fill-opacity:1;stroke:none;stroke-width:0.846;stroke-linecap:round;stroke-linejoin:round"
+     style="fill:#3d3d3c;fill-opacity:1;stroke:none;stroke-width:0.846;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path834"
      cx="-10.5"
      cy="10"
      r="4"
      transform="scale(-1,1)" />
   <ellipse
-     style="fill:none;fill-opacity:1;stroke:url(#linearGradient853);stroke-width:1.00001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:none;fill-opacity:1;stroke:none;stroke-width:1.00001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path834-3"
      cx="-13.910207"
      cy="-4.0932012"
