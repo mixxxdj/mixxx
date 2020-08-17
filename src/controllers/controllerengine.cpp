@@ -633,6 +633,12 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
 
 ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& group, const QString& name) {
     ConfigKey key = ConfigKey(group, name);
+
+    if (!key.isValid()) {
+        qWarning() << "ControllerEngine: Requested control with invalid key" << key;
+        return nullptr;
+    }
+
     ControlObjectScript* coScript = m_controlCache.value(key, nullptr);
     if (coScript == nullptr) {
         // create COT

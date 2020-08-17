@@ -142,6 +142,29 @@ bool parseAlbumPeak(
 }
 #endif // __EXTRA_METADATA__
 
+bool parseSeratoBeatGrid(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& data,
+        FileType fileType) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseBeatGrid(data, fileType);
+    if (isValid) {
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
+    }
+    return isValid;
+}
+
+bool parseSeratoBeatGrid(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& data,
+        FileType fileType) {
+    const TagLib::ByteVector byteVec =
+            data.data(TagLib::String::UTF8);
+    return parseSeratoBeatGrid(pTrackMetadata, toQByteArrayRaw(byteVec), fileType);
+}
+
 bool parseSeratoMarkers(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data,
@@ -188,23 +211,33 @@ bool parseSeratoMarkers2(
     return parseSeratoMarkers2(pTrackMetadata, toQByteArrayRaw(byteVec), fileType);
 }
 
+TagLib::String dumpSeratoBeatGrid(
+        const TrackMetadata& trackMetadata,
+        FileType fileType) {
+    const QByteArray seratoBeatGridData =
+            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(fileType);
+    return TagLib::String(
+            seratoBeatGridData.constData(),
+            TagLib::String::UTF8);
+}
+
 TagLib::String dumpSeratoMarkers(
         const TrackMetadata& trackMetadata,
         FileType fileType) {
-    const QByteArray utf8Data =
+    const QByteArray seratoMarkersData =
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(fileType);
     return TagLib::String(
-            utf8Data.constData(),
+            seratoMarkersData.constData(),
             TagLib::String::UTF8);
 }
 
 TagLib::String dumpSeratoMarkers2(
         const TrackMetadata& trackMetadata,
         FileType fileType) {
-    const QByteArray utf8Data =
+    const QByteArray seratoMarkers2Data =
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(fileType);
     return TagLib::String(
-            utf8Data.constData(),
+            seratoMarkers2Data.constData(),
             TagLib::String::UTF8);
 }
 
