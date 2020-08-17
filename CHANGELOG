@@ -3,6 +3,7 @@
 * Add controller mapping for Hercules DJControl Inpulse 200 #2542
 * Add controller mapping for Hercules DJControl Jogvision #2370
 * Fix missing manual in deb package lp:1889776
+* Fix caching of duplicate tracks that reference the same file #3027
 
 ==== 2.2.4 2020-05-10 ====
 
