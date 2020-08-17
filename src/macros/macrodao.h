@@ -11,11 +11,12 @@ class MacroDAO : public virtual DAO {
     void initialize(const QSqlDatabase& database) override;
 
     void saveMacro(TrackId trackId,
-            const QVector<MacroAction>& actions,
-            const QString& label,
+            QVector<MacroAction> actions,
+            QString label,
             Macro::State state = Macro::State(),
-            int number = 0);
-    void saveMacro(TrackId trackId, const Macro& macro, int number = 0);
+            int number = 0) const;
+    void saveMacro(TrackId trackId, const Macro& macro, int number = 0) const;
+    void saveMacros(TrackId trackId, QMap<int, Macro> macros) const;
 
     int getFreeNumber(TrackId trackId) const;
     QMap<int, Macro> loadMacros(TrackId trackId) const;

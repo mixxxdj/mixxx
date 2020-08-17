@@ -11,7 +11,7 @@
 class MacroManager : public QObject {
     Q_OBJECT
   public:
-    MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool);
+    MacroManager();
 
     MacroRecorder* getRecorder();
     void setPlayerManager(PlayerManager*);
@@ -22,7 +22,6 @@ class MacroManager : public QObject {
 
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;
-    std::unique_ptr<MacroDAO> m_pMacroDao;
 
     PlayerManager* m_pPlayerManager;
 };

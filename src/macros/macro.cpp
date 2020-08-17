@@ -32,6 +32,14 @@ QByteArray Macro::serialize(const QVector<MacroAction>& actions) {
     return QByteArray(string.data(), string.length());
 }
 
+// static
+int Macro::getFreeSlot(QList<int> taken) {
+    int number = 1;
+    while (taken.contains(number))
+        number++;
+    return number;
+}
+
 proto::Macro_Action* MacroAction::serialize() const {
     auto serialized = new proto::Macro_Action();
     serialized->set_position(position);

@@ -9,15 +9,15 @@ void MacroDAO::initialize(const QSqlDatabase& database) {
     m_database = database;
 }
 
-void MacroDAO::saveMacro(TrackId trackId, const Macro& macro, int number) {
-    saveMacro(trackId, macro.m_actions, macro.m_label, macro.m_state, number);
+void MacroDAO::saveMacro(TrackId trackId, const Macro& macro, int number) const {
+    return saveMacro(trackId, macro.m_actions, macro.m_label, macro.m_state, number);
 }
 
 void MacroDAO::saveMacro(TrackId trackId,
-        const QVector<MacroAction>& actions,
-        const QString& label,
+        QVector<MacroAction> actions,
+        QString label,
         Macro::State state,
-        int number) {
+        int number) const {
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "INSERT INTO macros "
@@ -39,6 +39,12 @@ void MacroDAO::saveMacro(TrackId trackId,
     qCDebug(macroLoggingCategory) << "Macro saved";
 }
 
+void MacroDAO::saveMacros(TrackId trackId, QMap<int, Macro> macros) const {
+    for (const Macro& macro : macros) {
+        saveMacro(trackId, macro);
+    }
+}
+
 QSqlQuery MacroDAO::querySelect(QString columns, TrackId trackId) const {
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT %1 FROM macros WHERE track_id=:trackId")
@@ -53,14 +59,11 @@ int MacroDAO::getFreeNumber(TrackId trackId) const {
         LOG_FAILED_QUERY(query);
         return 1;
     }
-    QBitArray taken(7);
+    QList<int> numbers;
     while (query.next()) {
-        taken.setBit(query.value(0).toInt());
+        numbers.append(query.value(0).toInt());
     }
-    int number = 1;
-    while (taken.testBit(number))
-        number++;
-    return number;
+    return Macro::getFreeSlot(numbers);
 }
 
 QMap<int, Macro> MacroDAO::loadMacros(TrackId trackId) const {

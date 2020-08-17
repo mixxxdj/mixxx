@@ -5,11 +5,8 @@
 #include "mixer/basetrackplayer.h"
 #include "util/db/dbconnectionpooled.h"
 
-MacroManager::MacroManager(
-        mixxx::DbConnectionPoolPtr pDbConnectionPool)
-        : m_pMacroRecorder(std::make_unique<MacroRecorder>()),
-          m_pMacroDao(std::make_unique<MacroDAO>()) {
-    m_pMacroDao->initialize(mixxx::DbConnectionPooled(pDbConnectionPool));
+MacroManager::MacroManager()
+        : m_pMacroRecorder(std::make_unique<MacroRecorder>()) {
     connect(getRecorder(),
             &MacroRecorder::saveMacroFromChannel,
             this,
@@ -34,11 +31,9 @@ void MacroManager::slotSaveMacro(QVector<MacroAction> actions, TrackPointer trac
     if (actions.empty()) {
         qCDebug(macroLoggingCategory) << "Macro empty, aborting save!";
     } else {
-        m_pMacroDao->saveMacro(
-                track->getId(),
-                actions,
-                "Unnamed Macro",
-                Macro::StateFlag::Enabled);
+        track->addMacro(
+                Macro::getFreeSlot(track->getMacros().keys()),
+                Macro(actions, "Unnamed Macro", Macro::StateFlag::Enabled));
     }
 }
 

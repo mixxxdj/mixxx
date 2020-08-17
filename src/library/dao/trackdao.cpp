@@ -1579,8 +1579,8 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             trackId,
             pTrack->getWaveform(),
             pTrack->getWaveformSummary());
-    m_cueDao.saveTrackCues(
-            trackId, pTrack->getCuePoints());
+    m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
+    m_macroDao.saveMacros(trackId, pTrack->getMacros());
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();

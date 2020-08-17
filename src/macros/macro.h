@@ -40,6 +40,7 @@ class Macro {
   public:
     static QByteArray serialize(const QVector<MacroAction>& actions);
     static QVector<MacroAction> deserialize(const QByteArray& serialized);
+    static int getFreeSlot(QList<int> taken);
 
     enum class StateFlag {
         Enabled = 1u,
