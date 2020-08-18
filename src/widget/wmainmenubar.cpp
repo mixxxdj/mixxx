@@ -265,9 +265,17 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    QList<QKeySequence> shortcuts;
-    shortcuts << QKeySequence::FullScreen;
-    shortcuts << QKeySequence("F11");
+    QList<QKeySequence> shortcuts{QKeySequence("F11")};
+    QKeySequence osShortcut = QKeySequence::FullScreen;
+    // Note(ronso0) Only add the OS shortcut if it's not empty and not F11.
+    // In some Linux distros the window managers doesn't pass the OS fullscreen
+    // key sequence to Mixxx for some reason.
+    // Both adding an empty key sequence or the same sequence twice can render
+    // the fullscreen shortcut nonfunctional.
+    // https://bugs.launchpad.net/mixxx/+bug/1882474  PR #3011
+    if (!osShortcut.isEmpty() && !shortcuts.contains(osShortcut)) {
+        shortcuts << osShortcut;
+    }
 
     pViewFullScreen->setShortcuts(shortcuts);
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);

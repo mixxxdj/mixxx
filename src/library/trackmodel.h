@@ -22,6 +22,7 @@ class TrackModel {
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
               m_eDefaultSortOrder(Qt::AscendingOrder) {
+        DEBUG_ASSERT(db.isValid());
     }
     virtual ~TrackModel() {}
 
