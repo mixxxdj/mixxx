@@ -1,0 +1,6 @@
+ @inproceedings{peter2010a,
+  author = {Peter Grosche and Meinard Müller and Frank Kurth},
+  title = {Cyclic tempogram - a mid-level tempo representation for music signals},
+  booktitle = {Proceedings of the 2010 IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP 2010)},
+  year = {2010}
+} 

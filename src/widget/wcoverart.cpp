@@ -234,15 +234,21 @@ void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
+void WCoverArt::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
+    if (m_loadedTrack) {
+        m_pMenu->setCoverArt(m_lastRequestedCover);
+        m_pMenu->popup(event->globalPos());
+    }
+}
+
 void WCoverArt::mousePressEvent(QMouseEvent* event) {
     if (!m_bEnable) {
         return;
     }
 
-    if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
-        m_pMenu->setCoverArt(m_lastRequestedCover);
-        m_pMenu->popup(event->globalPos());
-    } else if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton) {
+        event->accept();
         // do nothing if left button is pressed,
         // wait for button release
         m_clickTimer.setSingleShot(true);
@@ -266,7 +272,7 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
+    if ((event->buttons().testFlag(Qt::LeftButton)) && m_loadedTrack) {
         DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
     }
 }

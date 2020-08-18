@@ -61,9 +61,25 @@ std::tuple<QList<double>, QMap<double, int>> AnalyzerRhythm::computeRawTemposAnd
     
     QList<double> tempoList;
     QMap<double, int> tempoFrequencyTable;
-    for (int i = beatWindow; i < beats.size(); i += 1) {
-        double start_sample = beats.at(i - beatWindow);
-        double end_sample = beats.at(i);
+    for (int i = 0; i < beats.size(); i += 1) {
+        double start_sample;
+        double end_sample;
+        // boundaries check..
+        if (i < beatWindow) {
+            start_sample = beats.at(i);
+            end_sample = beats.at(i + beatWindow);
+        } else if (i + beatWindow > beats.size()-1) {
+            start_sample = beats.at(i - beatWindow);
+            end_sample = beats.at(i);
+        } else {
+            if (beatWindow % 2 == 0) {
+                start_sample = beats.at(i - (beatWindow/2));
+                end_sample = beats.at(i + (beatWindow/2));
+            } else {
+                start_sample = beats.at(i - (beatWindow/2));
+                end_sample = beats.at(i + (beatWindow/2) + 1);
+            }
+        }
         // Time needed to count beatWindow beats
         double time = (end_sample - start_sample) / m_iSampleRate;
         if (time == 0) continue;
