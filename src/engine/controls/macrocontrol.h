@@ -23,7 +23,7 @@ class MacroControl : public EngineControl {
         Armed = 1,
         Recording = 2,
         Recorded = 3,
-        Running = 4,
+        Playing = 4,
     };
 
   private slots:
@@ -35,7 +35,7 @@ class MacroControl : public EngineControl {
     void run();
     void stop();
 
-    Macro m_macro;
+    MacroPtr m_pMacro;
     int m_iNextAction;
 
     int m_number;

@@ -10,16 +10,11 @@ class MacroDAO : public virtual DAO {
   public:
     void initialize(const QSqlDatabase& database) override;
 
-    void saveMacro(TrackId trackId,
-            QList<MacroAction> actions,
-            QString label,
-            Macro::State state = Macro::State(),
-            int number = 0) const;
-    void saveMacro(TrackId trackId, const Macro& macro, int number = 0) const;
-    void saveMacros(TrackId trackId, QMap<int, Macro> macros) const;
+    bool saveMacro(TrackId trackId, Macro* macro, int slot = 0) const;
+    void saveMacros(TrackId trackId, QMap<int, MacroPtr> macros) const;
 
-    int getFreeNumber(TrackId trackId) const;
-    QMap<int, Macro> loadMacros(TrackId trackId) const;
+    int getFreeSlot(TrackId trackId) const;
+    QMap<int, MacroPtr> loadMacros(TrackId trackId) const;
 
   private:
     QSqlQuery querySelect(QString columns, TrackId trackId) const;

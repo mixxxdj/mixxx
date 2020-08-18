@@ -1138,17 +1138,17 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     emit cuesUpdated();
 }
 
-QMap<int, Macro> Track::getMacros() const {
+QMap<int, MacroPtr> Track::getMacros() const {
     QMutexLocker lock(&m_qMutex);
     return m_macros;
 }
 
-void Track::setMacros(QMap<int, Macro> macros) {
+void Track::setMacros(QMap<int, MacroPtr> macros) {
     QMutexLocker lock(&m_qMutex);
     m_macros = macros;
 }
 
-void Track::addMacro(int number, const Macro& macro) {
+void Track::addMacro(int number, MacroPtr macro) {
     QMutexLocker lock(&m_qMutex);
     m_macros.insert(number, macro);
     markDirtyAndUnlock(&lock);

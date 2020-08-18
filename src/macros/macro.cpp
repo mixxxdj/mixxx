@@ -10,8 +10,9 @@ proto::Macro_Action* MacroAction::serialize() const {
     return serialized;
 }
 
-Macro::Macro(QList<MacroAction> actions, QString label, State state)
-        : m_actions(actions),
+Macro::Macro(QList<MacroAction> actions, QString label, State state, int id)
+        : m_iId(id),
+          m_actions(actions),
           m_label(label),
           m_state(state) {
 }
@@ -49,6 +50,10 @@ int Macro::getFreeSlot(QList<int> taken) {
 
 bool Macro::isDirty() const {
     return m_bDirty;
+}
+
+int Macro::getId() const {
+    return m_iId;
 }
 
 QString Macro::getLabel() const {
@@ -97,6 +102,14 @@ void Macro::addAction(const MacroAction& action) {
 void Macro::clear() {
     m_bDirty = true;
     m_actions.clear();
+}
+
+void Macro::setDirty(bool dirty) {
+    m_bDirty = dirty;
+}
+
+void Macro::setId(int id) {
+    m_iId = id;
 }
 
 QDebug operator<<(QDebug debug, const MacroAction& action) {

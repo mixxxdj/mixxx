@@ -281,10 +281,10 @@ class Track : public QObject {
             mixxx::CueInfoImporterPointer pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
-    QMap<int, Macro> getMacros() const;
+    QMap<int, MacroPtr> getMacros() const;
 
-    void setMacros(QMap<int, Macro> macros);
-    void addMacro(int number, const Macro& macro);
+    void setMacros(QMap<int, MacroPtr> macros);
+    void addMacro(int number, MacroPtr macro);
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
@@ -468,7 +468,7 @@ class Track : public QObject {
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
 
-    QMap<int, Macro> m_macros;
+    QMap<int, MacroPtr> m_macros;
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;

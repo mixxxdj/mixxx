@@ -1,5 +1,7 @@
 #include "macrocontrol.h"
 
+// TODO(xerus) move recording here and delete macromanager
+
 MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int number)
         : EngineControl(group, pConfig),
           m_number(number),
@@ -36,8 +38,9 @@ ConfigKey MacroControl::getConfigKey(QString name) {
 }
 
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
-    m_macro = pNewTrack ? pNewTrack->getMacros().value(m_number) : Macro();
-    if (m_macro.isEnabled()) {
+    // TODO(xerus) should we even allow nullptr?
+    m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_number) : nullptr;
+    if (m_pMacro && m_pMacro->isEnabled()) {
         run();
     } else {
         stop();
@@ -50,7 +53,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
         return;
     }
     double framePos = dCurrentSample / mixxx::kEngineChannelCount;
-    const MacroAction& nextAction = m_macro.getActions().at(m_iNextAction);
+    const MacroAction& nextAction = m_pMacro->getActions().at(m_iNextAction);
     double nextActionPos = nextAction.position;
     int bufFrames = iBufferSize / 2;
     // the process method is called roughly every iBufferSize samples (double as often if you view frames)
@@ -59,8 +62,8 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
         seekExact(nextAction.target * mixxx::kEngineChannelCount);
         m_iNextAction++;
-        if (m_iNextAction == m_macro.size()) {
-            if (m_macro.isLooped()) {
+        if (m_iNextAction == m_pMacro->size()) {
+            if (m_pMacro->isLooped()) {
                 m_iNextAction = 0;
             } else {
                 stop();
@@ -70,12 +73,12 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
 }
 
 bool MacroControl::isRunning() const {
-    return m_iNextAction < m_macro.size();
+    return m_pMacro && m_iNextAction < m_pMacro->size();
 }
 
 void MacroControl::run() {
     m_iNextAction = 0;
-    m_COStatus.forceSet(Status::Running);
+    m_COStatus.forceSet(Status::Playing);
 }
 
 void MacroControl::stop() {
@@ -84,17 +87,24 @@ void MacroControl::stop() {
 }
 
 void MacroControl::controlSet() {
+    if (!m_pMacro || m_pMacro->isEmpty()) {
+        // TODO(xerus) stop recording
+    } else {
+        m_pMacro->setState(Macro::StateFlag::Enabled, !m_pMacro->isEnabled());
+    }
 }
 
 void MacroControl::controlClear() {
-    m_macro.clear();
+    if (!isRunning()) {
+        m_pMacro->clear();
+    }
 }
 
 void MacroControl::controlActivate() {
-    if (m_macro.isEmpty()) {
+    if (!m_pMacro || m_pMacro->isEmpty()) {
         // TODO(xerus) start recording
+        // TODO(xerus) save if recording
     } else {
-        m_iNextAction = 0;
-        m_macro.setState(Macro::StateFlag::Enabled);
+        run();
     }
 }

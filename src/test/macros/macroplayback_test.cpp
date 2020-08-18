@@ -7,10 +7,9 @@ class MacroPlaybackTest : public BaseSignalPathTest {
 TEST_F(MacroPlaybackTest, Playback) {
     MacroAction action(0, 2000);
     QList<MacroAction> actions{action};
-    Macro macro(actions, "Test1", Macro::StateFlag::Enabled);
 
     TrackPointer pTrack = getTestTrack();
-    pTrack->setMacros({{1, macro}});
+    pTrack->setMacros({{1, std::make_shared<Macro>(actions, "Test1", Macro::StateFlag::Enabled)}});
 
     loadTrack(m_pMixerDeck1, pTrack);
     EngineBuffer* pEngineBuffer = m_pMixerDeck1->getEngineDeck()->getEngineBuffer();

@@ -33,7 +33,7 @@ void MacroManager::slotSaveMacro(QList<MacroAction> actions, TrackPointer track)
     } else {
         track->addMacro(
                 Macro::getFreeSlot(track->getMacros().keys()),
-                Macro(actions, "Unnamed Macro", Macro::StateFlag::Enabled));
+                std::make_shared<Macro>(actions, "Unnamed Macro", Macro::StateFlag::Enabled));
     }
 }
 

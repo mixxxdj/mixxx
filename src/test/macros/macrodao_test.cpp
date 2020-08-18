@@ -18,25 +18,30 @@ class MacroDAOTest : public MixxxDbTest {
 
 TEST_F(MacroDAOTest, SaveAndLoadMacro) {
     TrackId track(1);
-    m_macroDAO.saveMacro(track, QList{MacroAction(0, 7)}, "Test", Macro::StateFlag::Looped);
+    MacroAction action(0, 7);
+    Macro saved(QList<MacroAction>{action}, "Test", Macro::StateFlag::Looped);
 
+    m_macroDAO.saveMacro(track, &saved);
+    // Sanity check
     EXPECT_EQ(m_macroDAO.loadMacros(TrackId(2)).size(), 0);
+    EXPECT_EQ(m_macroDAO.getFreeSlot(track), 2);
 
-    QMap<int, Macro> loaded = m_macroDAO.loadMacros(track);
+    QMap<int, MacroPtr> loaded = m_macroDAO.loadMacros(track);
     ASSERT_EQ(loaded.size(), 1);
-    EXPECT_EQ(loaded.firstKey(), 1);
+    EXPECT_EQ(loaded.keys(), QList{1});
 
-    Macro macro = loaded.first();
-    EXPECT_EQ(macro.isEnabled(), false);
-    EXPECT_EQ(macro.isLooped(), true);
-    EXPECT_EQ(macro.size(), 1);
-    EXPECT_EQ(macro.getActions().first().target, 7);
-    EXPECT_EQ(macro.getLabel(), "Test");
+    MacroPtr macro = loaded.first();
+    EXPECT_EQ(macro->isEnabled(), false);
+    EXPECT_EQ(macro->isLooped(), true);
+    EXPECT_EQ(macro->size(), 1);
+    EXPECT_EQ(macro->getActions().first().target, action.target);
+    EXPECT_EQ(macro->getLabel(), "Test");
 
-    m_macroDAO.saveMacro(track, macro);
+    // Change Macro slot
+    m_macroDAO.saveMacro(track, macro.get(), 3);
+    EXPECT_EQ(m_macroDAO.getFreeSlot(track), 1);
+
     loaded = m_macroDAO.loadMacros(track);
-    EXPECT_EQ(loaded.size(), 2);
-    auto expectedKeys = QList<int>{1, 2};
-    EXPECT_EQ(loaded.keys(), expectedKeys);
-    EXPECT_EQ(m_macroDAO.getFreeNumber(track), 3);
+    EXPECT_EQ(loaded.size(), 1);
+    EXPECT_EQ(loaded.keys(), QList{3});
 }

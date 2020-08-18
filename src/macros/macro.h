@@ -5,6 +5,8 @@
 #include "proto/macro.pb.h"
 namespace proto = mixxx::track::io;
 
+class MacroDAO;
+
 const QLoggingCategory macroLoggingCategory("macros");
 
 /// A MacroAction is the building block of a Macro.
@@ -49,9 +51,10 @@ class Macro {
     Q_DECLARE_FLAGS(State, StateFlag);
 
     explicit Macro() = default;
-    Macro(QList<MacroAction> actions, QString label, State state = State());
+    Macro(QList<MacroAction> actions, QString label, State state = State(), int id = -1);
 
     bool isDirty() const;
+    int getId() const;
 
     QString getLabel() const;
     void setLabel(QString);
@@ -70,14 +73,21 @@ class Macro {
     void clear();
 
   private:
+    void setDirty(bool dirty);
+    void setId(int id);
+
     bool m_bDirty;
-    int m_iId;
+    int m_iId = -1;
 
     QList<MacroAction> m_actions;
     QString m_label;
     State m_state;
+
+    friend class MacroDAO;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(Macro::State)
+
+typedef std::shared_ptr<Macro> MacroPtr;
 
 QDebug operator<<(QDebug debug, const MacroAction& action);
 QDebug operator<<(QDebug debug, const Macro& macro);
