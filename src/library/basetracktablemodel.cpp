@@ -62,6 +62,7 @@ inline QSqlDatabase cloneDatabase(
     auto cloned = QSqlDatabase::cloneDatabase(
             prototype,
             connectionName);
+    DEBUG_ASSERT(cloned.isValid());
     if (prototype.isOpen() && !cloned.open()) {
         kLogger.warning()
                 << "Failed to open cloned database connection"
@@ -73,8 +74,10 @@ inline QSqlDatabase cloneDatabase(
 
 QSqlDatabase cloneDatabase(
         TrackCollectionManager* pTrackCollectionManager) {
-    DEBUG_ASSERT(pTrackCollectionManager);
-    DEBUG_ASSERT(pTrackCollectionManager->internalCollection());
+    VERIFY_OR_DEBUG_ASSERT(pTrackCollectionManager &&
+            pTrackCollectionManager->internalCollection()) {
+        return QSqlDatabase();
+    }
     const auto connectionName =
             uuidToStringWithoutBraces(QUuid::createUuid());
     return cloneDatabase(
