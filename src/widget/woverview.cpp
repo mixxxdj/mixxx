@@ -85,7 +85,7 @@ WOverview::WOverview(
     m_pPassthroughControl =
             new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
-    onPassthroughChange(m_pPassthroughControl->get());
+    m_bPassthroughEnabled = static_cast<bool>(m_pPassthroughControl->get());
 
     setAcceptDrops(true);
 
@@ -496,9 +496,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
         }
 
-        double dValue = positionToValue(m_iPickupPos);
         if (m_pHoveredMark != nullptr) {
-            dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
+            double dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPickupPos = valueToPosition(dValue);
             m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
