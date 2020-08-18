@@ -62,6 +62,10 @@
                     <MinimunSize>30,20</MinimunSize>
                     <MaximumSize>38,</MaximumSize>
                     <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </Label>
                   <WidgetGroup>
                     <SizePolicy>me,min</SizePolicy>
@@ -84,6 +88,17 @@
                   </PushButton>
                 </Children>
               </WidgetGroup><!-- Fx label & icon -->
+
+              <!-- Indicates if this FxUnit can currently be accessed by controller.
+                   To be used with default midi-components.js mapping -->
+              <WidgetGroup>
+                <ObjectName>FxUnitControllerInputIndicator</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- transparent expand button on top of Fx label & icon -->

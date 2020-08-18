@@ -85,10 +85,9 @@ WLibrary, QAbstractScrollArea::corner {
   border-radius: 1px;
   background-color: #151517;
   }
-  #FxUnitHeaderCollapsed[highlight="1"],
-  #FxUnitHeaderExpanded[highlight="1"] {
-    border-top: 1px solid #257b82;
-    border-right: 1px solid #257b82;
+  #FxUnitControllerInputIndicator[highlight="1"] {
+    border: 1px solid #257b82;
+    background-color: #0f0f0f;
   }
   #WaveformsContainer {
     border-width: 1px 0px;
@@ -795,8 +794,7 @@ WBeatSpinBox::down-button,
     padding: 0px 0px 1px 4px;
   }
   #FxUnitLabel {
-    alignment: left;  /*
-    background-color: rgba(255,0,0,80); */
+    alignment: left;
   }
 
 #FxUnitControlsCollapsed {
@@ -1213,26 +1211,14 @@ WEffectSelector,
     color: #559b99;
   }
 
-/* green for Fx 1/2
-#FxUnit1 #FxUnitLabel,
-#FxUnit2 #FxUnitLabel {
-  color: #236B00;
-} */
-
-/* blue for Fx 3/4
-#FxUnit3 #FxUnitLabel,
-#FxUnit4 #FxUnitLabel {
-  color: #146674;
-} */
-
-/* green for Fx 1/2 */
-#FxUnit1 #FxUnitLabel,
-#FxUnit2 #FxUnitLabel,
-#FxUnit3 #FxUnitLabel,
-#FxUnit4 #FxUnitLabel,
+/* Grey for FxUnit labels */
+#FxUnitLabel,
 #MicAuxLabelUnconfigured {
   color: #686666;
-}
+  }
+  #FxUnitLabel[highlight="1"] {
+    color: #aaa;
+  }
 
 /* Grey. default for all deck labels */
 #PlayPositionText, #PlayPositionTextSmall,
