@@ -24,17 +24,18 @@
   <defs
      id="defs16" />
   <g
-     style="stroke:#060202;stroke-opacity:0.99607998;stroke-linejoin:round;fill:none"
-     id="g899">
+     style="fill:none;stroke:#060202;stroke-linejoin:round;stroke-opacity:0.99608"
+     id="g899"
+     transform="translate(0,1.000296)">
     <path
-       style="fill:none;stroke-linecap:round;stroke:#060202;stroke-opacity:0.99607998;stroke-linejoin:round"
+       style="fill:none;stroke:#060202;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.99608"
        id="path2"
        stroke-width="3.2"
        stroke-opacity="0.99608"
        stroke="#060202"
        d="m 3.5140858,7.001704 c 14.6820002,3.7456 20.9750002,9.9882 20.9750002,9.9882" />
     <path
-       style="fill:none;stroke-linecap:round;stroke:#060202;stroke-opacity:0.99607998;stroke-linejoin:round"
+       style="fill:none;stroke:#060202;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.99608"
        id="path6"
        stroke-width="3.2"
        stroke-opacity="0.99608"
@@ -42,14 +43,14 @@
        d="m 24.486286,7.001704 c -14.6819998,3.7456 -20.9750002,9.9882 -20.9750002,9.9882" />
   </g>
   <path
-     d="m 3.5140858,7.001704 c 14.6820002,3.7456 20.9750002,9.9882 20.9750002,9.9882"
+     d="M 3.5140858,8.002 C 18.196086,11.7476 24.489086,17.9902 24.489086,17.9902"
      stroke="#b5b5b5"
      stroke-opacity=".99216003"
      stroke-width="2"
      id="path4"
      style="fill:none;fill-opacity:1;stroke:#918273;stroke-linecap:round;stroke-opacity:1" />
   <path
-     d="m 24.486286,7.001704 c -14.6819998,3.7456 -20.9750002,9.9882 -20.9750002,9.9882"
+     d="M 24.486286,8.002 C 9.8042862,11.7476 3.5112858,17.9902 3.5112858,17.9902"
      stroke="#da0606"
      stroke-width="2"
      id="path8"

@@ -193,7 +193,7 @@
       <SetVariable name="ArcColorFxParameter">#6d6d6d</SetVariable>
       <SetVariable name="ArcColorGainLow">#8d3b11</SetVariable>
       <SetVariable name="ArcColorMstBal">#a00000</SetVariable>
-      <SetVariable name="ArcColorFxMix">#aa0000</SetVariable>
+      <SetVariable name="ArcColorFxMix">#da0606</SetVariable>
       <!-- Knob pointers
            = suffix for indicator image url -->
       <SetVariable name="KnobColorEq">grey</SetVariable>
