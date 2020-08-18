@@ -379,16 +379,13 @@ TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
 
     // Hotcues mode
     if (this.padModeState === 0) {
-        // XXX: Should we be lighting things here?  I think not.
-        // TraktorS3.lightHotcue(padNumber, field.value);
-        if (field.value) {
-            if (this.shiftPressed) {
-                action = "_clear";
-            } else {
-                action = "_activate";
-            }
-            engine.setValue(this.activeChannel, "hotcue_" + padNumber + action, field.value);
+        if (this.shiftPressed) {
+            action = "_clear";
+        } else {
+            action = "_activate";
         }
+        HIDDebug("setting " + "hotcue_" + padNumber + action + " " + field.value);
+        engine.setValue(this.activeChannel, "hotcue_" + padNumber + action, field.value);
         return;
     }
 
@@ -397,13 +394,6 @@ TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
     if (field.group === "deck2") {
         sampler += 8;
     }
-
-    // var ledValue = field.value;
-    // if (!field.value) {
-    //     ledValue = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
-    // }
-    // XXX: Again, should we be lighting?
-    // this.colorOutput(ledValue, "!pad_" + padNumber);
 
     if (this.shiftPressed) {
         var playing = engine.getValue("[Sampler" + sampler + "]", "play");
@@ -791,24 +781,29 @@ TraktorS3.Deck.prototype.defineLink = function(key, callback) {
 
 TraktorS3.Deck.prototype.linkOutputs = function() {
     var deckFn = TraktorS3.Deck.prototype;
+
+    var colorOutputHandler = function(value, _group, key) {
+        this.colorOutput(value, key);
+    };
+
+    var basicOutputHandler = function(value, _group, key) {
+        this.basicOutput(value, key);
+    };
+
     this.defineLink("play_indicator", TraktorS3.bind(deckFn.playIndicatorHandler, this));
-    this.defineLink("cue_indicator", TraktorS3.bind(deckFn.colorOutputHandler, this));
-    this.defineLink("sync_enabled", TraktorS3.bind(deckFn.colorOutputHandler, this));
-    this.defineLink("keylock", TraktorS3.bind(deckFn.colorOutputHandler, this));
-    this.defineLink("slip_enabled", TraktorS3.bind(deckFn.colorOutputHandler, this));
-    this.defineLink("quantize", TraktorS3.bind(deckFn.colorOutputHandler, this));
-    this.defineLink("reverse", TraktorS3.bind(deckFn.basicOutputHandler, this));
+    this.defineLink("cue_indicator", TraktorS3.bind(colorOutputHandler, this));
+    this.defineLink("sync_enabled", TraktorS3.bind(colorOutputHandler, this));
+    this.defineLink("keylock", TraktorS3.bind(colorOutputHandler, this));
+    this.defineLink("slip_enabled", TraktorS3.bind(colorOutputHandler, this));
+    this.defineLink("quantize", TraktorS3.bind(colorOutputHandler, this));
+    this.defineLink("reverse", TraktorS3.bind(basicOutputHandler, this));
 };
 
 TraktorS3.Deck.prototype.deckBaseColor = function() {
     return TraktorS3.controller.LEDColors[TraktorS3.deckOutputColors[this.activeChannel]];
 };
 
-// outputHandler drives lights that only have one color.
-TraktorS3.Deck.prototype.basicOutputHandler = function(value, _group, key) {
-    this.basicOutput(value, key);
-};
-
+// basicOutput drives lights that only have one color.
 TraktorS3.Deck.prototype.basicOutput = function(value, key) {
     // incoming value will be a channel, we have to resolve back to
     // deck.
@@ -818,10 +813,6 @@ TraktorS3.Deck.prototype.basicOutput = function(value, key) {
         ledValue = 0x77;
     }
     TraktorS3.controller.setOutput(this.group, key, ledValue, !TraktorS3.batchingOutputs);
-};
-
-TraktorS3.Deck.prototype.colorOutputHandler = function(value, _group, key) {
-    this.colorOutput(value, key);
 };
 
 // colorOutput drives lights that have the palettized multicolor lights.
@@ -1410,12 +1401,6 @@ TraktorS3.registerOutputPackets = function() {
 
 TraktorS3.linkChannelOutput = function(group, name, callback) {
     TraktorS3.controller.linkOutput(group, name, group, name, callback);
-};
-
-TraktorS3.wrapOutput = function(callback) {
-    return function(value, _group, name) {
-        callback(value, name);
-    };
 };
 
 // outputHandler drives lights that only have one color.
