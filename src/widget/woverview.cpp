@@ -85,7 +85,7 @@ WOverview::WOverview(
     m_pPassthroughControl =
             new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
-    onPassthroughChange(m_pPassthroughControl->get());
+    m_bPassthroughEnabled = static_cast<bool>(m_pPassthroughControl->get());
 
     setAcceptDrops(true);
 
