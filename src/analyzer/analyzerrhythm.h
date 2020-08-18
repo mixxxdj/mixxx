@@ -42,6 +42,7 @@ class AnalyzerRhythm : public Analyzer {
     bool shouldAnalyze(TrackPointer pTrack) const;
     int stepSize();
     int windowSize();
+    double frameToMinutes(int frame);
 
     // beats and bpms methods
 
@@ -69,6 +70,7 @@ class AnalyzerRhythm : public Analyzer {
     // downbeats and meter methods
     std::vector<double> computeBeatsSpectralDifference(std::vector<double>& beats);
     void computeMeter();
+    std::vector<std::vector<int>> computeMeterHierarchies(int base, std::vector<int> const &multiples);
     // tempogram methods
     void setTempogramParameters();
     void computeTempogramByDFT();
@@ -100,8 +102,8 @@ class AnalyzerRhythm : public Analyzer {
     Window<double>* m_window;
     Window<double>* m_noveltyWindow;
     double* m_fftRealOut;
-    double* m_noveltyfftRealOut;
     double* m_fftImagOut;
+    double* m_noveltyfftRealOut;
     double* m_noveltyfftImagOut;
     double* m_noveltyfftMagnitude;
     // tempogram

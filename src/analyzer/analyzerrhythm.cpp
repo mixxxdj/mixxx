@@ -56,6 +56,14 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
 
 } // namespace
 
+double AnalyzerRhythm::frameToMinutes(int frame) {
+    double minute = (frame/static_cast<double>(m_iSampleRate))/60.0;
+    double intMinutes;
+    double fractionalMinutes = std::modf(minute, &intMinutes);
+    double seconds = (fractionalMinutes*60.0)/100;
+    return intMinutes + seconds;
+}
+
 AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
         : m_iSampleRate(0),
           m_iTotalSamples(0),
@@ -148,8 +156,8 @@ void AnalyzerRhythm::setTempogramParameters() {
     m_tempogramHopSize = pow(2, kTempogramLog2HopSize);
     m_tempogramFftLength = pow(2, kTempogramLog2FftLength);
 
-    m_tempogramMinBPM = 11;
-    m_tempogramMaxBPM = 68;
+    m_tempogramMinBPM = 10;
+    m_tempogramMaxBPM = 70;
     m_tempogramInputSampleRate = m_iSampleRate / kNoveltyCurveHop;
 }
 
@@ -195,10 +203,15 @@ void AnalyzerRhythm::cleanup() {
     m_spectrogram.clear();
     m_pDetectionFunction.reset();
     m_fft.reset();
+    m_noveltyfft.reset();
     m_downbeat.reset();
+    delete m_noveltyWindow;
     delete m_window;
     delete[] m_fftImagOut;
     delete[] m_fftRealOut;
+    delete[] m_noveltyfftRealOut;
+    delete[] m_noveltyfftImagOut;
+    delete[] m_noveltyfftMagnitude;
 }
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
@@ -208,14 +221,12 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
             m_detectionResults[nonZeroCount - 1].t.complexSpecDiff <= 0.0) {
         --nonZeroCount;
     }
-
     std::vector<double> noteOnsets;
     std::vector<double> beatPeriod;
     std::vector<double> tempi;
     const auto required_size = std::max(0, nonZeroCount - 2);
     noteOnsets.reserve(required_size);
     beatPeriod.reserve(required_size);
-
     // skip first 2 results as it might have detect noise as onset
     // that's how vamp does and seems works best this way
     for (int i = 2; i < nonZeroCount; ++i) {
@@ -258,24 +269,10 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
         }
     }
     */
-
-    /*
     for (size_t i = 0; i < beats.size(); ++i) {
         double result = (beats.at(i) * stepSize()) - (stepSize() / mixxx::kEngineChannelCount);
         m_resultBeats.push_back(result);
     }
-
-    */
-
-    int i = 1;
-    for (const auto& x : m_noveltyCurve) {
-        if (x) {
-            double result = i * kNoveltyCurveHop;
-            m_resultBeats.push_back(result);
-        }
-        i++;
-    }
-
     return beats;
 }
 
@@ -366,6 +363,8 @@ void AnalyzerRhythm::computeMeter() {
     int blockCounter = 0;
     double tempoSum = 0;
     double tempoCounter = 0.0;
+    QMap<int, double> accumulatedPulsesLenghtsAndWeights;
+    std::vector<QMap<int, double>> blockWisePulsesLenghtsAndWeights;
     for (int i = 0; i < m_resultBeats.size(); i += 1) {
         double beatFramePos = m_resultBeats[i];
         double blockEnd =
@@ -375,7 +374,7 @@ void AnalyzerRhythm::computeMeter() {
         if (blockEnd < beatFramePos) {
             // check if pulse is integer ratio of tempo
             double localTempo = tempoSum / tempoCounter;
-            qDebug() << "at" << blockEnd << "local tempo is" << localTempo;
+            qDebug() << "at" << frameToMinutes(m_tempogramHopSize * blockCounter * kNoveltyCurveHop) << "local tempo is" << localTempo;
             QMap<int, double> pulsesLenghtsAndWeights;
             auto allPulses = m_metergram[blockCounter].keys();
             for (auto pulse : allPulses) {
@@ -383,94 +382,129 @@ void AnalyzerRhythm::computeMeter() {
                 double beatLenghtOfPulse;
                 double ratioDecimals = std::modf(ratio, &beatLenghtOfPulse);
                 if (ratioDecimals < kCloseToIntTolerance) {
+                     accumulatedPulsesLenghtsAndWeights[static_cast<int>(
+                            beatLenghtOfPulse)] +=
+                            m_metergram[blockCounter][pulse];
                     pulsesLenghtsAndWeights[static_cast<int>(
                             beatLenghtOfPulse)] +=
                             m_metergram[blockCounter][pulse];
+                    blockWisePulsesLenghtsAndWeights.push_back(pulsesLenghtsAndWeights);
                 }
             }
-            std::vector<int> metricalHierchy;
-            double highestWeight = 0.0;
-            //combine integer pulses into metrical hieranchies
-            auto metricalPulses = pulsesLenghtsAndWeights.keys();
-            for (int j = 0; j < metricalPulses.size(); j += 1) {
-                std::vector<int> metricalHierchyCanditade;
-                double metricalHierchyCanditadeWeight = 0.0;
-                metricalHierchyCanditade.push_back(metricalPulses[j]);
-                metricalHierchyCanditadeWeight += pulsesLenghtsAndWeights[metricalPulses[j]];
-                for (int k = 0; k < metricalPulses.size(); k += 1) {
-                    if (j == k) {
-                        continue;
-                    }
-                    int size = metricalHierchyCanditade.size();
-                    bool intergerDivisorOfAllUnits = false;
-                    for (int ij = 0; ij < size; ij += 1) {
-                        if (metricalPulses[k] % metricalHierchyCanditade[ij] != 0) {
-                            intergerDivisorOfAllUnits = false;
-                            break;
-                        }
-                        intergerDivisorOfAllUnits = true;
-                    }
-                    if (intergerDivisorOfAllUnits) {
-                        metricalHierchyCanditade.push_back(metricalPulses[k]);
-                        metricalHierchyCanditadeWeight += pulsesLenghtsAndWeights[metricalPulses[k]];
-                    }
-                }
-                if (metricalHierchyCanditadeWeight > highestWeight) {
-                    metricalHierchy = metricalHierchyCanditade;
-                    highestWeight = metricalHierchyCanditadeWeight;
-                }
-            }
-            qDebug() << metricalHierchy;
             // set for next iteration
             tempoSum = 0;
             tempoCounter = 0.0;
             blockCounter += 1;
         }
     }
-    /*
-    blockCounter = 0;
-    for (auto block : m_metergram) {
-        auto strongestTempo = block.end();
-        int i = 1;
-        int j = 1;
-        auto lastStrongTempo = strongestTempo - j;
-        std::vector<double> strongestPulses;
-        strongestPulses.push_back(lastStrongTempo.value());
-        while (i <= 20) {
-            for (int k = 0; k < strongestPulses.size(); k += 1) {
-                // if the tempo diff is less than 1.5 assume it's the same pulse..
-                if (fabs((strongestTempo - j).value() - strongestPulses[k]) < 1.5) {
-                    j += 1;
-                    k = -1;
+    std::vector<std::vector<int>> metricalHierarchy;
+    //combine integer pulses into metrical hieranchies
+    auto metricalPulses = accumulatedPulsesLenghtsAndWeights.keys();
+    auto primeMetricalPulses = metricalPulses;
+    for (auto pulse : metricalPulses) {
+        if (pulse == 1) {continue;}
+        for (int j = pulse * pulse; j <= metricalPulses.last(); j+=pulse) {
+            primeMetricalPulses.removeAt(primeMetricalPulses.indexOf(j));
+        }
+    }
+    for (auto pulse : primeMetricalPulses) {
+        std::vector<int> pulseMultiples;
+        for (auto nextPulse : metricalPulses) {
+            if (nextPulse <= pulse) {continue;}
+            if (nextPulse % pulse == 0) {
+                pulseMultiples.push_back(nextPulse);
+            }
+        }
+        auto pulseHierarchies = computeMeterHierarchies(pulse, pulseMultiples);
+        metricalHierarchy.insert(metricalHierarchy.end(), pulseHierarchies.begin(), pulseHierarchies.end());
+    }
+    for (int i = 0; i < metricalHierarchy.size(); i += 1) {
+        if (metricalHierarchy[i].size() == 3) {
+            auto firstMetricPair = metricalHierarchy[i];
+            auto secondMetricPair = metricalHierarchy[i];
+            firstMetricPair.pop_back();
+            secondMetricPair.erase(secondMetricPair.begin());
+            metricalHierarchy.push_back(firstMetricPair);
+            metricalHierarchy.push_back(secondMetricPair);
+        }
+        else if (metricalHierarchy[i].size() == 4) {
+            auto firstMetricTuple = metricalHierarchy[i];
+            auto lastMetricTuple = metricalHierarchy[i];
+            firstMetricTuple.pop_back();
+            lastMetricTuple.erase(lastMetricTuple.begin());
+            metricalHierarchy.push_back(firstMetricTuple);
+            metricalHierarchy.push_back(lastMetricTuple);
+        }
+    }
+    double highestWeight = 0.0;
+    std::vector<int> bestHierarchy;
+    for (auto meter : metricalHierarchy) {
+        double pulseWeight = 0.0;
+        for (auto pulse : meter) {
+            pulseWeight += accumulatedPulsesLenghtsAndWeights[pulse];
+        }
+        double meterWeight = pulseWeight/meter.size();
+        qDebug() << meter << meterWeight;
+        if (meterWeight > highestWeight) {
+            highestWeight = meterWeight;
+            bestHierarchy = meter;
+        }
+    }
+    qDebug() << bestHierarchy;
+}
+
+std::vector<std::vector<int>> AnalyzerRhythm::computeMeterHierarchies
+        (int pulse, std::vector<int> const &pulseMultiples) {
+    // This function combines all the possible combinations of common
+    // pulse interger divisors in pulseMultiples into seperate vectors
+    // ex: 2 and <4,6,8,10,12> | <2,4,8>, <2,4,12> <2,6,12> <2,10>
+    std::vector<std::vector<int>> pulseHierarchies;
+    std::vector<int> lowestPulse;
+    lowestPulse.push_back(pulse);
+    pulseHierarchies.push_back(lowestPulse);
+    for (int i = 0; i < pulseMultiples.size(); i += 1) {
+        bool pulseBelongs = false;
+        for (auto &testHierarchy : pulseHierarchies) {
+            // handle standart case in which multiple of divisible by
+            // the last element already in the hierarchy
+            if (pulseMultiples[i] % testHierarchy.back() == 0) {
+                testHierarchy.push_back(pulseMultiples[i]);
+                pulseBelongs = true;
+            } else {
+                // handle edge cases in which multiple is not divisible
+                // by the last element but might be from some element before
+                auto last = testHierarchy.end() -1;
+                while (last != testHierarchy.begin()){
+                    if (pulseMultiples[i] % (*last) == 0) {
+                        pulseBelongs = true;
+                        std::vector<int> hierarchyCopy;
+                        std::copy(testHierarchy.begin(), last+1, std::back_inserter(hierarchyCopy));
+                        hierarchyCopy.push_back(pulseMultiples[i]);
+                        // this checks that two hierarchies have not reduced to the same
+                        // ex pulse = 20, with <2,4,12> and <2,4,8> both will reduce to <2,4>
+                        if( hierarchyCopy == pulseHierarchies.back()) {
+                            break;
+                        }
+                        pulseHierarchies.push_back(hierarchyCopy);
+                        break;
+                        
+                    }
+                    last -= 1;
                 }
             }
-            strongestPulses.push_back((strongestTempo - j).value());
-            i += 1;
         }
-        double minute = ((m_tempogramHopSize * blockCounter * kNoveltyCurveHop)/static_cast<double>(m_iSampleRate))/60.0;
-        double fractionalMinutes;
-        double intMinutes;
-        fractionalMinutes = std::modf(minute, &intMinutes);
-        double seconds = (fractionalMinutes*60.0)/100;
-        minute = intMinutes + seconds;
-        qDebug() << "At time" << minute << "blockcounter" << blockCounter;
-        int pulseCounter = 1;
-        for (auto pulse : strongestPulses) {
-            qDebug() << pulseCounter++ << "th strongest pulse is" << pulse;
-        } 
-        blockCounter += 1;
+        // handle cases in which multiple does not belong in any hierarchy
+        if (!pulseBelongs) {
+            pulseHierarchies.push_back(lowestPulse);
+            pulseHierarchies.back().push_back(pulseMultiples[i]);
+        }
     }
-    */
+    return pulseHierarchies;
 }
 
 int AnalyzerRhythm::computeNoveltyCurve() {
     NoveltyCurveProcessor nc(static_cast<float>(m_iSampleRate), kNoveltyCurveWindow, kNoveltyCurveCompressionConstant);
     m_noveltyCurve = nc.spectrogramToNoveltyCurve(m_spectrogram);
-
-    int i = 0;
-    for (const auto& x : m_noveltyCurve) {
-        qDebug() << i++ << x << "nnnnnnnnn";
-    }
     return m_spectrogram.size();
 }
 
