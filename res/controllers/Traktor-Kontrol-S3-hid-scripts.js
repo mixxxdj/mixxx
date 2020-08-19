@@ -27,6 +27,8 @@
 var TraktorS3 = new function() {
     this.controller = new HIDController();
 
+    this.debugMode = false;
+
     // ==== Friendly User Configuration ====
     // The pitch slider can operate either in absolute or relative mode.
     // In absolute mode:
@@ -1686,5 +1688,7 @@ TraktorS3.init = function(_id) {
     TraktorS3.lightDeck("[Channel1]", false);
     TraktorS3.lightDeck("[Channel2]", true);
 
-    // TraktorS3.debugLights();
+    if (TraktorS3.debugMode) {
+        TraktorS3.debugLights();
+    }
 };
