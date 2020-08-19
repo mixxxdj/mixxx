@@ -244,68 +244,6 @@ LoopingControl::~LoopingControl() {
     }
 }
 
-void LoopingControl::slotLoopScale(double scaleFactor) {
-    LoopSamples loopSamples = m_loopSamples.getValue();
-    if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
-        return;
-    }
-    const double loopLength = (loopSamples.end - loopSamples.start) * scaleFactor;
-    const int trackSamples = static_cast<int>(m_pTrackSamples->get());
-
-    // Abandon loops that are too short of extend beyond the end of the file.
-    if (loopLength < MINIMUM_AUDIBLE_LOOP_SIZE ||
-            loopSamples.start + loopLength > trackSamples) {
-        return;
-    }
-
-    loopSamples.end = loopSamples.start + loopLength;
-
-    // TODO(XXX) we could be smarter about taking the active beatloop, scaling
-    // it by the desired amount and trying to find another beatloop that matches
-    // it, but for now we just clear the active beat loop if somebody scales.
-    clearActiveBeatLoop();
-
-    // Don't allow 0 samples loop, so one can still manipulate it
-    if (loopSamples.end == loopSamples.start) {
-        if ((loopSamples.end + 2) >= trackSamples) {
-            loopSamples.start -= 2;
-        } else {
-            loopSamples.end += 2;
-        }
-    }
-    // Do not allow loops to go past the end of the song
-    else if (loopSamples.end > trackSamples) {
-        loopSamples.end = trackSamples;
-    }
-
-    // Reseek if the loop shrank out from under the playposition.
-    loopSamples.seekMode = (m_bLoopingEnabled && scaleFactor < 1.0)
-            ? LoopSeekMode::Changed
-            : LoopSeekMode::MovedOut;
-
-    m_loopSamples.setValue(loopSamples);
-    emit loopUpdated(loopSamples.start, loopSamples.end);
-
-    // Update CO for loop end marker
-    m_pCOLoopEndPosition->set(loopSamples.end);
-}
-
-void LoopingControl::slotLoopHalve(double pressed) {
-    if (pressed <= 0.0) {
-        return;
-    }
-
-    slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
-}
-
-void LoopingControl::slotLoopDouble(double pressed) {
-    if (pressed <= 0.0) {
-        return;
-    }
-
-    slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
-}
-
 void LoopingControl::process(const double dRate,
                              const double currentSample,
                              const int iBufferSize) {
@@ -1402,6 +1340,68 @@ void LoopingControl::slotLoopMove(double beats) {
         m_pCOLoopStartPosition->set(new_loop_in);
         m_pCOLoopEndPosition->set(new_loop_out);
     }
+}
+
+void LoopingControl::slotLoopScale(double scaleFactor) {
+    LoopSamples loopSamples = m_loopSamples.getValue();
+    if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
+        return;
+    }
+    const double loopLength = (loopSamples.end - loopSamples.start) * scaleFactor;
+    const int trackSamples = static_cast<int>(m_pTrackSamples->get());
+
+    // Abandon loops that are too short of extend beyond the end of the file.
+    if (loopLength < MINIMUM_AUDIBLE_LOOP_SIZE ||
+            loopSamples.start + loopLength > trackSamples) {
+        return;
+    }
+
+    loopSamples.end = loopSamples.start + loopLength;
+
+    // TODO(XXX) we could be smarter about taking the active beatloop, scaling
+    // it by the desired amount and trying to find another beatloop that matches
+    // it, but for now we just clear the active beat loop if somebody scales.
+    clearActiveBeatLoop();
+
+    // Don't allow 0 samples loop, so one can still manipulate it
+    if (loopSamples.end == loopSamples.start) {
+        if ((loopSamples.end + 2) >= trackSamples) {
+            loopSamples.start -= 2;
+        } else {
+            loopSamples.end += 2;
+        }
+    }
+    // Do not allow loops to go past the end of the song
+    else if (loopSamples.end > trackSamples) {
+        loopSamples.end = trackSamples;
+    }
+
+    // Reseek if the loop shrank out from under the playposition.
+    loopSamples.seekMode = (m_bLoopingEnabled && scaleFactor < 1.0)
+            ? LoopSeekMode::Changed
+            : LoopSeekMode::MovedOut;
+
+    m_loopSamples.setValue(loopSamples);
+    emit loopUpdated(loopSamples.start, loopSamples.end);
+
+    // Update CO for loop end marker
+    m_pCOLoopEndPosition->set(loopSamples.end);
+}
+
+void LoopingControl::slotLoopHalve(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    slotBeatLoop(m_pCOBeatLoopSize->get() / 2.0, true, false);
+}
+
+void LoopingControl::slotLoopDouble(double pressed) {
+    if (pressed <= 0.0) {
+        return;
+    }
+
+    slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
 }
 
 // Must be called from the engine thread only
