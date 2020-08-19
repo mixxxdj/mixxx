@@ -71,7 +71,7 @@ var TraktorS3 = new function() {
         SKY: 0x28,
         BLUE: 0x2C,
         PURPLE: 0x30,
-        FUSCHIA: 0x34,
+        FUCHSIA: 0x34,
         MAGENTA: 0x38,
         AZALEA: 0x3C,
         SALMON: 0x40,
