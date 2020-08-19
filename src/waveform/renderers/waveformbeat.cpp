@@ -3,7 +3,7 @@
 #include "waveform/renderers/geometryutils.h"
 
 namespace {
-constexpr int kTriangleEdgeLength = 10;
+constexpr int kTriangleEdgeLength = 7;
 constexpr int kClickableLinePaddingPixels = 5;
 const QColor downbeatTriangleFillBaseColor = Qt::red;
 } // namespace
