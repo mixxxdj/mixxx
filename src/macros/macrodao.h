@@ -3,7 +3,7 @@
 #include <QtSql/QSqlDatabase>
 
 #include "library/dao/dao.h"
-#include "macros/macro.h"
+#include "track/macro.h"
 #include "track/trackid.h"
 
 class MacroDAO : public virtual DAO {

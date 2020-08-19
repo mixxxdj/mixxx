@@ -6,11 +6,11 @@
 #include <QUrl>
 
 #include "audio/streaminfo.h"
-#include "macros/macro.h"
 #include "sources/metadatasource.h"
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#include "track/macro.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
 #include "util/memory.h"

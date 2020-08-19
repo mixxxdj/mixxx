@@ -9,8 +9,8 @@
 
 #include "control/controlpushbutton.h"
 #include "engine/channelhandle.h"
-#include "macros/macro.h"
 #include "recording/recordingmanagerbase.h"
+#include "track/macro.h"
 #include "track/track.h"
 
 /// The MacroRecorder handles the recording of Macros and the [MacroRecording] controls.
