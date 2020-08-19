@@ -8,6 +8,7 @@ mixxx::FramePos rendererPositionFractionToTrackPosition(
     return samplePosToFramePos(rendererPositionFraction * trackSamples);
 }
 constexpr double kBarBeatTextBoxOpacity = 0.9;
+const QString kBarBeatSeparator = ".";
 } // namespace
 
 WaveformRenderPlayMarker::WaveformRenderPlayMarker(
@@ -62,9 +63,7 @@ void WaveformRenderPlayMarker::draw(QPainter* painter, QPaintEvent* event) {
 
     // Draw bar and beat counter
     if (prevBeat != mixxx::kInvalidBeat) {
-        QString barBeatString = QString("%1.%2").arg(
-                QString::number(prevBeat.getBarIndex() + 1),
-                QString::number(prevBeat.getBarRelativeBeatIndex() + 1));
+        QString barBeatString = generateBarBeatDisplayTextFromPrevBeat(prevBeat);
         painter->setPen(colors->getPlayPosColor());
         painter->setBrush(colors->getBgColor());
         painter->setOpacity(kBarBeatTextBoxOpacity);
@@ -91,4 +90,11 @@ void WaveformRenderPlayMarker::draw(QPainter* painter, QPaintEvent* event) {
                     barBeatString);
         }
     }
+}
+
+QString WaveformRenderPlayMarker::generateBarBeatDisplayTextFromPrevBeat(mixxx::Beat beat) {
+    return QString("%1%2%3").arg(
+            QString::number(beat.getBarIndex() + 1),
+            kBarBeatSeparator,
+            QString::number(beat.getBarRelativeBeatIndex() + 1));
 }

@@ -9,6 +9,7 @@ class WaveformRenderPlayMarker : public WaveformRendererAbstract {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void draw(QPainter* painter, QPaintEvent* event) override;
+    static QString generateBarBeatDisplayTextFromPrevBeat(mixxx::Beat beat);
 
   private:
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderPlayMarker);
