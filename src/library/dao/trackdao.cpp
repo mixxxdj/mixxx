@@ -702,6 +702,21 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
         qDebug() << "TrackDAO::addTracksAddFile:"
                 << "Track has already been added to the database"
                 << oldTrackId;
+        DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+        const auto trackLocation = pTrack->getLocation();
+        // TODO: These duplicates are only detected by chance when
+        // the other track is currently cached. Instead file aliasing
+        // must be detected reliably in any situation.
+        if (fileInfo.absoluteFilePath() != trackLocation) {
+            kLogger.warning()
+                    << "Both track locations"
+                    << fileInfo.absoluteFilePath()
+                    << "and"
+                    << trackLocation
+                    << "are referencing the same file"
+                    << fileInfo.canonicalFilePath();
+            return TrackPointer();
+        }
         return pTrack;
     }
     // Keep the GlobalTrackCache locked until the id of the Track
