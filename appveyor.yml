@@ -88,6 +88,7 @@ for:
       libupower-glib-dev
       libusb-1.0-0-dev
       libwavpack-dev
+      ninja-build
       portaudio19-dev
       protobuf-compiler
       qt5-default
@@ -109,6 +110,7 @@ for:
     # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
     - cmake
       -L
+      -GNinja
       -DCMAKE_BUILD_TYPE=Release
       -DWARNINGS_FATAL=ON
       -DDEBUG_ASSERTIONS_FATAL=ON

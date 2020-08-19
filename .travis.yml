@@ -87,7 +87,7 @@ jobs:
       install:
         - mkdir cmake_build
         - cd cmake_build
-        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
+        - cmake -L -GNinja $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
         - cmake --build .
         - cpack -G DEB
       script:
@@ -245,6 +245,7 @@ addons:
       - libupower-glib-dev
       - libusb-1.0-0-dev
       - libwavpack-dev
+      - ninja-build
       - portaudio19-dev
       - protobuf-compiler
       - qt5-default
