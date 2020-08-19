@@ -49,7 +49,7 @@ var TraktorS3 = new function() {
 
     // "5" is the "filter" button below the other 4. It starts on but the
     // others start off.
-    this.fxButtonState = {1: false, 2: false, 3: false, 4: false, 5: true};
+    this.fxButtonState = {1: false, 2: false, 3: false, 4: false, 5: false};
 
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
     this.batchingOutputs = false;
@@ -919,7 +919,7 @@ TraktorS3.Deck.prototype.wheelOutputHandler = function(group, valueArray) {
 TraktorS3.Channel = function(parentDeck, group) {
     this.parentDeck = parentDeck;
     this.group = group;
-    this.fxEnabledState = true;
+    this.fxEnabledState = false;
 
     this.trackDurationSec = 0;
     this.endOfTrackTimer = 0;
@@ -936,6 +936,7 @@ TraktorS3.Channel.prototype.fxEnableHandler = function(field) {
         return;
     }
 
+    engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_" + this.group + "]", "super1");
     this.fxEnabledState = !this.fxEnabledState;
     this.colorOutput(this.fxEnabledState, "!fxEnabled");
     TraktorS3.toggleFX();
@@ -1257,13 +1258,16 @@ TraktorS3.headphoneHandler = function(field) {
 
 TraktorS3.superHandler = function(field) {
     // The super knob drives all the supers!
-    var group = field.group;
+    var chan = TraktorS3.Channels[field.group];
     var value = field.value / 4095.;
-    engine.setParameter("[QuickEffectRack1_" + group + "]", "super1", value);
-    for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
-        if (TraktorS3.fxButtonState[fxNumber]) {
-            engine.setParameter("[EffectRack1_EffectUnit" + fxNumber + "]", "super1", value);
+    if (chan.fxEnabledState) {
+        for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
+            if (TraktorS3.fxButtonState[fxNumber]) {
+                engine.setParameter("[EffectRack1_EffectUnit" + fxNumber + "]", "super1", value);
+            }
         }
+    } else {
+        engine.setParameter("[QuickEffectRack1_" + chan.group + "]", "super1", value);
     }
 };
 
