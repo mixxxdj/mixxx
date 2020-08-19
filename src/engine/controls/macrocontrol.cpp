@@ -4,21 +4,23 @@
 
 MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int number)
         : EngineControl(group, pConfig),
+          m_iNextAction(0),
           m_number(number),
           m_controlPattern(QString("macro_%1_%2").arg(number)),
           m_COStatus(getConfigKey("status")),
           m_COActive(getConfigKey("active")),
-          m_set(getConfigKey("set")),
+          m_toggle(getConfigKey("toggle")),
           m_clear(getConfigKey("clear")),
           m_activate(getConfigKey("activate")) {
     m_COActive.setReadOnly();
     m_COStatus.setReadOnly();
+    m_COStatus.forceSet(Status::NoTrack);
 
-    m_set.setButtonMode(ControlPushButton::TRIGGER);
-    connect(&m_set,
+    m_toggle.setButtonMode(ControlPushButton::TRIGGER);
+    connect(&m_toggle,
             &ControlObject::valueChanged,
             this,
-            &MacroControl::controlSet,
+            &MacroControl::controlToggle,
             Qt::DirectConnection);
     m_clear.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_clear,
@@ -38,18 +40,25 @@ ConfigKey MacroControl::getConfigKey(QString name) {
 }
 
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
-    // TODO(xerus) should we even allow nullptr?
     m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_number) : nullptr;
-    if (m_pMacro && m_pMacro->isEnabled()) {
-        run();
+    if (m_pMacro) {
+        if (m_pMacro->isEmpty()) {
+            m_COStatus.forceSet(Status::Empty);
+        } else {
+            if (m_pMacro->isEnabled()) {
+                play();
+            } else {
+                stop();
+            }
+        }
     } else {
-        stop();
+        m_COStatus.forceSet(Status::NoTrack);
     }
 }
 
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
     Q_UNUSED(dRate);
-    if (!isRunning()) {
+    if (!isPlaying()) {
         return;
     }
     double framePos = dCurrentSample / mixxx::kEngineChannelCount;
@@ -66,45 +75,60 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
             if (m_pMacro->isLooped()) {
                 m_iNextAction = 0;
             } else {
-                stop();
+                m_COStatus.forceSet(Status::PlaybackStopped);
             }
         }
     }
 }
 
-bool MacroControl::isRunning() const {
+bool MacroControl::isRecording() const {
+    return false;
+}
+
+bool MacroControl::isPlaying() const {
+    DEBUG_ASSERT(m_iNextAction >= 0);
     return m_pMacro && m_iNextAction < m_pMacro->size();
 }
 
-void MacroControl::run() {
+void MacroControl::play() {
+    DEBUG_ASSERT(m_pMacro);
     m_iNextAction = 0;
     m_COStatus.forceSet(Status::Playing);
 }
 
 void MacroControl::stop() {
+    DEBUG_ASSERT(m_pMacro);
     m_iNextAction = INT_MAX;
     m_COStatus.forceSet(Status::Recorded);
 }
 
-void MacroControl::controlSet() {
-    if (!m_pMacro || m_pMacro->isEmpty()) {
-        // TODO(xerus) stop recording
-    } else {
+void MacroControl::controlToggle() {
+    if (m_pMacro) {
         m_pMacro->setState(Macro::StateFlag::Enabled, !m_pMacro->isEnabled());
     }
 }
 
 void MacroControl::controlClear() {
-    if (!isRunning()) {
+    if (m_pMacro && !isPlaying()) {
         m_pMacro->clear();
     }
 }
 
 void MacroControl::controlActivate() {
     if (!m_pMacro || m_pMacro->isEmpty()) {
-        // TODO(xerus) start recording
-        // TODO(xerus) save if recording
+        if (m_COStatus.get() == Status::NoTrack) {
+            return;
+        }
+        if (isRecording()) {
+            // TODO(xerus) save
+        } else {
+            // TODO(xerus) start recording
+        }
     } else {
-        run();
+        if (isPlaying()) {
+            // TODO(xerus) jump to first position
+        } else {
+            play();
+        }
     }
 }

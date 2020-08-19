@@ -16,23 +16,26 @@ class MacroControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void process(const double dRate, const double dCurrentSample, const int iBufferSize) override;
 
-    bool isRunning() const;
+    bool isRecording() const;
+    bool isPlaying() const;
 
     enum Status {
-        Off = 0,
+        NoTrack = -1,
+        Empty = 0,
         Armed = 1,
         Recording = 2,
         Recorded = 3,
         Playing = 4,
+        PlaybackStopped = 5,
     };
 
   private slots:
-    void controlSet();
+    void controlToggle();
     void controlClear();
     void controlActivate();
 
   private:
-    void run();
+    void play();
     void stop();
 
     MacroPtr m_pMacro;
@@ -45,7 +48,7 @@ class MacroControl : public EngineControl {
     ControlObject m_COStatus;
     ControlObject m_COActive;
 
-    ControlPushButton m_set;
+    ControlPushButton m_toggle;
     ControlPushButton m_clear;
     ControlPushButton m_activate;
 };
