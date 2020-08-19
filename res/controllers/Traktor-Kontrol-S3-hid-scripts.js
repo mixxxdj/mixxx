@@ -133,6 +133,7 @@ var TraktorS3 = new function() {
     this.samplerCallbacks = [];
 };
 
+// Mixxx's javascript doesn't support .bind natively, so here's a simple version.
 TraktorS3.bind = function(fn, obj) {
     return function() {
         return fn.apply(obj, arguments);
@@ -156,7 +157,7 @@ TraktorS3.Deck = function(deckNumber, group) {
     // Various states
     this.syncPressedTimer = 0;
     this.previewPressed = false;
-    // state 0 is hotcues, 1 is samplers
+    // padModeState 0 is hotcues, 1 is samplers
     this.padModeState = 0;
 
     // Jog wheel state
@@ -195,10 +196,10 @@ TraktorS3.Deck.prototype.defineButton = function(msg, name, deckOffset, deckBitm
 };
 
 TraktorS3.Deck.prototype.defineJog = function(message, name, deckOffset, deck2Offset, callback) {
-    // Jog wheels have 4 byte input
     if (this.deckNumber === 2) {
         deckOffset = deck2Offset;
     }
+    // Jog wheels have four byte input: 1 byte for distance ticks, and 3 bytes for a timecode.
     message.addControl(this.group, name, deckOffset, "I", 0xFFFFFFFF);
     message.setCallback(this.group, name, TraktorS3.bind(callback, this));
 };
@@ -243,9 +244,10 @@ TraktorS3.Deck.prototype.registerInputs = function(messageShort, messageLong) {
     this.defineButton(messageShort, "!SelectLoop", 0x0C, 0x0F, 0x0D, 0xF0, deckFn.selectLoopHandler);
     this.defineButton(messageShort, "!ActivateLoop", 0x09, 0x04, 0x09, 0x20, deckFn.activateLoopHandler);
 
-    // Rev / FLUX / GRID
+    // Rev / Flux / Grid / Jog
     this.defineButton(messageShort, "!reverse", 0x01, 0x04, 0x04, 0x08, deckFn.reverseHandler);
     this.defineButton(messageShort, "!slip_enabled", 0x01, 0x02, 0x04, 0x04, deckFn.fluxHandler);
+    // Grid button
     this.defineButton(messageShort, "quantize", 0x01, 0x80, 0x05, 0x01, deckFn.quantizeHandler);
 
     // Beatjump
@@ -258,6 +260,15 @@ TraktorS3.Deck.prototype.registerInputs = function(messageShort, messageLong) {
     this.defineJog(messageShort, "!jog", 0x0E, 0x12, deckFn.jogHandler);
 
     this.defineScaler(messageLong, "rate", 0x01, 0xFFFF, 0x0D, 0xFFFF, deckFn.pitchSliderHandler);
+};
+
+TraktorS3.Deck.prototype.shiftHandler = function(field) {
+    // Mixxx only knows about one shift value, but this controller has two shift buttons.
+    // This control object could get confused if both physical buttons are pushed at the same
+    // time.
+    engine.setValue("[Controls]", "touch_shift", field.value);
+    this.shiftPressed = field.value;
+    TraktorS3.basicOutputHandler(field.value, field.group, "!shift");
 };
 
 TraktorS3.Deck.prototype.playHandler = function(field) {
@@ -274,15 +285,6 @@ TraktorS3.Deck.prototype.cueHandler = function(field) {
     } else {
         engine.setValue(this.activeChannel, "cue_default", field.value);
     }
-};
-
-TraktorS3.Deck.prototype.shiftHandler = function(field) {
-    // Mixxx only knows about one shift value, but this controller has two shift buttons.
-    // This control object could get confused if both physical buttons are pushed at the same
-    // time.
-    engine.setValue("[Controls]", "touch_shift", field.value);
-    this.shiftPressed = field.value;
-    TraktorS3.basicOutputHandler(field.value, field.group, "!shift");
 };
 
 TraktorS3.Deck.prototype.syncHandler = function(field) {
@@ -542,11 +544,11 @@ TraktorS3.Deck.prototype.activateBeatjumpHandler = function(field) {
 };
 
 TraktorS3.Deck.prototype.reverseHandler = function(field) {
-    this.basicOutput(field.value, "reverse");
+    // this.basicOutput(field.value, "reverse");
     if (this.shiftPressed) {
-        engine.setValue(this.activeChannel, "reverseroll", field.value);
-    } else {
         engine.setValue(this.activeChannel, "reverse", field.value);
+    } else {
+        engine.setValue(this.activeChannel, "reverseroll", field.value);
     }
 };
 
@@ -1184,8 +1186,6 @@ TraktorS3.registerInputPackets = function() {
             engine.softTakeover(group, "rate", true);
         }
         engine.softTakeover(group, "pitch_adjust", true);
-        // engine.softTakeover(group, "volume", true);
-        // engine.softTakeover(group, "pregain", true);
         engine.softTakeover("[QuickEffectRack1_" + group + "]", "super1", true);
     }
 
@@ -1297,19 +1297,23 @@ TraktorS3.toggleFX = function() {
     // This is an AND operation.  We go through each channel, and if
     // the fitler button is ON and the fx is ON, we turn the effect ON.
     // We turn OFF if either is false.
-    for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
-        for (var ch = 1; ch <= 4; ch++) {
+
+    // The only exception is the Filter effect.  If the channel fxenable
+    // is off, the Filter effect is still automatically enabled.
+    // If the fxenable button is on, the Filter effect is only enabled if
+    // the Filter FX button is enabled.
+    for (var ch = 1; ch <= 4; ch++) {
+        for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
             var channel = TraktorS3.Channels["[Channel" + ch + "]"];
             var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
             var fxKey = "group_[Channel" + ch + "]_enable";
-            if (fxNumber === 5) {
-                fxGroup = "[QuickEffectRack1_[Channel" + ch + "]_Effect1]";
-                fxKey = "enabled";
-            }
 
             var newState = channel.fxEnabledState && TraktorS3.fxButtonState[fxNumber];
             engine.setValue(fxGroup, fxKey, newState);
         }
+        newState = !channel.fxEnabledState || TraktorS3.fxButtonState[5];
+        engine.setValue("[QuickEffectRack1_[Channel" + ch + "]_Effect1]", "enabled",
+            newState);
     }
 };
 

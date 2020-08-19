@@ -17,7 +17,6 @@ double colorDistance(QRgb a, QRgb b) {
     // of costly computations. In contrast, this is a low-cost
     // approximation and should be sufficiently accurate.
     // More details: https://www.compuphase.com/cmetric.htm
-    qDebug() << "distance between " << QColor(a) << "and" << QColor(b);
     long mean_red = (static_cast<long>(qRed(a)) + static_cast<long>(qRed(b))) / 2;
     long delta_red = static_cast<long>(qRed(a)) - static_cast<long>(qRed(b));
     long delta_green = static_cast<long>(qGreen(a)) - static_cast<long>(qGreen(b));
@@ -31,7 +30,6 @@ double colorDistance(QRgb a, QRgb b) {
 } // namespace
 
 QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
-    qDebug() << "ColorMapper::getNearestColor";
     // If desired color is already in cache, use cache entry
     const auto iCachedColor = m_cache.constFind(desiredColor);
     if (iCachedColor != m_cache.constEnd()) {
@@ -52,18 +50,14 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     double nearestColorDistance = qInf();
     for (auto i = m_availableColors.constBegin(); i != m_availableColors.constEnd(); ++i) {
         const QRgb availableColor = i.key();
-        qDebug() << "possible color" << QColor(availableColor);
         double distance = colorDistance(desiredColor, availableColor);
-        qDebug() << "distance is " << distance;
         if (distance < nearestColorDistance) {
-            qDebug() << "new possible color";
             nearestColorDistance = distance;
             iNearestColor = i;
         }
     }
     if (iNearestColor != m_availableColors.constEnd()) {
         const QRgb nearestColor = iNearestColor.key();
-        qDebug() << "found something good!";
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Found matching color"
@@ -72,7 +66,6 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
                     << desiredColor;
         }
         m_cache.insert(desiredColor, nearestColor);
-        qDebug() << "returning " << QColor(nearestColor);
         return nearestColor;
     }
 
@@ -82,8 +75,5 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
 }
 
 QVariant ColorMapper::getValueForNearestColor(QRgb desiredColor) {
-    qDebug() << "getting value for " << desiredColor;
-    auto ret = m_availableColors.value(getNearestColor(desiredColor));
-    qDebug() << "it's " << m_availableColors << " SO LIKE "<< ret;
-    return ret;
+    return m_availableColors.value(getNearestColor(desiredColor));
 }
