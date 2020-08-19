@@ -536,6 +536,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dao/cuedao.cpp
   src/library/dao/directorydao.cpp
   src/library/dao/libraryhashdao.cpp
+  src/library/dao/macrodao.cpp
   src/library/dao/playlistdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
@@ -614,8 +615,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
-  src/track/macro.cpp
-  src/macros/macrodao.cpp
   src/macros/macromanager.cpp
   src/macros/macrorecorder.cpp
   src/mixer/auxiliary.cpp
@@ -731,6 +730,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/keyfactory.cpp
   src/track/keys.cpp
   src/track/keyutils.cpp
+  src/track/macro.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
   src/track/serato/beatgrid.cpp

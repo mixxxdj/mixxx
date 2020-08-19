@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "macros/macrodao.h"
+#include "library/dao/macrodao.h"
 #include "macros/macrorecorder.h"
 #include "mixer/playermanager.h"
 #include "track/trackid.h"

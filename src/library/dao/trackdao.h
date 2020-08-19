@@ -8,18 +8,18 @@
 #include <QString>
 
 #include "library/dao/dao.h"
+#include "library/dao/macrodao.h"
 #include "library/relocatedtrack.h"
-#include "macros/macrodao.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
 
-class SqlTransaction;
-class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+class PlaylistDAO;
+class SqlTransaction;
 
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT

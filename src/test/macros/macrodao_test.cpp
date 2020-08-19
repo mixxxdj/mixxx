@@ -1,4 +1,4 @@
-#include "macros/macrodao.h"
+#include "library/dao/macrodao.h"
 
 #include <database/schemamanager.h>
 #include <gtest/gtest.h>

@@ -1,4 +1,4 @@
-#include "macros/macrodao.h"
+#include "macrodao.h"
 
 #include <QDebug>
 #include <QSqlQuery>
