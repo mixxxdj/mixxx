@@ -5,6 +5,8 @@
 /* Author: Owen Williams                                                         */
 /* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3     */
 /*                                                                               */
+/* For linter:                                                                   */
+/* global HIDController, HIDDebug, HIDPacket, controller                         */
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* TODO:                                                                         */
@@ -1610,17 +1612,6 @@ TraktorS3.debugLights = function() {
             }
             data[i][j] = b;
         }
-        // if (i === 0) {
-        //     for (k = 0; k < data[0].length; k++) {
-        //         data[0][k] = 0x30;
-        //     }
-        // }
-        // for (d = 0; d < 8; d++) {
-        //     data[0][0x11+d] = (d+1) * 4 + 2;
-        // }
-        // for (d = 0; d < 8; d++) {
-        //     data[0][0x2A + d] = (d + 1) * 4 + 32 + 2;
-        // }
         if (ok) {
             controller.send(data[i], data[i].length, 0x80 + i);
         }
