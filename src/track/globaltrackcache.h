@@ -12,9 +12,10 @@
 class GlobalTrackCache;
 
 enum class GlobalTrackCacheLookupResult {
-    NONE,
-    HIT,
-    MISS
+    None,
+    Hit,
+    Miss,
+    ConflictCanonicalLocation
 };
 
 // Find the updated location of a track in the database when
