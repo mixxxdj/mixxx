@@ -217,6 +217,7 @@ class CueControl : public EngineControl {
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
 
+    /// Moves the cue point to current position
     void cueSet(double v);
     void cueClear(double v);
     void cueGoto(double v);
@@ -332,7 +333,7 @@ class CueControl : public EngineControl {
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
     HotcueControl* m_pCurrentSavedLoopControl;
 
-    // Tells us which controls map to which hotcue
+    /// Maps Controls to Hotcues
     QMap<QObject*, int> m_controlMap;
 
     // TODO(daschuer): It looks like the whole m_mutex is broken. Originally it

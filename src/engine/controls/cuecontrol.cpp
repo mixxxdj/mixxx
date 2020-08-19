@@ -1225,8 +1225,6 @@ void CueControl::hintReader(HintVector* pHintList) {
     }
 }
 
-// Moves the cue point to current position or to closest beat in case
-// quantize is enabled
 void CueControl::cueSet(double value) {
     if (value <= 0) {
         return;
@@ -1334,13 +1332,12 @@ void CueControl::cuePreview(double value) {
     seekAbs(m_pCuePoint->get());
 }
 
+/// This is how Pioneer cue buttons work:
+/// - If pressed while freely playing (i.e. playing and platter NOT being touched), stop playback and go to cue.
+/// - If pressed while NOT freely playing (i.e. stopped or playing but platter IS being touched), set new cue point.
+/// - If pressed while stopped and at cue, play while pressed.
+/// - If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
 void CueControl::cueCDJ(double value) {
-    // This is how Pioneer cue buttons work:
-    // If pressed while freely playing (i.e. playing and platter NOT being touched), stop playback and go to cue.
-    // If pressed while NOT freely playing (i.e. stopped or playing but platter IS being touched), set new cue point.
-    // If pressed while stopped and at cue, play while pressed.
-    // If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
-
     QMutexLocker lock(&m_mutex);
     const auto freely_playing =
             m_pPlay->toBool() && !getEngineBuffer()->getScratching();
@@ -1403,12 +1400,11 @@ void CueControl::cueCDJ(double value) {
     }
 }
 
+/// This is how Denon DN-S 3700 cue buttons work:
+/// - If pressed go to cue and stop
+/// - Play if pressed while stopped at cue, jump back to Cue on release
+/// - Cue Point is moved on play
 void CueControl::cueDenon(double value) {
-    // This is how Denon DN-S 3700 cue buttons work:
-    // If pressed go to cue and stop.
-    // If pressed while stopped and at cue, play while pressed.
-    // Cue Point is moved by play from pause
-
     QMutexLocker lock(&m_mutex);
     bool playing = (m_pPlay->toBool());
     TrackAt trackAt = getTrackAt();
@@ -1445,18 +1441,16 @@ void CueControl::cueDenon(double value) {
     }
 }
 
+/// This is how CUP button works:
+/// - If freely playing (i.e. playing and platter NOT being touched), press to go to cue and stop.
+/// - If not freely playing (i.e. stopped or platter IS being touched), press to go to cue and stop.
+/// - On release, start playing from cue point.
 void CueControl::cuePlay(double value) {
-    // This is how CUP button works:
-    // If freely playing (i.e. playing and platter NOT being touched), press to go to cue and stop.
-    // If not freely playing (i.e. stopped or platter IS being touched), press to go to cue and stop.
-    // On release, start playing from cue point.
-
     QMutexLocker lock(&m_mutex);
     const auto freely_playing =
             m_pPlay->toBool() && !getEngineBuffer()->getScratching();
     TrackAt trackAt = getTrackAt();
 
-    // pressed
     if (value > 0) {
         if (freely_playing) {
             m_bPreviewing = false;
@@ -1495,8 +1489,8 @@ void CueControl::cueDefault(double v) {
     } else if (cueMode == CUE_MODE_CUP) {
         cuePlay(v);
     } else {
-        // The modes CUE_MODE_PIONEER and CUE_MODE_MIXXX are similar
-        // are handled inside cueCDJ(v)
+        // The modes CUE_MODE_PIONEER and CUE_MODE_MIXXX are functionally identical,
+        // so they are both handled by cueCDJ
         // default to Pioneer mode
         cueCDJ(v);
     }
