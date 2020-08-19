@@ -117,7 +117,7 @@ var TraktorS3 = new function() {
         0x0000CC: this.controller.LEDColors.BLUE,
         0xCC00CC: this.controller.LEDColors.PURPLE,
 
-        0xCC0091: this.controller.LEDColors.FUSCHIA,
+        0xCC0091: this.controller.LEDColors.FUCHSIA,
         0xCC0079: this.controller.LEDColors.MAGENTA,
         0xCC477E: this.controller.LEDColors.AZALEA,
         0xCC4761: this.controller.LEDColors.SALMON,
