@@ -136,6 +136,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     // Make sure to use constData to prevent detaches!
     for (int i = 0; i < beatCount; i++) {
         const auto currentBeat = m_beats.constData() + i;
+        painter->setPen(beatPen);
         currentBeat->draw(painter);
     }
     for (int i = 0; i < beatMarkerCount; i++) {

@@ -26,6 +26,7 @@ void WaveformBeat::draw(QPainter* painter) const {
             if (m_beat.getType() == mixxx::Beat::DOWNBEAT &&
                     m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
                 // TODO(hacksdump): Get color from skin context
+                painter->setPen(Qt::transparent);
                 painter->drawPolygon(getEquilateralTriangle(
                         kTriangleEdgeLength, QPointF(m_position, 0), Direction::DOWN));
                 painter->drawPolygon(getEquilateralTriangle(
@@ -35,6 +36,7 @@ void WaveformBeat::draw(QPainter* painter) const {
             painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
             if (m_beat.getType() == mixxx::Beat::BEAT &&
                     m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
+                painter->setPen(Qt::transparent);
                 painter->drawPolygon(getEquilateralTriangle(
                         kTriangleEdgeLength, QPointF(0, m_position), Direction::RIGHT));
                 painter->drawPolygon(getEquilateralTriangle(kTriangleEdgeLength,
