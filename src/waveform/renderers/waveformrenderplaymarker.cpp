@@ -71,22 +71,23 @@ void WaveformRenderPlayMarker::draw(QPainter* painter, QPaintEvent* event) {
         const int boxWidthPixels = painter->fontMetrics().width(
                 barBeatString, barBeatString.length());
         const int textPaddingPixels = 2;
+        const int textDisplayBoxInitialShiftPixels = 1;
         if (orientation == Qt::Horizontal) {
             painter->drawRect(lineX,
-                    height / 2 - boxHeightPixels / 2 - textPaddingPixels,
+                    textDisplayBoxInitialShiftPixels,
                     boxWidthPixels + 2 * textPaddingPixels,
                     boxHeightPixels + 2 * textPaddingPixels);
             painter->drawText(lineX + textPaddingPixels,
-                    height / 2 + boxHeightPixels / 2 - textPaddingPixels,
+                    boxHeightPixels,
                     barBeatString);
         } else {
             painter->drawRect(
-                    width / 2 - boxWidthPixels / 2 - textPaddingPixels,
+                    textDisplayBoxInitialShiftPixels,
                     lineY - boxHeightPixels - textPaddingPixels * 2,
                     boxWidthPixels + 2 * textPaddingPixels,
                     boxHeightPixels + 2 * textPaddingPixels);
-            painter->drawText(width / 2 - boxWidthPixels / 2,
-                    lineY - textPaddingPixels,
+            painter->drawText(0,
+                    lineY - 2 * textPaddingPixels,
                     barBeatString);
         }
     }
