@@ -709,9 +709,10 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
         // must be detected reliably in any situation.
         if (fileInfo.absoluteFilePath() != trackLocation) {
             kLogger.warning()
-                    << "Both track locations"
+                    << "Cannot add track:"
+                    << "Both the new track at"
                     << fileInfo.absoluteFilePath()
-                    << "and"
+                    << "and an existing track at"
                     << trackLocation
                     << "are referencing the same file"
                     << fileInfo.canonicalFilePath();
