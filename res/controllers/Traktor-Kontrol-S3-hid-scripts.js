@@ -1,12 +1,4 @@
 ///////////////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                                          //
-///////////////////////////////////////////////////////////////////////////////////
-/* global controller                                                             */
-/* global HIDDebug                                                               */
-/* global HIDPacket                                                              */
-/* global HIDController                                                          */
-/* jshint -W016                                                                  */
-///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* Traktor Kontrol S3 HID controller script v1.00                                */
 /* Last modification: August 2020                                                */
