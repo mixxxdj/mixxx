@@ -313,6 +313,10 @@ void BeatsInternal::initWithProtobuf(const QByteArray& byteArray) {
 
 void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers) {
+    if (beats.empty()) {
+        clearMarkers();
+        return;
+    }
     m_beatsProto.set_first_frame_position(beats.at(0).getValue());
     int bpmMarkerBeatIndex = 0;
     for (int i = 1; i < beats.size(); ++i) {
@@ -351,6 +355,11 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     }
 
     generateBeatsFromMarkers();
+
+    // Check whether the generated beats match the input beats.
+    for (int i = 0; i < beats.size(); ++i) {
+        DEBUG_ASSERT(beats.at(i) == m_beats.at(i).getFramePosition());
+    }
 }
 
 void Beats::slotTrackBeatsUpdated() {
@@ -911,13 +920,15 @@ void BeatsInternal::generateBeatsFromMarkers() {
     Beat::Markers markers;
     while (true) {
         markers = mixxx::Beat::Marker::NONE;
+
+        auto currentBpmMarker = m_beatsProto.bpm_markers().Get(bpmMarkerIndex);
+
         if (bpmMarkerIndex < m_beatsProto.bpm_markers_size() - 1 &&
                 m_beatsProto.bpm_markers()
                                 .Get(bpmMarkerIndex + 1)
                                 .beat_index() == m_beats.size()) {
             bpmMarkerIndex++;
         }
-        auto currentBpmMarker = m_beatsProto.bpm_markers().Get(bpmMarkerIndex);
 
         if (currentBpmMarker.beat_index() == m_beats.size()) {
             markers |= Beat::Marker::BPM;
@@ -983,6 +994,7 @@ void BeatsInternal::clearMarkers() {
     m_beatsProto.clear_first_downbeat_index();
     m_beatsProto.clear_bpm_markers();
     m_beatsProto.clear_time_signature_markers();
+    m_beats.clear();
 }
 
 void BeatsInternal::setAsDownbeat(int beatIndex) {
