@@ -27,8 +27,8 @@ constexpr bool useDownbeatOnly = false;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
 // tempogram resolution constants
-constexpr float kNoveltyCurveMinDB = -54.0;
-constexpr float kNoveltyCurveCompressionConstant = 400.0;
+constexpr float kNoveltyCurveMinDB = -24.0;
+constexpr float kNoveltyCurveCompressionConstant = 10.0;
 constexpr int kTempogramLog2WindowLength = 12;
 constexpr int kTempogramLog2HopSize = 8;
 constexpr int kTempogramLog2FftLength = 12;
@@ -156,7 +156,7 @@ void AnalyzerRhythm::setTempogramParameters() {
     m_tempogramHopSize = pow(2, kTempogramLog2HopSize);
     m_tempogramFftLength = pow(2, kTempogramLog2FftLength);
 
-    m_tempogramMinBPM = 10;
+    m_tempogramMinBPM = 6;
     m_tempogramMaxBPM = 70;
     m_tempogramInputSampleRate = m_iSampleRate / kNoveltyCurveHop;
 }
@@ -381,6 +381,7 @@ void AnalyzerRhythm::computeMeter() {
                 double ratio = localTempo / pulse;
                 double beatLenghtOfPulse;
                 double ratioDecimals = std::modf(ratio, &beatLenghtOfPulse);
+                if (static_cast<int>(beatLenghtOfPulse) == 1) {continue;}
                 if (ratioDecimals < kCloseToIntTolerance) {
                      accumulatedPulsesLenghtsAndWeights[static_cast<int>(
                             beatLenghtOfPulse)] +=
@@ -419,15 +420,8 @@ void AnalyzerRhythm::computeMeter() {
         metricalHierarchy.insert(metricalHierarchy.end(), pulseHierarchies.begin(), pulseHierarchies.end());
     }
     for (int i = 0; i < metricalHierarchy.size(); i += 1) {
-        if (metricalHierarchy[i].size() == 3) {
-            auto firstMetricPair = metricalHierarchy[i];
-            auto secondMetricPair = metricalHierarchy[i];
-            firstMetricPair.pop_back();
-            secondMetricPair.erase(secondMetricPair.begin());
-            metricalHierarchy.push_back(firstMetricPair);
-            metricalHierarchy.push_back(secondMetricPair);
-        }
-        else if (metricalHierarchy[i].size() == 4) {
+        
+        if (metricalHierarchy[i].size() == 4) {
             auto firstMetricTuple = metricalHierarchy[i];
             auto lastMetricTuple = metricalHierarchy[i];
             firstMetricTuple.pop_back();
@@ -435,10 +429,26 @@ void AnalyzerRhythm::computeMeter() {
             metricalHierarchy.push_back(firstMetricTuple);
             metricalHierarchy.push_back(lastMetricTuple);
         }
+        else if (metricalHierarchy[i].size() == 5) {
+            auto firstMetricTuple = metricalHierarchy[i];
+            auto lastMetricTuple = metricalHierarchy[i];
+            auto middleTuple = metricalHierarchy[i];
+            firstMetricTuple.pop_back();
+            firstMetricTuple.pop_back();
+            middleTuple.pop_back();
+            middleTuple.erase(middleTuple.begin());
+            lastMetricTuple.erase(lastMetricTuple.begin());
+            lastMetricTuple.erase(lastMetricTuple.begin());
+            metricalHierarchy.push_back(firstMetricTuple);
+            metricalHierarchy.push_back(lastMetricTuple);
+            metricalHierarchy.push_back(middleTuple);
+        }
     }
     double highestWeight = 0.0;
     std::vector<int> bestHierarchy;
     for (auto meter : metricalHierarchy) {
+        if (meter[0] <= 4 && meter.size() < 3) {continue;}
+        if (meter.size() == 1) {continue;}
         double pulseWeight = 0.0;
         for (auto pulse : meter) {
             pulseWeight += accumulatedPulsesLenghtsAndWeights[pulse];
@@ -450,7 +460,18 @@ void AnalyzerRhythm::computeMeter() {
             bestHierarchy = meter;
         }
     }
-    qDebug() << bestHierarchy;
+    auto pulseValues = accumulatedPulsesLenghtsAndWeights.keyValueBegin();
+    int bestKey;
+    double highestValue = 0.0;
+    while (pulseValues != accumulatedPulsesLenghtsAndWeights.keyValueEnd()) {
+        if (pulseValues.operator*().second > highestValue) {
+            highestValue = pulseValues.operator*().second;
+            bestKey = pulseValues.operator*().first;
+            qDebug() << pulseValues.operator*().first;
+        }
+        pulseValues++;
+    }
+    qDebug() << bestHierarchy << bestKey;
 }
 
 std::vector<std::vector<int>> AnalyzerRhythm::computeMeterHierarchies
