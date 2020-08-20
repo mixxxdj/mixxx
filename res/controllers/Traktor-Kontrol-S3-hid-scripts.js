@@ -18,35 +18,44 @@
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 
+// ==== Friendly User Configuration ====
+// The pitch slider can operate either in absolute or relative mode.
+// In absolute mode:
+// * Moving the pitch slider works like normal
+// * Mixxx will use soft-takeover
+// * Pressing shift will adjust musical pitch instead of rate
+// * Keylock toggles on with down-press.
+//
+// In relative mode:
+// * The slider always moves, unless it has hit the end of the range inside Mixxx
+// * No soft-takeover
+// * Hold shift to move the pitch slider without adjusting the rate
+// * Hold keylock and move the pitch slider to adjust musical pitch
+// * keylock will still toggle on, but on release, not press.
+var TraktorS3PitchSliderRelativeMode = true;
+
+// You can choose whatever colors you like for each channel. The list of colors is:
+// RED, CARROT, ORANGE, HONEY, YELLOW, LIME, GREEN, AQUA, CELESTE, SKY, BLUE,
+// PURPLE, FUCHSIA, MAGENTA, AZALEA, SALMON, WHITE
+var TraktorS3ChannelColors = {
+    "[Channel1]": "CARROT",
+    "[Channel2]": "CARROT",
+    "[Channel3]": "BLUE",
+    "[Channel4]": "BLUE"
+};
+
+// Set to true to output debug messages and debug light outputs.
+var TraktorS3DebugMode = false;
+
+
 var TraktorS3 = new function() {
     this.controller = new HIDController();
 
-    this.debugMode = false;
-
-    // ==== Friendly User Configuration ====
-    // The pitch slider can operate either in absolute or relative mode.
-    // In absolute mode:
-    // * Moving the pitch slider works like normal
-    // * Mixxx will use soft-takeover
-    // * Pressing shift will adjust musical pitch instead of rate
-    // * Keylock toggles on with down-press.
-    //
-    // In relative mode:
-    // * The slider always moves, unless it has hit the end of the range inside Mixxx
-    // * No soft-takeover
-    // * Hold shift to move the pitch slider without adjusting the rate
-    // * Hold keylock and move the pitch slider to adjust musical pitch
-    // * keylock will still toggle on, but on release, not press.
-    this.pitchSliderRelativeMode = true;
-
-    // State for relative mode
-
-    // "5" is the "filter" button below the other 4. It starts on but the
-    // others start off.
-    this.fxButtonState = {1: false, 2: false, 3: false, 4: false, 5: false};
-
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
     this.batchingOutputs = false;
+
+    // "5" is the "filter" button below the other 4.
+    this.fxButtonState = {1: false, 2: false, 3: false, 4: false, 5: false};
 
     // Microphone button
     this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
@@ -83,14 +92,6 @@ var TraktorS3 = new function() {
     // Each color has four brightnesses.
     this.LEDDimValue = 0x00;
     this.LEDBrightValue = 0x02;
-
-    // More User-friendly config: you can choose whatever colors you like for each deck!
-    this.deckOutputColors = {
-        "[Channel1]": "CARROT",
-        "[Channel2]": "CARROT",
-        "[Channel3]": "BLUE",
-        "[Channel4]": "BLUE"
-    };
 
     // FX 5 is the Filter
     this.fxLEDValue = {
@@ -330,7 +331,7 @@ TraktorS3.Deck.prototype.keylockHandler = function(field) {
         }
         return;
     }
-    if (TraktorS3.pitchSliderRelativeMode) {
+    if (TraktorS3PitchSliderRelativeMode) {
         if (field.value) {
             // In relative mode on down-press, reset the values and note that
             // the button is pressed.
@@ -678,7 +679,7 @@ TraktorS3.Deck.prototype.jogHandler = function(field) {
 
 TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
     var value = field.value / 4095;
-    if (TraktorS3.pitchSliderRelativeMode) {
+    if (TraktorS3PitchSliderRelativeMode) {
         if (this.pitchSliderLastValue === -1) {
             this.pitchSliderLastValue = value;
         } else {
@@ -798,7 +799,7 @@ TraktorS3.Deck.prototype.linkOutputs = function() {
 };
 
 TraktorS3.Deck.prototype.deckBaseColor = function() {
-    return TraktorS3.controller.LEDColors[TraktorS3.deckOutputColors[this.activeChannel]];
+    return TraktorS3.controller.LEDColors[TraktorS3ChannelColors[this.activeChannel]];
 };
 
 // basicOutput drives lights that only have one color.
@@ -1036,7 +1037,7 @@ TraktorS3.Channel.prototype.linkOutputs = function() {
 };
 
 TraktorS3.Channel.prototype.channelBaseColor = function() {
-    return TraktorS3.controller.LEDColors[TraktorS3.deckOutputColors[this.group]];
+    return TraktorS3.controller.LEDColors[TraktorS3ChannelColors[this.group]];
 };
 
 // colorOutput drives lights that have the palettized multicolor lights.
@@ -1179,7 +1180,7 @@ TraktorS3.registerInputPackets = function() {
     // Soft takeovers
     for (var ch = 1; ch <= 4; ch++) {
         group = "[Channel" + ch + "]";
-        if (!TraktorS3.pitchSliderRelativeMode) {
+        if (!TraktorS3PitchSliderRelativeMode) {
             engine.softTakeover(group, "rate", true);
         }
         engine.softTakeover(group, "pitch_adjust", true);
@@ -1537,17 +1538,17 @@ TraktorS3.lightDeck = function(group, sendPackets) {
     // Selected deck lights
     var ctrlr = TraktorS3.controller;
     if (group === "[Channel1]") {
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel1]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel3]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel1]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel3]"]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel2]") {
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel2]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel4]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel2]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel4]"]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel3]") {
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel3]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel1]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel3]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel1]"]] + TraktorS3.LEDDimValue, false);
     } else if (group === "[Channel4]") {
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel4]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3.deckOutputColors["[Channel2]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel4]"]] + TraktorS3.LEDBrightValue, false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel2]"]] + TraktorS3.LEDDimValue, false);
     }
 
     TraktorS3.batchingOutputs = false;
@@ -1675,7 +1676,7 @@ TraktorS3.init = function(_id) {
     TraktorS3.lightDeck("[Channel1]", false);
     TraktorS3.lightDeck("[Channel2]", true);
 
-    if (TraktorS3.debugMode) {
+    if (TraktorS3DebugMode) {
         TraktorS3.debugLights();
     }
 };
