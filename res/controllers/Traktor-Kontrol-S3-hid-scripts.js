@@ -34,15 +34,20 @@
 // * keylock will still toggle on, but on release, not press.
 var TraktorS3PitchSliderRelativeMode = true;
 
-// You can choose whatever colors you like for each channel. The list of colors is:
+// You can choose the colors you want for each channel. The list of colors is:
 // RED, CARROT, ORANGE, HONEY, YELLOW, LIME, GREEN, AQUA, CELESTE, SKY, BLUE,
 // PURPLE, FUCHSIA, MAGENTA, AZALEA, SALMON, WHITE
+// Some colors may look odd because of how they are encoded inside the controller.
 var TraktorS3ChannelColors = {
     "[Channel1]": "CARROT",
     "[Channel2]": "CARROT",
     "[Channel3]": "BLUE",
     "[Channel4]": "BLUE"
 };
+
+// Each color has four brightnesses, so these values can be between 0 and 3.
+var TraktorS3LEDDimValue = 0x00;
+var TraktorS3LEDBrightValue = 0x02;
 
 // Set to true to output debug messages and debug light outputs.
 var TraktorS3DebugMode = false;
@@ -56,9 +61,6 @@ var TraktorS3 = new function() {
 
     // "5" is the "filter" button below the other 4.
     this.fxButtonState = {1: false, 2: false, 3: false, 4: false, 5: false};
-
-    // Microphone button
-    this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
 
     // VuMeter
     this.masterVuConnections = {
@@ -89,9 +91,6 @@ var TraktorS3 = new function() {
         WHITE: 0x44
     };
 
-    // Each color has four brightnesses.
-    this.LEDDimValue = 0x00;
-    this.LEDBrightValue = 0x02;
 
     // FX 5 is the Filter
     this.fxLEDValue = {
@@ -819,9 +818,9 @@ TraktorS3.Deck.prototype.colorOutput = function(value, key) {
     var ledValue = this.deckBaseColor();
 
     if (value === 1 || value === true) {
-        ledValue += TraktorS3.LEDBrightValue;
+        ledValue += TraktorS3LEDBrightValue;
     } else {
-        ledValue += TraktorS3.LEDDimValue;
+        ledValue += TraktorS3LEDDimValue;
     }
     TraktorS3.controller.setOutput(this.group, key, ledValue, !TraktorS3.batchingOutputs);
 };
@@ -843,12 +842,12 @@ TraktorS3.Deck.prototype.lightHotcue = function(number) {
     var ledValue = TraktorS3.controller.LEDColors.WHITE;
     if (loaded) {
         ledValue = this.colorForHotcue(number);
-        ledValue += TraktorS3.LEDDimValue;
+        ledValue += TraktorS3LEDDimValue;
     }
     if (active) {
-        ledValue += TraktorS3.LEDBrightValue;
+        ledValue += TraktorS3LEDBrightValue;
     } else {
-        ledValue += TraktorS3.LEDDimValue;
+        ledValue += TraktorS3LEDDimValue;
     }
     TraktorS3.controller.setOutput(this.group, "!pad_" + number, ledValue, !TraktorS3.batchingOutputs);
 };
@@ -883,7 +882,7 @@ TraktorS3.Deck.prototype.wheelOutputByValue = function(group, value) {
     var ledValue = this.deckBaseColor();
 
     if (value === 1 || value === true) {
-        ledValue += TraktorS3.LEDBrightValue;
+        ledValue += TraktorS3LEDBrightValue;
     } else {
         ledValue = 0x00;
     }
@@ -1044,9 +1043,9 @@ TraktorS3.Channel.prototype.channelBaseColor = function() {
 TraktorS3.Channel.prototype.colorOutput = function(value, key) {
     var ledValue = this.channelBaseColor();
     if (value === 1 || value === true) {
-        ledValue += TraktorS3.LEDBrightValue;
+        ledValue += TraktorS3LEDBrightValue;
     } else {
-        ledValue  += TraktorS3.LEDDimValue;
+        ledValue  += TraktorS3LEDDimValue;
     }
     TraktorS3.controller.setOutput(this.group, key, ledValue, !TraktorS3.batchingOutputs);
 };
@@ -1286,9 +1285,9 @@ TraktorS3.fxHandler = function(field) {
     TraktorS3.fxButtonState[fxNumber] = !TraktorS3.fxButtonState[fxNumber];
     var ledValue = TraktorS3.fxLEDValue[fxNumber];
     if (TraktorS3.fxButtonState[fxNumber]) {
-        ledValue += TraktorS3.LEDBrightValue;
+        ledValue += TraktorS3LEDBrightValue;
     } else {
-        ledValue += TraktorS3.LEDDimValue;
+        ledValue += TraktorS3LEDDimValue;
     }
     TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
     TraktorS3.toggleFX();
@@ -1498,9 +1497,9 @@ TraktorS3.lightFX = function() {
     for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
         var ledValue = TraktorS3.fxLEDValue[fxNumber];
         if (TraktorS3.fxButtonState[fxNumber]) {
-            ledValue += TraktorS3.LEDBrightValue;
+            ledValue += TraktorS3LEDBrightValue;
         } else {
-            ledValue += TraktorS3.LEDDimValue;
+            ledValue += TraktorS3LEDDimValue;
         }
         TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
     }
@@ -1538,17 +1537,17 @@ TraktorS3.lightDeck = function(group, sendPackets) {
     // Selected deck lights
     var ctrlr = TraktorS3.controller;
     if (group === "[Channel1]") {
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel1]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel3]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel1]"]] + TraktorS3LEDBrightValue, false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel3]"]] + TraktorS3LEDDimValue, false);
     } else if (group === "[Channel2]") {
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel2]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel4]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel2]"]] + TraktorS3LEDBrightValue, false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel4]"]] + TraktorS3LEDDimValue, false);
     } else if (group === "[Channel3]") {
-        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel3]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel1]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel3]", "!deck_C", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel3]"]] + TraktorS3LEDBrightValue, false);
+        ctrlr.setOutput("[Channel1]", "!deck_A", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel1]"]] + TraktorS3LEDDimValue, false);
     } else if (group === "[Channel4]") {
-        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel4]"]] + TraktorS3.LEDBrightValue, false);
-        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel2]"]] + TraktorS3.LEDDimValue, false);
+        ctrlr.setOutput("[Channel4]", "!deck_D", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel4]"]] + TraktorS3LEDBrightValue, false);
+        ctrlr.setOutput("[Channel2]", "!deck_B", ctrlr.LEDColors[TraktorS3ChannelColors["[Channel2]"]] + TraktorS3LEDDimValue, false);
     }
 
     TraktorS3.batchingOutputs = false;
