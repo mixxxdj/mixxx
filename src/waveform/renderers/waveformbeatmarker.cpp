@@ -3,8 +3,10 @@
 #include "waveform/renderers/geometryutils.h"
 
 namespace {
-constexpr int kTriangleEdgeLength = 15;
+constexpr int kTriangleEdgeLength = 9;
 const auto labelBackgroundColor = QColor(10, 100, 200, 75);
+const int markerGreyBrightness = 200;
+const auto markerColor = QColor(markerGreyBrightness, markerGreyBrightness, markerGreyBrightness);
 } // namespace
 
 WaveformBeatMarker::WaveformBeatMarker()
@@ -12,8 +14,8 @@ WaveformBeatMarker::WaveformBeatMarker()
 }
 
 void WaveformBeatMarker::draw(QPainter* painter) const {
-    painter->setBrush(Qt::white);
-    painter->setPen((QPen(Qt::white, 2)));
+    painter->setBrush(markerColor);
+    painter->setPen((QPen(markerColor, 1)));
     if (m_orientation == Qt::Horizontal) {
         painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
         painter->drawPolygon(getEquilateralTriangle(
@@ -33,11 +35,11 @@ void WaveformBeatMarker::draw(QPainter* painter) const {
         painter->setBrush(QBrush(labelBackgroundColor));
         painter->setPen(Qt::transparent);
         painter->drawRect(textBoundingRect);
-        painter->setPen(Qt::white);
+        painter->setPen(markerColor);
         painter->drawText(textBoundingRect, Qt::TextWordWrap, labelText);
     } else {
         painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
-        painter->setBrush(Qt::white);
+        painter->setBrush(markerColor);
         painter->drawPolygon(getEquilateralTriangle(
                 kTriangleEdgeLength, QPointF(0, m_position), Direction::RIGHT));
     }
