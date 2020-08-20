@@ -342,7 +342,7 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
                 timeSignatureMarker);
     }
 
-    VERIFY_OR_DEBUG_ASSERT(m_beatsProto.time_signature_markers_size() > 0) {
+    if (m_beatsProto.time_signature_markers_size() == 0) {
         // If the analyzer does not send time signature information, just assume 4/4
         // for the whole track and the first beat as downbeat.
         track::io::TimeSignatureMarker timeSignatureMarker;
@@ -835,7 +835,7 @@ FramePos BeatsInternal::getLastBeatPosition() const {
 void BeatsInternal::generateBeatsFromMarkers() {
     // If the protobuf does not have any time signature markers, we add the default
     // time signature marker.
-    VERIFY_OR_DEBUG_ASSERT(m_beatsProto.time_signature_markers_size() > 0) {
+    if (m_beatsProto.time_signature_markers_size() == 0) {
         // This marker will get the default values from the protobuf definitions,
         // beatIndex = 0 and timeSignature = 4/4.
         track::io::TimeSignatureMarker generatedTimeSignatureMarker;
@@ -843,9 +843,9 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 generatedTimeSignatureMarker);
     }
 
-    // This assertion enforces the assumption that the initial downbeat offset
-    // is always less than the number of beats in the first measure.
-    VERIFY_OR_DEBUG_ASSERT(m_beatsProto.first_downbeat_index() <
+    // The initial downbeat offset should always be less than the number
+    // of beats in the first measure.
+    if (m_beatsProto.first_downbeat_index() >=
             m_beatsProto.time_signature_markers()
                     .Get(0)
                     .time_signature()
