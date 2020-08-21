@@ -269,6 +269,9 @@ TraktorS3.Deck.prototype.shiftHandler = function(field) {
     // time.
     engine.setValue("[Controls]", "touch_shift", field.value);
     this.shiftPressed = field.value;
+    if (field.value) {
+        engine.softTakeoverIgnoreNextValue("[Master]", "gain");
+    }
     TraktorS3.basicOutputHandler(field.value, field.group, "!shift");
 };
 
@@ -318,12 +321,10 @@ TraktorS3.Deck.prototype.syncHandler = function(field) {
             // LED is turned off by the callback handler for sync_enabled
             engine.setValue(this.activeChannel, "sync_enabled", 0);
         }
-    } else {
-        if (this.syncPressedTimer !== 0) {
-            // Timer still running -> stop it and unlight LED
-            engine.stopTimer(this.syncPressedTimer);
-            this.colorOutput(0, "sync_enabled");
-        }
+    } else if (this.syncPressedTimer !== 0) {
+        // Timer still running -> stop it and unlight LED
+        engine.stopTimer(this.syncPressedTimer);
+        this.colorOutput(0, "sync_enabled");
     }
 };
 
@@ -333,30 +334,32 @@ TraktorS3.Deck.prototype.keylockHandler = function(field) {
         if (field.value) {
             engine.setValue(this.activeChannel, "pitch_adjust_set_default", 1);
         }
-        return;
-    }
-    if (TraktorS3PitchSliderRelativeMode) {
+    } else if (TraktorS3PitchSliderRelativeMode) {
         if (field.value) {
             // In relative mode on down-press, reset the values and note that
             // the button is pressed.
             this.keylockPressed = true;
             this.keyAdjusted = false;
-            return;
+        } else {
+            // On release, note that the button is released, and if the key *wasn't* adjusted,
+            // activate keylock.
+            this.keylockPressed = false;
+            if (!this.keyAdjusted) {
+                script.toggleControl(this.activeChannel, "keylock");
+            }
         }
-        // On release, note that the button is released, and if the key *wasn't* adjusted,
-        // activate keylock.
-        this.keylockPressed = false;
-        if (!this.keyAdjusted) {
-            script.toggleControl(this.activeChannel, "keylock");
-        }
-        return;
+    } else if (field.value) {
+        // In absolute mode, do a simple toggle on down-press.
+        script.toggleControl(this.activeChannel, "keylock");
     }
 
-    // By default, do a basic press-to-toggle action.
-    if (field.value === 0) {
-        return;
+    // Adjust the light on release depending on keylock status.  Down-press is always lit.
+    if (!field.value) {
+        var val = engine.getValue(this.activeChannel, "keylock");
+        this.colorOutput(val, "keylock");
+    } else {
+        this.colorOutput(1, "keylock");
     }
-    script.toggleControl(this.activeChannel, "keylock");
 };
 
 // This handles when the mode buttons for the pads is pressed.
@@ -1154,7 +1157,7 @@ TraktorS3.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[Channel4]", "!super", 0x3D, 0xFFFF, this.superHandler);
 
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x0B, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Master]", "gain", 0x17, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Master]", "gain", 0x17, 0xFFFF, this.masterGainHandler);
     this.registerInputScaler(messageLong, "[Master]", "headMix", 0x1D, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
 
@@ -1190,8 +1193,8 @@ TraktorS3.registerInputPackets = function() {
 
     // engine.softTakeover("[Master]", "crossfader", true);
     engine.softTakeover("[Master]", "gain", true);
-    engine.softTakeover("[Master]", "headMix", true);
-    engine.softTakeover("[Master]", "headGain", true);
+    // engine.softTakeover("[Master]", "headMix", true);
+    // engine.softTakeover("[Master]", "headGain", true);
 
     for (var i = 1; i <= 16; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
@@ -1236,6 +1239,14 @@ TraktorS3.parameterHandler = function(field) {
     }
 };
 
+TraktorS3.masterGainHandler = function(field) {
+    // Only adjust if shift is held.  This will still adjust the sound card
+    // volume but it at least allows for control of Mixxx's master gain.
+    if (TraktorS3.Decks["deck1"].shiftPressed || TraktorS3.Decks["deck2"].shiftPressed) {
+        engine.setParameter(field.group, field.name, field.value / 4095);
+    }
+};
+
 TraktorS3.headphoneHandler = function(field) {
     if (field.value === 0) {
         return;
@@ -1261,7 +1272,8 @@ TraktorS3.superHandler = function(field) {
                 engine.setParameter("[EffectRack1_EffectUnit" + fxNumber + "]", "super1", value);
             }
         }
-    } else {
+    } else if (field.group !== "[Channel4]" || !TraktorS3.channel4InputMode) {
+        // There is no quickeffect for the microphone.
         engine.setParameter("[QuickEffectRack1_" + chan.group + "]", "super1", value);
     }
 };
@@ -1307,20 +1319,22 @@ TraktorS3.toggleFX = function() {
         var chEnabled = channel.fxEnabledState;
         if (ch === 4 && TraktorS3.channel4InputMode) {
             chEnabled = TraktorS3.inputFxEnabledState;
+        } else {
+            // There is no quickeffect for the microphone
+            var newState = !chEnabled || TraktorS3.fxButtonState[5];
+            engine.setValue("[QuickEffectRack1_[Channel" + ch + "]_Effect1]", "enabled",
+                newState);
         }
         for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
             var channel = TraktorS3.Channels["[Channel" + ch + "]"];
             var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
             var fxKey = "group_[Channel" + ch + "]_enable";
-            var newState = chEnabled && TraktorS3.fxButtonState[fxNumber];
+            newState = chEnabled && TraktorS3.fxButtonState[fxNumber];
             if (ch === 4 && TraktorS3.channel4InputMode) {
                 fxKey = "group_[Microphone]_enable";
             }
             engine.setValue(fxGroup, fxKey, newState);
         }
-        newState = !chEnabled || TraktorS3.fxButtonState[5];
-        engine.setValue("[QuickEffectRack1_[Channel" + ch + "]_Effect1]", "enabled",
-            newState);
     }
 };
 
@@ -1651,7 +1665,7 @@ TraktorS3.setInputLineMode = function(lineMode) {
     var packet = Object();
     packet.length = 33;
     packet[0] = 0x20;
-    if (lineMode) {
+    if (!lineMode) {
         packet[1] = 0x08;
     }
     controller.send(packet, packet.length, 0xF4);
