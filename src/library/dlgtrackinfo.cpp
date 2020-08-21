@@ -484,6 +484,7 @@ void DlgTrackInfo::clear() {
 
     m_loadedCoverInfo = CoverInfo();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
+    m_beatsChanged = false;
 }
 
 void DlgTrackInfo::slotBpmRound() {

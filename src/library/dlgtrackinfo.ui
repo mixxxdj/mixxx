@@ -643,7 +643,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>Lock BPM</string>
+          <string>&amp;Lock BPM</string>
          </property>
         </widget>
        </item>
@@ -701,7 +701,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Sets the BPM to 200% of the current value.</string>
              </property>
              <property name="text">
-              <string>Double BPM</string>
+              <string>&amp;Double BPM</string>
              </property>
             </widget>
            </item>
@@ -717,7 +717,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Sets the BPM to 50% of the current value.</string>
              </property>
              <property name="text">
-              <string>Halve BPM</string>
+              <string>&amp;Halve BPM</string>
              </property>
             </widget>
            </item>
@@ -733,7 +733,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Sets the BPM to 66% of the current value.</string>
              </property>
              <property name="text">
-              <string>2/3 BPM</string>
+              <string>&amp;2/3 BPM</string>
              </property>
             </widget>
            </item>
@@ -749,7 +749,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Sets the BPM to 75% of the current value.</string>
              </property>
              <property name="text">
-              <string>3/4 BPM</string>
+              <string>3/&amp;4 BPM</string>
              </property>
             </widget>
            </item>
@@ -765,7 +765,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Sets the BPM to 150% of the current value.</string>
              </property>
              <property name="text">
-              <string>3/2 BPM</string>
+              <string>&amp;3/2 BPM</string>
              </property>
             </widget>
            </item>
@@ -781,7 +781,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Sets the BPM to 133% of the current value.</string>
              </property>
              <property name="text">
-              <string>4/3 BPM</string>
+              <string>4/3 &amp;BPM</string>
              </property>
             </widget>
            </item>
@@ -803,7 +803,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Tap with the beat to set the BPM to the speed you are tapping.</string>
              </property>
              <property name="text">
-              <string>Tap to Beat</string>
+              <string>&amp;Tap to Beat</string>
              </property>
             </widget>
            </item>
@@ -813,7 +813,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               <string>Rounds the BPM value to the nearest integer.</string>
              </property>
              <property name="text">
-              <string>Round</string>
+              <string>&amp;Round</string>
              </property>
             </widget>
            </item>
@@ -831,7 +831,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
        <item>
         <widget class="QPushButton" name="bpmClear">
          <property name="text">
-          <string>Clear BPM and Beatgrid</string>
+          <string>Cl&amp;ear BPM and Beatgrid</string>
          </property>
         </widget>
        </item>
@@ -976,35 +976,37 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>txtTrackName</tabstop>
-  <tabstop>txtArtist</tabstop>
-  <tabstop>txtAlbum</tabstop>
-  <tabstop>txtAlbumArtist</tabstop>
-  <tabstop>txtComposer</tabstop>
-  <tabstop>txtGenre</tabstop>
-  <tabstop>txtGrouping</tabstop>
-  <tabstop>txtComment</tabstop>
-  <tabstop>txtYear</tabstop>
-  <tabstop>txtKey</tabstop>
-  <tabstop>txtTrackNumber</tabstop>
-  <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
-  <tabstop>btnImportMetadataFromFile</tabstop>
-  <tabstop>btnOpenFileBrowser</tabstop>
+  <tabstop>bpmLock</tabstop>
   <tabstop>spinBpm</tabstop>
+  <tabstop>bpmRound</tabstop>
   <tabstop>bpmConst</tabstop>
   <tabstop>bpmTap</tabstop>
   <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
-  <tabstop>bpmClear</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
-  <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
+  <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>bpmClear</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
   <tabstop>btnCancel</tabstop>
   <tabstop>btnApply</tabstop>
   <tabstop>btnOK</tabstop>
+  <tabstop>txtComposer</tabstop>
+  <tabstop>txtGenre</tabstop>
+  <tabstop>txtTrackNumber</tabstop>
+  <tabstop>txtComment</tabstop>
+  <tabstop>txtYear</tabstop>
+  <tabstop>txtGrouping</tabstop>
+  <tabstop>txtKey</tabstop>
+  <tabstop>btnImportMetadataFromFile</tabstop>
+  <tabstop>btnOpenFileBrowser</tabstop>
+  <tabstop>txtTrackName</tabstop>
+  <tabstop>txtAlbumArtist</tabstop>
+  <tabstop>txtAlbum</tabstop>
+  <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
+  <tabstop>txtArtist</tabstop>
  </tabstops>
  <resources/>
  <connections/>
