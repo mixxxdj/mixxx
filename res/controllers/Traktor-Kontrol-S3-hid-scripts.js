@@ -128,6 +128,8 @@ var TraktorS3 = new function() {
     // If true, channel 4 is in input mode
     this.channel4InputMode = false;
 
+    this.inputFxEnabledState = false;
+
     // callbacks
     this.samplerCallbacks = [];
 };
@@ -933,8 +935,13 @@ TraktorS3.Channel.prototype.fxEnableHandler = function(field) {
     }
 
     engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_" + this.group + "]", "super1");
-    this.fxEnabledState = !this.fxEnabledState;
-    this.colorOutput(this.fxEnabledState, "!fxEnabled");
+    if (this.group === "[Channel4]" && TraktorS3.channel4InputMode) {
+        TraktorS3.inputFxEnabledState = !TraktorS3.inputFxEnabledState;
+        this.colorOutput(TraktorS3.inputFxEnabledState, "!fxEnabled");
+    } else {
+        this.fxEnabledState = !this.fxEnabledState;
+        this.colorOutput(this.fxEnabledState, "!fxEnabled");
+    }
     TraktorS3.toggleFX();
 };
 
@@ -1241,10 +1248,14 @@ TraktorS3.headphoneHandler = function(field) {
 };
 
 TraktorS3.superHandler = function(field) {
-    // The super knob drives all the supers!
+    // The super knob drives all the supers -- if they are enabled.
     var chan = TraktorS3.Channels[field.group];
     var value = field.value / 4095.;
-    if (chan.fxEnabledState) {
+    var enabled = chan.fxEnabledState;
+    if (field.group === "[Channel4]" && TraktorS3.channel4InputMode) {
+        enabled = TraktorS3.inputFxEnabledState;
+    }
+    if (enabled) {
         for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
             if (TraktorS3.fxButtonState[fxNumber]) {
                 engine.setParameter("[EffectRack1_EffectUnit" + fxNumber + "]", "super1", value);
@@ -1293,15 +1304,21 @@ TraktorS3.toggleFX = function() {
     // If the fxenable button is on, the Filter effect is only enabled if
     // the Filter FX button is enabled.
     for (var ch = 1; ch <= 4; ch++) {
+        var chEnabled = channel.fxEnabledState;
+        if (ch === 4 && TraktorS3.channel4InputMode) {
+            chEnabled = TraktorS3.inputFxEnabledState;
+        }
         for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
             var channel = TraktorS3.Channels["[Channel" + ch + "]"];
             var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
             var fxKey = "group_[Channel" + ch + "]_enable";
-
-            var newState = channel.fxEnabledState && TraktorS3.fxButtonState[fxNumber];
+            var newState = chEnabled && TraktorS3.fxButtonState[fxNumber];
+            if (ch === 4 && TraktorS3.channel4InputMode) {
+                fxKey = "group_[Microphone]_enable";
+            }
             engine.setValue(fxGroup, fxKey, newState);
         }
-        newState = !channel.fxEnabledState || TraktorS3.fxButtonState[5];
+        newState = !chEnabled || TraktorS3.fxButtonState[5];
         engine.setValue("[QuickEffectRack1_[Channel" + ch + "]_Effect1]", "enabled",
             newState);
     }
@@ -1555,7 +1572,7 @@ TraktorS3.lightFX = function() {
     for (var ch in TraktorS3.Channels) {
         var chanob = TraktorS3.Channels[ch];
         if (ch === "[Channel4]" && TraktorS3.channel4InputMode) {
-            chanob.colorOutput(false, "!fxEnabled");
+            chanob.colorOutput(TraktorS3.inputFxEnabledState, "!fxEnabled");
         } else {
             chanob.colorOutput(chanob.fxEnabledState, "!fxEnabled");
         }
