@@ -469,7 +469,12 @@ bool WTrackMenu::isAnyTrackBpmLocked() const {
     return false;
 }
 
-std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
+std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor(bool* ok) const {
+    VERIFY_OR_DEBUG_ASSERT(ok) {
+        return std::nullopt;
+    }
+
+    *ok = false;
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return std::nullopt;
     }
@@ -479,9 +484,6 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
         commonColor = mixxx::RgbColor::fromQVariant(
                 m_trackIndexList.first().sibling(m_trackIndexList.first().row(), column).data());
-        if (!commonColor) {
-            return std::nullopt;
-        }
         for (const auto trackIndex : m_trackIndexList) {
             const auto otherColor = mixxx::RgbColor::fromQVariant(
                     trackIndex.sibling(trackIndex.row(), column).data());
@@ -492,9 +494,6 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
         }
     } else {
         commonColor = m_trackPointerList.first()->getColor();
-        if (!commonColor) {
-            return std::nullopt;
-        }
         for (const auto& pTrack : m_trackPointerList) {
             if (commonColor != pTrack->getColor()) {
                 // Multiple, different colors
@@ -502,6 +501,7 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
             }
         }
     }
+    *ok = true;
     return commonColor;
 }
 
@@ -658,8 +658,9 @@ void WTrackMenu::updateMenus() {
         QResizeEvent resizeEvent(QSize(), m_pColorMenu->size());
         qApp->sendEvent(m_pColorMenu, &resizeEvent);
 
-        const auto commonColor = getCommonTrackColor();
-        if (commonColor) {
+        bool ok;
+        const auto commonColor = getCommonTrackColor(&ok);
+        if (ok) {
             m_pColorPickerAction->setSelectedColor(commonColor);
         } else {
             m_pColorPickerAction->resetSelectedColor();
