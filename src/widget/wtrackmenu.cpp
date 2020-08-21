@@ -491,7 +491,7 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
             }
         }
     } else {
-        auto commonColor = m_trackPointerList.first()->getColor();
+        commonColor = m_trackPointerList.first()->getColor();
         if (!commonColor) {
             return std::nullopt;
         }
