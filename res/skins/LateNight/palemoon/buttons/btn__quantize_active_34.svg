@@ -26,7 +26,6 @@
      id="defs12" />
   <path
      d="m9.156 4c-2.7614 0-5 2.2386-5 5s2.2386 5 5 5h3.8438v-3h-3.9688c-1.1046 0-2-.89543-2-2 0-1.1046.89543-2 2-2h3.9688v-3z"
-     fill="#85bdbb"
      id="path2"
      style="fill:#559b99;fill-opacity:1;stroke:none;stroke-opacity:1" />
   <g
@@ -35,12 +34,10 @@
     <path
        style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-opacity:1"
        id="path4"
-       fill="#fff"
        d="m17 11h-3v3h3z" />
     <path
        style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-opacity:1"
        id="path6"
-       fill="#fff"
        d="m17 4h-2.9896v3h2.9896z" />
   </g>
 </svg>
