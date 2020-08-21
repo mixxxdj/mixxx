@@ -469,12 +469,7 @@ bool WTrackMenu::isAnyTrackBpmLocked() const {
     return false;
 }
 
-std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor(bool* ok) const {
-    VERIFY_OR_DEBUG_ASSERT(ok) {
-        return std::nullopt;
-    }
-
-    *ok = false;
+std::optional<std::optional<mixxx::RgbColor>> WTrackMenu::getCommonTrackColor() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return std::nullopt;
     }
@@ -501,8 +496,7 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor(bool* ok) const {
             }
         }
     }
-    *ok = true;
-    return commonColor;
+    return make_optional(commonColor);
 }
 
 CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
@@ -658,10 +652,9 @@ void WTrackMenu::updateMenus() {
         QResizeEvent resizeEvent(QSize(), m_pColorMenu->size());
         qApp->sendEvent(m_pColorMenu, &resizeEvent);
 
-        bool ok;
-        const auto commonColor = getCommonTrackColor(&ok);
-        if (ok) {
-            m_pColorPickerAction->setSelectedColor(commonColor);
+        const auto commonColor = getCommonTrackColor();
+        if (commonColor.has_value()) {
+            m_pColorPickerAction->setSelectedColor(*commonColor);
         } else {
             m_pColorPickerAction->resetSelectedColor();
         }
