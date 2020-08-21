@@ -12,39 +12,45 @@ void WBeatMenu::updateMenu() {
     clear();
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::SetDownbeat) &&
             m_beat.getType() == mixxx::Beat::BEAT) {
-        m_pSetAsDownbeat = make_parented<QAction>(tr("Set as Downbeat"), this);
-        connect(m_pSetAsDownbeat,
+        parented_ptr<QAction> pSetAsDownbeat;
+        pSetAsDownbeat = make_parented<QAction>(tr("Set as Downbeat"), this);
+        connect(pSetAsDownbeat.get(),
                 &QAction::triggered,
                 this,
                 &WBeatMenu::slotDownbeatUpdated);
-        addAction(m_pSetAsDownbeat);
+        addAction(pSetAsDownbeat.get());
     }
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::CueMenu)) {
-        m_pCueMenu = make_parented<QAction>(tr("Edit Cue"), this);
-        addAction(m_pCueMenu);
-        connect(m_pCueMenu,
+        parented_ptr<QAction> pCueMenu;
+        pCueMenu = make_parented<QAction>(tr("Edit Cue"), this);
+        connect(pCueMenu.get(),
                 &QAction::triggered,
                 this,
                 &WBeatMenu::cueButtonClicked);
+        addAction(pCueMenu.get());
     }
     if (m_beat.getType() == mixxx::Beat::DOWNBEAT) {
-        m_pTimeSignatureAction =
+        parented_ptr<QAction> pTimeSignatureAction;
+        pTimeSignatureAction =
                 make_parented<QAction>(tr("Edit Time Signature"), this);
-        addAction(m_pTimeSignatureAction);
-        connect(m_pTimeSignatureAction,
+        connect(pTimeSignatureAction.get(),
                 &QAction::triggered,
                 this,
                 &WBeatMenu::slotDisplayTimeSignatureMenu);
+        addAction(pTimeSignatureAction.get());
     }
 
     // TODO(hacksdump): Don't show this option when constant BPM is selected in preferences.
-    m_pTempoAction =
-            make_parented<QAction>(tr("Edit tempo ahead"), this);
-    addAction(m_pTempoAction);
-    connect(m_pTempoAction,
-            &QAction::triggered,
-            this,
-            &WBeatMenu::slotDisplayTempoMenu);
+    if (true) { // Replace with check for constant BPM preference: if (bpm is not constant)
+        parented_ptr<QAction> pTempoAction;
+        pTempoAction =
+                make_parented<QAction>(tr("Edit tempo ahead"), this);
+        connect(pTempoAction.get(),
+                &QAction::triggered,
+                this,
+                &WBeatMenu::slotDisplayTempoMenu);
+        addAction(pTempoAction.get());
+    }
 }
 
 void WBeatMenu::slotDownbeatUpdated() {

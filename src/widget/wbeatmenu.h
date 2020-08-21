@@ -50,10 +50,6 @@ class WBeatMenu : public QMenu {
     void updateMenu();
 
     UserSettingsPointer m_pConfig;
-    parented_ptr<QAction> m_pSetAsDownbeat;
-    parented_ptr<QAction> m_pCueMenu;
-    parented_ptr<QAction> m_pTimeSignatureAction;
-    parented_ptr<QAction> m_pTempoAction;
     parented_ptr<WTimeSignatureMenu> m_pTimeSignatureMenu;
     parented_ptr<WTempoMenu> m_pTempoMenu;
     mixxx::BeatsPointer m_pBeats;
