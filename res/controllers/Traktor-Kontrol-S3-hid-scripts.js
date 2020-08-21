@@ -1028,12 +1028,12 @@ TraktorS3.Channel.prototype.playpositionChanged = function(value) {
 TraktorS3.Channel.prototype.linkOutputs = function() {
     this.vuConnection = engine.makeConnection(this.group, "VuMeter", TraktorS3.channelVuMeterHandler);
     this.clipConnection = engine.makeConnection(this.group, "PeakIndicator", TraktorS3.peakOutputHandler);
+    TraktorS3.linkChannelOutput(this.group, "pfl", TraktorS3.pflOutputHandler);
     for (var j = 1; j <= 8; j++) {
         this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_enabled",
             TraktorS3.bind(TraktorS3.Channel.prototype.hotcuesOutputHandler, this)));
         this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_activate",
             TraktorS3.bind(TraktorS3.Channel.prototype.hotcuesOutputHandler, this)));
-        TraktorS3.linkChannelOutput(this.group, "pfl", TraktorS3.pflOutputHandler);
     }
 };
 
