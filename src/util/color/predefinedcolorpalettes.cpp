@@ -12,6 +12,27 @@ constexpr mixxx::RgbColor kColorMixxxPurple(0xAF00CC);
 constexpr mixxx::RgbColor kColorMixxxPink(0xFCA6D7);
 constexpr mixxx::RgbColor kColorMixxxWhite(0xF2F2FF);
 
+// Default Mixxx Track Color Palette
+constexpr mixxx::RgbColor kMixxxTrackColorDarkRed(0x880000);
+constexpr mixxx::RgbColor kMixxxTrackColorRed(0xFF0000);
+constexpr mixxx::RgbColor kMixxxTrackColorDarkOrange(0xFF8800);
+constexpr mixxx::RgbColor kMixxxTrackColorLemonGlacier(0xFFFF00);
+constexpr mixxx::RgbColor kMixxxTrackColorChartreuseGreen(0x88FF00);
+constexpr mixxx::RgbColor kMixxxTrackColorElectricGreen(0x00FF00);
+constexpr mixxx::RgbColor kMixxxTrackColorIndiaGreen(0x008800);
+constexpr mixxx::RgbColor kMixxxTrackColorDarkCyan(0x008888);
+constexpr mixxx::RgbColor kMixxxTrackColorSpringGreen(0x00FF88);
+constexpr mixxx::RgbColor kMixxxTrackColorAqua(0x00FFFF);
+constexpr mixxx::RgbColor kMixxxTrackColorDodgerBlue(0x0088FF);
+constexpr mixxx::RgbColor kMixxxTrackColorBlue(0x0000FF);
+constexpr mixxx::RgbColor kMixxxTrackColorNavyBlue(0x000088);
+constexpr mixxx::RgbColor kMixxxTrackColorMardiGras(0x8800088);
+constexpr mixxx::RgbColor kMixxxTrackColorElectricViolet(0x8800FF);
+constexpr mixxx::RgbColor kMixxxTrackColorFuchsia(0xFF00FF);
+constexpr mixxx::RgbColor kMixxxTrackColorViolet(0xFF88FF);
+constexpr mixxx::RgbColor kMixxxTrackColorWhite(0xFFFFFF);
+constexpr mixxx::RgbColor kMixxxTrackColorBattleshipGrey(0x888888);
+
 // Rekordbox Track Color Palette
 constexpr mixxx::RgbColor kRekordboxTrackColorPink(0xF870F8);
 constexpr mixxx::RgbColor kRekordboxTrackColorRed(0xF870900);
@@ -182,6 +203,31 @@ const ColorPalette PredefinedColorPalettes::kSeratoDJProHotcueColorPalette =
                 },
                 QList<int>{0, 2, 12, 3, 6, 15, 9, 14});
 
+const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
+        ColorPalette(
+                QStringLiteral("Mixxx Track Colors"),
+                QList<mixxx::RgbColor>{
+                        kMixxxTrackColorDarkRed,
+                        kMixxxTrackColorRed,
+                        kMixxxTrackColorDarkOrange,
+                        kMixxxTrackColorLemonGlacier,
+                        kMixxxTrackColorChartreuseGreen,
+                        kMixxxTrackColorElectricGreen,
+                        kMixxxTrackColorIndiaGreen,
+                        kMixxxTrackColorDarkCyan,
+                        kMixxxTrackColorSpringGreen,
+                        kMixxxTrackColorAqua,
+                        kMixxxTrackColorDodgerBlue,
+                        kMixxxTrackColorBlue,
+                        kMixxxTrackColorNavyBlue,
+                        kMixxxTrackColorMardiGras,
+                        kMixxxTrackColorElectricViolet,
+                        kMixxxTrackColorFuchsia,
+                        kMixxxTrackColorViolet,
+                        kMixxxTrackColorWhite,
+                        kMixxxTrackColorBattleshipGrey,
+                });
+
 const ColorPalette PredefinedColorPalettes::kRekordboxTrackColorPalette =
         ColorPalette(
                 QStringLiteral("Rekordbox Track Colors"),
@@ -252,13 +298,14 @@ const ColorPalette PredefinedColorPalettes::kDefaultHotcueColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette;
 
 const ColorPalette PredefinedColorPalettes::kDefaultTrackColorPalette =
-        mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette;
+        mixxx::PredefinedColorPalettes::kMixxxTrackColorPalette;
 
 const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         // Hotcue Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette,
         mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
         // Track Color Palettes
+        mixxx::PredefinedColorPalettes::kMixxxTrackColorPalette,
         mixxx::PredefinedColorPalettes::kRekordboxTrackColorPalette,
         mixxx::PredefinedColorPalettes::kSeratoDJProTrackColorPalette,
         mixxx::PredefinedColorPalettes::kTraktorProTrackColorPalette,
