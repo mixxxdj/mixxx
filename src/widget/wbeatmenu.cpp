@@ -37,17 +37,14 @@ void WBeatMenu::updateMenu() {
                 &WBeatMenu::slotDisplayTimeSignatureMenu);
     }
 
-    if (m_beat.getType() == mixxx::Beat::DOWNBEAT ||
-            m_beat.getMarkers().testFlag(mixxx::Beat::Marker::BPM)) {
-        // TODO(hacksdump): Don't show this option when constant BPM is selected in preferences.
-        m_pTempoAction =
-                make_parented<QAction>(tr("Edit tempo ahead"), this);
-        addAction(m_pTempoAction);
-        connect(m_pTempoAction,
-                &QAction::triggered,
-                this,
-                &WBeatMenu::slotDisplayTempoMenu);
-    }
+    // TODO(hacksdump): Don't show this option when constant BPM is selected in preferences.
+    m_pTempoAction =
+            make_parented<QAction>(tr("Edit tempo ahead"), this);
+    addAction(m_pTempoAction);
+    connect(m_pTempoAction,
+            &QAction::triggered,
+            this,
+            &WBeatMenu::slotDisplayTempoMenu);
 }
 
 void WBeatMenu::slotDownbeatUpdated() {
