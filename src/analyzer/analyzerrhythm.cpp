@@ -4,6 +4,7 @@
 #include <QString>
 #include <QVector>
 #include <QtDebug>
+#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -29,9 +30,9 @@ constexpr int kDfTypes = 5;
 // tempogram resolution constants
 constexpr float kNoveltyCurveMinDB = -54.0;
 constexpr float kNoveltyCurveCompressionConstant = 400.0;
-constexpr int kTempogramLog2WindowLength = 12;
-constexpr int kTempogramLog2HopSize = 8;
-constexpr int kTempogramLog2FftLength = 12;
+constexpr int kTempogramLog2WindowLength = 10; // ~ 11.6 s the maximal measure length we can detect
+constexpr int kTempogramLog2HopSize = 7;       // ~ 1.45 s Resolution for detecting regions
+constexpr int kTempogramLog2FftLength = 10;
 constexpr int kNoveltyCurveHop = 512;
 constexpr int kNoveltyCurveWindow = 1024;
 
@@ -307,13 +308,15 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
     allBeats.reserve(size / 10);
 
     // This is a dynamic threshold that defines which SD is considered as a beat.
-    double threshold = 0;
+    double threshold = 0.000001;
 
     // Find peak beats within a window of 9 SDs (100 ms)
     // This limits the detection result to 600 BPM
     for (int i = 0; i < size; ++i) {
         double beat = 0;
         double result = complexSdMinDiff[i];
+        m_detectionResults[i].results[1] = complexSdMinDiff[i];
+        m_detectionResults[i].results[2] = complexSdMinDiff[i] / threshold;
         if (result > threshold) {
             double max = result;
             for (int j = i - 4; j < i + 4; ++j) {
@@ -376,19 +379,21 @@ void AnalyzerRhythm::computeMeter() {
             double localTempo = tempoSum / tempoCounter;
             qDebug() << "at" << frameToMinutes(m_tempogramHopSize * blockCounter * kNoveltyCurveHop) << "local tempo is" << localTempo;
             QMap<int, double> pulsesLenghtsAndWeights;
-            auto allPulses = m_metergram[blockCounter].keys();
-            for (auto pulse : allPulses) {
-                double ratio = localTempo / pulse;
-                double beatLenghtOfPulse;
-                double ratioDecimals = std::modf(ratio, &beatLenghtOfPulse);
-                if (ratioDecimals < kCloseToIntTolerance) {
-                     accumulatedPulsesLenghtsAndWeights[static_cast<int>(
-                            beatLenghtOfPulse)] +=
-                            m_metergram[blockCounter][pulse];
-                    pulsesLenghtsAndWeights[static_cast<int>(
-                            beatLenghtOfPulse)] +=
-                            m_metergram[blockCounter][pulse];
-                    blockWisePulsesLenghtsAndWeights.push_back(pulsesLenghtsAndWeights);
+            if (blockCounter < m_metergram.size()) {
+                auto allPulses = m_metergram[blockCounter].keys();
+                for (auto pulse : allPulses) {
+                    double ratio = localTempo / pulse;
+                    double beatLenghtOfPulse;
+                    double ratioDecimals = std::modf(ratio, &beatLenghtOfPulse);
+                    if (ratioDecimals < kCloseToIntTolerance) {
+                        accumulatedPulsesLenghtsAndWeights[static_cast<int>(
+                                beatLenghtOfPulse)] +=
+                                m_metergram[blockCounter][pulse];
+                        pulsesLenghtsAndWeights[static_cast<int>(
+                                beatLenghtOfPulse)] +=
+                                m_metergram[blockCounter][pulse];
+                        blockWisePulsesLenghtsAndWeights.push_back(pulsesLenghtsAndWeights);
+                    }
                 }
             }
             // set for next iteration
@@ -509,12 +514,41 @@ int AnalyzerRhythm::computeNoveltyCurve() {
 }
 
 void AnalyzerRhythm::computeTempogramByDFT() {
-    auto hannWindow = std::vector<float>(m_tempogramWindowLength, 0.0);
-    WindowFunction::hanning(&hannWindow[0], m_tempogramWindowLength);
+    auto hannWindow = std::vector<float>(m_tempogramWindowLength, 1.0);
+    //WindowFunction::hanning(&hannWindow[0], m_tempogramWindowLength);
     SpectrogramProcessor spectrogramProcessor(m_tempogramWindowLength,
             m_tempogramFftLength, m_tempogramHopSize);
+
+    //Spectrogram tempogramDFT = spectrogramProcessor.process(
+    //        &m_noveltyCurve[0], m_noveltyCurve.size(), &hannWindow[0]);
+
+    std::vector<float> complexSdCurve;
+    for (int i = 0; i < m_detectionResults.size(); i++) {
+        complexSdCurve.push_back(m_detectionResults[i].results[3]);
+    }
+
     Spectrogram tempogramDFT = spectrogramProcessor.process(
-            &m_noveltyCurve[0], m_noveltyCurve.size(), &hannWindow[0]);
+            &complexSdCurve[0], complexSdCurve.size(), &hannWindow[0]);
+
+    /*
+    int firstFullAC = m_tempogramWindowLength / 2 / m_tempogramHopSize;
+    for(int i = 0; i < tempogramDFT[0].size(); i++) {
+        qDebug() << i
+              << tempogramDFT[firstFullAC * 4 + 1][i]
+              << tempogramDFT[firstFullAC * 4 + 2][i]
+              << tempogramDFT[firstFullAC * 4 + 3][i]
+              << tempogramDFT[firstFullAC * 4 + 4][i]
+              << tempogramDFT[firstFullAC * 4 + 5][i]
+              << tempogramDFT[firstFullAC * 4 + 6][i]
+              << tempogramDFT[firstFullAC * 4 + 7][i]
+              << tempogramDFT[firstFullAC * 4 + 8][i]
+              << tempogramDFT[firstFullAC * 4 + 9][i]
+              << tempogramDFT[firstFullAC * 4 + 10][i]
+              << tempogramDFT[firstFullAC * 4 + 11][i]
+              << tempogramDFT[firstFullAC * 4 + 12][i];
+    }
+    */
+
     // convert y axis to bpm
     int tempogramMinBin = (std::max(static_cast<int>(floor(((m_tempogramMinBPM/60.0)
             /m_tempogramInputSampleRate)*m_tempogramFftLength)), 0));
@@ -549,8 +583,36 @@ void AnalyzerRhythm::computeTempogramByDFT() {
 
 void AnalyzerRhythm::computeTempogramByACF() {
     // Compute acf tempogram
+    // m_tempogramWindowLength = 4096 ~ 446 s
+    // m_tempogramHopSize = 512 ~ 2,9 s
     AutocorrelationProcessor autocorrelationProcessor(m_tempogramWindowLength, m_tempogramHopSize);
-    Spectrogram tempogramACF = autocorrelationProcessor.process(&m_noveltyCurve[0], m_noveltyCurve.size());
+
+    std::vector<float> complexSdCurve;
+    for (int i = 0; i < m_detectionResults.size(); i++) {
+        complexSdCurve.push_back(m_detectionResults[i].results[3]);
+    }
+    Spectrogram tempogramACF = autocorrelationProcessor.process(
+            &complexSdCurve[0], complexSdCurve.size());
+
+    int firstFullAC = m_tempogramWindowLength / 2 / m_tempogramHopSize;
+    for (int i = 0; i < tempogramACF[0].size(); i++) {
+        qDebug() << i
+                 << tempogramACF[0][i]
+                 << tempogramACF[5][i]
+                 << tempogramACF[firstFullAC * 4 + 1][i]
+                 << tempogramACF[firstFullAC * 4 + 2][i]
+                 << tempogramACF[firstFullAC * 4 + 3][i]
+                 << tempogramACF[firstFullAC * 4 + 4][i]
+                 << tempogramACF[firstFullAC * 4 + 5][i]
+                 << tempogramACF[firstFullAC * 4 + 6][i]
+                 << tempogramACF[firstFullAC * 4 + 7][i]
+                 << tempogramACF[firstFullAC * 4 + 8][i]
+                 << tempogramACF[firstFullAC * 4 + 9][i]
+                 << tempogramACF[firstFullAC * 4 + 10][i]
+                 << tempogramACF[firstFullAC * 4 + 11][i]
+                 << tempogramACF[firstFullAC * 4 + 12][i];
+    }
+
     // Convert y axis to bpm
     int tempogramMinLag = std::max(static_cast<int>(ceil((60/ static_cast<double>((kNoveltyCurveHop) * m_tempogramMaxBPM))
                 *m_iSampleRate)), 0);
@@ -561,23 +623,77 @@ void AnalyzerRhythm::computeTempogramByACF() {
     double bestBpm;
     int bin;
     for (int block = 0; block < tempogramACF.size(); block++) {
-        //qDebug() << "block" << block;
-        //qDebug() << "ACF tempogram";
-        highest = .0;
-        bestBpm = .0;
-        bin = 0;
         QMap<double, double> acf;
-        for (int lag = tempogramMaxLag; lag >= tempogramMinLag; lag--) {
-            double bpm = 60/static_cast<double>(kNoveltyCurveHop * (lag/static_cast<double>(m_iSampleRate)));
-            //qDebug() << "bin, bpm and value"<< bin++ << bpm << tempogramACF[block][lag];
-            acf[bpm] = tempogramACF[block][lag];
-            if (tempogramACF[block][lag] > highest) {
-                highest = tempogramACF[block][lag];
-                bestBpm = bpm;
+        double max = 0;
+        int max_lag = 0;
+        int lag = 0;
+        constexpr int kLookAhead = 8;
+        for (; lag < tempogramACF[block].size() - kLookAhead; ++lag) {
+            for (int i = lag; i <= lag + kLookAhead; ++i) {
+                double compensated = tempogramACF[block][i] * (1 - (1 / ((i / 2.0) + 1)));
+                if (max < compensated) {
+                    max = compensated;
+                    max_lag = i;
+                }
+            }
+            if (max_lag == lag) {
+                acf[lag] = max;
             }
         }
         m_tempogramACF.push_back(acf);
-        //qDebug() << "best bpm at block" << bestBpm << block;
+        qDebug() << "measurelength" << block << acf.keys();
+    }
+
+    std::set<int> possible_downbeats_sorted;
+    for (int block = 0; block < m_tempogramACF.size(); block++) {
+        QList<double> keys = m_tempogramACF[block].keys();
+        if (keys.size() < 2) {
+            continue;
+        }
+        double minK = keys[0];
+        double maxK = keys[1];
+        for (int k = 2; k < keys.size(); k++) {
+            if (keys[k] > maxK) {
+                maxK = keys[k];
+            }
+            if (maxK > 160) {
+                // TODO: Use a more sophisticated
+                // Algorithm to find sensible measures
+                break;
+            }
+        }
+        Spectrogram tempogramPhase = autocorrelationProcessor.processPhase(
+                &complexSdCurve[0], complexSdCurve.size(), block, minK, maxK);
+        std::vector<int> possible_downbeats;
+        for (size_t i = 0; i < tempogramPhase.size(); i++) {
+            // auto deb = qDebug();
+            float max = tempogramPhase[i][0];
+            float j_max = 0;
+            for (size_t j = 0; j < tempogramPhase[i].size(); j++) {
+                //deb << tempogramPhase[i][j];
+                if (max < tempogramPhase[i][j]) {
+                    //deb << i << j << tempogramPhase[i][j];
+                    max = tempogramPhase[i][j];
+                    j_max = j * minK + (i + 1) * maxK +
+                            block * m_tempogramHopSize -
+                            m_tempogramWindowLength / 2;
+                }
+            }
+            if (j_max > 0) {
+                possible_downbeats.push_back(j_max);
+                // Store boundaries for viualsation
+                possible_downbeats_sorted.insert(j_max - minK);
+                possible_downbeats_sorted.insert(j_max);
+            }
+        }
+        qDebug() << "measure:" << block << minK << maxK << maxK / minK << possible_downbeats;
+    }
+
+    for (const auto& beat : possible_downbeats_sorted) {
+        // Output possible downbeat positions
+        // TODO: Snap them to the SnapGrid and pick the most likely measure length from the overlapping AC from on of the eight ACF Runs.
+        double result = (beat * stepSize()) - (stepSize() / mixxx::kEngineChannelCount);
+        m_resultBeats.push_back(result);
     }
 }
 
@@ -588,8 +704,8 @@ void AnalyzerRhythm::computeMetergram() {
     // with it's harmonics and others sporious peaks, while the acf has
     // the meter pulses, the subharmonics and also spororious peak, by multiplying
     // them we should enchance the meter pulses only..
-    
-    for (int i = 0; i < m_tempogramDFT.size(); i+=1) {
+
+    for (int i = 0; i < m_tempogramACF.size() && i < m_tempogramDFT.size(); i += 1) {
         QMap<double, double> metergramBlock;
         for (auto act = m_tempogramACF[i].begin(); act != m_tempogramACF[i].end(); act +=1) {
             auto nextDFT = m_tempogramDFT[i].lowerBound(act.key());
@@ -614,14 +730,21 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
 
     auto notes = computeSnapGrid();
     setTempogramParameters();
-    computeNoveltyCurve();    
-    //for (auto nc : m_noveltyCurve) {qDebug() << nc;}
+    //computeNoveltyCurve();
+
+    for (int i = 0; i < m_detectionResults.size(); i++) {
+        qDebug() << i
+                 << m_detectionResults[i].results[3]
+                 << m_detectionResults[i].results[1]
+                 << m_detectionResults[i].results[2] * 400;
+        // << m_noveltyCurve[i] * 400;
+    }
+
     computeTempogramByACF();
-    computeTempogramByDFT();
-    computeMetergram();
-    computeBeats();
-    computeMeter();
-    
+    //computeTempogramByDFT();
+    //computeMetergram();
+    //computeBeats();
+    //computeMeter();
 
     // TODO(Cristiano&Harshit) THIS IS WHERE A BEAT VECTOR IS CREATED
     auto pBeatMap = new mixxx::BeatMap(*pTrack, m_iSampleRate, m_resultBeats);

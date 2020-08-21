@@ -25,6 +25,7 @@ public:
     AutocorrelationProcessor(int windowLength, int hopSize);
     ~AutocorrelationProcessor();
     AutoCorrelation process(float * input, int inputLength) const;
+    AutoCorrelation processPhase(float * input, int inputLength,int hop, int beatsize, int measuresize) const;
 private:
     int m_windowLength;
     int m_hopSize;
