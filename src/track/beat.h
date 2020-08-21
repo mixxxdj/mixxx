@@ -115,9 +115,9 @@ inline QDebug operator<<(QDebug dbg, Beat beat) {
         << " | Signature:" << beat.getTimeSignature()
         << " | Type:" << beat.getType()
         << " | BarIndex:" << beat.getBarIndex()
-        << " | BeatIndex:" << beat.getBeatIndex() << "]"
-        << " | BarRelativeBeatIndex:" << beat.getBarRelativeBeatIndex() << "]"
-        << " | BPM:" << beat.getBpm() << "]"
+        << " | BeatIndex:" << beat.getBeatIndex()
+        << " | BarRelativeBeatIndex:" << beat.getBarRelativeBeatIndex()
+        << " | BPM:" << beat.getBpm()
         << " | Markers:" << beat.getMarkers() << "]";
     return dbg;
 }

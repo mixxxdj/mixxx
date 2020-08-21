@@ -921,7 +921,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
     while (true) {
         markers = mixxx::Beat::Marker::NONE;
 
-        auto currentBpmMarker = m_beatsProto.bpm_markers().Get(bpmMarkerIndex);
+        Bpm bpmBeforeThisBeat = Bpm(m_beatsProto.bpm_markers().Get(bpmMarkerIndex).bpm());
 
         if (bpmMarkerIndex < m_beatsProto.bpm_markers_size() - 1 &&
                 m_beatsProto.bpm_markers()
@@ -930,17 +930,18 @@ void BeatsInternal::generateBeatsFromMarkers() {
             bpmMarkerIndex++;
         }
 
+        auto currentBpmMarker = m_beatsProto.bpm_markers(bpmMarkerIndex);
+
         if (currentBpmMarker.beat_index() == m_beats.size()) {
             markers |= Beat::Marker::BPM;
         }
-        Bpm currentBpm = Bpm(currentBpmMarker.bpm());
         auto currentTimeSignatureMarker =
                 m_beatsProto.time_signature_markers().Get(
                         timeSignatureMarkerIndex);
         TimeSignature currentTimeSignature =
                 TimeSignature(currentTimeSignatureMarker.time_signature());
         FrameDiff_t beatLength = getBeatLengthFrames(
-                currentBpm, m_iSampleRate, currentTimeSignature);
+                bpmBeforeThisBeat, m_iSampleRate, currentTimeSignature);
 
         if (barRelativeBeatIndex % currentTimeSignature.getBeatsPerBar() == 0) {
             barIndex++;
@@ -974,7 +975,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
         addedBeat = Beat(beatFramePosition,
                 beatType,
                 currentTimeSignature,
-                currentBpm,
+                Bpm(currentBpmMarker.bpm()),
                 m_beats.size(),
                 barIndex,
                 barRelativeBeatIndex,
