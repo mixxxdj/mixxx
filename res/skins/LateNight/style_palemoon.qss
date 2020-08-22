@@ -2725,8 +2725,12 @@ WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu {
   padding: 3px;
-  border: 1px solid #888;
-  border-radius: 2px;
+  border-top: 1px solid #333;
+  border-left: 1px solid #282828;
+  border-bottom: 1px solid #0c0c0c;
+  border-right: 1px solid #181818;
+  border-radius: 1px;
+  border-bottom-left-radius: 2px;
 }
 
 #SkinContainer {
@@ -2995,3 +2999,22 @@ WEffectSelector,
     }
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
+
+WColorPicker QPushButton,
+WCueMenuPopup #CueDeleteButton {
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
+}
+
+WCueMenuPopup #CueDeleteButton:pressed {
+  background-color: #b24c12;
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+}
+
+WCueMenuPopup #CueLabelEdit {
+  border-width: 3px 19px 2px 3px;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
+}
