@@ -357,8 +357,11 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
 
     generateBeatsFromMarkers();
 
+    // The number of generated beats should not be less than the input beats.
+    // They can be more since they can be extrapolated with the last bpm marker.
+    DEBUG_ASSERT(beats.size() <= m_beats.size());
+
     // Check whether the generated beats match the input beats.
-    DEBUG_ASSERT(beats.size() == m_beats.size());
     for (int i = 0; i < beats.size(); ++i) {
         DEBUG_ASSERT(beats.at(i) == m_beats.at(i).getFramePosition());
     }
