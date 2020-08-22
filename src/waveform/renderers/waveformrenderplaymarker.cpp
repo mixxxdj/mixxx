@@ -9,6 +9,7 @@ mixxx::FramePos rendererPositionFractionToTrackPosition(
 }
 constexpr double kBarBeatTextBoxOpacity = 0.9;
 const QString kBarBeatSeparator = ".";
+constexpr double fontSize = 12;
 } // namespace
 
 WaveformRenderPlayMarker::WaveformRenderPlayMarker(
@@ -67,6 +68,9 @@ void WaveformRenderPlayMarker::draw(QPainter* painter, QPaintEvent* event) {
         painter->setPen(colors->getPlayPosColor());
         painter->setBrush(colors->getBgColor());
         painter->setOpacity(kBarBeatTextBoxOpacity);
+        QFont font = painter->font();
+        font.setPixelSize(fontSize);
+        painter->setFont(font);
         const int boxHeightPixels = painter->fontMetrics().height();
         const int boxWidthPixels = painter->fontMetrics().width(
                 barBeatString, barBeatString.length());
