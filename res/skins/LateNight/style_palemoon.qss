@@ -85,10 +85,12 @@ WLibrary, QAbstractScrollArea::corner {
   border-radius: 1px;
   background-color: #151517;
   }
-  #FxUnitControllerInputIndicator[highlight="1"] {
+  /*
+  #FxUnitControllerInputIndicator {
     border: 1px solid #257b82;
     background-color: #0f0f0f;
   }
+  */
   #WaveformsContainer {
     border-width: 1px 0px;
     border-radius: 0px;
@@ -791,7 +793,7 @@ WBeatSpinBox::down-button,
     border-bottom-right-radius: 0px;
   }
   #FxUnitHeader {
-    padding: 0px 0px 1px 4px;
+    padding: 0px 0px 1px 0px;
   }
   #FxUnitLabel {
     alignment: left;
@@ -1216,8 +1218,33 @@ WEffectSelector,
 #MicAuxLabelUnconfigured {
   color: #686666;
   }
-  #FxUnitLabel[highlight="1"] {
-    color: #aaa;
+  /* Colorize active Fx unit label, add underline.
+     (Use color as base color of FxUnitControllerInputIndicator) */
+  WLabel#FxUnitLabel[highlight="1"],
+  #FxUnitControllerInputIndicator {
+    /*text-decoration: underline;*/
+    /*font-weight: bold;*/
+  }
+  #FxUnitControllerInputIndicator {
+    font-size: 18px;
+  }
+  #FxUnit1 #FxUnitLabel[highlight="1"],
+  #FxUnit2 #FxUnitLabel[highlight="1"] {
+    color: #518f00;
+  }
+  #FxUnit3 #FxUnitLabel[highlight="1"],
+  #FxUnit4 #FxUnitLabel[highlight="1"] {
+    color: #028392;
+  }
+  #FxUnit1 #FxUnitControllerInputIndicator[highlight="1"],
+  #FxUnit2 #FxUnitControllerInputIndicator[highlight="1"] {
+    background-color: #518f00;
+    color: #518f00;
+  }
+  #FxUnit3 #FxUnitControllerInputIndicator[highlight="1"],
+  #FxUnit4 #FxUnitControllerInputIndicator[highlight="1"] {
+    background-color: #028392;
+    color: #028392;
   }
 
 /* Grey. default for all deck labels */

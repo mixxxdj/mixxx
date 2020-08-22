@@ -192,7 +192,7 @@ WSearchLineEdit,
   min-width: 1px;
   max-width: 1px;
   image: url(skin:/classic/style/fx_separator.svg) repeat center center;
-  margin: 2px 0px;
+  margin: 2px 1px;
 }
 #FxSlotSeparatorH {
   min-height: 2px;
@@ -1018,16 +1018,29 @@ WTrackMenu QMenu QCheckBox,
 }
 
 /* green for Fx 1/2 */
-#FxUnit1 #FxUnitLabel,
-#FxUnit2 #FxUnitLabel {
+#FxUnit1 #FxUnitLabel[highlight="1"],
+#FxUnit2 #FxUnitLabel[highlight="1"] {
   color: #73b508;
 }
 
 /* blue for Fx 3/4 */
-#FxUnit3 #FxUnitLabel,
-#FxUnit4 #FxUnitLabel {
+#FxUnit3 #FxUnitLabel[highlight="1"],
+#FxUnit4 #FxUnitLabel[highlight="1"] {
   color: #0795b5;
-}
+  }
+  #FxUnitControllerInputIndicator {
+    margin: 2px 0px;
+  }
+  #FxUnit1 #FxUnitControllerInputIndicator[highlight="1"],
+  #FxUnit2 #FxUnitControllerInputIndicator[highlight="1"] {
+    background-color: #73b508;
+    color: #73b508;
+  }
+  #FxUnit3 #FxUnitControllerInputIndicator[highlight="1"],
+  #FxUnit4 #FxUnitControllerInputIndicator[highlight="1"] {
+    background-color: #0795b5;
+    color: #0795b5;
+  }
 
 /* Grey. default for all deck labels */
 #PlayPositionText, #PlayPositionTextSmall,
@@ -1045,6 +1058,7 @@ WLibrary QLabel, WLibrary QRadioButton {
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
+#FxUnitLabel[highlight="0"],
 #MicAuxLabelUnconfigured,
 #DlgMissing > QPushButton:!enabled,
 #DlgHidden > QPushButton:!enabled,
