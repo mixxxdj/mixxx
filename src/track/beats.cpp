@@ -30,6 +30,7 @@ inline FrameDiff_t getBeatLengthFrames(Bpm bpm,
     return kSecondsPerMinute * sampleRate *
             (4.0 / timeSignature.getNoteValue()) / bpm.getValue();
 }
+const double bpmFloatingPointPrecision = std::pow(10, -10);
 } // namespace
 
 Beats::Beats(const Track* track,
@@ -363,7 +364,8 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
 
     // Check whether the generated beats match the input beats.
     for (int i = 0; i < beats.size(); ++i) {
-        DEBUG_ASSERT(beats.at(i) == m_beats.at(i).getFramePosition());
+        DEBUG_ASSERT(qFuzzyCompare(beats.at(i).getValue(),
+                m_beats.at(i).getFramePosition().getValue()));
     }
 }
 
@@ -895,8 +897,9 @@ void BeatsInternal::generateBeatsFromMarkers() {
     for (const auto& bpmMarker :
             m_beatsProto.bpm_markers()) {
         if (minimalBpmMarkers.empty() ||
-                Bpm(minimalBpmMarkers.constLast().bpm()) !=
-                        Bpm(bpmMarker.bpm())) {
+                (minimalBpmMarkers.constLast().bpm() -
+                                bpmMarker.bpm() >
+                        bpmFloatingPointPrecision)) {
             minimalBpmMarkers.append(bpmMarker);
         }
     }
