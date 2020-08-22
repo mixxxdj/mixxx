@@ -47,7 +47,6 @@ class EffectsManager {
     const EffectChainPresetManagerPointer getChainPresetManager() const {
         return m_pChainPresetManager;
     }
-
     const EffectPresetManagerPointer getEffectPresetManager() const {
         return m_pEffectPresetManager;
     }

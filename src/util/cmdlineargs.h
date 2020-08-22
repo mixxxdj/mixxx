@@ -1,16 +1,20 @@
-#ifndef CMDLINEARGS_H
-#define CMDLINEARGS_H
+#pragma once
 
+#include <QDesktopServices>
+#include <QDir>
 #include <QList>
 #include <QString>
-#include <QDir>
-#include <QDesktopServices>
 
 #include "util/logging.h"
 
-// A structure to store the parsed command-line arguments
+/// A structure to store the parsed command-line arguments
 class CmdlineArgs final {
   public:
+    /// The constructor is only public to make this class reusable in tests.
+    /// All operational code in Mixxx itself must access the global singleton
+    /// via `CmdlineArgs::instance()`.
+    CmdlineArgs();
+
     static inline CmdlineArgs& Instance() {
         static CmdlineArgs cla;
         return cla;
@@ -39,8 +43,6 @@ class CmdlineArgs final {
     const QString& getTimelinePath() const { return m_timelinePath; }
 
   private:
-    CmdlineArgs();
-
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_midiDebug;
@@ -56,5 +58,3 @@ class CmdlineArgs final {
     QString m_pluginPath;
     QString m_timelinePath;
 };
-
-#endif /* CMDLINEARGS_H */

@@ -146,6 +146,16 @@ bool parseAlbumPeak(
         const QString& strPeak);
 #endif // __EXTRA_METADATA__
 
+bool parseSeratoBeatGrid(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& data,
+        FileType fileType);
+
+bool parseSeratoBeatGrid(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& data,
+        FileType fileType);
+
 bool parseSeratoMarkers(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data,
@@ -164,6 +174,10 @@ bool parseSeratoMarkers2(
 bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
         const TagLib::String& data,
+        FileType fileType);
+
+TagLib::String dumpSeratoBeatGrid(
+        const TrackMetadata& trackMetadata,
         FileType fileType);
 
 TagLib::String dumpSeratoMarkers(

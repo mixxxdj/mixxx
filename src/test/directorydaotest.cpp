@@ -76,6 +76,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
+    ASSERT_TRUE(success);
 
     // we do not trust what directory dao thinks and better check up on it
     QStringList dirs;
@@ -102,6 +103,8 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
+    ASSERT_TRUE(success);
+
     QStringList dirs;
     while (query.next()) {
         dirs << query.value(0).toString();

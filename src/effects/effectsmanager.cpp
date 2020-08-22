@@ -74,7 +74,6 @@ void EffectsManager::setup() {
     addStandardEffectChainSlots();
     addOutputEffectChainSlot();
     // EQ and QuickEffect chain slots are initialized when PlayerManager creates decks.
-
     readEffectsXml();
 }
 

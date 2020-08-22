@@ -6,8 +6,15 @@ Deck::Deck(QObject* pParent,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
-        const QString& group)
-        : BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager, pVisualsManager, defaultOrientation, group, /*defaultMaster*/ true,
+        const ChannelHandleAndGroup& handleGroup)
+        : BaseTrackPlayerImpl(pParent,
+                  pConfig,
+                  pMixingEngine,
+                  pEffectsManager,
+                  pVisualsManager,
+                  defaultOrientation,
+                  handleGroup,
+                  /*defaultMaster*/ true,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ true) {
 }
