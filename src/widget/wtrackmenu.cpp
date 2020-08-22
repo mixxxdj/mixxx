@@ -653,7 +653,7 @@ void WTrackMenu::updateMenus() {
         qApp->sendEvent(m_pColorMenu, &resizeEvent);
 
         const auto commonColor = getCommonTrackColor();
-        if (commonColor.has_value()) {
+        if (commonColor) {
             m_pColorPickerAction->setSelectedColor(*commonColor);
         } else {
             m_pColorPickerAction->resetSelectedColor();
