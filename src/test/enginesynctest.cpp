@@ -1681,14 +1681,19 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     FrameDiff_t beatLengthFrames = 60.0 * 44100 / 90.0;
     FramePos startOffsetFrames = FramePos(0);
     const int numBeats = 100;
+    const double trackEndPaddingSeconds = 0.1;
     QVector<FramePos> beats1 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+    const double duration1 = beats1.last().getValue() / m_pTrack1->getSampleRate();
+    m_pTrack1->setDuration(duration1 + trackEndPaddingSeconds);
     auto pBeats1 = new mixxx::Beats(m_pTrack1.get(), beats1);
     m_pTrack1->setBeats(mixxx::BeatsPointer(pBeats1));
 
     beatLengthFrames = 60.0 * 44100 / 145.0;
     QVector<FramePos> beats2 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+    const double duration2 = beats2.last().getValue() / m_pTrack2->getSampleRate();
+    m_pTrack2->setDuration(duration2 + trackEndPaddingSeconds);
     auto pBeats2 = new mixxx::Beats(m_pTrack2.get(), beats2);
     m_pTrack2->setBeats(mixxx::BeatsPointer(pBeats2));
 

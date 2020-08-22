@@ -37,9 +37,6 @@ Beats::Beats(const Track* track,
         const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers)
         : Beats(track) {
     if (beats.size() > 0) {
-        // This causes BeatsInternal constructor to be called twice.
-        // But it can't be included in ctor initializer list since
-        // we already have a delegating constructor.
         m_beatsInternal.initWithAnalyzer(beats, timeSignatureMarkers);
     }
     slotTrackBeatsUpdated();
@@ -317,6 +314,10 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         clearMarkers();
         return;
     }
+
+    auto lastBeatTime = Duration::fromSeconds(beats.last().getValue() / m_iSampleRate);
+    DEBUG_ASSERT(m_dDurationSeconds >= lastBeatTime.toDoubleSeconds());
+
     m_beatsProto.set_first_frame_position(beats.at(0).getValue());
     int bpmMarkerBeatIndex = 0;
     for (int i = 1; i < beats.size(); ++i) {
@@ -357,6 +358,7 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     generateBeatsFromMarkers();
 
     // Check whether the generated beats match the input beats.
+    DEBUG_ASSERT(beats.size() == m_beats.size());
     for (int i = 0; i < beats.size(); ++i) {
         DEBUG_ASSERT(beats.at(i) == m_beats.at(i).getFramePosition());
     }
