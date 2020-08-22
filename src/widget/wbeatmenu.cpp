@@ -40,17 +40,14 @@ void WBeatMenu::updateMenu() {
         addAction(pTimeSignatureAction.get());
     }
 
-    // TODO(hacksdump): Don't show this option when constant BPM is selected in preferences.
-    if (true) { // Replace with check for constant BPM preference: if (bpm is not constant)
-        parented_ptr<QAction> pTempoAction;
-        pTempoAction =
-                make_parented<QAction>(tr("Edit tempo ahead"), this);
-        connect(pTempoAction.get(),
-                &QAction::triggered,
-                this,
-                &WBeatMenu::slotDisplayTempoMenu);
-        addAction(pTempoAction.get());
-    }
+    parented_ptr<QAction> pTempoAction;
+    pTempoAction =
+            make_parented<QAction>(tr("Edit tempo ahead"), this);
+    connect(pTempoAction.get(),
+            &QAction::triggered,
+            this,
+            &WBeatMenu::slotDisplayTempoMenu);
+    addAction(pTempoAction.get());
 }
 
 void WBeatMenu::slotDownbeatUpdated() {
