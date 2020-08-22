@@ -190,10 +190,41 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     // the limits warning is a Linux only thing
     limitsHint->hide();
 #endif // __LINUX__
+
+    // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
+    // connect them to the custom event filter below so they don't accept focus
+    // when we scroll the preferences page.
+    QObjectList objList = this->children();
+    for (int i = 0; i < objList.length(); ++i) {
+        QComboBox* combo = qobject_cast<QComboBox*>(objList[i]);
+        QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(objList[i]);
+        if (combo) {
+            combo->setFocusPolicy(Qt::StrongFocus);
+            combo->installEventFilter(this);
+        } else if (spin) {
+            spin->setFocusPolicy(Qt::StrongFocus);
+            spin->installEventFilter(this);
+        }
+    }
 }
 
 DlgPrefSound::~DlgPrefSound() {
     delete m_pLatencyCompensation;
+}
+
+// Catch scroll events over comboboxes and pass them to the scroll area instead.
+bool DlgPrefSound::eventFilter(QObject* obj, QEvent* e) {
+    if (e->type() == QEvent::Wheel) {
+        // Reject scrolling only if widget is unfocused.
+        // Object to widget cast is needed to check the focus state.
+        QComboBox* combo = qobject_cast<QComboBox*>(obj);
+        QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(obj);
+        if ((combo && !combo->hasFocus()) || (spin && !spin->hasFocus())) {
+            QApplication::sendEvent(verticalLayout_2, e);
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, e);
 }
 
 /**
