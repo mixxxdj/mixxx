@@ -626,11 +626,16 @@ WSearchLineEdit {
 
 /********************** Loop Controls / AutoDJ spinbox ************************/
 WBeatSpinBox,
-#spinBoxTransition,
-#LibraryBPMSpinBox  {
-  selection-color: #000;
-  selection-background-color: #d2d2d2;
-}
+#spinBoxTransition {
+  selection-color: #a7998b;
+  selection-background-color: #111;
+  }
+  WBeatSpinBox:focus,
+  #spinBoxTransition:focus,
+  #LibraryBPMSpinBox:focus  {
+    selection-color: #000;
+    selection-background-color: #d2d2d2;
+  }
 WBeatSpinBox {
   border-width: 3px 19px 2px 3px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;

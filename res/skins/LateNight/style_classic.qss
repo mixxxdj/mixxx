@@ -200,10 +200,13 @@ WSearchLineEdit,
 }
 
 WBeatSpinBox,
-#spinBoxTransition,
-#LibraryBPMSpinBox  {
+#spinBoxTransition  {
   selection-color: #000;
   selection-background-color: #d2d2d2;
+  }
+  WBeatSpinBox:focus  {
+    selection-color: #000;
+    selection-background-color: #d2d2d2;
   }
   WBeatSpinBox:focus,
   #spinBoxTransition:focus {
