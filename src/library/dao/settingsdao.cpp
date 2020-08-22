@@ -1,5 +1,3 @@
-// settingsdao.cpp
-// Created 12/29/2009 by RJ Ryan (rryan@mit.edu)
 
 #include "library/dao/settingsdao.h"
 
@@ -42,7 +40,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     return defaultValue;
 }
 
-bool SettingsDAO::setValue(const QString& name, const QVariant& value) {
+bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
     if (!value.canConvert(QMetaType::QString)) {
         return false;
     }

@@ -34,7 +34,7 @@ class AnalysisDao : public DAO {
     };
 
     explicit AnalysisDao(UserSettingsPointer pConfig);
-    ~AnalysisDao() override {}
+    ~AnalysisDao() override = default;
 
     // The following functions can be used with a custom database
     // connection and independent of whether the DAO has been
@@ -69,7 +69,7 @@ class AnalysisDao : public DAO {
     bool deleteFile(const QString& filename) const;
     QList<AnalysisInfo> loadAnalysesFromQuery(TrackId trackId, QSqlQuery* query);
 
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
 };
 

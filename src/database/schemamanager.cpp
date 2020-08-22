@@ -13,7 +13,7 @@ const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_c
 namespace {
     mixxx::Logger kLogger("SchemaManager");
 
-    int readCurrentSchemaVersion(SettingsDAO& settings) {
+    int readCurrentSchemaVersion(const SettingsDAO& settings) {
         QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
         // May be a null string if the schema has not been created. We default the
         // startVersion to 0 so that we automatically try to upgrade to revision 1.
@@ -32,9 +32,9 @@ namespace {
 }
 
 SchemaManager::SchemaManager(const QSqlDatabase& database)
-    : m_database(database),
-      m_settingsDao(database),
-      m_currentVersion(readCurrentSchemaVersion(m_settingsDao)) {
+        : m_database(database),
+          m_settingsDao(m_database),
+          m_currentVersion(readCurrentSchemaVersion(m_settingsDao)) {
 }
 
 bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
