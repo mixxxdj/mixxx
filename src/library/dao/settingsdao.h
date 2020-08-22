@@ -1,18 +1,15 @@
 #pragma once
-#include <QtSql>
 
-#define SETTINGS_TABLE "settings"
-
-#define SETTINGSTABLE_NAME "name"
-#define SETTINGSTABLE_VALUE "value"
-#define SETTINGSTABLE_LOCKED "locked"
-#define SETTINGSTABLE_HIDDEN "hidden"
-
+#include <QSqlDatabase>
+#include <QString>
+#include <QVariant>
 
 // All library-specific preferences go in the library settings table
 class SettingsDAO final {
   public:
-    explicit SettingsDAO(const QSqlDatabase& db);
+    explicit SettingsDAO(QSqlDatabase database)
+            : m_database(std::move(database)) {
+    }
 
     QString getValue(
             const QString& name,
@@ -22,5 +19,5 @@ class SettingsDAO final {
             const QVariant& value) const;
 
   private:
-    QSqlDatabase m_db;
+    const QSqlDatabase m_database;
 };
