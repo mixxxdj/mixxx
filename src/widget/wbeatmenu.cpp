@@ -10,6 +10,7 @@ WBeatMenu::WBeatMenu(UserSettingsPointer pConfig, QWidget* parent)
 
 void WBeatMenu::updateMenu() {
     clear();
+    // TODO(hacksdump): Only create menu for beats which are visible on the waveform.
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::SetDownbeat) &&
             m_beat.getType() == mixxx::Beat::BEAT) {
         parented_ptr<QAction> pSetAsDownbeat;

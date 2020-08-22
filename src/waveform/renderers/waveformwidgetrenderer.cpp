@@ -10,7 +10,7 @@
 #include "util/performancetimer.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
-const double WaveformWidgetRenderer::s_waveformMaxZoom = 30.0;
+const double WaveformWidgetRenderer::s_waveformMaxZoom = 80.0;
 const double WaveformWidgetRenderer::s_waveformDefaultZoom = 3.0;
 const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 

@@ -14,6 +14,7 @@
 
 namespace {
 constexpr int kMaxZoomFactorToDisplayBeats = 15;
+const QList<double> kWaveformZoomToTakeOutDownbeats({35, 70});
 inline int opacityPercentageToAlpha(int opacityPercentageOnHundredScale) {
     return opacityPercentageOnHundredScale * 255.0 / 100;
 }
@@ -100,10 +101,27 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         waveformBeat->setBeat(beat);
         waveformBeat->setOrientation(orientation);
         waveformBeat->setLength((orientation == Qt::Horizontal) ? rendererHeight : rendererWidth);
-        waveformBeat->setVisible(beat.getType() == mixxx::Beat::DOWNBEAT ||
+        double zoomFactor = m_waveformRenderer->getZoomFactor();
+        bool isVisible = beat.getType() == mixxx::Beat::DOWNBEAT ||
                 (beat.getType() == mixxx::Beat::BEAT &&
-                        m_waveformRenderer->getZoomFactor() <
-                                kMaxZoomFactorToDisplayBeats));
+                        zoomFactor <
+                                kMaxZoomFactorToDisplayBeats);
+        // TODO: Calculate adjacent beat distance to decide which beats to hide.
+        if (isVisible && zoomFactor >= kWaveformZoomToTakeOutDownbeats.at(0)) {
+            DEBUG_ASSERT(beat.getType() == mixxx::Beat::DOWNBEAT);
+            const int zoomLevelIdx =
+                    std::lower_bound(
+                            kWaveformZoomToTakeOutDownbeats.constBegin(),
+                            kWaveformZoomToTakeOutDownbeats.constEnd(),
+                            zoomFactor)
+                            .i -
+                    kWaveformZoomToTakeOutDownbeats.constBegin().i;
+            const int allowedDownbeatIndexFactor = std::pow(2, zoomLevelIdx);
+            if ((beat.getBarIndex() + 1) % allowedDownbeatIndexFactor != 0) {
+                isVisible = false;
+            }
+        }
+        waveformBeat->setVisible(isVisible);
         waveformBeat->setAlpha(opacityPercentageToAlpha(alpha));
         beatsOnScreen.append(*waveformBeat);
         beatCount++;
