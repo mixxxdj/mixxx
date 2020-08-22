@@ -166,7 +166,8 @@ class WTrackMenu : public QMenu {
     bool isAnyTrackBpmLocked() const;
 
     /// Get the common track color of all tracks this menu is shown for, or
-    /// return `nullopt` if common color could be detected.
+    /// return `nullopt` if there is no common color. Tracks may have no color
+    /// assigned to them. In that case the inner optional is set to `nullopt`.
     std::optional<std::optional<mixxx::RgbColor>> getCommonTrackColor() const;
     CoverInfo getCoverInfoOfLastTrack() const;
 
