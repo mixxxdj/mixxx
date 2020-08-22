@@ -46,10 +46,6 @@ class AnalysisDao : public DAO {
             const QSqlDatabase& database,
             AnalysisType type) const;
 
-    void initialize(const QSqlDatabase& database) override {
-        m_db = database;
-    }
-
     QList<AnalysisInfo> getAnalysesForTrackByType(TrackId trackId, AnalysisType type);
     QList<AnalysisInfo> getAnalysesForTrack(TrackId trackId);
     bool saveAnalysis(AnalysisInfo* analysis);
@@ -70,7 +66,6 @@ class AnalysisDao : public DAO {
     QList<AnalysisInfo> loadAnalysesFromQuery(TrackId trackId, QSqlQuery* query);
 
     const UserSettingsPointer m_pConfig;
-    QSqlDatabase m_db;
 };
 
 #endif // ANALYSISDAO_H

@@ -18,10 +18,6 @@ class DirectoryDAO : public DAO {
   public:
     ~DirectoryDAO() override = default;
 
-    void initialize(const QSqlDatabase& database) override {
-        m_database = database;
-    }
-
     QStringList getDirs() const;
 
     int addDirectory(const QString& dir) const;
@@ -30,7 +26,4 @@ class DirectoryDAO : public DAO {
     QList<RelocatedTrack> relocateDirectory(
             const QString& oldFolder,
             const QString& newFolder) const;
-
-  private:
-    QSqlDatabase m_database;
 };
