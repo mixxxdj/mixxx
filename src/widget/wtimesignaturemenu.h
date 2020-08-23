@@ -28,10 +28,18 @@ class WTimeSignatureMenu : public QWidget {
     void slotBeatCountChanged(int value);
     void slotBeatSizeChanged(int index);
     void setTimeSignature(mixxx::TimeSignature timeSignature);
+    void slotTimeSignatureHalved();
+    void slotTimeSignatureDoubled();
 
   private:
+    bool canHalveBothValues() const;
+    bool canDoubleBothValues() const;
+    void updateHalfDoubleButtonsActiveStatus();
+
     parented_ptr<QSpinBox> m_pBeatCountBox;
     parented_ptr<QComboBox> m_pBeatLengthBox;
+    parented_ptr<QPushButton> m_pHalfButton;
+    parented_ptr<QPushButton> m_pDoubleButton;
     mixxx::BeatsPointer m_pBeats;
     mixxx::Beat m_beat;
 };
