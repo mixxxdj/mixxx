@@ -70,10 +70,44 @@ AutoCorrelation AutocorrelationProcessor::process(float * input, int inputLength
     return autocorrelation;
 }
 
-
-AutoCorrelation AutocorrelationProcessor::processPhase(float * input, int inputLength, int hop, int beatsize, int measuresize) const
+int AutocorrelationProcessor::processOffset(float * input, int inputLength, int hop, const std::vector<int>& periods) const
 {
-    int readBlockPointerIndex = m_hopSize * hop;
+    int readBlockPointerIndex = m_hopSize * hop - m_windowLength/2;
+    AutoCorrelation autocorrelation;
+
+    float max_sum = 0;
+    int max_lag = 0;
+    // periods[0] is most likely 1/8 expect a maximum at lest at 1/4
+    for (int lag = -periods[0]; lag < periods[0] * 2; ++lag) {
+        int readPointer = readBlockPointerIndex + lag;
+        float sum = 0;
+        if (readPointer >= 0) {
+            sum = input[readPointer];
+        }
+        for (int i = 0; i < periods.size(); ++i) {
+            int period = periods[i];
+            if (readPointer + period + 1 >= inputLength) {
+                break;
+            }
+            if (readPointer + period - 1 >= 0) {
+                float itSum = input[readPointer + period - 1];
+                itSum += input[readPointer + period];
+                itSum += input[readPointer + period + 1];
+                sum += itSum / 3;
+            }
+        }
+        if (sum > max_sum) {
+            max_sum = sum;
+            max_lag = lag;
+        }
+    }
+    return max_lag;
+}
+
+
+AutoCorrelation AutocorrelationProcessor::processPhase(float * input, int inputLength, int hop, int beatsize, int measuresize, int offset) const
+{
+    int readBlockPointerIndex = m_hopSize * hop + offset - 1;
     AutoCorrelation autocorrelation;
 
     for (int lag = measuresize; lag < m_windowLength; lag += measuresize) {
@@ -81,27 +115,58 @@ AutoCorrelation AutocorrelationProcessor::processPhase(float * input, int inputL
         int readPointer = readBlockPointerIndex - m_windowLength / 2;
         for (int b = 0; b < m_windowLength / beatsize; ++b) {
             float sum = 0;
-            for (int n = 0; n < beatsize; n++) {
+            for (int n = 0; n <= beatsize; n++) {
                 int refPointer = readPointer + lag;
-                if (refPointer >= inputLength) {
+                if (refPointer + 1 >= inputLength) {
                     break;
                 } else if (readPointer >= 0) {
-                    float diff = input[readPointer]*input[refPointer];
-                    float ref1 = input[readPointer]*input[readPointer];
-                    float ref2 = input[refPointer]*input[refPointer];
+                    float inref = (input[refPointer - 1] + input[refPointer] + input[refPointer + 1]) / 3;
+                    float diff = input[readPointer] * inref;
+                    float ref1 = input[readPointer] * input[readPointer];
+                    float ref2 = inref * inref;
                     float ref = ((ref1 + ref2)/2);
                     if (ref > 0) {
                         sum += diff/((ref1 + ref2)/2);
                     } else {
                         sum += 1;
                     }
-                } else if (refPointer < 0) {
+                } else if (refPointer > 0) {
                     sum += 1;
                 }
                 readPointer++;
             }
+
             // store
-            autocorrelationBlock.push_back(1 - (sum/beatsize));
+            autocorrelationBlock.push_back(1 - (sum / (beatsize + 1)));
+
+
+            /*
+            float sumread = 0;
+            float sumref = 0;
+            for (int n = 0; n <= beatsize + 1; n++) {
+                int refPointer = readPointer + lag;
+                if (refPointer >= inputLength) {
+                    break;
+                } else if (readPointer >= 0) {
+                    sumread += input[readPointer];
+                    sumref += input[refPointer];
+                } else if (refPointer > 0) {
+                    sumref += 1;
+                }
+                readPointer++;
+            }
+            float diff = sumread * sumref;
+            float ref1 = sumread * sumread;
+            float ref2 = sumref * sumref;
+            float ref = ((ref1 + ref2)/2);
+            if (ref > 0) {
+                sum += diff/((ref1 + ref2)/2);
+            } else {
+                sum += 1;
+            }
+            // store
+            autocorrelationBlock.push_back(1 - sum);
+            */
         }
         autocorrelation.push_back(autocorrelationBlock);
     }

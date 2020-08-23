@@ -613,16 +613,13 @@ void AnalyzerRhythm::computeTempogramByACF() {
                  << tempogramACF[firstFullAC * 4 + 12][i];
     }
 
-    // Convert y axis to bpm
     int tempogramMinLag = std::max(static_cast<int>(ceil((60/ static_cast<double>((kNoveltyCurveHop) * m_tempogramMaxBPM))
                 *m_iSampleRate)), 0);
     int tempogramMaxLag = std::min(static_cast<int>(floor((60/ static_cast<double>((kNoveltyCurveHop) * m_tempogramMinBPM))
                 *m_iSampleRate)), m_tempogramWindowLength-1);
     qDebug() << tempogramMinLag << tempogramMaxLag;
-    double highest;
-    double bestBpm;
-    int bin;
-    for (int block = 0; block < tempogramACF.size(); block++) {
+
+    for (size_t block = 0; block < tempogramACF.size(); block++) {
         QMap<double, double> acf;
         double max = 0;
         int max_lag = 0;
@@ -641,7 +638,33 @@ void AnalyzerRhythm::computeTempogramByACF() {
             }
         }
         m_tempogramACF.push_back(acf);
-        qDebug() << "measurelength" << block << acf.keys();
+        //        qDebug() << "measurelength" << block << acf.keys();
+    }
+
+    std::vector<float> snapGrid;
+    for (int i = 0; i < m_detectionResults.size(); i++) {
+        snapGrid.push_back(m_detectionResults[i].results[2]);
+    }
+
+    // Find offset
+    std::vector<int> offsets;
+    for (int block = 0; block < m_tempogramACF.size(); block++) {
+        QList<double> keys = m_tempogramACF[block].keys();
+        if (keys.size() < 1) {
+            continue;
+        }
+        std::vector<int> periods;
+        for (double period : keys) {
+            periods.push_back(period);
+        }
+        int offset = autocorrelationProcessor.processOffset(
+                &snapGrid[0], snapGrid.size(), block, periods);
+        qDebug() << "measurelength" << block << offset << m_tempogramACF[block].keys();
+
+        offsets.push_back(offset);
+
+        //double result = (m_tempogramHopSize * block + offset - m_windowLength / 2) * stepSize();
+        //m_resultBeats.push_back(result);
     }
 
     std::set<int> possible_downbeats_sorted;
@@ -663,18 +686,26 @@ void AnalyzerRhythm::computeTempogramByACF() {
             }
         }
         Spectrogram tempogramPhase = autocorrelationProcessor.processPhase(
-                &complexSdCurve[0], complexSdCurve.size(), block, minK, maxK);
+                &complexSdCurve[0], complexSdCurve.size(), block, minK, maxK, offsets[block]);
         std::vector<int> possible_downbeats;
         for (size_t i = 0; i < tempogramPhase.size(); i++) {
             // auto deb = qDebug();
             float max = tempogramPhase[i][0];
             float j_max = 0;
-            for (size_t j = 0; j < tempogramPhase[i].size(); j++) {
+            size_t j = 0;
+            for (; j < tempogramPhase[i].size() && j < maxK / minK; j++) {
                 //deb << tempogramPhase[i][j];
                 if (max < tempogramPhase[i][j]) {
                     //deb << i << j << tempogramPhase[i][j];
                     max = tempogramPhase[i][j];
-                    j_max = j * minK + (i + 1) * maxK +
+                }
+            }
+            for (; j < tempogramPhase[i].size(); j++) {
+                //deb << tempogramPhase[i][j];
+                if (max < tempogramPhase[i][j]) {
+                    //deb << i << j << tempogramPhase[i][j];
+                    max = tempogramPhase[i][j];
+                    j_max = (i + 1) * maxK + j * minK + offsets[block] +
                             block * m_tempogramHopSize -
                             m_tempogramWindowLength / 2;
                 }
@@ -682,9 +713,37 @@ void AnalyzerRhythm::computeTempogramByACF() {
             if (j_max > 0) {
                 possible_downbeats.push_back(j_max);
                 // Store boundaries for viualsation
-                possible_downbeats_sorted.insert(j_max - minK);
                 possible_downbeats_sorted.insert(j_max);
             }
+
+            /*
+            // auto deb = qDebug();
+            float min = tempogramPhase[i][0];
+            float j_min = 0;
+            size_t j = 0;
+            for (; j < tempogramPhase[i].size() && j < maxK / minK; j++) {
+                //deb << tempogramPhase[i][j];
+                if (min > tempogramPhase[i][j]) {
+                    //deb << i << j << tempogramPhase[i][j];
+                    min = tempogramPhase[i][j];
+                }
+            }
+            for (; j < tempogramPhase[i].size(); j++) {
+                //deb << tempogramPhase[i][j];
+                if (min > tempogramPhase[i][j]) {
+                    //deb << i << j << tempogramPhase[i][j];
+                    min = tempogramPhase[i][j];
+                    j_min = 1 * maxK + j * minK + offsets[block] +
+                            block * m_tempogramHopSize -
+                            m_tempogramWindowLength / 2;
+                }
+            }
+            if (j_min > 0) {
+                possible_downbeats.push_back(j_min);
+                // Store boundaries for viualsation
+                possible_downbeats_sorted.insert(j_min);
+            }
+            */
         }
         qDebug() << "measure:" << block << minK << maxK << maxK / minK << possible_downbeats;
     }
@@ -692,7 +751,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
     for (const auto& beat : possible_downbeats_sorted) {
         // Output possible downbeat positions
         // TODO: Snap them to the SnapGrid and pick the most likely measure length from the overlapping AC from on of the eight ACF Runs.
-        double result = (beat * stepSize()) - (stepSize() / mixxx::kEngineChannelCount);
+        double result = beat * stepSize();
         m_resultBeats.push_back(result);
     }
 }
@@ -705,7 +764,7 @@ void AnalyzerRhythm::computeMetergram() {
     // the meter pulses, the subharmonics and also spororious peak, by multiplying
     // them we should enchance the meter pulses only..
 
-    for (int i = 0; i < m_tempogramACF.size() && i < m_tempogramDFT.size(); i += 1) {
+    for (size_t i = 0; i < m_tempogramACF.size() && i < m_tempogramDFT.size(); i += 1) {
         QMap<double, double> metergramBlock;
         for (auto act = m_tempogramACF[i].begin(); act != m_tempogramACF[i].end(); act +=1) {
             auto nextDFT = m_tempogramDFT[i].lowerBound(act.key());
@@ -728,11 +787,20 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_downbeatsProcessor.finalize();
     m_noveltyCurveProcessor.finalize();
 
-    auto notes = computeSnapGrid();
+    std::vector<double> notes = computeSnapGrid();
+
+    /*
+    // Visualizes Snap Grid as Beats
+    for (const auto& beat : notes) {
+        double result = beat * stepSize();
+        m_resultBeats.push_back(result);
+    }
+    */
+
     setTempogramParameters();
     //computeNoveltyCurve();
 
-    for (int i = 0; i < m_detectionResults.size(); i++) {
+    for (size_t i = 0; i < m_detectionResults.size(); i++) {
         qDebug() << i
                  << m_detectionResults[i].results[3]
                  << m_detectionResults[i].results[1]
