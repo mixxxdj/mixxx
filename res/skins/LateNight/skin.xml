@@ -65,6 +65,7 @@
       <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_loopjump_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_sync_button_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_key_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_key_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_vumeters_compact">1</attribute>
 
