@@ -1,0 +1,476 @@
+///////////////////////////////////////////////////////////////////////////////////
+/*                                                                               */
+/* Traktor Kontrol Z2 HID controller script v1.00                                */
+/* Last modification: August 2020                                                */
+/* Author: Jörg Wartenberg (based on the Traktor S3 mapping by Owen Williams)    */
+/* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_Z2     */
+/*                                                                               */
+/* For linter:                                                                   */
+/* global HIDController, HIDDebug, HIDPacket, controller                         */
+///////////////////////////////////////////////////////////////////////////////////
+
+var TraktorZ2 = new function() {
+    this.controller = new HIDController();
+		
+    this.shiftPressed = false;
+	
+	this.fxButtonState = {1: false, 2: false, 3: false, 4: false};
+
+    // When true, packets will not be sent to the controller.  Good for doing mass updates.
+    this.batchingOutputs = false;
+	
+    // callbacks
+    this.samplerCallbacks = [];
+		
+    // Knob encoder states (hold values between 0x0 and 0xF)
+    // Rotate to the right is +1 and to the left is means -1
+    this.browseKnobEncoderState = 0;
+};
+
+// Mixxx's javascript doesn't support .bind natively, so here's a simple version.
+TraktorZ2.bind = function(fn, obj) {
+    return function() {
+        return fn.apply(obj, arguments);
+    };
+};
+
+/////////////////////////
+//// FX effect unit Objects ////
+////
+//// FX Effect Units don't have much state, just the fx button state.
+TraktorZ2.EffectUnit = function(group) {
+    this.group = group;
+    this.fxEnabledState = false;
+};
+
+TraktorZ2.EffectUnit.prototype.fxEnableHandler = function(field) {
+	HIDDebug("TraktorZ2: fxEnableHandler");
+    if (field.value === 0) {
+        return;
+    }
+
+    this.fxEnabledState = !this.fxEnabledState;
+    //this.colorOutput(this.fxEnabledState, "!fxEnabled");
+    TraktorZ2.toggleFX();
+};
+
+//// Deck Objects ////
+// Decks are the loop controls and the 4 hotcue buttons on either side of the controller.
+// Each Deck can control 2 channels a + c and b + d, which can be mapped.
+TraktorZ2.Deck = function(deckNumber, group) {
+    this.deckNumber = deckNumber;
+    this.group = group;
+    this.activeChannel = "[Channel" + deckNumber + "]";
+
+    // Various states
+    this.syncPressedTimer = 0;
+    // this.previewPressed = false;
+    // padModeState 0 is hotcues, 1 is samplers
+    this.padModeState = 0;
+
+    // Knob encoder states (hold values between 0x0 and 0xF)
+    // Rotate to the right is +1 and to the left is means -1
+    this.loopKnobEncoderState = 0;
+};
+
+// defineScaler configures ranged controls like knobs and sliders.
+TraktorZ2.Deck.prototype.defineScaler = function(msg, name, deckOffset, deckBitmask, deck2Offset, deck2Bitmask, fn) {
+    if (this.deckNumber === 2) {
+        deckOffset = deck2Offset;
+        deckBitmask = deck2Bitmask;
+    }
+    TraktorZ2.registerInputScaler(msg, this.group, name, deckOffset, deckBitmask, TraktorZ2.bind(fn, this));
+};
+TraktorZ2.Deck.prototype.registerInputs = function(messageShort, messageLong) {
+	HIDDebug("TraktorZ2: Deck.prototype.registerInputs");
+    var deckFn = TraktorZ2.Deck.prototype;
+	
+
+    this.defineButton(messageShort, "!pad_1", 0x06, 0x04, 0x07, 0x08, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_2", 0x06, 0x08, 0x07, 0x10, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_3", 0x06, 0x10, 0x07, 0x20, deckFn.numberButtonHandler);
+    this.defineButton(messageShort, "!pad_4", 0x06, 0x20, 0x07, 0x40, deckFn.numberButtonHandler);	
+	
+    this.defineButton(messageShort, "!sync", 0x04, 0x40, 0x04, 0x80, deckFn.syncHandler);
+
+	// Load/Duplicate buttons
+    this.defineButton(messageShort, "!LoadSelectedTrack", 0x04, 0x01, 0x04, 0x02, deckFn.loadTrackHandler);
+
+    // Loop control
+    this.defineButton(messageShort, "!SelectLoop", 0x01, 0xF0, 0x02, 0x0F, deckFn.selectLoopHandler);
+    this.defineButton(messageShort, "!ActivateLoop", 0x05, 0x40, 0x08, 0x20, deckFn.activateLoopHandler);
+
+    // Rev / Flux / Grid / Jog
+    this.defineButton(messageShort, "!slip_enabled", 0x06, 0x40, 0x07, 0x80, deckFn.fluxHandler);
+
+};
+
+TraktorZ2.Deck.prototype.numberButtonHandler = function(field) {
+    var padNumber = parseInt(field.id[field.id.length - 1]);
+    var action = "";
+
+    // Hotcues mode
+    if (this.padModeState === 0) {
+        if (this.shiftPressed) {
+            action = "_clear";
+        } else {
+            action = "_activate";
+        }
+        HIDDebug("setting " + "hotcue_" + padNumber + action + " " + field.value);
+        engine.setValue(this.activeChannel, "hotcue_" + padNumber + action, field.value);
+        return;
+    }
+
+    // Samples mode
+    var sampler = padNumber;
+    if (field.group === "deck2") {
+        sampler += 8;
+    }
+
+    if (this.shiftPressed) {
+        var playing = engine.getValue("[Sampler" + sampler + "]", "play");
+        if (playing) {
+            action = "cue_default";
+        } else {
+            action = "eject";
+        }
+        engine.setValue("[Sampler" + sampler + "]", action, field.value);
+        return;
+    }
+    var loaded = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
+    if (loaded) {
+        if (field.value) {
+            action = "cue_gotoandplay";
+        } else {
+            action = "stop";
+        }
+        engine.setValue("[Sampler" + sampler + "]", action, 1);
+        return;
+    }
+    engine.setValue("[Sampler" + sampler + "]", "LoadSelectedTrack", field.value);
+};
+
+TraktorZ2.Deck.prototype.fluxHandler = function(field) {
+    if (field.value === 0) {
+        return;
+    }
+    script.toggleControl(this.activeChannel, "slip_enabled");
+};
+
+TraktorZ2.Deck.prototype.syncHandler = function(field) {
+	HIDDebug("TraktorZ2: syncHandler");
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "beatsync_phase", field.value);
+        // Light LED while pressed
+        //this.colorOutput(field.value, "sync_enabled");
+        return;
+    }
+
+    // Unshifted
+    if (field.value) {
+        // We have to reimplement push-to-lock because it's only defined in the midi code
+        // in Mixxx.
+        if (engine.getValue(this.activeChannel, "sync_enabled") === 0) {
+            script.triggerControl(this.activeChannel, "beatsync");
+            // Start timer to measure how long button is pressed
+            this.syncPressedTimer = engine.beginTimer(300, function() {
+                engine.setValue(this.activeChannel, "sync_enabled", 1);
+                // Reset sync button timer state if active
+                if (this.syncPressedTimer !== 0) {
+                    this.syncPressedTimer = 0;
+                }
+            }, true);
+
+            // Light corresponding LED when button is pressed
+            //this.colorOutput(1, "sync_enabled");
+        } else {
+            // Deactivate sync lock
+            // LED is turned off by the callback handler for sync_enabled
+            engine.setValue(this.activeChannel, "sync_enabled", 0);
+        }
+    } else {
+        if (this.syncPressedTimer !== 0) {
+            // Timer still running -> stop it and unlight LED
+            engine.stopTimer(this.syncPressedTimer);
+            //this.colorOutput(0, "sync_enabled");
+        }
+    }
+};
+
+TraktorZ2.selectTrackHandler = function(field) {
+	HIDDebug("TraktorZ2: selectTrackHandler");
+    var delta = 1;
+    if ((field.value + 1) % 16 === this.browseKnobEncoderState) {
+        delta = -1;
+    }
+    this.browseKnobEncoderState = field.value;
+
+    // When preview is held, rotating the library encoder scrolls through the previewing track.
+    if (this.previewPressed) {
+        var playPosition = engine.getValue("[PreviewDeck1]", "playposition");
+        if (delta > 0) {
+            playPosition += 0.0125;
+        } else {
+            playPosition -= 0.0125;
+        }
+        engine.setValue("[PreviewDeck1]", "playposition", playPosition);
+        return;
+    }
+
+    if (this.shiftPressed) {
+        engine.setValue("[Library]", "MoveHorizontal", delta);
+    } else {
+        engine.setValue("[Library]", "MoveVertical", delta);
+    }
+};
+
+TraktorZ2.LibraryFocusHandler = function(field) {
+	HIDDebug("TraktorZ2: LibraryFocusHandler");
+    //this.colorOutput(field.value, "!LibraryFocus");
+    // if (field.value === 0) {
+        // return;
+    // }
+
+    script.toggleControl("[Library]", "MoveFocus");
+};
+
+TraktorZ2.Deck.prototype.loadTrackHandler = function(field) {
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "eject", field.value);
+    } else {
+        engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+    }
+};
+
+
+// defineButton allows us to configure either the right deck or the left deck, depending on which
+// is appropriate.  This avoids extra logic in the function where we define all the magic numbers.
+// We use a similar approach in the other define funcs.
+TraktorZ2.Deck.prototype.defineButton = function(msg, name, deckOffset, deckBitmask, deck2Offset, deck2Bitmask, fn) {
+    if (this.deckNumber === 2) {
+        deckOffset = deck2Offset;
+        deckBitmask = deck2Bitmask;
+    }
+    TraktorZ2.registerInputButton(msg, this.group, name, deckOffset, deckBitmask, TraktorZ2.bind(fn, this));
+};
+
+TraktorZ2.Deck.prototype.selectLoopHandler = function(field) {
+	HIDDebug("TraktorZ2: selectLoopHandler");
+    if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+        script.triggerControl(this.activeChannel, "loop_halve");
+    } else {
+        script.triggerControl(this.activeChannel, "loop_double");
+    }
+
+    this.loopKnobEncoderState = field.value;
+};
+
+TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
+	HIDDebug("TraktorZ2: activateLoopHandler");
+    if (field.value === 0) {
+        return;
+    }
+    var isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
+
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "reloop_toggle", field.value);
+    } else {
+        if (isLoopActive) {
+            engine.setValue(this.activeChannel, "reloop_toggle", field.value);
+        } else {
+            engine.setValue(this.activeChannel, "beatloop_activate", field.value);
+        }
+    }
+};
+
+TraktorZ2.registerInputPackets = function() {
+    var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
+    var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
+
+	    HIDDebug("TraktorZ2: registerInputPackets");
+    for (var idx in TraktorZ2.Decks) {
+         var deck = TraktorZ2.Decks[idx];
+         deck.registerInputs(messageShort, messageLong);
+    }
+
+    // this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, this.deckSwitchHandler);
+    // this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, this.deckSwitchHandler);
+    // this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, this.deckSwitchHandler);
+    // this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, this.deckSwitchHandler);
+
+    // // Headphone buttons
+    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x04, 0x04, this.buttonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x04, 0x08, this.buttonHandler);
+  
+    // // FX Buttons
+    // this.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x02, this.fxHandler);
+    // this.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x04, this.fxHandler);
+    // // this.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, this.fxHandler);
+    // // this.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, this.fxHandler);
+    // this.registerInputButton(messageShort, "[ChannelX]", "!fx5", 0x08, 0x80, this.fxHandler);
+
+    this.registerInputButton(messageShort, "[Master]", "!shift", 0x07, 0x01, this.shiftHandler);
+	
+    this.registerInputButton(messageShort, "[Master]", "!SelectTrack", 0x01, 0x0F, this.selectTrackHandler);	
+    this.registerInputButton(messageShort, "[Master]", "!LibraryFocus", 0x03, 0x80, this.LibraryFocusHandler);
+   
+    this.controller.registerInputPacket(messageShort);
+
+   
+   
+    this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x2D, 0xFFFF, this.parameterHandler); // Fader Deck A
+    this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x2F, 0xFFFF, this.parameterHandler); // Fader Deck B
+    this.registerInputScaler(messageLong, "[Channel3]", "volume", 0x29, 0xFFFF, this.parameterHandler); // Rotary knob Deck C
+    this.registerInputScaler(messageLong, "[Channel4]", "volume", 0x2B, 0xFFFF, this.parameterHandler); // Rotary knob Deck D
+
+    this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1F, 0xFFFF, this.parameterHandler);
+
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xFFFF, this.parameterHandler); // High
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xFFFF, this.parameterHandler); // Mid
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xFFFF, this.parameterHandler); // Low
+
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, 0xFFFF, this.parameterHandler); // High
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, 0xFFFF, this.parameterHandler); // Mid
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x25, 0xFFFF, this.parameterHandler); // Low
+
+    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x27, 0xFFFF, this.parameterHandler);
+
+    this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x31, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Master]", "gain", 0x09, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Master]", "headMix", 0x07, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Master]", "headGain", 0x05, 0xFFFF, this.parameterHandler);
+
+    this.controller.registerInputPacket(messageLong);
+
+    // Soft takeovers
+    for (var ch = 1; ch <= 2; ch++) {
+        group = "[Channel" + ch + "]";
+        engine.softTakeover("[QuickEffectRack1_" + group + "]", "super1", true);
+    }
+
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", true);
+   
+    // engine.softTakeover("[Master]", "crossfader", true);
+    engine.softTakeover("[Master]", "gain", true);
+    engine.softTakeover("[Master]", "headMix", true);
+    engine.softTakeover("[Master]", "headGain", true);
+
+    for (var i = 1; i <= 16; ++i) {
+        engine.softTakeover("[Sampler" + i + "]", "pregain", true);
+    }
+
+    // Dirty hack to set initial values in the packet parser
+    var data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    TraktorZ2.incomingData(data);
+};
+
+TraktorZ2.registerInputScaler = function(message, group, name, offset, bitmask, callback) {
+	HIDDebug("TraktorZ2: registerInputScaler");
+    message.addControl(group, name, offset, "H", bitmask);
+    message.setCallback(group, name, callback);
+};
+
+TraktorZ2.registerInputButton = function(message, group, name, offset, bitmask, callback) {
+	HIDDebug("TraktorZ2: registerInputButton");
+    message.addControl(group, name, offset, "B", bitmask);
+    message.setCallback(group, name, callback);
+};
+
+TraktorZ2.shiftHandler = function(field) {
+    HIDDebug("TraktorZ2: shiftHandler");
+	engine.setValue("[Controls]", "touch_shift", field.value);
+    this.shiftPressed = field.value;
+   // TraktorZ2.basicOutputHandler(field.value, field.group, "!shift");
+};
+
+TraktorZ2.parameterHandler = function(field) {
+	HIDDebug("TraktorZ2: parameterHandler");
+    engine.setParameter(field.group, field.name, field.value / 4095);
+};
+
+// TraktorZ2.filterHandler = function(field) {
+	// HIDDebug("TraktorZ2: filterHandler");
+    // // The super knob drives all the supers!
+    // var chan = TraktorZ2.Channels[field.group];
+    // var value = field.value / 4095.;
+    // // if (chan.fxEnabledState) {
+        // // for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
+            // // if (TraktorZ2.fxButtonState[fxNumber]) {
+                // // engine.setParameter("[EffectRack1_EffectUnit" + fxNumber + "]", "super1", value);
+            // // }
+        // // }
+    // // } else {
+        // engine.setParameter("[QuickEffectRack1_" + chan.group + "]", "super1", value);
+    // //}
+// };
+
+TraktorZ2.messageCallback = function(_packet, data) {
+    for (var name in data) {
+        if (Object.prototype.hasOwnProperty.call(data, name)) {
+            TraktorZ2.controller.processButton(data[name]);
+        }
+    }
+};
+
+TraktorZ2.incomingData = function(data, length) {
+    TraktorZ2.controller.parsePacket(data, length);
+};
+
+TraktorZ2.shutdown = function() {
+    // Deactivate all LEDs
+    var dataStrings = [
+        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00 ",
+        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
+        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00",
+    ];
+
+    var data = [Object(), Object()];
+
+
+    for (var i = 0; i < data.length; i++) {
+        var splitted = dataStrings[i].split(/\s+/);
+        data[i].length = splitted.length;
+        for (var j = 0; j < splitted.length; j++) {
+            var byteStr = splitted[j];
+            if (byteStr.length === 0) {
+                continue;
+            }
+            data[i][j] = parseInt(byteStr, 16);
+        }
+        controller.send(data[i], data[i].length, 0x80 + i);
+    }
+
+    HIDDebug("TraktorZ2: Shutdown done!");
+};
+
+TraktorZ2.init = function(_id) {
+    this.Decks = {
+        "deck1": new TraktorZ2.Deck(1, "deck1"),
+        "deck2": new TraktorZ2.Deck(2, "deck2"),
+    };
+
+     this.EffectUnit = {
+        "FX1": new TraktorZ2.EffectUnit("FX1"),
+        "FX2": new TraktorZ2.EffectUnit("FX2")
+    };
+
+    TraktorZ2.registerInputPackets();
+    //TraktorZ2.registerOutputPackets();
+    HIDDebug("TraktorZ2: Init done!");
+
+};
