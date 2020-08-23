@@ -17,7 +17,7 @@ constexpr mixxx::RgbColor kMixxxTrackColorDarkRed(0x880000);
 constexpr mixxx::RgbColor kMixxxTrackColorRed(0xFF0000);
 constexpr mixxx::RgbColor kMixxxTrackColorDarkOrange(0xFF8800);
 constexpr mixxx::RgbColor kMixxxTrackColorLemonGlacier(0xFFFF00);
-constexpr mixxx::RgbColor kMixxxTrackColorChartreuseGreen(0x88FF00);
+constexpr mixxx::RgbColor kMixxxTrackColorBitterLime(0xBBEE00);
 constexpr mixxx::RgbColor kMixxxTrackColorElectricGreen(0x00FF00);
 constexpr mixxx::RgbColor kMixxxTrackColorIndiaGreen(0x008800);
 constexpr mixxx::RgbColor kMixxxTrackColorDarkCyan(0x008888);
@@ -27,7 +27,7 @@ constexpr mixxx::RgbColor kMixxxTrackColorDodgerBlue(0x0088FF);
 constexpr mixxx::RgbColor kMixxxTrackColorBlue(0x0000FF);
 constexpr mixxx::RgbColor kMixxxTrackColorNavyBlue(0x000088);
 constexpr mixxx::RgbColor kMixxxTrackColorMardiGras(0x8800088);
-constexpr mixxx::RgbColor kMixxxTrackColorElectricViolet(0x8800FF);
+constexpr mixxx::RgbColor kMixxxTrackColorVividViolet(0xAA00FF);
 constexpr mixxx::RgbColor kMixxxTrackColorFuchsia(0xFF00FF);
 constexpr mixxx::RgbColor kMixxxTrackColorViolet(0xFF88FF);
 constexpr mixxx::RgbColor kMixxxTrackColorWhite(0xFFFFFF);
@@ -211,7 +211,7 @@ const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
                         kMixxxTrackColorRed,
                         kMixxxTrackColorDarkOrange,
                         kMixxxTrackColorLemonGlacier,
-                        kMixxxTrackColorChartreuseGreen,
+                        kMixxxTrackColorBitterLime,
                         kMixxxTrackColorElectricGreen,
                         kMixxxTrackColorIndiaGreen,
                         kMixxxTrackColorDarkCyan,
@@ -221,7 +221,7 @@ const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
                         kMixxxTrackColorBlue,
                         kMixxxTrackColorNavyBlue,
                         kMixxxTrackColorMardiGras,
-                        kMixxxTrackColorElectricViolet,
+                        kMixxxTrackColorVividViolet,
                         kMixxxTrackColorFuchsia,
                         kMixxxTrackColorViolet,
                         kMixxxTrackColorWhite,
