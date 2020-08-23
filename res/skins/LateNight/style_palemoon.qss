@@ -2801,7 +2801,26 @@ WEffectSelector::item,
     background-color: #0a2329;
     color: #fff;
     }
-
+  /* disabled items */
+  WEffectSelector::item:disabled,
+  #fadeModeCombobox::item:disabled,
+  WBeatSpinBox QMenu::item:disabled,
+  #LibraryContainer QMenu::item:disabled,
+  WCueMenuPopup QMenu::item:disabled,
+  WCoverArtMenu::item:disabled,
+  WTrackMenu::item:disabled,
+  WTrackMenu QMenu::item:disabled,
+  #LibraryContainer QMenu QCheckBox:disabled,
+  WTrackMenu QCheckBox:disabled,
+  WTrackMenu QCheckBox:focus,
+  WTrackMenu QCheckBox:hover,
+  WTrackMenu QMenu QCheckBox:disabled,
+  #SkinSettingsButton[hover="true"],
+  #DeckSizeButton[hover="true"],
+  #SkinSettingsMixerToggle[hover="true"],
+  #SkinSettingsLabelButton[hover="true"] {
+    color: #777;
+  }
 
 WEffectSelector,
 #fadeModeCombobox {
