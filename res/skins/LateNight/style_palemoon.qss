@@ -75,9 +75,10 @@
 #PreviewDeck,
 #SidebarCoverSplitter,
 #SidebarCoverSplitter:handle,
-#LibrarySplitter,
+/*#LibrarySplitter,*/
 #LibrarySplitter::handle,
-WLibrary, QAbstractScrollArea::corner {
+/*WLibrary,*/
+QAbstractScrollArea::corner {
   border-top: 1px solid #212123;
   border-right: 1px solid #111;
   border-bottom: 1px solid #020202;
@@ -100,7 +101,7 @@ WLibrary, QAbstractScrollArea::corner {
     background-color: #0f0f0f;
   }
 
-  WLibrary,
+  /*WLibrary,*/
   #SidebarBox {
     padding: 2px 0px 0px 2px;
     }
@@ -110,7 +111,7 @@ WLibrary, QAbstractScrollArea::corner {
       border-bottom-left-radius: 0px;
       border-top-left-radius: 0px;
     }
-  WLibrary,
+  /*WLibrary,*/
   #SidebarCoverSplitter,
   #SidebarCoverSplitter::handle,
   #LibrarySplitter,
@@ -130,6 +131,13 @@ WLibrary, QAbstractScrollArea::corner {
     WLibrary {
       border-width: 1px 0px 0px 0px;
     }
+/* Some tweaks to create a frameless library table */
+#LibraryContainer {
+  background-color: #151517;
+  background-image: url(skin:/palemoon/style/lib_bg.png);
+  background-position: top;
+  background-repeat: repeat-x;
+}
   #LibraryContainer QScrollBar::handle:horizontal,
   #LibraryContainer QScrollBar::handle:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
@@ -165,7 +173,9 @@ WSearchLineEdit {
   border-right: 1px solid #222;
   }
   #LibraryContainer QTextBrowser {
+    margin-top: 1px;
     padding: 5px 0px 0px 8px;
+    border-top: 1px solid #212123;
   }
   #WaveformsFrame,
   #OverviewBox,
@@ -234,6 +244,7 @@ WSearchLineEdit {
 }
 
 #SearchLineBox {
+  margin-top: 1px;
   padding-right: 2px;
   border-right: 0px;
   border-top-right-radius: 0px;
@@ -247,9 +258,8 @@ WSearchLineEdit {
   border-radius: 0px;
   margin-bottom: 3px;
   padding: 0px 2px 2px 2px;
+  margin-top: 1px;
 }
-
-
 
 #SidebarBox {
   border-right: 0px;
@@ -2506,6 +2516,9 @@ WEffectSelector QAbstractScrollArea QScrollBar {
     color: #b3b3b3;
     background-color: #000;
   }
+  #LibraryContainer QScrollBar:vertical {
+    border-top: 1px solid #212123;
+  }
   /* catch scroll bar of focused treeview like this:
   #LibraryContainer QTreeView:focus QScrollBar:vertical {
   }*/
@@ -2585,7 +2598,7 @@ WSearchLineEdit {
     }
     #WaveformSplitter::handle:pressed,
     #SidebarCoverSplitter::handle:pressed
-    /* doesn't catch hover state
+    /* doesn't catch hover state:
     #HorizontalSplitter::handle:hover,
     #HorizontalSplitter::handle[hover="true"] */ {
       image: url(skin:/palemoon/style/splitter_handle_horizontal_pressed.svg);
@@ -2601,7 +2614,7 @@ WSearchLineEdit {
   #LibrarySplitter::handle {
     image: url(skin:/palemoon/style/splitter_handle_vertical.svg);
     padding: 0px;
-    margin: 0px;
+    margin: 1px 0px 0px 0px;
     /* 'height' works although it's actually the width of the handle */
     height: 6px;
   }
@@ -2616,18 +2629,6 @@ WSearchLineEdit {
    Linux with Gnome */
 WLibrary QLabel, WLibrary QRadioButton {
   background: transparent;
-}
-
-/* Additional space for QRadionButtons */
-WLibrary QRadioButton {
-  /* bottom margin! */
-  margin: 2px 3px 4px 3px;
-}
-
-/* Additional space for QLabels */
-#DlgAnalysis QLabel,
-#DlgAutoDJ QLabel {
-  margin: 2px 5px 5px 1px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -2651,6 +2652,25 @@ WLibrary QRadioButton::indicator:unchecked {
   padding: 0px;
   height: 20px;
   }
+/* add margin to compensate for frameless library table */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton,
+#fadeModeCombobox,
+#spinBoxTransition {
+  margin-top: 4px;
+  }
+  WLibrary QRadioButton {
+    /* bottom margin! */
+    margin: 6px 3px 4px 3px;
+  }
+  #DlgAnalysis QLabel,
+  #DlgAutoDJ QLabel {
+    margin: 6px 5px 5px 1px;
+  }
+
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgRecording > QPushButton,
@@ -2816,7 +2836,7 @@ WEffectSelector,
     min-height: 17px;
     max-height: 17px;
     padding: 1px 0px 1px 5px;
-    margin: 0px 1px 4px 1px;
+    margin: 4px 1px 4px 1px;
   }
   WEffectSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
