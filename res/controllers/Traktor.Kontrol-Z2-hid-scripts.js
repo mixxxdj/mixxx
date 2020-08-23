@@ -2,7 +2,7 @@
 /*                                                                               */
 /* Traktor Kontrol Z2 HID controller script v1.00                                */
 /* Last modification: August 2020                                                */
-/* Author: Jörg Wartenberg (based on the Traktor S3 mapping by Owen Williams)    */
+/* Author: Jörg Wartenberg (based on the Traktor Z2 mapping by Owen Williams)    */
 /* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_Z2     */
 /*                                                                               */
 /* For linter:                                                                   */
@@ -341,7 +341,7 @@ TraktorZ2.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[Channel3]", "volume", 0x29, 0xFFFF, this.parameterHandler); // Rotary knob Deck C
     this.registerInputScaler(messageLong, "[Channel4]", "volume", 0x2B, 0xFFFF, this.parameterHandler); // Rotary knob Deck D
 
-    this.registerInputScaler(messageLong, "[Master]", "duckStrength", 0x03, 0xFFFF, this.parameterHandler); // Mic/Aux Tone knob, where no 1:1 mapping is available
+    this.registerInputScaler(messageLong, "[Master]", "duckStrengh", 0x03, 0xFFFF, this.parameterHandler); // Mic/Aux Tone knob, where no 1:1 mapping is available
     this.registerInputScaler(messageLong, "[Microphone]", "pregain", 0x01, 0xFFFF, this.parameterHandler);
 	
     this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xFFFF, this.parameterHandler);
@@ -475,6 +475,138 @@ TraktorZ2.shutdown = function() {
     HIDDebug("TraktorZ2: Shutdown done!");
 };
 
+TraktorZ2.debugLights = function() {
+
+    HIDDebug("TraktorZ2: debugLights");
+    // Call this if you want to just send raw packets to the controller (good for figuring out what
+    // bytes do what).
+    var dataStrings = [
+	    /* 0x80*/ 
+        "70 " + // 3 MSB bits Warning Symbol on top left brightness (orange)
+		"70 " + // 3 MSB bits Timecode-Vinyl Symbol on top right brightness (orange)
+		"70 " + // 3 MSB bits Snap-Button S brightness (blue)
+		"70 " + // 3 MSB bits Quantize-Button Q brightness (blue)
+		"70 " + // 3 MSB bits Settings-Button (Gear-Wheel-Symbol) brightness (orange)
+		"00 " + // 
+        "70 " + // 3 MSB bits Deck A button brightness (blue)
+		"70 " + // 3 MSB bits Deck B button brightness (blue)
+		"70 " + // 3 MSB bits Deck C button brightness (white)
+		"70 " + // 3 MSB bits Deck D button brightness (white)
+		"70 " + // 3 MSB bits Deck C volume text label backlight brightness (white)
+		"70 " + // 3 MSB bits Deck D volume text label backlight brightness (white)
+        "70 " + // 3 MSB bits Macro FX1 On button brightness (orange)
+        "70 " + // 3 MSB bits Deck 1 Flux button brightness (orange)
+        "70 " + // 3 MSB bits Channel 1 FX1 select button brightness (orange)
+		"70 " + // 3 MSB bits Channel 1 FX2 select button brightness (orange)
+		"70 " + // 3 MSB bits Load A button brightness (orange)
+		"70 " + // 3 MSB bits vinylcontrol Rel/Intl A button brightness (orange)
+		"70 " + // 3 MSB bits vinylcontrol Rel/Intl A button brightness (green)
+		"70 " + // 3 MSB bits vinylcontrol Sync A button brightness (orange)
+		"70 " + // 3 MSB bits Macro FX2 On button brightness (orange)
+        "70 " + // 3 MSB bits Deck 2 Flux button brightness (orange)
+        "70 " + // 3 MSB bits Channel 2 FX1 select button brightness (orange)
+		"70 " + // 3 MSB bits Channel 2 FX2 select button brightness (orange)
+		"70 " + // 3 MSB bits Load B button brightness (orange)
+		"70 " + // 3 MSB bits vinylcontrol Rel/Intl B button brightness (orange)
+		"70 " + // 3 MSB bits vinylcontrol Rel/Intl B button brightness (green)
+		"70 " + // 3 MSB bits vinylcontrol Sync B button brightness (orange)
+		"FF 00 00 " + //HotCue 1 Deck 1 RGB
+        "FF 00 00 " + //HotCue 2 Deck 1 RGB
+        "00 00 00 " + //HotCue 3 Deck 1 RGB
+        "00 00 00 " + //HotCue 4 Deck 1 RGB
+        "34 34 34 " + //HotCue 2 Deck 2 RGB
+        "00 00 34 " + //HotCue 2 Deck 2 RGB
+        "00 FF 00 " + //HotCue 3 Deck 2 RGB
+        "00 00 34 " + //HotCue 4 Deck 2 RGB
+		
+		"70 " + // 3 MSB bits Deck 1 1st 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 1st 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 1st 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 1st 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 1st 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 1st 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 1st 7 segment lower horizontal bar brightness (orange)
+		
+		"70 " + // 3 MSB bits Deck 1 2nd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 2nd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 2nd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 2nd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 2nd 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 2nd 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 2nd 7 segment lower horizontal bar brightness (orange)
+		
+		"70 " + // 3 MSB bits Deck 1 3rd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
+		
+		"70 " + // 3 MSB bits Deck 2 1st 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 1st 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 1st 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 1st 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 1st 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 1st 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 1st 7 segment lower horizontal bar brightness (orange)
+		
+		"70 " + // 3 MSB bits Deck 2 2nd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 2nd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 2nd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 2nd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 2nd 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 2nd 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 2nd 7 segment lower horizontal bar brightness (orange)
+		
+		"70 " + // 3 MSB bits Deck 2 3rd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 3rd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 3rd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 3rd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 MSB bits Deck 2 3rd 7 segment upper left vertical bar brightness (orange)
+		"70 " /*+ // 3 MSB bits Deck 2 3rd 7 segment lower left vertical bar brightness (orange)
+		"70 "*/, // 3 MSB bits Deck 2 3rd 7 segment lower horizontal bar brightness (orange) ---------------- COMMUNICATION CRASHS, IF BYTE 95 IS SEND ---------------
+ /* 0x81*/ "FF FF FF  FF FF FF FF  FF FF FF FF  FF FF FF FF " +
+        "FF FF FF FF  FF FF FF FF  FF FF FF FF  FF FF FF FF " +
+        "FF FF FF FF  FF FF FF FF  FF FF"
+    ];
+
+    var data = [Object(), Object()];
+
+HIDDebug(data.length + "\n");
+    for (var i = 0; i < data.length; i++) {
+        var ok = true;
+        var splitted = dataStrings[i].split(/\s+/);
+        HIDDebug("i " + i + " " + splitted);
+        data[i].length = splitted.length;
+        HIDDebug(splitted.length + "\n");
+        for (var j = 0; j < splitted.length; j++) {
+            var byteStr = splitted[j];
+            if (byteStr.length === 0) {
+                continue;
+            }
+            if (byteStr.length !== 2) {
+                ok = false;
+                HIDDebug("not two characters?? " + byteStr);
+            }
+            var b = parseInt(byteStr, 16);
+            if (b < 0 || b > 255) {
+                ok = false;
+                HIDDebug("number out of range: " + byteStr + " " + b);
+            }
+            data[i][j] = b;
+        }
+        if (ok) {
+            var header = 0x80 + i;
+            if (i === 2) {
+                header = 0xD0;
+            }
+			HIDDebug(header + " " + data[i].length + "\n");
+            controller.send(data[i], data[i].length, header);
+        }
+    }
+};
+
 TraktorZ2.init = function(_id) {
     this.Decks = {
         "deck1": new TraktorZ2.Deck(1, "deck1"),
@@ -485,9 +617,13 @@ TraktorZ2.init = function(_id) {
         "FX1": new TraktorZ2.EffectUnit("FX1"),
         "FX2": new TraktorZ2.EffectUnit("FX2")
     };
-
+ 
     TraktorZ2.registerInputPackets();
     //TraktorZ2.registerOutputPackets();
+	TraktorZ2.debugLights();
     HIDDebug("TraktorZ2: Init done!");
+	
+	var outputA = new HIDPacket("outputA", 0x80);
+    var outputB = new HIDPacket("outputB", 0x81);
 
 };
