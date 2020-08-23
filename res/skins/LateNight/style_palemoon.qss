@@ -2739,6 +2739,11 @@ WTrackMenu QMenu {
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView,
+#SkinSettings,
+WSearchLineEdit {
+  background-color: #0f0f0f;
+}
+
 QToolTip,
 WBeatSpinBox QMenu,
   WCueMenuPopup,
@@ -2757,13 +2762,11 @@ WBeatSpinBox QMenu::item,
 #LibraryContainer QMenu QCheckBox,
 WTrackMenu QCheckBox,
 WTrackMenu QMenu QCheckBox,
-#SkinSettings,
-WSearchLineEdit,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 WEffectSelector::item,
 #fadeModeCombobox::item {
-  background-color: #0f0f0f;
+  background-color: #151517;
 }
   /* hovered items */
   WEffectSelector::item:selected,
