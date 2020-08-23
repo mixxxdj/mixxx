@@ -51,26 +51,4 @@
       </g>
     </g>
   </g>
-  <g
-     transform="matrix(0.70833144,0,0,0.70833144,4.6513348,-6.4374563)"
-     id="g8-6-3"
-     style="opacity:1;fill:none;fill-opacity:1;stroke:#cbcbcb;stroke-opacity:1">
-    <g
-       transform="matrix(0.4151,0,0,0.4151,-1.6604,19.547)"
-       id="g6-7-6"
-       style="fill:none;fill-opacity:1;stroke:#cbcbcb;stroke-opacity:1">
-      <g
-         style="opacity:1;fill:none;fill-opacity:1;stroke:#cbcbcb;stroke-width:3.85449;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="g862-5-7">
-        <path
-           id="path856-3-5"
-           d="M 36.027491,-1.3177544 19.164084,15.545652"
-           style="fill:none;fill-opacity:1;stroke:#cbcbcb;stroke-width:3.85449;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-        <path
-           id="path858-5-3"
-           d="M 19.164084,-1.3177544 36.027491,15.545652"
-           style="fill:none;fill-opacity:1;stroke:#cbcbcb;stroke-width:3.85449;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      </g>
-    </g>
-  </g>
 </svg>
