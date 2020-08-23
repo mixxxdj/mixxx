@@ -318,4 +318,4 @@ notifications:
       Authorization:
         secure: 95cbVBcC4rogjE5VNdhuYm8cnjPF8+7SeQXySqcxAqrFZxK+/Kcn3Q2hRb2iZfUEKZ+EdCYwx7EbpZdSiZc5goAuJT+/QXXT/Ls+fzc+eSy4Sz1Ic5t2BjLhmYZLdnBL3uIVceNSb8GzYPQx0+xy7g==
     on_build_status_changed: true
-    body: "type=stream&to=appveyor&subject={{^isPullRequest}}{{branch}}{{/isPullRequest}}{{#isPullRequest}}Pull Request #{{pullRequestId}}{{/isPullRequest}}&content={{#failed}}:cross_mark:{{/failed}}{{#passed}}:check_mark:{{/passed}} {{status}} {{buildUrl}}\n{{commitId}} {{commitAuthor}}\n{{commitMessage}}\n{{commitMessageExtended}}"
+    body: "type=stream&to=appveyor&subject={{^isPullRequest}}{{branch}}&content={{#failed}}:cross_mark:{{/failed}}{{#passed}}:check_mark:{{/passed}} {{status}} {{buildUrl}}\n{{commitId}} {{commitAuthor}}\n{{commitMessage}}\n{{commitMessageExtended}}{{/isPullRequest}}"
