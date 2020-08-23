@@ -62,8 +62,6 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetWaveformType(int)));
     connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotSetDefaultZoom(int)));
-    connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
-            this, SLOT(slotSetZoomSynchronization(bool)));
     connect(allVisualGain, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetVisualGainAll(double)));
     connect(lowVisualGain, SIGNAL(valueChanged(double)),
@@ -106,7 +104,6 @@ void DlgPrefWaveform::slotUpdate() {
     frameRateSlider->setValue(factory->getFrameRate());
     endOfTrackWarningTimeSpinBox->setValue(factory->getEndOfTrackWarningTime());
     endOfTrackWarningTimeSlider->setValue(factory->getEndOfTrackWarningTime());
-    synchronizeZoomCheckBox->setChecked(factory->isZoomSync());
     allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
     lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
@@ -157,9 +154,6 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
-
-    // Don't synchronize zoom by default.
-    synchronizeZoomCheckBox->setChecked(false);
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(2);
@@ -214,10 +208,6 @@ void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
     WaveformWidgetFactory::instance()->setDefaultZoom(index + 1);
-}
-
-void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
-    WaveformWidgetFactory::instance()->setZoomSync(checked);
 }
 
 void DlgPrefWaveform::slotSetVisualGainAll(double gain) {

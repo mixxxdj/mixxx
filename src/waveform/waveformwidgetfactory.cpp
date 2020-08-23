@@ -105,7 +105,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameRate(30),
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
-          m_zoomSync(false),
           m_overviewNormalized(false),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
@@ -301,13 +300,6 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         setDefaultZoom(defaultZoom);
     } else{
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
-    }
-
-    int zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization")).toInt(&ok);
-    if (ok) {
-        setZoomSync(static_cast<bool>(zoomSync));
-    } else {
-        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
     int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
@@ -554,22 +546,6 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
     }
 }
 
-void WaveformWidgetFactory::setZoomSync(bool sync) {
-    m_zoomSync = sync;
-    if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
-    }
-
-    if (m_waveformWidgetHolders.size() == 0) {
-        return;
-    }
-
-    double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
-    for (std::size_t i = 1; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
-    }
-}
-
 void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     m_beatGridAlpha = alpha;
     if (m_waveformWidgetHolders.size() == 0) {
@@ -613,7 +589,7 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
 
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
-    if (pWaveformWidget != NULL && isZoomSync()) {
+    if (pWaveformWidget != nullptr) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         double refZoom = pWaveformWidget->getZoomFactor();
 

@@ -28,7 +28,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformType(int index);
     void slotSetWaveformOverviewType(int index);
     void slotSetDefaultZoom(int index);
-    void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
     void slotSetVisualGainLow(double gain);
     void slotSetVisualGainMid(double gain);

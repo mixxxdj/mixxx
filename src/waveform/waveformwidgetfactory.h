@@ -104,9 +104,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setDefaultZoom(double zoom);
     double getDefaultZoom() const { return m_defaultZoom;}
 
-    void setZoomSync(bool sync);
-    int isZoomSync() const { return m_zoomSync;}
-
     void setDisplayBeatGridAlpha(int alpha);
     int beatGridAlpha() const { return m_beatGridAlpha; }
 
@@ -176,7 +173,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_frameRate;
     int m_endOfTrackWarningTime;
     double m_defaultZoom;
-    bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
 
