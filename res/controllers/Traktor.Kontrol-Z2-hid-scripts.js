@@ -64,7 +64,7 @@ TraktorZ2.Deck = function(deckNumber, group) {
 
     // Various states
     this.syncPressedTimer = 0;
-    // this.previewPressed = false;
+	this.vinylcontrolTimer = 0;
     // padModeState 0 is hotcues, 1 is samplers
     this.padModeState = 0;
 
@@ -91,6 +91,8 @@ TraktorZ2.Deck.prototype.registerInputs = function(messageShort, messageLong) {
     this.defineButton(messageShort, "!pad_3", 0x06, 0x10, 0x07, 0x20, deckFn.numberButtonHandler);
     this.defineButton(messageShort, "!pad_4", 0x06, 0x20, 0x07, 0x40, deckFn.numberButtonHandler);	
 	
+    // Vinyl control mode (REL / INTL)
+    this.defineButton(messageShort, "vinylcontrol_mode", 0x04, 0x10, 0x04, 0x20, this.vinylcontrolHandler);
     this.defineButton(messageShort, "!sync", 0x04, 0x40, 0x04, 0x80, deckFn.syncHandler);
 
 	// Load/Duplicate buttons
@@ -155,6 +157,26 @@ TraktorZ2.Deck.prototype.fluxHandler = function(field) {
         return;
     }
     script.toggleControl(this.activeChannel, "slip_enabled");
+};
+
+TraktorZ2.Deck.prototype.vinylcontrolHandler = function(field) {
+	HIDDebug("TraktorZ2: vinylcontrolHandler");	
+    var vinylcontrol_mode = engine.getValue(this.activeChannel, "vinylcontrol_mode");
+	this.vinylcontrolTimer = engine.beginTimer(300, function() {
+		if (vinylcontrol_mode >= 2) 
+		{
+			vinylcontrol_mode = 0;
+		}
+		else
+		{
+			vinylcontrol_mode++;
+		}	
+		engine.setValue(this.activeChannel, "vinylcontrol_mode", vinylcontrol_mode);
+		// Reset vinylcontrol button timer state if active
+		if (this.vinylcontrolTimer !== 0) {
+			this.vinylcontrolTimer = 0;
+		}
+	}, true);
 };
 
 TraktorZ2.Deck.prototype.syncHandler = function(field) {
@@ -267,20 +289,20 @@ TraktorZ2.Deck.prototype.selectLoopHandler = function(field) {
 
 TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
 	HIDDebug("TraktorZ2: activateLoopHandler");
-    if (field.value === 0) {
-        return;
-    }
-    var isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
+	if (field.value === 0) {
+		return;
+	}
+	var isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
 
-    if (this.shiftPressed) {
-        engine.setValue(this.activeChannel, "reloop_toggle", field.value);
-    } else {
-        if (isLoopActive) {
-            engine.setValue(this.activeChannel, "reloop_toggle", field.value);
-        } else {
-            engine.setValue(this.activeChannel, "beatloop_activate", field.value);
-        }
-    }
+	if (this.shiftPressed) {
+		engine.setValue(this.activeChannel, "reloop_toggle", field.value);
+	} else {
+		if (isLoopActive) {
+			engine.setValue(this.activeChannel, "reloop_toggle", field.value);
+		} else {
+			engine.setValue(this.activeChannel, "beatloop_activate", field.value);
+		}
+	}
 };
 
 TraktorZ2.registerInputPackets = function() {
@@ -297,18 +319,14 @@ TraktorZ2.registerInputPackets = function() {
     // this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, this.deckSwitchHandler);
     // this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, this.deckSwitchHandler);
     // this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, this.deckSwitchHandler);
+	
+	// Mic button
+    this.registerInputButton(messageShort, "[Microphone]", "talkover", 0x05, 0x01, this.buttonHandler);
 
-    // // Headphone buttons
+    // Headphone buttons
     this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x04, 0x04, this.buttonHandler);
     this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x04, 0x08, this.buttonHandler);
   
-    // // FX Buttons
-    // this.registerInputButton(messageShort, "[ChannelX]", "!fx1", 0x08, 0x02, this.fxHandler);
-    // this.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x08, 0x04, this.fxHandler);
-    // // this.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x08, 0x20, this.fxHandler);
-    // // this.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x08, 0x40, this.fxHandler);
-    // this.registerInputButton(messageShort, "[ChannelX]", "!fx5", 0x08, 0x80, this.fxHandler);
-
     this.registerInputButton(messageShort, "[Master]", "!shift", 0x07, 0x01, this.shiftHandler);
 	
     this.registerInputButton(messageShort, "[Master]", "!SelectTrack", 0x01, 0x0F, this.selectTrackHandler);	
@@ -323,6 +341,9 @@ TraktorZ2.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[Channel3]", "volume", 0x29, 0xFFFF, this.parameterHandler); // Rotary knob Deck C
     this.registerInputScaler(messageLong, "[Channel4]", "volume", 0x2B, 0xFFFF, this.parameterHandler); // Rotary knob Deck D
 
+    this.registerInputScaler(messageLong, "[Master]", "duckStrength", 0x03, 0xFFFF, this.parameterHandler); // Mic/Aux Tone knob, where no 1:1 mapping is available
+    this.registerInputScaler(messageLong, "[Microphone]", "pregain", 0x01, 0xFFFF, this.parameterHandler);
+	
     this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1F, 0xFFFF, this.parameterHandler);
 
@@ -361,10 +382,6 @@ TraktorZ2.registerInputPackets = function() {
     engine.softTakeover("[Master]", "gain", true);
     engine.softTakeover("[Master]", "headMix", true);
     engine.softTakeover("[Master]", "headGain", true);
-
-    for (var i = 1; i <= 16; ++i) {
-        engine.softTakeover("[Sampler" + i + "]", "pregain", true);
-    }
 
     // Dirty hack to set initial values in the packet parser
     var data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
