@@ -150,7 +150,8 @@ QAbstractScrollArea::corner {
 #WaveformsFrame,
 #OverviewBox,
 #OverviewBoxMini,
-WSearchLineEdit {
+WSearchLineEdit,
+WCueMenuPopup #CueLabelEdit {
   border-top: 1px solid #0d0d0d;
   border-left: 1px solid #121212;
   border-bottom: 1px solid #2a2a2a;
@@ -1590,8 +1591,8 @@ WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
-#BeatgridControls WPushButton[pressed="true"],
-#CueDeleteButton[pressed="true"] {
+#BeatgridControls WPushButton[pressed="true"]/*,
+#CueDeleteButton[pressed="true"]*/ {
   background-color: #7d350d;
   }
   #BpmTap[pressed="true"] {
@@ -2312,22 +2313,52 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /* AutoDJ button icons */
 
 /* widgets in cue popup menu */
-#CueDeleteButton {
+WCueMenuPopup #CueDeleteButton {
   qproperty-icon: url(skin:/palemoon/buttons/btn__delete.svg);
   width: 24px;
   height: 42px;
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
 }
-/*    */
-#CueLabelEdit {
-  border: 1px solid #c2b3a5;
+
+WCueMenuPopup #CueDeleteButton:pressed {
+  background-color: #b24c12;
+  outline: none;
+  /* not applied: */
+  qproperty-icon: url(skin:/palemoon/buttons/btn__delete_active.svg);
+}
+WCueMenuPopup #CueLabelEdit {
+  /*border: 1px solid #c2b3a5;*/
   border-radius: 0px;
   background-color: #000;
   selection-color: #000;
   selection-background-color: #ccc;
   padding: 2px;
 }
+
+/* Color picker in WCueMenuPopup and WTrackMenu (library and decks) */
+WColorPicker QPushButton {
+}
+WColorPicker QPushButton[checked="false"] {
+  outline: none;
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:/palemoon/buttons/btn_colorpicker.svg) 2 2 2 2;
+  margin: 0px;
+  padding: 0px;
+}
+WColorPicker QPushButton[checked="true"] {
+  outline: none;
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:/palemoon/buttons/btn_colorpicker_active.svg) 2 2 2 2;
+  margin: 0px;
+  padding: 0px;
+  /* This property behaves really strange:
+  * set to 20px it's 2px too tall
+  * set to 18px it's 2px too small
+  qproperty-iconSize: 20px;*/
+}
+
+
 /************** Button icons **************************************************/
 /************** Button styles *************************************************/
 
@@ -2744,8 +2775,8 @@ WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu {
   padding: 3px;
-  border: 1px solid #888;
-  border-radius: 2px;
+  border: 1px solid #333;
+  border-radius: 1px;
 }
 
 #SkinContainer {
@@ -2754,6 +2785,11 @@ WTrackMenu QMenu {
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView,
+#SkinSettings,
+WSearchLineEdit {
+  background-color: #0f0f0f;
+}
+
 QToolTip,
 WBeatSpinBox QMenu,
   WCueMenuPopup,
@@ -2772,13 +2808,11 @@ WBeatSpinBox QMenu::item,
 #LibraryContainer QMenu QCheckBox,
 WTrackMenu QCheckBox,
 WTrackMenu QMenu QCheckBox,
-#SkinSettings,
-WSearchLineEdit,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 WEffectSelector::item,
 #fadeModeCombobox::item {
-  background-color: #0f0f0f;
+  background-color: #151517;
 }
   /* hovered items */
   WEffectSelector::item:selected,
@@ -2813,7 +2847,20 @@ WEffectSelector::item,
     background-color: #0a2329;
     color: #fff;
     }
-
+  /* disabled items */
+  WEffectSelector::item:disabled,
+  #fadeModeCombobox::item:disabled,
+  WBeatSpinBox QMenu::item:disabled,
+  #LibraryContainer QMenu::item:disabled,
+  WCueMenuPopup QMenu::item:disabled,
+  WCoverArtMenu::item:disabled,
+  WTrackMenu::item:disabled,
+  WTrackMenu QMenu::item:disabled,
+  #LibraryContainer QMenu QCheckBox:disabled,
+  WTrackMenu QCheckBox:disabled,
+  WTrackMenu QMenu QCheckBox:disabled {
+    color: #555;
+  }
 
 WEffectSelector,
 #fadeModeCombobox {
