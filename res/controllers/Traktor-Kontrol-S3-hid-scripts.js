@@ -1322,7 +1322,7 @@ TraktorS3.toggleFX = function() {
         } else {
             // There is no quickeffect for the microphone
             var newState = !chEnabled || TraktorS3.fxButtonState[5];
-            engine.setValue("[QuickEffectRack1_[Channel" + ch + "]_Effect1]", "enabled",
+            engine.setValue("[QuickEffectRack1_[Channel" + ch + "]]", "enabled",
                 newState);
         }
         for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
