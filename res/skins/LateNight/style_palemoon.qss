@@ -3004,14 +3004,14 @@ WColorPicker QPushButton,
 WCueMenuPopup #CueDeleteButton {
   outline: none;
   border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 1;
 }
 
 WCueMenuPopup #CueDeleteButton:pressed {
   background-color: #b24c12;
   outline: none;
   border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 1;
 }
 
 WCueMenuPopup #CueLabelEdit {
