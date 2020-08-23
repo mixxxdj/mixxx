@@ -51,10 +51,10 @@
             <EffectUnit><Variable name="FxUnit"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
             <!-- Style the effect selector when the effect is enabled -->
-            <Connection>
+            <!-- <Connection>
               <ConfigKey>[<Variable name="FxRack_FxUnit_FxNum"/>],enabled</ConfigKey>
               <BindProperty>highlight</BindProperty>
-            </Connection>
+            </Connection> -->
           </EffectSelector>
 
           <WidgetGroup><Size>2min,0min</Size></WidgetGroup>

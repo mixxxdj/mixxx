@@ -86,12 +86,6 @@ QAbstractScrollArea::corner {
   border-radius: 1px;
   background-color: #151517;
   }
-  /*
-  #FxUnitControllerInputIndicator {
-    border: 1px solid #257b82;
-    background-color: #0f0f0f;
-  }
-  */
   #WaveformsContainer {
     border-width: 1px 0px;
     border-radius: 0px;
@@ -946,7 +940,7 @@ WPushButton#FxSuperLinkInvertButton {
   }
 
 #Sampler {
-  padding: 1px 0px 2px 0px;
+  padding: 1px 0px 2px 1px;
   }
   #SamplerTitleBox {
     border-width: 0px 1px 0px 0px;
@@ -978,7 +972,7 @@ WPushButton#FxSuperLinkInvertButton {
   }
   #SamplerPfl {
     border-width: 0px 0px 0px 1px;
-    padding: 0px 5px 1px 6px;
+    padding: 0px 5px 0px 6px;
   }
 
   #SamplerVU {
