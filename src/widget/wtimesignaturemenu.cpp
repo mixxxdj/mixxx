@@ -66,35 +66,35 @@ WTimeSignatureMenu::~WTimeSignatureMenu() {
 }
 
 void WTimeSignatureMenu::slotBeatCountChanged(int value) {
-    mixxx::TimeSignature newTimeSignature(value, m_beat.getTimeSignature().getNoteValue());
+    mixxx::TimeSignature newTimeSignature(value, m_beat.timeSignature().getNoteValue());
     setTimeSignature(newTimeSignature);
 }
 
 void WTimeSignatureMenu::slotBeatSizeChanged(int index) {
     int beatSize = pow(2, index);
-    mixxx::TimeSignature newTimeSignature(m_beat.getTimeSignature().getBeatsPerBar(), beatSize);
+    mixxx::TimeSignature newTimeSignature(m_beat.timeSignature().getBeatsPerBar(), beatSize);
     setTimeSignature(newTimeSignature);
 }
 
 void WTimeSignatureMenu::setTimeSignature(mixxx::TimeSignature timeSignature) {
-    if (m_beat.getFramePosition() != mixxx::kInvalidFramePos &&
+    if (m_beat.framePosition() != mixxx::kInvalidFramePos &&
             kMinBeatsPerBar <= timeSignature.getBeatsPerBar() &&
             timeSignature.getBeatsPerBar() <= kMaxBeatsPerBar) {
-        m_pBeats->setSignature(timeSignature, m_beat.getBarIndex());
+        m_pBeats->setSignature(timeSignature, m_beat.barIndex());
     }
     updateHalfDoubleButtonsActiveStatus();
 }
 
 void WTimeSignatureMenu::setBeat(mixxx::Beat beat) {
     m_beat = beat;
-    m_pBeatCountBox->setValue(beat.getTimeSignature().getBeatsPerBar());
+    m_pBeatCountBox->setValue(beat.timeSignature().getBeatsPerBar());
     m_pBeatLengthBox->setCurrentIndex(
-            static_cast<int>(log2(beat.getTimeSignature().getNoteValue())));
+            static_cast<int>(log2(beat.timeSignature().getNoteValue())));
     updateHalfDoubleButtonsActiveStatus();
 }
 
 void WTimeSignatureMenu::popup(const QPoint& p) {
-    m_pBeatCountBox->setValue(m_beat.getTimeSignature().getBeatsPerBar());
+    m_pBeatCountBox->setValue(m_beat.timeSignature().getBeatsPerBar());
     auto parentWidget = static_cast<QWidget*>(parent());
     QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
     move(topLeft);
@@ -102,7 +102,7 @@ void WTimeSignatureMenu::popup(const QPoint& p) {
 }
 
 void WTimeSignatureMenu::slotTimeSignatureHalved() {
-    auto currentTimeSignature = m_beat.getTimeSignature();
+    auto currentTimeSignature = m_beat.timeSignature();
     int currentBeatsPerBar = currentTimeSignature.getBeatsPerBar();
     int currentNoteValue = currentTimeSignature.getNoteValue();
     if (canHalveBothValues()) {
@@ -114,7 +114,7 @@ void WTimeSignatureMenu::slotTimeSignatureHalved() {
 }
 
 void WTimeSignatureMenu::slotTimeSignatureDoubled() {
-    auto currentTimeSignature = m_beat.getTimeSignature();
+    auto currentTimeSignature = m_beat.timeSignature();
     int newBeatsPerBar = currentTimeSignature.getBeatsPerBar() * 2;
     int newNoteValue = currentTimeSignature.getNoteValue() * 2;
     if (canDoubleBothValues()) {
@@ -126,14 +126,14 @@ void WTimeSignatureMenu::slotTimeSignatureDoubled() {
 }
 
 bool WTimeSignatureMenu::canHalveBothValues() const {
-    auto currentTimeSignature = m_beat.getTimeSignature();
+    auto currentTimeSignature = m_beat.timeSignature();
     int currentBeatsPerBar = currentTimeSignature.getBeatsPerBar();
     int currentNoteValue = currentTimeSignature.getNoteValue();
     return currentBeatsPerBar >= 2 && currentBeatsPerBar % 2 == 0 && currentNoteValue >= 2 && currentNoteValue % 2 == 0;
 }
 
 bool WTimeSignatureMenu::canDoubleBothValues() const {
-    auto currentTimeSignature = m_beat.getTimeSignature();
+    auto currentTimeSignature = m_beat.timeSignature();
     int newBeatsPerBar = currentTimeSignature.getBeatsPerBar() * 2;
     int newNoteValue = currentTimeSignature.getNoteValue() * 2;
     return newBeatsPerBar <= kMaxBeatsPerBar && newNoteValue <= kMaxBeatLengthFractionDenominator;

@@ -48,7 +48,7 @@ class TimeSignature final {
 
   private:
     // Using the protocol buffer defined type.
-    mixxx::track::io::TimeSignature m_timeSignature;
+    track::io::TimeSignature m_timeSignature;
 };
 
 inline bool operator==(TimeSignature signature1, TimeSignature signature2) {

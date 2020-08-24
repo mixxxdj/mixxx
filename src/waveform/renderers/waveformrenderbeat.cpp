@@ -85,7 +85,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     while (it->hasNext()) {
         auto beat = it->next();
-        double beatSamplePosition = framePosToSamplePos(beat.getFramePosition());
+        double beatSamplePosition = framePosToSamplePos(beat.framePosition());
         int beatPixelPositionInWidgetSpace = qRound(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(
                         beatSamplePosition));
@@ -102,13 +102,13 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         waveformBeat->setOrientation(orientation);
         waveformBeat->setLength((orientation == Qt::Horizontal) ? rendererHeight : rendererWidth);
         double zoomFactor = m_waveformRenderer->getZoomFactor();
-        bool isVisible = beat.getType() == mixxx::Beat::DOWNBEAT ||
-                (beat.getType() == mixxx::Beat::BEAT &&
+        bool isVisible = beat.type() == mixxx::BeatType::Downbeat ||
+                (beat.type() == mixxx::BeatType::Beat &&
                         zoomFactor <
                                 kMaxZoomFactorToDisplayBeats);
         // TODO: Calculate adjacent beat distance to decide which beats to hide.
         if (isVisible && zoomFactor >= kWaveformZoomToTakeOutDownbeats.at(0)) {
-            DEBUG_ASSERT(beat.getType() == mixxx::Beat::DOWNBEAT);
+            DEBUG_ASSERT(beat.type() == mixxx::BeatType::Downbeat);
             const int zoomLevelIdx =
                     std::lower_bound(
                             kWaveformZoomToTakeOutDownbeats.constBegin(),
@@ -117,7 +117,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
                             .i -
                     kWaveformZoomToTakeOutDownbeats.constBegin().i;
             const int allowedDownbeatIndexFactor = std::pow(2, zoomLevelIdx);
-            if ((beat.getBarIndex() + 1) % allowedDownbeatIndexFactor != 0) {
+            if ((beat.barIndex() + 1) % allowedDownbeatIndexFactor != 0) {
                 isVisible = false;
             }
         }
@@ -129,22 +129,22 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (beatMarkerCount >= m_beatMarkers.size()) {
             m_beatMarkers.resize(m_beatMarkers.size() * 2);
         }
-        if (beat.getMarkers()) {
+        if (beat.markers()) {
             m_beatMarkers[beatMarkerCount].setPositionPixels(beatPixelPositionInWidgetSpace);
             m_beatMarkers[beatMarkerCount].setLength(
                     (orientation == Qt::Horizontal) ? rendererHeight
                                                     : rendererWidth);
             QStringList displayItems;
-            if (beat.getMarkers().testFlag(mixxx::Beat::Marker::TIME_SIGNATURE)) {
+            if (beat.markers().testFlag(mixxx::BeatMarker::TimeSignature)) {
                 QString timeSignatureString =
-                        QString::number(beat.getTimeSignature().getBeatsPerBar()) +
+                        QString::number(beat.timeSignature().getBeatsPerBar()) +
                         "/" +
-                        QString::number(beat.getTimeSignature().getNoteValue());
+                        QString::number(beat.timeSignature().getNoteValue());
                 displayItems.append(timeSignatureString);
             }
-            if (beat.getMarkers().testFlag(mixxx::Beat::Marker::BPM)) {
+            if (beat.markers().testFlag(mixxx::BeatMarker::Bpm)) {
                 displayItems.append(QString("%1 BPM").arg(
-                        QString::number(beat.getBpm().getValue())));
+                        QString::number(beat.bpm().getValue())));
             }
             m_beatMarkers[beatMarkerCount].setTextDisplayItems(displayItems);
             beatMarkerCount++;

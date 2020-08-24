@@ -28,12 +28,12 @@ void WaveformBeat::draw(QPainter* painter) const {
         const int downbeatNumberGapPixels = 5;
         if (m_orientation == Qt::Horizontal) {
             painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
-            if (m_beat.getType() == mixxx::Beat::DOWNBEAT &&
+            if (m_beat.type() == mixxx::BeatType::Downbeat &&
                     m_beatGridMode == BeatGridMode::BeatsAndDownbeats) {
                 painter->setPen(Qt::white);
                 painter->drawText(m_position + downbeatNumberGapPixels,
                         painter->fontMetrics().height(),
-                        QString::number(m_beat.getBarIndex() + 1));
+                        QString::number(m_beat.barIndex() + 1));
                 painter->setPen(Qt::transparent);
                 painter->drawPolygon(getEquilateralTriangle(
                         kTriangleEdgeLength, QPointF(m_position, 0), Direction::DOWN));
@@ -42,12 +42,12 @@ void WaveformBeat::draw(QPainter* painter) const {
             }
         } else {
             painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
-            if (m_beat.getType() == mixxx::Beat::DOWNBEAT &&
+            if (m_beat.type() == mixxx::BeatType::Downbeat &&
                     m_beatGridMode == BeatGridMode::BeatsAndDownbeats) {
                 painter->setPen(Qt::white);
                 painter->drawText(downbeatNumberGapPixels,
                         m_position - downbeatNumberGapPixels,
-                        QString::number(m_beat.getBarIndex() + 1));
+                        QString::number(m_beat.barIndex() + 1));
                 painter->setPen(Qt::transparent);
                 painter->drawPolygon(getEquilateralTriangle(
                         kTriangleEdgeLength, QPointF(0, m_position), Direction::RIGHT));

@@ -12,7 +12,7 @@ void WBeatMenu::updateMenu() {
     clear();
     // TODO(hacksdump): Only create menu for beats which are visible on the waveform.
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::SetDownbeat) &&
-            m_beat.getType() == mixxx::Beat::BEAT) {
+            m_beat.type() == mixxx::BeatType::Beat) {
         parented_ptr<QAction> pSetAsDownbeat;
         pSetAsDownbeat = make_parented<QAction>(tr("Set as Downbeat"), this);
         connect(pSetAsDownbeat.get(),
@@ -30,7 +30,7 @@ void WBeatMenu::updateMenu() {
                 &WBeatMenu::cueButtonClicked);
         addAction(pCueMenu.get());
     }
-    if (m_beat.getType() == mixxx::Beat::DOWNBEAT) {
+    if (m_beat.type() == mixxx::BeatType::Downbeat) {
         parented_ptr<QAction> pTimeSignatureAction;
         pTimeSignatureAction =
                 make_parented<QAction>(tr("Edit Time Signature"), this);
@@ -53,7 +53,7 @@ void WBeatMenu::updateMenu() {
 
 void WBeatMenu::slotDownbeatUpdated() {
     if (m_pBeats) {
-        m_pBeats->setAsDownbeat(m_beat.getBeatIndex());
+        m_pBeats->setAsDownbeat(m_beat.beatIndex());
     }
 }
 
@@ -91,5 +91,5 @@ void WBeatMenu::setBeat(mixxx::Beat beat) {
 }
 
 void WBeatMenu::slotBeatsUpdated() {
-    setBeat(m_pBeats->getBeatAtIndex(m_beat.getBeatIndex()));
+    setBeat(m_pBeats->getBeatAtIndex(m_beat.beatIndex()));
 }

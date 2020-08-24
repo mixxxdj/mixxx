@@ -74,7 +74,7 @@ WTempoMenu::~WTempoMenu() {
 
 void WTempoMenu::setBeat(mixxx::Beat beat) {
     m_beat = beat;
-    m_pBpmEditBox->setText(QString::number(beat.getBpm().getValue()));
+    m_pBpmEditBox->setText(QString::number(beat.bpm().getValue()));
 }
 
 void WTempoMenu::popup(const QPoint& p) {
@@ -85,7 +85,7 @@ void WTempoMenu::popup(const QPoint& p) {
 }
 
 void WTempoMenu::setBpm(mixxx::Bpm bpm) {
-    m_pBeats->setBpm(bpm, m_beat.getBeatIndex());
+    m_pBeats->setBpm(bpm, m_beat.beatIndex());
 }
 
 void WTempoMenu::slotTextInput(const QString& bpmString) {
@@ -94,17 +94,17 @@ void WTempoMenu::slotTextInput(const QString& bpmString) {
 }
 
 void WTempoMenu::slotSlightDecrease() {
-    setBpm(mixxx::Bpm(m_beat.getBpm().getValue() - kSlightChangeValue));
+    setBpm(mixxx::Bpm(m_beat.bpm().getValue() - kSlightChangeValue));
 }
 
 void WTempoMenu::slotSlightIncrease() {
-    setBpm(mixxx::Bpm(m_beat.getBpm().getValue() + kSlightChangeValue));
+    setBpm(mixxx::Bpm(m_beat.bpm().getValue() + kSlightChangeValue));
 }
 
 void WTempoMenu::slotBigDecrease() {
-    setBpm(mixxx::Bpm(m_beat.getBpm().getValue() - kBigChangeValue));
+    setBpm(mixxx::Bpm(m_beat.bpm().getValue() - kBigChangeValue));
 }
 
 void WTempoMenu::slotBigIncrease() {
-    setBpm(mixxx::Bpm(m_beat.getBpm().getValue() + kBigChangeValue));
+    setBpm(mixxx::Bpm(m_beat.bpm().getValue() + kBigChangeValue));
 }

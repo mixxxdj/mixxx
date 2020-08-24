@@ -196,7 +196,7 @@ QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
 QDebug operator<<(QDebug dbg, const BeatsInternal& arg) {
     QVector<FramePos> beatFramePositions;
     for (const auto& beat : arg.m_beats) {
-        beatFramePositions.append(beat.getFramePosition());
+        beatFramePositions.append(beat.framePosition());
     }
     dbg << "["
         << "Aggregate BPM:" << arg.m_bpm << "|"
@@ -229,7 +229,7 @@ Beat BeatsInternal::findNthBeat(FramePos frame, int n) const {
     BeatList::const_iterator previous_beat = m_beats.cend();
     BeatList::const_iterator next_beat = m_beats.cend();
     for (; it != m_beats.end(); ++it) {
-        FrameDiff_t delta = it->getFramePosition() - beat.getFramePosition();
+        FrameDiff_t delta = it->framePosition() - beat.framePosition();
 
         // We are "on" this beat.
         if (abs(delta) < kFrameEpsilon) {
@@ -369,7 +369,7 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     // Check whether the generated beats match the input beats.
     for (int i = 0; i < beats.size(); ++i) {
         DEBUG_ASSERT(qFuzzyCompare(beats.at(i).getValue(),
-                m_beats.at(i).getFramePosition().getValue()));
+                m_beats.at(i).framePosition().getValue()));
     }
 }
 
@@ -383,7 +383,7 @@ int BeatsInternal::numBeatsInRange(
     FramePos lastCountedBeat(0.0);
     int iBeatsCounter;
     for (iBeatsCounter = 1; lastCountedBeat < endFrame; iBeatsCounter++) {
-        lastCountedBeat = findNthBeat(startFrame, iBeatsCounter).getFramePosition();
+        lastCountedBeat = findNthBeat(startFrame, iBeatsCounter).framePosition();
         if (lastCountedBeat == kInvalidFramePos) {
             break;
         }
@@ -519,7 +519,7 @@ Bpm BeatsInternal::calculateBpm(
     QVector<double> beatvect;
     for (; curBeat != lastBeat; ++curBeat) {
         const Beat& beat = *curBeat;
-        beatvect.append(beat.getFramePosition().getValue());
+        beatvect.append(beat.framePosition().getValue());
     }
 
     if (beatvect.isEmpty()) {
@@ -546,9 +546,9 @@ FramePos BeatsInternal::findNBeatsFromFrame(
     // Add the length between this beat and the fullbeats'th beat
     // to the end position
     if (fullBeats > 0) {
-        nthBeat = findNthBeat(nextBeat, fullBeats).getFramePosition();
+        nthBeat = findNthBeat(nextBeat, fullBeats).framePosition();
     } else {
-        nthBeat = findNthBeat(prevBeat, fullBeats - 1).getFramePosition();
+        nthBeat = findNthBeat(prevBeat, fullBeats - 1).framePosition();
     }
 
     if (nthBeat == kInvalidFramePos) {
@@ -557,7 +557,7 @@ FramePos BeatsInternal::findNBeatsFromFrame(
 
     // Add the fraction of the beat
     if (fractionBeats != 0) {
-        nextBeat = findNthBeat(nthBeat, 2).getFramePosition();
+        nextBeat = findNthBeat(nthBeat, 2).framePosition();
         if (nextBeat == kInvalidFramePos) {
             return fromFrame;
         }
@@ -599,7 +599,7 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
     BeatList::const_iterator previous_beat = m_beats.cend();
     BeatList::const_iterator next_beat = m_beats.cend();
     for (; it != m_beats.end(); ++it) {
-        qint32 delta = it->getFramePosition() - beat.getFramePosition();
+        qint32 delta = it->framePosition() - beat.framePosition();
 
         // We are "on" this beat.
         if (abs(delta) < kFrameEpsilon) {
@@ -631,13 +631,13 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
     *pNextBeatFrame = kInvalidFramePos;
 
     for (; next_beat != m_beats.end(); ++next_beat) {
-        pNextBeatFrame->setValue(next_beat->getFramePosition().getValue());
+        pNextBeatFrame->setValue(next_beat->framePosition().getValue());
         break;
     }
     if (previous_beat != m_beats.end()) {
         for (; true; --previous_beat) {
             pPrevBeatFrame->setValue(
-                    previous_beat->getFramePosition().getValue());
+                    previous_beat->framePosition().getValue());
             break;
 
             // Don't step before the start of the list.
@@ -709,20 +709,20 @@ Bpm BeatsInternal::getBpmAroundPosition(FramePos curFrame, int n) const {
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.
     // kInvalidFramePos indicates we went off the map -- count from the beginning.
-    FramePos lower_bound = findNthBeat(curFrame, -n).getFramePosition();
+    FramePos lower_bound = findNthBeat(curFrame, -n).framePosition();
     if (lower_bound == kInvalidFramePos) {
-        lower_bound = m_beats.first().getFramePosition();
+        lower_bound = m_beats.first().framePosition();
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
-    FramePos upper_bound = findNthBeat(lower_bound, n * 2).getFramePosition();
+    FramePos upper_bound = findNthBeat(lower_bound, n * 2).framePosition();
     if (upper_bound == kInvalidFramePos) {
-        upper_bound = m_beats.last().getFramePosition();
-        lower_bound = findNthBeat(upper_bound, n * -2).getFramePosition();
+        upper_bound = m_beats.last().framePosition();
+        lower_bound = findNthBeat(upper_bound, n * -2).framePosition();
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
         if (lower_bound == kInvalidFramePos) {
-            lower_bound = m_beats.first().getFramePosition();
+            lower_bound = m_beats.first().framePosition();
         }
     }
 
@@ -845,12 +845,12 @@ void BeatsInternal::setBpm(Bpm bpm, int beatIndex) {
 
 FramePos BeatsInternal::getFirstBeatPosition() const {
     return m_beats.empty() ? kInvalidFramePos
-                           : m_beats.front().getFramePosition();
+                           : m_beats.front().framePosition();
 }
 
 FramePos BeatsInternal::getLastBeatPosition() const {
     return m_beats.empty() ? kInvalidFramePos
-                           : m_beats.back().getFramePosition();
+                           : m_beats.back().framePosition();
 }
 void BeatsInternal::generateBeatsFromMarkers() {
     // If the protobuf does not have any time signature markers, we add the default
@@ -928,12 +928,10 @@ void BeatsInternal::generateBeatsFromMarkers() {
             beatsPerBar;
     Beat addedBeat = kInvalidBeat;
     // TODO(hacksdump): Use markers for BPM and enable marker only on user edited markers.
-    Beat::Markers markers;
+    BeatMarkers markers;
     while (true) {
-        markers = mixxx::Beat::Marker::NONE;
-
+        markers = BeatMarker::None;
         Bpm bpmBeforeThisBeat = Bpm(m_beatsProto.bpm_markers().Get(bpmMarkerIndex).bpm());
-
         if (bpmMarkerIndex < m_beatsProto.bpm_markers_size() - 1 &&
                 m_beatsProto.bpm_markers()
                                 .Get(bpmMarkerIndex + 1)
@@ -944,7 +942,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
         auto currentBpmMarker = m_beatsProto.bpm_markers(bpmMarkerIndex);
 
         if (currentBpmMarker.beat_index() == m_beats.size()) {
-            markers |= Beat::Marker::BPM;
+            markers |= BeatMarker::Bpm;
         }
         auto currentTimeSignatureMarker =
                 m_beatsProto.time_signature_markers().Get(
@@ -957,7 +955,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
         if (barRelativeBeatIndex % currentTimeSignature.getBeatsPerBar() == 0) {
             barIndex++;
             if (m_beatsProto.first_downbeat_index() == m_beats.size()) {
-                markers |= Beat::Marker::TIME_SIGNATURE;
+                markers |= BeatMarker::TimeSignature;
             }
             if (timeSignatureMarkerIndex <
                             m_beatsProto.time_signature_markers_size() - 1 &&
@@ -970,19 +968,19 @@ void BeatsInternal::generateBeatsFromMarkers() {
                                 timeSignatureMarkerIndex);
                 currentTimeSignature = TimeSignature(
                         currentTimeSignatureMarker.time_signature());
-                markers |= Beat::Marker::TIME_SIGNATURE;
+                markers |= BeatMarker::TimeSignature;
             }
         }
 
-        Beat::Type beatType =
+        BeatType beatType =
                 barRelativeBeatIndex % currentTimeSignature.getBeatsPerBar() ==
                         0
-                ? Beat::DOWNBEAT
-                : Beat::BEAT;
+                ? BeatType::Downbeat
+                : BeatType::Beat;
 
         FramePos beatFramePosition = m_beats.empty()
                 ? FramePos(m_beatsProto.first_frame_position())
-                : (m_beats.last().getFramePosition() + beatLength);
+                : (m_beats.last().framePosition() + beatLength);
         addedBeat = Beat(beatFramePosition,
                 beatType,
                 currentTimeSignature,
@@ -993,7 +991,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 markers);
         barRelativeBeatIndex = (barRelativeBeatIndex + 1) %
                 currentTimeSignature.getBeatsPerBar();
-        if (addedBeat.getFramePosition() <= trackLastFrame) {
+        if (addedBeat.framePosition() <= trackLastFrame) {
             m_beats.append(addedBeat);
         } else {
             break;
@@ -1012,7 +1010,7 @@ void BeatsInternal::clearMarkers() {
 void BeatsInternal::setAsDownbeat(int beatIndex) {
     auto beat = getBeatAtIndex(beatIndex);
     m_beatsProto.set_first_downbeat_index(m_beatsProto.first_downbeat_index() +
-            beat.getBarRelativeBeatIndex());
+            beat.beatInBarIndex());
     generateBeatsFromMarkers();
 }
 

@@ -9,101 +9,104 @@
 #include "track/timesignature.h"
 
 namespace mixxx {
+enum class BeatType {
+    Beat,
+    Downbeat
+};
+
+enum class BeatMarker {
+    None = 0,
+    TimeSignature = 1 << 0,
+    Bpm = 1 << 1
+};
+Q_DECLARE_FLAGS(BeatMarkers, BeatMarker)
+
 class Beat {
   public:
-    enum Type {
-        BEAT,
-        DOWNBEAT
-    };
-    enum Marker {
-        NONE = 0,
-        TIME_SIGNATURE = 1 << 0,
-        BPM = 1 << 1
-    };
-    Q_DECLARE_FLAGS(Markers, Marker)
     explicit Beat(FramePos framePos,
-            Type type = BEAT,
+            BeatType type = BeatType::Beat,
             const TimeSignature& timeSignature = TimeSignature(),
             const Bpm& bpm = Bpm(),
             int beatIndex = 0,
             int barIndex = 0,
-            int barRelativeBeatIndex = 0,
-            Markers markers = Marker::NONE)
+            int beatInBarIndex = 0,
+            BeatMarkers markers = BeatMarker::None)
             : m_framePos(framePos),
               m_eType(type),
               m_iBeatIndex(beatIndex),
               m_iBarIndex(barIndex),
-              m_iBarRelativeBeatIndex(barRelativeBeatIndex),
+              m_iBeatInBarIndex(beatInBarIndex),
               m_timeSignature(timeSignature),
               m_bpm(bpm),
               m_eMarkers(markers) {
     }
-    int getBeatIndex() const {
+
+    int beatIndex() const {
         return m_iBeatIndex;
     }
 
-    int getBarIndex() const {
+    int barIndex() const {
         return m_iBarIndex;
     }
 
-    int getBarRelativeBeatIndex() const {
-        return m_iBarRelativeBeatIndex;
+    int beatInBarIndex() const {
+        return m_iBeatInBarIndex;
     }
 
-    TimeSignature getTimeSignature() const {
+    TimeSignature timeSignature() const {
         return m_timeSignature;
     }
 
-    FramePos getFramePosition() const {
+    FramePos framePosition() const {
         return m_framePos;
     }
 
-    Type getType() const {
+    BeatType type() const {
         return m_eType;
     }
 
-    Markers getMarkers() const {
+    BeatMarkers markers() const {
         return m_eMarkers;
     }
 
-    Bpm getBpm() const {
+    Bpm bpm() const {
         return m_bpm;
     }
 
   private:
     FramePos m_framePos;
-    Type m_eType;
+    BeatType m_eType;
     int m_iBeatIndex;
     int m_iBarIndex;
-    int m_iBarRelativeBeatIndex;
+    int m_iBeatInBarIndex;
     TimeSignature m_timeSignature;
     // This BPM value represents the instantaneous BPM at this beat.
     Bpm m_bpm;
-    Markers m_eMarkers;
+    BeatMarkers m_eMarkers;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Beat::Markers);
+Q_DECLARE_OPERATORS_FOR_FLAGS(BeatMarkers);
 
 using BeatList = QList<Beat>;
 
 inline bool operator<(Beat beat1, Beat beat2) {
-    return beat1.getFramePosition() < beat2.getFramePosition();
+    return beat1.framePosition() < beat2.framePosition();
 }
 
 inline bool operator>(Beat beat1, Beat beat2) {
-    return beat1.getFramePosition() > beat2.getFramePosition();
+    return beat1.framePosition() > beat2.framePosition();
 }
 
 inline bool operator==(Beat beat1, Beat beat2) {
-    return beat1.getFramePosition() == beat2.getFramePosition() &&
-            beat1.getBeatIndex() == beat2.getBeatIndex() &&
-            beat1.getMarkers() == beat2.getMarkers() &&
-            beat1.getBarIndex() == beat2.getBarIndex() &&
-            beat1.getBarRelativeBeatIndex() ==
-            beat2.getBarRelativeBeatIndex() &&
-            beat1.getType() == beat2.getType() &&
-            beat1.getTimeSignature() == beat2.getTimeSignature() &&
-            beat1.getBpm() == beat2.getBpm();
+    return beat1.framePosition() == beat2.framePosition() &&
+            beat1.beatIndex() == beat2.beatIndex() &&
+            beat1.markers() == beat2.markers() &&
+            beat1.barIndex() == beat2.barIndex() &&
+            beat1.beatInBarIndex() ==
+            beat2.beatInBarIndex() &&
+            beat1.type() == beat2.type() &&
+            beat1.timeSignature() == beat2.timeSignature() &&
+            beat1.bpm() == beat2.bpm();
 }
 
 inline bool operator!=(Beat beat1, Beat beat2) {
@@ -111,14 +114,16 @@ inline bool operator!=(Beat beat1, Beat beat2) {
 }
 
 inline QDebug operator<<(QDebug dbg, Beat beat) {
-    dbg << "[ Position:" << beat.getFramePosition()
-        << " | Signature:" << beat.getTimeSignature()
-        << " | Type:" << beat.getType()
-        << " | BarIndex:" << beat.getBarIndex()
-        << " | BeatIndex:" << beat.getBeatIndex()
-        << " | BarRelativeBeatIndex:" << beat.getBarRelativeBeatIndex()
-        << " | BPM:" << beat.getBpm()
-        << " | Markers:" << beat.getMarkers() << "]";
+    dbg << "[ Position:" << beat.framePosition()
+        << " | Signature:" << beat.timeSignature() << " | Type:"
+        << (beat.type() == BeatType::Beat
+                           ? "Beat"
+                           : (beat.type() == BeatType::Downbeat) ? "Downbeat"
+                                                                 : "None")
+        << " | BarIndex:" << beat.barIndex()
+        << " | BeatIndex:" << beat.beatIndex()
+        << " | BeatInBarIndex:" << beat.beatInBarIndex()
+        << " | BPM:" << beat.bpm() << " | Markers:" << beat.markers() << "]";
     return dbg;
 }
 
