@@ -17,6 +17,8 @@
 
 #include <iostream>
 #include <vector>
+#include <utility>
+
 
 typedef std::vector< std::vector<float> > AutoCorrelation;
 
@@ -26,7 +28,9 @@ public:
     ~AutocorrelationProcessor();
     AutoCorrelation process(float * input, int inputLength) const;
     int processOffset(float * input, int inputLength, int hop, const std::vector<int>& periods) const;
-    AutoCorrelation processPhase(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
+    AutoCorrelation processChanges(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
+    std::vector<std::pair<int, float> > processPhase(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
+
 
 private:
     int m_windowLength;

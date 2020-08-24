@@ -379,7 +379,7 @@ void AnalyzerRhythm::computeMeter() {
             double localTempo = tempoSum / tempoCounter;
             qDebug() << "at" << frameToMinutes(m_tempogramHopSize * blockCounter * kNoveltyCurveHop) << "local tempo is" << localTempo;
             QMap<int, double> pulsesLenghtsAndWeights;
-            if (blockCounter < m_metergram.size()) {
+            if (blockCounter < static_cast<int>(m_metergram.size())) {
                 auto allPulses = m_metergram[blockCounter].keys();
                 for (auto pulse : allPulses) {
                     double ratio = localTempo / pulse;
@@ -423,7 +423,7 @@ void AnalyzerRhythm::computeMeter() {
         auto pulseHierarchies = computeMeterHierarchies(pulse, pulseMultiples);
         metricalHierarchy.insert(metricalHierarchy.end(), pulseHierarchies.begin(), pulseHierarchies.end());
     }
-    for (int i = 0; i < metricalHierarchy.size(); i += 1) {
+    for (size_t i = 0; i < metricalHierarchy.size(); i += 1) {
         if (metricalHierarchy[i].size() == 3) {
             auto firstMetricPair = metricalHierarchy[i];
             auto secondMetricPair = metricalHierarchy[i];
@@ -588,14 +588,14 @@ void AnalyzerRhythm::computeTempogramByACF() {
     AutocorrelationProcessor autocorrelationProcessor(m_tempogramWindowLength, m_tempogramHopSize);
 
     std::vector<float> complexSdCurve;
-    for (int i = 0; i < m_detectionResults.size(); i++) {
+    for (size_t i = 0; i < m_detectionResults.size(); i++) {
         complexSdCurve.push_back(m_detectionResults[i].results[3]);
     }
     Spectrogram tempogramACF = autocorrelationProcessor.process(
             &complexSdCurve[0], complexSdCurve.size());
 
     int firstFullAC = m_tempogramWindowLength / 2 / m_tempogramHopSize;
-    for (int i = 0; i < tempogramACF[0].size(); i++) {
+    for (size_t i = 0; i < tempogramACF[0].size(); i++) {
         qDebug() << i
                  << tempogramACF[0][i]
                  << tempogramACF[5][i]
@@ -625,7 +625,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
         int max_lag = 0;
         int lag = 0;
         constexpr int kLookAhead = 8;
-        for (; lag < tempogramACF[block].size() - kLookAhead; ++lag) {
+        for (; lag < static_cast<int>(tempogramACF[block].size()) - kLookAhead; ++lag) {
             for (int i = lag; i <= lag + kLookAhead; ++i) {
                 double compensated = tempogramACF[block][i] * (1 - (1 / ((i / 2.0) + 1)));
                 if (max < compensated) {
@@ -685,6 +685,8 @@ void AnalyzerRhythm::computeTempogramByACF() {
                 break;
             }
         }
+
+        /*
         Spectrogram tempogramPhase = autocorrelationProcessor.processPhase(
                 &complexSdCurve[0], complexSdCurve.size(), block, minK, maxK, offsets[block]);
         std::vector<int> possible_downbeats;
@@ -716,7 +718,8 @@ void AnalyzerRhythm::computeTempogramByACF() {
                 possible_downbeats_sorted.insert(j_max);
             }
 
-            /*
+            */
+        /*
             // auto deb = qDebug();
             float min = tempogramPhase[i][0];
             float j_min = 0;
@@ -744,8 +747,25 @@ void AnalyzerRhythm::computeTempogramByACF() {
                 possible_downbeats_sorted.insert(j_min);
             }
             */
+
+        std::vector<std::pair<int, float>> tempogramPhase = autocorrelationProcessor.processPhase(
+                &complexSdCurve[0], complexSdCurve.size(), block, minK, maxK, offsets[block]);
+
+        float max = tempogramPhase[0].second;
+        float i_max = 0;
+        for (int i = 1; i < tempogramPhase.size(); i++) {
+            if (max < tempogramPhase[i].second) {
+                //deb << i << j << tempogramPhase[i][j];
+                max = tempogramPhase[i].second;
+                i_max = tempogramPhase[i].first;
+            }
         }
-        qDebug() << "measure:" << block << minK << maxK << maxK / minK << possible_downbeats;
+        if (i_max > 0 && i_max < tempogramPhase.back().first) {
+            // Store boundaries for viualsation
+            possible_downbeats_sorted.insert(i_max);
+        }
+
+        qDebug() << "measure:" << block << minK << maxK << maxK / minK << i_max;
     }
 
     for (const auto& beat : possible_downbeats_sorted) {

@@ -77,8 +77,12 @@ int AutocorrelationProcessor::processOffset(float * input, int inputLength, int 
 
     float max_sum = 0;
     int max_lag = 0;
-    // periods[0] is most likely 1/8 expect a maximum at lest at 1/4
-    for (int lag = -periods[0]; lag < periods[0] * 2; ++lag) {
+    // periods[0] is most likely 1/8 expect a maximum at least at 1/4
+    int shift = periods[0];
+    if (shift < 20) {
+        shift = 20;
+    }
+    for (int lag = -shift; lag < shift * 2; ++lag) {
         int readPointer = readBlockPointerIndex + lag;
         float sum = 0;
         if (readPointer >= 0) {
@@ -105,7 +109,7 @@ int AutocorrelationProcessor::processOffset(float * input, int inputLength, int 
 }
 
 
-AutoCorrelation AutocorrelationProcessor::processPhase(float * input, int inputLength, int hop, int beatsize, int measuresize, int offset) const
+AutoCorrelation AutocorrelationProcessor::processChanges(float * input, int inputLength, int hop, int beatsize, int measuresize, int offset) const
 {
     int readBlockPointerIndex = m_hopSize * hop + offset - 1;
     AutoCorrelation autocorrelation;
@@ -173,3 +177,41 @@ AutoCorrelation AutocorrelationProcessor::processPhase(float * input, int inputL
    return autocorrelation;
 }
 
+
+std::vector<std::pair<int, float> > AutocorrelationProcessor::processPhase(float * input, int inputLength, int hop, int beatsize, int measuresize, int offset) const
+{
+    int readBlockPointerIndex = m_hopSize * hop + offset - 1;
+
+    int shift = measuresize / beatsize / 2 + 1;
+    std::vector<std::pair<int, float> > autocorrelationBlock;
+
+    for (int lag = -shift * beatsize; lag <= shift * beatsize; lag += beatsize) {
+        int readPointer = readBlockPointerIndex - m_windowLength / 2 + lag;
+        int map_index = readPointer;
+        float sum = 0;
+        int refPointer = readPointer + measuresize;
+        for (int n = 0; n < measuresize + 1; n++) {
+            if (refPointer >= inputLength) {
+                break;
+            } else if (readPointer >= 0) {
+                float inref = input[refPointer];
+                float diff = input[readPointer] * inref;
+                float ref1 = input[readPointer] * input[readPointer];
+                float ref2 = inref * inref;
+                float ref = ((ref1 + ref2)/2);
+                if (ref > 0) {
+                    sum += diff /((ref1 + ref2)/2);
+                } else {
+                    sum += 1;
+                }
+            } else if (refPointer > 0) {
+                sum += 1;
+            }
+            readPointer++;
+            refPointer++;
+        }
+        // store
+        autocorrelationBlock.push_back(std::pair(map_index, sum / (measuresize + 1)));
+    }
+    return autocorrelationBlock;
+}
