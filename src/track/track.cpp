@@ -433,6 +433,9 @@ void Track::setDuration(mixxx::Duration duration) {
                 m_record.refMetadata().ptrDuration(),
                 duration)) {
         markDirtyAndUnlock(&lock);
+        if (m_pBeats) {
+            m_pBeats->setDurationSeconds(getDuration());
+        }
     }
 }
 
@@ -1442,6 +1445,9 @@ void Track::setAudioProperties(
                 m_record.refMetadata().ptrSampleRate(),
                 sampleRate)) {
         dirty = true;
+        if (m_pBeats) {
+            m_pBeats->setSampleRate(getSampleRate());
+        }
     }
     if (compareAndSet(
                 m_record.refMetadata().ptrBitrate(),
@@ -1452,6 +1458,9 @@ void Track::setAudioProperties(
                 m_record.refMetadata().ptrDuration(),
                 duration)) {
         dirty = true;
+        if (m_pBeats) {
+            m_pBeats->setDurationSeconds(getDuration());
+        }
     }
     if (dirty) {
         markDirtyAndUnlock(&lock);

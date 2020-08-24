@@ -13,14 +13,22 @@ namespace {
 class BeatsTest : public testing::Test {
   protected:
     BeatsTest()
-            : m_pTrack(Track::newTemporary()),
+            : m_pTrack1(Track::newTemporary()),
+              m_pTrack2(Track::newTemporary()),
               m_iChannelCount(2),
               m_iSampleRate(100),
-              m_pBeats1(new Beats(m_pTrack.get())),
-              m_pBeats2(new Beats(m_pTrack.get())),
+              m_pBeats1(new Beats(m_pTrack1.get())),
+              m_pBeats2(new Beats(m_pTrack2.get())),
               m_bpm(60),
               m_startOffsetFrames(7) {
-        m_pTrack->setAudioProperties(
+        m_pTrack1->setBeats(m_pBeats1);
+        m_pTrack2->setBeats(m_pBeats2);
+        m_pTrack1->setAudioProperties(
+                mixxx::audio::ChannelCount(m_iChannelCount),
+                mixxx::audio::SampleRate(m_iSampleRate),
+                mixxx::audio::Bitrate(),
+                mixxx::Duration::fromSeconds(180));
+        m_pTrack2->setAudioProperties(
                 mixxx::audio::ChannelCount(m_iChannelCount),
                 mixxx::audio::SampleRate(m_iSampleRate),
                 mixxx::audio::Bitrate(),
@@ -50,7 +58,8 @@ class BeatsTest : public testing::Test {
         return beats;
     }
 
-    TrackPointer m_pTrack;
+    TrackPointer m_pTrack1;
+    TrackPointer m_pTrack2;
     const int m_iChannelCount;
     // Sample Rate is a standard unit
     const SINT m_iSampleRate;

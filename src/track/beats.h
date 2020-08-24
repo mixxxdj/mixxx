@@ -57,9 +57,10 @@ class BeatsInternal {
     Bpm getBpm() const;
     bool isValid() const;
     void setSampleRate(int sampleRate);
-    void setDurationSeconds(double duration) {
-        m_dDurationSeconds = duration;
+    SINT getSampleRate() const {
+        return m_iSampleRate;
     }
+    void setDurationSeconds(double duration);
     int numBeatsInRange(FramePos startFrame, FramePos endFrame) const;
     QByteArray toProtobuf() const;
     QString getVersion() const;
@@ -131,11 +132,9 @@ class Beats final : public QObject {
                     timeSignatureMarkers =
                             QVector<track::io::TimeSignatureMarker>());
     ~Beats() override = default;
+    Beats(const mixxx::Beats& other);
 
     using iterator = BeatIterator;
-
-    // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
-    Beats(const mixxx::Beats& other);
 
     /// Serializes into a protobuf.
     QByteArray toProtobuf() const;
@@ -145,18 +144,17 @@ class Beats final : public QObject {
     /// produced this Beats instance. Used by BeatsFactory for associating a
     /// given serialization with the version that produced it.
     QString getVersion() const;
+
     /// Return a string that represent the preferences used to generate
     /// the beats object.
     QString getSubVersion() const;
+
     void setSubVersion(const QString& subVersion);
 
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of firstBeatFrame. Does not generate an updated() signal, since it is
     /// meant for initialization.
     void setGrid(Bpm dBpm, FramePos firstBeatFrame = kStartFramePos);
-
-    // TODO: We may want to implement these with common code that returns
-    //       the triple of closest, next, and prev.
 
     /// Starting from frame, return the next beat
     /// in the track, or invalid beat if none exists. If frame refers to the location
@@ -211,18 +209,16 @@ class Beats final : public QObject {
     }
 
     /// Return the average BPM over the entire track if the BPM is
-    /// valid, otherwise returns -1
+    /// valid, otherwise returns Bpm().
     Bpm getBpm() const;
 
     /// Return the average BPM over the range of n*2 beats centered around
     /// curFrameNum.  (An n of 4 results in an averaging of 8 beats).  Invalid
-    /// BPM returns -1.
+    /// BPM returns Bpm().
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
 
     /// Sets the track signature starting at specified bar
     void setSignature(TimeSignature sig, int downbeatIndex);
-
-    /// Sets the nearest beat as a downbeat
 
     /// Translate all beats in the song by numFrames. Beats that lie
     /// before the start of the track or after the end of the track are not
@@ -258,11 +254,20 @@ class Beats final : public QObject {
     /// Prints debugging information in stderr
     friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
 
-  private slots:
-    void slotTrackBeatsUpdated();
+    /**
+     * Set sample rate of the track which owns these beats.
+     * @param sampleRate Track sample rate
+     */
+    void setSampleRate(int sampleRate);
+
+    /**
+     * Set duration of the track which owns these beats.
+     * @param duration Track duration in seconds.
+     */
+    void setDurationSeconds(double duration);
+
   private:
     mutable QMutex m_mutex;
-    const Track* m_track;
     BeatsInternal m_beatsInternal;
 
   signals:
