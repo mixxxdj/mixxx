@@ -13,11 +13,11 @@ typedef double value_t;
 /// with respect to a fixed origin, i.e. start of the track.
 class FramePos final {
   public:
-    FramePos()
+    constexpr FramePos()
             : m_dFramePos(0) {
     }
 
-    explicit FramePos(value_t dFramePos)
+    constexpr explicit FramePos(value_t dFramePos)
             : m_dFramePos(dFramePos) {
     }
 
@@ -107,5 +107,6 @@ inline QDebug operator<<(QDebug dbg, FramePos arg) {
     return dbg;
 }
 
-const FramePos kInvalidFramePos = FramePos(std::numeric_limits<double>::lowest());
+constexpr FramePos kInvalidFramePos = FramePos(std::numeric_limits<double>::lowest());
+constexpr FramePos kStartFramePos = FramePos(0);
 } // namespace mixxx
