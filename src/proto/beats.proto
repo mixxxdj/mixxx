@@ -26,6 +26,9 @@ message TimeSignatureMarker {
   optional int32 downbeat_index = 1;
   optional TimeSignature time_signature = 2;
 }
+
+// NOTE: This part commented out in anticipation of future extensions.
+// This is only indicative and is subject to change.
 /*
 message PhraseMarker {
   optional int32 downbeat_index = 1;
@@ -50,6 +53,7 @@ message SectionMarker {
   optional Color color = 4;
 }
 */
+
 message Beats {
   optional double first_frame_position = 1;
   optional int32 first_downbeat_index = 2;
