@@ -13,6 +13,10 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
+namespace {
+constexpr int kFirstBeatIndex = 0;
+}
+
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> plugins;
@@ -276,8 +280,9 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
     // If we got here then the user doesn't want to replace the beatgrid but
     // since the first beat is zero we'll apply the offset we just detected.
-    mixxx::FramePos currentFirstBeat = pCurrentBeats->getBeatAtIndex(0).getFramePosition();
-    mixxx::FramePos newFirstBeat = pBeats->getBeatAtIndex(0).getFramePosition();
+    mixxx::FramePos currentFirstBeat =
+            pCurrentBeats->getBeatAtIndex(kFirstBeatIndex).getFramePosition();
+    mixxx::FramePos newFirstBeat = pBeats->getBeatAtIndex(kFirstBeatIndex).getFramePosition();
     if (currentFirstBeat == mixxx::kStartFramePos && newFirstBeat > mixxx::kStartFramePos) {
         pCurrentBeats->translate(newFirstBeat - currentFirstBeat);
     }
