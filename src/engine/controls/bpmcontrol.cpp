@@ -529,10 +529,12 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
             : (dThisPosition - dPrevBeat) / dBeatLength;
     // Because findNext and findPrev have an epsilon built in, sometimes
     // the beat percentage is out of range.  Fix it.
-    if (dBeatPercentage < 0)
+    if (dBeatPercentage < 0) {
         ++dBeatPercentage;
-    if (dBeatPercentage > 1)
+    }
+    if (dBeatPercentage > 1) {
         --dBeatPercentage;
+    }
 
     return dBeatPercentage - m_dUserOffset.getValue();
 }
@@ -591,10 +593,12 @@ bool BpmControl::getBeatContextNoLookup(
                 : (position - pPrevBeat) / dBeatLength;
         // Because findNext and findPrev have an epsilon built in, sometimes
         // the beat percentage is out of range.  Fix it.
-        if (*dpBeatPercentage < 0)
+        if (*dpBeatPercentage < 0) {
             ++*dpBeatPercentage;
-        if (*dpBeatPercentage > 1)
+        }
+        if (*dpBeatPercentage > 1) {
             --*dpBeatPercentage;
+        }
     }
 
     return true;
