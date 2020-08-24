@@ -277,14 +277,14 @@ TEST_F(BeatsTest, BpmAround) {
     // The average of the first 8 beats should be different than the average
     // of the last 8 beats.
     EXPECT_DOUBLE_EQ(63.937454161267674,
-            pMap->getBpmAroundPosition(FramePos(0) + approxBeatLengthFrames * 4, 4).getValue());
+            pMap->getBpmAroundPosition(kStartFramePos + approxBeatLengthFrames * 4, 4).getValue());
     EXPECT_DOUBLE_EQ(118.96637943082918,
-            pMap->getBpmAroundPosition(FramePos(0) + approxBeatLengthFrames * 60, 4).getValue());
+            pMap->getBpmAroundPosition(kStartFramePos + approxBeatLengthFrames * 60, 4).getValue());
     // Also test at the beginning and end of the track
     EXPECT_DOUBLE_EQ(62.936459878052396,
-            pMap->getBpmAroundPosition(FramePos(0), 4).getValue());
+            pMap->getBpmAroundPosition(kStartFramePos, 4).getValue());
     EXPECT_DOUBLE_EQ(118.96637943082918,
-            pMap->getBpmAroundPosition(FramePos(0) + approxBeatLengthFrames * 65, 4).getValue());
+            pMap->getBpmAroundPosition(kStartFramePos + approxBeatLengthFrames * 65, 4).getValue());
 
     // Try a really, really short track
     beats = createBeatVector(FramePos(10), 3, getBeatLengthFrames(m_bpm));
@@ -292,7 +292,9 @@ TEST_F(BeatsTest, BpmAround) {
     BeatsPointer pBeats =
             std::make_unique<Beats>(track.get(), beats);
     EXPECT_DOUBLE_EQ(m_bpm.getValue(),
-            pBeats->getBpmAroundPosition(FramePos(0) + approxBeatLengthFrames * 1, 4).getValue());
+            pBeats->getBpmAroundPosition(
+                          kStartFramePos + approxBeatLengthFrames * 1, 4)
+                    .getValue());
 }
 
 TEST_F(BeatsTest, Signature) {

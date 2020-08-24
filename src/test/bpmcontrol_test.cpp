@@ -44,7 +44,7 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     mixxx::FrameDiff_t beatLength;
     double beatPercentage;
     EXPECT_TRUE(BpmControl::getBeatContext(pBeats,
-            mixxx::FramePos(0),
+            mixxx::kStartFramePos,
             &prevBeat,
             &nextBeat,
             &beatLength,

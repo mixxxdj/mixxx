@@ -1679,7 +1679,7 @@ QVector<FramePos> createBeatVector(FramePos first_beat,
 TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     // half-double matching should be consistent
     FrameDiff_t beatLengthFrames = 60.0 * 44100 / 90.0;
-    FramePos startOffsetFrames = FramePos(0);
+    FramePos startOffsetFrames = kStartFramePos;
     const int numBeats = 100;
     const double trackEndPaddingSeconds = 0.1;
     QVector<FramePos> beats1 =

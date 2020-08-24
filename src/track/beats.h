@@ -72,7 +72,7 @@ class BeatsInternal {
     bool findPrevNextBeats(FramePos frame,
             FramePos* pPrevBeatFrame,
             FramePos* pNextBeatFrame) const;
-    void setGrid(Bpm dBpm, FramePos firstBeatFrame = FramePos());
+    void setGrid(Bpm dBpm, FramePos firstBeatFrame = kStartFramePos);
     FramePos findClosestBeat(FramePos frame) const;
     std::unique_ptr<BeatsInternal::iterator> findBeats(
             FramePos startFrame, FramePos stopFrame) const;
@@ -153,7 +153,7 @@ class Beats final : public QObject {
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of firstBeatFrame. Does not generate an updated() signal, since it is
     /// meant for initialization.
-    void setGrid(Bpm dBpm, FramePos firstBeatFrame = FramePos());
+    void setGrid(Bpm dBpm, FramePos firstBeatFrame = kStartFramePos);
 
     // TODO: We may want to implement these with common code that returns
     //       the triple of closest, next, and prev.

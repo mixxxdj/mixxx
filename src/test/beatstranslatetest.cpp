@@ -54,5 +54,5 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Deck 2 was left at 0.
     // We translated grid 2 so that it is also +delta away from its closest beat
     // So that beat should be at deck 1 position -delta.
-    ASSERT_DOUBLE_EQ(-deltaFrames, beats2->findClosestBeat(FramePos(0)).getValue());
+    ASSERT_DOUBLE_EQ(-deltaFrames, beats2->findClosestBeat(kStartFramePos).getValue());
 }

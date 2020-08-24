@@ -10,7 +10,7 @@ constexpr double fontSizePixels = 10;
 } // namespace
 
 WaveformBeat::WaveformBeat()
-        : m_beat(mixxx::FramePos(0)),
+        : m_beat(mixxx::kStartFramePos),
           m_orientation(Qt::Horizontal),
           m_iAlpha(255),
           m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS),

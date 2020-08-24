@@ -322,7 +322,7 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     int bpmMarkerBeatIndex = 0;
     for (int i = 1; i < beats.size(); ++i) {
         VERIFY_OR_DEBUG_ASSERT(
-                beats.at(i) > beats.at(i - 1) && beats.at(i) >= FramePos(0)) {
+                beats.at(i) > beats.at(i - 1) && beats.at(i) >= kStartFramePos) {
             qDebug() << "Beats not in increasing order or negative, discarding "
                         "beat"
                      << beats.at(i);
