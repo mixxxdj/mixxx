@@ -131,9 +131,9 @@ std::unique_ptr<Beats::iterator> Beats::findBeats(
     return m_beatsInternal.findBeats(startFrame, stopFrame);
 }
 
-Bpm Beats::getBpm() const {
+Bpm Beats::getGlobalBpm() const {
     QMutexLocker locker(&m_mutex);
-    return m_beatsInternal.getBpm();
+    return m_beatsInternal.getGlobalBpm();
 }
 
 Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
@@ -218,7 +218,7 @@ Beat BeatsInternal::findNthBeat(FramePos frame, int n) const {
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
     const double kFrameEpsilon =
-            kBeatVicinityFactor * getBeatLengthFrames(getBpm(), m_iSampleRate);
+            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), m_iSampleRate);
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -283,14 +283,9 @@ Beat BeatsInternal::findNthBeat(FramePos frame, int n) const {
     return kInvalidBeat;
 }
 
-Bpm BeatsInternal::getBpm() const {
+Bpm BeatsInternal::getGlobalBpm() const {
     if (!isValid()) {
         return Bpm();
-    }
-    // If we only have one BPM value, there is no need to rely on the
-    // BPM aggregation algorithm. Just return the stored BPM.
-    if (m_beatsProto.bpm_markers_size() == 1) {
-        return Bpm(m_beatsProto.bpm_markers().cbegin()->bpm());
     }
     return m_bpm;
 }
@@ -520,9 +515,15 @@ void BeatsInternal::updateBpm() {
         m_bpm = Bpm();
         return;
     }
-    Beat startBeat = m_beats.first();
-    Beat stopBeat = m_beats.last();
-    m_bpm = calculateBpm(startBeat, stopBeat);
+    // If we only have one BPM value, there is no need to rely on the
+    // BPM aggregation algorithm. Just use the BPM value in protobuf.
+    if (m_beatsProto.bpm_markers_size() == 1) {
+        m_bpm = Bpm(m_beatsProto.bpm_markers().cbegin()->bpm());
+    } else {
+        Beat startBeat = m_beats.first();
+        Beat stopBeat = m_beats.last();
+        m_bpm = calculateBpm(startBeat, stopBeat);
+    }
 }
 
 Bpm BeatsInternal::calculateBpm(
@@ -610,7 +611,7 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
     const double kFrameEpsilon =
-            kBeatVicinityFactor * getBeatLengthFrames(getBpm(), m_iSampleRate);
+            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), m_iSampleRate);
 
     // Back-up by one.
     if (it != m_beats.begin()) {

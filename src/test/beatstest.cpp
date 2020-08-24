@@ -73,25 +73,25 @@ class BeatsTest : public testing::Test {
 
 TEST_F(BeatsTest, Scale) {
     // Initially must be the base value
-    EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
+    EXPECT_EQ(m_bpm, m_pBeats1->getGlobalBpm());
 
     m_pBeats1->scale(BeatsInternal::DOUBLE);
-    EXPECT_EQ(m_bpm * 2, m_pBeats1->getBpm());
+    EXPECT_EQ(m_bpm * 2, m_pBeats1->getGlobalBpm());
 
     m_pBeats1->scale(BeatsInternal::HALVE);
-    EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
+    EXPECT_EQ(m_bpm, m_pBeats1->getGlobalBpm());
 
     m_pBeats1->scale(BeatsInternal::TWOTHIRDS);
-    EXPECT_EQ(m_bpm * 2 / 3, m_pBeats1->getBpm());
+    EXPECT_EQ(m_bpm * 2 / 3, m_pBeats1->getGlobalBpm());
 
     m_pBeats1->scale(BeatsInternal::THREEHALVES);
-    EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
+    EXPECT_EQ(m_bpm, m_pBeats1->getGlobalBpm());
 
     m_pBeats1->scale(BeatsInternal::THREEFOURTHS);
-    EXPECT_EQ(m_bpm * 3 / 4, m_pBeats1->getBpm());
+    EXPECT_EQ(m_bpm * 3 / 4, m_pBeats1->getGlobalBpm());
 
     m_pBeats1->scale(BeatsInternal::FOURTHIRDS);
-    EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
+    EXPECT_EQ(m_bpm, m_pBeats1->getGlobalBpm());
 }
 
 TEST_F(BeatsTest, NthBeat) {
@@ -462,12 +462,12 @@ TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
     m_pBeats1->setBpm(Bpm(240), 10);
     m_pBeats1->setBpm(Bpm(75), 15);
     // Let's test global BPM first
-    auto oldBpm = m_pBeats1->getBpm();
+    auto oldBpm = m_pBeats1->getGlobalBpm();
     auto oldTimeSignature = m_pBeats1->getBeatAtIndex(0).timeSignature();
     m_pBeats1->setSignature(TimeSignature(oldTimeSignature.getBeatsPerBar(),
                                     oldTimeSignature.getNoteValue() * 2),
             0);
-    auto newBpm = m_pBeats1->getBpm();
+    auto newBpm = m_pBeats1->getGlobalBpm();
 
     ASSERT_EQ(oldBpm, newBpm);
 }

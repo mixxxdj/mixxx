@@ -7,7 +7,6 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "util/assert.h"
 #include "util/duration.h"
 #include "util/frameadapter.h"
 #include "util/logger.h"
@@ -177,7 +176,7 @@ double BpmControl::getBpm() const {
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
     if (v > 0 && m_pBeats) {
-        auto bpm = m_pBeats->getBpm();
+        auto bpm = m_pBeats->getGlobalBpm();
         auto adjustedBpm = bpm + kBpmAdjustStep;
         m_pBeats->setBpm(adjustedBpm);
     }
@@ -185,7 +184,7 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v > 0 && m_pBeats) {
-        auto bpm = m_pBeats->getBpm();
+        auto bpm = m_pBeats->getGlobalBpm();
         auto adjustedBpm = mixxx::Bpm(math_max(kBpmAdjustMin, (bpm - kBpmAdjustStep).getValue()));
         m_pBeats->setBpm(adjustedBpm);
     }
@@ -983,7 +982,7 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
 void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated"
-                        << (pBeats ? pBeats->getBpm() : mixxx::Bpm());
+                        << (pBeats ? pBeats->getGlobalBpm() : mixxx::Bpm());
     }
     m_pBeats = pBeats;
     updateLocalBpm();
@@ -1017,7 +1016,7 @@ double BpmControl::updateLocalBpm() {
         local_bpm = m_pBeats->getBpmAroundPosition(
                 getFrameOfTrack().currentFrame, kLocalBpmSpan);
         if (local_bpm.getValue() == -1) {
-            local_bpm = m_pBeats->getBpm();
+            local_bpm = m_pBeats->getGlobalBpm();
         }
     }
     if (local_bpm != prev_local_bpm) {

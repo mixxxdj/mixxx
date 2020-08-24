@@ -282,7 +282,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     mixxx::BeatsPointer pBeats = track.getBeats();
     if (pBeats) {
-        spinBpm->setValue(pBeats->getBpm().getValue());
+        spinBpm->setValue(pBeats->getGlobalBpm().getValue());
         m_pBeatsClone = pBeats->clone();
     } else {
         m_pBeatsClone.reset();
@@ -296,12 +296,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     bpmConst->setEnabled(!m_bpmIsConst);
     spinBpm->setEnabled(m_bpmIsConst); // We cannot change bpm continuously or tap them
     bpmTap->setEnabled(m_bpmIsConst);  // when we have a variable bpm.
-
-    if (track.isBpmLocked()) {
-        tabBPM->setEnabled(false);
-    } else {
-        tabBPM->setEnabled(true);
-    }
+    tabBPM->setEnabled(!track.isBpmLocked());
 }
 
 void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
@@ -474,42 +469,42 @@ void DlgTrackInfo::clear() {
 void DlgTrackInfo::slotBpmDouble() {
     m_pBeatsClone->scale(mixxx::BeatsInternal::DOUBLE);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm().getValue();
+    double newValue = m_pBeatsClone->getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
     m_pBeatsClone->scale(mixxx::BeatsInternal::HALVE);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm().getValue();
+    double newValue = m_pBeatsClone->getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
     m_pBeatsClone->scale(mixxx::BeatsInternal::TWOTHIRDS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm().getValue();
+    double newValue = m_pBeatsClone->getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
     m_pBeatsClone->scale(mixxx::BeatsInternal::THREEFOURTHS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm().getValue();
+    double newValue = m_pBeatsClone->getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
     m_pBeatsClone->scale(mixxx::BeatsInternal::FOURTHIRDS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm().getValue();
+    double newValue = m_pBeatsClone->getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
     m_pBeatsClone->scale(mixxx::BeatsInternal::THREEHALVES);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm().getValue();
+    double newValue = m_pBeatsClone->getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
@@ -574,7 +569,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
                 samplePosToFramePos(cue.getPosition()));
     }
 
-    double oldValue = m_pBeatsClone->getBpm().getValue();
+    double oldValue = m_pBeatsClone->getGlobalBpm().getValue();
     if (oldValue == value) {
         return;
     }
@@ -584,7 +579,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm().getValue();
+    double newValue = m_pBeatsClone->getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 

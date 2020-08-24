@@ -54,7 +54,7 @@ class BeatsInternal {
     Beat findNthBeat(FramePos frame, int offset) const;
     Beat findNextBeat(FramePos frame) const;
     Beat findPrevBeat(FramePos frame) const;
-    Bpm getBpm() const;
+    Bpm getGlobalBpm() const;
     bool isValid() const;
     void setSampleRate(int sampleRate);
     SINT getSampleRate() const {
@@ -210,7 +210,7 @@ class Beats final : public QObject {
 
     /// Return the average BPM over the entire track if the BPM is
     /// valid, otherwise returns Bpm().
-    Bpm getBpm() const;
+    Bpm getGlobalBpm() const;
 
     /// Return the average BPM over the range of n*2 beats centered around
     /// curFrameNum.  (An n of 4 results in an averaging of 8 beats).  Invalid

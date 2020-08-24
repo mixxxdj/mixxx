@@ -49,7 +49,7 @@ inline mixxx::Bpm getActualBpm(
     // Reason: The BPM value in the metadata might be normalized
     // or rounded, e.g. ID3v2 only supports integer values.
     if (pBeats) {
-        return mixxx::Bpm(pBeats->getBpm().getValue());
+        return pBeats->getGlobalBpm();
     } else {
         return bpm;
     }
@@ -263,7 +263,7 @@ double Track::getBpm() const {
         // BPM from beat grid overrides BPM from metadata
         // Reason: The BPM value in the metadata might be imprecise,
         // e.g. ID3v2 only supports integer values!
-        double beatsBpm = m_pBeats->getBpm().getValue();
+        double beatsBpm = m_pBeats->getGlobalBpm().getValue();
         if (mixxx::Bpm::isValidValue(beatsBpm)) {
             bpm = beatsBpm;
         }
@@ -294,7 +294,7 @@ double Track::setBpm(double bpmValue) {
     }
 
     // Continue with the regular case
-    if (m_pBeats->getBpm().getValue() != bpmValue) {
+    if (m_pBeats->getGlobalBpm().getValue() != bpmValue) {
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
@@ -330,7 +330,7 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm().getValue();
+        bpmValue = m_pBeats->getGlobalBpm().getValue();
         connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
@@ -344,7 +344,7 @@ void Track::setBeatsMarkDirtyAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer 
         return;
     }
 
-    auto bpmValue = m_pBeats ? m_pBeats->getBpm().getValue() : mixxx::Bpm::kValueUndefined;
+    auto bpmValue = m_pBeats ? m_pBeats->getGlobalBpm().getValue() : mixxx::Bpm::kValueUndefined;
 
     markDirtyAndUnlock(pLock);
     emit bpmUpdated(bpmValue);
@@ -361,7 +361,7 @@ void Track::slotBeatsUpdated() {
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm().getValue();
+        bpmValue = m_pBeats->getGlobalBpm().getValue();
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
@@ -985,7 +985,7 @@ void Track::importPendingBeatsMarkDirtyAndUnlock(
         return;
     }
 
-    auto bpmValue = m_pBeats ? m_pBeats->getBpm().getValue() : mixxx::Bpm::kValueUndefined;
+    auto bpmValue = m_pBeats ? m_pBeats->getGlobalBpm().getValue() : mixxx::Bpm::kValueUndefined;
 
     markDirtyAndUnlock(pLock);
     emit bpmUpdated(bpmValue);
@@ -1500,7 +1500,7 @@ void Track::updateAudioPropertiesFromStream(
                            "audio properties are available now";
         importBeats = importPendingBeatsWhileLocked();
         if (m_pBeats) {
-            bpmValue = m_pBeats->getBpm().getValue();
+            bpmValue = m_pBeats->getGlobalBpm().getValue();
         }
     }
 

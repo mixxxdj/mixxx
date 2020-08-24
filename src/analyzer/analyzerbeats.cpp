@@ -3,7 +3,6 @@
 #include <QHash>
 #include <QString>
 #include <QVector>
-#include <QtDebug>
 
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
@@ -155,7 +154,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     if (!pBeats) {
         return true;
     }
-    if (!mixxx::Bpm::isValidValue(pBeats->getBpm().getValue())) {
+    if (!mixxx::Bpm::isValidValue(pBeats->getGlobalBpm().getValue())) {
         // Tracks with an invalid bpm <= 0 should be re-analyzed,
         // independent of the preference settings. We expect that
         // all tracks have a bpm > 0 when analyzed. Users that want
@@ -241,7 +240,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 m_iMinBpm,
                 m_iMaxBpm);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
-                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm().getValue() : 0.0);
+                 << "beats. Average BPM:" << (pBeats ? pBeats->getGlobalBpm().getValue() : 0.0);
     } else {
         mixxx::Bpm bpm = mixxx::Bpm(m_pPlugin->getBpm());
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
@@ -268,10 +267,10 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
     // If the user prefers to replace old beatgrids with newly generated ones or
     // the old beatgrid has 0-bpm then we replace it.
-    bool zeroCurrentBpm = pCurrentBeats->getBpm().getValue() == 0.0;
+    bool zeroCurrentBpm = pCurrentBeats->getGlobalBpm().getValue() == 0.0;
     if (m_bPreferencesReanalyzeOldBpm || zeroCurrentBpm) {
         if (zeroCurrentBpm) {
-            qDebug() << "Replacing 0-BPM beatgrid with a" << pBeats->getBpm()
+            qDebug() << "Replacing 0-BPM beatgrid with a" << pBeats->getGlobalBpm()
                      << "beatgrid.";
         }
         pTrack->setBeats(pBeats);
