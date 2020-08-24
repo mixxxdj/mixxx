@@ -8,17 +8,15 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "preferences/beatdetectionsettings.h"
-#include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
-#include "util/color/colorpalette.h"
-#include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
+#include "util/frameadapter.h"
 
 const int kFilterLength = 80;
 const int kMinBpm = 30;
@@ -537,9 +535,8 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // to be a good alternative
             CuePosition cue = m_pLoadedTrack->getCuePoint();
             m_pBeatsClone = std::make_shared<mixxx::Beats>(m_pLoadedTrack.get());
-            // setGrid accepts position in frames thus dividing by 2
             m_pBeatsClone->setGrid(mixxx::Bpm(spinBpm->value()),
-                    mixxx::FramePos(cue.getPosition() / 2.0));
+                    samplePosToFramePos(cue.getPosition()));
         } else {
             m_pBeatsClone.reset();
         }
@@ -574,7 +571,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         CuePosition cue = m_pLoadedTrack->getCuePoint();
         m_pBeatsClone = std::make_shared<mixxx::Beats>(m_pLoadedTrack.get());
         m_pBeatsClone->setGrid(mixxx::Bpm(spinBpm->value()),
-                mixxx::FramePos(cue.getPosition() / 2.0));
+                samplePosToFramePos(cue.getPosition()));
     }
 
     double oldValue = m_pBeatsClone->getBpm().getValue();
