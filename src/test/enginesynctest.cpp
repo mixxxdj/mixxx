@@ -1355,7 +1355,7 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
     // If a track isn't loaded (0 bpm), but the deck has sync enabled,
     // don't pay attention to rate changes.
     auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
-    pBeats1->setGrid(mixxx::Bpm(0));
+    pBeats1->setGrid(mixxx::Bpm());
     m_pTrack1->setBeats(pBeats1);
     auto pButtonSyncEnabled1 =
             std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
@@ -2007,7 +2007,7 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
     // doesn't end up something crazy when sync is enabled..
     // Maybe the beatgrid ended up at zero also.
     auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
-    pBeats1->setGrid(mixxx::Bpm(0));
+    pBeats1->setGrid(mixxx::Bpm());
     m_pTrack1->setBeats(pBeats1);
 
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");

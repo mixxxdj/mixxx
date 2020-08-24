@@ -983,7 +983,7 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
 void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated"
-                        << (pBeats ? pBeats->getBpm() : mixxx::Bpm(0.0));
+                        << (pBeats ? pBeats->getBpm() : mixxx::Bpm());
     }
     m_pBeats = pBeats;
     updateLocalBpm();
