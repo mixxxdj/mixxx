@@ -34,7 +34,7 @@ constexpr int kBpmTapFilterLength = 5;
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
 constexpr int kLocalBpmSpan = 4;
-constexpr double kSlightBeatsTranslateFactor = 0.01;
+constexpr double kSmallBeatsTranslateFactor = 0.01;
 }
 
 BpmControl::BpmControl(QString group,
@@ -194,7 +194,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && m_pBeats) {
         const mixxx::FrameDiff_t translateDistFrames = samplesToFrames(
-                getSampleOfTrack().rate * -kSlightBeatsTranslateFactor);
+                getSampleOfTrack().rate * -kSmallBeatsTranslateFactor);
         m_pBeats->translate(translateDistFrames);
     }
 }
@@ -203,7 +203,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && m_pBeats) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const mixxx::FrameDiff_t translateDistFrames = samplesToFrames(
-                getSampleOfTrack().rate * kSlightBeatsTranslateFactor);
+                getSampleOfTrack().rate * kSmallBeatsTranslateFactor);
         m_pBeats->translate(translateDistFrames);
     }
 }
