@@ -188,7 +188,7 @@
       <SetVariable name="PotiMaxAngle">130</SetVariable>
       <!-- Arc Settings -->
       <SetVariable name="ArcRadiusBig">14.5</SetVariable>
-      <SetVariable name="ArcRadiusCompact">13.0</SetVariable>
+      <SetVariable name="ArcRadiusCompact">12.5</SetVariable>
       <SetVariable name="ArcRadiusSmall">12.0</SetVariable>
       <SetVariable name="ArcThicknessBig">2</SetVariable>
       <SetVariable name="ArcRoundCaps">true</SetVariable>

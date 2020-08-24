@@ -21,6 +21,7 @@
         <KnobCenterYOffset>1.883</KnobCenterYOffset>
         <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
         <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+        <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
         <ArcColor><Variable name="ArcColorSuper"/></ArcColor>
         <ArcUnipolar>true</ArcUnipolar>
         <Connection>

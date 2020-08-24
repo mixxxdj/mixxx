@@ -12,7 +12,7 @@
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum"><Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/></SetVariable>
   <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
-  <SetVariable name="ArcRadius"><Variable name="ArcRadiusSmall"/></SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
 
 <!-- Wrapper that allows to set an indirect top/bottom padding within the Fx unit
     so the Fx unit controls layout is independent. -->
