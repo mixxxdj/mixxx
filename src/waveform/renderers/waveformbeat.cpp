@@ -13,7 +13,7 @@ WaveformBeat::WaveformBeat()
         : m_beat(mixxx::kStartFramePos),
           m_orientation(Qt::Horizontal),
           m_iAlpha(255),
-          m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS),
+          m_beatGridMode(kDefaultBeatGridMode),
           m_bVisible(true) {
 }
 
@@ -29,7 +29,7 @@ void WaveformBeat::draw(QPainter* painter) const {
         if (m_orientation == Qt::Horizontal) {
             painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
             if (m_beat.getType() == mixxx::Beat::DOWNBEAT &&
-                    m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
+                    m_beatGridMode == BeatGridMode::BeatsAndDownbeats) {
                 painter->setPen(Qt::white);
                 painter->drawText(m_position + downbeatNumberGapPixels,
                         painter->fontMetrics().height(),
@@ -43,7 +43,7 @@ void WaveformBeat::draw(QPainter* painter) const {
         } else {
             painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
             if (m_beat.getType() == mixxx::Beat::DOWNBEAT &&
-                    m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
+                    m_beatGridMode == BeatGridMode::BeatsAndDownbeats) {
                 painter->setPen(Qt::white);
                 painter->drawText(downbeatNumberGapPixels,
                         m_position - downbeatNumberGapPixels,

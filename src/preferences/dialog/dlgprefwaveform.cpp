@@ -168,8 +168,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
-    // Default Beat grid mode is "beats + downbeats"
-    beatGridModeComboBox->setCurrentIndex(static_cast<int>(BeatGridMode::BEATS_DOWNBEATS));
+    beatGridModeComboBox->setCurrentIndex(static_cast<int>(kDefaultBeatGridMode));
 
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);

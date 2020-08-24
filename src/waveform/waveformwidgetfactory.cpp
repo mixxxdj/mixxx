@@ -111,7 +111,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
-          m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS),
+          m_beatGridMode(kDefaultBeatGridMode),
           m_vsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
