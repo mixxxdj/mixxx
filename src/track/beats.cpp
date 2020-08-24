@@ -285,6 +285,11 @@ Bpm BeatsInternal::getBpm() const {
     if (!isValid()) {
         return Bpm();
     }
+    // If we only have one BPM value, there is no need to rely on the
+    // BPM aggregation algorithm. Just return the stored BPM.
+    if (m_beatsProto.bpm_markers_size() == 1) {
+        return Bpm(m_beatsProto.bpm_markers().cbegin()->bpm());
+    }
     return m_bpm;
 }
 bool BeatsInternal::isValid() const {

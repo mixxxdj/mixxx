@@ -447,6 +447,11 @@ TEST_F(BeatsTest, FindClosest) {
 }
 
 TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
+    // Set the track to have multiple BPM values.
+    m_pBeats1->setBpm(Bpm(60), 0);
+    m_pBeats1->setBpm(Bpm(120), 5);
+    m_pBeats1->setBpm(Bpm(240), 10);
+    m_pBeats1->setBpm(Bpm(75), 15);
     // Let's test global BPM first
     auto oldBpm = m_pBeats1->getBpm();
     auto oldTimeSignature = m_pBeats1->getBeatAtIndex(0).getTimeSignature();
