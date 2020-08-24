@@ -997,7 +997,7 @@ WPushButton#FxSuperLinkInvertButton {
     padding: 2px 2px 0px 2px;
   }
   #MicDuckingStrengthBox {
-    padding-top: 3px;
+    padding: 1px 0px 4px 0px;
   }
 
 #MicAuxMainControls {
