@@ -292,7 +292,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="140"/>
         <source>BPM</source>
-        <translation>ÚZM</translation>
+        <translation>RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="144"/>
@@ -372,7 +372,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="204"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Vzorkovací kmitočet</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="208"/>
@@ -594,7 +594,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="40"/>
         <source>BPM</source>
-        <translation>ÚZM</translation>
+        <translation>RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="41"/>
@@ -665,12 +665,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="39"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>Odstranit barvu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="52"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>Přidat barvu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="60"/>
@@ -681,7 +681,7 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="66"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>Odstranit paletu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="82"/>
@@ -691,12 +691,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>Přiřadit k číslu rychlé značky</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>Upraveno</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
@@ -940,32 +940,32 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="76"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="77"/>
         <source>BPM</source>
-        <translation>ÚZM</translation>
+        <translation>RZM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="78"/>
         <source>Increase BPM by 1</source>
-        <translation>Zvýšit ÚZM o 1</translation>
+        <translation>Zvýšit RZM o 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="79"/>
         <source>Decrease BPM by 1</source>
-        <translation>Snížit ÚZM o 1</translation>
+        <translation>Snížit RZM o 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="80"/>
         <source>Increase BPM by 0.1</source>
-        <translation>Zvýšit ÚZM o 0,1</translation>
+        <translation>Zvýšit RZM o 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>Decrease BPM by 0.1</source>
-        <translation>Snížit ÚZM o 0,1</translation>
+        <translation>Snížit RZM o 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="82"/>
         <source>BPM tap button</source>
-        <translation>Tlačítko pro klepání ÚZM</translation>
+        <translation>Tlačítko pro klepání RZM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="91"/>
@@ -975,22 +975,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="101"/>
         <source>Increase internal master BPM by 1</source>
-        <translation>Zvýšit vnitřní hlavní ÚZM o 1</translation>
+        <translation>Zvýšit vnitřní hlavní RZM o 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="104"/>
         <source>Decrease internal master BPM by 1</source>
-        <translation>Snížit vnitřní hlavní ÚZM o 1</translation>
+        <translation>Snížit vnitřní hlavní RZM o 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="107"/>
         <source>Increase internal master BPM by 0.1</source>
-        <translation>Zvýšit vnitřní hlavní ÚZM o 0,1</translation>
+        <translation>Zvýšit vnitřní hlavní RZM o 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="109"/>
         <source>Decrease internal master BPM by 0.1</source>
-        <translation>Snížit vnitřní hlavní ÚZM o 0,1</translation>
+        <translation>Snížit vnitřní hlavní RZM o 0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="110"/>
@@ -1437,27 +1437,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="78"/>
         <source>BPM +1</source>
-        <translation>ÚZM +1</translation>
+        <translation>RZM +1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="79"/>
         <source>BPM -1</source>
-        <translation>ÚZM -1</translation>
+        <translation>RZM -1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="80"/>
         <source>BPM +0.1</source>
-        <translation>ÚZM +0,1</translation>
+        <translation>RZM +0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>BPM -0.1</source>
-        <translation>ÚZM -0,1</translation>
+        <translation>RZM -0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="82"/>
         <source>BPM Tap</source>
-        <translation>Klepání tempa</translation>
+        <translation>Klepání tempa (rázů za minutu)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="83"/>
@@ -1467,7 +1467,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="83"/>
         <source>Increase track&apos;s average BPM by 0.01</source>
-        <translation>Zvýšit průměrný počet ÚZM skladby o 0,01</translation>
+        <translation>Zvýšit průměrný počet RZM skladby o 0,01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="84"/>
@@ -1477,7 +1477,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="84"/>
         <source>Decrease track&apos;s average BPM by 0.01</source>
-        <translation>Snížit průměrný počet ÚZM skladby o 0,01</translation>
+        <translation>Snížit průměrný počet RZM skladby o 0,01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="85"/>
@@ -1549,27 +1549,27 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="98"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="99"/>
         <source>Internal Master BPM</source>
-        <translation>Vnitřní hlavní ÚZM</translation>
+        <translation>Vnitřní hlavní RZM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="100"/>
         <source>Internal Master BPM +1</source>
-        <translation>Vnitřní hlavní ÚZM +1</translation>
+        <translation>Vnitřní hlavní RZM +1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="103"/>
         <source>Internal Master BPM -1</source>
-        <translation>Vnitřní hlavní ÚZM -1</translation>
+        <translation>Vnitřní hlavní RZM -1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="106"/>
         <source>Internal Master BPM +0.1</source>
-        <translation>Vnitřní hlavní ÚZM +0,1</translation>
+        <translation>Vnitřní hlavní RZM +0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="108"/>
         <source>Internal Master BPM -0.1</source>
-        <translation>Vnitřní hlavní ÚZM -0,1</translation>
+        <translation>Vnitřní hlavní RZM -0,1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="110"/>
@@ -2757,12 +2757,12 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1061"/>
         <source>File:</source>
-        <translation type="unfinished"/>
+        <translation>Soubor:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1062"/>
         <source>Error:</source>
-        <translation type="unfinished"/>
+        <translation>Chyba:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="579"/>
@@ -3175,14 +3175,18 @@
         <source>Enable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Povolit automatického diskžokeje
+
+Klávesová zkratka: Shift+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="99"/>
         <source>Disable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Zakázat automatického diskžokeje
+
+Klávesová zkratka: Shift+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="103"/>
@@ -3208,12 +3212,12 @@ Shortcut: Shift+F9</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="118"/>
         <source>Repeat the playlist</source>
-        <translation type="unfinished"/>
+        <translation>Opakovat seznam skladeb</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="120"/>
         <source>Determines the duration of the transition</source>
-        <translation type="unfinished"/>
+        <translation>Určuje dobu trvání plynulého přechodu</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="122"/>
@@ -3332,7 +3336,7 @@ automaticky ukáže rytmickou mřížku a dovolí vám seřízení skladeb pomoc
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="24"/>
         <source>Enable BPM and Beat Detection</source>
-        <translation>Povolit ÚZM a rozpoznávání rytmu</translation>
+        <translation>Povolit rázy za minutu (RZM) a rozpoznávání rytmu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="198"/>
@@ -3414,7 +3418,7 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="44"/>
         <source>BPM Range</source>
-        <translation>Rozsah ÚZM</translation>
+        <translation>Rozsah RZM</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="50"/>
@@ -4155,7 +4159,7 @@ Dvě zdrojová připojení ke stejnému serveru nemohou mít týž přípojný b
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="261"/>
         <source>By hotcue number</source>
-        <translation type="unfinished"/>
+        <translation>Podle čísla rychlé značky</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="269"/>
@@ -4173,33 +4177,33 @@ Dvě zdrojová připojení ke stejnému serveru nemohou mít týž přípojný b
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="26"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="32"/>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="42"/>
         <source>Edit…</source>
-        <translation type="unfinished"/>
+        <translation>Upravit...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="49"/>
         <source>Track palette</source>
-        <translation type="unfinished"/>
+        <translation>Paleta skladeb</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="66"/>
         <source>Hotcue palette</source>
-        <translation type="unfinished"/>
+        <translation>Paleta s rychlými značkami</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="73"/>
         <source>Hotcue default color</source>
-        <translation type="unfinished"/>
+        <translation>Barva rychlé značky</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="90"/>
         <source>Replace…</source>
-        <translation type="unfinished"/>
+        <translation>Nahradit</translation>
     </message>
 </context>
 <context>
@@ -4244,17 +4248,17 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="255"/>
         <source>No Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Žádné skripty</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="267"/>
         <source>missing</source>
-        <translation type="unfinished"/>
+        <translation>chybí</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="271"/>
         <source>built-in</source>
-        <translation type="unfinished"/>
+        <translation>vestavěno</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="456"/>
@@ -4269,7 +4273,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>edited</source>
-        <translation type="unfinished"/>
+        <translation>upraveno</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="551"/>
@@ -4337,7 +4341,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
         <source>Script Files:</source>
-        <translation type="unfinished"/>
+        <translation>Soubory skriptů:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>
@@ -4687,7 +4691,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="162"/>
         <source>Intro start</source>
-        <translation type="unfinished"/>
+        <translation>Začátek otevírající skladby</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="163"/>
@@ -4697,7 +4701,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="164"/>
         <source>First sound (skip silence)</source>
-        <translation type="unfinished"/>
+        <translation>První zvuk (přeskočit ticho)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="165"/>
@@ -4841,7 +4845,7 @@ Režim BZP:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="69"/>
         <source>Intro start</source>
-        <translation type="unfinished"/>
+        <translation>Začátek otevírající skladby</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="55"/>
@@ -6765,7 +6769,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="242"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="254"/>
@@ -6866,7 +6870,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="20"/>
         <source>Replace Hotcue Color</source>
-        <translation type="unfinished"/>
+        <translation>Nahradit barvu rychlé značky</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="26"/>
@@ -6876,7 +6880,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="45"/>
         <source>Hotcue index</source>
-        <translation type="unfinished"/>
+        <translation>Rejstřík rychlých značek</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="56"/>
@@ -7113,7 +7117,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="440"/>
         <source>BPM:</source>
-        <translation>ÚZM:</translation>
+        <translation>RZM:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="549"/>
@@ -7133,27 +7137,27 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="628"/>
         <source>BPM</source>
-        <translation>ÚZM</translation>
+        <translation>RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="730"/>
         <source>Sets the BPM to 75% of the current value.</source>
-        <translation>Nastaví ÚZM na 75 % nynější hodnoty.</translation>
+        <translation>Nastaví rázy za minutu (RZM) na 75 % nynější hodnoty.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="733"/>
         <source>3/4 BPM</source>
-        <translation>3/4</translation>
+        <translation>3/4 RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="698"/>
         <source>Sets the BPM to 50% of the current value.</source>
-        <translation>Nastaví ÚZM na 50 % nynější hodnoty.</translation>
+        <translation>Nastaví rázy za minutu (RZM) na 50 % nynější hodnoty.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="645"/>
         <source>Displays the BPM of the selected track.</source>
-        <translation>Zobrazí ÚZM vybrané skladby.</translation>
+        <translation>Zobrazí rázy za minutu (RZM) vybrané skladby.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="85"/>
@@ -7213,22 +7217,22 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="682"/>
         <source>Sets the BPM to 200% of the current value.</source>
-        <translation>Nastaví ÚZM na 200 % nynější hodnoty.</translation>
+        <translation>Nastaví rázy za minutu (RZM) na 200 % nynější hodnoty.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="685"/>
         <source>Double BPM</source>
-        <translation>Zdvojit</translation>
+        <translation>Zdvojit RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="701"/>
         <source>Halve BPM</source>
-        <translation>Snížit na polovinu</translation>
+        <translation>Snížit RZM na polovinu</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="805"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation>Smazat ÚZM a rytmickou mřížku</translation>
+        <translation>Smazat RZM a rytmickou mřížku</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="850"/>
@@ -7280,7 +7284,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="638"/>
         <source>Track BPM: </source>
-        <translation>ÚZM skladby: </translation>
+        <translation>RZM skladby: </translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="661"/>
@@ -7299,37 +7303,37 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="714"/>
         <source>Sets the BPM to 66% of the current value.</source>
-        <translation>Nastaví ÚZM na 66 % nynější hodnoty.</translation>
+        <translation>Nastaví rázy za minutu (RZM) na 66 % nynější hodnoty.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="717"/>
         <source>2/3 BPM</source>
-        <translation>2/3</translation>
+        <translation>2/3 RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="746"/>
         <source>Sets the BPM to 150% of the current value.</source>
-        <translation>Nastaví ÚZM na 150 % nynější hodnoty.</translation>
+        <translation>Nastaví rázy za minutu (RZM) na 150 % nynější hodnoty.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="749"/>
         <source>3/2 BPM</source>
-        <translation>3/2 ÚZM</translation>
+        <translation>3/2 RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="762"/>
         <source>Sets the BPM to 133% of the current value.</source>
-        <translation>Nastaví ÚZM na 133 % nynější hodnoty.</translation>
+        <translation>Nastaví rázy za minutu (RZM) na 133 % nynější hodnoty.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="765"/>
         <source>4/3 BPM</source>
-        <translation>4/3 ÚZM</translation>
+        <translation>4/3 RZM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="784"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
-        <translation>Klepejte (ťukejte) do taktu pro nastavení počtu úderů za minutu na rychlost, kterou ťukáte.</translation>
+        <translation>Klepejte (ťukejte) do taktu (rytmus) pro nastavení rázů (úderů) za minutu (RZM - „M.M.“: Mälzelův metronom) na rychlost, kterou ťukáte.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="787"/>
@@ -7339,7 +7343,7 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="812"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
-        <translation>Rada: Rozbor knihovny použijte ke zjištění počtu úderů za minutu.</translation>
+        <translation>Rada: Rozbor knihovny použijte ke zjištění počtu úderů za minutu - rázů za minutu (RZM - „M.M.“: Mälzelův metronom).</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="933"/>
@@ -8769,7 +8773,7 @@ Se šířkou na nule může být celá oblast zpoždění pokryta ručně.</tran
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="30"/>
         <source>BPM</source>
-        <translation>ÚZM</translation>
+        <translation>RZM</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="31"/>
@@ -8784,7 +8788,7 @@ Se šířkou na nule může být celá oblast zpoždění pokryta ručně.</tran
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="44"/>
         <source>Synchronizes the BPM with the track if it can be retrieved</source>
-        <translation>Seřídí údery za minutu se stopou, pokud lze údaj získat</translation>
+        <translation>Seřídí údery za minutu/rázy za minutu (RZM - „M.M.“: Mälzelův metronom) se stopou, pokud lze údaj získat</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/autopaneffect.cpp" line="31"/>
@@ -10712,7 +10716,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="354"/>
         <source>Displays the tempo of the loaded track in BPM (beats per minute).</source>
-        <translation>Ukáže tempo nahrané skladby v počtu úderů za minutu.</translation>
+        <translation>Ukáže tempo nahrané skladby v počtu úderů za minutu - rázů za minutu (RZM - „M.M.“: Mälzelův metronom).</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="356"/>
@@ -10733,27 +10737,27 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/tooltips.cpp" line="366"/>
         <location filename="../../src/skin/tooltips.cpp" line="397"/>
         <source>When tapped repeatedly, adjusts the BPM to match the tapped BPM.</source>
-        <translation>Když je poklepáno opakovaně, upraví počet úderů za minutu, aby odpovídal vyklepanému (zaťukanému) počtu úderů za minutu.</translation>
+        <translation>Když je poklepáno opakovaně, upraví počet úderů za minutu - rázů za minutu (RZM - „M.M.“: Mälzelův metronom), aby odpovídal vyklepanému (zaťukanému) počtu úderů za minutu.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="369"/>
         <source>Adjust BPM Down</source>
-        <translation>Snížit počet ÚZM</translation>
+        <translation>Snížit počet RZM</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="370"/>
         <source>When tapped, adjusts the average BPM down by a small amount.</source>
-        <translation>Když je poklepáno, zmenší lehce průměrný počet úderů za minutu.</translation>
+        <translation>Když je poklepáno, zmenší lehce průměrný počet úderů za minutu - rázů za minutu (RZM - „M.M.“: Mälzelův metronom).</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="373"/>
         <source>Adjust BPM Up</source>
-        <translation>Zvýšit počet ÚZM</translation>
+        <translation>Zvýšit počet RZM</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="374"/>
         <source>When tapped, adjusts the average BPM up by a small amount.</source>
-        <translation>Když je poklepáno, zvýší lehce průměrný počet úderů za minutu.</translation>
+        <translation>Když je poklepáno, zvýší lehce průměrný počet úderů za minutu - rázů za minutu (RZM - „M.M.“: Mälzelův metronom).</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="377"/>
@@ -10778,7 +10782,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="395"/>
         <source>Tempo and BPM Tap</source>
-        <translation>Klepání tempa a ÚZM</translation>
+        <translation>Klepání tempa a RZM</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="401"/>
@@ -10868,7 +10872,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="620"/>
         <source>Hot Cue - Track will seek to nearest previous hotcue point.</source>
-        <translation type="unfinished"/>
+        <translation>Rychlá značka - Skladba bude hledat k nejbližšímu bodu předchozí rychlé značky</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="625"/>
@@ -11533,12 +11537,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="500"/>
         <source>Syncs the tempo (BPM) and phase to that of the other track, if BPM is detected on both.</source>
-        <translation>Seřídí tempo (ÚZM) a fázi s jiným přehrávačem, pokud je hodnota ÚZM rozpoznána u obou.</translation>
+        <translation>Seřídí tempo (RZM - údery/rázy za minutu - „M.M.“: Mälzelův metronom) a fázi s jiným přehrávačem, pokud je hodnota RZM rozpoznána u obou.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="502"/>
         <source>Syncs the tempo (BPM) to that of the other track, if BPM is detected on both.</source>
-        <translation>Seřídí tempo (ÚZM) s tempem skladby jiného přehrávače, pokud je hodnota ÚZM rozpoznána u obou.</translation>
+        <translation>Seřídí tempo (RZM - údery/rázy za minutu - „M.M.“: Mälzelův metronom) s tempem skladby jiného přehrávače, pokud je hodnota RZM rozpoznána u obou.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="518"/>
@@ -11623,7 +11627,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="42"/>
         <source>Right click hotcues to edit their labels and colors.</source>
-        <translation type="unfinished"/>
+        <translation>Klepněte pravým tlačítkem myši na rychlé značky pro upravení jejich štítků a barev.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="43"/>
@@ -11768,7 +11772,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="409"/>
         <source>Changes the number of hotcue buttons displayed in the deck</source>
-        <translation type="unfinished"/>
+        <translation>Změní počet tlačítek rychlých značek v přehrávači</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="432"/>
@@ -11829,12 +11833,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="504"/>
         <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
-        <translation>Seřídí s prvním přehrávačem (v číselném pořadí), který přehrává nějakou skladbu a má ÚZM.</translation>
+        <translation>Seřídí s prvním přehrávačem (v číselném pořadí), který přehrává nějakou skladbu a má RZM.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="505"/>
         <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
-        <translation>Pokud nepřehrává žádný přehrávač, seřídí s prvním přehrávačem, který má ÚZM.</translation>
+        <translation>Pokud nepřehrává žádný přehrávač, seřídí s prvním přehrávačem, který má RZM.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="506"/>
@@ -11911,7 +11915,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="572"/>
         <source>Opens a menu to clear hotcues or edit their labels and colors.</source>
-        <translation type="unfinished"/>
+        <translation>Otevře nabídku pro vyprázdnění rychlých značek nebo upravení jejich štítků a barev.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="576"/>
@@ -12578,7 +12582,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="74"/>
         <source>Hotcue #%1</source>
-        <translation type="unfinished"/>
+        <translation>Rychlá značka #%1</translation>
     </message>
 </context>
 <context>
@@ -13137,7 +13141,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="192"/>
         <source>Use operators like bpm:115-128, artist:BooFar, -year:1990</source>
-        <translation>Použít operátory jako je ÚZM:115-128, artist:BooFar, -year:1990</translation>
+        <translation>Použít operátory jako je RZM:115-128, artist:BooFar, -year:1990</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="193"/>
@@ -13224,7 +13228,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="122"/>
         <source>Adjust BPM</source>
-        <translation type="unfinished"/>
+        <translation>Upravit RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="127"/>
@@ -13315,7 +13319,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="217"/>
         <source>BPM and Beatgrid</source>
-        <translation>ÚZM a rytmická mřížka</translation>
+        <translation>RZM a rytmická mřížka</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="220"/>
@@ -13370,42 +13374,42 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="252"/>
         <source>Lock BPM</source>
-        <translation>Zamknout</translation>
+        <translation>Zamknout RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="253"/>
         <source>Unlock BPM</source>
-        <translation>Odemknout ÚZM</translation>
+        <translation>Odemknout RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="258"/>
         <source>Double BPM</source>
-        <translation>Zdvojit</translation>
+        <translation>Zdvojit RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="259"/>
         <source>Halve BPM</source>
-        <translation>Snížit na polovinu</translation>
+        <translation>Snížit RZM na polovinu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="260"/>
         <source>2/3 BPM</source>
-        <translation>2/3</translation>
+        <translation>2/3 RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="261"/>
         <source>3/4 BPM</source>
-        <translation>3/4</translation>
+        <translation>3/4 RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="262"/>
         <source>4/3 BPM</source>
-        <translation>4/3 ÚZM</translation>
+        <translation>4/3 RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="263"/>
         <source>3/2 BPM</source>
-        <translation>3/2 ÚZM</translation>
+        <translation>3/2 RZM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="284"/>

@@ -24,13 +24,14 @@ namespace taglib {
 namespace {
 
 // Preferred picture types for cover art sorted by priority
-const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes = {
+const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes{{
         TagLib::FLAC::Picture::FrontCover,   // Front cover image of the album
         TagLib::FLAC::Picture::Media,        // Image from the album itself
         TagLib::FLAC::Picture::Illustration, // Illustration related to the track
         TagLib::FLAC::Picture::Other,
-};
+}};
 
+const TagLib::String kCommentFieldKeySeratoBeatGrid = "SERATO_BEATGRID";
 const TagLib::String kCommentFieldKeySeratoMarkers2FLAC = "SERATO_MARKERS_V2";
 const TagLib::String kCommentFieldKeySeratoMarkers2Ogg = "SERATO_MARKERS2";
 
@@ -471,6 +472,16 @@ void importTrackMetadataFromTag(
     // FIXME: We're only parsing FLAC tags for now, since the Ogg format is
     // different we don't support it yet.
     if (fileType == FileType::FLAC) {
+        TagLib::String seratoBeatGridData;
+        if (readCommentField(tag,
+                    kCommentFieldKeySeratoBeatGrid,
+                    &seratoBeatGridData)) {
+            parseSeratoBeatGrid(
+                    pTrackMetadata,
+                    seratoBeatGridData,
+                    fileType);
+        }
+
         TagLib::String seratoMarkers2Data;
         if (readCommentField(tag,
                     kCommentFieldKeySeratoMarkers2FLAC,
@@ -598,6 +609,11 @@ bool exportTrackMetadataIntoTag(
     // FIXME: We're only dumping FLAC tags for now, since the Ogg format is
     // different we don't support it yet.
     if (fileType == FileType::FLAC) {
+        writeCommentField(
+                pTag,
+                kCommentFieldKeySeratoBeatGrid,
+                dumpSeratoBeatGrid(trackMetadata, fileType));
+
         writeCommentField(
                 pTag,
                 kCommentFieldKeySeratoMarkers2FLAC,

@@ -633,6 +633,12 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
 
 ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& group, const QString& name) {
     ConfigKey key = ConfigKey(group, name);
+
+    if (!key.isValid()) {
+        qWarning() << "ControllerEngine: Requested control with invalid key" << key;
+        return nullptr;
+    }
+
     ControlObjectScript* coScript = m_controlCache.value(key, nullptr);
     if (coScript == nullptr) {
         // create COT
@@ -676,13 +682,13 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript != nullptr) {
-        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        ControlObject* pControl = ControlObject::getControl(
+                coScript->getKey(), ControlFlag::NoAssertIfMissing);
         if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
             coScript->slotSet(newValue);
         }
     }
 }
-
 
 /* -------- ------------------------------------------------------
    Purpose: Returns the normalized value of a Mixxx control (for scripts)
@@ -713,7 +719,8 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript != nullptr) {
-        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        ControlObject* pControl = ControlObject::getControl(
+                coScript->getKey(), ControlFlag::NoAssertIfMissing);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
           coScript->setParameter(newParameter);
         }
@@ -1440,7 +1447,8 @@ bool ControllerEngine::isScratching(int deck) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
-    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    ControlObject* pControl = ControlObject::getControl(
+            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
     if (!pControl) {
         return;
     }
@@ -1460,8 +1468,10 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
      Input:   ControlObject group and key values
      Output:  -
      -------- ------------------------------------------------------ */
-void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString name) {
-    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+void ControllerEngine::softTakeoverIgnoreNextValue(
+        QString group, const QString name) {
+    ControlObject* pControl = ControlObject::getControl(
+            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
     if (!pControl) {
         return;
     }

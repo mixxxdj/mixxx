@@ -46,12 +46,12 @@ bool checkHeaderVersionSupported(
 }
 
 // Preferred picture types for cover art sorted by priority
-const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredPictureTypes = {
+const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredPictureTypes{{
         TagLib::ID3v2::AttachedPictureFrame::FrontCover,   // Front cover image of the album
         TagLib::ID3v2::AttachedPictureFrame::Media,        // Image from the album itself
         TagLib::ID3v2::AttachedPictureFrame::Illustration, // Illustration related to the track
         TagLib::ID3v2::AttachedPictureFrame::Other,
-};
+}};
 
 // http://id3.org/id3v2.3.0
 // "TYER: The 'Year' frame is a numeric string with a year of the
@@ -73,6 +73,7 @@ const QString kFormatTDAT = QStringLiteral("ddMM");
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 // Serato frames
+const QString kFrameDescriptionSeratoBeatGrid = QStringLiteral("Serato BeatGrid");
 const QString kFrameDescriptionSeratoMarkers = QStringLiteral("Serato Markers_");
 const QString kFrameDescriptionSeratoMarkers2 = QStringLiteral("Serato Markers2");
 
@@ -989,6 +990,13 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     // Serato tags
+    const QByteArray seratoBeatGrid =
+            readFirstGeneralEncapsulatedObjectFrame(
+                    tag,
+                    kFrameDescriptionSeratoBeatGrid);
+    if (!seratoBeatGrid.isEmpty()) {
+        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MP3);
+    }
     const QByteArray seratoMarkers =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
@@ -1276,6 +1284,10 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     // does not modify them.
 #if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
+    writeGeneralEncapsulatedObjectFrame(
+            pTag,
+            kFrameDescriptionSeratoBeatGrid,
+            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
     writeGeneralEncapsulatedObjectFrame(
             pTag,
             kFrameDescriptionSeratoMarkers,

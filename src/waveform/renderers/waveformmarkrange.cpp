@@ -14,6 +14,8 @@ WaveformMarkRange::WaveformMarkRange(
         const WaveformSignalColors& signalColors)
         : m_activeColor(context.selectString(node, "Color")),
           m_disabledColor(context.selectString(node, "DisabledColor")),
+          m_enabledOpacity(context.selectDouble(node, "Opacity", 0.5)),
+          m_disabledOpacity(context.selectDouble(node, "DisabledOpacity", 0.5)),
           m_durationTextColor(context.selectString(node, "DurationTextColor")) {
     if (!m_activeColor.isValid()) {
         //vRince kind of legacy fallback ...

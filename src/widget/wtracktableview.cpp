@@ -341,13 +341,13 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
                     doubleClickActionConfigValue);
 
     auto trackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return;
+    }
+
     if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
             trackModel->hasCapabilities(
                     TrackModel::TRACKMODELCAPS_LOADTODECK)) {
-        VERIFY_OR_DEBUG_ASSERT(trackModel) {
-            return;
-        }
-
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             emit loadTrack(pTrack);
@@ -430,6 +430,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         initTrackMenu();
     }
+    event->accept();
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
     m_pTrackMenu->loadTrackModelIndices(indices);
@@ -837,6 +838,18 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     // TODO(XXX): Care whether the append succeeded.
     m_pTrackCollectionManager->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
+}
+
+void WTrackTableView::slotAddToAutoDJBottom() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
+}
+
+void WTrackTableView::slotAddToAutoDJTop() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
+}
+
+void WTrackTableView::slotAddToAutoDJReplace() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {

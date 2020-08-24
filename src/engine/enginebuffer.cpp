@@ -923,7 +923,6 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
-    bool at_start = m_filepos_play <= 0;
     bool at_end = m_filepos_play >= m_trackSamplesOld;
     bool backwards = rate < 0;
 
@@ -967,8 +966,10 @@ void EngineBuffer::processTrackLocked(
         // callback and the m_filepos_play is advanced behind the end of the track.
 
         if (m_bCrossfadeReady) {
-           SampleUtil::linearCrossfadeBuffers(
-                    pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
+            // Bring pOutput with the new parameters in and fade out the old one,
+            // stored with the old parameters in m_pCrossfadeBuffer
+            SampleUtil::linearCrossfadeBuffersIn(
+                    pOutput, m_pCrossfadeBuffer, iBufferSize);
         }
         // Note: we do not fade here if we pass the end or the start of
         // the track in reverse direction
@@ -995,7 +996,7 @@ void EngineBuffer::processTrackLocked(
     m_scratching_old = is_scratching;
 
     // Handle repeat mode
-    at_start = m_filepos_play <= 0;
+    bool at_start = m_filepos_play <= 0;
     at_end = m_filepos_play >= m_trackSamplesOld;
 
     bool repeat_enabled = m_pRepeat->toBool();
@@ -1247,13 +1248,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
-
-    double ratio = m_tempo_ratio_old;
-    if (ratio == 0.0) {
-        // In case the track is slowed done to zero we will have INF remaining seconds.
-        // We jump back to a rate of 1.0 to show a useful time.
-        ratio = 1.0;
-    }
 
     const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame
             / m_trackSampleRateOld / m_tempo_ratio_old;

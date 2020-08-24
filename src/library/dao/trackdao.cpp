@@ -585,6 +585,10 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             trackId = TrackId(m_pQueryLibrarySelect->value(m_queryLibraryIdColumn));
             DEBUG_ASSERT(trackId.isValid());
         }
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+            return TrackId();
+        }
+        pTrack->initId(trackId);
         // Track already included in library, but maybe marked as deleted
         bool mixxx_deleted = m_pQueryLibrarySelect->value(m_queryLibraryMixxxDeletedColumn).toBool();
         if (unremove && mixxx_deleted) {
@@ -630,6 +634,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
             return TrackId();
         }
+        pTrack->initId(trackId);
         pTrack->setDateAdded(trackDateAdded);
 
         m_analysisDao.saveTrackAnalyses(
@@ -697,8 +702,12 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
         // GlobalTrackCache will be unlocked implicitly
         return TrackPointer();
     }
-    cacheResolver.initTrackIdAndUnlockCache(newTrackId);
+    // The track object has already been initialized with the
+    // database id, but the cache is not aware of this yet.
+    // Re-initializing the track object with the same id again
+    // from within the cache scope is allowed.
     DEBUG_ASSERT(pTrack->getId() == newTrackId);
+    cacheResolver.initTrackIdAndUnlockCache(newTrackId);
     // Only newly inserted tracks must be marked as clean!
     // Existing or unremoved tracks have not been added to
     // m_tracksAddedSet and will keep their dirty flag unchanged.
