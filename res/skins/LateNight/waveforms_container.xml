@@ -1,6 +1,4 @@
 <Template>
-  <SetVariable name="BtnType">embedded</SetVariable>
-  <SetVariable name="BtnSize">library</SetVariable>
 
   <WidgetGroup>
     <Layout>horizontal</Layout>

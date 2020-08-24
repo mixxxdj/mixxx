@@ -168,10 +168,16 @@
       <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
       <SetVariable name="OverviewFontSizePreview">9</SetVariable>
 
-      <!-- Set the button type
-        * elevated: buttons stand out, have a 3D border and a drop shadow
-        * embedded: buttons are domed and seem leveled with surface, and they have surrounding groove
-        In PaleMoon there's only the _embedded_ style set -->
+      <!-- Set the button icons used by templates in LateNight/controls/button...xml
+           There, those border icons are stacked on top of the additional icons set in css.
+           Other buttons that use text (like vinyl controls and Fx assign button) are styled
+           in css via
+              border-width: 2px;
+              border-image: url(skin:/path/to/btn_icon.svg) 2 2 2 2;
+        Example themes: (in PaleMoon only the embedded style is used)
+        * elevated: domed buttons that stand out, with a 3D border and a drop shadow
+        * embedded: slightly domed buttons that seem leveled with surface and a surrounding groove
+       -->
       <!-- Buttons in top-level containers like mixer, rate controls, collapsed FxUnits etc. -->
       <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
       <!-- Buttons in subregions like transport row, mic/aux units etc. -->
