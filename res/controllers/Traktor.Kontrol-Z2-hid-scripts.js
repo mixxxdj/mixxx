@@ -537,8 +537,8 @@ TraktorZ2.debugLights = function() {
 		"70 " + // 0x5A 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper right vertical bar brightness (orange)
 		"70 " + // 0x5B 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper horizontal bar brightness (orange)
 		"70 " + // 0x5C 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper left vertical bar brightness (orange)
-		"70 " /*+ //0x5D 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower left vertical bar brightness (orange)
-		"70 "*/, // 0x5E 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower horizontal bar brightness (orange) ---------------- COMMUNICATION CRASHS, IF BYTE 95 IS SEND ---------------
+		"70 " + //0x5D 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower left vertical bar brightness (orange)
+		"70",   // 0x5E 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower horizontal bar brightness (orange)
  /* 0x81*/ "FF FF FF  FF FF FF FF  FF FF FF FF  FF FF FF FF " +
         "FF FF FF FF  FF FF FF FF  FF FF FF FF  FF FF FF FF " +
         "FF FF FF FF  FF FF FF FF  FF FF"
