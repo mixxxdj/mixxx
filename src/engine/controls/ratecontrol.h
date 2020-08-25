@@ -53,6 +53,8 @@ public:
           bool* pReportScratching,
           bool* pReportReverse);
 
+  bool isReverseButtonPressed();
+
   // Set rate change when temp rate button is pressed
   static void setTemporaryRateChangeCoarseAmount(double v);
   static double getTemporaryRateChangeCoarseAmount();
@@ -65,14 +67,14 @@ public:
   // Set rate change when perm rate small button is pressed
   static void setPermanentRateChangeFineAmount(double v);
   static double getPermanentRateChangeFineAmount();
-  // Set Rate Ramp Mode
-  static void setRateRampMode(RampMode mode);
+
+  static void setRateRampMode(RampMode);
   static RampMode getRateRampMode();
-  // Set Rate Ramp Sensitivity
+
   static void setRateRampSensitivity(int);
   static int getRateRampSensitivity();
+
   void notifySeek(double dNewPlaypos) override;
-  bool isReverseButtonPressed();
 
 public slots:
   void slotRateRangeChanged(double);

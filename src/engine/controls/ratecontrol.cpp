@@ -235,6 +235,11 @@ void RateControl::setRateRampSensitivity(int sense) {
     }
 }
 
+// static
+int RateControl::getRateRampSensitivity() {
+    return m_iRateRampSensitivity;
+}
+
 //static
 void RateControl::setTemporaryRateChangeCoarseAmount(double v) {
     m_dTemporaryRateChangeCoarse.setValue(v);
