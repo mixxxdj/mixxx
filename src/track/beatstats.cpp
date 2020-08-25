@@ -7,6 +7,23 @@
 #include "track/beatstats.h"
 #include "util/fpclassify.h"
 
+
+void MovingAvarage::update(double newValue, double oldValue) {
+    if (!util_isnan(oldValue)) {
+        m_sum -= oldValue;
+    }
+    m_sum += newValue;
+}
+
+void MovingAvarage::reset() {
+    m_sum = 0;
+    clear();
+}
+
+double MovingAvarage::compute() {
+    return m_sum / static_cast<double>(windowSize());
+}
+
 void MovingMode::update(double newValue, double oldValue) {
     m_tempoFrequency[newValue] += 1;
     if (!util_isnan(oldValue)) {
@@ -16,17 +33,7 @@ void MovingMode::update(double newValue, double oldValue) {
 // this is an incomplete implementation that do NOT
 // handle cases where the mode is not unique.
 double MovingMode::compute() {
-    QMapIterator<double,  int> tempo(m_tempoFrequency);
-    int max = 0;
-    double mode;
-    while (tempo.hasNext()) {
-        tempo.next();
-        if (max < tempo.value()) {
-            mode = tempo.key();
-            max = tempo.value();
-        }
-    }
-    return mode;
+    return BeatStatistics::mode(m_tempoFrequency);
 }
 
 void MovingMedian::update(double newValue, double oldValue) {
@@ -57,4 +64,21 @@ double BeatStatistics::median(QList<double> sortedItems) {
     // the sorted list.
     int item_position = (sortedItems.size() + 1) / 2;
     return sortedItems.at(item_position - 1);
+}
+
+// this is an incomplete implementation that do NOT
+// handle cases where the mode is not unique.
+// but is good enough for our proporses
+double BeatStatistics::mode(QMap<double, int> tempoFrequency) {
+    QMapIterator<double,  int> tempos(tempoFrequency);
+    int max = 0;
+    double mode = 0;
+    while (tempos.hasNext()) {
+        tempos.next();
+        if (max < tempos.value()) {
+            mode = tempos.key();
+            max = tempos.value();
+        }
+    }
+    return mode;
 }

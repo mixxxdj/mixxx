@@ -83,13 +83,15 @@ class BeatUtils {
         QMap<double, int>* filteredFrequencyTable);
     static QMap<int, double> findTempoChanges(
             QMap<double, int> tempoFrequency, QList<double> tempoList);
-    static void RemoveSmallArrhythmic(QVector<double>& rawBeats, int sampleRate,
+    static void RemoveSmallArrhythmic(QVector<double>& rawBeats, const int sampleRate,
             QMap<int, double> &stableTemposByPosition);
-    static QVector<double> calculateFixedTempoBeatMap(
-        const QVector<double> &rawbeats, const int sampleRate, const double globalBpm);
+    static QVector<double> calculateIronedBeatMap(
+            const QVector<double> &rawbeats, const int sampleRate);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
-        const QVector<double> beats, const int windowSize, const int windowStep,
-        const int sampleRate, QMap<double, int>* frequencyHistogram);
+            const QVector<double> beats, const int windowSize, const int windowStep,
+            const int sampleRate, QMap<double, int>* frequencyHistogram);
+    static QVector<double> calculateFixedTempoGrid(
+            const QVector<double> &rawbeats, const int sampleRate, const double localBpm);
 
 };
 
