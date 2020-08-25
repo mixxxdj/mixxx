@@ -41,7 +41,7 @@ EngineDeck::EngineDeck(
             Qt::DirectConnection);
 
     m_pPregain = new EnginePregain(getGroup());
-    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine, pMacroRecorder);
+    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
 }
 
 EngineDeck::~EngineDeck() {

@@ -1,14 +1,23 @@
 #include "macrocontrol.h"
 
-// TODO(xerus) move recording here and delete macromanager
+namespace {
+constexpr uint kRecordingTimerInterval = 100;
+constexpr size_t kRecordingQueueSize = kRecordingTimerInterval / 10;
+} // namespace
 
+ConfigKey MacroControl::getConfigKey(QString name) {
+    return ConfigKey(m_group, m_controlPattern.arg(name));
+}
 MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int number)
         : EngineControl(group, pConfig),
-          m_iNextAction(0),
           m_number(number),
           m_controlPattern(QString("macro_%1_%2").arg(number)),
+          m_bJumpPending(false),
+          m_recordedActions(kRecordingQueueSize),
+          m_iNextAction(0),
           m_COStatus(getConfigKey("status")),
           m_COActive(getConfigKey("active")),
+          m_record(getConfigKey("record")),
           m_toggle(getConfigKey("toggle")),
           m_clear(getConfigKey("clear")),
           m_activate(getConfigKey("activate")) {
@@ -16,6 +25,12 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int numbe
     m_COStatus.setReadOnly();
     m_COStatus.forceSet(Status::NoTrack);
 
+    m_record.setButtonMode(ControlPushButton::TRIGGER);
+    connect(&m_record,
+            &ControlObject::valueChanged,
+            this,
+            &MacroControl::controlRecord,
+            Qt::DirectConnection);
     m_toggle.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_toggle,
             &ControlObject::valueChanged,
@@ -35,29 +50,9 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int numbe
             Qt::DirectConnection);
 }
 
-ConfigKey MacroControl::getConfigKey(QString name) {
-    return ConfigKey(m_group, m_controlPattern.arg(name));
-}
-
-void MacroControl::trackLoaded(TrackPointer pNewTrack) {
-    m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_number) : nullptr;
-    if (m_pMacro) {
-        if (m_pMacro->isEmpty()) {
-            m_COStatus.forceSet(Status::Empty);
-        } else {
-            if (m_pMacro->isEnabled()) {
-                play();
-            } else {
-                stop();
-            }
-        }
-    } else {
-        m_COStatus.forceSet(Status::NoTrack);
-    }
-}
-
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
     Q_UNUSED(dRate);
+    m_bJumpPending = false;
     if (!isPlaying()) {
         return;
     }
@@ -79,6 +74,46 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
             }
         }
     }
+}
+
+void MacroControl::trackLoaded(TrackPointer pNewTrack) {
+    if (isRecording()) {
+        stopRecording();
+    }
+    m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_number) : nullptr;
+    if (m_pMacro) {
+        if (m_pMacro->isEmpty()) {
+            m_COStatus.forceSet(Status::Empty);
+        } else {
+            if (m_pMacro->isEnabled()) {
+                play();
+            } else {
+                stop();
+            }
+        }
+    } else {
+        m_COStatus.forceSet(Status::NoTrack);
+    }
+}
+
+void MacroControl::notifySeek(double dNewPlaypos) {
+    if (!m_bJumpPending) {
+        return;
+    }
+    m_bJumpPending = false;
+    if (getStatus() == Status::Armed) {
+        m_COStatus.forceSet(Status::Recording);
+    }
+    if (getStatus() != Status::Recording) {
+        return;
+    }
+    double sourceFramePos = getSampleOfTrack().current / mixxx::kEngineChannelCount;
+    double destFramePos = dNewPlaypos / mixxx::kEngineChannelCount;
+    m_recordedActions.try_emplace(sourceFramePos, destFramePos);
+}
+
+void MacroControl::slotJumpQueued() {
+    m_bJumpPending = true;
 }
 
 MacroControl::Status MacroControl::getStatus() const {
@@ -110,7 +145,46 @@ void MacroControl::stop() {
     m_COStatus.forceSet(Status::Recorded);
 }
 
+void MacroControl::updateRecording() {
+    VERIFY_OR_DEBUG_ASSERT(isRecording()) {
+        return;
+    }
+    if (m_recordedActions.empty()) {
+        return;
+    }
+    if (getStatus() == Status::Armed) {
+        m_COStatus.forceSet(Status::Recording);
+    }
+    while (MacroAction* action = m_recordedActions.front()) {
+        m_pMacro->addAction(*action);
+        m_recordedActions.pop();
+    }
+}
+
+void MacroControl::stopRecording() {
+    VERIFY_OR_DEBUG_ASSERT(isRecording()) {
+        return;
+    }
+    m_updateRecordingTimer.stop();
+    updateRecording();
+    if (getStatus() == Status::Armed) {
+        m_COStatus.forceSet(Status::Empty);
+    } else {
+        m_COStatus.forceSet(Status::Recorded);
+        play();
+    }
+}
+
 void MacroControl::controlRecord() {
+    if (getStatus() == Status::NoTrack) {
+        return;
+    }
+    if (!isRecording()) {
+        m_COStatus.forceSet(Status::Armed);
+        m_updateRecordingTimer.start(kRecordingTimerInterval);
+    } else {
+        stopRecording();
+    }
 }
 
 void MacroControl::controlToggle() {

@@ -55,14 +55,10 @@ const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
-        EngineMaster* pMixingEngine,
-        MacroRecorder* pMacroRecorder)
+        EngineMaster* pMixingEngine)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
-          m_channel(pChannel->getHandle()),
-          m_bHotcueJumpPending(false),
-          m_pMacroRecorder(pMacroRecorder),
           m_pSyncControl(nullptr),
           m_pVinylControlControl(nullptr),
           m_pRateControl(nullptr),
@@ -237,6 +233,11 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     for (int i = 0; i < 8; ++i) {
         auto control = new MacroControl(group, pConfig, i + 1);
+        connect(this,
+                &EngineBuffer::cueJumpQueued,
+                control,
+                &MacroControl::slotJumpQueued,
+                Qt::DirectConnection);
         m_macroControls.append(control);
         addControl(control);
     }
@@ -590,9 +591,6 @@ void EngineBuffer::notifyTrackLoaded(
                 &Track::beatsUpdated,
                 this,
                 &EngineBuffer::slotUpdatedTrackBeats);
-        if (m_pMacroRecorder) {
-            m_pMacroRecorder->notifyTrackChange(&m_channel, pOldTrack);
-        }
     }
 
     // First inform engineControls directly
@@ -627,14 +625,14 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    m_bHotcueJumpPending = true;
-    doSeekPlayPos(playPosition, SEEK_STANDARD);
+void EngineBuffer::slotControlSeekAbs(double samplePos) {
+    emit cueJumpQueued(samplePos);
+    doSeekPlayPos(samplePos, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekExact(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_EXACT);
+void EngineBuffer::slotControlSeekExact(double samplePos) {
+    doSeekPlayPos(samplePos, SEEK_EXACT);
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
@@ -1251,14 +1249,8 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
         }
-        if (m_pMacroRecorder && m_bHotcueJumpPending) {
-            m_pMacroRecorder->notifyCueJump(&m_channel,
-                    m_filepos_play / kSamplesPerFrame,
-                    position / kSamplesPerFrame);
-        }
         setNewPlaypos(position);
     }
-    m_bHotcueJumpPending = false;
     m_iSeekQueued.storeRelease(SEEK_NONE);
 }
 

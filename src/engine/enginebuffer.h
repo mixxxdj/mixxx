@@ -93,8 +93,7 @@ class EngineBuffer : public EngineObject {
     EngineBuffer(const QString& group,
             UserSettingsPointer pConfig,
             EngineChannel* pChannel,
-            EngineMaster* pMixingEngine,
-            MacroRecorder* pMacroRecorder);
+            EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -169,9 +168,11 @@ class EngineBuffer : public EngineObject {
     void slotControlStop(double);
     void slotControlStart(double);
     void slotControlEnd(double);
-    void slotControlSeek(double);
-    void slotControlSeekAbs(double);
-    void slotControlSeekExact(double);
+    /// Seek to a relative position (0-1) in the track
+    void slotControlSeek(double fractionalPos);
+    /// Seek to the given sample Position in phase
+    void slotControlSeekAbs(double samplePos);
+    void slotControlSeekExact(double samplePos);
     void slotKeylockEngineChanged(double);
 
     /// Eject current track if the supplied value is greater than 0
@@ -180,6 +181,7 @@ class EngineBuffer : public EngineObject {
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
+    void cueJumpQueued(double samplePos);
 
   private slots:
     void slotTrackLoading();
@@ -249,10 +251,6 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
-
-    ChannelHandle m_channel;
-    bool m_bHotcueJumpPending;
-    MacroRecorder* m_pMacroRecorder;
 
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;

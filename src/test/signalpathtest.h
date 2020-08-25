@@ -68,7 +68,6 @@ class BaseSignalPathTest : public MixxxTest {
               m_pVisualsManager(new VisualsManager()),
               m_pEffectsManager(new EffectsManager(
                       nullptr, config(), m_pChannelHandleFactory)),
-              m_pMacroRecorder(pMacroRecorder),
               m_pEngineMaster(new TestEngineMaster(
                       m_pConfig,
                       m_sMasterGroup,
@@ -144,7 +143,6 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pEffectsManager;
         delete m_pVisualsManager;
         delete m_pNumDecks;
-        delete m_pMacroRecorder;
         PlayerInfo::destroy();
     }
 
@@ -248,7 +246,6 @@ class BaseSignalPathTest : public MixxxTest {
 
     VisualsManager* m_pVisualsManager;
     EffectsManager* m_pEffectsManager;
-    MacroRecorder* m_pMacroRecorder;
 
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
@@ -271,8 +268,8 @@ class BaseSignalPathTest : public MixxxTest {
 
 class SignalPathTest : public BaseSignalPathTest {
   protected:
-    SignalPathTest(MacroRecorder* pMacroRecorder = nullptr)
-            : BaseSignalPathTest(pMacroRecorder) {
+    SignalPathTest()
+            : BaseSignalPathTest() {
         TrackPointer pTrack = getTestTrack();
         loadTrack(m_pMixerDeck1, pTrack);
         loadTrack(m_pMixerDeck2, pTrack);

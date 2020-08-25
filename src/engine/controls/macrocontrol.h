@@ -15,6 +15,7 @@ class MacroControl : public EngineControl {
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void process(const double dRate, const double dCurrentSample, const int iBufferSize) override;
+    void notifySeek(double dNewPlaypos) override;
 
     bool isRecording() const;
     bool isPlaying() const;
@@ -38,20 +39,30 @@ class MacroControl : public EngineControl {
     void controlClear();
     void controlActivate();
 
+    void slotJumpQueued();
+
   private:
+    void updateRecording();
+    void stopRecording();
+
     void play();
     void stop();
+
+    ConfigKey getConfigKey(QString name);
+    int m_number;
+    QString m_controlPattern;
+
+    bool m_bJumpPending;
+    rigtorp::SPSCQueue<MacroAction> m_recordedActions;
+    QTimer m_updateRecordingTimer;
 
     MacroPtr m_pMacro;
     int m_iNextAction;
 
-    int m_number;
-    QString m_controlPattern;
-    ConfigKey getConfigKey(QString name);
-
     ControlObject m_COStatus;
     ControlObject m_COActive;
 
+    ControlPushButton m_record;
     ControlPushButton m_toggle;
     ControlPushButton m_clear;
     ControlPushButton m_activate;
