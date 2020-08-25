@@ -19,9 +19,13 @@ const QString kColumnHidden = QStringLiteral("hidden");
 } // anonymous namespace
 
 QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
-    const auto statement =
-            QStringLiteral("SELECT %1 FROM %2 WHERE %3=:name")
-                    .arg(kColumnValue, kTable, kColumnName);
+    const QString statement =
+            QStringLiteral("SELECT ") +
+            kColumnValue +
+            QStringLiteral(" FROM ") +
+            kTable +
+            QStringLiteral(" WHERE ") +
+            kColumnName + QStringLiteral("=:name");
     QSqlQuery query(m_database);
     if (!query.prepare(statement)) {
         // Prepare is expected to fail for a fresh database
@@ -51,9 +55,14 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
         return false;
     }
 
-    const auto statement =
-            QStringLiteral("REPLACE INTO %1 (%2,%3) VALUES (:name,:value)")
-                    .arg(kTable, kColumnName, kColumnValue);
+    const QString statement =
+            QStringLiteral("REPLACE INTO ") +
+            kTable +
+            QStringLiteral(" (") +
+            kColumnName +
+            QChar(',') +
+            kColumnValue +
+            QStringLiteral(") VALUES (:name,:value)");
     QSqlQuery query(m_database);
     VERIFY_OR_DEBUG_ASSERT(query.prepare(statement)) {
         return false;
