@@ -106,8 +106,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
   private slots:
     void tracksChanged(QSet<TrackId> trackIds);
 
-    void slotRefreshCoverRows(QList<int> rows);
-
   private:
     BaseCoverArtDelegate* doCreateCoverArtDelegate(
             QTableView* pTableView) const final;

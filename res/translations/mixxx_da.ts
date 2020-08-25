@@ -1220,7 +1220,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="26"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="364"/>
         <source>Library</source>
-        <translation type="unfinished"/>
+        <translation>Bibliotek</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="23"/>
@@ -1265,7 +1265,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="49"/>
         <source>Play</source>
-        <translation type="unfinished"/>
+        <translation>Afspil</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="51"/>
@@ -1385,7 +1385,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="70"/>
         <source>Eject</source>
-        <translation type="unfinished"/>
+        <translation>Skub ud</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="71"/>
@@ -1637,12 +1637,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="161"/>
         <source>High EQ</source>
-        <translation type="unfinished"/>
+        <translation>Høj EQ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="160"/>
         <source>Mid EQ</source>
-        <translation type="unfinished"/>
+        <translation>Mellem EQ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="159"/>
@@ -1872,7 +1872,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="439"/>
         <source>Record Mix</source>
-        <translation type="unfinished"/>
+        <translation>Optag Mix</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
@@ -1882,7 +1882,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="444"/>
         <source>Effects</source>
-        <translation type="unfinished"/>
+        <translation>Effekter</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="447"/>
@@ -1965,7 +1965,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
         <source>Clear</source>
-        <translation type="unfinished"/>
+        <translation>Ryd</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
@@ -1985,27 +1985,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
         <source>Next</source>
-        <translation type="unfinished"/>
+        <translation>Næste</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
         <source>Switch to next effect</source>
-        <translation type="unfinished"/>
+        <translation>Skift til næste effekt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="621"/>
         <source>Previous</source>
-        <translation type="unfinished"/>
+        <translation>Forrige</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="621"/>
         <source>Switch to the previous effect</source>
-        <translation type="unfinished"/>
+        <translation>Skift til forrige effekt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="624"/>
         <source>Next or Previous</source>
-        <translation type="unfinished"/>
+        <translation>Næste eller Forrige</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="625"/>
@@ -2016,7 +2016,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="650"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="651"/>
         <source>Parameter Value</source>
-        <translation type="unfinished"/>
+        <translation>Parameter Værdi</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="678"/>
@@ -2087,7 +2087,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="766"/>
         <source>Show/hide cover art</source>
-        <translation type="unfinished"/>
+        <translation>Vis/skjul albumcover</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="782"/>
@@ -5487,7 +5487,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="20"/>
         <source>Library</source>
-        <translation type="unfinished"/>
+        <translation>Bibliotek</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="38"/>
@@ -6696,7 +6696,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="194"/>
         <source>Library</source>
-        <translation type="unfinished"/>
+        <translation>Bibliotek</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="224"/>
@@ -6736,7 +6736,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="260"/>
         <source>Effects</source>
-        <translation type="unfinished"/>
+        <translation>Effekter</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="267"/>
@@ -10593,7 +10593,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="329"/>
         <source>Mid EQ</source>
-        <translation type="unfinished"/>
+        <translation>Mellem EQ</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="330"/>
@@ -10603,7 +10603,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="334"/>
         <source>High EQ</source>
-        <translation type="unfinished"/>
+        <translation>Høj EQ</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="335"/>
@@ -10759,7 +10759,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="465"/>
         <source>Play</source>
-        <translation type="unfinished"/>
+        <translation>Afspil</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="466"/>
@@ -11150,7 +11150,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="893"/>
         <source>Clear</source>
-        <translation type="unfinished"/>
+        <translation>Ryd</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="894"/>
@@ -11170,7 +11170,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="901"/>
         <source>Next</source>
-        <translation type="unfinished"/>
+        <translation>Næste</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="804"/>
@@ -11278,7 +11278,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="905"/>
         <source>Previous</source>
-        <translation type="unfinished"/>
+        <translation>Forrige</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="906"/>
@@ -11288,7 +11288,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="909"/>
         <source>Next or Previous</source>
-        <translation type="unfinished"/>
+        <translation>Næste eller Forrige</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="910"/>
@@ -11852,7 +11852,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="576"/>
         <source>Record Mix</source>
-        <translation type="unfinished"/>
+        <translation>Optag Mix</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="577"/>
@@ -12079,7 +12079,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="564"/>
         <source>Eject</source>
-        <translation type="unfinished"/>
+        <translation>Skub ud</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="565"/>

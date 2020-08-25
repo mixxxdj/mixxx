@@ -487,7 +487,6 @@ void ITunesFeature::parseTracks(QXmlStreamReader& xml) {
                 continue;
             } else if (in_container_dictionary && !in_track_dictionary) {
                 // Done parsing tracks.
-                in_container_dictionary = false;
                 break;
             }
         }

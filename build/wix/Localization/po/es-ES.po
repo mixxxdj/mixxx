@@ -1,7 +1,7 @@
-# 
+#
 # Translators:
-# Jorge Marcos (Jorgeelalto) <inactive+jormarchav@transifex.com>, 2016
-# Jorge Marcos (Jorgeelalto) <inactive+jormarchav@transifex.com>, 2016
+# b947144a8dd3152e9cb943537a1dc7c4_533b046 <8439d1991f1056217a14f50fcf0a67ef_372648>, 2016
+# b947144a8dd3152e9cb943537a1dc7c4_533b046 <8439d1991f1056217a14f50fcf0a67ef_372648>, 2016
 # Jose Manuel López <joselp@disroot.org>, 2018
 # Josep Maria Antolin <josepma@gmail.com>, 2016-2017
 # Josep Maria Antolin <josepma@gmail.com>, 2016

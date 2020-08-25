@@ -20,8 +20,8 @@ namespace {
 
 class DirectoryDAOTest : public LibraryTest {
   protected:
-    void SetUp() override {
-        m_supportedFileExt = "." % SoundSourceProxy::getSupportedFileExtensions().first();
+    DirectoryDAOTest()
+            : m_supportedFileExt("." % SoundSourceProxy::getSupportedFileExtensions().first()) {
     }
 
     void TearDown() override {
@@ -35,7 +35,7 @@ class DirectoryDAOTest : public LibraryTest {
         query.exec();
     }
 
-    QString m_supportedFileExt;
+    const QString m_supportedFileExt;
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {
@@ -76,6 +76,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
+    ASSERT_TRUE(success);
 
     // we do not trust what directory dao thinks and better check up on it
     QStringList dirs;
@@ -102,6 +103,8 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
+    ASSERT_TRUE(success);
+
     QStringList dirs;
     while (query.next()) {
         dirs << query.value(0).toString();

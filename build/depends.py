@@ -954,6 +954,7 @@ class MixxxCore(Feature):
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
+                   "src/widget/wtrackwidgetgroup.cpp",
                    "src/widget/wwidgetstack.cpp",
                    "src/widget/wsizeawarestack.cpp",
                    "src/widget/wlabel.cpp",
@@ -1235,9 +1236,11 @@ class MixxxCore(Feature):
                    "src/track/keyutils.cpp",
                    "src/track/playcounter.cpp",
                    "src/track/replaygain.cpp",
+                   "src/track/serato/beatgrid.cpp",
                    "src/track/serato/markers.cpp",
                    "src/track/serato/markers2.cpp",
                    "src/track/serato/tags.cpp",
+                   "src/track/serato/beatsimporter.cpp",
                    "src/track/serato/cueinfoimporter.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
@@ -1426,6 +1429,7 @@ class MixxxCore(Feature):
 
         if build.build_is_debug:
             build.env.Append(CPPDEFINES='MIXXX_BUILD_DEBUG')
+            build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_ENABLED')
         elif build.build_is_release:
             build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
             # Disable assert.h assertions in release mode. Some libraries use
@@ -1449,6 +1453,7 @@ class MixxxCore(Feature):
 
         if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
             build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
+            build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_ENABLED')
 
         if build.toolchain_is_gnu:
             # Default GNU Options

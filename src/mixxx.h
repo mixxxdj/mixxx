@@ -111,6 +111,9 @@ class MixxxMainWindow : public QMainWindow {
 
     bool initializeDatabase();
 
+    /// Load skin to a QWidget that we set as the central widget.
+    bool loadConfiguredSkin();
+
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
@@ -171,6 +174,8 @@ class MixxxMainWindow : public QMainWindow {
 
     ControlPushButton* m_pTouchShift;
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
+
+    QSet<ControlObject*> m_skinCreatedControls;
 
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;

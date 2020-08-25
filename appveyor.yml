@@ -133,7 +133,7 @@ for:
   test_script:
     - export CTEST_OUTPUT_ON_FAILURE=1
     - export QT_QPA_PLATFORM=offscreen
-    - ctest -T test --no-compress-output
+    - ctest -T test --no-compress-output --timeout 45
     - cmake --build . --target benchmark
 
   after_test:
@@ -192,10 +192,11 @@ for:
     - python -m pip install git+https://github.com/frerich/clcache.git
     # Decrypt the code signing certificate.
     - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
-    - IF [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
         appveyor-tools\secure-file -decrypt %CODESIGN_CERTIFICATE_PATH%.enc -secret %CODESIGN_CERTIFICATE_SECURE_FILE_SECRET% -salt %CODESIGN_CERTIFICATE_SECURE_FILE_SALT%
       ) else (
-        echo "Skipping certificate decryption because we are in a pull request."
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
 
   before_build:
@@ -249,24 +250,26 @@ for:
       ..
     - cmake --build .
     - cmake --build . --target install
-    - IF [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
         signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.exe
       ) else (
-        echo "Skipping codesigning *.exe because we are in a pull request."
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
     # Generate WIX installer
     - cpack -G "WIX"
-    - IF [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
         signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi
       ) else (
-        echo "Skipping codesigning *.msi because we are in a pull request."
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
 
   test_script:
     # Calling mixxx-test under bash to have standard output and use stdbuf to
     # unbuffer standard & error output
     - set CTEST_OUTPUT_ON_FAILURE=1
-    - ctest -C "Release" -T test --no-compress-output
+    - ctest -C "Release" -T test --no-compress-output --timeout 45
     - cmake --build . --target benchmark
 
   after_test:
@@ -315,7 +318,5 @@ notifications:
     headers:
       Authorization:
         secure: 95cbVBcC4rogjE5VNdhuYm8cnjPF8+7SeQXySqcxAqrFZxK+/Kcn3Q2hRb2iZfUEKZ+EdCYwx7EbpZdSiZc5goAuJT+/QXXT/Ls+fzc+eSy4Sz1Ic5t2BjLhmYZLdnBL3uIVceNSb8GzYPQx0+xy7g==
-    on_build_success: true
-    on_build_failure: true
     on_build_status_changed: true
-    body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#isPullRequest}} (PR #{{pullRequestId}}) {{/isPullRequest}}{{#failed}} :cross_mark:{{/failed}}{{#passed}} :check_mark:{{/passed}} {{buildUrl}}"
+    body: "type=stream&to=appveyor&subject={{^isPullRequest}}{{branch}}&content={{#failed}}:cross_mark:{{/failed}}{{#passed}}:check_mark:{{/passed}} {{status}} {{buildUrl}}\n{{commitId}} {{commitAuthor}}\n{{commitMessage}}\n{{commitMessageExtended}}{{/isPullRequest}}"
