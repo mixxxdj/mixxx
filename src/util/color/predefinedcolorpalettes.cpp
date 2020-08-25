@@ -17,12 +17,10 @@ constexpr mixxx::RgbColor kMixxxTrackColorDarkRed(0x880000);
 constexpr mixxx::RgbColor kMixxxTrackColorRed(0xFF0000);
 constexpr mixxx::RgbColor kMixxxTrackColorDarkOrange(0xFF8800);
 constexpr mixxx::RgbColor kMixxxTrackColorLemonGlacier(0xFFFF00);
-constexpr mixxx::RgbColor kMixxxTrackColorBitterLime(0xBBEE00);
+constexpr mixxx::RgbColor kMixxxTrackColorChartreuse(0x88FF00);
 constexpr mixxx::RgbColor kMixxxTrackColorElectricGreen(0x00FF00);
 constexpr mixxx::RgbColor kMixxxTrackColorIndiaGreen(0x008800);
 constexpr mixxx::RgbColor kMixxxTrackColorDarkCyan(0x008888);
-constexpr mixxx::RgbColor kMixxxTrackColorSpringGreen(0x00FF88);
-constexpr mixxx::RgbColor kMixxxTrackColorAqua(0x00FFFF);
 constexpr mixxx::RgbColor kMixxxTrackColorDodgerBlue(0x0088FF);
 constexpr mixxx::RgbColor kMixxxTrackColorBlue(0x0000FF);
 constexpr mixxx::RgbColor kMixxxTrackColorNavyBlue(0x000088);
@@ -31,6 +29,8 @@ constexpr mixxx::RgbColor kMixxxTrackColorVividViolet(0xAA00FF);
 constexpr mixxx::RgbColor kMixxxTrackColorFuchsia(0xFF00FF);
 constexpr mixxx::RgbColor kMixxxTrackColorViolet(0xFF88FF);
 constexpr mixxx::RgbColor kMixxxTrackColorWhite(0xFFFFFF);
+constexpr mixxx::RgbColor kMixxxTrackColorAqua(0x00FFFF);
+constexpr mixxx::RgbColor kMixxxTrackColorSpringGreen(0x00FF88);
 constexpr mixxx::RgbColor kMixxxTrackColorBattleshipGrey(0x888888);
 
 // Rekordbox Track Color Palette
@@ -211,12 +211,10 @@ const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
                         kMixxxTrackColorRed,
                         kMixxxTrackColorDarkOrange,
                         kMixxxTrackColorLemonGlacier,
-                        kMixxxTrackColorBitterLime,
+                        kMixxxTrackColorChartreuse,
                         kMixxxTrackColorElectricGreen,
                         kMixxxTrackColorIndiaGreen,
                         kMixxxTrackColorDarkCyan,
-                        kMixxxTrackColorSpringGreen,
-                        kMixxxTrackColorAqua,
                         kMixxxTrackColorDodgerBlue,
                         kMixxxTrackColorBlue,
                         kMixxxTrackColorNavyBlue,
@@ -225,6 +223,8 @@ const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
                         kMixxxTrackColorFuchsia,
                         kMixxxTrackColorViolet,
                         kMixxxTrackColorWhite,
+                        kMixxxTrackColorAqua,
+                        kMixxxTrackColorSpringGreen,
                         kMixxxTrackColorBattleshipGrey,
                 });
 
