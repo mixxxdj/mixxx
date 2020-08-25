@@ -441,37 +441,7 @@ TraktorZ2.incomingData = function(data, length) {
 };
 
 TraktorZ2.shutdown = function() {
-    // Deactivate all LEDs
-    var dataStrings = [
-        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00 ",
-        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00",
-    ];
-
-    var data = [Object(), Object()];
-
-
-    for (var i = 0; i < data.length; i++) {
-        var splitted = dataStrings[i].split(/\s+/);
-        data[i].length = splitted.length;
-        for (var j = 0; j < splitted.length; j++) {
-            var byteStr = splitted[j];
-            if (byteStr.length === 0) {
-                continue;
-            }
-            data[i][j] = parseInt(byteStr, 16);
-        }
-        controller.send(data[i], data[i].length, 0x80 + i);
-    }
-
+    
     HIDDebug("TraktorZ2: Shutdown done!");
 };
 
@@ -482,34 +452,34 @@ TraktorZ2.debugLights = function() {
     // bytes do what).
     var dataStrings = [
 	    /* 0x80*/ 
-        "70 " + // 3 MSB bits Warning Symbol on top left brightness (orange)
-		"70 " + // 3 MSB bits Timecode-Vinyl Symbol on top right brightness (orange)
-		"70 " + // 3 MSB bits Snap-Button S brightness (blue)
-		"70 " + // 3 MSB bits Quantize-Button Q brightness (blue)
-		"70 " + // 3 MSB bits Settings-Button (Gear-Wheel-Symbol) brightness (orange)
+        "70 " + // 3 bits (0x40, 0x20, 0x10) control Warning Symbol on top left brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Timecode-Vinyl Symbol on top right brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Snap-Button S brightness (blue)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Quantize-Button Q brightness (blue)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Settings-Button (Gear-Wheel-Symbol) brightness (orange)
 		"00 " + // 
-        "70 " + // 3 MSB bits Deck A button brightness (blue)
-		"70 " + // 3 MSB bits Deck B button brightness (blue)
-		"70 " + // 3 MSB bits Deck C button brightness (white)
-		"70 " + // 3 MSB bits Deck D button brightness (white)
-		"70 " + // 3 MSB bits Deck C volume text label backlight brightness (white)
-		"70 " + // 3 MSB bits Deck D volume text label backlight brightness (white)
-        "70 " + // 3 MSB bits Macro FX1 On button brightness (orange)
-        "70 " + // 3 MSB bits Deck 1 Flux button brightness (orange)
-        "70 " + // 3 MSB bits Channel 1 FX1 select button brightness (orange)
-		"70 " + // 3 MSB bits Channel 1 FX2 select button brightness (orange)
-		"70 " + // 3 MSB bits Load A button brightness (orange)
-		"70 " + // 3 MSB bits vinylcontrol Rel/Intl A button brightness (orange)
-		"70 " + // 3 MSB bits vinylcontrol Rel/Intl A button brightness (green)
-		"70 " + // 3 MSB bits vinylcontrol Sync A button brightness (orange)
-		"70 " + // 3 MSB bits Macro FX2 On button brightness (orange)
-        "70 " + // 3 MSB bits Deck 2 Flux button brightness (orange)
-        "70 " + // 3 MSB bits Channel 2 FX1 select button brightness (orange)
-		"70 " + // 3 MSB bits Channel 2 FX2 select button brightness (orange)
-		"70 " + // 3 MSB bits Load B button brightness (orange)
-		"70 " + // 3 MSB bits vinylcontrol Rel/Intl B button brightness (orange)
-		"70 " + // 3 MSB bits vinylcontrol Rel/Intl B button brightness (green)
-		"70 " + // 3 MSB bits vinylcontrol Sync B button brightness (orange)
+        "70 " + // 3 bits (0x40, 0x20, 0x10) control Deck A button brightness (blue)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck B button brightness (blue)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck C button brightness (white)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck D button brightness (white)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck C volume text label backlight brightness (white)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck D volume text label backlight brightness (white)
+        "70 " + // 3 bits (0x40, 0x20, 0x10) control Macro FX1 On button brightness (orange)
+        "70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 Flux button brightness (orange)
+        "70 " + // 3 bits (0x40, 0x20, 0x10) control Channel 1 FX1 select button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Channel 1 FX2 select button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Load A button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (green)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync A button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Macro FX2 On button brightness (orange)
+        "70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 Flux button brightness (orange)
+        "70 " + // 3 bits (0x40, 0x20, 0x10) control Channel 2 FX1 select button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Channel 2 FX2 select button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Load B button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (green)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync B button brightness (orange)
 		"FF 00 00 " + //HotCue 1 Deck 1 RGB
         "FF 00 00 " + //HotCue 2 Deck 1 RGB
         "00 00 00 " + //HotCue 3 Deck 1 RGB
@@ -519,53 +489,53 @@ TraktorZ2.debugLights = function() {
         "00 FF 00 " + //HotCue 3 Deck 2 RGB
         "00 00 34 " + //HotCue 4 Deck 2 RGB
 		
-		"70 " + // 3 MSB bits Deck 1 1st 7 segment center horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 1st 7 segment lower right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 1st 7 segment upper right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 1st 7 segment upper horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 1st 7 segment upper left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 1st 7 segment lower left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 1st 7 segment lower horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower horizontal bar brightness (orange)
 		
-		"70 " + // 3 MSB bits Deck 1 2nd 7 segment center horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 2nd 7 segment lower right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 2nd 7 segment upper right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 2nd 7 segment upper horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 2nd 7 segment upper left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 2nd 7 segment lower left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 2nd 7 segment lower horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower horizontal bar brightness (orange)
 		
-		"70 " + // 3 MSB bits Deck 1 3rd 7 segment center horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
 		
-		"70 " + // 3 MSB bits Deck 2 1st 7 segment center horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 1st 7 segment lower right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 1st 7 segment upper right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 1st 7 segment upper horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 1st 7 segment upper left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 1st 7 segment lower left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 1st 7 segment lower horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower horizontal bar brightness (orange)
 		
-		"70 " + // 3 MSB bits Deck 2 2nd 7 segment center horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 2nd 7 segment lower right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 2nd 7 segment upper right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 2nd 7 segment upper horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 2nd 7 segment upper left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 2nd 7 segment lower left vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 2nd 7 segment lower horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower left vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower horizontal bar brightness (orange)
 		
-		"70 " + // 3 MSB bits Deck 2 3rd 7 segment center horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 3rd 7 segment lower right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 3rd 7 segment upper right vertical bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 3rd 7 segment upper horizontal bar brightness (orange)
-		"70 " + // 3 MSB bits Deck 2 3rd 7 segment upper left vertical bar brightness (orange)
-		"70 " /*+ // 3 MSB bits Deck 2 3rd 7 segment lower left vertical bar brightness (orange)
-		"70 "*/, // 3 MSB bits Deck 2 3rd 7 segment lower horizontal bar brightness (orange) ---------------- COMMUNICATION CRASHS, IF BYTE 95 IS SEND ---------------
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment center horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper right vertical bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper horizontal bar brightness (orange)
+		"70 " + // 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper left vertical bar brightness (orange)
+		"70 " /*+ // 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower left vertical bar brightness (orange)
+		"70 "*/, // 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower horizontal bar brightness (orange) ---------------- COMMUNICATION CRASHS, IF BYTE 95 IS SEND ---------------
  /* 0x81*/ "FF FF FF  FF FF FF FF  FF FF FF FF  FF FF FF FF " +
         "FF FF FF FF  FF FF FF FF  FF FF FF FF  FF FF FF FF " +
         "FF FF FF FF  FF FF FF FF  FF FF"
