@@ -1,7 +1,5 @@
 #include "macros_test.h"
 
-#include <QtConcurrent>
-
 TEST(MacroTest, SerializeMacroActions) {
     QList<MacroAction> actions{MacroAction(0, 1)};
 
@@ -16,51 +14,4 @@ TEST(MacroTest, SerializeMacroActions) {
     QList<MacroAction> deserialized = Macro::deserialize(serialized);
     EXPECT_EQ(deserialized.size(), 1);
     EXPECT_EQ(deserialized, actions);
-}
-
-TEST(MacroRecorderTest, StartAndStopRecordingCOs) {
-    MacroRecorder recorder;
-    ASSERT_EQ(ControlProxy(kConfigGroup, "status").get(),
-            MacroRecorder::Status::Disabled);
-    EXPECT_EQ(recorder.isRecordingActive(), false);
-
-    ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
-    ASSERT_EQ(ControlProxy(kConfigGroup, "status").get(),
-            MacroRecorder::Status::Armed);
-    EXPECT_EQ(recorder.isRecordingActive(), true);
-
-    ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
-    ASSERT_EQ(ControlProxy(kConfigGroup, "status").get(),
-            MacroRecorder::Status::Disabled);
-    EXPECT_EQ(recorder.isRecordingActive(), false);
-}
-
-TEST(MacroRecorderTest, RecordCueJump) {
-    MacroRecorder recorder;
-    auto factory = ChannelHandleFactory();
-    ChannelHandle handle = factory.getOrCreateHandle("test-one");
-    ASSERT_EQ(recorder.getStatus(), MacroRecorder::Status::Disabled);
-
-    recorder.notifyCueJump(&handle, kAction.position, kAction.target);
-    ASSERT_EQ(recorder.getActiveChannel(), nullptr);
-    EXPECT_EQ(recorder.getRecordingSize(), 0);
-
-    recorder.startRecording();
-    recorder.notifyCueJump(&handle, kAction.position, kAction.target);
-    EXPECT_EQ(recorder.getActiveChannel()->handle(), handle.handle());
-    checkRecordedAction(&recorder);
-
-    auto handle2 = factory.getOrCreateHandle("test-two");
-    recorder.notifyCueJump(&handle2, 0, 2);
-    EXPECT_EQ(recorder.checkOrClaimRecording(&handle2), false);
-    EXPECT_EQ(recorder.checkOrClaimRecording(&handle), true);
-    ASSERT_EQ(recorder.getRecordingSize(), 0);
-
-    MacroAction otherAction(3, 5);
-    recorder.notifyCueJump(&handle, otherAction.position, otherAction.target);
-    checkRecordedAction(&recorder, otherAction);
-
-    recorder.pollRecordingStart();
-    EXPECT_EQ(ControlProxy(kConfigGroup, "status").get(),
-            MacroRecorder::Status::Recording);
 }

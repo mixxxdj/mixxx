@@ -615,8 +615,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
-  src/macros/macromanager.cpp
-  src/macros/macrorecorder.cpp
   src/mixer/auxiliary.cpp
   src/mixer/baseplayer.cpp
   src/mixer/basetrackplayer.cpp
