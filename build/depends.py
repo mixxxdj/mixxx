@@ -1011,7 +1011,7 @@ class MixxxCore(Feature):
 
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
-                   "src/musicbrainz/crc.c",
+                   "src/musicbrainz/crc.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
                    "src/musicbrainz/musicbrainz.cpp",
                    "src/musicbrainz/musicbrainzxml.cpp",
