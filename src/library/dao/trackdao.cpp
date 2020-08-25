@@ -80,12 +80,6 @@ TrackDAO::~TrackDAO() {
     addTracksFinish(true);
 }
 
-void TrackDAO::initialize(
-        const QSqlDatabase& database) {
-    DEBUG_ASSERT(!m_database.isOpen());
-    m_database = database;
-}
-
 void TrackDAO::finish() {
     qDebug() << "TrackDAO::finish()";
 
