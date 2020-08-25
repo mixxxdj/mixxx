@@ -74,8 +74,7 @@ const bool kDefaultNoDelayFirstReconnect = true;
 const bool kDefaultOggDynamicupdate = false;
 double kDefaultReconnectFirstDelay = 0.0;
 double kDefaultReconnectPeriod = 5.0;
-const QString kDefaultStreamName =
-        QObject::tr("Mixxx");
+const QString kDefaultStreamName = QStringLiteral("Mixxx");
 const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
