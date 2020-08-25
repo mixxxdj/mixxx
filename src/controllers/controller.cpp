@@ -106,7 +106,7 @@ void Controller::send(QList<int> data, unsigned int length) {
     for (unsigned int i = 0; i < length; ++i) {
         msg[i] = data.at(i);
     }
-    send(msg);
+    sendBytes(msg);
 }
 
 void Controller::triggerActivity()
