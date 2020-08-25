@@ -34,6 +34,33 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
+TrackRef validateAndCanonicalizeRequestedTrackRef(
+        const TrackRef requestedTrackRef,
+        const Track& cachedTrack) {
+    const auto cachedTrackRef = createTrackRef(cachedTrack);
+    // If an id has been provided the caller expects that if a track
+    // is found it is supposed to have the exact same id. This cannot
+    // be guaranteed due to file system aliasing.
+    // The found track may or may not have a valid id.
+    if (requestedTrackRef.hasId() &&
+            requestedTrackRef.getId() != cachedTrackRef.getId()) {
+        DEBUG_ASSERT(
+                requestedTrackRef.getLocation() !=
+                cachedTrackRef.getLocation());
+        DEBUG_ASSERT(
+                requestedTrackRef.getCanonicalLocation() ==
+                cachedTrackRef.getCanonicalLocation());
+        kLogger.warning()
+                << "Found a different track for the same canonical location:"
+                << "requested =" << requestedTrackRef
+                << "cached =" << cachedTrackRef;
+        return cachedTrackRef;
+    } else {
+        // Regular case, i.e. no aliasing
+        return requestedTrackRef;
+    }
+}
+
 class EvictAndSaveFunctor {
   public:
     explicit EvictAndSaveFunctor(
@@ -148,7 +175,7 @@ TrackPointer GlobalTrackCacheLocker::lookupTrackByRef(
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         QFileInfo fileInfo,
         SecurityTokenPointer pSecurityToken)
-        : m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
+        : m_lookupResult(GlobalTrackCacheLookupResult::None) {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->resolve(this, std::move(fileInfo), TrackId(), std::move(pSecurityToken));
 }
@@ -157,7 +184,7 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         QFileInfo fileInfo,
         TrackId trackId,
         SecurityTokenPointer pSecurityToken)
-        : m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
+        : m_lookupResult(GlobalTrackCacheLookupResult::None) {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->resolve(this, std::move(fileInfo), std::move(trackId), std::move(pSecurityToken));
 }
@@ -167,7 +194,7 @@ void GlobalTrackCacheResolver::initLookupResult(
         TrackPointer&& strongPtr,
         TrackRef&& trackRef) {
     DEBUG_ASSERT(m_pInstance);
-    DEBUG_ASSERT(GlobalTrackCacheLookupResult::NONE == m_lookupResult);
+    DEBUG_ASSERT(GlobalTrackCacheLookupResult::None == m_lookupResult);
     DEBUG_ASSERT(!m_strongPtr);
     m_lookupResult = lookupResult;
     m_strongPtr = std::move(strongPtr);
@@ -176,7 +203,7 @@ void GlobalTrackCacheResolver::initLookupResult(
 
 void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
     DEBUG_ASSERT(m_pInstance);
-    DEBUG_ASSERT(GlobalTrackCacheLookupResult::NONE != m_lookupResult);
+    DEBUG_ASSERT(GlobalTrackCacheLookupResult::None != m_lookupResult);
     DEBUG_ASSERT(m_strongPtr);
     DEBUG_ASSERT(trackId.isValid());
     if (m_trackRef.getId().isValid()) {
@@ -391,8 +418,32 @@ bool GlobalTrackCache::isEmpty() const {
     return m_tracksById.empty() && m_tracksByCanonicalLocation.empty();
 }
 
+TrackPointer GlobalTrackCache::lookupByRef(
+        const TrackRef& trackRef) {
+    TrackPointer trackPtr;
+    if (trackRef.hasId()) {
+        trackPtr = lookupById(trackRef.getId());
+        if (trackPtr) {
+            return trackPtr;
+        }
+    }
+    if (trackRef.hasCanonicalLocation()) {
+        trackPtr = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
+        if (trackPtr) {
+            const auto cachedTrackRef =
+                    validateAndCanonicalizeRequestedTrackRef(trackRef, *trackPtr);
+            // Multiple tracks may reference the same physical file on disk
+            if (!trackRef.hasId() || trackRef.getId() == cachedTrackRef.getId()) {
+                return trackPtr;
+            }
+        }
+    }
+    return trackPtr;
+}
+
 TrackPointer GlobalTrackCache::lookupById(
         const TrackId& trackId) {
+    TrackPointer trackPtr;
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
         // Cache hit
@@ -402,7 +453,8 @@ TrackPointer GlobalTrackCache::lookupById(
                     << trackId
                     << trackById->second->getPlainPtr();
         }
-        return revive(trackById->second);
+        trackPtr = revive(trackById->second);
+        DEBUG_ASSERT(trackPtr);
     } else {
         // Cache miss
         if (traceLogEnabled()) {
@@ -410,37 +462,34 @@ TrackPointer GlobalTrackCache::lookupById(
                     << "Cache miss for"
                     << trackId;
         }
-        return TrackPointer();
     }
+    return trackPtr;
 }
 
-TrackPointer GlobalTrackCache::lookupByRef(
-        const TrackRef& trackRef) {
-    if (trackRef.hasId()) {
-        return lookupById(trackRef.getId());
+TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
+        const QString& canonicalLocation) {
+    TrackPointer trackPtr;
+    const auto trackByCanonicalLocation(
+            m_tracksByCanonicalLocation.find(canonicalLocation));
+    if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
+        // Cache hit
+        if (traceLogEnabled()) {
+            kLogger.trace()
+                    << "Cache hit for"
+                    << canonicalLocation
+                    << trackByCanonicalLocation->second->getPlainPtr();
+        }
+        trackPtr = revive(trackByCanonicalLocation->second);
+        DEBUG_ASSERT(trackPtr);
     } else {
-        const auto canonicalLocation = trackRef.getCanonicalLocation();
-        const auto trackByCanonicalLocation(
-                m_tracksByCanonicalLocation.find(canonicalLocation));
-        if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
-            // Cache hit
-            if (traceLogEnabled()) {
-                kLogger.trace()
-                        << "Cache hit for"
-                        << canonicalLocation
-                        << trackByCanonicalLocation->second->getPlainPtr();
-            }
-            return revive(trackByCanonicalLocation->second);
-        } else {
-            // Cache miss
-            if (traceLogEnabled()) {
-                kLogger.trace()
-                        << "Cache miss for"
-                        << canonicalLocation;
-            }
-            return TrackPointer();
+        // Cache miss
+        if (traceLogEnabled()) {
+            kLogger.trace()
+                    << "Cache miss for"
+                    << canonicalLocation;
         }
     }
+    return trackPtr;
 }
 
 TrackPointer GlobalTrackCache::revive(
@@ -499,7 +548,7 @@ void GlobalTrackCache::resolve(
             }
             TrackRef trackRef = createTrackRef(*strongPtr);
             pCacheResolver->initLookupResult(
-                    GlobalTrackCacheLookupResult::HIT,
+                    GlobalTrackCacheLookupResult::Hit,
                     std::move(strongPtr),
                     std::move(trackRef));
             return;
@@ -515,7 +564,8 @@ void GlobalTrackCache::resolve(
                     << "Resolving track by canonical location"
                     << trackRef.getCanonicalLocation();
         }
-        auto strongPtr = lookupByRef(trackRef);
+        auto strongPtr = lookupByCanonicalLocation(
+                trackRef.getCanonicalLocation());
         if (strongPtr) {
             // Cache hit
             if (debugLogEnabled()) {
@@ -524,10 +574,21 @@ void GlobalTrackCache::resolve(
                         << trackRef.getCanonicalLocation()
                         << strongPtr.get();
             }
-            pCacheResolver->initLookupResult(
-                    GlobalTrackCacheLookupResult::HIT,
-                    std::move(strongPtr),
-                    std::move(trackRef));
+            auto cachedTrackRef = validateAndCanonicalizeRequestedTrackRef(
+                    trackRef,
+                    *strongPtr);
+            // Multiple tracks may reference the same physical file on disk
+            if (!trackRef.hasId() || trackRef.getId() == cachedTrackRef.getId()) {
+                pCacheResolver->initLookupResult(
+                        GlobalTrackCacheLookupResult::Hit,
+                        std::move(strongPtr),
+                        std::move(trackRef));
+            } else {
+                pCacheResolver->initLookupResult(
+                        GlobalTrackCacheLookupResult::ConflictCanonicalLocation,
+                        TrackPointer(),
+                        std::move(cachedTrackRef));
+            }
             return;
         }
     }
@@ -591,7 +652,7 @@ void GlobalTrackCache::resolve(
     savingPtr->moveToThread(QApplication::instance()->thread());
 
     pCacheResolver->initLookupResult(
-            GlobalTrackCacheLookupResult::MISS,
+            GlobalTrackCacheLookupResult::Miss,
             std::move(savingPtr),
             std::move(trackRef));
 }
