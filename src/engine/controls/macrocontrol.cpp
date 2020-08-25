@@ -81,8 +81,16 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     }
 }
 
+MacroControl::Status MacroControl::getStatus() const {
+    return Status(m_COStatus.get());
+}
+
+MacroPtr MacroControl::getMacro() const {
+    return m_pMacro;
+}
+
 bool MacroControl::isRecording() const {
-    return false;
+    return getStatus() == Status::Armed || getStatus() == Status::Recording;
 }
 
 bool MacroControl::isPlaying() const {
@@ -102,6 +110,9 @@ void MacroControl::stop() {
     m_COStatus.forceSet(Status::Recorded);
 }
 
+void MacroControl::controlRecord() {
+}
+
 void MacroControl::controlToggle() {
     if (m_pMacro) {
         m_pMacro->setState(Macro::StateFlag::Enabled, !m_pMacro->isEnabled());
@@ -116,17 +127,10 @@ void MacroControl::controlClear() {
 
 void MacroControl::controlActivate() {
     if (!m_pMacro || m_pMacro->isEmpty()) {
-        if (m_COStatus.get() == Status::NoTrack) {
-            return;
-        }
-        if (isRecording()) {
-            // TODO(xerus) save
-        } else {
-            // TODO(xerus) start recording
-        }
+        controlRecord();
     } else {
         if (isPlaying()) {
-            // TODO(xerus) jump to first position
+            seekExact(m_pMacro->getActions().first().target);
         } else {
             play();
         }

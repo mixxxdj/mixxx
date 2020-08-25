@@ -29,7 +29,11 @@ class MacroControl : public EngineControl {
         PlaybackStopped = 5,
     };
 
-  private slots:
+    Status getStatus() const;
+    MacroPtr getMacro() const;
+
+  public slots:
+    void controlRecord();
     void controlToggle();
     void controlClear();
     void controlActivate();
