@@ -26,7 +26,6 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
-#include "macros/macrorecorder.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/assert.h"

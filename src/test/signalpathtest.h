@@ -29,7 +29,6 @@
 #include "waveform/visualsmanager.h"
 
 class EngineSync;
-class MacroRecorder;
 
 using ::testing::_;
 using ::testing::Return;
@@ -60,7 +59,7 @@ class TestEngineMaster : public EngineMaster {
 
 class BaseSignalPathTest : public MixxxTest {
   protected:
-    explicit BaseSignalPathTest(MacroRecorder* pMacroRecorder = nullptr)
+    explicit BaseSignalPathTest()
             : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
               m_pNumDecks(new ControlObject(
                       ConfigKey(m_sMasterGroup, "num_decks"))),
@@ -77,7 +76,6 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
-                pMacroRecorder,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
@@ -85,7 +83,6 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck2 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
-                pMacroRecorder,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
@@ -93,7 +90,6 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck3 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
-                pMacroRecorder,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,

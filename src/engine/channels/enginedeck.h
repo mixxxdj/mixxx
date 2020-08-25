@@ -18,7 +18,6 @@ class EngineBuffer;
 class EngineMaster;
 class EngineVuMeter;
 class EngineEffectsManager;
-class MacroRecorder;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
@@ -27,7 +26,6 @@ class EngineDeck : public EngineChannel, public AudioDestination {
             const ChannelHandleAndGroup& handleGroup,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
-            MacroRecorder* pMacroRecorder,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             bool primaryDeck);

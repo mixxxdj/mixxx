@@ -41,7 +41,6 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EngineMaster* pEngine,
-        MacroRecorder* pMacroRecorder,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager)
         : m_mutex(QMutex::Recursive),
@@ -50,7 +49,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pEffectsManager(pEffectsManager),
           m_pVisualsManager(pVisualsManager),
           m_pEngine(pEngine),
-          m_pMacroRecorder(pMacroRecorder),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(new ControlObject(
@@ -372,7 +370,6 @@ void PlayerManager::addDeckInner() {
     Deck* pDeck = new Deck(this,
             m_pConfig,
             m_pEngine,
-            m_pMacroRecorder,
             m_pEffectsManager,
             m_pVisualsManager,
             deckIndex % 2 == 1 ? EngineChannel::RIGHT : EngineChannel::LEFT,

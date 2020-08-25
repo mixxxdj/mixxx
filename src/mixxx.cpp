@@ -33,7 +33,6 @@
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "macros/macromanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "preferences/settingsmanager.h"
@@ -286,16 +285,12 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
-    m_pMacroManager = new MacroManager();
-
     // Create the player manager (long)
     m_pPlayerManager = new PlayerManager(pConfig,
             m_pSoundManager,
             m_pEngine,
-            m_pMacroManager->getRecorder(),
             m_pEffectsManager,
             m_pVisualsManager);
-    m_pMacroManager->setPlayerManager(m_pPlayerManager);
     connect(m_pPlayerManager,
             &PlayerManager::noMicrophoneInputConfigured,
             this,
@@ -746,9 +741,6 @@ void MixxxMainWindow::finalize() {
     // RecordingManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
-
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting MacroManager";
-    delete m_pMacroManager;
 
 #ifdef __BROADCAST__
     // BroadcastManager depends on config, engine

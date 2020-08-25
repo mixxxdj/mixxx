@@ -13,7 +13,6 @@ EngineDeck::EngineDeck(
         const ChannelHandleAndGroup& handleGroup,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
-        MacroRecorder* pMacroRecorder,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         bool primaryDeck)

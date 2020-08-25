@@ -10,7 +10,6 @@
 #include "engine/controls/macrocontrol.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "macros/macrorecorder.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/rotary.h"

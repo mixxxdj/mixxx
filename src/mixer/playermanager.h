@@ -19,7 +19,6 @@ class Deck;
 class EffectsManager;
 class EngineMaster;
 class Library;
-class MacroRecorder;
 class Microphone;
 class PreviewDeck;
 class Sampler;
@@ -58,7 +57,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EngineMaster* pEngine,
-            MacroRecorder* pMacroRecorder,
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager);
     ~PlayerManager() override;
@@ -256,7 +254,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     EffectsManager* m_pEffectsManager;
     VisualsManager* m_pVisualsManager;
     EngineMaster* m_pEngine;
-    MacroRecorder* m_pMacroRecorder;
     SamplerBank* m_pSamplerBank;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;

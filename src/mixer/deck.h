@@ -10,7 +10,6 @@ class Deck : public BaseTrackPlayerImpl {
     Deck(QObject* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
-            MacroRecorder* pMacroRecorder,
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
