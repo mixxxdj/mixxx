@@ -477,19 +477,19 @@ void Library::slotRequestAddDir(QString dir) {
 
 void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     switch (removalType) {
-        case Library::HideTracks:
-            // Mark all tracks in this directory as deleted but DON'T purge them
-            // in case the user re-adds them manually.
-            m_pTrackCollectionManager->hideAllTracks(dir);
-            break;
-        case Library::PurgeTracks:
-            // The user requested that we purge all metadata.
-            m_pTrackCollectionManager->purgeAllTracks(dir);
-            break;
-        case Library::LeaveTracksUnchanged:
-        default:
-            break;
-
+    case RemovalType::KeepTracks:
+        break;
+    case RemovalType::HideTracks:
+        // Mark all tracks in this directory as deleted but DON'T purge them
+        // in case the user re-adds them manually.
+        m_pTrackCollectionManager->hideAllTracks(dir);
+        break;
+    case RemovalType::PurgeTracks:
+        // The user requested that we purge all metadata.
+        m_pTrackCollectionManager->purgeAllTracks(dir);
+        break;
+    default:
+        DEBUG_ASSERT(!"unreachable");
     }
 
     // Remove the directory from the directory list.
