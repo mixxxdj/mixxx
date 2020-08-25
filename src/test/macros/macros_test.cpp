@@ -2,7 +2,7 @@
 
 #include <QtConcurrent>
 
-TEST(MacrosTest, SerializeMacroActions) {
+TEST(MacroTest, SerializeMacroActions) {
     QList<MacroAction> actions{MacroAction(0, 1)};
 
     QString filename(QDir::currentPath() % "/src/test/macros/macro_proto");
@@ -18,7 +18,7 @@ TEST(MacrosTest, SerializeMacroActions) {
     EXPECT_EQ(deserialized, actions);
 }
 
-TEST(MacroRecordingTest, StartAndStopRecordingCOs) {
+TEST(MacroRecorderTest, StartAndStopRecordingCOs) {
     MacroRecorder recorder;
     ASSERT_EQ(ControlProxy(kConfigGroup, "status").get(),
             MacroRecorder::Status::Disabled);
@@ -35,18 +35,18 @@ TEST(MacroRecordingTest, StartAndStopRecordingCOs) {
     EXPECT_EQ(recorder.isRecordingActive(), false);
 }
 
-TEST(MacroRecordingTest, RecordCueJump) {
+TEST(MacroRecorderTest, RecordCueJump) {
     MacroRecorder recorder;
     auto factory = ChannelHandleFactory();
     ChannelHandle handle = factory.getOrCreateHandle("test-one");
     ASSERT_EQ(recorder.getStatus(), MacroRecorder::Status::Disabled);
 
-    recorder.notifyCueJump(&handle, s_action.position, s_action.target);
+    recorder.notifyCueJump(&handle, kAction.position, kAction.target);
     ASSERT_EQ(recorder.getActiveChannel(), nullptr);
     EXPECT_EQ(recorder.getRecordingSize(), 0);
 
     recorder.startRecording();
-    recorder.notifyCueJump(&handle, s_action.position, s_action.target);
+    recorder.notifyCueJump(&handle, kAction.position, kAction.target);
     EXPECT_EQ(recorder.getActiveChannel()->handle(), handle.handle());
     checkRecordedAction(&recorder);
 

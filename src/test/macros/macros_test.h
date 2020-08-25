@@ -4,12 +4,15 @@
 
 namespace {
 const QString kConfigGroup = QStringLiteral("[MacroRecording]");
+const QString kChannelGroup("[Channel1]");
 
-const MacroAction s_action(500, 15);
-void checkRecordedAction(MacroRecorder* recorder, MacroAction action = s_action) {
+const MacroAction kAction(500, 15);
+inline void checkMacroAction(MacroPtr macro, MacroAction action = kAction) {
+    EXPECT_EQ(macro->size(), 1);
+    EXPECT_EQ(macro->getActions().first(), action);
+}
+inline void checkRecordedAction(MacroRecorder* recorder, MacroAction action = kAction) {
     EXPECT_EQ(recorder->getRecordingSize(), 1);
-    auto recordedAction = recorder->fetchRecordedActions().first();
-    EXPECT_EQ(recordedAction.position, action.position);
-    EXPECT_EQ(recordedAction.target, action.target);
+    EXPECT_EQ(recorder->fetchRecordedActions().first(), action);
 }
 } // namespace

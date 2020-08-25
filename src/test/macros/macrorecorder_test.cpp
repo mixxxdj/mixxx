@@ -1,38 +1,38 @@
 #include "macros_test.h"
 #include "test/signalpathtest.h"
 
-class MacroRecorderTest : public SignalPathTest {
+class MacroRecordingTest : public SignalPathTest {
   public:
-    MacroRecorderTest()
+    MacroRecordingTest()
             : SignalPathTest(new MacroRecorder()),
               m_pEngineBuffer1(m_pChannel1->getEngineBuffer()) {
     }
 
-    void checkRecordedAction(MacroAction action = s_action) {
+    void checkRecordedAction(MacroAction action = kAction) {
         return ::checkRecordedAction(m_pMacroRecorder, action);
     }
 
     EngineBuffer* m_pEngineBuffer1;
 };
 
-TEST_F(MacroRecorderTest, RecordSeek) {
+TEST_F(MacroRecordingTest, RecordSeek) {
     ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
     ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);
     EXPECT_EQ(ControlProxy(kConfigGroup, "status").get(),
             MacroRecorder::Status::Armed);
 
     m_pEngineBuffer1->slotControlSeekExact(
-            s_action.position * mixxx::kEngineChannelCount);
+            kAction.position * mixxx::kEngineChannelCount);
     ProcessBuffer();
     EXPECT_EQ(m_pMacroRecorder->getRecordingSize(), 0);
 
     m_pEngineBuffer1->slotControlSeekAbs(
-            s_action.target * mixxx::kEngineChannelCount);
+            kAction.target * mixxx::kEngineChannelCount);
     ProcessBuffer();
     checkRecordedAction();
 }
 
-TEST_F(MacroRecorderTest, RecordHotcueActivation) {
+TEST_F(MacroRecordingTest, RecordHotcueActivation) {
     MacroAction action(100, 0);
     ControlObject::set(ConfigKey(kConfigGroup, "record"), 1);
     ASSERT_EQ(m_pMacroRecorder->isRecordingActive(), true);

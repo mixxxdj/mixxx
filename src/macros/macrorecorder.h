@@ -56,7 +56,7 @@ class MacroRecorder : public RecordingManagerBase {
     void pollRecordingStart();
 
   private:
-    FRIEND_TEST(MacroRecordingTest, RecordCueJump);
+    FRIEND_TEST(MacroRecorderTest, RecordCueJump);
 
     /// Checks if this channel is recording, otherwise tries to claim it.
     /// Returns true if this channel is recording.
