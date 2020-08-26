@@ -779,6 +779,7 @@ class MixxxCore(Feature):
                    "src/preferences/dialog/dlgprefsounditem.cpp",
                    "src/preferences/dialog/dlgprefwaveform.cpp",
                    "src/preferences/dialog/dlgprefbeats.cpp",
+                   "src/preferences/dialog/dlgprefrhythm.cpp",
                    "src/preferences/dialog/dlgprefkey.cpp",
                    "src/preferences/settingsmanager.cpp",
                    "src/preferences/replaygainsettings.cpp",
@@ -895,6 +896,9 @@ class MixxxCore(Feature):
                    "src/analyzer/analyzerkey.cpp",
                    "src/analyzer/analyzerebur128.cpp",
                    "src/analyzer/analyzersilence.cpp",
+                   "src/analyzer/analyzerrhythm.cpp",
+                   "src/analyzer/analyzerrhythmstats.cpp",
+                   "src/analyzer/analyzerrhythmbpm.cpp",
                    "src/analyzer/plugins/analyzersoundtouchbeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarybeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarykey.cpp",
@@ -1394,6 +1398,7 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefsounditem.ui',
             'src/preferences/dialog/dlgprefvinyldlg.ui',
             'src/preferences/dialog/dlgprefwaveformdlg.ui',
+            'src/preferences/dialog/dlgprefrhythm.ui',
         ]
 
         # In Python 3.x, map() returns a "map object" (instead of a list),
