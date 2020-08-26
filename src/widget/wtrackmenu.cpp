@@ -302,6 +302,7 @@ void WTrackMenu::createActions() {
         m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), m_pBPMMenu);
         m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), m_pBPMMenu);
         m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
+        m_pBpmRoundAction = new QAction(tr("Round BPM"), m_pBPMMenu);
 
         connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::DOUBLE);
@@ -321,6 +322,7 @@ void WTrackMenu::createActions() {
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::THREEHALVES);
         });
+        connect(m_pBpmRoundAction, &QAction::triggered, this, &WTrackMenu::slotRoundBpm);
 
         m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
         connect(m_pBpmResetAction,
@@ -397,6 +399,7 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
+        m_pBPMMenu->addAction(m_pBpmRoundAction);
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
@@ -682,6 +685,7 @@ void WTrackMenu::updateMenus() {
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
+            m_pBpmRoundAction->setEnabled(!anyBpmLocked);
         }
     }
 
@@ -1225,6 +1229,39 @@ void WTrackMenu::lockBpm(bool lock) {
             : tr("Unlocking BPM of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             LockBpmTrackPointerOperation(lock);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class RoundBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit RoundBpmTrackPointerOperation() {}
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        if (pTrack->isBpmLocked()) {
+            return;
+        }
+        mixxx::BeatsPointer pBeats = pTrack->getBeats();
+        if (!pBeats) {
+            return;
+        }
+        if (!(pBeats->getCapabilities() & ::mixxx::Beats::Capabilities::BEATSCAP_ROUND)) {
+            return;
+        }
+        pBeats->round();
+    }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotRoundBpm() {
+    const auto progressLabelText = tr("Round BPM of %n track(s)", "", getTrackCount());
+    const auto trackOperator = RoundBpmTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
