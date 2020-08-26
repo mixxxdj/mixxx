@@ -1,4 +1,4 @@
-#include "macrodao.h"
+#include "library/dao/macrodao.h"
 
 #include <QDebug>
 #include <QSqlQuery>
@@ -100,13 +100,19 @@ QMap<int, MacroPtr> MacroDAO::loadMacros(TrackId trackId) const {
     int labelColumn = record.indexOf("label");
     int contentColumn = record.indexOf("content");
     while (query.next()) {
+        int slot = query.value(slotColumn).toInt();
         result.insert(
-                query.value(slotColumn).toInt(),
+                slot,
                 std::make_shared<Macro>(
                         Macro::deserialize(query.value(contentColumn).toByteArray()),
                         query.value(labelColumn).toString(),
                         Macro::State(query.value(stateColumn).toInt()),
                         query.value(idColumn).toInt()));
+    }
+    for (int i = 1; i <= kMacrosPerTrack; ++i) {
+        if (!result.contains(i)) {
+            result.insert(i, std::make_shared<Macro>());
+        }
     }
     return result;
 }

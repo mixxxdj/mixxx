@@ -10,8 +10,9 @@ proto::Macro_Action* MacroAction::serialize() const {
     return serialized;
 }
 
-Macro::Macro(QList<MacroAction> actions, QString label, State state, int id)
-        : m_iId(id),
+Macro::Macro(QList<MacroAction> actions, QString label, State state, int dbId)
+        : m_bDirty(false),
+          m_iId(dbId),
           m_actions(actions),
           m_label(label),
           m_state(state) {
@@ -110,6 +111,13 @@ void Macro::setDirty(bool dirty) {
 
 void Macro::setId(int id) {
     m_iId = id;
+}
+
+bool operator==(const Macro& m1, const Macro& m2) {
+    return m1.getId() == m2.getId() &&
+            m1.getState() == m2.getState() &&
+            m1.getLabel() == m2.getLabel() &&
+            m1.getActions() == m2.getActions();
 }
 
 QDebug operator<<(QDebug debug, const MacroAction& action) {

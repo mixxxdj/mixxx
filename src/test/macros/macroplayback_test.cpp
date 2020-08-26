@@ -1,4 +1,4 @@
-#include "macros_test.h"
+#include "macro_test.h"
 #include "test/signalpathtest.h"
 
 class MacroPlaybackTest : public BaseSignalPathTest {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QtSql/QSqlDatabase>
-
 #include "library/dao/dao.h"
 #include "track/macro.h"
 #include "track/trackid.h"

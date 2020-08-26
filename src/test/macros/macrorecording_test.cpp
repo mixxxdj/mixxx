@@ -1,6 +1,6 @@
 #include <QDebug>
 
-#include "macros_test.h"
+#include "macro_test.h"
 #include "test/signalpathtest.h"
 
 constexpr int kMacro = 2;
@@ -12,7 +12,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
               m_status(kChannelGroup, QString("macro_%1_status").arg(kMacro)),
               m_record(kChannelGroup, QString("macro_%1_record").arg(kMacro)) {
         TrackPointer pTrack = getTestTrack();
-        pTrack->setMacros({{kMacro, std::make_shared<Macro>()}}); // TODO(xerus) remove
+        pTrack->setMacros({{kMacro, std::make_shared<Macro>()}});
         loadTrack(m_pMixerDeck1, pTrack);
     }
 

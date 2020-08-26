@@ -1282,7 +1282,7 @@ add_executable(mixxx-test
   src/test/macros/macrodao_test.cpp
   src/test/macros/macrorecording_test.cpp
   src/test/macros/macroplayback_test.cpp
-  src/test/macros/macros_test.cpp
+  src/test/macros/macro_test.cpp
   src/test/main.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp

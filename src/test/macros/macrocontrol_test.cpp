@@ -5,11 +5,12 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "macros_test.h"
+#include "macro_test.h"
 
-void loadTrack(MacroControl& macroControl, QList<MacroAction> actions = {}) {
+template<typename... _Args>
+void loadTrack(MacroControl& macroControl, _Args&&... args) {
     auto pTrack = Track::newTemporary();
-    pTrack->setMacros({{2, std::make_shared<Macro>(actions, "test")}});
+    pTrack->setMacros({{2, std::make_shared<Macro>(std::forward<_Args>(args)...)}});
     macroControl.trackLoaded(pTrack);
 }
 
@@ -21,31 +22,6 @@ TEST(MacroControl, Create) {
     macroControl.controlActivate();
     macroControl.controlToggle();
     macroControl.controlClear();
-
-    // TODO(xerus) ensure valid macro on load
-    //macroControl.trackLoaded(Track::newTemporary());
-    //EXPECT_EQ(COStatus.get(), MacroControl::Status::Empty);
-}
-
-class MacroControlMock : public MacroControl {
-  public:
-    MacroControlMock()
-            : MacroControl(kChannelGroup, nullptr, 2) {
-    }
-    MOCK_METHOD1(seekExact, void(double));
-};
-
-TEST(MacroControlTest, LoadTrackAndPlay) {
-    MacroControlMock macroControl;
-    int position = 0;
-
-    loadTrack(macroControl, QList{MacroAction(position, kAction.position)});
-    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
-
-    macroControl.controlActivate();
-    ASSERT_EQ(macroControl.isPlaying(), true);
-    EXPECT_CALL(macroControl, seekExact(kAction.position * mixxx::kEngineChannelCount)).Times(1);
-    macroControl.process(0, position, 2);
 }
 
 TEST(MacroControlTest, RecordSeek) {
@@ -91,4 +67,25 @@ TEST(MacroControlTest, Controls) {
     ASSERT_EQ(status.get(), MacroControl::Status::Armed);
     activate.set(1);
     ASSERT_EQ(status.get(), MacroControl::Status::Empty);
+}
+
+class MacroControlMock : public MacroControl {
+  public:
+    MacroControlMock()
+            : MacroControl(kChannelGroup, nullptr, 2) {
+    }
+    MOCK_METHOD1(seekExact, void(double));
+};
+
+TEST(MacroControlTest, LoadTrackAndPlay) {
+    MacroControlMock macroControl;
+    int position = 0;
+
+    loadTrack(macroControl, QList{MacroAction(position, kAction.position)}, "", Macro::State());
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
+
+    macroControl.controlActivate();
+    ASSERT_EQ(macroControl.isPlaying(), true);
+    EXPECT_CALL(macroControl, seekExact(kAction.position * mixxx::kEngineChannelCount)).Times(1);
+    macroControl.process(0, position, 2);
 }

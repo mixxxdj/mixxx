@@ -1,4 +1,4 @@
-#include "macros_test.h"
+#include "macro_test.h"
 
 TEST(MacroTest, SerializeMacroActions) {
     QList<MacroAction> actions{MacroAction(0, 1)};
@@ -14,4 +14,12 @@ TEST(MacroTest, SerializeMacroActions) {
     QList<MacroAction> deserialized = Macro::deserialize(serialized);
     EXPECT_EQ(deserialized.size(), 1);
     EXPECT_EQ(deserialized, actions);
+}
+
+TEST(MacroTest, CreateMacro) {
+    Macro macro;
+    EXPECT_EQ(macro.isDirty(), false);
+    EXPECT_EQ(macro.isEmpty(), true);
+    macro.clear();
+    EXPECT_EQ(macro, Macro());
 }
