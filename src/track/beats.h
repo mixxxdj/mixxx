@@ -41,7 +41,8 @@ class Beats : public QObject {
         BEATSCAP_TRANSLATE     = 0x0002, // Move all beat markers earlier or later
         BEATSCAP_SCALE         = 0x0004, // Scale beat distance by a fixed ratio
         BEATSCAP_MOVEBEAT      = 0x0008, // Move a single Beat
-        BEATSCAP_SETBPM        = 0x0010  // Set new bpm, beat grid only
+        BEATSCAP_SETBPM        = 0x0010, // Set new bpm, beat grid only
+        BEATSCAP_ROUND         = 0x0020  // Try to round the beat grid to interger segments
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
 
@@ -166,6 +167,9 @@ class Beats : public QObject {
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
     virtual void setBpm(double dBpm) = 0;
+
+    // Try to round the BPM value to a constant value
+    virtual void round() = 0;
 
     virtual SINT getSampleRate() const = 0;
 

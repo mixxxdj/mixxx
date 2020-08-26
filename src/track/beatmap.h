@@ -81,6 +81,7 @@ class BeatMap final : public Beats {
     void translate(double dNumSamples) override;
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;
+    void round() override;
 
     SINT getSampleRate() const override {
         return m_iSampleRate;

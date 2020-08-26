@@ -297,10 +297,19 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
 }
 
 void DlgTrackInfo::enableBPMControls(bool enabled) {
-    spinBpm->setEnabled(enabled && !m_trackHasBeatMap);
-    bpmRound->setEnabled(enabled && !m_trackHasBeatMap);
-    bpmConst->setEnabled(enabled && m_trackHasBeatMap);
-    bpmTap->setEnabled(enabled && !m_trackHasBeatMap);
+    bool canRound = false;
+    bool canSetBpm = false;
+    if (m_pLoadedTrack) {
+        mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+        if (pBeats) {
+            canSetBpm = pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM;
+            canRound = pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_ROUND;
+        }
+    }
+    spinBpm->setEnabled(enabled && canSetBpm);
+    bpmRound->setEnabled(enabled && canRound);
+    bpmConst->setEnabled(enabled && !canSetBpm);
+    bpmTap->setEnabled(enabled && canSetBpm);
     bpmDouble->setEnabled(enabled);
     bpmHalve->setEnabled(enabled);
     bpmTwoThirds->setEnabled(enabled);
@@ -488,8 +497,11 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmRound() {
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(round(newValue));
+    if (!m_pBeatsClone) {
+        return;
+    }
+    m_pBeatsClone->round();
+    spinBpm->setValue(m_pBeatsClone->getBpm());
     m_beatsChanged = true;
 }
 

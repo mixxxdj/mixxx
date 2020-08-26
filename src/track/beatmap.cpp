@@ -693,6 +693,19 @@ void BeatMap::setBpm(double dBpm) {
      */
 }
 
+void BeatMap::round() {
+    DEBUG_ASSERT(!"BeatMap::round() not implemented");
+
+    /*
+     * Once the unified Beats class is implemented and proper segments are detected, this
+     * method could try to align beats in segments to either constant beat with integer bpm number,
+     * segment with increasing/decreasing bpm or ignore segments with no dominant beats.
+     */
+
+    return;
+}
+
+
 void BeatMap::onBeatlistChanged() {
     if (!isValid()) {
         m_dLastFrame = 0;
