@@ -16,14 +16,14 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int numbe
           m_recordedActions(kRecordingQueueSize),
           m_iNextAction(0),
           m_COStatus(getConfigKey("status")),
-          m_COActive(getConfigKey("active")),
+          m_COIndicator(getConfigKey("indicator")),
           m_record(getConfigKey("record")),
           m_toggle(getConfigKey("toggle")),
           m_clear(getConfigKey("clear")),
           m_activate(getConfigKey("activate")) {
-    m_COActive.setReadOnly();
+    m_COIndicator.setReadOnly();
     m_COStatus.setReadOnly();
-    m_COStatus.forceSet(Status::NoTrack);
+    setStatus(Status::NoTrack);
 
     m_record.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_record,
@@ -70,7 +70,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
             if (m_pMacro->isLooped()) {
                 m_iNextAction = 0;
             } else {
-                m_COStatus.forceSet(Status::PlaybackStopped);
+                setStatus(Status::PlaybackStopped);
             }
         }
     }
@@ -83,7 +83,7 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_number) : nullptr;
     if (m_pMacro) {
         if (m_pMacro->isEmpty()) {
-            m_COStatus.forceSet(Status::Empty);
+            setStatus(Status::Empty);
         } else {
             if (m_pMacro->isEnabled()) {
                 play();
@@ -92,7 +92,7 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
             }
         }
     } else {
-        m_COStatus.forceSet(Status::NoTrack);
+        setStatus(Status::NoTrack);
     }
 }
 
@@ -102,7 +102,7 @@ void MacroControl::notifySeek(double dNewPlaypos) {
     }
     m_bJumpPending = false;
     if (getStatus() == Status::Armed) {
-        m_COStatus.forceSet(Status::Recording);
+        setStatus(Status::Recording);
     }
     if (getStatus() != Status::Recording) {
         return;
@@ -118,6 +118,14 @@ void MacroControl::slotJumpQueued() {
 
 MacroControl::Status MacroControl::getStatus() const {
     return Status(m_COStatus.get());
+}
+
+void MacroControl::setStatus(Status status) {
+    m_COStatus.forceSet(status);
+    if (status > Status::Empty) {
+        // TODO(xerus) add blinking for Status::Recording & Status::Playing
+        m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
+    }
 }
 
 MacroPtr MacroControl::getMacro() const {
@@ -136,13 +144,13 @@ bool MacroControl::isPlaying() const {
 void MacroControl::play() {
     DEBUG_ASSERT(m_pMacro);
     m_iNextAction = 0;
-    m_COStatus.forceSet(Status::Playing);
+    setStatus(Status::Playing);
 }
 
 void MacroControl::stop() {
     DEBUG_ASSERT(m_pMacro);
     m_iNextAction = INT_MAX;
-    m_COStatus.forceSet(Status::Recorded);
+    setStatus(Status::Recorded);
 }
 
 void MacroControl::updateRecording() {
@@ -153,7 +161,7 @@ void MacroControl::updateRecording() {
         return;
     }
     if (getStatus() == Status::Armed) {
-        m_COStatus.forceSet(Status::Recording);
+        setStatus(Status::Recording);
     }
     while (MacroAction* action = m_recordedActions.front()) {
         m_pMacro->addAction(*action);
@@ -168,9 +176,9 @@ void MacroControl::stopRecording() {
     m_updateRecordingTimer.stop();
     updateRecording();
     if (getStatus() == Status::Armed) {
-        m_COStatus.forceSet(Status::Empty);
+        setStatus(Status::Empty);
     } else {
-        m_COStatus.forceSet(Status::Recorded);
+        setStatus(Status::Recorded);
         play();
     }
 }
@@ -180,7 +188,7 @@ void MacroControl::controlRecord() {
         return;
     }
     if (!isRecording()) {
-        m_COStatus.forceSet(Status::Armed);
+        setStatus(Status::Armed);
         m_updateRecordingTimer.start(kRecordingTimerInterval);
     } else {
         stopRecording();

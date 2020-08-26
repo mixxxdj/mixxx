@@ -48,6 +48,8 @@ class MacroControl : public EngineControl {
     void play();
     void stop();
 
+    void setStatus(Status);
+
     ConfigKey getConfigKey(QString name);
     int m_number;
     QString m_controlPattern;
@@ -60,7 +62,7 @@ class MacroControl : public EngineControl {
     int m_iNextAction;
 
     ControlObject m_COStatus;
-    ControlObject m_COActive;
+    ControlObject m_COIndicator;
 
     ControlPushButton m_record;
     ControlPushButton m_toggle;
