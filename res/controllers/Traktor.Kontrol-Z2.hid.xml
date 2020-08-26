@@ -6,7 +6,7 @@
         <description>HID Mapping for Traktor Kontrol Z2</description>
         <wiki>http://mixxx.org/wiki/doku.php/traktor_z2</wiki>
         <devices>
-            <product protocol="hid" vendor_id="0x17cc" product_id="0x1310" usage_page="0xff01" usage="0x1" interface_number="0x4" />
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1130" usage_page="0xff01" usage="0x1" interface_number="0x4" />
         </devices>
     </info>
     <controller id="Traktor">
