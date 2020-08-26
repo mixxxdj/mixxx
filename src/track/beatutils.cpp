@@ -35,15 +35,8 @@ const double kBpmFilterTolerance = 1.0;
 constexpr double kMaxDiffSameBpm = 0.25;
 
 bool checkIfErrorGrowing(double previous, double current) {
-
-    if (current < 0 && previous > 0) {
-        return false;
-    } else if (current > 0 && previous < 0) {
-        return true;
-    } else {
-        return fabs(current) > fabs(previous)
-                ? true : false;
-    }
+    return fabs(current) > fabs(previous)
+            ? true : false;
 }
 
 } //namespece
@@ -194,6 +187,7 @@ QVector<double> BeatUtils::FixBeatmap(
             double modeAtRight = BeatStatistics::mode(rightTempoFrequency);
             leftRighDiff = fabs(modeAtLeft - modeAtRight);
         }
+        qDebug() << leftRighDiff;
         // const tempo make const grid
         if (leftRighDiff < kMaxDiffSameBpm) {
             auto splittedAtTempoChange = QVector<double>::fromStdVector(std::vector<double>(
@@ -241,7 +235,6 @@ QVector<double> BeatUtils::calculateIronedBeatMap(
     if (rawbeats.size() < kBeatsToCountTempo) {
         return rawbeats;
     }
-    // Length of a beat at globalBpm in mono samples.
     double secondsPerSample = 1 / static_cast<double>(sampleRate);
     double beatOffset = rawbeats[1];
     int lastCorrectedBeat = 0;
@@ -254,14 +247,16 @@ QVector<double> BeatUtils::calculateIronedBeatMap(
     double previousPhaseErrorMean = 0.0;
     auto phaseErrorAvarageCalculator = MovingAvarage(1);
     auto bpmAvarageCalculator = MovingAvarage(1);
-    double meanBpm;
+    double meanBpm = 0.0;
+    double meanBeatLength = 0.0;
+    bool foundFistOutlier = false;
     QVector<double> fixedBeats;
-    while (rightIndex < rawbeats.size()) {
+    while (beatOffset < rawbeats.last() + meanBeatLength) {
         double bpm = 60.0 * sampleRate / (rawbeats[rightIndex] - rawbeats[rightIndex -1]);
         meanBpm = bpmAvarageCalculator(bpm);
         bpmAvarageCalculator.increasePeriod();
         // we do the rounding because we do not want beats at fractional sample position
-        double meanBeatLength = floor(((60.0 * sampleRate) / meanBpm) + 0.5);
+        meanBeatLength = floor(((60.0 * sampleRate) / meanBpm) + 0.5);
         phaseError = secondsPerSample * (beatOffset - rawbeats[rightIndex]);
         phaseErrorMean = phaseErrorAvarageCalculator(phaseError);
         phaseErrorAvarageCalculator.increasePeriod();
@@ -269,37 +264,52 @@ QVector<double> BeatUtils::calculateIronedBeatMap(
         if (isErrorGrowing && !wasErrorGrowing) {
             errorStartedGrowing = rightIndex;
         }
-        double correctedOffset = rawbeats[lastCorrectedBeat];
-        // we reached our phase error, add the beats until error started growing
+        double correctedOffset;
+        if (lastCorrectedBeat == 0) {
+            correctedOffset = rawbeats[lastCorrectedBeat];
+        } else {
+            correctedOffset = fixedBeats.last();
+        }
         if (fabs(phaseError) > kMaxSecsPhaseError) {
-            qDebug() << "from beat" << lastCorrectedBeat << "to beat" << errorStartedGrowing << "tempo is" << meanBpm;
-            for (int i = lastCorrectedBeat; i < errorStartedGrowing; i += 1) {
-                correctedOffset += meanBeatLength;
-                fixedBeats << correctedOffset;
+            // ignore a single outlier
+            if (!foundFistOutlier) {
+                foundFistOutlier = true;
+                isErrorGrowing = false;
+            // add the beats until error started growing
+            } else {
+                qDebug() << "from beat" << lastCorrectedBeat << "to beat" << errorStartedGrowing << "tempo is" << meanBpm;
+                for (int i = lastCorrectedBeat; i < errorStartedGrowing; i += 1) {
+                    correctedOffset += meanBeatLength;
+                    fixedBeats << correctedOffset;
+                }
+                lastCorrectedBeat = errorStartedGrowing;
+                if (lastCorrectedBeat == rawbeats.size() -1) {
+                    break;
+                }
+                foundFistOutlier = false;
+                rightIndex = errorStartedGrowing;
+                beatOffset = rawbeats[rightIndex];
+                phaseErrorAvarageCalculator.reset();
+                phaseErrorAvarageCalculator.setPeriod(1);
+                bpmAvarageCalculator.reset();
+                bpmAvarageCalculator.setPeriod(1);
+                previousPhaseErrorMean = 0;
+                wasErrorGrowing = false;
+                continue;
             }
-            lastCorrectedBeat = errorStartedGrowing;
-            if (lastCorrectedBeat == rawbeats.size() -1) {
-                break;
-            }
-            rightIndex = errorStartedGrowing;
-            beatOffset = rawbeats[rightIndex];
-            phaseErrorAvarageCalculator.reset();
-            phaseErrorAvarageCalculator.setPeriod(1);
-            bpmAvarageCalculator.reset();
-            bpmAvarageCalculator.setPeriod(1);
+        }
         // case we reach our last beat without any reaching our max phase error
         // still need to add those beats..
-        } else if (rightIndex == rawbeats.size() - 1) {
+        if (rightIndex == rawbeats.size() - 1) {
             qDebug() << "from beat" << lastCorrectedBeat << "to beat" << rightIndex << "tempo is" << meanBpm;
             for (int i = lastCorrectedBeat; i < rawbeats.size(); i += 1) {
                 correctedOffset += meanBeatLength;
                 fixedBeats << correctedOffset;
             }
             break;
-        } else {
-            beatOffset += meanBeatLength;
-            rightIndex += 1;
         }
+        beatOffset += meanBeatLength;
+        rightIndex += 1;
         previousPhaseErrorMean = phaseErrorMean;
         wasErrorGrowing = isErrorGrowing;
     }
