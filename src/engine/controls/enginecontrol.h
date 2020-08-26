@@ -69,8 +69,8 @@ class EngineControl : public QObject {
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypos);
     virtual void trackLoaded(TrackPointer pNewTrack);
-    virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
     virtual void trackUnloaded(TrackPointer pOldTrack);
+    virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
 
   protected:
     struct SampleOfTrack {

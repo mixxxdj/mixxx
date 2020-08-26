@@ -1233,8 +1233,8 @@ void Track::setKeyText(const QString& keyText,
 void Track::setBpmLocked(bool bpmLocked) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.ptrBpmLocked(), bpmLocked)) {
-        emit bpmLockUpdated(bpmLocked);
         markDirtyAndUnlock(&lock);
+        emit bpmLockUpdated(bpmLocked);
     }
 }
 

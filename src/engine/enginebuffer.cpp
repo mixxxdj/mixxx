@@ -582,7 +582,7 @@ void EngineBuffer::notifyTrackLoaded(
                 this,
                 &EngineBuffer::slotUpdatedTrackBeats);
         for (const auto& pControl : qAsConst(m_engineControls)) {
-            pControl->trackUnloaded(pNewTrack);
+            pControl->trackUnloaded(pOldTrack);
         }
     }
 
