@@ -3,6 +3,7 @@
 #include <QHash>
 #include <QMetaMethod>
 #include <QStringList>
+#include <QtGlobal>
 #include <array>
 #include <cstdint>
 #include <djinterop/djinterop.hpp>
@@ -317,13 +318,20 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
                             ->getDirectoryDAO()
                             .getDirs();
         for (auto& dir : dirs) {
-            trackRefs.unite(m_pTrackCollectionManager->internalCollection()
-                                    ->getTrackDAO()
-                                    .getAllTrackRefs(dir)
-                                    .toSet());
+            auto trackRefsFromDir = m_pTrackCollectionManager
+                                            ->internalCollection()
+                                            ->getTrackDAO()
+                                            .getAllTrackRefs(dir);
+            for (auto& trackRef : trackRefsFromDir) {
+                trackRefs.insert(trackRef);
+            }
         }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        m_trackRefs = QList<TrackRef>{trackRefs.begin(), trackRefs.end()};
+#else
         m_trackRefs = trackRefs.toList();
+#endif
 
         // Convert a list of track refs to a list of track ids, and use that
         // to identify all crates that contain those tracks.
@@ -331,14 +339,22 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
         for (auto& trackRef : trackRefs) {
             trackIds.append(trackRef.getId());
         }
-        m_crateIds = m_pTrackCollectionManager->internalCollection()
-                             ->crates()
-                             .collectCrateIdsOfTracks(trackIds)
-                             .toList();
+        crateIds = m_pTrackCollectionManager->internalCollection()
+                           ->crates()
+                           .collectCrateIdsOfTracks(trackIds);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        m_crateIds = QList<CrateId>{crateIds.begin(), crateIds.end()};
+#else
+        m_crateIds = crateIds.toList();
+#endif
     } else {
         // Explicit crates have been specified to export.
         qDebug() << "Loading track refs from" << crateIds.size() << "crate(s)";
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        m_crateIds = QList<CrateId>{crateIds.begin(), crateIds.end()};
+#else
         m_crateIds = crateIds.toList();
+#endif
 
         // Identify track refs from the specified crates.
         m_trackRefs.clear();
