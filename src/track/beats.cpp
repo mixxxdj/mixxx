@@ -226,8 +226,9 @@ Beat BeatsInternal::findNthBeat(FramePos frame, int n) const {
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
+    // TODO: Use local beat length, not global.
     const double kFrameEpsilon =
-            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), m_iSampleRate);
+            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), getSampleRate());
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -300,14 +301,12 @@ Bpm BeatsInternal::getGlobalBpm() const {
 }
 
 bool BeatsInternal::isValid() const {
-    return m_iSampleRate > 0 && !m_beats.empty();
+    return getSampleRate() > 0 && !m_beats.empty();
 }
 
 void BeatsInternal::updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo) {
-    m_iSampleRate = streamInfo.getSignalInfo().getSampleRate();
-    m_duration = streamInfo.getDuration();
+    m_streamInfo = streamInfo;
     generateBeatsFromMarkers();
-    updateBpm();
 }
 
 BeatsInternal::BeatsInternal(const audio::StreamInfo& streamInfo) {
@@ -326,7 +325,7 @@ void BeatsInternal::initWithProtobuf(const QByteArray& byteArray) {
 
 void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers) {
-    DEBUG_ASSERT(m_iSampleRate > 0 && m_duration.toDoubleSeconds() > 0);
+    DEBUG_ASSERT(getSampleRate() > 0 && getDurationSeconds() > 0);
     if (beats.empty()) {
         clearMarkers();
         return;
@@ -334,8 +333,8 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
 
     clearMarkers();
 
-    auto lastBeatTime = Duration::fromSeconds(beats.last().getValue() / m_iSampleRate);
-    DEBUG_ASSERT(m_duration >= lastBeatTime);
+    auto lastBeatTime = Duration::fromSeconds(beats.last().getValue() / getSampleRate());
+    DEBUG_ASSERT(m_streamInfo.getDuration() >= lastBeatTime);
 
     m_beatsProto.set_first_beat_frame(beats.at(0).getValue());
     int bpmMarkerBeatIndex = 0;
@@ -348,7 +347,8 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         }
         else {
             FrameDiff_t beatLength = beats.at(i) - beats.at(i - 1);
-            Bpm immediateBpm(kSecondsPerMinute * m_iSampleRate / beatLength);
+            // TODO(hacksdump): Take time signature (note length) into account while calculating BPM.
+            Bpm immediateBpm(kSecondsPerMinute * getSampleRate() / beatLength);
             if (m_beatsProto.bpm_markers().empty() ||
                     m_beatsProto.bpm_markers().rbegin()->bpm() !=
                             immediateBpm.getValue()) {
@@ -551,7 +551,7 @@ Bpm BeatsInternal::calculateBpm(
         return Bpm();
     }
 
-    return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
+    return BeatUtils::calculateBpm(beatvect, getSampleRate(), 0, 9999);
 }
 
 FramePos BeatsInternal::findNBeatsFromFrame(
@@ -613,8 +613,9 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
+    // TODO: Use local beat length, not global.
     const double kFrameEpsilon =
-            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), m_iSampleRate);
+            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), getSampleRate());
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -861,7 +862,7 @@ FramePos BeatsInternal::getLastBeatPosition() const {
 
 void BeatsInternal::generateBeatsFromMarkers() {
     m_beats.clear();
-    if (m_iSampleRate <= 0 || m_duration.toDoubleSeconds() <= 0) {
+    if (getSampleRate() <= 0 || getDurationSeconds() <= 0) {
         return;
     }
     // Absence of BPM markers is irrecoverable.
@@ -928,7 +929,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
     }
 
     // We keep generating beats until this frame.
-    const FramePos trackLastFrame(m_iSampleRate * m_duration.toDoubleSeconds());
+    const FramePos trackLastFrame(getSampleRate() * getDurationSeconds());
     int bpmMarkerIndex = 0;
     int timeSignatureMarkerIndex = 0;
     int barIndex = -1;
@@ -963,7 +964,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
         TimeSignature currentTimeSignature =
                 TimeSignature(currentTimeSignatureMarker.time_signature());
         FrameDiff_t beatLength = getBeatLengthFrames(
-                bpmBeforeThisBeat, m_iSampleRate, currentTimeSignature);
+                bpmBeforeThisBeat, getSampleRate(), currentTimeSignature);
 
         if (barRelativeBeatIndex % currentTimeSignature.getBeatsPerBar() == 0) {
             barIndex++;
@@ -1026,6 +1027,14 @@ void BeatsInternal::setAsDownbeat(int beatIndex) {
     m_beatsProto.set_first_downbeat_index(m_beatsProto.first_downbeat_index() +
             beat.beatInBarIndex());
     generateBeatsFromMarkers();
+}
+
+SINT BeatsInternal::getSampleRate() const {
+    return m_streamInfo.getSignalInfo().getSampleRate();
+}
+
+double BeatsInternal::getDurationSeconds() const {
+    return m_streamInfo.getDuration().toDoubleSeconds();
 }
 
 } // namespace mixxx

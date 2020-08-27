@@ -98,13 +98,14 @@ class BeatsInternal {
     void scaleFraction(uint fraction);
     void generateBeatsFromMarkers();
     void clearMarkers();
+    SINT getSampleRate() const;
+    double getDurationSeconds() const;
 
     QString m_subVersion;
     Bpm m_bpm;
     BeatList m_beats;
     track::io::Beats m_beatsProto;
-    int m_iSampleRate;
-    mixxx::Duration m_duration;
+    audio::StreamInfo m_streamInfo;
     friend QDebug operator<<(QDebug dbg, const BeatsInternal& arg);
 };
 
