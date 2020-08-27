@@ -49,7 +49,7 @@ class BeatUtils {
                                int min_bpm, int max_bpm);
 
     // Remove jitter and false beats noise from the beats that make a beatmap
-    static QVector<double> FixBeatmap(
+    static QVector<double> ironBeatmap(
             QVector<double>& rawBeats, int SampleRate, double minBpm, double maxBpm);
 
     
@@ -81,9 +81,9 @@ class BeatUtils {
         const double filterCenter,
         const double filterTolerance,
         QMap<double, int>* filteredFrequencyTable);
-    static QMap<int, double> findTempoChanges(
-            QMap<double, int> tempoFrequency, QList<double> tempoList);
-    static void RemoveSmallArrhythmic(QVector<double>& rawBeats, const int sampleRate,
+    static QMap<int, double> findStableTempoRegions(
+            QMap<double, int> frequencyOfTempos, QList<double> tempoList);
+    static void removeSmallArrhythmic(QVector<double>& rawBeats, const int sampleRate,
             QMap<int, double> &stableTemposByPosition);
     static QVector<double> calculateIronedGrid(
             const QVector<double> &rawbeats, const int sampleRate);
