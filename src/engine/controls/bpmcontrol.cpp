@@ -1024,8 +1024,8 @@ double BpmControl::updateLocalBpm() {
     mixxx::Bpm local_bpm;
     const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (pBeats) {
-        local_bpm = pBeats->getBpmAroundPosition(
-                getFrameOfTrack().currentFrame, kLocalBpmSpan);
+        local_bpm = pBeats->getBpmAtPosition(
+                getFrameOfTrack().currentFrame);
         if (local_bpm.getValue() == -1) {
             local_bpm = pBeats->getGlobalBpm();
         }

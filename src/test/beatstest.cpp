@@ -260,20 +260,23 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
     EXPECT_EQ(nextBeat, foundNextBeat);
 }
 
-TEST_F(BeatsTest, BpmAround) {
+TEST_F(BeatsTest, InstantaneousBpm) {
     const auto& pBeats = m_pTrack1->getBeats();
     const FrameDiff_t approxBeatLengthFrames = getBeatLengthFrames(m_bpm);
     const int numBeats = 64;
 
     // Constant BPM, constructed in BeatsTest
     for (unsigned int i = 0; i < 100; i++) {
-        EXPECT_EQ(Bpm(60), pBeats->getBpmAroundPosition(FramePos(i), 5));
+        EXPECT_EQ(m_bpm, pBeats->getBpmAtPosition(FramePos(i)));
     }
+
+    // Check before the start of the track.
+    EXPECT_EQ(m_bpm, pBeats->getBpmAtPosition(m_startOffsetFrames - 100));
 
     // Prepare a new Beats to test the behavior for variable BPM
     QVector<FramePos> beats;
     FramePos beat_pos;
-    Bpm bpm(60);
+    Bpm bpm = m_bpm;
     for (unsigned int i = 0; i < numBeats; ++i, bpm = bpm + 1) {
         FrameDiff_t beat_length = getBeatLengthFrames(bpm);
         beats.append(beat_pos);
@@ -282,27 +285,34 @@ TEST_F(BeatsTest, BpmAround) {
 
     m_pTrack1->setDuration(mixxx::Duration::fromSeconds(beat_pos.getValue() / m_iSampleRate));
     pBeats->initWithAnalyzer(beats);
-    BeatsPointer pMap = m_pTrack1->getBeats();
-    // The average of the first 8 beats should be different than the average
-    // of the last 8 beats.
-    EXPECT_DOUBLE_EQ(63.937454161267674,
-            pMap->getBpmAroundPosition(kStartFramePos + approxBeatLengthFrames * 4, 4).getValue());
-    EXPECT_DOUBLE_EQ(118.96637943082918,
-            pMap->getBpmAroundPosition(kStartFramePos + approxBeatLengthFrames * 60, 4).getValue());
-    // Also test at the beginning and end of the track
-    EXPECT_DOUBLE_EQ(62.936459878052396,
-            pMap->getBpmAroundPosition(kStartFramePos, 4).getValue());
-    EXPECT_DOUBLE_EQ(118.96637943082918,
-            pMap->getBpmAroundPosition(kStartFramePos + approxBeatLengthFrames * 65, 4).getValue());
+
+    // Test within the track.
+    EXPECT_TRUE(qFuzzyCompare(64,
+            pBeats->getBpmAtPosition(kStartFramePos + approxBeatLengthFrames * 4).getValue()));
+    EXPECT_TRUE(qFuzzyCompare(100,
+            pBeats->getBpmAtPosition(kStartFramePos + approxBeatLengthFrames * 31).getValue()));
+    // Before
+    EXPECT_TRUE(qFuzzyCompare(60,
+            pBeats->getBpmAtPosition(kStartFramePos - 1000).getValue()));
+    // Beginning
+    EXPECT_TRUE(qFuzzyCompare(60,
+            pBeats->getBpmAtPosition(kStartFramePos).getValue()));
+    // End
+    EXPECT_TRUE(qFuzzyCompare(m_bpm.getValue() + numBeats - 2,
+            pBeats->getBpmAtPosition(beats.last()).getValue()));
+    // Beyond the end
+    EXPECT_TRUE(qFuzzyCompare(m_bpm.getValue() + numBeats - 2,
+            pBeats->getBpmAtPosition(beats.last() + 1000).getValue()));
 
     // Try a really, really short track
-    beats = createBeatVector(FramePos(10), 3, getBeatLengthFrames(m_bpm));
+    auto startOffset = FramePos(10);
+    beats = createBeatVector(startOffset, 3, getBeatLengthFrames(m_bpm));
     m_pTrack1->setDuration(beats.last().getValue() / m_iSampleRate);
-    m_pTrack1->getBeats()->initWithAnalyzer(beats);
-    EXPECT_DOUBLE_EQ(m_bpm.getValue(),
-            pBeats->getBpmAroundPosition(
-                          kStartFramePos + approxBeatLengthFrames * 1, 4)
-                    .getValue());
+    pBeats->initWithAnalyzer(beats);
+    EXPECT_TRUE(qFuzzyCompare(m_bpm.getValue(),
+            pBeats->getBpmAtPosition(
+                          startOffset + approxBeatLengthFrames * 1)
+                    .getValue()));
 }
 
 TEST_F(BeatsTest, Signature) {

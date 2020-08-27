@@ -76,7 +76,7 @@ class BeatsInternal {
     FramePos findClosestBeat(FramePos frame) const;
     std::unique_ptr<BeatsInternal::iterator> findBeats(
             FramePos startFrame, FramePos stopFrame) const;
-    Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
+    Bpm getBpmAtPosition(FramePos curFrame) const;
     void setSignature(TimeSignature sig, int downbeatIndex);
     void translate(FrameDiff_t numFrames);
     void setBpm(Bpm bpm, int beatIndex = 0);
@@ -209,10 +209,8 @@ class Beats final : public QObject {
     /// valid, otherwise returns Bpm().
     Bpm getGlobalBpm() const;
 
-    /// Return the average BPM over the range of n*2 beats centered around
-    /// curFrameNum.  (An n of 4 results in an averaging of 8 beats).  Invalid
-    /// BPM returns Bpm().
-    Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
+    /// Return the instantaneous BPM at a position.
+    Bpm getBpmAtPosition(FramePos curFrame) const;
 
     /// Sets the track signature starting at specified bar
     void setSignature(TimeSignature sig, int downbeatIndex);

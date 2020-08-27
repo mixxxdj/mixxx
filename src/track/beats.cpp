@@ -130,9 +130,9 @@ Bpm Beats::getGlobalBpm() const {
     return m_beatsInternal.getGlobalBpm();
 }
 
-Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
+Bpm Beats::getBpmAtPosition(FramePos curFrame) const {
     QMutexLocker locker(&m_mutex);
-    return m_beatsInternal.getBpmAroundPosition(curFrame, n);
+    return m_beatsInternal.getBpmAtPosition(curFrame);
 }
 
 void Beats::setSignature(TimeSignature sig, int beatIndex) {
@@ -326,12 +326,11 @@ void BeatsInternal::initWithProtobuf(const QByteArray& byteArray) {
 void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers) {
     DEBUG_ASSERT(getSampleRate() > 0 && getDurationSeconds() > 0);
+    clearMarkers();
+
     if (beats.empty()) {
-        clearMarkers();
         return;
     }
-
-    clearMarkers();
 
     auto lastBeatTime = Duration::fromSeconds(beats.last().getValue() / getSampleRate());
     DEBUG_ASSERT(m_streamInfo.getDuration() >= lastBeatTime);
@@ -734,38 +733,14 @@ Beat BeatsInternal::findPrevBeat(FramePos frame) const {
     return findNthBeat(frame, -1);
 }
 
-Bpm BeatsInternal::getBpmAroundPosition(FramePos curFrame, int n) const {
+Bpm BeatsInternal::getBpmAtPosition(FramePos curFrame) const {
     if (!isValid()) {
         return Bpm();
     }
-
-    // To make sure we are always counting n beats, iterate backward to the
-    // lower bound, then iterate forward from there to the upper bound.
-    // kInvalidFramePos indicates we went off the map -- count from the beginning.
-    FramePos lower_bound = findNthBeat(curFrame, -n).framePosition();
-    if (lower_bound == kInvalidFramePos) {
-        lower_bound = m_beats.first().framePosition();
+    if (curFrame < getFirstBeatFrame()) {
+        return m_beats.first().bpm();
     }
-
-    // If we hit the end of the beat map, recalculate the lower bound.
-    FramePos upper_bound = findNthBeat(lower_bound, n * 2).framePosition();
-    if (upper_bound == kInvalidFramePos) {
-        upper_bound = m_beats.last().framePosition();
-        lower_bound = findNthBeat(upper_bound, n * -2).framePosition();
-        // Super edge-case -- the track doesn't have n beats!  Do the best
-        // we can.
-        if (lower_bound == kInvalidFramePos) {
-            lower_bound = m_beats.first().framePosition();
-        }
-    }
-
-    // TODO(JVC) We are extracting frame numbers to then construct beats.
-    // Then in calculateBpm we are using the frame position to find
-    // the beats to  use them to calculate. Seems inefficient
-    // Will not make more sense to extract the Beats straight?
-    // We can use getBpmRange and move the logic of calculateBpm there
-    Beat startBeat(lower_bound), stopBeat(upper_bound);
-    return calculateBpm(startBeat, stopBeat);
+    return findPrevBeat(curFrame).bpm();
 }
 
 void BeatsInternal::setSignature(TimeSignature sig, int downbeatIndex) {
