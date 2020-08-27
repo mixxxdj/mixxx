@@ -597,20 +597,19 @@ void AnalyzerRhythm::computeTempogramByACF() {
     int firstFullAC = m_tempogramWindowLength / 2 / m_tempogramHopSize;
     for (size_t i = 0; i < tempogramACF[0].size(); i++) {
         qDebug() << i
-                 << tempogramACF[0][i]
-                 << tempogramACF[5][i]
-                 << tempogramACF[firstFullAC * 4 + 1][i]
-                 << tempogramACF[firstFullAC * 4 + 2][i]
-                 << tempogramACF[firstFullAC * 4 + 3][i]
-                 << tempogramACF[firstFullAC * 4 + 4][i]
-                 << tempogramACF[firstFullAC * 4 + 5][i]
-                 << tempogramACF[firstFullAC * 4 + 6][i]
-                 << tempogramACF[firstFullAC * 4 + 7][i]
-                 << tempogramACF[firstFullAC * 4 + 8][i]
-                 << tempogramACF[firstFullAC * 4 + 9][i]
-                 << tempogramACF[firstFullAC * 4 + 10][i]
-                 << tempogramACF[firstFullAC * 4 + 11][i]
-                 << tempogramACF[firstFullAC * 4 + 12][i];
+                 << tempogramACF[27][i]
+                 << tempogramACF[28][i]
+                 << tempogramACF[29][i]
+                 << tempogramACF[30][i]
+                 << tempogramACF[31][i]
+                 << tempogramACF[32][i]
+                 << tempogramACF[33][i];
+
+        //                 << tempogramACF[firstFullAC * 4 + 8][i]
+        //                 << tempogramACF[firstFullAC * 4 + 9][i]
+        //                 << tempogramACF[firstFullAC * 4 + 10][i]
+        //                 << tempogramACF[firstFullAC * 4 + 11][i]
+        //                 << tempogramACF[firstFullAC * 4 + 12][i];
     }
 
     int tempogramMinLag = std::max(static_cast<int>(ceil((60/ static_cast<double>((kNoveltyCurveHop) * m_tempogramMaxBPM))

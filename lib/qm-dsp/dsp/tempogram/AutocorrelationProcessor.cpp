@@ -80,6 +80,7 @@ int AutocorrelationProcessor::processOffset(float * input, int inputLength, int 
     // periods[0] is most likely 1/8 expect a maximum at least at 1/4
     int shift = periods[0];
     if (shift < 20) {
+        // Look at least into a 680 ms Window (88 BPM)
         shift = 20;
     }
     for (int lag = -shift; lag < shift * 2; ++lag) {
