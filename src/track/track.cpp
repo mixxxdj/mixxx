@@ -203,8 +203,7 @@ void Track::importMetadata(
         setBpm(actualBpm.getValue());
     }
 
-    if (!newKey.isEmpty()
-            && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
+    if (!newKey.isEmpty() && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
         setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
     }
 }
@@ -286,7 +285,6 @@ double Track::setBpm(double bpmValue) {
         // No beat grid available -> create and initialize
         mixxx::FramePos cue = samplePosToFramePos(getCuePoint().getPosition());
         const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(streamInfo()));
-        pBeats->moveToThread(thread());
         pBeats->setGrid(mixxx::Bpm(bpmValue), cue);
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
         return bpmValue;
@@ -314,9 +312,8 @@ QString Track::getBpmText() const {
 void Track::setBeats(const mixxx::BeatsInternal& beats) {
     QMutexLocker lock(&m_qMutex);
     if (!m_pBeats) {
-        m_pBeats = mixxx::BeatsPointer(new mixxx::Beats(streamInfo(), beats));
-        connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::beatsUpdated);
-        m_pBeats->moveToThread(thread());
+        const auto& pBeats = mixxx::BeatsPointer(new mixxx::Beats(streamInfo(), beats));
+        setBeatsMarkDirtyAndUnlock(&lock, pBeats);
     } else {
         m_pBeats->initWithProtobuf(beats.toProtobuf());
     }
@@ -337,6 +334,7 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     if (m_pBeats) {
         bpmValue = m_pBeats->getGlobalBpm().getValue();
         connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
+        m_pBeats->moveToThread(thread());
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
     return true;
@@ -713,7 +711,7 @@ void Track::initId(TrackId id) {
     // the object has been created.
     VERIFY_OR_DEBUG_ASSERT(!m_record.getId().isValid()) {
         kLogger.warning() << "Cannot change id from"
-                << m_record.getId() << "to" << id;
+                          << m_record.getId() << "to" << id;
         return; // abort
     }
     m_record.setId(id);
@@ -975,7 +973,6 @@ bool Track::importPendingBeatsWhileLocked() {
     DEBUG_ASSERT(m_streamInfo->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getSampleRate());
     auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(streamInfo(), mixxx::BeatsInternal()));
-    pBeats->moveToThread(thread());
     pBeats->initWithAnalyzer(
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
                     getLocation(), *m_streamInfo));
@@ -1348,7 +1345,7 @@ ExportTrackMetadataResult Track::exportMetadata(
     // is we import it again into a temporary variable.
     mixxx::TrackMetadata importedFromFile;
     if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
-            mixxx::MetadataSource::ImportResult::Succeeded)) {
+                mixxx::MetadataSource::ImportResult::Succeeded)) {
         // Prevent overwriting any file tags that are not yet stored in the
         // library database!
         m_record.mergeImportedMetadata(importedFromFile);
@@ -1368,13 +1365,13 @@ ExportTrackMetadataResult Track::exportMetadata(
         if (!m_bMarkedForMetadataExport &&
                 !m_record.getMetadata().anyFileTagsModified(
                         importedFromFile,
-                        mixxx::Bpm::Comparison::Integer))  {
+                        mixxx::Bpm::Comparison::Integer)) {
             // The file tags are in-sync with the track's metadata and don't need
             // to be updated.
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
-                            << "Skip exporting of unmodified track metadata into file:"
-                            << getLocation();
+                        << "Skip exporting of unmodified track metadata into file:"
+                        << getLocation();
             }
             // abort
             return ExportTrackMetadataResult::Skipped;
