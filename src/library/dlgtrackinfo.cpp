@@ -129,7 +129,7 @@ void DlgTrackInfo::init() {
             &QCheckBox::stateChanged,
             this,
             &DlgTrackInfo::slotBpmConstChanged);
-    connect(bpmLock,
+    connect(beatgridLock,
             &QCheckBox::stateChanged,
             this,
             [this] (int state) {enableBpmControls(state == Qt::Unchecked);});
@@ -287,7 +287,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
     bpmConst->setChecked(!m_trackHasBeatMap);
 
-    bpmLock->setChecked(track.isBpmLocked());
+    beatgridLock->setChecked(track.isBpmLocked());
 }
 
 void DlgTrackInfo::enableBpmControls(bool enabled) {
@@ -420,7 +420,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
-    m_pLoadedTrack->setBpmLocked(bpmLock->checkState() == Qt::Checked);
+    m_pLoadedTrack->setBpmLocked(beatgridLock->checkState() == Qt::Checked);
 
     if (m_beatsChanged) {
         m_pLoadedTrack->setBeats(m_pBeatsClone);

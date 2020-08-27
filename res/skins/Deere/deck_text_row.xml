@@ -129,15 +129,15 @@
                                 </Connection>
                               </NumberBpm>
                               <Label>
-                                <TooltipId>bpm_locked</TooltipId>
+                                <TooltipId>beatgrid_lock</TooltipId>
                                 <Size>me,min</Size>
-                                <ObjectName>BpmLocked</ObjectName>
+                                <ObjectName>BeatgridLock</ObjectName>
                                 <Connection>
-                                  <ConfigKey>[Deere],show_bpm_lock</ConfigKey>
+                                  <ConfigKey>[Deere],show_beatgrid_lock</ConfigKey>
                                   <BindProperty>visible</BindProperty>
                                 </Connection>
                                 <Connection>
-                                  <ConfigKey><Variable name="group"/>,lock_bpm</ConfigKey>
+                                  <ConfigKey><Variable name="group"/>,beatgrid_lock</ConfigKey>
                                   <BindProperty>highlight</BindProperty>
                                 </Connection>
                               </Label>
@@ -319,15 +319,15 @@
                                   </NumberBpm>
 
                                   <Label>
-                                    <TooltipId>bpm_locked</TooltipId>
+                                    <TooltipId>beatgrid_lock</TooltipId>
                                     <Size>me,min</Size>
-                                    <ObjectName>BpmLocked</ObjectName>
+                                    <ObjectName>BeatgridLock</ObjectName>
                                     <Connection>
-                                      <ConfigKey>[Deere],show_bpm_lock</ConfigKey>
+                                      <ConfigKey>[Deere],show_beatgrid_lock</ConfigKey>
                                       <BindProperty>visible</BindProperty>
                                     </Connection>
                                     <Connection>
-                                      <ConfigKey><Variable name="group"/>,lock_bpm</ConfigKey>
+                                      <ConfigKey><Variable name="group"/>,beatgrid_lock</ConfigKey>
                                       <BindProperty>highlight</BindProperty>
                                     </Connection>
                                   </Label>

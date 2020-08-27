@@ -1080,13 +1080,13 @@ WBeatSpinBox,
 }
 
 /* BPM lock next to BPM label */
-#BpmLocked[highlight="1"] {
+#BeatgridLock[highlight="1"] {
   padding-left: 1px;
   padding-right: 5px;
   image: url(skin:/icon/ic_library_bpm_locked.svg);
 }
 
-#BpmLocked[highlight="0"] {
+#BeatgridLock[highlight="0"] {
   padding-left: 1px;
   padding-right: 5px;
   image: url(skin:/icon/ic_library_bpm_unlocked.svg);

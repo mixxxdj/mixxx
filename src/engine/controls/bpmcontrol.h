@@ -136,7 +136,7 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pAdjustBeatsSlower;
     ControlPushButton* m_pTranslateBeatsEarlier;
     ControlPushButton* m_pTranslateBeatsLater;
-    ControlPushButton* m_pLockBpm;
+    ControlPushButton* m_pLockBeatgrid;
 
     // The current effective BPM of the engine
     ControlLinPotmeter* m_pEngineBpm;

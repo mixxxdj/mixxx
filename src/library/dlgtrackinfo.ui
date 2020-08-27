@@ -635,7 +635,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QCheckBox" name="bpmLock">
+        <widget class="QCheckBox" name="beatgridLock">
          <property name="toolTip">
           <string>Prevents mixxx from changing the BPM when reanalyzing the track.</string>
          </property>
@@ -643,7 +643,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>&amp;Lock BPM</string>
+          <string>&amp;Lock beatgrid</string>
          </property>
         </widget>
        </item>
@@ -976,7 +976,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>bpmLock</tabstop>
+  <tabstop>beatgridLock</tabstop>
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmRound</tabstop>
   <tabstop>bpmConst</tabstop>
