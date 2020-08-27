@@ -81,19 +81,24 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     if (isRecording()) {
         stopRecording();
     }
-    m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_slot) : nullptr;
-    if (m_pMacro) {
-        if (m_pMacro->isEmpty()) {
-            setStatus(Status::Empty);
-        } else {
-            if (m_pMacro->isEnabled()) {
-                play();
-            } else {
-                stop();
-            }
-        }
-    } else {
+    if (!pNewTrack) {
+        m_pMacro = nullptr;
         setStatus(Status::NoTrack);
+        return;
+    }
+    m_pMacro = pNewTrack->getMacros().value(m_slot);
+    if (!m_pMacro) {
+        m_pMacro = std::make_shared<Macro>();
+        pNewTrack->addMacro(m_slot, m_pMacro);
+    }
+    if (m_pMacro->isEmpty()) {
+        setStatus(Status::Empty);
+    } else {
+        if (m_pMacro->isEnabled()) {
+            play();
+        } else {
+            stop();
+        }
     }
 }
 

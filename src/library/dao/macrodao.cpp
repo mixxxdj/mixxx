@@ -54,8 +54,11 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
 
 void MacroDAO::saveMacros(TrackId trackId, QMap<int, MacroPtr> macros) const {
     for (auto e : macros.toStdMap()) {
-        // New macros (without an id) must always be marked as dirty
         auto pMacro = e.second;
+        // Don't save placeholder Macros
+        if (pMacro->isEmpty() && !pMacro->isDirty())
+            return;
+        // Newly recorded macros must be dirty
         DEBUG_ASSERT(pMacro->getId() >= 0 || pMacro->isDirty());
         if (pMacro->isDirty()) {
             saveMacro(trackId, pMacro.get(), e.first);
@@ -100,19 +103,13 @@ QMap<int, MacroPtr> MacroDAO::loadMacros(TrackId trackId) const {
     int labelColumn = record.indexOf("label");
     int contentColumn = record.indexOf("content");
     while (query.next()) {
-        int slot = query.value(slotColumn).toInt();
         result.insert(
-                slot,
+                query.value(slotColumn).toInt(),
                 std::make_shared<Macro>(
                         Macro::deserialize(query.value(contentColumn).toByteArray()),
                         query.value(labelColumn).toString(),
                         Macro::State(query.value(stateColumn).toInt()),
                         query.value(idColumn).toInt()));
-    }
-    for (int i = 1; i <= kMacrosPerTrack; ++i) {
-        if (!result.contains(i)) {
-            result.insert(i, std::make_shared<Macro>());
-        }
     }
     return result;
 }

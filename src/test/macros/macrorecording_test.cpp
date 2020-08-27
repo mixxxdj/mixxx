@@ -12,7 +12,6 @@ class MacroRecordingTest : public BaseSignalPathTest {
               m_status(kChannelGroup, QString("macro_%1_status").arg(kMacro)),
               m_record(kChannelGroup, QString("macro_%1_record").arg(kMacro)) {
         TrackPointer pTrack = getTestTrack();
-        pTrack->setMacros({{kMacro, std::make_shared<Macro>()}});
         loadTrack(m_pMixerDeck1, pTrack);
     }
 

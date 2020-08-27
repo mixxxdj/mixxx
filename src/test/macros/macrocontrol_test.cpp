@@ -7,13 +7,6 @@
 #include "engine/enginemaster.h"
 #include "macro_test.h"
 
-template<typename... _Args>
-void loadTrack(MacroControl& macroControl, _Args&&... args) {
-    auto pTrack = Track::newTemporary();
-    pTrack->setMacros({{2, std::make_shared<Macro>(std::forward<_Args>(args)...)}});
-    macroControl.trackLoaded(pTrack);
-}
-
 TEST(MacroControl, Create) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::NoTrack);
@@ -22,13 +15,16 @@ TEST(MacroControl, Create) {
     macroControl.controlActivate();
     macroControl.controlToggle();
     macroControl.controlClear();
+
+    macroControl.trackLoaded(Track::newTemporary());
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
 }
 
 TEST(MacroControlTest, RecordSeek) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     EXPECT_EQ(macroControl.isRecording(), false);
 
-    loadTrack(macroControl);
+    macroControl.trackLoaded(Track::newTemporary());
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
     macroControl.controlRecord();
     EXPECT_EQ(macroControl.isRecording(), true);
@@ -58,7 +54,7 @@ TEST(MacroControlTest, Controls) {
     ControlProxy status(kChannelGroup, "macro_2_status");
     ASSERT_EQ(status.get(), MacroControl::Status::NoTrack);
 
-    loadTrack(macroControl);
+    macroControl.trackLoaded(Track::newTemporary());
     ASSERT_EQ(status.get(), MacroControl::Status::Empty);
 
     ControlProxy record(kChannelGroup, "macro_2_record");
@@ -86,10 +82,13 @@ TEST(MacroControlTest, LoadTrackAndPlay) {
     MacroControlMock macroControl;
     int position = 0;
 
-    loadTrack(macroControl,
-            QList{MacroAction(), MacroAction(position, kAction.position)},
-            "",
-            Macro::State());
+    auto pTrack = Track::newTemporary();
+    pTrack->setMacros({{2,
+            std::make_shared<Macro>(
+                    QList{MacroAction(), MacroAction(position, kAction.position)},
+                    "test",
+                    Macro::State())}});
+    macroControl.trackLoaded(pTrack);
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
 
     macroControl.controlActivate();
