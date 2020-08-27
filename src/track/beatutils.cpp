@@ -37,6 +37,13 @@ const double kBpmFilterTolerance = 1.0;
 // when comparing with two tempos should be the same we use this tolerence
 constexpr double kMaxDiffSameBpm = 0.3;
 
+QVector<double> makeQVector(QVector<double>::iterator begin, QVector<double>::iterator end) {
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        return QVector<double>(begin, end);
+    #else
+        return QVector<double>::fromStdVector(std::vector<double>(begin,end));
+    #endif
+}
 
 } //namespece
 
@@ -113,8 +120,7 @@ void BeatUtils::removeSmallArrhythmic(
     // shift our whole beats vector which will results in a copy anyway
     QVector<double> anchoredBeats;
     anchoredBeats.reserve(beats.size());
-    anchoredBeats << QVector<double>::fromStdVector(std::vector<double>(
-                beats.begin(), beats.begin() + positionsWithTempoChange[1]));
+    anchoredBeats << makeQVector(beats.begin(), beats.begin() + positionsWithTempoChange[1]);
 
     for (int i = 2; i < positionsWithTempoChange.size(); i+=1) {
         // here use the rough stable tempo on the region to the left 
@@ -134,9 +140,9 @@ void BeatUtils::removeSmallArrhythmic(
             }
 
         } else {
-            anchoredBeats << QVector<double>::fromStdVector(std::vector<double>(
+            anchoredBeats << makeQVector(
                     beats.begin() + positionsWithTempoChange[i-1],
-                    beats.begin() + positionsWithTempoChange[i]));
+                    beats.begin() + positionsWithTempoChange[i]);
         }
     }
     // We may have shinkred or enlarged our beat vector so we make sure our  
@@ -182,10 +188,10 @@ QVector<double> BeatUtils::ironBeatmap(
         // here we detect if the segment has a constant tempo or not
         if (partLenght >= kBeatsToCountTempo * 2) {
             int middle = partLenght / 2;            
-            auto beatsAtLeft = QVector<double>::fromStdVector(std::vector<double>(
-                    rawBeats.begin() + beatStart, rawBeats.begin() + beatStart + middle));
-            auto beatsAtRight = QVector<double>::fromStdVector(std::vector<double>(
-                    rawBeats.begin() + beatStart + middle, rawBeats.begin() + beatEnd));
+            auto beatsAtLeft = makeQVector(
+                    rawBeats.begin() + beatStart, rawBeats.begin() + beatStart + middle);
+            auto beatsAtRight = makeQVector(
+                    rawBeats.begin() + beatStart + middle, rawBeats.begin() + beatEnd);
             QMap<double, int> leftTempoFrequency;
             auto temposLeft = computeWindowedBpmsAndFrequencyHistogram(
                     beatsAtLeft, kBeatsToCountTempo, 1, sampleRate, &leftTempoFrequency);
@@ -199,15 +205,15 @@ QVector<double> BeatUtils::ironBeatmap(
         // if the most frequent tempo (mode) on each side of the region are within our 
         // tolerence we assume the region has a constant tempo and make a fixed tempo grid
         if (leftRighDiff < kMaxDiffSameBpm) {
-            auto splittedAtTempoChange = QVector<double>::fromStdVector(std::vector<double>(
-                rawBeats.begin() + beatStart, rawBeats.begin() + beatEnd));
+            auto splittedAtTempoChange = makeQVector(
+                rawBeats.begin() + beatStart, rawBeats.begin() + beatEnd);
             double bpm = calculateBpm(splittedAtTempoChange, sampleRate, minBpm, maxBpm);
             fixedBeats << calculateFixedTempoGrid(splittedAtTempoChange, sampleRate, bpm);
         }
         // not const, make ironed grid of longest sequence withing a 25ms phase error
         else {
-            auto splittedAtTempoChange = QVector<double>::fromStdVector(std::vector<double>(
-                rawBeats.begin() + beatStart, rawBeats.begin() + beatEnd));
+            auto splittedAtTempoChange = makeQVector(
+                rawBeats.begin() + beatStart, rawBeats.begin() + beatEnd);
             fixedBeats << calculateIronedGrid(splittedAtTempoChange, sampleRate);
         }
     }
