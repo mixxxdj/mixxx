@@ -135,19 +135,19 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
                     (orientation == Qt::Horizontal) ? rendererHeight
                                                     : rendererWidth);
             QStringList displayItems;
+            bool markerIsDisplayed = false;
             if (beat.markers().testFlag(mixxx::BeatMarker::TimeSignature)) {
                 QString timeSignatureString =
                         QString::number(beat.timeSignature().getBeatsPerBar()) +
                         "/" +
                         QString::number(beat.timeSignature().getNoteValue());
                 displayItems.append(timeSignatureString);
+                markerIsDisplayed = true;
             }
-            if (beat.markers().testFlag(mixxx::BeatMarker::Bpm)) {
-                displayItems.append(QString("%1 BPM").arg(
-                        QString::number(beat.bpm().getValue())));
+            if (markerIsDisplayed) {
+                m_beatMarkers[beatMarkerCount].setTextDisplayItems(displayItems);
+                beatMarkerCount++;
             }
-            m_beatMarkers[beatMarkerCount].setTextDisplayItems(displayItems);
-            beatMarkerCount++;
         }
     }
 
