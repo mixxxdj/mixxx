@@ -469,7 +469,7 @@ bool WTrackMenu::isAnyTrackBpmLocked() const {
     return false;
 }
 
-std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
+std::optional<std::optional<mixxx::RgbColor>> WTrackMenu::getCommonTrackColor() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return std::nullopt;
     }
@@ -479,9 +479,6 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
         commonColor = mixxx::RgbColor::fromQVariant(
                 m_trackIndexList.first().sibling(m_trackIndexList.first().row(), column).data());
-        if (!commonColor) {
-            return std::nullopt;
-        }
         for (const auto trackIndex : m_trackIndexList) {
             const auto otherColor = mixxx::RgbColor::fromQVariant(
                     trackIndex.sibling(trackIndex.row(), column).data());
@@ -491,10 +488,7 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
             }
         }
     } else {
-        auto commonColor = m_trackPointerList.first()->getColor();
-        if (!commonColor) {
-            return std::nullopt;
-        }
+        commonColor = m_trackPointerList.first()->getColor();
         for (const auto& pTrack : m_trackPointerList) {
             if (commonColor != pTrack->getColor()) {
                 // Multiple, different colors
@@ -502,7 +496,7 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
             }
         }
     }
-    return commonColor;
+    return make_optional(commonColor);
 }
 
 CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
@@ -674,7 +668,7 @@ void WTrackMenu::updateMenus() {
 
         const auto commonColor = getCommonTrackColor();
         if (commonColor) {
-            m_pColorPickerAction->setSelectedColor(commonColor);
+            m_pColorPickerAction->setSelectedColor(*commonColor);
         } else {
             m_pColorPickerAction->resetSelectedColor();
         }

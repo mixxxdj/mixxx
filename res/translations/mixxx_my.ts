@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="56"/>
         <source>Analyze</source>
-        <translation type="unfinished"/>
+        <translation>သရုပ်ခွဲရန်</translation>
     </message>
 </context>
 <context>
@@ -21,12 +21,12 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="73"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>အကန့်ကန့်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
         <source>Remove Crate as Track Source</source>
-        <translation type="unfinished"/>
+        <translation>ရင်းမြစ် တေးဂီတ အဖြစ် စုစည်မှု မှ ဖယ်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="110"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="298"/>
         <source>Add Crate as Track Source</source>
-        <translation type="unfinished"/>
+        <translation>ရင်းမြစ် တေးဂီတ အဖြစ် စုစည်မှု သို့ ထည့်ရန်</translation>
     </message>
 </context>
 <context>
@@ -81,7 +81,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="35"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>အော်တို ဒီဂျေ တန်းစီခြင်း သို့ ထည့် ရန် (အစားထိုး)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="41"/>
@@ -140,7 +140,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>ပုံတူပွားရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="86"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="101"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>တေးဂီတ ဖိုင်များ ထုတ်လုပ်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="80"/>
@@ -183,7 +183,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="74"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>အော်တို ဒီဂျေ တန်းစီခြင်း သို့ ထည့် ရန် (အစားထိုး)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
@@ -215,7 +215,7 @@
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
-        <translation type="unfinished"/>
+        <translation>_ကူးယူ</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="252"/>
@@ -254,7 +254,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Timestamp</source>
-        <translation type="unfinished"/>
+        <translation>အချိန်မှတ်တမ်း</translation>
     </message>
 </context>
 <context>
@@ -262,7 +262,7 @@
     <message>
         <location filename="../../src/mixer/basetrackplayer.cpp" line="364"/>
         <source>Couldn&apos;t load track.</source>
-        <translation type="unfinished"/>
+        <translation>တေးဂီတပုဒ် မဖွင့်နိုင်ပါ</translation>
     </message>
 </context>
 <context>
@@ -385,7 +385,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="216"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>အပုဒ် #</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="220"/>
@@ -398,7 +398,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="113"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>လုပ်ဆောင်မှုမအောင်မြင်ပါ</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="114"/>
@@ -562,7 +562,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="34"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>အပုဒ် #</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="35"/>
@@ -903,7 +903,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="70"/>
         <source>Eject track</source>
-        <translation type="unfinished"/>
+        <translation>တေးဂီတပုဒ် ကို ဖယ်ထုတ်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="39"/>
@@ -2460,7 +2460,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="426"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>အော်တို ဒီဂျေ တန်းစီခြင်း သို့ ထည့် ရန် (အစားထိုး)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
@@ -2876,12 +2876,12 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="118"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>တေးဂီတ ဖိုင်များ ထုတ်လုပ်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="74"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>ပုံတူပွားရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="97"/>
@@ -2902,7 +2902,7 @@
         <location filename="../../src/library/crate/cratefeature.cpp" line="160"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="168"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>အကန့်ကန့်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="103"/>
@@ -3093,7 +3093,7 @@
         <location filename="../../src/library/dlganalysis.ui" line="97"/>
         <location filename="../../src/library/dlganalysis.cpp" line="181"/>
         <source>Analyze</source>
-        <translation type="unfinished"/>
+        <translation>သရုပ်ခွဲရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="55"/>
@@ -3817,7 +3817,7 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="547"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>လုပ်ဆောင်မှုမအောင်မြင်ပါ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="212"/>
@@ -7119,7 +7119,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="85"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>အပုဒ် #</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="114"/>
@@ -9724,7 +9724,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="989"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>အကန့်ကန့်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="992"/>
@@ -13142,7 +13142,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="103"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>အကန့်ကန့်ရန်</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="109"/>
@@ -13188,7 +13188,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="145"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>အော်တို ဒီဂျေ တန်းစီခြင်း သို့ ထည့် ရန် (အစားထိုး)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="150"/>
