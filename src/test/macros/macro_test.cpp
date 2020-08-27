@@ -16,10 +16,14 @@ TEST(MacroTest, SerializeMacroActions) {
     EXPECT_EQ(deserialized, actions);
 }
 
-TEST(MacroTest, CreateMacro) {
+TEST(MacroTest, CreateMacroAndChangeLabel) {
     Macro macro;
     EXPECT_FALSE(macro.isDirty());
     EXPECT_TRUE(macro.isEmpty());
     macro.clear();
     EXPECT_EQ(macro, Macro());
+
+    macro.setLabel("hello");
+    EXPECT_TRUE(macro.isDirty());
+    EXPECT_NE(macro, Macro());
 }

@@ -92,5 +92,8 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(Macro::State)
 typedef std::shared_ptr<Macro> MacroPtr;
 
 bool operator==(const Macro& m1, const Macro& m2);
+inline bool operator!=(const Macro& m1, const Macro& m2) {
+    return !(m1 == m2);
+}
 QDebug operator<<(QDebug debug, const MacroAction& action);
 QDebug operator<<(QDebug debug, const Macro& macro);

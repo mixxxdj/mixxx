@@ -1158,7 +1158,15 @@ void Track::addMacro(int slot, MacroPtr macro) {
 
 bool Track::isDirty() {
     QMutexLocker lock(&m_qMutex);
-    return m_bDirty;
+    if (m_bDirty) {
+        return true;
+    }
+    for (MacroPtr macro : m_macros) {
+        if (macro->isDirty()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Track::markDirty() {

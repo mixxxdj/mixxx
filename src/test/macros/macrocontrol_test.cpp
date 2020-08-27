@@ -15,16 +15,24 @@ TEST(MacroControl, Create) {
     macroControl.controlActivate();
     macroControl.controlToggle();
     macroControl.controlClear();
+}
 
-    macroControl.trackLoaded(Track::newTemporary());
+TEST(MacroControl, LoadTrack) {
+    MacroControl macroControl(kChannelGroup, nullptr, 2);
+    TrackPointer pTrack = Track::newTemporary();
+    macroControl.trackLoaded(pTrack);
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
+
+    macroControl.getMacro()->setLabel("hello");
+    EXPECT_TRUE(pTrack->isDirty());
 }
 
 TEST(MacroControlTest, RecordSeek) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     EXPECT_FALSE(macroControl.isRecording());
 
-    macroControl.trackLoaded(Track::newTemporary());
+    TrackPointer pTrack = Track::newTemporary();
+    macroControl.trackLoaded(pTrack);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
     macroControl.controlRecord();
     EXPECT_TRUE(macroControl.isRecording());
@@ -44,6 +52,7 @@ TEST(MacroControlTest, RecordSeek) {
     macroControl.controlRecord();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
     checkMacroAction(macroControl.getMacro());
+    EXPECT_TRUE(pTrack->isDirty());
 
     macroControl.trackLoaded(nullptr);
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::NoTrack);
