@@ -85,7 +85,7 @@ class BeatUtils {
             QMap<double, int> tempoFrequency, QList<double> tempoList);
     static void RemoveSmallArrhythmic(QVector<double>& rawBeats, const int sampleRate,
             QMap<int, double> &stableTemposByPosition);
-    static QVector<double> calculateIronedBeatMap(
+    static QVector<double> calculateIronedGrid(
             const QVector<double> &rawbeats, const int sampleRate);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
             const QVector<double> beats, const int windowSize, const int windowStep,
