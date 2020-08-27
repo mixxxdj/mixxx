@@ -26,29 +26,32 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
     m_COStatus.setReadOnly();
     setStatus(Status::NoTrack);
 
+    m_updateRecordingTimer.moveToThread(qApp->thread());
+    connect(&m_updateRecordingTimer,
+            &QTimer::timeout,
+            this,
+            &MacroControl::updateRecording);
+
     m_record.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_record,
             &ControlObject::valueChanged,
             this,
-            &MacroControl::controlRecord,
-            Qt::DirectConnection);
+            &MacroControl::controlRecord);
     m_toggle.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_toggle,
             &ControlObject::valueChanged,
             this,
-            &MacroControl::controlToggle,
-            Qt::DirectConnection);
+            &MacroControl::controlToggle);
     m_clear.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_clear,
             &ControlObject::valueChanged,
             this,
-            &MacroControl::controlClear,
-            Qt::DirectConnection);
+            &MacroControl::controlClear);
+    m_activate.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_activate,
             &ControlObject::valueChanged,
             this,
-            &MacroControl::controlActivate,
-            Qt::DirectConnection);
+            &MacroControl::controlActivate);
 }
 
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
@@ -128,10 +131,8 @@ MacroControl::Status MacroControl::getStatus() const {
 
 void MacroControl::setStatus(Status status) {
     m_COStatus.forceSet(status);
-    if (status > Status::Empty) {
-        // TODO(xerus) add blinking for Status::Recording & Status::Playing
-        m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
-    }
+    // TODO(xerus) add blinking for Status::Recording & Status::Playing
+    m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
 }
 
 MacroPtr MacroControl::getMacro() const {
@@ -160,9 +161,6 @@ void MacroControl::stop() {
 }
 
 void MacroControl::updateRecording() {
-    VERIFY_OR_DEBUG_ASSERT(isRecording()) {
-        return;
-    }
     if (m_recordedActions.empty()) {
         return;
     }
@@ -196,6 +194,7 @@ void MacroControl::controlRecord() {
     }
     if (!isRecording()) {
         setStatus(Status::Armed);
+        DEBUG_ASSERT(m_updateRecordingTimer.thread() == QThread::currentThread());
         m_updateRecordingTimer.start(kRecordingTimerInterval);
     } else {
         stopRecording();
