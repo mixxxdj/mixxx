@@ -214,9 +214,14 @@ void MacroControl::controlActivate() {
         controlRecord();
     } else {
         if (isPlaying()) {
-            seekExact(m_pMacro->getActions().first().target);
+            gotoAndPlay();
         } else {
             play();
         }
     }
+}
+
+void MacroControl::gotoAndPlay() {
+    seekExact(m_pMacro->getActions().first().target * mixxx::kEngineChannelCount);
+    play();
 }

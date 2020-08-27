@@ -38,6 +38,7 @@ class MacroControl : public EngineControl {
     void controlToggle();
     void controlClear();
     void controlActivate();
+    void gotoAndPlay();
 
     void slotJumpQueued();
 
