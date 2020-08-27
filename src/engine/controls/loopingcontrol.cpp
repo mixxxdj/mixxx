@@ -515,7 +515,7 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
 
 void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
     double dPosSample = m_currentSample.getValue();
@@ -620,7 +620,7 @@ void LoopingControl::slotLoopInGoto(double pressed) {
 }
 
 void LoopingControl::setLoopOutToCurrentPosition() {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
     int pos = m_currentSample.getValue();
@@ -886,8 +886,7 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
 
 void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     clearActiveBeatLoop();
-    m_pBeats = pBeats;
-    if (m_pBeats) {
+    if (pBeats) {
         LoopSamples loopSamples = m_loopSamples.getValue();
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
             double loaded_loop_size =
@@ -967,7 +966,7 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 bool LoopingControl::currentLoopMatchesBeatloopSize() {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     if (!pBeats) {
         return false;
     }
@@ -985,7 +984,7 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
 }
 
 double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     if (!pBeats) {
         return -1;
     }
@@ -1047,12 +1046,12 @@ void LoopingControl::slotBeatLoop(
     }
 
     int samples = m_pTrackSamples->get();
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (samples == 0 || !pBeats) {
+    if (samples == 0 || !m_pTrack || !m_pTrack->getBeats()) {
         clearActiveBeatLoop();
         m_pCOBeatLoopSize->setAndConfirm(beats);
         return;
     }
+    mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
 
     // Calculate the new loop start and end samples
     // give start and end defaults so we can detect problems
@@ -1228,7 +1227,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
 }
 
 void LoopingControl::slotBeatJump(double beats) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     if (!pBeats) {
         return;
     }
@@ -1260,7 +1259,7 @@ void LoopingControl::slotBeatJumpBackward(double pressed) {
 }
 
 void LoopingControl::slotLoopMove(double beats) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const auto& pBeats = m_pTrack->getBeats();
     if (!pBeats || beats == 0) {
         return;
     }

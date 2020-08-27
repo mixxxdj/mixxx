@@ -36,14 +36,13 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     const mixxx::Bpm bpm = mixxx::Bpm(60.0);
     const mixxx::FrameDiff_t expectedBeatLengthFrames = (60.0 * sampleRate / bpm.getValue());
 
-    auto pBeats = std::make_shared<mixxx::Beats>(pTrack.get());
-    pBeats->setGrid(bpm);
+    pTrack->setBpm(bpm.getValue());
 
     // On a beat.
     mixxx::FramePos prevBeat, nextBeat;
     mixxx::FrameDiff_t beatLength;
     double beatPercentage;
-    EXPECT_TRUE(BpmControl::getBeatContext(pBeats,
+    EXPECT_TRUE(BpmControl::getBeatContext(pTrack->getBeats(),
             mixxx::kStartFramePos,
             &prevBeat,
             &nextBeat,

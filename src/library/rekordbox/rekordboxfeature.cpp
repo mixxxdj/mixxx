@@ -952,7 +952,7 @@ void readAnalyze(TrackPointer track,
 
             QHash<QString, QString> extraVersionInfo;
 
-            mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(track,
+            mixxx::BeatsInternal beatsInternal = BeatFactory::makePreferredBeats(track,
                     beats,
                     extraVersionInfo,
                     false,
@@ -961,7 +961,7 @@ void readAnalyze(TrackPointer track,
                     0,
                     0);
 
-            track->setBeats(pBeats);
+            track->setBeats(beatsInternal);
         } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {
             if (ignoreCues) {

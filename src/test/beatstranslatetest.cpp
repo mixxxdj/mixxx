@@ -12,14 +12,14 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     const FramePos firstBeat(0.0);
 
     // Set up Beats for decks 1 and 2.
-    auto beats1 = std::make_shared<Beats>(m_pTrack1.get());
-    beats1->setGrid(bpm, firstBeat);
-    m_pTrack1->setBeats(beats1);
-    ASSERT_DOUBLE_EQ(firstBeat.getValue(), beats1->findClosestBeat(firstBeat).getValue());
-    auto beats2 = std::make_shared<Beats>(m_pTrack2.get());
-    beats2->setGrid(bpm, firstBeat);
-    m_pTrack2->setBeats(beats2);
-    ASSERT_DOUBLE_EQ(firstBeat.getValue(), beats2->findClosestBeat(firstBeat).getValue());
+    m_pTrack1->setBeats(mixxx::BeatsInternal());
+    m_pTrack1->getBeats()->setGrid(bpm, firstBeat);
+    ASSERT_DOUBLE_EQ(firstBeat.getValue(),
+            m_pTrack1->getBeats()->findClosestBeat(firstBeat).getValue());
+    m_pTrack2->setBeats(mixxx::BeatsInternal());
+    m_pTrack2->getBeats()->setGrid(bpm, firstBeat);
+    ASSERT_DOUBLE_EQ(firstBeat.getValue(),
+            m_pTrack2->getBeats()->findClosestBeat(firstBeat).getValue());
 
     const FrameDiff_t deltaFrames = 1111.0;
     // Seek deck 1 forward a bit
@@ -54,5 +54,6 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Deck 2 was left at 0.
     // We translated grid 2 so that it is also +delta away from its closest beat
     // So that beat should be at deck 1 position -delta.
-    ASSERT_DOUBLE_EQ(-deltaFrames, beats2->findClosestBeat(kStartFramePos).getValue());
+    ASSERT_DOUBLE_EQ(-deltaFrames,
+            m_pTrack2->getBeats()->findClosestBeat(kStartFramePos).getValue());
 }

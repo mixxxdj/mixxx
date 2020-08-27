@@ -8,9 +8,9 @@
 
 class BeatFactory {
   public:
-    static mixxx::BeatsPointer loadBeatsFromByteArray(const TrackPointer& track,
-            QString beatsVersion,
-            QString beatsSubVersion,
+    static mixxx::BeatsInternal loadBeatsFromByteArray(const TrackPointer& track,
+            const QString& beatsVersion,
+            const QString& beatsSubVersion,
             const QByteArray& beatsSerialized);
     static mixxx::BeatsPointer makeBeatGrid(const TrackPointer& track,
             double dBpm,
@@ -24,7 +24,7 @@ class BeatFactory {
         const int iMinBpm, const int iMaxBpm,
         const QHash<QString, QString> extraVersionInfo);
 
-    static mixxx::BeatsPointer makePreferredBeats(const TrackPointer& track,
+    static mixxx::BeatsInternal makePreferredBeats(const TrackPointer& track,
             QVector<double> beats,
             const QHash<QString, QString> extraVersionInfo,
             const bool bEnableFixedTempoCorrection,
@@ -32,9 +32,6 @@ class BeatFactory {
             const int iTotalSamples,
             const int iMinBpm,
             const int iMaxBpm);
-
-  private:
-    static void deleteBeats(mixxx::Beats* pBeats);
 };
 
 #endif /* BEATFACTORY_H */

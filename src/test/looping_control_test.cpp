@@ -1,11 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <QtDebug>
-#include <QScopedPointer>
-
-#include "mixxxtest.h"
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
 #include "engine/controls/loopingcontrol.h"
 #include "test/mockedenginebackendtest.h"

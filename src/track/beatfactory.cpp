@@ -7,10 +7,14 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
-mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& track,
-        QString beatsVersion,
-        QString beatsSubVersion,
+mixxx::BeatsInternal BeatFactory::loadBeatsFromByteArray(const TrackPointer& track,
+        const QString& beatsVersion,
+        const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
+    auto deserializedBeats = mixxx::BeatsInternal();
+    deserializedBeats.setSampleRate(track->getSampleRate());
+    deserializedBeats.setDurationSeconds(track->getDuration());
+    deserializedBeats.setSubVersion(beatsSubVersion);
     // Now that the serialized representation is the same for BeatGrids and BeatMaps,
     // they can be deserialized in a common function.
     if (beatsVersion == mixxx::BeatsInternal::BEAT_GRID_1_VERSION ||
@@ -21,22 +25,20 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
             qDebug()
                     << "ERROR: Could not parse legacy" << beatsVersion << "from QByteArray of size"
                     << beatsSerialized.size();
-            return mixxx::BeatsPointer();
+            return deserializedBeats;
         }
-        mixxx::Beats* pGrid = new mixxx::Beats(track.get());
-        pGrid->setGrid(mixxx::Bpm(legacyBeatGridProto.bpm().bpm()),
+        deserializedBeats.setGrid(mixxx::Bpm(legacyBeatGridProto.bpm().bpm()),
                 mixxx::FramePos(
                         legacyBeatGridProto.first_beat().frame_position()));
-        pGrid->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized Beats from legacy data in format" << beatsVersion;
-        return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+        return deserializedBeats;
     } else if (beatsVersion == mixxx::BeatsInternal::BEAT_MAP_VERSION) {
         mixxx::track::io::LegacyBeatMap legacyBeatMapProto;
         if (!legacyBeatMapProto.ParseFromArray(
                     beatsSerialized.constData(), beatsSerialized.size())) {
             qDebug() << "ERROR: Could not parse legacy" << beatsVersion << "from QByteArray of size"
                      << beatsSerialized.size();
-            return mixxx::BeatsPointer();
+            return deserializedBeats;
         }
         // Generate intermediate data from the old serialized representation.
         QVector<mixxx::FramePos> beatVector;
@@ -44,19 +46,16 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
             const mixxx::track::io::LegacyBeat& beat = legacyBeatMapProto.beat(i);
             beatVector.append(mixxx::FramePos(beat.frame_position()));
         }
-        mixxx::Beats* pMap = new mixxx::Beats(track.get(), beatVector);
-        pMap->setSubVersion(beatsSubVersion);
+        deserializedBeats.initWithAnalyzer(beatVector);
         qDebug() << "Successfully deserialized Beats from legacy data in format" << beatsVersion;
-        return mixxx::BeatsPointer(pMap, &BeatFactory::deleteBeats);
+        return deserializedBeats;
     } else if (beatsVersion == mixxx::BeatsInternal::BEATS_VERSION) {
-        mixxx::Beats* pBeats = new mixxx::Beats(track.get(), beatsSerialized);
-        pBeats->setSubVersion(beatsSubVersion);
+        deserializedBeats.initWithProtobuf(beatsSerialized);
         qDebug() << "Successfully deserialized Beats";
-        return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
+        return deserializedBeats;
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
-    // TODO(JVC) May be launching a reanalysis to fix the data?
-    return mixxx::BeatsPointer();
+    return deserializedBeats;
 }
 
 // static
@@ -118,7 +117,7 @@ QString BeatFactory::getPreferredSubVersion(
                                   : "";
 }
 
-mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
+mixxx::BeatsInternal BeatFactory::makePreferredBeats(const TrackPointer& track,
         QVector<double> beats,
         const QHash<QString, QString> extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
@@ -127,11 +126,17 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
         const int iMinBpm,
         const int iMaxBpm) {
     const int iSampleRate = track->getSampleRate();
+    const double dDurationSeconds = track->getDuration();
+    mixxx::BeatsInternal beatsInternal;
+    beatsInternal.setDurationSeconds(dDurationSeconds);
+    beatsInternal.setSampleRate(iSampleRate);
+
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
                                                       iMinBpm, iMaxBpm,
                                                       extraVersionInfo);
+    beatsInternal.setSubVersion(subVersion);
 
     BeatUtils::printBeatStatistics(beats, iSampleRate);
     if (version == mixxx::BeatsInternal::BEAT_GRID_2_VERSION) {
@@ -149,10 +154,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
         for (int i = 0; i < numberOfBeats; i++) {
             generatedBeats.append(firstBeat + beatLength * i);
         }
-        mixxx::Beats* pBeats = new mixxx::Beats(
-                track.get(), generatedBeats);
-        pBeats->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
+        beatsInternal.initWithAnalyzer(generatedBeats);
+        return beatsInternal;
     } else if (version == mixxx::BeatsInternal::BEAT_MAP_VERSION) {
         QVector<mixxx::FramePos> intermediateBeatFrameVector;
         intermediateBeatFrameVector.reserve(beats.size());
@@ -160,21 +163,10 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
                 beats.end(),
                 std::back_inserter(intermediateBeatFrameVector),
                 [](double value) { return mixxx::FramePos(value); });
-        mixxx::Beats* pBeats = new mixxx::Beats(
-                track.get(), intermediateBeatFrameVector);
-        pBeats->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
+        beatsInternal.initWithAnalyzer(intermediateBeatFrameVector);
+        return beatsInternal;
     } else {
         DEBUG_ASSERT("Could not determine what type of beatgrid to create.");
-        return mixxx::BeatsPointer();
+        return mixxx::BeatsInternal();
     }
-}
-
-void BeatFactory::deleteBeats(mixxx::Beats* pBeats) {
-    // BeatGrid/BeatMap objects have no parent and live in the same thread as
-    // their associated TIO. QObject::deleteLater does not have the desired
-    // effect when the QObject's thread does not have an event loop (i.e. when
-    // the main thread has already shut down) so we delete the BeatMap/BeatGrid
-    // directly when its reference count drops to zero.
-    delete pBeats;
 }

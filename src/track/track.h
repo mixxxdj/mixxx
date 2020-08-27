@@ -294,7 +294,7 @@ class Track : public QObject {
     mixxx::BeatsPointer getBeats() const;
 
     // Set the track's Beats
-    void setBeats(mixxx::BeatsPointer beats);
+    void setBeats(const mixxx::BeatsInternal& beats);
 
     /// Imports the given list of cue infos as cue points,
     /// thereby replacing all existing cue points!

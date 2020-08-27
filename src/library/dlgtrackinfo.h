@@ -91,7 +91,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void clear();
     void init();
     TrackPointer m_pLoadedTrack;
-    mixxx::BeatsPointer m_pBeatsClone;
+    mixxx::BeatsInternal m_beatsClone;
     Keys m_keysClone;
     bool m_bpmIsConst;
 

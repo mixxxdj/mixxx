@@ -1281,7 +1281,7 @@ class ResetBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pTrack->isBpmLocked()) {
             return;
         }
-        pTrack->setBeats(mixxx::BeatsPointer());
+        pTrack->setBeats(mixxx::BeatsInternal());
     }
 };
 

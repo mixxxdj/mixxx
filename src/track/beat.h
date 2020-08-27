@@ -8,6 +8,9 @@
 #include "track/frame.h"
 #include "track/timesignature.h"
 
+namespace {
+constexpr int kNegativeInfinity = std::numeric_limits<int>::lowest();
+}
 namespace mixxx {
 enum class BeatType {
     Beat,
@@ -127,5 +130,11 @@ inline QDebug operator<<(QDebug dbg, Beat beat) {
     return dbg;
 }
 
-const Beat kInvalidBeat = Beat(kInvalidFramePos);
+const Beat kInvalidBeat = Beat(kInvalidFramePos,
+        BeatType::Beat,
+        TimeSignature(),
+        Bpm(),
+        kNegativeInfinity,
+        kNegativeInfinity,
+        kNegativeInfinity);
 }; // namespace mixxx

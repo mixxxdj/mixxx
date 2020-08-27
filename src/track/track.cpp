@@ -271,23 +271,20 @@ double Track::getBpm() const {
     return bpm;
 }
 
-// TODO(JVC) It makes no sense to setBpm on a beatmap. To be removed.
 double Track::setBpm(double bpmValue) {
     if (!mixxx::Bpm::isValidValue(bpmValue)) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
-        setBeats(mixxx::BeatsPointer());
+        setBeats(mixxx::BeatsInternal());
         return bpmValue;
     }
 
     QMutexLocker lock(&m_qMutex);
 
-    // TODO(JVC) A track must always have a Beats even if it's empty
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         mixxx::FramePos cue = samplePosToFramePos(getCuePoint().getPosition());
-        mixxx::BeatsPointer pBeats = std::make_shared<mixxx::Beats>(this);
-        // setGrid accepts frames, but cue is in samples.
+        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(this));
         pBeats->setGrid(mixxx::Bpm(bpmValue), cue);
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
         return bpmValue;
@@ -312,9 +309,17 @@ QString Track::getBpmText() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
-void Track::setBeats(mixxx::BeatsPointer pBeats) {
+void Track::setBeats(const mixxx::BeatsInternal& beats) {
+    auto beatsInternalCopy = beats;
+    beatsInternalCopy.setSampleRate(getSampleRate());
+    beatsInternalCopy.setDurationSeconds(getDuration());
     QMutexLocker lock(&m_qMutex);
-    setBeatsMarkDirtyAndUnlock(&lock, pBeats);
+    if (!m_pBeats) {
+        m_pBeats = mixxx::BeatsPointer(new mixxx::Beats(this, beatsInternalCopy));
+        connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::beatsUpdated);
+    } else {
+        m_pBeats->initWithProtobuf(beatsInternalCopy.toProtobuf());
+    }
 }
 
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
@@ -969,9 +974,10 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_streamInfo->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getSampleRate());
-    mixxx::BeatsPointer pBeats(new mixxx::Beats(this,
+    auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(this, mixxx::BeatsInternal()));
+    pBeats->initWithAnalyzer(
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_streamInfo)));
+                    getLocation(), *m_streamInfo));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);

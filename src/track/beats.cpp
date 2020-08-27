@@ -32,38 +32,31 @@ inline FrameDiff_t getBeatLengthFrames(Bpm bpm,
 }
 } // namespace
 
-Beats::Beats(const Track* track,
-        const QVector<FramePos>& beats,
-        const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers)
-        : Beats(track) {
-    if (beats.size() > 0) {
-        m_beatsInternal.initWithAnalyzer(beats, timeSignatureMarkers);
-    }
+void Beats::initWithAnalyzer(const QVector<FramePos>& beats,
+        const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers) {
+    QMutexLocker locker(&m_mutex);
+    m_beatsInternal.initWithAnalyzer(beats, timeSignatureMarkers);
+    emit updated();
 }
 
-Beats::Beats(const Track* track, const QByteArray& byteArray)
-        : Beats(track) {
+void Beats::initWithProtobuf(const QByteArray& byteArray) {
+    QMutexLocker locker(&m_mutex);
     m_beatsInternal.initWithProtobuf(byteArray);
+    emit updated();
 }
 
-Beats::Beats(const Track* track)
-        : m_mutex(QMutex::Recursive) {
-    if (track) {
-        setSampleRate(track->getSampleRate());
-        setDurationSeconds(track->getDuration());
-        // Beats object should live in the same thread as the track
-        // it is associated with.
-        moveToThread(track->thread());
-    }
+Beats::Beats(const Track* track, const BeatsInternal& internal)
+        : m_mutex(QMutex::Recursive), m_beatsInternal(internal) {
+    DEBUG_ASSERT(track);
+    setSampleRate(track->getSampleRate());
+    setDurationSeconds(track->getDuration());
+    // Beats object should live in the same thread as the track
+    // it is associated with.
+    moveToThread(track->thread());
 }
 
-Beats::Beats(const Beats& other)
-        : Beats(nullptr) {
-    m_beatsInternal = other.m_beatsInternal;
-    moveToThread(other.thread());
-}
-
-int Beats::numBeatsInRange(FramePos startFrame, FramePos endFrame) {
+int Beats::numBeatsInRange(FramePos startFrame, FramePos endFrame) const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.numBeatsInRange(startFrame, endFrame);
 };
 
@@ -72,38 +65,39 @@ QByteArray Beats::toProtobuf() const {
     return m_beatsInternal.toProtobuf();
 }
 
-BeatsPointer Beats::clone() const {
-    QMutexLocker locker(&m_mutex);
-    BeatsPointer other(new Beats(*this));
-    return other;
-}
-
 QString Beats::getVersion() const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.getVersion();
 }
 
 QString Beats::getSubVersion() const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.getSubVersion();
 }
 
 Beat Beats::findNextBeat(FramePos frame) const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.findNextBeat(frame);
 }
 
 void Beats::setSubVersion(const QString& subVersion) {
+    QMutexLocker locker(&m_mutex);
     m_beatsInternal.setSubVersion(subVersion);
 }
 
 void Beats::setGrid(Bpm bpm, FramePos firstBeatFrame) {
     QMutexLocker lock(&m_mutex);
     m_beatsInternal.setGrid(bpm, firstBeatFrame);
+    emit updated();
 }
 
 FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.findNBeatsFromFrame(fromFrame, beats);
 };
 
 Beat Beats::findPrevBeat(FramePos frame) const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.findPrevBeat(frame);
 }
 
@@ -129,6 +123,11 @@ std::unique_ptr<Beats::iterator> Beats::findBeats(
         FramePos startFrame, FramePos stopFrame) const {
     QMutexLocker locker(&m_mutex);
     return m_beatsInternal.findBeats(startFrame, stopFrame);
+}
+
+Beat Beats::getBeatAtIndex(int index) const {
+    QMutexLocker locker(&m_mutex);
+    return m_beatsInternal.getBeatAtIndex(index);
 }
 
 Bpm Beats::getGlobalBpm() const {
@@ -169,15 +168,30 @@ void Beats::setBpm(Bpm bpm, int beatIndex) {
     emit updated();
 }
 
+int Beats::size() const {
+    QMutexLocker locker(&m_mutex);
+    return m_beatsInternal.size();
+}
+
 FramePos Beats::getFirstBeatPosition() const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.getFirstBeatPosition();
 }
 
 FramePos Beats::getLastBeatPosition() const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.getLastBeatPosition();
 }
 
+Beat BeatsInternal::getBeatAtIndex(int index) const {
+    if (index >= 0 && index < m_beats.size()) {
+        return m_beats.at(index);
+    }
+    return kInvalidBeat;
+}
+
 SINT Beats::getSampleRate() const {
+    QMutexLocker locker(&m_mutex);
     return m_beatsInternal.getSampleRate();
 }
 
@@ -186,6 +200,11 @@ void Beats::setAsDownbeat(int beatIndex) {
     m_beatsInternal.setAsDownbeat(beatIndex);
     locker.unlock();
     emit updated();
+}
+
+BeatsInternal Beats::getInternal() const {
+    QMutexLocker locker(&m_mutex);
+    return m_beatsInternal;
 }
 
 QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
@@ -322,15 +341,18 @@ void BeatsInternal::initWithProtobuf(const QByteArray& byteArray) {
 
 void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers) {
+    DEBUG_ASSERT(m_iSampleRate > 0 && m_dDurationSeconds > 0);
     if (beats.empty()) {
         clearMarkers();
         return;
     }
 
+    clearMarkers();
+
     auto lastBeatTime = Duration::fromSeconds(beats.last().getValue() / m_iSampleRate);
     DEBUG_ASSERT(m_dDurationSeconds >= lastBeatTime.toDoubleSeconds());
 
-    m_beatsProto.set_first_frame_position(beats.at(0).getValue());
+    m_beatsProto.set_first_beat_frame(beats.at(0).getValue());
     int bpmMarkerBeatIndex = 0;
     for (int i = 1; i < beats.size(); ++i) {
         VERIFY_OR_DEBUG_ASSERT(
@@ -383,11 +405,13 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
 void Beats::setSampleRate(int sampleRate) {
     QMutexLocker locker(&m_mutex);
     m_beatsInternal.setSampleRate(sampleRate);
+    emit updated();
 }
 
 void Beats::setDurationSeconds(double duration) {
     QMutexLocker locker(&m_mutex);
     m_beatsInternal.setDurationSeconds(duration);
+    emit updated();
 }
 
 int BeatsInternal::numBeatsInRange(
@@ -676,7 +700,7 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
 
 void BeatsInternal::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
     m_beatsProto.clear_bpm_markers();
-    m_beatsProto.set_first_frame_position(firstBeatFrame.getValue());
+    m_beatsProto.set_first_beat_frame(firstBeatFrame.getValue());
     track::io::BpmMarker bpmMarker;
     bpmMarker.set_bpm(dBpm.getValue());
     m_beatsProto.add_bpm_markers()->CopyFrom(bpmMarker);
@@ -804,8 +828,8 @@ void BeatsInternal::translate(FrameDiff_t numFrames) {
         return;
     }
 
-    m_beatsProto.set_first_frame_position(
-            m_beatsProto.first_frame_position() + numFrames);
+    m_beatsProto.set_first_beat_frame(
+            m_beatsProto.first_beat_frame() + numFrames);
     generateBeatsFromMarkers();
 }
 
@@ -842,6 +866,10 @@ void BeatsInternal::setBpm(Bpm bpm, int beatIndex) {
     generateBeatsFromMarkers();
 }
 
+int BeatsInternal::size() const {
+    return m_beats.size();
+}
+
 FramePos BeatsInternal::getFirstBeatPosition() const {
     return m_beats.empty() ? kInvalidFramePos
                            : m_beats.front().framePosition();
@@ -853,6 +881,7 @@ FramePos BeatsInternal::getLastBeatPosition() const {
 }
 
 void BeatsInternal::generateBeatsFromMarkers() {
+    m_beats.clear();
     if (m_iSampleRate <= 0 || m_dDurationSeconds <= 0) {
         return;
     }
@@ -919,8 +948,6 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 minimalBpmMarker);
     }
 
-    m_beats.clear();
-
     // We keep generating beats until this frame.
     const FramePos trackLastFrame(m_iSampleRate * m_dDurationSeconds);
     int bpmMarkerIndex = 0;
@@ -986,7 +1013,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 : BeatType::Beat;
 
         FramePos beatFramePosition = m_beats.empty()
-                ? FramePos(m_beatsProto.first_frame_position())
+                ? FramePos(m_beatsProto.first_beat_frame())
                 : (m_beats.last().framePosition() + beatLength);
         addedBeat = Beat(beatFramePosition,
                 beatType,
@@ -1008,7 +1035,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
 }
 
 void BeatsInternal::clearMarkers() {
-    m_beatsProto.clear_first_frame_position();
+    m_beatsProto.clear_first_beat_frame();
     m_beatsProto.clear_first_downbeat_index();
     m_beatsProto.clear_bpm_markers();
     m_beatsProto.clear_time_signature_markers();

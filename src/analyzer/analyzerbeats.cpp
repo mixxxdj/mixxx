@@ -225,12 +225,12 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
         return;
     }
 
-    mixxx::BeatsPointer pBeats;
+    mixxx::BeatsInternal newBeats;
     if (m_pPlugin->supportsBeatTracking()) {
         QVector<double> beats = m_pPlugin->getBeats();
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis);
-        pBeats = BeatFactory::makePreferredBeats(
+        newBeats = BeatFactory::makePreferredBeats(
                 pTrack,
                 beats,
                 extraVersionInfo,
@@ -240,13 +240,11 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 m_iMinBpm,
                 m_iMaxBpm);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
-                 << "beats. Average BPM:" << (pBeats ? pBeats->getGlobalBpm().getValue() : 0.0);
+                 << "beats. Average BPM:" << newBeats.getGlobalBpm();
     } else {
-        mixxx::Bpm bpm = mixxx::Bpm(m_pPlugin->getBpm());
+        auto bpm = mixxx::Bpm(m_pPlugin->getBpm());
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = std::make_shared<mixxx::Beats>(pTrack.get());
-        pBeats->setGrid(bpm);
-        pTrack->setBeats(pBeats);
+        pTrack->setBpm(bpm.getValue());
     }
 
     mixxx::BeatsPointer pCurrentBeats = pTrack->getBeats();
@@ -254,7 +252,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     // If the track has no beats object then set our newly generated one
     // regardless of beat lock.
     if (!pCurrentBeats) {
-        pTrack->setBeats(pBeats);
+        pTrack->setBeats(newBeats);
         return;
     }
 
@@ -270,10 +268,10 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     bool zeroCurrentBpm = pCurrentBeats->getGlobalBpm().getValue() == 0.0;
     if (m_bPreferencesReanalyzeOldBpm || zeroCurrentBpm) {
         if (zeroCurrentBpm) {
-            qDebug() << "Replacing 0-BPM beatgrid with a" << pBeats->getGlobalBpm()
+            qDebug() << "Replacing 0-BPM beatgrid with a" << newBeats.getGlobalBpm()
                      << "beatgrid.";
         }
-        pTrack->setBeats(pBeats);
+        pTrack->setBeats(newBeats);
         return;
     }
 
@@ -281,7 +279,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     // since the first beat is zero we'll apply the offset we just detected.
     mixxx::FramePos currentFirstBeat =
             pCurrentBeats->getBeatAtIndex(kFirstBeatIndex).framePosition();
-    mixxx::FramePos newFirstBeat = pBeats->getBeatAtIndex(kFirstBeatIndex).framePosition();
+    mixxx::FramePos newFirstBeat = newBeats.getBeatAtIndex(kFirstBeatIndex).framePosition();
     if (currentFirstBeat == mixxx::kStartFramePos && newFirstBeat > mixxx::kStartFramePos) {
         pCurrentBeats->translate(newFirstBeat - currentFirstBeat);
     }
