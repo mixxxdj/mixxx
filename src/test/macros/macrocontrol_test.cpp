@@ -22,12 +22,12 @@ TEST(MacroControl, Create) {
 
 TEST(MacroControlTest, RecordSeek) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
-    EXPECT_EQ(macroControl.isRecording(), false);
+    EXPECT_FALSE(macroControl.isRecording());
 
     macroControl.trackLoaded(Track::newTemporary());
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
     macroControl.controlRecord();
-    EXPECT_EQ(macroControl.isRecording(), true);
+    EXPECT_TRUE(macroControl.isRecording());
 
     macroControl.notifySeek(kAction.position * mixxx::kEngineChannelCount);
     macroControl.setCurrentSample(kAction.position * mixxx::kEngineChannelCount, 99000, 44100);

@@ -18,8 +18,8 @@ TEST(MacroTest, SerializeMacroActions) {
 
 TEST(MacroTest, CreateMacro) {
     Macro macro;
-    EXPECT_EQ(macro.isDirty(), false);
-    EXPECT_EQ(macro.isEmpty(), true);
+    EXPECT_FALSE(macro.isDirty());
+    EXPECT_TRUE(macro.isEmpty());
     macro.clear();
     EXPECT_EQ(macro, Macro());
 }

@@ -31,8 +31,8 @@ TEST_F(MacroDAOTest, SaveAndLoadMacro) {
     EXPECT_EQ(loaded.keys(), QList{1});
 
     MacroPtr macro = loaded.first();
-    EXPECT_EQ(macro->isEnabled(), false);
-    EXPECT_EQ(macro->isLooped(), true);
+    EXPECT_FALSE(macro->isEnabled());
+    EXPECT_TRUE(macro->isLooped());
     EXPECT_EQ(macro->size(), 1);
     EXPECT_EQ(macro->getActions().first().target, action.target);
     EXPECT_EQ(macro->getLabel(), "Test");
