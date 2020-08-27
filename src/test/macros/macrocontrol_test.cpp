@@ -39,7 +39,12 @@ TEST(MacroControlTest, RecordSeek) {
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Armed);
 
     macroControl.slotJumpQueued();
+    macroControl.notifySeek(kAction.position * mixxx::kEngineChannelCount);
+    macroControl.slotJumpQueued();
     macroControl.notifySeek(kAction.target * mixxx::kEngineChannelCount);
+    macroControl.setCurrentSample(kAction.target * mixxx::kEngineChannelCount, 99000, 44100);
+    macroControl.process(0, kAction.target * mixxx::kEngineChannelCount, 1);
+
     macroControl.controlRecord();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
     checkMacroAction(macroControl.getMacro());
@@ -81,7 +86,10 @@ TEST(MacroControlTest, LoadTrackAndPlay) {
     MacroControlMock macroControl;
     int position = 0;
 
-    loadTrack(macroControl, QList{MacroAction(position, kAction.position)}, "", Macro::State());
+    loadTrack(macroControl,
+            QList{MacroAction(), MacroAction(position, kAction.position)},
+            "",
+            Macro::State());
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
 
     macroControl.controlActivate();

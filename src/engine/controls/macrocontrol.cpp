@@ -143,7 +143,7 @@ bool MacroControl::isPlaying() const {
 
 void MacroControl::play() {
     DEBUG_ASSERT(m_pMacro);
-    m_iNextAction = 0;
+    m_iNextAction = 1;
     setStatus(Status::Playing);
 }
 
@@ -178,6 +178,7 @@ void MacroControl::stopRecording() {
     if (getStatus() == Status::Armed) {
         setStatus(Status::Empty);
     } else {
+        m_pMacro->setEnd(getSampleOfTrack().current / mixxx::kEngineChannelCount);
         setStatus(Status::Recorded);
         play();
     }

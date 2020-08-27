@@ -70,6 +70,7 @@ class Macro {
 
     const QList<MacroAction>& getActions() const;
     void addAction(const MacroAction& action);
+    void setEnd(double framePos);
 
     void clear();
 

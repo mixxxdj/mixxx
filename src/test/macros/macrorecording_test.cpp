@@ -20,7 +20,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
         return MacroControl::Status(m_status.get());
     }
 
-    void setRecording() {
+    void toggleRecording() {
         m_record.set(1);
     }
 
@@ -28,39 +28,47 @@ class MacroRecordingTest : public BaseSignalPathTest {
         return m_pEngineBuffer1->getLoadedTrack()->getMacros().value(kMacro);
     }
 
+    void prepRecording(double position = kAction.position) {
+        toggleRecording();
+        ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
+
+        m_pEngineBuffer1->slotControlSeekAbs(position * mixxx::kEngineChannelCount);
+        ProcessBuffer();
+    }
+
     EngineBuffer* m_pEngineBuffer1;
     ControlProxy m_status;
     ControlProxy m_record;
 };
 
-TEST_F(MacroRecordingTest, RecordSeek) {
-    setRecording();
-    ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
+TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
+    prepRecording();
 
-    m_pEngineBuffer1->slotControlSeekExact(
-            kAction.position * mixxx::kEngineChannelCount);
+    m_pEngineBuffer1->slotControlSeekAbs(kAction.target * mixxx::kEngineChannelCount);
     ProcessBuffer();
-    EXPECT_EQ(getMacro()->size(), 0);
 
-    m_pEngineBuffer1->slotControlSeekAbs(
-            kAction.target * mixxx::kEngineChannelCount);
-    ProcessBuffer();
-    setRecording();
-    EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
+    toggleRecording();
     checkMacroAction(getMacro());
+
+    // Should activate automatically
+    EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
+    MacroAction newAction(100, 440);
+    getMacro()->addAction(newAction);
+    ProcessBuffer();
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), kAction.target * mixxx::kEngineChannelCount);
+    m_pEngineBuffer1->slotControlSeekExact(newAction.position * mixxx::kEngineChannelCount);
+    ProcessBuffer();
+    ProcessBuffer();
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), newAction.target * mixxx::kEngineChannelCount);
+    EXPECT_EQ(getStatus(), MacroControl::Status::PlaybackStopped);
 }
 
-TEST_F(MacroRecordingTest, RecordHotcueActivation) {
-    MacroAction action(100, 0);
-    setRecording();
-    ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
-
+TEST_F(MacroRecordingTest, RecordHotcueAndPlay) {
     // Place hotcue 1 at position 0
     ControlObject::set(ConfigKey(kChannelGroup, "hotcue_1_set"), 1);
 
-    m_pEngineBuffer1->slotControlSeekExact(action.position * mixxx::kEngineChannelCount);
-    ProcessBuffer();
-    EXPECT_EQ(getMacro()->size(), 0);
+    MacroAction action(100, 0);
+    prepRecording(action.position);
 
     ControlObject::set(ConfigKey(kChannelGroup, "hotcue_1_goto"), 1);
     ProcessBuffer();

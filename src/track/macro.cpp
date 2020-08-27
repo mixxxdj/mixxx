@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+#include "util/assert.h"
+
 proto::Macro_Action* MacroAction::serialize() const {
     auto serialized = new proto::Macro_Action();
     serialized->set_position(position);
@@ -98,6 +100,11 @@ const QList<MacroAction>& Macro::getActions() const {
 void Macro::addAction(const MacroAction& action) {
     m_bDirty = true;
     m_actions.append(action);
+}
+
+void Macro::setEnd(double framePos) {
+    DEBUG_ASSERT(!isEmpty());
+    m_actions.first().position = framePos;
 }
 
 void Macro::clear() {
