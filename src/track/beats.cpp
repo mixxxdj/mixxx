@@ -336,7 +336,7 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     auto lastBeatTime = Duration::fromSeconds(beats.last().getValue() / getSampleRate());
     DEBUG_ASSERT(m_streamInfo.getDuration() >= lastBeatTime);
 
-    m_beatsProto.set_first_beat_frame(beats.at(0).getValue());
+    setFirstBeatFrame(beats.at(0));
     int bpmMarkerBeatIndex = 0;
     for (int i = 1; i < beats.size(); ++i) {
         VERIFY_OR_DEBUG_ASSERT(
@@ -680,7 +680,7 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
 
 void BeatsInternal::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
     m_beatsProto.clear_bpm_markers();
-    m_beatsProto.set_first_beat_frame(firstBeatFrame.getValue());
+    setFirstBeatFrame(firstBeatFrame);
     track::io::BpmMarker bpmMarker;
     bpmMarker.set_bpm(dBpm.getValue());
     m_beatsProto.add_bpm_markers()->CopyFrom(bpmMarker);
@@ -808,8 +808,7 @@ void BeatsInternal::translate(FrameDiff_t numFrames) {
         return;
     }
 
-    m_beatsProto.set_first_beat_frame(
-            m_beatsProto.first_beat_frame() + numFrames);
+    setFirstBeatFrame(getFirstBeatFrame() + numFrames);
     generateBeatsFromMarkers();
 }
 
@@ -993,7 +992,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 : BeatType::Beat;
 
         FramePos beatFramePosition = m_beats.empty()
-                ? FramePos(m_beatsProto.first_beat_frame())
+                ? FramePos(getFirstBeatFrame())
                 : (m_beats.last().framePosition() + beatLength);
         addedBeat = Beat(beatFramePosition,
                 beatType,
@@ -1015,7 +1014,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
 }
 
 void BeatsInternal::clearMarkers() {
-    m_beatsProto.clear_first_beat_frame();
+    m_beatsProto.clear_first_beat_time_seconds();
     m_beatsProto.clear_first_downbeat_index();
     m_beatsProto.clear_bpm_markers();
     m_beatsProto.clear_time_signature_markers();
@@ -1035,6 +1034,14 @@ SINT BeatsInternal::getSampleRate() const {
 
 double BeatsInternal::getDurationSeconds() const {
     return m_streamInfo.getDuration().toDoubleSeconds();
+}
+
+void BeatsInternal::setFirstBeatFrame(FramePos framePos) {
+    m_beatsProto.set_first_beat_time_seconds(framePos.getValue() / getSampleRate());
+}
+
+FramePos BeatsInternal::getFirstBeatFrame() const {
+    return FramePos(m_beatsProto.first_beat_time_seconds() * getSampleRate());
 }
 
 } // namespace mixxx

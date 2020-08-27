@@ -55,7 +55,7 @@ message SectionMarker {
 */
 
 message Beats {
-  optional double first_beat_frame = 1;
+  optional double first_beat_time_seconds = 1;
   optional int32 first_downbeat_index = 2;
   repeated BpmMarker bpm_markers = 3;
   repeated TimeSignatureMarker time_signature_markers = 4;

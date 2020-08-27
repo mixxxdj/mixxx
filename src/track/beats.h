@@ -100,6 +100,8 @@ class BeatsInternal {
     void clearMarkers();
     SINT getSampleRate() const;
     double getDurationSeconds() const;
+    void setFirstBeatFrame(FramePos framePos);
+    FramePos getFirstBeatFrame() const;
 
     QString m_subVersion;
     Bpm m_bpm;
