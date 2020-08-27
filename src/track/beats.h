@@ -198,11 +198,7 @@ class Beats final : public QObject {
     std::unique_ptr<Beats::iterator> findBeats(FramePos startFrame,
             FramePos stopFrame) const;
 
-    /**
-     * Return Beat at (0 based) index
-     * @param index
-     * @return Beat object
-     */
+    /// Return Beat at (0 based) index
     Beat getBeatAtIndex(int index) const;
 
     /// Return the average BPM over the entire track if the BPM is
@@ -235,10 +231,7 @@ class Beats final : public QObject {
     /// Returns the frame number for the last beat, -1 if no beats
     FramePos getLastBeatPosition() const;
 
-    /**
-     * Convert a non-downbeat to a downbeat shifting all downbeats
-     * @param beatIndex Index of the beat to be converted to downbeat
-     */
+    /// Convert a non-downbeat to a downbeat shifting all downbeats
     void setAsDownbeat(int beatIndex);
 
     /// Prints debugging information in stderr
