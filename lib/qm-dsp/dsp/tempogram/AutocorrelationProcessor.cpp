@@ -191,7 +191,7 @@ std::vector<std::pair<int, float> > AutocorrelationProcessor::processPhase(float
         int map_index = readPointer;
         float sum = 0;
         int refPointer = readPointer + measuresize;
-        for (int n = 0; n < measuresize + 1; n++) {
+        for (int n = 0; n < measuresize * 3; n++) {
             if (refPointer >= inputLength) {
                 break;
             } else if (readPointer >= 0) {
@@ -212,7 +212,7 @@ std::vector<std::pair<int, float> > AutocorrelationProcessor::processPhase(float
             refPointer++;
         }
         // store
-        autocorrelationBlock.push_back(std::pair(map_index, sum / (measuresize + 1)));
+        autocorrelationBlock.push_back(std::pair(map_index + 2 * measuresize, sum / (measuresize + 1)));
     }
     return autocorrelationBlock;
 }

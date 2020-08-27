@@ -30,6 +30,8 @@ public:
     int processOffset(float * input, int inputLength, int hop, const std::vector<int>& periods) const;
     AutoCorrelation processChanges(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
     std::vector<std::pair<int, float> > processPhase(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
+    std::vector<std::pair<int, float> > processBeatDiff(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
+
 
 
 private:

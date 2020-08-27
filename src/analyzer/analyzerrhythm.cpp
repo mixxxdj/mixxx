@@ -467,7 +467,7 @@ std::vector<std::vector<int>> AnalyzerRhythm::computeMeterHierarchies
     std::vector<int> lowestPulse;
     lowestPulse.push_back(pulse);
     pulseHierarchies.push_back(lowestPulse);
-    for (int i = 0; i < pulseMultiples.size(); i += 1) {
+    for (size_t i = 0; i < pulseMultiples.size(); i += 1) {
         bool pulseBelongs = false;
         for (auto &testHierarchy : pulseHierarchies) {
             // handle standart case in which multiple of divisible by
@@ -523,7 +523,7 @@ void AnalyzerRhythm::computeTempogramByDFT() {
     //        &m_noveltyCurve[0], m_noveltyCurve.size(), &hannWindow[0]);
 
     std::vector<float> complexSdCurve;
-    for (int i = 0; i < m_detectionResults.size(); i++) {
+    for (size_t i = 0; i < m_detectionResults.size(); i++) {
         complexSdCurve.push_back(m_detectionResults[i].results[3]);
     }
 
@@ -558,7 +558,7 @@ void AnalyzerRhythm::computeTempogramByDFT() {
     double highest;
     double bestBpm;
     int bin;
-    for (int block = 0; block < tempogramDFT.size(); block++) {
+    for (size_t block = 0; block < tempogramDFT.size(); block++) {
         // dft
         //qDebug() << "block" << block;
         //qDebug() << "DFT tempogram";
@@ -647,7 +647,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
 
     // Find offset
     std::vector<int> offsets;
-    for (int block = 0; block < m_tempogramACF.size(); block++) {
+    for (size_t block = 0; block < m_tempogramACF.size(); block++) {
         QList<double> keys = m_tempogramACF[block].keys();
         if (keys.size() < 1) {
             continue;
@@ -667,20 +667,33 @@ void AnalyzerRhythm::computeTempogramByACF() {
     }
 
     std::set<int> possible_downbeats_sorted;
-    for (int block = 0; block < m_tempogramACF.size(); block++) {
+    std::set<int> possible_downbeats_auto;
+    int lastPos = 0;
+    for (size_t block = 0; block < m_tempogramACF.size(); block++) {
         QList<double> keys = m_tempogramACF[block].keys();
         if (keys.size() < 2) {
             continue;
         }
-        double minK = keys[0];
-        double maxK = keys[1];
+        int measureK = keys[1];
         for (int k = 2; k < keys.size(); k++) {
-            if (keys[k] > maxK) {
-                maxK = keys[k];
+            if (keys[k] > measureK) {
+                measureK = keys[k];
             }
-            if (maxK > 160) {
+            if (measureK > 160) {
                 // TODO: Use a more sophisticated
                 // Algorithm to find sensible measures
+                break;
+            }
+        }
+        while (measureK <= 160) {
+            measureK *= 2;
+        }
+        int beatK = keys[0];
+        for (int k = 0; k < keys.size(); k++) {
+            if (beatK < (measureK / 15)) {
+                // We don't want 1/16 notes
+                beatK = keys[k];
+            } else {
                 break;
             }
         }
@@ -748,11 +761,11 @@ void AnalyzerRhythm::computeTempogramByACF() {
             */
 
         std::vector<std::pair<int, float>> tempogramPhase = autocorrelationProcessor.processPhase(
-                &complexSdCurve[0], complexSdCurve.size(), block, minK, maxK, offsets[block]);
+                &complexSdCurve[0], complexSdCurve.size(), block, beatK, measureK, offsets[block]);
 
         float max = tempogramPhase[0].second;
         float i_max = 0;
-        for (int i = 1; i < tempogramPhase.size(); i++) {
+        for (size_t i = 1; i < tempogramPhase.size(); i++) {
             if (max < tempogramPhase[i].second) {
                 //deb << i << j << tempogramPhase[i][j];
                 max = tempogramPhase[i].second;
@@ -764,10 +777,18 @@ void AnalyzerRhythm::computeTempogramByACF() {
             possible_downbeats_sorted.insert(i_max);
         }
 
-        qDebug() << "measure:" << block << minK << maxK << maxK / minK << i_max;
+        qDebug() << "measure:" << block << beatK << measureK
+                 << ((measureK + beatK / 2) * 2 / beatK) * 0.5 << i_max;
+
+        int pos = block * 128 + measureK + m_tempogramWindowLength / 2;
+        int delta = pos - lastPos;
+        if (delta > (measureK + 1) / 2) {
+            possible_downbeats_auto.insert(pos);
+            lastPos = pos;
+        }
     }
 
-    for (const auto& beat : possible_downbeats_sorted) {
+    for (const auto& beat : possible_downbeats_auto) {
         // Output possible downbeat positions
         // TODO: Snap them to the SnapGrid and pick the most likely measure length from the overlapping AC from on of the eight ACF Runs.
         double result = beat * stepSize();
