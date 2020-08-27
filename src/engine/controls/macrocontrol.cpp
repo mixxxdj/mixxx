@@ -8,10 +8,11 @@ constexpr size_t kRecordingQueueSize = kRecordingTimerInterval / 10;
 ConfigKey MacroControl::getConfigKey(QString name) {
     return ConfigKey(m_group, m_controlPattern.arg(name));
 }
-MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int number)
+
+MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
         : EngineControl(group, pConfig),
-          m_number(number),
-          m_controlPattern(QString("macro_%1_%2").arg(number)),
+          m_slot(slot),
+          m_controlPattern(QString("macro_%1_%2").arg(slot)),
           m_bJumpPending(false),
           m_recordedActions(kRecordingQueueSize),
           m_iNextAction(0),
@@ -80,7 +81,7 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     if (isRecording()) {
         stopRecording();
     }
-    m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_number) : nullptr;
+    m_pMacro = pNewTrack ? pNewTrack->getMacros().value(m_slot) : nullptr;
     if (m_pMacro) {
         if (m_pMacro->isEmpty()) {
             setStatus(Status::Empty);

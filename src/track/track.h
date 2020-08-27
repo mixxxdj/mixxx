@@ -284,7 +284,7 @@ class Track : public QObject {
     QMap<int, MacroPtr> getMacros() const;
 
     void setMacros(QMap<int, MacroPtr> macros);
-    void addMacro(int number, MacroPtr macro);
+    void addMacro(int slot, MacroPtr macro);
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;

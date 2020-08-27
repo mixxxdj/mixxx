@@ -1148,9 +1148,9 @@ void Track::setMacros(QMap<int, MacroPtr> macros) {
     m_macros = macros;
 }
 
-void Track::addMacro(int number, MacroPtr macro) {
+void Track::addMacro(int slot, MacroPtr macro) {
     QMutexLocker lock(&m_qMutex);
-    m_macros.insert(number, macro);
+    m_macros.insert(slot, macro);
     markDirtyAndUnlock(&lock);
 }
 

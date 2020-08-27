@@ -11,7 +11,7 @@
 class MacroControl : public EngineControl {
     Q_OBJECT
   public:
-    MacroControl(QString group, UserSettingsPointer pConfig, int number);
+    MacroControl(QString group, UserSettingsPointer pConfig, int slot);
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void process(const double dRate, const double dCurrentSample, const int iBufferSize) override;
@@ -51,7 +51,7 @@ class MacroControl : public EngineControl {
     void setStatus(Status);
 
     ConfigKey getConfigKey(QString name);
-    int m_number;
+    int m_slot;
     QString m_controlPattern;
 
     bool m_bJumpPending;
