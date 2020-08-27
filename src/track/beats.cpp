@@ -45,13 +45,9 @@ void Beats::initWithProtobuf(const QByteArray& byteArray) {
     emit updated();
 }
 
-Beats::Beats(const Track* track, const BeatsInternal& internal)
+Beats::Beats(const audio::StreamInfo& streamInfo, const BeatsInternal& internal)
         : m_mutex(QMutex::Recursive), m_beatsInternal(internal) {
-    DEBUG_ASSERT(track);
-    updateStreamInfo(track->streamInfo());
-    // Beats object should live in the same thread as the track
-    // it is associated with.
-    moveToThread(track->thread());
+    updateStreamInfo(streamInfo);
 }
 
 int Beats::numBeatsInRange(FramePos startFrame, FramePos endFrame) const {
@@ -187,11 +183,6 @@ Beat BeatsInternal::getBeatAtIndex(int index) const {
         return m_beats.at(index);
     }
     return kInvalidBeat;
-}
-
-SINT Beats::getSampleRate() const {
-    QMutexLocker locker(&m_mutex);
-    return m_beatsInternal.getSampleRate();
 }
 
 void Beats::setAsDownbeat(int beatIndex) {

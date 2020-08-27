@@ -169,8 +169,8 @@ class BpmControl : public EngineControl {
     double m_dLastSyncAdjustment;
     bool m_dUserTweakingSync;
 
-    // m_pBeats is written from an engine worker thread
-    mixxx::BeatsPointer m_pBeats;
+    // m_pTrack is written from an engine worker thread
+    TrackPointer m_pTrack;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);

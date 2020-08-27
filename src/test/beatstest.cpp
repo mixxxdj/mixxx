@@ -29,12 +29,10 @@ class BeatsTest : public testing::Test {
                 mixxx::audio::SampleRate(m_iSampleRate),
                 mixxx::audio::Bitrate(),
                 mixxx::Duration::fromSeconds(180));
-        auto beatsInternal1 = BeatsInternal();
-        auto beatsInternal2 = BeatsInternal();
-        beatsInternal1.setGrid(m_bpm, m_startOffsetFrames);
-        beatsInternal2.setGrid(m_bpm, m_startOffsetFrames);
-        m_pTrack1->setBeats(beatsInternal1);
-        m_pTrack2->setBeats(beatsInternal2);
+        m_pTrack1->setBeats(BeatsInternal());
+        m_pTrack2->setBeats(BeatsInternal());
+        m_pTrack1->getBeats()->setGrid(m_bpm, m_startOffsetFrames);
+        m_pTrack2->getBeats()->setGrid(m_bpm, m_startOffsetFrames);
     }
 
     ~BeatsTest() {

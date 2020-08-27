@@ -60,9 +60,6 @@ class BeatsInternal {
     Bpm getGlobalBpm() const;
     bool isValid() const;
     void updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo);
-    SINT getSampleRate() const {
-        return m_iSampleRate;
-    }
     int numBeatsInRange(FramePos startFrame, FramePos endFrame) const;
     QByteArray toProtobuf() const;
     QString getVersion() const;
@@ -117,8 +114,8 @@ class BeatsInternal {
 class Beats final : public QObject {
     Q_OBJECT
   private:
-    /// Initialize beats with only the track pointer.
-    explicit Beats(const Track* track, const BeatsInternal& internal = BeatsInternal());
+    explicit Beats(const audio::StreamInfo& streamInfo = audio::StreamInfo(),
+            const BeatsInternal& internal = BeatsInternal());
 
   public:
     ~Beats() override = default;
@@ -236,9 +233,6 @@ class Beats final : public QObject {
 
     /// Returns the frame number for the last beat, -1 if no beats
     FramePos getLastBeatPosition() const;
-
-    /// Return the sample rate
-    SINT getSampleRate() const;
 
     /**
      * Convert a non-downbeat to a downbeat shifting all downbeats
