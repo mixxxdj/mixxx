@@ -137,4 +137,6 @@ const Beat kInvalidBeat = Beat(kInvalidFramePos,
         kNegativeInfinity,
         kNegativeInfinity,
         kNegativeInfinity);
+
+constexpr int kFirstBeatIndex = 0;
 }; // namespace mixxx

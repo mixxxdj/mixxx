@@ -79,7 +79,7 @@ class BeatsInternal {
     Bpm getBpmAtPosition(FramePos curFrame) const;
     void setSignature(TimeSignature sig, int downbeatIndex);
     void translate(FrameDiff_t numFrames);
-    void setBpm(Bpm bpm, int beatIndex = 0);
+    void setBpm(Bpm bpm, int beatIndex = kFirstBeatIndex);
     int size() const;
     FramePos getFirstBeatPosition() const;
     FramePos getLastBeatPosition() const;
@@ -224,7 +224,7 @@ class Beats final : public QObject {
     void scale(enum BeatsInternal::BPMScale scale);
 
     /// Set bpm marker at a beat
-    void setBpm(Bpm bpm, int beatIndex = 0);
+    void setBpm(Bpm bpm, int beatIndex = kFirstBeatIndex);
 
     /// Returns the number of beats
     int size() const;
