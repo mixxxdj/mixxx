@@ -42,6 +42,7 @@ MC7000.needleSearchPlay = false;
 MC7000.rateRanges = [
     4/100,  // default: 4/100
     6/100,  // default: 6/100
+    8/100,  // default: 8/100
     10/100, // default: 10/100
     16/100, // default: 16/100
     24/100, // default: 24/100
@@ -89,7 +90,7 @@ MC7000.jogWheelTicksPerRevolution = 894;
 MC7000.needleSearchTouched = [true, true, true, true];
 
 // initial value for VINYL mode per Deck (see above for user input)
-MC7000.isVinylMode = [MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
+MC7000.isVinylMode = [0, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
 
 // used to keep track of which the rateRange of each slider.
 // value used as an index to MC7000.rateRanges
@@ -184,7 +185,7 @@ MC7000.init = function() {
         engine.makeConnection("[Sampler"+i+"]", "play", MC7000.SamplerLED);
     }
 
-    // Activate Timer for Softtakeover to avoid conflicts with ControllerStatusSysex
+    // Activate Timer for Controller Status SysEx to avoid conflicts with Softtakeover
     engine.beginTimer(2000, MC7000.delayedSysEx, true);
 };
 
@@ -694,10 +695,12 @@ MC7000.stopTime = function(channel, control, value, status, group) {
 // Use the CENSOR button as Spinback with STOP TIME adjusted length
 MC7000.censor = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    var deck =
-      parseInt(group.substring(8, 9)); // work out which deck we are using
-    engine.brake(deck, value > 0, MC7000.factor[deckNumber],
-        -15); // start at a rate of -15 and decrease by "factor"
+    var deck = parseInt(group.substring(8, 9)); // work out which deck we are using
+    if (value > 0) {
+        engine.spinback(deck, true, MC7000.factor[deckNumber], -15); // start at a rate of -15 and decrease by "factor"
+    } else {
+        engine.softStart(deck, true, MC7000.factor[deckNumber]);
+    }
 };
 
 // SET CROSSFADER CURVE
