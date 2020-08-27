@@ -48,8 +48,7 @@ void Beats::initWithProtobuf(const QByteArray& byteArray) {
 Beats::Beats(const Track* track, const BeatsInternal& internal)
         : m_mutex(QMutex::Recursive), m_beatsInternal(internal) {
     DEBUG_ASSERT(track);
-    setSampleRate(track->getSampleRate());
-    setDurationSeconds(track->getDuration());
+    updateStreamInfo(track->streamInfo());
     // Beats object should live in the same thread as the track
     // it is associated with.
     moveToThread(track->thread());
@@ -313,20 +312,15 @@ bool BeatsInternal::isValid() const {
     return m_iSampleRate > 0 && !m_beats.empty();
 }
 
-void BeatsInternal::setSampleRate(int sampleRate) {
-    m_iSampleRate = sampleRate;
+void BeatsInternal::updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo) {
+    m_iSampleRate = streamInfo.getSignalInfo().getSampleRate();
+    m_duration = streamInfo.getDuration();
     generateBeatsFromMarkers();
     updateBpm();
 }
 
-void BeatsInternal::setDurationSeconds(double duration) {
-    m_dDurationSeconds = duration;
-    generateBeatsFromMarkers();
-    updateBpm();
-}
-
-BeatsInternal::BeatsInternal()
-        : m_iSampleRate(0), m_dDurationSeconds(0) {
+BeatsInternal::BeatsInternal(const audio::StreamInfo& streamInfo) {
+    updateStreamInfo(streamInfo);
 }
 
 void BeatsInternal::initWithProtobuf(const QByteArray& byteArray) {
@@ -341,7 +335,7 @@ void BeatsInternal::initWithProtobuf(const QByteArray& byteArray) {
 
 void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers) {
-    DEBUG_ASSERT(m_iSampleRate > 0 && m_dDurationSeconds > 0);
+    DEBUG_ASSERT(m_iSampleRate > 0 && m_duration.toDoubleSeconds() > 0);
     if (beats.empty()) {
         clearMarkers();
         return;
@@ -350,7 +344,7 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     clearMarkers();
 
     auto lastBeatTime = Duration::fromSeconds(beats.last().getValue() / m_iSampleRate);
-    DEBUG_ASSERT(m_dDurationSeconds >= lastBeatTime.toDoubleSeconds());
+    DEBUG_ASSERT(m_duration >= lastBeatTime);
 
     m_beatsProto.set_first_beat_frame(beats.at(0).getValue());
     int bpmMarkerBeatIndex = 0;
@@ -402,15 +396,9 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
     }
 }
 
-void Beats::setSampleRate(int sampleRate) {
+void Beats::updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo) {
     QMutexLocker locker(&m_mutex);
-    m_beatsInternal.setSampleRate(sampleRate);
-    emit updated();
-}
-
-void Beats::setDurationSeconds(double duration) {
-    QMutexLocker locker(&m_mutex);
-    m_beatsInternal.setDurationSeconds(duration);
+    m_beatsInternal.updateStreamInfo(streamInfo);
     emit updated();
 }
 
@@ -882,7 +870,7 @@ FramePos BeatsInternal::getLastBeatPosition() const {
 
 void BeatsInternal::generateBeatsFromMarkers() {
     m_beats.clear();
-    if (m_iSampleRate <= 0 || m_dDurationSeconds <= 0) {
+    if (m_iSampleRate <= 0 || m_duration.toDoubleSeconds() <= 0) {
         return;
     }
     // Absence of BPM markers is irrecoverable.
@@ -949,7 +937,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
     }
 
     // We keep generating beats until this frame.
-    const FramePos trackLastFrame(m_iSampleRate * m_dDurationSeconds);
+    const FramePos trackLastFrame(m_iSampleRate * m_duration.toDoubleSeconds());
     int bpmMarkerIndex = 0;
     int timeSignatureMarkerIndex = 0;
     int barIndex = -1;

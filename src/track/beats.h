@@ -8,6 +8,7 @@
 #include <QVector>
 #include <memory>
 
+#include "audio/streaminfo.h"
 #include "proto/beats.pb.h"
 #include "track/beat.h"
 #include "track/bpm.h"
@@ -31,7 +32,7 @@ namespace mixxx {
 /// plain copyable, movable object.
 class BeatsInternal {
   public:
-    BeatsInternal();
+    BeatsInternal(const audio::StreamInfo& streamInfo = audio::StreamInfo());
     void initWithProtobuf(const QByteArray& byteArray);
     void initWithAnalyzer(const QVector<FramePos>& beats,
             const QVector<track::io::TimeSignatureMarker>&
@@ -58,11 +59,10 @@ class BeatsInternal {
     Beat findPrevBeat(FramePos frame) const;
     Bpm getGlobalBpm() const;
     bool isValid() const;
-    void setSampleRate(int sampleRate);
+    void updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo);
     SINT getSampleRate() const {
         return m_iSampleRate;
     }
-    void setDurationSeconds(double duration);
     int numBeatsInRange(FramePos startFrame, FramePos endFrame) const;
     QByteArray toProtobuf() const;
     QString getVersion() const;
@@ -107,7 +107,7 @@ class BeatsInternal {
     BeatList m_beats;
     track::io::Beats m_beatsProto;
     int m_iSampleRate;
-    double m_dDurationSeconds;
+    mixxx::Duration m_duration;
     friend QDebug operator<<(QDebug dbg, const BeatsInternal& arg);
 };
 
@@ -249,17 +249,8 @@ class Beats final : public QObject {
     /// Prints debugging information in stderr
     friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
 
-    /**
-     * Set sample rate of the track which owns these beats.
-     * @param sampleRate Track sample rate
-     */
-    void setSampleRate(int sampleRate);
-
-    /**
-     * Set duration of the track which owns these beats.
-     * @param duration Track duration in seconds.
-     */
-    void setDurationSeconds(double duration);
+    /// Update stream info encapsulating sample rate and track duration.
+    void updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo);
 
     /// Get the internal copyable Beats object.
     BeatsInternal getInternal() const;

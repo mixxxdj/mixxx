@@ -4,6 +4,7 @@
 #include <QMutexLocker>
 #include <atomic>
 
+#include "audio/streaminfo.h"
 #include "engine/engine.h"
 #include "track/trackref.h"
 #include "util/assert.h"
@@ -310,10 +311,9 @@ QString Track::getBpmText() const {
 }
 
 void Track::setBeats(const mixxx::BeatsInternal& beats) {
-    auto beatsInternalCopy = beats;
-    beatsInternalCopy.setSampleRate(getSampleRate());
-    beatsInternalCopy.setDurationSeconds(getDuration());
     QMutexLocker lock(&m_qMutex);
+    auto beatsInternalCopy = beats;
+    beatsInternalCopy.updateStreamInfo(streamInfo());
     if (!m_pBeats) {
         m_pBeats = mixxx::BeatsPointer(new mixxx::Beats(this, beatsInternalCopy));
         connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::beatsUpdated);
@@ -439,7 +439,7 @@ void Track::setDuration(mixxx::Duration duration) {
                 duration)) {
         markDirtyAndUnlock(&lock);
         if (m_pBeats) {
-            m_pBeats->setDurationSeconds(getDuration());
+            m_pBeats->updateStreamInfo(streamInfo());
         }
     }
 }
@@ -1452,7 +1452,7 @@ void Track::setAudioProperties(
                 sampleRate)) {
         dirty = true;
         if (m_pBeats) {
-            m_pBeats->setSampleRate(getSampleRate());
+            m_pBeats->updateStreamInfo(streamInfo());
         }
     }
     if (compareAndSet(
@@ -1465,7 +1465,7 @@ void Track::setAudioProperties(
                 duration)) {
         dirty = true;
         if (m_pBeats) {
-            m_pBeats->setDurationSeconds(getDuration());
+            m_pBeats->updateStreamInfo(streamInfo());
         }
     }
     if (dirty) {
@@ -1531,6 +1531,16 @@ void Track::updateAudioPropertiesFromStream(
     if (importCueInfos) {
         emit cuesUpdated();
     }
+}
+
+mixxx::audio::StreamInfo Track::streamInfo() const {
+    mixxx::audio::ChannelCount channelCount(getChannels());
+    mixxx::audio::SampleRate sampleRate(getSampleRate());
+    mixxx::audio::Bitrate bitrate(getBitrate());
+    mixxx::Duration duration = mixxx::Duration::fromSeconds(getDuration());
+    mixxx::audio::SignalInfo signalInfo(channelCount, sampleRate);
+    mixxx::audio::StreamInfo streamInfo(signalInfo, bitrate, duration);
+    return streamInfo;
 }
 
 QDebug operator<<(QDebug dbg, const TrackPointer& arg) {

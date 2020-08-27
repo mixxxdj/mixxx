@@ -358,6 +358,8 @@ class Track : public QObject {
             mixxx::audio::Bitrate bitrate,
             mixxx::Duration duration);
 
+    mixxx::audio::StreamInfo streamInfo() const;
+
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();

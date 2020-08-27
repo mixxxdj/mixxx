@@ -11,9 +11,7 @@ mixxx::BeatsInternal BeatFactory::loadBeatsFromByteArray(const TrackPointer& tra
         const QString& beatsVersion,
         const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
-    auto deserializedBeats = mixxx::BeatsInternal();
-    deserializedBeats.setSampleRate(track->getSampleRate());
-    deserializedBeats.setDurationSeconds(track->getDuration());
+    auto deserializedBeats = mixxx::BeatsInternal(track->streamInfo());
     deserializedBeats.setSubVersion(beatsSubVersion);
     // Now that the serialized representation is the same for BeatGrids and BeatMaps,
     // they can be deserialized in a common function.
@@ -126,10 +124,7 @@ mixxx::BeatsInternal BeatFactory::makePreferredBeats(const TrackPointer& track,
         const int iMinBpm,
         const int iMaxBpm) {
     const int iSampleRate = track->getSampleRate();
-    const double dDurationSeconds = track->getDuration();
-    mixxx::BeatsInternal beatsInternal;
-    beatsInternal.setDurationSeconds(dDurationSeconds);
-    beatsInternal.setSampleRate(iSampleRate);
+    mixxx::BeatsInternal beatsInternal(track->streamInfo());
 
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
