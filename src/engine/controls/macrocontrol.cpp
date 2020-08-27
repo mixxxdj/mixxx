@@ -203,14 +203,17 @@ void MacroControl::controlRecord() {
 }
 
 void MacroControl::controlToggle() {
-    if (m_pMacro) {
-        m_pMacro->setState(Macro::StateFlag::Enabled, !m_pMacro->isEnabled());
+    if (isPlaying()) {
+        stop();
+    } else {
+        controlActivate();
     }
 }
 
 void MacroControl::controlClear() {
     if (m_pMacro && !isPlaying()) {
         m_pMacro->clear();
+        setStatus(Status::Empty);
     }
 }
 
