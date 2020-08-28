@@ -21,6 +21,8 @@ class BeatFactory {
     static QString getPreferredSubVersion(
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
+        const bool bEnableIroning,
+        const bool bEnableArrytimicRemoval,
         const int iMinBpm, const int iMaxBpm,
         const QHash<QString, QString> extraVersionInfo);
 
@@ -29,6 +31,8 @@ class BeatFactory {
             const QHash<QString, QString> extraVersionInfo,
             const bool bEnableFixedTempoCorrection,
             const bool bEnableOffsetCorrection,
+            const bool bEnableIroning,
+            const bool bEnableArrytimicRemoval,
             const int iSampleRate,
             const int iTotalSamples,
             const int iMinBpm,

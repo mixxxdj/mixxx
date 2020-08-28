@@ -137,7 +137,6 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         pGrid->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
-        qDebug() << subVersion;
         if (bEnableIroning) {
             beats = BeatUtils::ironBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
         }
