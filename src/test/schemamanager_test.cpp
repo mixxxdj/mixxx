@@ -1,16 +1,15 @@
+#include "database/schemamanager.h"
+
 #include <gtest/gtest.h>
 
-#include "test/mixxxtest.h"
+#include <QSqlQuery>
 
 #include "database/mixxxdb.h"
-#include "database/schemamanager.h"
-#include "util/db/dbconnectionpooler.h"
-#include "util/db/dbconnectionpooled.h"
-
 #include "library/dao/settingsdao.h"
-
+#include "test/mixxxtest.h"
 #include "util/assert.h"
-
+#include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 
 class SchemaManagerTest : public MixxxTest {
   protected:

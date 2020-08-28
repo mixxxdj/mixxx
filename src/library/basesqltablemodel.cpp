@@ -746,17 +746,6 @@ BaseCoverArtDelegate* BaseSqlTableModel::doCreateCoverArtDelegate(
     return new CoverArtDelegate(pTableView);
 }
 
-void BaseSqlTableModel::slotRefreshCoverRows(QList<int> rows) {
-    if (rows.isEmpty()) {
-        return;
-    }
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
-    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
-        return;
-    }
-    emitDataChangedForMultipleRowsInColumn(rows, column);
-}
-
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
