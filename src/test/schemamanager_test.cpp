@@ -1,7 +1,8 @@
 #include "database/schemamanager.h"
 
-#include <gtest/gtest.h>
+#include <QSqlQuery>
 
+#include "library/dao/settingsdao.h"
 #include "test/mixxxdbtest.h"
 
 class SchemaManagerTest : public MixxxDbTest {};

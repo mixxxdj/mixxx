@@ -157,8 +157,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             TrackId trackId,
             TrackFile fileInfo) override;
 
-    QSqlDatabase m_database;
-
     CueDAO& m_cueDao;
     MacroDAO m_macroDao;
     PlaylistDAO& m_playlistDao;

@@ -75,8 +75,8 @@ class Library: public QObject {
 
     //static Library* buildDefaultLibrary();
 
-    enum RemovalType {
-        LeaveTracksUnchanged = 0,
+    enum class RemovalType {
+        KeepTracks,
         HideTracks,
         PurgeTracks
     };

@@ -83,8 +83,7 @@ TrackDAO::~TrackDAO() {
 
 void TrackDAO::initialize(
         const QSqlDatabase& database) {
-    DEBUG_ASSERT(!m_database.isOpen());
-    m_database = database;
+    DAO::initialize(database);
     m_macroDao.initialize(database);
 }
 

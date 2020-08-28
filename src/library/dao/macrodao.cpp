@@ -5,10 +5,6 @@
 
 #include "library/queryutil.h"
 
-void MacroDAO::initialize(const QSqlDatabase& database) {
-    m_database = database;
-}
-
 bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     QSqlQuery query(m_database);
     if (macro->getId() == -1) {
