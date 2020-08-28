@@ -17,7 +17,7 @@ var TraktorZ2 = new function() {
 	this.fxButtonState = {1: false, 2: false, 3: false, 4: false};
 
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
-    this.batchingOutputs = false;
+    this.batchingOutputs = true;
 	
     // callbacks
     this.samplerCallbacks = [];
@@ -596,6 +596,109 @@ TraktorZ2.basicOutputHandler = function(value, group, key) {
     TraktorZ2.controller.setOutput(group, key, ledValue, !TraktorZ2.batchingOutputs);
 };
 
+TraktorZ2.beatOutputHandler = function(value, group, key) {
+    var ledValue = value;
+    if (value === 1 || value === true) {		
+		TraktorZ2.displayLoopCount(group, 0x07);
+		
+		engine.beginTimer(0.3  * 60 / engine.getValue(group, "bpm") / 4 * 1000, function() {	
+			TraktorZ2.displayLoopCount(group, 0x06);
+        }, true);
+		engine.beginTimer(0.3  * 60 / engine.getValue(group, "bpm") / 4 * 2 * 1000 , function() {
+		    TraktorZ2.displayLoopCount(group, 0x05);
+        }, true);
+		engine.beginTimer(0.3  * 60 / engine.getValue(group, "bpm") / 4  * 3 * 1000, function() {
+		    TraktorZ2.displayLoopCount(group, 0x04);
+        }, true);
+		engine.beginTimer(0.3  * 60 / engine.getValue(group, "bpm") / 4  * 4 * 1000, function() {
+		    TraktorZ2.displayLoopCount(group, 0x03);
+        }, true);
+	}
+};
+
+TraktorZ2.displayLoopCount = function(group, brightness)
+{
+	// @param group may be either[Channel1] or [Channel2]
+	// @param brightness may be aninteger value from 0x00 to 0x07
+	var beatloop_size = engine.getValue(group, "beatloop_size");
+	
+	var LED_DigitModulus = {
+        "[Digit3]": 10,
+        "[Digit2]": 100,
+        "[Digit1]": 1000
+    };
+	
+	for (var digit in LED_DigitModulus) {			
+		var leastSignificiantDigit = (beatloop_size % 10);
+		HIDDebug(leastSignificiantDigit + " " + beatloop_size + " " + group + " " + digit);
+		beatloop_size = beatloop_size - leastSignificiantDigit;
+		TraktorZ2.displayloopCountDigit(group + digit, leastSignificiantDigit, brightness);
+		beatloop_size /= 10;
+	}
+}
+
+TraktorZ2.displayloopCountDigit = function(group, digit, brightness)
+{
+	// @param offset of the first LED (center horizontal bar) of the digit
+	// @param digit to display (-2 represents all OFF, -1 represents "1/" )
+	// @param brightness may be aninteger value from 0x00 to 0x07
+	HIDDebug("Offset:" + " Digit:" + digit + " Brightness:" + brightness);
+	
+	//	
+	if (digit == 0 || digit == 2 || digit == 3 || digit == 5 || digit == 6 || digit == 7  || digit == 8  || digit == 9) {
+		TraktorZ2.controller.setOutput(group, "segment_a", brightness, false); // ON
+	} else {
+		TraktorZ2.controller.setOutput(group, "segment_a", 0x00,       false); // OFF
+	}
+	if (digit == 0 || digit == 1 || digit == 2 || digit == 3 || digit == 4 || digit == 7  || digit == 8  || digit == 9) {
+		TraktorZ2.controller.setOutput(group, "segment_b", brightness, false); // ON
+	} else {
+		TraktorZ2.controller.setOutput(group, "segment_b", 0x00,       false); // OFF
+	}
+	
+	// Segment c (lower right vertical bar)
+	if (digit == 0 || digit == 1 || digit == 3 || digit == 4  || digit == 5  || digit == 6  || digit == 7  || digit == 8  || digit == 9) {
+		TraktorZ2.controller.setOutput(group, "segment_c", brightness, false); // ON
+	} else {
+		TraktorZ2.controller.setOutput(group, "segment_c", 0x00,       false); // OFF
+	}
+		
+	// Segment d (lower horizontal bar)
+	if (digit == 0 || digit == 2 || digit == 3 || digit == 5  || digit == 6 || digit == 8  || digit == 9) {
+		TraktorZ2.controller.setOutput(group, "segment_d", brightness, false); // ON
+	} else {
+		TraktorZ2.controller.setOutput(group, "segment_d", 0x00,       false); // OFF
+	}
+	
+	// Segment e (lower left vertical bar)
+	if (digit == 0 || digit == 2 || digit == 6 || digit == 8) {
+		TraktorZ2.controller.setOutput(group, "segment_e", brightness, false); // ON
+	} else {
+		TraktorZ2.controller.setOutput(group, "segment_e", 0x00,       false); // OFF
+	}
+	
+	// Segment f (upper left vertical bar)
+	if (digit == 0 || digit == 4 || digit == 5 || digit == 6 || digit == 8  || digit == 9) {
+		TraktorZ2.controller.setOutput(group, "segment_f", brightness, false); // ON
+	} else {
+		TraktorZ2.controller.setOutput(group, "segment_f", 0x00,       false); // OFF
+	}
+	
+	HIDDebug(group);
+	var batching = false;
+	if (group == "[Channel1][Digit1]" || group == "[Channel2][Digit1]") {
+		batching = true;
+	}
+		
+	// Segment g (center horizontal bar)
+	if (digit == 2 || digit == 3  || digit == 4 || digit == 5 || digit == 6 || digit == 8 || digit == 9) {
+		TraktorZ2.controller.setOutput(group, "segment_g", brightness, batching); // ON
+	} else {
+	    TraktorZ2.controller.setOutput(group, "segment_g", 0x00,       batching); // OFF
+	}
+}
+
+
 TraktorZ2.registerOutputPackets = function() {
 	HIDDebug("TraktorZ2: registerOutputPackets");
     var outputA = new HIDPacket("outputA", 0x80);
@@ -611,25 +714,58 @@ TraktorZ2.registerOutputPackets = function() {
     outputA.addOutput("[Channel3]", "!deck_C", 0x09, "B");
     outputA.addOutput("[Channel4]", "!deck_D", 0x10, "B");
 
-    outputA.addOutput("[Channel1]", "pfl", 0x39, "B");
-    outputA.addOutput("[Channel2]", "pfl", 0x3A, "B");
+    //outputA.addOutput("[Channel1]", "pfl", 0x39, "B");
+    //outputA.addOutput("[Channel2]", "pfl", 0x3A, "B");
 	
+    outputA.addOutput("[Channel1]", "slip_enabled", 0x0E, "B", 0x70);	
+    engine.connectControl("[Channel1]", "slip_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
     outputA.addOutput("[Channel1]", "sync_enabled", 0x14, "B", 0x70);	
     engine.connectControl("[Channel1]", "sync_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 		
+    outputA.addOutput("[Channel2]", "slip_enabled", 0x16, "B", 0x70);	
+    engine.connectControl("[Channel2]", "slip_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
     outputA.addOutput("[Channel2]", "sync_enabled", 0x1C, "B", 0x70);	
     engine.connectControl("[Channel2]", "sync_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+		
+    outputA.addOutput("[Channel1]", "beat_active", 0x0E, "B", 0x70);	
+    engine.connectControl("[Channel1]", "beat_active", TraktorZ2.bind(TraktorZ2.beatOutputHandler, this));
+		
+    outputA.addOutput("[Channel2]", "beat_active", 0x26, "B", 0x70);	
+    engine.connectControl("[Channel2]", "beat_active", TraktorZ2.bind(TraktorZ2.beatOutputHandler, this));
+  
+		
+	var LED_ChannelOffsets = {
+        "[Channel1]": 0x35,
+        "[Channel2]": 0x4A
+    };
+		var LED_DigitOffsets = {
+        "[Digit1]": 0x00,
+        "[Digit2]": 0x07,
+        "[Digit3]": 0x0E
+    };
+	
+    for (var ch in LED_ChannelOffsets) {
+		for (var digit in LED_DigitOffsets) {
+			outputA.addOutput(ch + digit, "segment_g", LED_ChannelOffsets[ch] + LED_DigitOffsets[digit] + 0x00, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
+			outputA.addOutput(ch + digit, "segment_c", LED_ChannelOffsets[ch] + LED_DigitOffsets[digit] + 0x01, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
+			outputA.addOutput(ch + digit, "segment_b", LED_ChannelOffsets[ch] + LED_DigitOffsets[digit] + 0x02, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
+			outputA.addOutput(ch + digit, "segment_a", LED_ChannelOffsets[ch] + LED_DigitOffsets[digit] + 0x03, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
+			outputA.addOutput(ch + digit, "segment_f", LED_ChannelOffsets[ch] + LED_DigitOffsets[digit] + 0x04, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
+			outputA.addOutput(ch + digit, "segment_e", LED_ChannelOffsets[ch] + LED_DigitOffsets[digit] + 0x05, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
+			outputA.addOutput(ch + digit, "segment_d", LED_ChannelOffsets[ch] + LED_DigitOffsets[digit] + 0x06, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
+		}
+	}
+	
+    // outputA.addOutput("[ChannelX]", "!fxButton1", 0x3C, "B");
+    // outputA.addOutput("[ChannelX]", "!fxButton2", 0x3D, "B");
+    // outputA.addOutput("[ChannelX]", "!fxButton3", 0x3E, "B");
+    // outputA.addOutput("[ChannelX]", "!fxButton4", 0x3F, "B");
+    // outputA.addOutput("[ChannelX]", "!fxButton5", 0x40, "B");
 
-    outputA.addOutput("[ChannelX]", "!fxButton1", 0x3C, "B");
-    outputA.addOutput("[ChannelX]", "!fxButton2", 0x3D, "B");
-    outputA.addOutput("[ChannelX]", "!fxButton3", 0x3E, "B");
-    outputA.addOutput("[ChannelX]", "!fxButton4", 0x3F, "B");
-    outputA.addOutput("[ChannelX]", "!fxButton5", 0x40, "B");
-
-    outputA.addOutput("[Channel3]", "!fxEnabled", 0x34, "B");
-    outputA.addOutput("[Channel1]", "!fxEnabled", 0x35, "B");
-    outputA.addOutput("[Channel2]", "!fxEnabled", 0x36, "B");
-    outputA.addOutput("[Channel4]", "!fxEnabled", 0x59, "B");
+    // outputA.addOutput("[Channel3]", "!fxEnabled", 0x34, "B");
+    // outputA.addOutput("[Channel1]", "!fxEnabled", 0x35, "B");
+    // outputA.addOutput("[Channel2]", "!fxEnabled", 0x36, "B");
+    // outputA.addOutput("[Channel4]", "!fxEnabled", 0x59, "B");
 
     this.controller.registerOutputPacket(outputA);
 
@@ -692,7 +828,21 @@ TraktorZ2.init = function(_id) {
         "FX1": new TraktorZ2.EffectUnit("FX1"),
         "FX2": new TraktorZ2.EffectUnit("FX2")
     };
- 
+	
+	// Traktor Z2 can be swiched per channel from internal mixing to external mixing
+	// This is done by USB HID: Set Reports (Feature) 0xF1
+	// 0xF1 90 40 means Ch1 (external) mixing / Ch2 (external) mixing
+	// 0xF1 91 40 means Ch1 (internal) mixing / Ch2 (external) mixing
+	// 0xF1 92 40 means Ch1 (external) mixing / Ch2 (internal) mixing
+	// 0xF1 93 40 means Ch1 (internal) mixing / Ch2 (internal) mixing
+	
+controller.send([0x93,0x40], 2, 0xF1);
+	var data = [0x93, 0x40];
+    controller.send(data, data.length, 0xF1);
+	 
+	data = [0x90, 0x40];
+    controller.send(data, data.length, 0xF1);
+	
 	TraktorZ2.debugLights(); 
     TraktorZ2.registerInputPackets();
     TraktorZ2.registerOutputPackets();
