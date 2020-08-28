@@ -121,6 +121,9 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
     } else if (version == BEAT_MAP_VERSION) {
 
         auto fixedBeats = BeatUtils::ironBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
+        for (auto beat : fixedBeats) {
+            std::cerr << std::fixed << beat << std::endl;
+        }
         auto pMap = new mixxx::BeatMap(track, iSampleRate, fixedBeats);
         pMap->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pMap,&BeatFactory::deleteBeats);

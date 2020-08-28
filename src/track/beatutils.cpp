@@ -100,7 +100,8 @@ QMap<int, double> BeatUtils::findStableTempoRegions(
     // We also add the median as rough guess as our last tempo
     // This way we always have both sentinels for the whole track
     // as a constant tempo region if no significant tempo changes
-    stableTemposByPosition[tempoList.count()] = medianBpm;
+    stableTemposByPosition[tempoList.count() - 1] = medianBpm;
+    qDebug() << stableTemposByPosition;
     return stableTemposByPosition;
 }
 
@@ -123,32 +124,45 @@ void BeatUtils::removeSmallArrhythmic(
     anchoredBeats << makeQVector(beats.begin(), beats.begin() + positionsWithTempoChange[1]);
 
     for (int i = 2; i < positionsWithTempoChange.size(); i+=1) {
-        // here use the rough stable tempo on the region to the left 
-        int smallInBeats =  16 / (60 / tempoValues[i-1]);  
+        double previousTempoRoughGuess = tempoValues[i-1]; 
+        int smallInBeats =  16 / (60 / previousTempoRoughGuess);  
         int limitAtLeft = positionsWithTempoChange[i-1];
         int limitAtRight = positionsWithTempoChange[i];
         int lenghtOfChange = limitAtRight - limitAtLeft;
-        double previousTempo = (stableTemposByPosition.lowerBound(limitAtLeft)-1).value();
-
         if (lenghtOfChange <= smallInBeats) {
+            qDebug() << "removing" << limitAtRight - limitAtLeft << "beats from" << limitAtLeft << limitAtRight;
+            auto beatsAtLeft = makeQVector(
+                    beats.begin() + positionsWithTempoChange[i-2],
+                    beats.begin() + positionsWithTempoChange[i-1]);
+            double tempoAtLeft = calculateBpm(beatsAtLeft, sampleRate, 60, 180);
+            qDebug() << tempoAtLeft;
+            double beatLength = (60.0 * sampleRate) / tempoAtLeft;
+            double regionLenghtInSamples = beats[limitAtRight] - beats[limitAtLeft];
+            int beatsInRegionAtTempoAtLeft = regionLenghtInSamples / beatLength;
+            qDebug() << beatsInRegionAtTempoAtLeft;
+            // Make sure the last beat we add is extacly at litmitAtRight
+            double preciseBeatLeght = regionLenghtInSamples / beatsInRegionAtTempoAtLeft;
             stableTemposByPosition.remove(limitAtLeft);
             double beatOffset = beats[limitAtLeft];
-            double beatLength = floor(((60.0 * sampleRate) / previousTempo) + 0.5);
-            while (beatOffset < beats[limitAtRight]) {
+            int beatsAdded = 0;
+            while (beatOffset < beats[limitAtRight] - preciseBeatLeght) {
                 anchoredBeats << beatOffset;
-                beatOffset += beatLength;
+                beatOffset += preciseBeatLeght;
+                qDebug() << beatOffset << beats[limitAtRight];
+                beatsAdded += 1;
             }
+            qDebug() << "added" << beatsAdded << "new beats";
 
         } else {
             anchoredBeats << makeQVector(
                     beats.begin() + positionsWithTempoChange[i-1],
                     beats.begin() + positionsWithTempoChange[i]);
+            int counter = 0;
+            for (auto beat : anchoredBeats) {
+                qDebug() << beat << counter++;
+            }
         }
     }
-    // We may have shinkred or enlarged our beat vector so we make sure our  
-    // last change sentinal does happens in the right place.
-    stableTemposByPosition.remove(stableTemposByPosition.last());
-    stableTemposByPosition[anchoredBeats.size() -1] = stableTemposByPosition[0];
     beats = anchoredBeats;
 }
 
@@ -159,7 +173,21 @@ QVector<double> BeatUtils::ironBeatmap(
     QList<double> tempoList = computeWindowedBpmsAndFrequencyHistogram(
             rawBeats, 2, 1, sampleRate, &tempoFrequency);
     auto stableTemposByPosition = findStableTempoRegions(tempoFrequency, tempoList);
+    qDebug() << rawBeats.size() << tempoList.size();
+    int counter = 0;
+    for (auto tempi : tempoList) {
+        qDebug() << tempi << counter++;
+    }
     removeSmallArrhythmic(rawBeats, sampleRate, stableTemposByPosition);
+    // This solves the dip problem near tempo changes
+    // TODO(Cristiano) adjust these on the fly on removeSmallArrhythmic
+    tempoList = computeWindowedBpmsAndFrequencyHistogram(
+            rawBeats, 2, 1, sampleRate, &tempoFrequency);
+    stableTemposByPosition = findStableTempoRegions(tempoFrequency, tempoList);
+    counter = 0;
+    for (auto tempi : tempoList) {
+        qDebug() << tempi << counter++;
+    }
     QVector<double> fixedBeats;
     fixedBeats.reserve(rawBeats.size());
     auto tempoChanges = stableTemposByPosition.keys();
@@ -193,14 +221,14 @@ QVector<double> BeatUtils::ironBeatmap(
             auto beatsAtRight = makeQVector(
                     rawBeats.begin() + beatStart + middle, rawBeats.begin() + beatEnd);
             QMap<double, int> leftTempoFrequency;
-            auto temposLeft = computeWindowedBpmsAndFrequencyHistogram(
-                    beatsAtLeft, kBeatsToCountTempo, 1, sampleRate, &leftTempoFrequency);
+            //auto temposLeft = computeWindowedBpmsAndFrequencyHistogram(
+                    //beatsAtLeft, kBeatsToCountTempo, 1, sampleRate, &leftTempoFrequency);
             QMap<double, int> rightTempoFrequency;
-            auto temposRight = computeWindowedBpmsAndFrequencyHistogram(
-                        beatsAtRight, kBeatsToCountTempo, 1, sampleRate, &rightTempoFrequency);
+            //auto temposRight = computeWindowedBpmsAndFrequencyHistogram(
+                    //beatsAtRight, kBeatsToCountTempo, 1, sampleRate, &rightTempoFrequency);
             double modeAtLeft = BeatStatistics::mode(leftTempoFrequency);
             double modeAtRight = BeatStatistics::mode(rightTempoFrequency);
-            leftRighDiff = fabs(modeAtLeft - modeAtRight);
+            //leftRighDiff = fabs(modeAtLeft - modeAtRight);
         }
         // if the most frequent tempo (mode) on each side of the region are within our 
         // tolerence we assume the region has a constant tempo and make a fixed tempo grid
@@ -341,10 +369,16 @@ QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
         const int sampleRate, QMap<double, int>* frequencyHistogram) {
     QList<double> averageBpmList;
     
-    for (int i = windowSize; i < beats.size(); i += windowStep) {
+    for (int i = 0; i < beats.size(); i += windowStep) {
         //get start and end sample of the beats
-        double start_sample = beats.at(i - windowSize);
-        double end_sample = beats.at(i);        
+        double start_sample = beats.at(i);
+        double end_sample;
+        if (i + windowSize > beats.size() - 1) {
+            end_sample = beats.at(i);
+            start_sample = beats.at(i - windowSize);
+        } else {
+            end_sample = beats.at(i + windowSize);   
+        }     
         // Time needed to count kbeats
         double time = (end_sample - start_sample) / sampleRate;
         if (time == 0) continue;
