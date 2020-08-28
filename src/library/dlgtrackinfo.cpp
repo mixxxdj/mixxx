@@ -467,42 +467,42 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    m_beatsClone.scale(mixxx::BeatsInternal::DOUBLE);
+    m_beatsClone.scale(mixxx::BPMScale::Double);
     // read back the actual value
     double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    m_beatsClone.scale(mixxx::BeatsInternal::HALVE);
+    m_beatsClone.scale(mixxx::BPMScale::Halve);
     // read back the actual value
     double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    m_beatsClone.scale(mixxx::BeatsInternal::TWOTHIRDS);
+    m_beatsClone.scale(mixxx::BPMScale::TwoThirds);
     // read back the actual value
     double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    m_beatsClone.scale(mixxx::BeatsInternal::THREEFOURTHS);
+    m_beatsClone.scale(mixxx::BPMScale::ThreeFourths);
     // read back the actual value
     double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
-    m_beatsClone.scale(mixxx::BeatsInternal::FOURTHIRDS);
+    m_beatsClone.scale(mixxx::BPMScale::FourThirds);
     // read back the actual value
     double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
-    m_beatsClone.scale(mixxx::BeatsInternal::THREEHALVES);
+    m_beatsClone.scale(mixxx::BPMScale::ThreeHalves);
     // read back the actual value
     double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);

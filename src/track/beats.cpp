@@ -149,7 +149,7 @@ void Beats::translate(FrameDiff_t numFrames) {
     emit updated();
 }
 
-void Beats::scale(enum BeatsInternal::BPMScale scale) {
+void Beats::scale(BPMScale scale) {
     QMutexLocker locker(&m_mutex);
     m_beatsInternal.scale(scale);
     locker.unlock();
@@ -423,39 +423,39 @@ QString BeatsInternal::getSubVersion() const {
     return m_subVersion;
 }
 
-void BeatsInternal::scale(BeatsInternal::BPMScale scale) {
+void BeatsInternal::scale(BPMScale scale) {
     if (!isValid()) {
         return;
     }
 
     switch (scale) {
-    case DOUBLE:
+    case BPMScale::Double:
         // introduce a new beat into every gap
         scaleDouble();
         break;
-    case HALVE:
+    case BPMScale::Halve:
         // remove every second beat
         scaleHalve();
         break;
-    case TWOTHIRDS:
+    case BPMScale::TwoThirds:
         // introduce a new beat into every gap
         scaleDouble();
         // remove every second and third beat
         scaleThird();
         break;
-    case THREEFOURTHS:
+    case BPMScale::ThreeFourths:
         // introduce two beats into every gap
         scaleTriple();
         // remove every second third and forth beat
         scaleFourth();
         break;
-    case FOURTHIRDS:
+    case BPMScale::FourThirds:
         // introduce three beats into every gap
         scaleQuadruple();
         // remove every second third and forth beat
         scaleThird();
         break;
-    case THREEHALVES:
+    case BPMScale::ThreeHalves:
         // introduce two beats into every gap
         scaleTriple();
         // remove every second beat

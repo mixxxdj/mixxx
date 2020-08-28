@@ -28,6 +28,15 @@ using BeatsPointer = std::shared_ptr<Beats>;
 class Track;
 
 namespace mixxx {
+enum class BPMScale {
+    Double,
+    Halve,
+    TwoThirds,
+    ThreeFourths,
+    FourThirds,
+    ThreeHalves,
+};
+
 /// This is an intermediate class which encapsulates the beats into a
 /// plain copyable, movable object.
 class BeatsInternal {
@@ -38,15 +47,6 @@ class BeatsInternal {
             const QVector<track::io::TimeSignatureMarker>&
                     timeSignatureMarkers =
                             QVector<track::io::TimeSignatureMarker>());
-
-    enum BPMScale {
-        DOUBLE,
-        HALVE,
-        TWOTHIRDS,
-        THREEFOURTHS,
-        FOURTHIRDS,
-        THREEHALVES,
-    };
 
     using iterator = BeatIterator;
 
@@ -67,7 +67,7 @@ class BeatsInternal {
     void setSubVersion(const QString& subVersion);
     Bpm calculateBpm(const Beat& startBeat,
             const Beat& stopBeat) const;
-    void scale(enum BPMScale scale);
+    void scale(BPMScale scale);
     FramePos findNBeatsFromFrame(FramePos fromFrame, double beats) const;
     bool findPrevNextBeats(FramePos frame,
             FramePos* pPrevBeatFrame,
@@ -216,8 +216,8 @@ class Beats final : public QObject {
     /// removed.
     void translate(FrameDiff_t numFrames);
 
-    /// Scale the position of every beat in the song by dScalePercentage.
-    void scale(enum BeatsInternal::BPMScale scale);
+    /// Scale the position of every beat in the song by a fraction.
+    void scale(BPMScale scale);
 
     /// Set bpm marker at a beat
     void setBpm(Bpm bpm, int beatIndex = kFirstBeatIndex);

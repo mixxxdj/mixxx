@@ -95,7 +95,7 @@ class WTrackMenu : public QMenu {
     // BPM
     void slotLockBpm();
     void slotUnlockBpm();
-    void slotScaleBpm(int);
+    void slotScaleBpm(mixxx::BPMScale);
 
     // Info and metadata
     void slotShowDlgTagFetcher();

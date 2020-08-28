@@ -72,22 +72,22 @@ TEST_F(BeatsTest, Scale) {
     // Initially must be the base value
     EXPECT_EQ(m_bpm, pBeats->getGlobalBpm());
 
-    pBeats->scale(BeatsInternal::DOUBLE);
+    pBeats->scale(BPMScale::Double);
     EXPECT_EQ(m_bpm * 2, pBeats->getGlobalBpm());
 
-    pBeats->scale(BeatsInternal::HALVE);
+    pBeats->scale(BPMScale::Halve);
     EXPECT_EQ(m_bpm, pBeats->getGlobalBpm());
 
-    pBeats->scale(BeatsInternal::TWOTHIRDS);
+    pBeats->scale(BPMScale::TwoThirds);
     EXPECT_EQ(m_bpm * 2 / 3, pBeats->getGlobalBpm());
 
-    pBeats->scale(BeatsInternal::THREEHALVES);
+    pBeats->scale(BPMScale::ThreeHalves);
     EXPECT_EQ(m_bpm, pBeats->getGlobalBpm());
 
-    pBeats->scale(BeatsInternal::THREEFOURTHS);
+    pBeats->scale(BPMScale::ThreeFourths);
     EXPECT_EQ(m_bpm * 3 / 4, pBeats->getGlobalBpm());
 
-    pBeats->scale(BeatsInternal::FOURTHIRDS);
+    pBeats->scale(BPMScale::FourThirds);
     EXPECT_EQ(m_bpm, pBeats->getGlobalBpm());
 }
 
