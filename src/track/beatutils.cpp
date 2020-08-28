@@ -246,85 +246,40 @@ QVector<double> BeatUtils::calculateFixedTempoGrid(
 
 QVector<double> BeatUtils::calculateIronedGrid(
         const QVector<double> &rawbeats, const int sampleRate) {
-
+    // Daniel's red ironing algorithm
+    // loop backwards through the raw beats. and calculate the average beat length from the first beat.
+    // add an inner loop and check for outliers using the momentary average as beat length.
+    // once you have found an average with only single outliers, store the beats using the current avarage.
+    // reset and do the loop again, starting with the region from the found beat to the end.
     if (rawbeats.size() < kBeatsToCountTempo) {
         return rawbeats;
     }
     double maxPhaseError = kMaxSecsPhaseError * sampleRate;
-    double beatOffset = rawbeats[1];
-    int lastCorrectedBeat = 0;
     int leftIndex = 0;
-    int rightIndex = 1;
-    bool wasErrorGrowing = false;
-    int errorStartedGrowing = 0;
-    double previousPhaseErrorMean = 0.0;
-    auto phaseErrorAvarageCalculator = MovingAvarage(1);
-    bool foundFistOutlier = false;
-    double beatLenghtToConsider = 0.0;
-    double meanBeatLength = 0.0;
+    int rightIndex = rawbeats.size() - 1;
     QVector<double> ironedBeats;
-    // We go past the previous end to avoid not having the last beat
-    // since it could be moved to the right of it's previous position
-    while (beatOffset < rawbeats.last() + meanBeatLength) {
-        meanBeatLength = (rawbeats[rightIndex] - rawbeats[leftIndex]) /  (rightIndex - leftIndex);
-        double phaseError =  beatOffset - rawbeats[rightIndex];
-        double phaseErrorMean = phaseErrorAvarageCalculator(phaseError);
-        phaseErrorAvarageCalculator.increasePeriod();
-        bool isErrorGrowing = fabs(phaseErrorMean) > fabs(previousPhaseErrorMean);
-        if (isErrorGrowing && !wasErrorGrowing) {
-            errorStartedGrowing = rightIndex;
-            beatLenghtToConsider = meanBeatLength;
-        }
-        // This is the offset of the next beat to consider for our ironed grid
-        double ironedBeat;
-        // We start if the first beat on first iteration
-        if (lastCorrectedBeat == 0) {
-            ironedBeat = rawbeats[lastCorrectedBeat];
-        // Afterwards it's the last beat we added to the ironed grid
-        } else {
-            ironedBeat = ironedBeats.last();
-        }
-        if (fabs(phaseError) > maxPhaseError) {
-            // ignore a single outlier
-            if (!foundFistOutlier) {
-                foundFistOutlier = true;
-                isErrorGrowing = false;
-            // add the beats until error started growing
-            } else {
-                qDebug() << "from beat" << lastCorrectedBeat << "to beat" << errorStartedGrowing << "tempo is const";
-                for (int i = lastCorrectedBeat; i < errorStartedGrowing; i += 1) {
-                    ironedBeat += beatLenghtToConsider;
-                    ironedBeats << ironedBeat;
-                }
-                lastCorrectedBeat = errorStartedGrowing;
-                if (lastCorrectedBeat == rawbeats.size() -1) {
-                    break;
-                }
-                foundFistOutlier = false;
-                leftIndex = errorStartedGrowing - 1;
-                rightIndex = errorStartedGrowing;
-                beatOffset = rawbeats[rightIndex];
-                phaseErrorAvarageCalculator.reset();
-                phaseErrorAvarageCalculator.setPeriod(1);
-                previousPhaseErrorMean = 0;
-                wasErrorGrowing = false;
-                continue;
+    while (leftIndex < rawbeats.size() - 1) {
+        double meanBeatLength = (rawbeats[rightIndex] - rawbeats[leftIndex]) /  (rightIndex - leftIndex);
+        int outliersCount = 0;
+        double beatOffset = rawbeats[leftIndex];
+        for (int i = leftIndex; i < rightIndex; i += 1) {
+            double phaseError = beatOffset - rawbeats[i];
+            if (fabs(phaseError) > maxPhaseError) {
+                outliersCount += 1;
             }
+            beatOffset += meanBeatLength;
         }
-        // case we reach our last beat without any reaching our max phase error
-        // still need to add those beats..
-        if (rightIndex == rawbeats.size() - 1) {
-            qDebug() << "from beat" << lastCorrectedBeat << "to beat" << rightIndex << "tempo is const";
-            for (int i = lastCorrectedBeat; i < rawbeats.size(); i += 1) {
-                ironedBeat += meanBeatLength;
-                ironedBeats << ironedBeat;
+        if (outliersCount <= 1) {
+            beatOffset = rawbeats[leftIndex];
+            for (int i = leftIndex; i < rightIndex; i += 1) {
+                ironedBeats << beatOffset;
+                beatOffset += meanBeatLength;
             }
-            break;
+            leftIndex = rightIndex;
+            rightIndex = rawbeats.size() - 1;
+            continue;
         }
-        beatOffset += meanBeatLength;
-        rightIndex += 1;
-        previousPhaseErrorMean = phaseErrorMean;
-        wasErrorGrowing = isErrorGrowing;
+        rightIndex -= 1;
     }
     return ironedBeats;
 }
