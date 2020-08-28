@@ -18,7 +18,6 @@ class MacroControl : public EngineControl {
     void notifySeek(double dNewPlaypos) override;
 
     bool isRecording() const;
-    bool isPlaying() const;
 
     enum Status {
         NoTrack = -1,
@@ -34,10 +33,10 @@ class MacroControl : public EngineControl {
     MacroPtr getMacro() const;
 
   public slots:
-    void controlRecord();
-    void controlToggle();
-    void controlClear();
-    void controlActivate();
+    void controlRecord(double value = 1);
+    void controlToggle(double value = 1);
+    void controlClear(double value = 1);
+    void controlActivate(double value = 1);
     void gotoAndPlay();
 
     void slotJumpQueued();
@@ -60,7 +59,7 @@ class MacroControl : public EngineControl {
     QTimer m_updateRecordingTimer;
 
     MacroPtr m_pMacro;
-    int m_iNextAction;
+    unsigned int m_iNextAction;
 
     ControlObject m_COStatus;
     ControlObject m_COIndicator;

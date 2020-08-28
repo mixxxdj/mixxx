@@ -57,7 +57,7 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
     Q_UNUSED(dRate);
     m_bJumpPending = false;
-    if (!isPlaying()) {
+    if (getStatus() != Status::Playing) {
         return;
     }
     double framePos = dCurrentSample / mixxx::kEngineChannelCount;
@@ -96,12 +96,10 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     }
     if (m_pMacro->isEmpty()) {
         setStatus(Status::Empty);
+    } else if (m_pMacro->isEnabled()) {
+        play();
     } else {
-        if (m_pMacro->isEnabled()) {
-            play();
-        } else {
-            stop();
-        }
+        stop();
     }
 }
 
@@ -143,11 +141,6 @@ bool MacroControl::isRecording() const {
     return getStatus() == Status::Armed || getStatus() == Status::Recording;
 }
 
-bool MacroControl::isPlaying() const {
-    DEBUG_ASSERT(m_iNextAction >= 0);
-    return m_pMacro && m_iNextAction < m_pMacro->size();
-}
-
 void MacroControl::play() {
     DEBUG_ASSERT(m_pMacro);
     m_iNextAction = 1;
@@ -161,6 +154,10 @@ void MacroControl::stop() {
 }
 
 void MacroControl::updateRecording() {
+    //qCDebug(macroLoggingCategory) << QThread::currentThread() << QTime::currentTime() << "Update recording status:" << getStatus() << "recording:" << isRecording();
+    VERIFY_OR_DEBUG_ASSERT(isRecording()) {
+        return;
+    }
     if (m_recordedActions.empty()) {
         return;
     }
@@ -184,51 +181,58 @@ void MacroControl::stopRecording() {
     } else {
         m_pMacro->setEnd(getSampleOfTrack().current / mixxx::kEngineChannelCount);
         setStatus(Status::Recorded);
-        play();
+        if (m_pMacro->isEnabled()) {
+            gotoAndPlay();
+        }
     }
 }
 
-void MacroControl::controlRecord() {
-    if (getStatus() == Status::NoTrack) {
+void MacroControl::controlRecord(double value) {
+    if (!value)
         return;
-    }
-    if (!isRecording()) {
+    if (getStatus() == Status::Empty) {
         setStatus(Status::Armed);
         DEBUG_ASSERT(m_updateRecordingTimer.thread() == QThread::currentThread());
         m_updateRecordingTimer.start(kRecordingTimerInterval);
-    } else {
+    } else if (isRecording()) {
         stopRecording();
     }
 }
 
-void MacroControl::controlToggle() {
-    if (isPlaying()) {
+void MacroControl::controlToggle(double value) {
+    if (!value)
+        return;
+    if (getStatus() == Status::Playing) {
         stop();
     } else {
         controlActivate();
     }
 }
 
-void MacroControl::controlClear() {
-    if (m_pMacro && !isPlaying()) {
+void MacroControl::controlClear(double value) {
+    if (!value)
+        return;
+    if (getStatus() == Status::Recorded || getStatus() == Status::PlaybackStopped) {
         m_pMacro->clear();
         setStatus(Status::Empty);
     }
 }
 
-void MacroControl::controlActivate() {
-    if (!m_pMacro || m_pMacro->isEmpty()) {
+void MacroControl::controlActivate(double value) {
+    if (!value)
+        return;
+    if (getStatus() < Status::Recorded) {
         controlRecord();
+    } else if (getStatus() == Status::Playing) {
+        gotoAndPlay();
     } else {
-        if (isPlaying()) {
-            gotoAndPlay();
-        } else {
-            play();
-        }
+        play();
     }
 }
 
 void MacroControl::gotoAndPlay() {
-    seekExact(m_pMacro->getActions().first().target * mixxx::kEngineChannelCount);
-    play();
+    if (getStatus() > Status::Recording) {
+        seekExact(m_pMacro->getActions().first().target * mixxx::kEngineChannelCount);
+        play();
+    }
 }

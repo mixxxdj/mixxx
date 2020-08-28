@@ -101,7 +101,7 @@ TEST(MacroControlTest, LoadTrackAndPlay) {
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
 
     macroControl.controlActivate();
-    ASSERT_EQ(macroControl.isPlaying(), true);
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
     EXPECT_CALL(macroControl, seekExact(kAction.position * mixxx::kEngineChannelCount)).Times(1);
     macroControl.process(0, position, 2);
 }
