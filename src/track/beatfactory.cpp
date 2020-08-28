@@ -45,6 +45,8 @@ QString BeatFactory::getPreferredVersion(
 QString BeatFactory::getPreferredSubVersion(
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
+        const bool bEnableIroning,
+        const bool bEnableArrytimicRemoval,
         const int iMinBpm,
         const int iMaxBpm,
         const QHash<QString, QString> extraVersionInfo) {
@@ -83,6 +85,18 @@ QString BeatFactory::getPreferredSubVersion(
                                      QString::number(1));
     }
 
+    if (bEnableIroning && !bEnableFixedTempoCorrection) {
+        fragments << QString("enable_ironing%1%2")
+                             .arg(kSubVersionKeyValueSeparator,
+                                     QString::number(1));
+    }
+
+    if (bEnableArrytimicRemoval && !bEnableFixedTempoCorrection) {
+        fragments << QString("enable_arrytimic_removal%1%2")
+                             .arg(kSubVersionKeyValueSeparator,
+                                     QString::number(1));
+    }
+
     fragments << QString("rounding%1%2")
                          .arg(kSubVersionKeyValueSeparator,
                                  QString::number(0.05));
@@ -97,6 +111,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         const QHash<QString, QString> extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
+        const bool bEnableIroning,
+        const bool bEnableArrytimicRemoval,
         const int iSampleRate,
         const int iTotalSamples,
         const int iMinBpm,
@@ -104,6 +120,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
+                                                      bEnableIroning,
+                                                      bEnableArrytimicRemoval,
                                                       iMinBpm, iMaxBpm,
                                                       extraVersionInfo);
 
@@ -119,12 +137,11 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         pGrid->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
-
-        auto fixedBeats = BeatUtils::ironBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
-        for (auto beat : fixedBeats) {
-            std::cerr << std::fixed << beat << std::endl;
+        qDebug() << subVersion;
+        if (bEnableIroning) {
+            beats = BeatUtils::ironBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
         }
-        auto pMap = new mixxx::BeatMap(track, iSampleRate, fixedBeats);
+        auto pMap = new mixxx::BeatMap(track, iSampleRate, beats);
         pMap->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pMap,&BeatFactory::deleteBeats);
         

@@ -38,6 +38,8 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void minBpmRangeChanged(int value);
     void maxBpmRangeChanged(int value);
     void slotReanalyzeChanged(int value);
+    void ironingEnabled(int value);
+    void removeArrythmicEnabled(int value);
 
   private:
     void loadSettings();
@@ -52,6 +54,8 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     bool m_boffsetEnabled;
     bool m_FastAnalysisEnabled;
     bool m_bReanalyze;
+    bool m_bEnableIroning;
+    bool m_bEnableArrythmicRemoval;
 };
 
 #endif // DLGPREFBEATS_H

@@ -19,6 +19,9 @@
 #define BPM_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
 #define BPM_FAST_ANALYSIS_ENABLED "FastAnalysisEnabled"
 
+#define BPM_ENABLE_IRONING "BeatDetectionEnableIroning"
+#define BPM_ENABLE_ARRYTHMIC_REGIONS_REMOVAL "BeatDetectionEnableArrythmicRemoval"
+
 #define BPM_RANGE_START "BPMRangeStart"
 #define BPM_RANGE_END "BPMRangeEnd"
 
@@ -35,6 +38,12 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(FixedTempoAssumption, bool,
                               BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION, true);
+
+    DEFINE_PREFERENCE_HELPERS(EnableIroning, bool,
+                              BPM_CONFIG_KEY, BPM_ENABLE_IRONING, true);
+
+    DEFINE_PREFERENCE_HELPERS(EnableArrythmicRemoval, bool,
+                              BPM_CONFIG_KEY, BPM_ENABLE_ARRYTHMIC_REGIONS_REMOVAL, true);
 
     DEFINE_PREFERENCE_HELPERS(FixedTempoOffsetCorrection, bool,
                               BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION, true);
