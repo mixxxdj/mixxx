@@ -7,19 +7,14 @@
 
 bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     QSqlQuery query(m_database);
+    DEBUG_ASSERT(slot > 0);
     if (macro->getId() == -1) {
         query.prepare(QStringLiteral(
                 "INSERT INTO macros "
                 "(track_id, slot, label, state, content) "
                 "VALUES "
                 "(:track_id, :slot, :label, :state, :content)"));
-        if (slot == 0) {
-            slot = getFreeSlot(trackId);
-        }
     } else {
-        VERIFY_OR_DEBUG_ASSERT(slot != 0) {
-            slot = getFreeSlot(trackId);
-        }
         query.prepare(QStringLiteral(
                 "UPDATE macros SET "
                 "track_id=:track_id,"
@@ -70,19 +65,6 @@ QSqlQuery MacroDAO::querySelect(QString columns, TrackId trackId) const {
                           .arg(columns));
     query.bindValue(":trackId", trackId.toVariant());
     return query;
-}
-
-int MacroDAO::getFreeSlot(TrackId trackId) const {
-    QSqlQuery query = querySelect("slot", trackId);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return 1;
-    }
-    QList<int> taken;
-    while (query.next()) {
-        taken.append(query.value(0).toInt());
-    }
-    return Macro::getFreeSlot(taken);
 }
 
 QMap<int, MacroPtr> MacroDAO::loadMacros(TrackId trackId) const {

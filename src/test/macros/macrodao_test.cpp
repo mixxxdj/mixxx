@@ -21,10 +21,8 @@ TEST_F(MacroDAOTest, SaveAndLoadMacro) {
     MacroAction action(0, 7);
     Macro saved(QList<MacroAction>{action}, "Test", Macro::StateFlag::Looped);
 
-    m_macroDAO.saveMacro(track, &saved);
-    EXPECT_EQ(m_macroDAO.getFreeSlot(track), 2);
-    // Sanity check
-    EXPECT_EQ(m_macroDAO.loadMacros(TrackId(2)).size(), 0);
+    m_macroDAO.saveMacro(track, &saved, 1);
+    EXPECT_EQ(m_macroDAO.loadMacros(TrackId(2)).size(), 0); // Sanity check
 
     QMap<int, MacroPtr> loaded = m_macroDAO.loadMacros(track);
     ASSERT_EQ(loaded.size(), 1);
@@ -39,9 +37,5 @@ TEST_F(MacroDAOTest, SaveAndLoadMacro) {
 
     // Change Macro slot
     m_macroDAO.saveMacro(track, macro.get(), 3);
-    EXPECT_EQ(m_macroDAO.getFreeSlot(track), 1);
-
-    loaded = m_macroDAO.loadMacros(track);
-    EXPECT_EQ(loaded.size(), 1);
-    EXPECT_EQ(loaded.keys(), QList{3});
+    EXPECT_EQ(m_macroDAO.loadMacros(track).keys(), QList{3});
 }
