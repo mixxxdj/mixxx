@@ -7,7 +7,7 @@
 namespace proto = mixxx::track::io;
 
 const QLoggingCategory macroLoggingCategory("macros");
-constexpr int kMacrosPerTrack = 16;
+constexpr int kMacrosPerChannel = 16;
 
 /// A MacroAction is the building block of a Macro.
 /// It contains a position as well as the action to be taken at that position.

@@ -230,7 +230,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
-    for (int i = 1; i <= kMacrosPerTrack; ++i) {
+    for (int i = 1; i <= kMacrosPerChannel; ++i) {
         auto control = new MacroControl(group, pConfig, i);
         connect(this,
                 &EngineBuffer::cueJumpQueued,
@@ -240,7 +240,7 @@ EngineBuffer::EngineBuffer(const QString& group,
         m_macroControls.append(control);
         addControl(control);
     }
-    DEBUG_ASSERT(m_macroControls.size() == kMacrosPerTrack);
+    DEBUG_ASSERT(m_macroControls.size() == kMacrosPerChannel);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
                                                m_pLoopingControl);
