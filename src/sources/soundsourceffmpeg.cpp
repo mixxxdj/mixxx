@@ -1393,7 +1393,14 @@ QString SoundSourceProviderFFmpeg::getName() const {
 }
 
 SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
+        const QString& supportedFileExtension) const {
+#if defined(__LINUX__)
+    // Prefer SoundSourceFFmpeg over SoundSourceM4A (FAAD2) on Linux
+    if (supportedFileExtension == QStringLiteral("m4a") ||
+            supportedFileExtension == QStringLiteral("mp4")) {
+        return SoundSourceProviderPriority::HIGHER;
+    }
+#endif
     // TODO: Increase priority to HIGHER if FFmpeg should be used as the
     // default decoder instead of other SoundSources?
     // Currently it is only used as a fallback after all other SoundSources
