@@ -7,14 +7,12 @@
 
 #include "track/beatutils.h"
 
-#include <QFile>
 #include <QList>
 #include <QMap>
 #include <QString>
 #include <QtDebug>
 #include <algorithm>
 
-#include "util/cmdlineargs.h"
 #include "util/math.h"
 #include "util/windowedstatistics.h"
 
@@ -46,24 +44,6 @@ QVector<double> makeQVector(QVector<double>::iterator begin, QVector<double>::it
 #else
     return QVector<double>::fromStdVector(std::vector<double>(begin, end));
 #endif
-}
-
-void debugBeats(const QVector<double>&  beats) {
-    if(!CmdlineArgs::Instance().getAnalyzerDebug()) {
-        return;
-    }
-    QString debugFilename = QDir(CmdlineArgs::Instance().getSettingsPath()).filePath("analyzerOutput.csv");
-    QFile debugFile(debugFilename);
-    if (!debugFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "ERROR: Could not open debug file:" << debugFilename;
-        return;
-    }
-    QString output;
-    for (const double& beat : beats) {
-        output += QString("%1,").arg(beat);
-    }
-    debugFile.write(output.toLocal8Bit());
-    debugFile.close();
 }
 
 } // namespace

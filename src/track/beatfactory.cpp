@@ -1,3 +1,4 @@
+#include <QFile>
 #include <QtDebug>
 #include <QStringList>
 
@@ -5,6 +6,63 @@
 #include "track/beatmap.h"
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
+#include "util/cmdlineargs.h"
+
+
+namespace {
+
+void debugBeats(const Track& track, const QVector<double>& rawBeats,
+        const QVector<double>& correctedBeats, QString beatsVersion, QString beatsSubVersion) {
+    if(!CmdlineArgs::Instance().getAnalyzerDebug()) {
+        return;
+    }
+    QString debugFilename = QDir(CmdlineArgs::Instance().getSettingsPath()).filePath("beatAnalyzerOutput.csv");
+    QFile debugFile(debugFilename);
+    if (!debugFile.open(QIODevice::Append | QIODevice::Text)) {
+        qWarning() << "ERROR: Could not open debug file:" << debugFilename;
+        return;
+    }
+    QString trackHeader;
+    trackHeader += track.getInfo();
+    trackHeader += ", analysed at ";
+    trackHeader += QDateTime::currentDateTime().toString("yyyy-MM-dd_hh'h'mm'm'ss's'");
+    trackHeader += ", with " + beatsVersion + beatsSubVersion;
+    debugFile.write(trackHeader.toLocal8Bit());
+    QString sRawBeats;
+    QString sRawBeatLenght;
+    auto previousBeat = rawBeats.begin();
+    sRawBeats += QString::number(*previousBeat, 'f') + ",";
+    for (auto beat = std::begin(rawBeats) + 1, end = std::end(rawBeats); beat != end; beat += 1) {
+        sRawBeats += QString::number(*beat, 'f') + ",";
+        sRawBeatLenght += QString::number(*beat - *previousBeat, 'f') + ",";
+        previousBeat = beat; 
+    }
+    QString sCorrectedBeats;
+    QString sCorrectedBeatLenght;
+    previousBeat = correctedBeats.begin();
+    sCorrectedBeats += QString::number(*previousBeat, 'f') + ",";
+    for (auto beat = std::begin(correctedBeats) + 1, end = std::end(correctedBeats); beat != end; beat += 1) {
+        sCorrectedBeats += QString::number(*beat, 'f') + ",";
+        sCorrectedBeatLenght += QString::number(*beat - *previousBeat, 'f') + ",";
+        previousBeat = beat; 
+    }
+    QString resultHeader = "\nRaw beats\n";
+    debugFile.write(resultHeader.toLocal8Bit());
+    debugFile.write(sRawBeats.toLocal8Bit());
+    resultHeader = "\nCorrected beats\n";
+    debugFile.write(resultHeader.toLocal8Bit());
+    debugFile.write(sCorrectedBeats.toLocal8Bit());
+    resultHeader = "\nRaw beat lenght\n";
+    debugFile.write(resultHeader.toLocal8Bit());
+    debugFile.write(sRawBeatLenght.toLocal8Bit());
+    resultHeader = "\nCorrected beat lenght\n";
+    debugFile.write(resultHeader.toLocal8Bit());
+    debugFile.write(sCorrectedBeatLenght.toLocal8Bit());
+    debugFile.write("\n");
+    debugFile.close();
+}
+
+}
 
 mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
         QString beatsVersion,
@@ -139,7 +197,9 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
         if (bEnableIroning) {
-            beats = BeatUtils::ironBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
+            QVector<double> correctedBeats = BeatUtils::ironBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
+            debugBeats(track, beats, correctedBeats, version, subVersion);
+            beats = correctedBeats;
         }
         auto pMap = new mixxx::BeatMap(track, iSampleRate, beats);
         pMap->setSubVersion(subVersion);

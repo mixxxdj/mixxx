@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include <QFile>
 #include <QStandardPaths>
 
 #include "util/cmdlineargs.h"
@@ -117,6 +118,17 @@ when a critical error occurs unless this is set properly.\n", stdout);
         m_logLevel = mixxx::LogLevel::Debug;
     }
 
+    if (m_analyzerDebug) {
+        // truncate file
+        QString debugFilename = QDir(m_settingsPath).filePath("beatAnalyzerOutput.csv");
+        QFile debugFile(debugFilename);
+        if (!debugFile.open(QIODevice::WriteOnly)) {
+            qWarning() << "ERROR: Could not open debug file:" << debugFilename;
+        } else {
+            debugFile.close();
+        }
+    }
+
     return true;
 }
 
@@ -170,6 +182,8 @@ void CmdlineArgs::printUsage() {
 --logFlushLevel LEVEL   Sets the the logging level at which the log buffer\n\
                         is flushed to mixxx.log. LEVEL is one of the values\n\
                         defined at --logLevel above.\n\
+\n\
+--analyzerDebug         Enable output the beat analyses results to a csv file.\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
 "\
