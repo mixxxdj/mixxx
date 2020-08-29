@@ -5,9 +5,12 @@
 #include <cmath>
 #include <memory>
 
+
 #include "util/assert.h"
 #include "util/circularbuffer.h"
 #include "util/fpclassify.h"
+// to tell the msvs compiler about `isnan`
+#include "util/math.h"
 
 /// These classes are used to compute statistics descriptors
 /// of a series of tempo values and are called from beatutils
