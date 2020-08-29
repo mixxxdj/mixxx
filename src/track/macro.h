@@ -15,12 +15,16 @@ constexpr int kMacrosPerTrack = 16;
 /// Note that currently only jumps to a target position are available, but that
 /// is subject to change.
 struct MacroAction {
-    MacroAction(){};
+    enum class Type : uint32_t {
+        Jump = 0
+    };
+
     MacroAction(double position, double target)
-            : position(position), target(target){};
+            : position(position), target(target), type(Type::Jump){};
     // use FramePos once https://github.com/mixxxdj/mixxx/pull/2961 is merged
-    double position;
-    double target;
+    const double position;
+    const double target;
+    const Type type;
 
     double getSamplePos() const {
         return position * mixxx::kEngineChannelCount;
@@ -32,16 +36,11 @@ struct MacroAction {
     bool operator==(const MacroAction& other) const {
         return position == other.position && target == other.target;
     }
-
     inline bool operator!=(const MacroAction& other) const {
         return !operator==(other);
     }
 
     proto::Macro_Action* serialize() const;
-
-    enum class Type : uint8_t {
-        Jump = 0
-    };
 };
 
 /// A Macro stores a list of MacroActions as well as its current state and label.

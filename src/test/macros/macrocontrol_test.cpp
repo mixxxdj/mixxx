@@ -94,7 +94,7 @@ TEST(MacroControlTest, LoadTrackAndPlay) {
     auto pTrack = Track::newTemporary();
     pTrack->setMacros({{2,
             std::make_shared<Macro>(
-                    QList{MacroAction(), MacroAction(position, kAction.position)},
+                    QList{MacroAction(0, 0), MacroAction(position, kAction.position)},
                     "test",
                     Macro::State())}});
     macroControl.trackLoaded(pTrack);

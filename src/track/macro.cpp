@@ -8,7 +8,7 @@ proto::Macro_Action* MacroAction::serialize() const {
     auto serialized = new proto::Macro_Action();
     serialized->set_position(position);
     serialized->set_target(target);
-    serialized->set_type(static_cast<uint>(Type::Jump));
+    serialized->set_type(static_cast<uint32_t>(type));
     return serialized;
 }
 
@@ -104,7 +104,9 @@ void Macro::addAction(const MacroAction& action) {
 
 void Macro::setEnd(double framePos) {
     DEBUG_ASSERT(!isEmpty());
-    m_actions.first().position = framePos;
+    // can't use replace because MacroAction is immutable
+    m_actions.insert(0, MacroAction(framePos, m_actions.first().target));
+    m_actions.removeAt(1);
 }
 
 void Macro::clear() {
