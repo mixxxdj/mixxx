@@ -73,10 +73,11 @@ class Macro {
     void setState(StateFlag flag, bool enable = true);
 
     bool isEmpty() const;
-    int size() const;
+    unsigned int size() const;
 
     const QList<MacroAction>& getActions() const;
     void addAction(const MacroAction& action);
+    /// Sets the end of the Macro (relevant for looping)
     void setEnd(double framePos);
 
     void clear();
@@ -88,6 +89,7 @@ class Macro {
     bool m_bDirty;
     int m_iId;
 
+    /// The list of actions. The first action marks the jump from end to start.
     QList<MacroAction> m_actions;
     QString m_label;
     State m_state;

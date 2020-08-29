@@ -89,7 +89,7 @@ bool Macro::isEmpty() const {
     return m_actions.isEmpty();
 }
 
-int Macro::size() const {
+unsigned int Macro::size() const {
     return m_actions.size();
 }
 

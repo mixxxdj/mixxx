@@ -71,9 +71,9 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     const MacroAction& nextAction = m_pMacro->getActions().at(m_iNextAction);
     double nextActionPos = nextAction.position;
     int bufFrames = iBufferSize / 2;
-    // the process method is called roughly every iBufferSize samples (double as often if you view frames)
-    // so we use double that as tolerance range to be safe
-    // it triggers early because the seek will only be processed in the next EngineBuffer process call
+    // The process method is called roughly every iBufferSize/2 samples, the
+    // tolerance range is double that to be safe. It is ahead of the position
+    // because the seek is executed in the next EngineBuffer process cycle.
     if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
         seekExact(nextAction.getTargetSamplePos());
         m_iNextAction++;
@@ -186,6 +186,8 @@ void MacroControl::stopRecording() {
     if (getStatus() == Status::Armed) {
         setStatus(Status::Empty);
     } else {
+        // This will still be the position of the previous track when called from trackLoaded
+        // since trackLoaded is invoked before the SampleOfTrack of the controls is updated.
         m_pMacro->setEnd(getSampleOfTrack().current / mixxx::kEngineChannelCount);
         setStatus(Status::Recorded);
         if (m_pMacro->isEnabled()) {
