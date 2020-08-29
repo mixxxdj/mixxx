@@ -432,8 +432,6 @@ bool WPushButton::event(QEvent* e) {
             m_bPressed = false;
             restyleAndRepaint();
         }
-    } else if (e->type() == QEvent::ToolTip) {
-        updateTooltip();
     } else if (e->type() == QEvent::Enter) {
         m_bHovered = true;
         restyleAndRepaint();
@@ -441,7 +439,7 @@ bool WPushButton::event(QEvent* e) {
         m_bHovered = false;
         restyleAndRepaint();
     }
-    return QWidget::event(e);
+    return WWidget::event(e);
 }
 
 void WPushButton::focusOutEvent(QFocusEvent* e) {

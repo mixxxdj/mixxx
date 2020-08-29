@@ -32,6 +32,7 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
           m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
           m_dLastTapedBpm(-1.),
           m_pWCoverArtLabel(new WCoverArtLabel(this)),
+          m_pWStarRating(new WStarRating(nullptr, this)),
           m_pConfig(pConfig),
           m_pTrackModel(trackModel) {
     init();
@@ -44,10 +45,17 @@ DlgTrackInfo::~DlgTrackInfo() {
 void DlgTrackInfo::init() {
     setupUi(this);
 
-    coverBox->setAlignment(Qt::AlignRight|Qt::AlignTop);
-    coverBox->setSpacing(0);
-    coverBox->setContentsMargins(0, 0, 0, 0);
-    coverBox->insertWidget(1, m_pWCoverArtLabel);
+    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    coverLayout->setSpacing(0);
+    coverLayout->setContentsMargins(0, 0, 0, 0);
+    coverLayout->insertWidget(0, m_pWCoverArtLabel);
+
+    starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    starsLayout->setSpacing(0);
+    starsLayout->setContentsMargins(0, 0, 0, 0);
+    starsLayout->insertWidget(0, m_pWStarRating);
+    // This is necessary to pass on mouseMove events to WStarRating
+    m_pWStarRating->setMouseTracking(true);
 
     m_pTagFetcher.reset(new DlgTagFetcher(this, m_pTrackModel));
     if (m_pTrackModel) {
@@ -269,6 +277,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
     m_loadedCoverInfo = track.getCoverInfoWithLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
     CoverArtCache::requestCover(this, m_loadedCoverInfo);
+    m_pWStarRating->slotTrackLoaded(m_pLoadedTrack);
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {

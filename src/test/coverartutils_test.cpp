@@ -1,11 +1,10 @@
-#include <gtest/gtest.h>
+#include "library/coverartutils.h"
+
 #include <QFileInfo>
 #include <QTemporaryDir>
 
-#include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
-#include "library/coverartutils.h"
-
+#include "sources/soundsourceproxy.h"
 #include "test/librarytest.h"
 
 namespace {
@@ -30,23 +29,10 @@ void extractEmbeddedCover(
 
 } // anonymous namespace
 
-// first inherit from MixxxTest to construct a QApplication to be able to
-// construct the default QPixmap in CoverArtCache
-class CoverArtUtilTest : public LibraryTest, public CoverArtCache {
-  protected:
-    void SetUp() override {
-    }
-
-    void TearDown() override {
-        // make sure we clean up the db
-        QSqlQuery query(dbConnection());
-        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
-        ASSERT_TRUE(query.exec());
-        query.prepare("DELETE FROM library");
-        ASSERT_TRUE(query.exec());
-        query.prepare("DELETE FROM track_locations");
-        ASSERT_TRUE(query.exec());
-    }
+// First inherit from LibraryTest to construct an QApplication instance
+// needed by CoverArtCache for the default QPixmapCache.
+// LibraryTest is required to instantiate the GlobalTrackCache singleton.
+class CoverArtUtilTest : public LibraryTest, CoverArtCache {
 };
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {

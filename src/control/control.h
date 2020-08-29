@@ -15,8 +15,13 @@ class ControlObject;
 
 enum class ControlFlag {
     None = 0,
-    AllowEmptyKey = 1,
+    /// Do not throw an assertion if the key is invalid. Needed for controller
+    /// mappings and skins.
+    AllowInvalidKey = 1,
+    /// Don't throw an assertion when trying to access a non-existing CO.
+    /// Needed for controller mappings and skins.
     NoAssertIfMissing = 1 << 1,
+    /// Don't log a warning when trying to access a non-existing CO.
     NoWarnIfMissing = (1 << 2) | NoAssertIfMissing,
 };
 

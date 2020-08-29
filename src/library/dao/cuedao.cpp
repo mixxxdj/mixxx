@@ -54,7 +54,6 @@ CuePointer cueFromRow(const QSqlRecord& row) {
         return CuePointer();
     }
     CuePointer pCue(new Cue(id,
-            trackId,
             static_cast<mixxx::CueType>(type),
             position,
             length,
@@ -139,7 +138,7 @@ bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) const {
     return false;
 }
 
-bool CueDAO::saveCue(Cue* cue) const {
+bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
     VERIFY_OR_DEBUG_ASSERT(cue) {
         return false;
@@ -148,7 +147,7 @@ bool CueDAO::saveCue(Cue* cue) const {
         // New cue
         QSqlQuery query(m_database);
         query.prepare(QStringLiteral("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label, color) VALUES (:track_id, :type, :position, :length, :hotcue, :label, :color)"));
-        query.bindValue(":track_id", cue->getTrackId().toVariant());
+        query.bindValue(":track_id", trackId.toVariant());
         query.bindValue(":type", static_cast<int>(cue->getType()));
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
@@ -176,7 +175,7 @@ bool CueDAO::saveCue(Cue* cue) const {
                         "color=:color"
                         " WHERE id=:id"));
         query.bindValue(":id", cue->getId());
-        query.bindValue(":track_id", cue->getTrackId().toVariant());
+        query.bindValue(":track_id", trackId.toVariant());
         query.bindValue(":type", static_cast<int>(cue->getType()));
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
@@ -214,17 +213,15 @@ bool CueDAO::deleteCue(Cue* cue) const {
 void CueDAO::saveTrackCues(
         TrackId trackId,
         const QList<CuePointer>& cueList) const {
+    DEBUG_ASSERT(trackId.isValid());
     QStringList cueIds;
     cueIds.reserve(cueList.size());
     for (const auto& pCue : cueList) {
-        VERIFY_OR_DEBUG_ASSERT(pCue->getTrackId() == trackId) {
-            pCue->setTrackId(trackId);
-        }
         // New cues (without an id) must always be marked as dirty
         DEBUG_ASSERT(pCue->getId() >= 0 || pCue->isDirty());
         // Update or save cue
         if (pCue->isDirty()) {
-            saveCue(pCue.get());
+            saveCue(trackId, pCue.get());
         }
         // After saving each cue must have a valid id
         VERIFY_OR_DEBUG_ASSERT(pCue->getId() >= 0) {
