@@ -32,7 +32,7 @@ class Beat {
             const Bpm& bpm = Bpm(),
             int beatIndex = 0,
             int barIndex = 0,
-            int beatInBarIndex = 0,
+            uint beatInBarIndex = 0,
             BeatMarkers markers = BeatMarker::None)
             : m_framePos(framePos),
               m_eType(type),
@@ -52,7 +52,7 @@ class Beat {
         return m_iBarIndex;
     }
 
-    int beatInBarIndex() const {
+    uint beatInBarIndex() const {
         return m_iBeatInBarIndex;
     }
 
@@ -81,7 +81,7 @@ class Beat {
     BeatType m_eType;
     int m_iBeatIndex;
     int m_iBarIndex;
-    int m_iBeatInBarIndex;
+    uint m_iBeatInBarIndex;
     TimeSignature m_timeSignature;
     // This BPM value represents the instantaneous BPM at this beat.
     Bpm m_bpm;
