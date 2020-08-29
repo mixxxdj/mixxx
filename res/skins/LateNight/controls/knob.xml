@@ -32,7 +32,7 @@
             <ArcBgColor>#fff</ArcBgColor>
             <ArcThickness>5</ArcThickness>
             <ArcBgThickness>3</ArcBgThickness>
-            <KnobCenterYOffset>1.602</KnobCenterYOffset>
+            <KnobCenterYOffset>1.998</KnobCenterYOffset>
             <Connection>
               <ConfigKey><Variable name="Group"/>,<Variable name="Control"/></ConfigKey>
             </Connection>

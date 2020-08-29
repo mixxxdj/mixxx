@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg15"
-   version="1.1"
+   width="10"
    height="10"
-   width="10">
+   version="1.1"
+   id="svg15">
   <metadata
      id="metadata19">
     <rdf:RDF>
@@ -24,25 +24,25 @@
   <defs
      id="defs7">
     <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(2.4091 0 0 2.4091 -17.681 3.5004)"
-       y2="34"
-       y1="24"
-       x2="28"
+       id="a"
        x1="28"
-       id="a">
+       x2="28"
+       y1="24"
+       y2="34"
+       gradientTransform="matrix(2.4091 0 0 2.4091 -17.681 3.5004)"
+       gradientUnits="userSpaceOnUse">
       <stop
-         id="stop2"
+         stop-color="#f60"
          offset="0"
-         stop-color="#f60" />
+         id="stop2" />
       <stop
-         id="stop4"
+         stop-color="#de5800"
          offset="1"
-         stop-color="#de5800" />
+         id="stop4" />
     </linearGradient>
   </defs>
   <path
-     style="fill:none;stroke:#4097ba;stroke-width:1.99999332;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     d="M 1.6276331,6.1242542 3.8759478,8.3725713 8.3726238,1.62776"
      id="path9"
-     d="M 2.0001178,6.0000964 4.0001112,8.0000897 8.0001393,2.0002343" />
+     style="fill:none;stroke:#4097ba;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
 </svg>
