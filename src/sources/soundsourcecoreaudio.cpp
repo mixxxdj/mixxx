@@ -273,6 +273,7 @@ QString SoundSourceProviderCoreAudio::getName() const {
 QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
     supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("mp4");
     supportedFileExtensions.append("mp3");
     supportedFileExtensions.append("mp2");
     // Can add mp3, mp2, ac3, and others here if you want:
@@ -281,11 +282,10 @@ QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
 }
 
 SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // On macOS CoreAudio is used both for decoding MP3 and M4A files. Neither
-    // FFmpeg nor libMAD are enabled in the release builds. In order to avoid
-    // priority conflicts with libMAD when enabled in the future the priority
-    // of this SoundSource is set to HIGHER.
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // On macOS SoundSourceCoreAudio is the preferred decoder for all
+    // supported audio formats.
     return SoundSourceProviderPriority::HIGHER;
 }
 
