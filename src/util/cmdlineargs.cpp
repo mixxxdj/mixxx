@@ -15,6 +15,7 @@ CmdlineArgs::CmdlineArgs()
       m_safeMode(false),
       m_debugAssertBreak(false),
       m_settingsPathSet(false),
+      m_analyzerDebug(false),
       m_logLevel(mixxx::kLogLevelDefault),
       m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
@@ -103,6 +104,8 @@ when a critical error occurs unless this is set properly.\n", stdout);
             m_safeMode = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
+        } else if (QString::fromLocal8Bit(argv[i]).contains("--analyzerDebug", Qt::CaseInsensitive)) {
+            m_analyzerDebug = true;
         } else {
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
