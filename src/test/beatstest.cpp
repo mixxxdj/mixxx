@@ -486,4 +486,55 @@ TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
 
     ASSERT_EQ(oldBpm, newBpm);
 }
+
+TEST_F(BeatsTest, IndexRetreival) {
+    const auto& pBeats = m_pTrack1->getBeats();
+    const auto& beatLengthFrames = getBeatLengthFrames(m_bpm);
+
+    // Shift first downbeat ahead
+    pBeats->setAsDownbeat(1);
+
+    // Verify first beat
+    const int firstBeatIndex = kFirstBeatIndex;
+    const auto& firstBeat = pBeats->getBeatAtIndex(firstBeatIndex);
+    EXPECT_NE(firstBeat, kInvalidBeat);
+    EXPECT_EQ(firstBeat.beatIndex(), firstBeatIndex);
+    EXPECT_EQ(firstBeat.barIndex(), -1);
+    EXPECT_EQ(firstBeat.beatInBarIndex(), 3);
+    EXPECT_EQ(firstBeat.type(), BeatType::Beat);
+    EXPECT_DOUBLE_EQ(firstBeat.framePosition().getValue(), m_startOffsetFrames.getValue());
+
+    // Verify second beat
+    const int secondBeatIndex = kFirstBeatIndex + 1;
+    const auto& secondBeat = pBeats->getBeatAtIndex(secondBeatIndex);
+    EXPECT_NE(secondBeat, kInvalidBeat);
+    EXPECT_EQ(secondBeat.beatIndex(), secondBeatIndex);
+    EXPECT_EQ(secondBeat.barIndex(), 0);
+    EXPECT_EQ(secondBeat.beatInBarIndex(), 0);
+    EXPECT_EQ(secondBeat.type(), BeatType::Downbeat);
+    EXPECT_DOUBLE_EQ(secondBeat.framePosition().getValue(),
+            m_startOffsetFrames.getValue() + beatLengthFrames);
+
+    // Before the first beat
+    const int oneBeforeFirstBeatIndex = kFirstBeatIndex - 1;
+    const auto& oneBeforeFirstBeat = pBeats->getBeatAtIndex(oneBeforeFirstBeatIndex);
+    EXPECT_NE(oneBeforeFirstBeat, kInvalidBeat);
+    EXPECT_EQ(oneBeforeFirstBeat.beatIndex(), oneBeforeFirstBeatIndex);
+    EXPECT_EQ(oneBeforeFirstBeat.barIndex(), -1);
+    EXPECT_EQ(oneBeforeFirstBeat.beatInBarIndex(), 2);
+    EXPECT_EQ(oneBeforeFirstBeat.type(), BeatType::Beat);
+    EXPECT_DOUBLE_EQ(oneBeforeFirstBeat.framePosition().getValue(),
+            m_startOffsetFrames.getValue() - beatLengthFrames);
+
+    // Way before the first beat
+    const int sevenBeforeFirstBeatIndex = kFirstBeatIndex - 7;
+    const auto& sevenBeforeFirstBeat = pBeats->getBeatAtIndex(sevenBeforeFirstBeatIndex);
+    EXPECT_NE(sevenBeforeFirstBeat, kInvalidBeat);
+    EXPECT_EQ(sevenBeforeFirstBeat.beatIndex(), sevenBeforeFirstBeatIndex);
+    EXPECT_EQ(sevenBeforeFirstBeat.barIndex(), -2);
+    EXPECT_EQ(sevenBeforeFirstBeat.beatInBarIndex(), 0);
+    EXPECT_EQ(sevenBeforeFirstBeat.type(), BeatType::Downbeat);
+    EXPECT_DOUBLE_EQ(sevenBeforeFirstBeat.framePosition().getValue(),
+            m_startOffsetFrames.getValue() - beatLengthFrames * 7);
+}
 } // namespace

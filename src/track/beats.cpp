@@ -30,6 +30,10 @@ inline FrameDiff_t getBeatLengthFrames(Bpm bpm,
     return kSecondsPerMinute * sampleRate *
             (4.0 / timeSignature.getNoteValue()) / bpm.getValue();
 }
+inline int clockModulo(int dividend, int divisor) {
+    int rawModulo = dividend % divisor;
+    return rawModulo < 0 ? rawModulo + divisor : rawModulo;
+}
 } // namespace
 
 void Beats::initWithAnalyzer(const QVector<FramePos>& beats,
@@ -179,8 +183,28 @@ FramePos Beats::getLastBeatPosition() const {
 }
 
 Beat BeatsInternal::getBeatAtIndex(int index) const {
+    if (!isValid()) {
+        return kInvalidBeat;
+    }
+
     if (index >= 0 && index < m_beats.size()) {
         return m_beats.at(index);
+    } else if (index < 0) {
+        const auto& firstBeat = m_beats.first();
+        const int beatsPerBar = firstBeat.timeSignature().getBeatsPerBar();
+        const FrameDiff_t beatLength = getBeatLengthFrames(
+                firstBeat.bpm(), getSampleRate(), firstBeat.timeSignature());
+        const int beatInBarIndex = clockModulo(firstBeat.beatInBarIndex() + index, beatsPerBar);
+        const int barIndex = std::floor(static_cast<double>(index) / beatsPerBar);
+        Beat generatedPseudoBeat(
+                firstBeat.framePosition() + index * beatLength,
+                (beatInBarIndex == 0) ? BeatType::Downbeat : BeatType::Beat,
+                firstBeat.timeSignature(),
+                firstBeat.bpm(),
+                index,
+                barIndex,
+                beatInBarIndex);
+        return generatedPseudoBeat;
     }
     return kInvalidBeat;
 }
