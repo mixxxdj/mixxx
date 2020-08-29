@@ -793,6 +793,14 @@ QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() con
     return supportedFileExtensions;
 }
 
+SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // On Windows SoundSourceMediaFoundation is the preferred decoder for all
+    // supported audio formats.
+    return SoundSourceProviderPriority::HIGHER;
+}
+
 SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
     return newSoundSourceFromUrl<SoundSourceMediaFoundation>(url);
 }
