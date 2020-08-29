@@ -569,35 +569,16 @@ void BeatsInternal::updateBpm() {
     if (m_beatsProto.bpm_markers_size() == 1) {
         m_bpm = Bpm(m_beatsProto.bpm_markers().cbegin()->bpm());
     } else {
-        Beat startBeat = m_beats.first();
-        Beat stopBeat = m_beats.last();
-        m_bpm = calculateBpm(startBeat, stopBeat);
+        QVector<double> beatVector;
+        beatVector.reserve(m_beats.size());
+        std::transform(m_beats.constBegin(),
+                m_beats.constEnd(),
+                std::back_inserter(beatVector),
+                [](const Beat& beat) {
+                    return beat.framePosition().getValue();
+                });
+        m_bpm = BeatUtils::calculateBpm(beatVector, getSampleRate(), 0, 9999);
     }
-}
-
-Bpm BeatsInternal::calculateBpm(
-        const Beat& startBeat, const Beat& stopBeat) const {
-    if (startBeat > stopBeat) {
-        return Bpm();
-    }
-
-    BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), startBeat);
-
-    BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.cbegin(), m_beats.cend(), stopBeat);
-
-    QVector<double> beatvect;
-    for (; curBeat != lastBeat; ++curBeat) {
-        const Beat& beat = *curBeat;
-        beatvect.append(beat.framePosition().getValue());
-    }
-
-    if (beatvect.isEmpty()) {
-        return Bpm();
-    }
-
-    return BeatUtils::calculateBpm(beatvect, getSampleRate(), 0, 9999);
 }
 
 FramePos BeatsInternal::findNBeatsFromFrame(

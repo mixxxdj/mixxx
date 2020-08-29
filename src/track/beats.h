@@ -65,8 +65,6 @@ class BeatsInternal {
     QString getVersion() const;
     QString getSubVersion() const;
     void setSubVersion(const QString& subVersion);
-    Bpm calculateBpm(const Beat& startBeat,
-            const Beat& stopBeat) const;
     void scale(enum BPMScale scale);
     FramePos findNBeatsFromFrame(FramePos fromFrame, double beats) const;
     bool findPrevNextBeats(FramePos frame,
