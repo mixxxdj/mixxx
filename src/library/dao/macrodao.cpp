@@ -44,15 +44,16 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
 }
 
 void MacroDAO::saveMacros(TrackId trackId, QMap<int, MacroPtr> macros) const {
-    for (auto e : macros.toStdMap()) {
-        auto pMacro = e.second;
+    for (auto it = macros.constBegin(); it != macros.constEnd(); ++it) {
+        auto pMacro = it.value();
         // Don't save placeholder Macros
-        if (pMacro->isEmpty() && !pMacro->isDirty())
+        if (pMacro->isEmpty() && !pMacro->isDirty()) {
             return;
+        }
         // Newly recorded macros must be dirty
         DEBUG_ASSERT(pMacro->getId() >= 0 || pMacro->isDirty());
         if (pMacro->isDirty()) {
-            saveMacro(trackId, pMacro.get(), e.first);
+            saveMacro(trackId, pMacro.get(), it.key());
         }
         // After saving each macro must have a valid id
         DEBUG_ASSERT(pMacro->getId() >= 0);
