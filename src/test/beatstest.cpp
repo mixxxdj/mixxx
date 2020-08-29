@@ -94,21 +94,50 @@ TEST_F(BeatsTest, Scale) {
 
 TEST_F(BeatsTest, NthBeat) {
     const auto& pBeats = m_pTrack1->getBeats();
+
     // Check edge cases
     EXPECT_EQ(pBeats->getLastBeatPosition(),
             pBeats->findNthBeat(pBeats->getLastBeatPosition(), 1).framePosition());
     EXPECT_EQ(pBeats->getLastBeatPosition(),
-            pBeats->findNextBeat(pBeats->getLastBeatPosition()).framePosition());
-    EXPECT_EQ(kInvalidFramePos,
+            pBeats->findNthBeat(pBeats->getLastBeatPosition(), -1).framePosition());
+    const auto& lastBeat = pBeats->getBeatAtIndex(pBeats->size() - 1);
+    EXPECT_EQ(lastBeat.framePosition() + getBeatLengthFrames(lastBeat.bpm()),
             pBeats->findNthBeat(pBeats->getLastBeatPosition(), 2).framePosition());
     EXPECT_EQ(pBeats->getFirstBeatPosition(),
             pBeats->findNthBeat(pBeats->getFirstBeatPosition(), -1).framePosition());
     EXPECT_EQ(pBeats->getFirstBeatPosition(),
-            pBeats->findPrevBeat(pBeats->getFirstBeatPosition()).framePosition());
-    EXPECT_EQ(kInvalidFramePos,
+            pBeats->findNthBeat(pBeats->getFirstBeatPosition(), -1).framePosition());
+    const auto& firstBeat = pBeats->getBeatAtIndex(0);
+    EXPECT_EQ(firstBeat.framePosition() - getBeatLengthFrames(firstBeat.bpm()),
             pBeats->findNthBeat(pBeats->getFirstBeatPosition(), -2).framePosition());
 
-    // TODO(JVC) Add some tests in the middle
+    // Use beat before track as pivot
+    const auto& beforeBeat = pBeats->getBeatAtIndex(-3);
+    EXPECT_EQ(beforeBeat.framePosition(),
+            pBeats->findNthBeat(beforeBeat.framePosition(), -1).framePosition());
+    EXPECT_EQ(beforeBeat.framePosition(),
+            pBeats->findNthBeat(beforeBeat.framePosition(), 1).framePosition());
+    EXPECT_EQ(beforeBeat.framePosition() - getBeatLengthFrames(firstBeat.bpm()),
+            pBeats->findNthBeat(beforeBeat.framePosition(), -2).framePosition());
+    EXPECT_EQ(beforeBeat.framePosition() + getBeatLengthFrames(firstBeat.bpm()),
+            pBeats->findNthBeat(beforeBeat.framePosition(), 2).framePosition());
+    // Try to find beat from pivot within the track
+    EXPECT_EQ(beforeBeat.framePosition() + 9 * getBeatLengthFrames(firstBeat.bpm()),
+            pBeats->findNthBeat(beforeBeat.framePosition(), 10).framePosition());
+
+    // Use beat after track as pivot
+    const auto& afterBeat = pBeats->getBeatAtIndex(pBeats->size() + 3);
+    EXPECT_EQ(afterBeat.framePosition(),
+            pBeats->findNthBeat(afterBeat.framePosition(), -1).framePosition());
+    EXPECT_EQ(afterBeat.framePosition(),
+            pBeats->findNthBeat(afterBeat.framePosition(), 1).framePosition());
+    EXPECT_EQ(afterBeat.framePosition() - getBeatLengthFrames(lastBeat.bpm()),
+            pBeats->findNthBeat(afterBeat.framePosition(), -2).framePosition());
+    EXPECT_EQ(afterBeat.framePosition() + getBeatLengthFrames(lastBeat.bpm()),
+            pBeats->findNthBeat(afterBeat.framePosition(), 2).framePosition());
+    // Try to find beat from pivot within the track
+    EXPECT_EQ(afterBeat.framePosition() - 9 * getBeatLengthFrames(lastBeat.bpm()),
+            pBeats->findNthBeat(afterBeat.framePosition(), -10).framePosition());
 }
 
 TEST_F(BeatsTest, PrevNextBeats) {
@@ -137,19 +166,21 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat) {
     const auto& pBeats = m_pTrack1->getBeats();
     // Pretend we're on the 20th beat;
     const int curBeat = 20;
-    FramePos position = m_startOffsetFrames + getBeatLengthFrames(m_bpm) * curBeat;
+    const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
+    FramePos position = m_startOffsetFrames + beatLength * curBeat;
 
     // The spec dictates that a value of 0 is always invalid
     EXPECT_EQ(kInvalidFramePos, pBeats->findNthBeat(position, 0).framePosition());
 
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
-    for (int i = 1; i < curBeat; ++i) {
+    const int spanBeats = pBeats->size() * 2;
+    for (int i = 1; i < spanBeats; ++i) {
         EXPECT_DOUBLE_EQ(
-                (position + getBeatLengthFrames(m_bpm) * (i - 1)).getValue(),
+                (position + beatLength * (i - 1)).getValue(),
                 pBeats->findNthBeat(position, i).framePosition().getValue());
         EXPECT_DOUBLE_EQ(
-                (position + getBeatLengthFrames(m_bpm) * (-i + 1)).getValue(),
+                (position + beatLength * (-i + 1)).getValue(),
                 pBeats->findNthBeat(position, -i).framePosition().getValue());
     }
 
@@ -157,7 +188,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat) {
     FramePos prevBeat, nextBeat;
     pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
     EXPECT_EQ(position, prevBeat);
-    EXPECT_EQ(position + getBeatLengthFrames(m_bpm), nextBeat);
+    EXPECT_EQ(position + beatLength, nextBeat);
 
     // Both previous and next beat should return the current position.
     EXPECT_EQ(position, pBeats->findNextBeat(position).framePosition());
@@ -168,18 +199,20 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
     const auto& pBeats = m_pTrack1->getBeats();
     // Pretend we're just before the 20th beat;
     const int curBeat = 20;
-    const FramePos kClosestBeat = m_startOffsetFrames + curBeat * getBeatLengthFrames(m_bpm);
-    FramePos position = kClosestBeat - getBeatLengthFrames(m_bpm) * 0.005;
+    const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
+    const FramePos kClosestBeat = m_startOffsetFrames + curBeat * beatLength;
+    FramePos position = kClosestBeat - beatLength * 0.005;
 
     // The spec dictates that a value of 0 is always invalid and returns invalid beat.
     EXPECT_EQ(kInvalidBeat, pBeats->findNthBeat(position, 0));
 
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
-    for (int i = 1; i < curBeat; ++i) {
-        EXPECT_DOUBLE_EQ((kClosestBeat + getBeatLengthFrames(m_bpm) * (i - 1)).getValue(),
+    const int spanBeats = pBeats->size() * 2;
+    for (int i = 1; i < spanBeats; ++i) {
+        EXPECT_DOUBLE_EQ((kClosestBeat + beatLength * (i - 1)).getValue(),
                 pBeats->findNthBeat(position, i).framePosition().getValue());
-        EXPECT_DOUBLE_EQ((kClosestBeat + getBeatLengthFrames(m_bpm) * (-i + 1)).getValue(),
+        EXPECT_DOUBLE_EQ((kClosestBeat + beatLength * (-i + 1)).getValue(),
                 pBeats->findNthBeat(position, -i).framePosition().getValue());
     }
 
@@ -187,7 +220,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
     FramePos prevBeat, nextBeat;
     pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
     EXPECT_EQ(kClosestBeat, prevBeat);
-    EXPECT_EQ(kClosestBeat + getBeatLengthFrames(m_bpm), nextBeat);
+    EXPECT_EQ(kClosestBeat + beatLength, nextBeat);
 
     // Both previous and next beat should return the closest beat.
     EXPECT_EQ(kClosestBeat, pBeats->findNextBeat(position).framePosition());
@@ -198,9 +231,10 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
     const auto& pBeats = m_pTrack1->getBeats();
     // Pretend we're just after the 20th beat;
     const int curBeat = 20;
-    const FramePos kClosestBeat = m_startOffsetFrames + curBeat * getBeatLengthFrames(m_bpm);
+    const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
+    const FramePos kClosestBeat = m_startOffsetFrames + curBeat * beatLength;
     FramePos position =
-            kClosestBeat + getBeatLengthFrames(m_bpm) * 0.005;
+            kClosestBeat + beatLength * 0.005;
 
     // The spec dictates that a value of 0 is always invalid
     EXPECT_EQ(kInvalidFramePos, pBeats->findNthBeat(position, 0).framePosition());
@@ -209,12 +243,13 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
 
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
-    for (int i = 1; i < curBeat; ++i) {
+    const int spanBeats = pBeats->size() * 2;
+    for (int i = 1; i < spanBeats; ++i) {
         EXPECT_DOUBLE_EQ(
-                (kClosestBeat + getBeatLengthFrames(m_bpm) * (i - 1)).getValue(),
+                (kClosestBeat + beatLength * (i - 1)).getValue(),
                 pBeats->findNthBeat(position, i).framePosition().getValue());
         EXPECT_DOUBLE_EQ(
-                (kClosestBeat + getBeatLengthFrames(m_bpm) * (-i + 1)).getValue(),
+                (kClosestBeat + beatLength * (-i + 1)).getValue(),
                 pBeats->findNthBeat(position, -i).framePosition().getValue());
     }
 
@@ -222,7 +257,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
     FramePos prevBeat, nextBeat;
     pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
     EXPECT_EQ(kClosestBeat, prevBeat);
-    EXPECT_EQ(kClosestBeat + getBeatLengthFrames(m_bpm), nextBeat);
+    EXPECT_EQ(kClosestBeat + beatLength, nextBeat);
 
     // Both previous and next beat should return the closest beat.
     EXPECT_EQ(kClosestBeat, pBeats->findNextBeat(position).framePosition());
@@ -231,11 +266,12 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
 
 TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
     const auto& pBeats = m_pTrack1->getBeats();
+    const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
     // Pretend we're half way between the 20th and 21st beat
     FramePos previousBeat =
-            m_startOffsetFrames + getBeatLengthFrames(m_bpm) * 20.0;
+            m_startOffsetFrames + beatLength * 20.0;
     FramePos nextBeat =
-            m_startOffsetFrames + getBeatLengthFrames(m_bpm) * 21.0;
+            m_startOffsetFrames + beatLength * 21.0;
     FramePos position = FramePos((previousBeat.getValue() + nextBeat.getValue()) / 2);
 
     // The spec dictates that a value of 0 is always invalid
@@ -243,13 +279,14 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
 
     // findNthBeat should return multiples of beats starting from the next or
     // previous beat, depending on whether N is positive or negative.
-    for (int i = 1; i < 20; ++i) {
+    const int spanBeats = pBeats->size() * 2;
+    for (int i = 1; i < spanBeats; ++i) {
         EXPECT_DOUBLE_EQ(
-                (nextBeat + getBeatLengthFrames(m_bpm) * (i - 1))
+                (nextBeat + beatLength * (i - 1))
                         .getValue(),
                 pBeats->findNthBeat(position, i).framePosition().getValue());
         EXPECT_DOUBLE_EQ(
-                (previousBeat - getBeatLengthFrames(m_bpm) * (i - 1))
+                (previousBeat - beatLength * (i - 1))
                         .getValue(),
                 pBeats->findNthBeat(position, -i).framePosition().getValue());
     }
@@ -490,7 +527,7 @@ TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
 
 TEST_F(BeatsTest, IndexRetrieval) {
     const auto& pBeats = m_pTrack1->getBeats();
-    const auto& beatLengthFrames = getBeatLengthFrames(m_bpm);
+    const FrameDiff_t beatLengthFrames = getBeatLengthFrames(m_bpm);
 
     // We assume 4/4 throughout the track
 

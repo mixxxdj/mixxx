@@ -266,74 +266,113 @@ Beat BeatsInternal::findNthBeat(FramePos frame, int n) const {
         return kInvalidBeat;
     }
 
-    Beat beat(frame);
-    // it points at the first occurrence of beat or the next largest beat
-    BeatList::const_iterator it =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat);
+    // We will divide beats into three zones.
+    // First: Real beats within the track
+    // Second: Pseudo beats before the track
+    // Third: Pseudo beats after the track
 
-    // If the position is within 1/10th of the average beat length,
-    // pretend we are on that beat.
-    // TODO: Use local beat length, not global.
-    const double kFrameEpsilon =
-            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), getSampleRate());
+    if (getFirstBeatPosition() <= frame && frame <= getLastBeatPosition()) {
+        Beat beat(frame);
+        // it points at the first occurrence of beat or the next largest beat
+        BeatList::const_iterator it =
+                std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat);
 
-    // Back-up by one.
-    if (it != m_beats.begin()) {
-        --it;
-    }
-
-    // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.cend();
-    BeatList::const_iterator previous_beat = m_beats.cend();
-    BeatList::const_iterator next_beat = m_beats.cend();
-    for (; it != m_beats.end(); ++it) {
-        FrameDiff_t delta = it->framePosition() - beat.framePosition();
-
-        // We are "on" this beat.
-        if (abs(delta) < kFrameEpsilon) {
-            on_beat = it;
-            break;
+        // Back-up by one.
+        if (it != m_beats.begin()) {
+            --it;
         }
 
-        if (delta < 0) {
-            // If we are not on the beat and delta < 0 then this beat comes
-            // before our current position.
-            previous_beat = it;
-        } else {
-            // If we are past the beat and we aren't on it then this beat comes
-            // after our current position.
-            next_beat = it;
-            // Stop because we have everything we need now.
-            break;
-        }
-    }
+        // Scan forward to find whether we are on a beat.
+        BeatList::const_iterator on_beat = m_beats.cend();
+        BeatList::const_iterator previous_beat = m_beats.cend();
+        BeatList::const_iterator next_beat = m_beats.cend();
+        for (; it != m_beats.end(); ++it) {
+            FrameDiff_t delta = it->framePosition() - beat.framePosition();
+            // If the position is within a fraction of the local beat length,
+            // pretend we are on that beat.
+            const double kFrameEpsilon = kBeatVicinityFactor *
+                    getBeatLengthFrames(
+                            it->bpm(), getSampleRate(), it->timeSignature());
 
-    // If we are within epsilon frames of a beat then the immediately next and
-    // previous beats are the beat we are on.
-    if (on_beat != m_beats.end()) {
-        next_beat = on_beat;
-        previous_beat = on_beat;
-    }
-
-    if (n > 0) {
-        for (; next_beat != m_beats.end(); ++next_beat) {
-            if (n == 1) {
-                // Return a sample offset
-                return *next_beat;
-            }
-            --n;
-        }
-    } else if (n < 0 && previous_beat != m_beats.end()) {
-        for (; true; --previous_beat) {
-            if (n == -1) {
-                // Return a sample offset
-                return *previous_beat;
-            }
-            ++n;
-
-            // Don't step before the start of the list.
-            if (previous_beat == m_beats.begin()) {
+            // We are "on" this beat.
+            if (abs(delta) < kFrameEpsilon) {
+                on_beat = it;
                 break;
+            }
+
+            if (delta < 0) {
+                // If we are not on the beat and delta < 0 then this beat comes
+                // before our current position.
+                previous_beat = it;
+            } else {
+                // If we are past the beat and we aren't on it then this beat comes
+                // after our current position.
+                next_beat = it;
+                // Stop because we have everything we need now.
+                break;
+            }
+        }
+
+        // If we are within epsilon frames of a beat then the immediately next and
+        // previous beats are the beat we are on.
+        if (on_beat != m_beats.end()) {
+            next_beat = on_beat;
+            previous_beat = on_beat;
+        }
+
+        if (n > 0) {
+            return getBeatAtIndex(next_beat->beatIndex() + n - 1);
+        } else { // n < 0
+            return getBeatAtIndex(previous_beat->beatIndex() + n + 1);
+        }
+    } else { // Pivot frame is on either side of track.
+        if (frame < getFirstBeatPosition()) {
+            const auto& firstBeat = getBeatAtIndex(0);
+            const FrameDiff_t beatLength = getBeatLengthFrames(firstBeat.bpm(),
+                    getSampleRate(),
+                    firstBeat.timeSignature());
+            double beatFraction = (frame - getFirstBeatPosition()) / beatLength;
+            int prevBeatIdx = floor(beatFraction);
+            int nextBeatIdx = ceil(beatFraction);
+
+            if (fabs(nextBeatIdx - beatFraction) < kBeatVicinityFactor) {
+                // If we are going to pretend we were actually on nextBeat then prevBeat
+                // needs to be re-calculated. Since it is floor(beatFraction), that's
+                // the same as nextBeat.  We only use prevBeat so no need to increment
+                // nextBeat.
+                prevBeatIdx = nextBeatIdx;
+            } else if (fabs(prevBeatIdx - beatFraction) < kBeatVicinityFactor) {
+                // If we are going to pretend we were actually on prevBeat then nextBeat
+                // needs to be re-calculated. Since it is ceil(beatFraction), that's
+                // the same as prevBeat.  We will only use nextBeat so no need to
+                // decrement prevBeat.
+                nextBeatIdx = prevBeatIdx;
+            }
+
+            if (n > 0) {
+                return getBeatAtIndex(nextBeatIdx + n - 1);
+            } else { // n < 0
+                return getBeatAtIndex(prevBeatIdx + n + 1);
+            }
+        } else { // frame > getLastFramePosition()
+            const int lastBeatIdx = size() - 1;
+            const auto& lastBeat = getBeatAtIndex(lastBeatIdx);
+            const FrameDiff_t beatLength = getBeatLengthFrames(
+                    lastBeat.bpm(), getSampleRate(), lastBeat.timeSignature());
+            double beatFraction = (frame - getLastBeatPosition()) / beatLength;
+            int prevBeatIdxRelativeToLast = floor(beatFraction);
+            int nextBeatIdxRelativeToLast = ceil(beatFraction);
+
+            if (fabs(nextBeatIdxRelativeToLast - beatFraction) < kBeatVicinityFactor) {
+                prevBeatIdxRelativeToLast = nextBeatIdxRelativeToLast;
+            } else if (fabs(prevBeatIdxRelativeToLast - beatFraction) < kBeatVicinityFactor) {
+                nextBeatIdxRelativeToLast = prevBeatIdxRelativeToLast;
+            }
+
+            if (n > 0) {
+                return getBeatAtIndex(nextBeatIdxRelativeToLast + lastBeatIdx + n - 1);
+            } else { // n < 0
+                return getBeatAtIndex(prevBeatIdxRelativeToLast + lastBeatIdx + n + 1);
             }
         }
     }
