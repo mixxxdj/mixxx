@@ -5,15 +5,11 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="21"
    height="18"
    version="1.1"
    viewBox="0 0 21 18"
-   id="svg8"
-   sodipodi:docname="btn__quantize_active_34.svg"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+   id="svg8">
   <metadata
      id="metadata14">
     <rdf:RDF>
@@ -28,43 +24,20 @@
   </metadata>
   <defs
      id="defs12" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1056"
-     id="namedview10"
-     showgrid="false"
-     inkscape:zoom="13.111111"
-     inkscape:cx="10.5"
-     inkscape:cy="9"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg8" />
   <path
      d="m9.156 4c-2.7614 0-5 2.2386-5 5s2.2386 5 5 5h3.8438v-3h-3.9688c-1.1046 0-2-.89543-2-2 0-1.1046.89543-2 2-2h3.9688v-3z"
-     fill="#85bdbb"
      id="path2"
-     style="fill:#559b99;fill-opacity:1" />
+     style="fill:#559b99;fill-opacity:1;stroke:none;stroke-opacity:1" />
   <g
      id="g842"
-     style="fill:#e6e6e6;fill-opacity:1">
+     style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-opacity:1">
     <path
-       style="fill:#e6e6e6;fill-opacity:1"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-opacity:1"
        id="path4"
-       fill="#fff"
        d="m17 11h-3v3h3z" />
     <path
-       style="fill:#e6e6e6;fill-opacity:1"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-opacity:1"
        id="path6"
-       fill="#fff"
        d="m17 4h-2.9896v3h2.9896z" />
   </g>
 </svg>

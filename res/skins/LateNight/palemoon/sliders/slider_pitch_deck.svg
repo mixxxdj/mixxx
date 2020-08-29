@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="40"
-   height="113"
+   id="svg84"
    version="1.1"
-   id="svg84">
+   height="119"
+   width="40">
   <metadata
      id="metadata90">
     <rdf:RDF>
@@ -23,174 +23,152 @@
   </metadata>
   <defs
      id="defs88" />
-  <rect
-     y="-55.063557"
-     x="-202.53813"
-     height="219.77542"
-     width="166.62712"
-     id="rect852"
-     style="opacity:1;fill:#146674;fill-opacity:0.55555558;stroke:none;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-  <g
-     style="fill:#050505;stroke-width:0.99979782"
-     transform="translate(1)"
-     id="g38">
-    <path
-       style="color:#000000"
-       d="m 8,20.500564 h 8 V 21.50016 H 8 Z"
-       id="path2" />
-    <path
-       style="color:#000000"
-       d="m 8,32.500511 h 8 v 0.999596 H 8 Z"
-       id="path4" />
-    <path
-       style="color:#000000"
-       d="m 8,44.500457 h 8 v 0.999596 H 8 Z"
-       id="path6" />
-    <path
-       style="color:#000000"
-       d="m 5,56.500202 11,2.02e-4 V 57.5 L 5,57.499798 Z"
-       id="path8" />
-    <path
-       style="color:#000000"
-       d="m 8,68.500361 h 8 v 0.999596 H 8 Z"
-       id="path10" />
-    <path
-       style="color:#000000"
-       d="m 8,80.500308 h 8 v 0.999596 H 8 Z"
-       id="path12" />
-    <path
-       style="color:#000000"
-       d="m 8,92.500254 h 8 V 93.49985 H 8 Z"
-       id="path14" />
-    <path
-       style="color:#000000"
-       d="m 32,20.500564 h -8 v 0.999596 h 8 z"
-       id="path16" />
-    <path
-       style="color:#000000"
-       d="m 32,32.500511 h -8 v 0.999596 h 8 z"
-       id="path18" />
-    <path
-       style="color:#000000"
-       d="m 32,44.500457 h -8 v 0.999596 h 8 z"
-       id="path20" />
-    <path
-       style="color:#000000"
-       d="M 34,56.500404 H 24 V 57.5 h 10 z"
-       id="path22" />
-    <path
-       style="color:#000000"
-       d="m 32,68.500361 h -8 v 0.999596 h 8 z"
-       id="path24" />
-    <path
-       style="color:#000000"
-       d="m 32,80.500308 h -8 v 0.999596 h 8 z"
-       id="path26" />
-    <path
-       style="color:#000000"
-       d="m 32,92.500254 h -8 v 0.999596 h 8 z"
-       id="path28" />
-    <path
-       style="color:#000000"
-       d="m 8,6.500564 h 8 V 7.50016 H 8 Z"
-       id="path30" />
-    <path
-       style="color:#000000"
-       d="M 32,6.500564 H 24 V 7.50016 h 8 z"
-       id="path32" />
-    <path
-       style="color:#000000"
-       d="m 8,104.50025 h 8 v 0.9996 H 8 Z"
-       id="path34" />
-    <path
-       style="color:#000000"
-       d="m 32,104.50025 h -8 v 0.9996 h 8 z"
-       id="path36" />
-  </g>
-  <g
-     style="fill:#636363;stroke-width:0.99979782"
-     transform="translate(1)"
-     id="g44">
-    <path
-       style="color:#000000"
-       d="M 5,57.000404 H 16 V 58 H 5 Z"
-       id="path40" />
-    <path
-       style="color:#000000"
-       d="M 34,57.000404 H 24 V 58 h 10 z"
-       id="path42" />
-  </g>
-  <g
-     style="fill:#404040;stroke-width:0.99979782"
-     transform="translate(1)"
-     id="g78">
-    <path
-       style="color:#000000"
-       d="m 8,21.000564 h 8 V 22.00016 H 8 Z"
-       id="path46" />
-    <path
-       style="color:#000000"
-       d="m 8,33.000511 h 8 v 0.999596 H 8 Z"
-       id="path48" />
-    <path
-       style="color:#000000"
-       d="m 8,45.000457 h 8 v 0.999596 H 8 Z"
-       id="path50" />
-    <path
-       style="color:#000000"
-       d="m 8,69.000361 h 8 v 0.999596 H 8 Z"
-       id="path52" />
-    <path
-       style="color:#000000"
-       d="m 8,81.000308 h 8 v 0.999596 H 8 Z"
-       id="path54" />
-    <path
-       style="color:#000000"
-       d="m 8,93.000254 h 8 V 93.99985 H 8 Z"
-       id="path56" />
-    <path
-       style="color:#000000"
-       d="m 32,21.000564 h -8 v 0.999596 h 8 z"
-       id="path58" />
-    <path
-       style="color:#000000"
-       d="m 32,33.000511 h -8 v 0.999596 h 8 z"
-       id="path60" />
-    <path
-       style="color:#000000"
-       d="m 32,45.000457 h -8 v 0.999596 h 8 z"
-       id="path62" />
-    <path
-       style="color:#000000"
-       d="m 32,69.000361 h -8 v 0.999596 h 8 z"
-       id="path64" />
-    <path
-       style="color:#000000"
-       d="m 32,81.000308 h -8 v 0.999596 h 8 z"
-       id="path66" />
-    <path
-       style="color:#000000"
-       d="m 32,93.000254 h -8 v 0.999596 h 8 z"
-       id="path68" />
-    <path
-       style="color:#000000"
-       d="m 8,7.000564 h 8 V 8.00016 H 8 Z"
-       id="path70" />
-    <path
-       style="color:#000000"
-       d="M 32,7.000564 H 24 V 8.00016 h 8 z"
-       id="path72" />
-    <path
-       style="color:#000000"
-       d="m 8,105.00025 h 8 v 0.9996 H 8 Z"
-       id="path74" />
-    <path
-       style="color:#000000"
-       d="m 32,105.00025 h -8 v 0.9996 h 8 z"
-       id="path76" />
-  </g>
   <path
-     d="m 20.326337,6.3263365 h 1.347327 V 106.67366 h -1.347327 z"
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,19.500404 h 8 V 20.5 H 8 Z"
+     id="path2" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,32.5 h 8 v 0.999596 H 8 Z"
+     id="path4" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,45.500404 h 8 V 46.5 H 8 Z"
+     id="path6" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 6,58.500202 10,2.02e-4 V 59.5 L 6,59.499798 Z"
+     id="path8" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,71.500404 h 8 V 72.5 H 8 Z"
+     id="path10" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,84.500404 h 8 V 85.5 H 8 Z"
+     id="path12" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,97.500404 h 8 V 98.5 H 8 Z"
+     id="path14" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="M 32,19.500404 H 24 V 20.5 h 8 z"
+     id="path16" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 32,32.5 h -8 v 0.999596 h 8 z"
+     id="path18" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="M 32,45.500404 H 24 V 46.5 h 8 z"
+     id="path20" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="M 34,58.500404 H 24 V 59.5 h 10 z"
+     id="path22" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="M 32,71.500404 H 24 V 72.5 h 8 z"
+     id="path24" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="M 32,84.500404 H 24 V 85.5 h 8 z"
+     id="path26" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="M 32,97.500404 H 24 V 98.5 h 8 z"
+     id="path28" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,6.5 h 8 V 7.499596 H 8 Z"
+     id="path30" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 32,6.5 h -8 v 0.999596 h 8 z"
+     id="path32" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="m 8,110.5004 h 8 V 111.5 H 8 Z"
+     id="path34" />
+  <path
+     style="color:#000000;fill:#050505;stroke-width:0.999798"
+     d="M 32,110.5004 H 24 V 111.5 h 8 z"
+     id="path36" />
+  <path
+     style="color:#000000;fill:#636363;stroke-width:0.999798"
+     d="M 6,59.000404 H 16 V 60 H 6 Z"
+     id="path40" />
+  <path
+     style="color:#000000;fill:#636363;stroke-width:0.999798"
+     d="M 34,59.000404 H 24 V 60 h 10 z"
+     id="path42" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,20.000404 h 8 V 21 H 8 Z"
+     id="path46" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,33 h 8 v 0.999596 H 8 Z"
+     id="path48" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,46.000404 h 8 V 47 H 8 Z"
+     id="path50" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,72.000404 h 8 V 73 H 8 Z"
+     id="path52" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,85.000404 h 8 V 86 H 8 Z"
+     id="path54" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,98.000404 h 8 V 99 H 8 Z"
+     id="path56" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="M 32,20.000404 H 24 V 21 h 8 z"
+     id="path58" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 32,33 h -8 v 0.999596 h 8 z"
+     id="path60" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="M 32,46.000404 H 24 V 47 h 8 z"
+     id="path62" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="M 32,72.000404 H 24 V 73 h 8 z"
+     id="path64" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="M 32,85.000404 H 24 V 86 h 8 z"
+     id="path66" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="M 32,98.000404 H 24 V 99 h 8 z"
+     id="path68" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,7 h 8 V 7.999596 H 8 Z"
+     id="path70" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 32,7 h -8 v 0.999596 h 8 z"
+     id="path72" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="m 8,111.0004 h 8 V 112 H 8 Z"
+     id="path74" />
+  <path
+     style="color:#000000;fill:#404040;stroke-width:0.999798"
+     d="M 32,111.0004 H 24 V 112 h 8 z"
+     id="path76" />
+  <path
+     style="color:#000000;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.68231;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path80"
-     style="color:#000000;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.65267289;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+     d="m 19.341157,6.341156 h 1.317687 V 112.65885 h -1.317687 z" />
 </svg>

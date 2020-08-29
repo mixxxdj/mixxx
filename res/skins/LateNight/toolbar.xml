@@ -26,7 +26,7 @@
         <Children>
 
           <Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">FIXME_waveforms</SetVariable>
+            <SetVariable name="TooltipId">show_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">80f,20f</SetVariable>
             <SetVariable name="state_0_text">WAVEFORMS</SetVariable>
@@ -35,7 +35,7 @@
           </Template>
 
           <Template src="skin:/controls/button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_4decks</SetVariable>
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">52f,20f</SetVariable>
             <SetVariable name="state_0_text">4 DECKS</SetVariable>
@@ -94,7 +94,7 @@
         <Children>
 
           <Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">FIXME_waveforms</SetVariable>
+            <SetVariable name="TooltipId">show_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">80f,20f</SetVariable>
             <SetVariable name="state_0_text">DECKS</SetVariable>
@@ -103,7 +103,7 @@
           </Template>
 
           <Template src="skin:/controls/button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_4decks</SetVariable>
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">52f,20f</SetVariable>
             <SetVariable name="state_0_text">4 DECKS</SetVariable>
@@ -125,60 +125,6 @@
         <Size>74f,24f</Size>
       </Label>
 
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>LatencyBatteryContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Label>
-            <ObjectName>LatencyLabel</ObjectName>
-            <Text>CPU</Text>
-          </Label>
-
-          <WidgetGroup>
-            <ObjectName>LatencyMeterBox</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>61f,7f</Size>
-            <Children>
-              <VuMeter>
-                <TooltipId>audio_latency_usage</TooltipId>
-                <Size>59f,5f</Size>
-                <PathBack>skin:/<Variable name="StyleScheme"/>/style/latency_bg.png</PathBack>
-                <PathVu>skin:/<Variable name="StyleScheme"/>/style/latency_over.png</PathVu>
-                <Horizontal>true</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>1000</PeakHoldTime>
-                <PeakFallTime>100</PeakFallTime>
-                <PeakFallStep>1</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Master],audio_latency_usage</ConfigKey>
-                </Connection>
-              </VuMeter>
-            </Children>
-          </WidgetGroup><!-- LatencyMeterBox -->
-
-          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>BatteryBox</ObjectName>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Battery>
-                <ObjectName>Battery</ObjectName>
-                <Size>24,24</Size>
-                <SizePolicy>f,f</SizePolicy>
-                <PixmapCharged scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
-                <NumberStates>8</NumberStates>
-                <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
-                <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
-              </Battery>
-            </Children>
-          </WidgetGroup><!-- BatteryBox -->
-        </Children>
-      </WidgetGroup><!-- LatencyBatteryContainer -->
-
       <WidgetGroup><Size>7f,min</Size></WidgetGroup>
 
       <WidgetGroup>
@@ -193,7 +139,71 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>7f,min</Size></WidgetGroup>
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>BatteryBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Battery>
+            <ObjectName>Battery</ObjectName>
+            <Size>24,24</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
+            <NumberStates>8</NumberStates>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+          </Battery>
+        </Children>
+      </WidgetGroup><!-- BatteryBox -->
+
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>LatencyBatteryContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup><Size>,0min</Size></WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>LatencyMeterBox</ObjectName>
+                <Size>61f,7f</Size>
+                <Layout>vertical</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId>audio_latency_usage</TooltipId>
+                    <Size>59f,5f</Size>
+                    <PathBack>skin:/<Variable name="StyleScheme"/>/style/latency_bg.png</PathBack>
+                    <PathVu>skin:/<Variable name="StyleScheme"/>/style/latency_over.png</PathVu>
+                    <Horizontal>true</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>1000</PeakHoldTime>
+                    <PeakFallTime>100</PeakFallTime>
+                    <PeakFallStep>1</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup><!-- LatencyMeterBox -->
+              <Label>
+                <ObjectName>LatencyLabel</ObjectName>
+                <TooltipId>audio_latency_usage</TooltipId>
+                <Size>0min,10f</Size>
+                <Alignment>center</Alignment>
+                <Text>CPU Load</Text>
+              </Label>
+            </Children>
+          </WidgetGroup><!-- LatencyMeterBox -->
+        </Children>
+      </WidgetGroup><!-- LatencyBatteryContainer -->
+
+      <WidgetGroup><Size>12f,min</Size></WidgetGroup>
 
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
@@ -239,7 +249,6 @@
           <!-- Rec feedback color -->
           <Template src="skin:/controls/button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
-            <SetVariable name="TooltipId">toggle_recording</SetVariable>
             <SetVariable name="Size">72f,20f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
@@ -248,25 +257,25 @@
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
       <PushButton>
-        <Size>82f,20f</Size>
-        <TooltipId>skin_settings</TooltipId>
+        <Size>72f,20f</Size>
+        <TooltipId>broadcast_enabled</TooltipId>
         <ObjectName>BroadcastButton</ObjectName>
         <NumberStates>4</NumberStates>
         <State>
           <Number>0</Number>
-          <Text>Broadcast</Text>
+          <Text>      ON AIR</Text>
         </State>
         <State>
           <Number>1</Number>
-          <Text>Connecting...</Text>
+          <Text>       ...</Text>
         </State>
         <State>
           <Number>2</Number>
-          <Text>ON AIR</Text>
+          <Text>      ON AIR</Text>
         </State>
         <State>
           <Number>3</Number>
-          <Text>Conn. Failed</Text>
+          <Text>       ---</Text>
         </State>
         <Connection>
           <ConfigKey>[Shoutcast],enabled</ConfigKey>
