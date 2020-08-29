@@ -44,11 +44,8 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
     connect(bReanalyse,SIGNAL(stateChanged(int)),
             this, SLOT(slotReanalyzeChanged(int)));
 
-    connect(bIron, SIGNAL(stateChanged(int)),
-            this, SLOT(ironingEnabled(int)));
-    connect(bRemoveArrythmic, SIGNAL(stateChanged(int)),
-            this, SLOT(removeArrythmicEnabled(int)));
-
+    connect(bIron, SIGNAL(stateChanged(int)), this, SLOT(ironingEnabled(int)));
+    connect(bRemoveArrythmic, SIGNAL(stateChanged(int)), this, SLOT(removeArrythmicEnabled(int)));
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
@@ -147,7 +144,6 @@ void DlgPrefBeats::slotUpdate() {
     bIron->setEnabled(m_banalyzerEnabled && !m_bfixedtempoEnabled);
     bRemoveArrythmic->setEnabled(m_banalyzerEnabled && !m_bfixedtempoEnabled);
 
-
     if (!m_banalyzerEnabled) {
         return;
     }
@@ -183,7 +179,6 @@ void DlgPrefBeats::slotUpdate() {
 
     bIron->setChecked(m_bEnableIroning);
     bRemoveArrythmic->setChecked(m_bEnableArrythmicRemoval);
-    
 }
 
 void DlgPrefBeats::slotReanalyzeChanged(int value) {

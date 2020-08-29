@@ -1,6 +1,7 @@
+#include "util/windowedstatistics.h"
+
 #include <algorithm>
 
-#include "util/windowedstatistics.h"
 #include "util/descriptivestatistics.h"
 
 void MovingMode::update(double newValue, double oldValue) {
@@ -10,7 +11,6 @@ void MovingMode::update(double newValue, double oldValue) {
         m_frequencyOfValues[oldValue] -= 1;
     }
     m_frequencyOfValues[newValue] += 1;
-
 }
 // this is an incomplete implementation that do NOT
 // handle cases where the mode is not unique.

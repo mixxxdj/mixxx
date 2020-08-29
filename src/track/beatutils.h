@@ -52,7 +52,6 @@ class BeatUtils {
     static QVector<double> ironBeatmap(
             QVector<double>& rawBeats, int SampleRate, double minBpm, double maxBpm);
 
-    
     static double findFirstCorrectBeat(const QVector<double> rawBeats,
                                        const int SampleRate, const double global_bpm);
 
@@ -83,16 +82,13 @@ class BeatUtils {
         QMap<double, int>* filteredFrequencyTable);
     static QMap<int, double> findStableTempoRegions(
             QMap<double, int> frequencyOfTempos, QList<double> tempoList);
-    static void removeSmallArrhythmic(QVector<double>& rawBeats, const int sampleRate,
-            QMap<int, double> &stableTemposByPosition);
+    static void removeSmallArrhythmic(QVector<double>& rawBeats, const int sampleRate, QMap<int, double>& stableTemposByPosition);
     static QVector<double> calculateIronedGrid(
-            const QVector<double> &rawbeats, const int sampleRate);
+            const QVector<double>& rawbeats, const int sampleRate);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
-            const QVector<double> beats, const int windowSize, const int windowStep,
-            const int sampleRate, QMap<double, int>* frequencyHistogram);
+            const QVector<double> beats, const int windowSize, const int windowStep, const int sampleRate, QMap<double, int>* frequencyHistogram);
     static QVector<double> calculateFixedTempoGrid(
-            const QVector<double> &rawbeats, const int sampleRate, const double localBpm);
-
+            const QVector<double>& rawbeats, const int sampleRate, const double localBpm);
 };
 
 #endif /* BEATUTILS_H_ */
