@@ -43,7 +43,7 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     }
 }
 
-void MacroDAO::saveMacros(TrackId trackId, QMap<int, MacroPtr> macros) const {
+void MacroDAO::saveMacros(TrackId trackId, QMap<int, MacroPointer> macros) const {
     for (auto it = macros.constBegin(); it != macros.constEnd(); ++it) {
         auto pMacro = it.value();
         // Don't save placeholder Macros
@@ -68,9 +68,9 @@ QSqlQuery MacroDAO::querySelect(QString columns, TrackId trackId) const {
     return query;
 }
 
-QMap<int, MacroPtr> MacroDAO::loadMacros(TrackId trackId) const {
+QMap<int, MacroPointer> MacroDAO::loadMacros(TrackId trackId) const {
     QSqlQuery query = querySelect("*", trackId);
-    QMap<int, MacroPtr> result;
+    QMap<int, MacroPointer> result;
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return result;

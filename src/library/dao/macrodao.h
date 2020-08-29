@@ -7,9 +7,9 @@
 class MacroDAO : public virtual DAO {
   public:
     bool saveMacro(TrackId trackId, Macro* macro, int slot) const;
-    void saveMacros(TrackId trackId, QMap<int, MacroPtr> macros) const;
+    void saveMacros(TrackId trackId, QMap<int, MacroPointer> macros) const;
 
-    QMap<int, MacroPtr> loadMacros(TrackId trackId) const;
+    QMap<int, MacroPointer> loadMacros(TrackId trackId) const;
 
   private:
     QSqlQuery querySelect(QString columns, TrackId trackId) const;

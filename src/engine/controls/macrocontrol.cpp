@@ -140,7 +140,7 @@ void MacroControl::setStatus(Status status) {
     m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
 }
 
-MacroPtr MacroControl::getMacro() const {
+MacroPointer MacroControl::getMacro() const {
     return m_pMacro;
 }
 

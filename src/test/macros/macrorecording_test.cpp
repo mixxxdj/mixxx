@@ -24,7 +24,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
         m_record.set(1);
     }
 
-    MacroPtr getMacro() {
+    MacroPointer getMacro() {
         return m_pEngineBuffer1->getLoadedTrack()->getMacros().value(kMacro);
     }
 
@@ -100,7 +100,7 @@ TEST_F(MacroRecordingTest, RecordHotcueAndPlay) {
     ControlObject::set(ConfigKey(kChannelGroup, "hotcue_1_goto"), 1);
     ProcessBuffer();
     EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action.getTargetSamplePos());
-    MacroPtr pMacro = getMacro();
+    MacroPointer pMacro = getMacro();
 
     // Check that recording stops gracefully when ejecting
     m_pEngineBuffer1->slotEjectTrack(1);

@@ -24,11 +24,11 @@ TEST_F(MacroDAOTest, SaveAndLoadMacro) {
     m_macroDAO.saveMacro(track, &saved, 1);
     EXPECT_EQ(m_macroDAO.loadMacros(TrackId(2)).size(), 0); // Sanity check
 
-    QMap<int, MacroPtr> loaded = m_macroDAO.loadMacros(track);
+    QMap<int, MacroPointer> loaded = m_macroDAO.loadMacros(track);
     ASSERT_EQ(loaded.size(), 1);
     EXPECT_EQ(loaded.keys(), QList{1});
 
-    MacroPtr macro = loaded.first();
+    MacroPointer macro = loaded.first();
     EXPECT_FALSE(macro->isEnabled());
     EXPECT_TRUE(macro->isLooped());
     EXPECT_EQ(macro->size(), 1);

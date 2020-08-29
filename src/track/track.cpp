@@ -1122,17 +1122,17 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     emit cuesUpdated();
 }
 
-QMap<int, MacroPtr> Track::getMacros() const {
+QMap<int, MacroPointer> Track::getMacros() const {
     QMutexLocker lock(&m_qMutex);
     return m_macros;
 }
 
-void Track::setMacros(QMap<int, MacroPtr> macros) {
+void Track::setMacros(QMap<int, MacroPointer> macros) {
     QMutexLocker lock(&m_qMutex);
     m_macros = macros;
 }
 
-void Track::addMacro(int slot, MacroPtr macro) {
+void Track::addMacro(int slot, MacroPointer macro) {
     QMutexLocker lock(&m_qMutex);
     m_macros.insert(slot, macro);
     if (macro->isDirty()) {
@@ -1145,7 +1145,7 @@ bool Track::isDirty() {
     if (m_bDirty) {
         return true;
     }
-    for (MacroPtr macro : m_macros) {
+    for (MacroPointer macro : m_macros) {
         if (macro->isDirty()) {
             return true;
         }

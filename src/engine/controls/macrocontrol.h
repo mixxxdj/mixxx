@@ -30,7 +30,7 @@ class MacroControl : public EngineControl {
     };
 
     Status getStatus() const;
-    MacroPtr getMacro() const;
+    MacroPointer getMacro() const;
 
   public slots:
     void slotRecord(double value = 1);
@@ -58,7 +58,7 @@ class MacroControl : public EngineControl {
     rigtorp::SPSCQueue<MacroAction> m_recordedActions;
     QTimer m_updateRecordingTimer;
 
-    MacroPtr m_pMacro;
+    MacroPointer m_pMacro;
     unsigned int m_iNextAction;
 
     ControlObject m_COStatus;

@@ -98,7 +98,7 @@ class Macro {
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(Macro::State)
 
-typedef std::shared_ptr<Macro> MacroPtr;
+typedef std::shared_ptr<Macro> MacroPointer;
 
 bool operator==(const Macro& m1, const Macro& m2);
 inline bool operator!=(const Macro& m1, const Macro& m2) {
