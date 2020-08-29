@@ -2,6 +2,7 @@
 
 #include "track/beatutils.h"
 #include "track/track.h"
+#include "util/math.h"
 
 namespace mixxx {
 
@@ -29,10 +30,6 @@ inline FrameDiff_t getBeatLengthFrames(Bpm bpm,
         TimeSignature timeSignature = TimeSignature()) {
     return kSecondsPerMinute * sampleRate *
             (4.0 / timeSignature.getNoteValue()) / bpm.getValue();
-}
-inline int clockModulo(int dividend, int divisor) {
-    int rawModulo = dividend % divisor;
-    return rawModulo < 0 ? rawModulo + divisor : rawModulo;
 }
 } // namespace
 
@@ -189,24 +186,50 @@ Beat BeatsInternal::getBeatAtIndex(int index) const {
 
     if (index >= 0 && index < m_beats.size()) {
         return m_beats.at(index);
-    } else if (index < 0) {
-        const auto& firstBeat = m_beats.first();
-        const int beatsPerBar = firstBeat.timeSignature().getBeatsPerBar();
-        const FrameDiff_t beatLength = getBeatLengthFrames(
-                firstBeat.bpm(), getSampleRate(), firstBeat.timeSignature());
-        const int beatInBarIndex = clockModulo(firstBeat.beatInBarIndex() + index, beatsPerBar);
-        const int barIndex = std::floor(static_cast<double>(index) / beatsPerBar);
-        Beat generatedPseudoBeat(
-                firstBeat.framePosition() + index * beatLength,
-                (beatInBarIndex == 0) ? BeatType::Downbeat : BeatType::Beat,
-                firstBeat.timeSignature(),
-                firstBeat.bpm(),
-                index,
-                barIndex,
-                beatInBarIndex);
-        return generatedPseudoBeat;
+    } else {
+        const int distanceFromFirstDownbeat = index - m_beatsProto.first_downbeat_index();
+        if (index < 0) {
+            const auto& firstBeat = m_beats.first();
+            const int beatsPerBar = firstBeat.timeSignature().getBeatsPerBar();
+            const FrameDiff_t beatLength = getBeatLengthFrames(
+                    firstBeat.bpm(), getSampleRate(), firstBeat.timeSignature());
+            const int beatInBarIndex = clockModulo(
+                    distanceFromFirstDownbeat, beatsPerBar);
+            const int barIndex =
+                    std::floor(static_cast<double>(distanceFromFirstDownbeat) /
+                            beatsPerBar);
+            Beat generatedPseudoBeat(
+                    firstBeat.framePosition() + index * beatLength,
+                    (beatInBarIndex == 0) ? BeatType::Downbeat : BeatType::Beat,
+                    firstBeat.timeSignature(),
+                    firstBeat.bpm(),
+                    index,
+                    barIndex,
+                    beatInBarIndex);
+            return generatedPseudoBeat;
+        }
+
+        else { // index >= m_beats.size()
+            const auto& lastBeat = m_beats.last();
+            const int beatsPerBar = lastBeat.timeSignature().getBeatsPerBar();
+            const FrameDiff_t beatLength = getBeatLengthFrames(
+                    lastBeat.bpm(), getSampleRate(), lastBeat.timeSignature());
+            const int beatInBarIndex = clockModulo(
+                    distanceFromFirstDownbeat, beatsPerBar);
+            const int barIndex =
+                    std::floor(static_cast<double>(distanceFromFirstDownbeat) /
+                            beatsPerBar);
+            Beat generatedPseudoBeat(
+                    lastBeat.framePosition() + (index - lastBeat.beatIndex()) * beatLength,
+                    (beatInBarIndex == 0) ? BeatType::Downbeat : BeatType::Beat,
+                    lastBeat.timeSignature(),
+                    lastBeat.bpm(),
+                    index,
+                    barIndex,
+                    beatInBarIndex);
+            return generatedPseudoBeat;
+        }
     }
-    return kInvalidBeat;
 }
 
 void Beats::setAsDownbeat(int beatIndex) {

@@ -4,6 +4,7 @@
 
 #include "track/beats.h"
 #include "track/track.h"
+#include "util/math.h"
 #include "util/memory.h"
 
 using namespace mixxx;
@@ -487,54 +488,37 @@ TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
     ASSERT_EQ(oldBpm, newBpm);
 }
 
-TEST_F(BeatsTest, IndexRetreival) {
+TEST_F(BeatsTest, IndexRetrieval) {
     const auto& pBeats = m_pTrack1->getBeats();
     const auto& beatLengthFrames = getBeatLengthFrames(m_bpm);
 
+    // We assume 4/4 throughout the track
+
     // Shift first downbeat ahead
-    pBeats->setAsDownbeat(1);
-
-    // Verify first beat
-    const int firstBeatIndex = kFirstBeatIndex;
-    const auto& firstBeat = pBeats->getBeatAtIndex(firstBeatIndex);
-    EXPECT_NE(firstBeat, kInvalidBeat);
-    EXPECT_EQ(firstBeat.beatIndex(), firstBeatIndex);
-    EXPECT_EQ(firstBeat.barIndex(), -1);
-    EXPECT_EQ(firstBeat.beatInBarIndex(), 3);
-    EXPECT_EQ(firstBeat.type(), BeatType::Beat);
-    EXPECT_DOUBLE_EQ(firstBeat.framePosition().getValue(), m_startOffsetFrames.getValue());
-
-    // Verify second beat
-    const int secondBeatIndex = kFirstBeatIndex + 1;
-    const auto& secondBeat = pBeats->getBeatAtIndex(secondBeatIndex);
-    EXPECT_NE(secondBeat, kInvalidBeat);
-    EXPECT_EQ(secondBeat.beatIndex(), secondBeatIndex);
-    EXPECT_EQ(secondBeat.barIndex(), 0);
-    EXPECT_EQ(secondBeat.beatInBarIndex(), 0);
-    EXPECT_EQ(secondBeat.type(), BeatType::Downbeat);
-    EXPECT_DOUBLE_EQ(secondBeat.framePosition().getValue(),
-            m_startOffsetFrames.getValue() + beatLengthFrames);
-
-    // Before the first beat
-    const int oneBeforeFirstBeatIndex = kFirstBeatIndex - 1;
-    const auto& oneBeforeFirstBeat = pBeats->getBeatAtIndex(oneBeforeFirstBeatIndex);
-    EXPECT_NE(oneBeforeFirstBeat, kInvalidBeat);
-    EXPECT_EQ(oneBeforeFirstBeat.beatIndex(), oneBeforeFirstBeatIndex);
-    EXPECT_EQ(oneBeforeFirstBeat.barIndex(), -1);
-    EXPECT_EQ(oneBeforeFirstBeat.beatInBarIndex(), 2);
-    EXPECT_EQ(oneBeforeFirstBeat.type(), BeatType::Beat);
-    EXPECT_DOUBLE_EQ(oneBeforeFirstBeat.framePosition().getValue(),
-            m_startOffsetFrames.getValue() - beatLengthFrames);
-
-    // Way before the first beat
-    const int sevenBeforeFirstBeatIndex = kFirstBeatIndex - 7;
-    const auto& sevenBeforeFirstBeat = pBeats->getBeatAtIndex(sevenBeforeFirstBeatIndex);
-    EXPECT_NE(sevenBeforeFirstBeat, kInvalidBeat);
-    EXPECT_EQ(sevenBeforeFirstBeat.beatIndex(), sevenBeforeFirstBeatIndex);
-    EXPECT_EQ(sevenBeforeFirstBeat.barIndex(), -2);
-    EXPECT_EQ(sevenBeforeFirstBeat.beatInBarIndex(), 0);
-    EXPECT_EQ(sevenBeforeFirstBeat.type(), BeatType::Downbeat);
-    EXPECT_DOUBLE_EQ(sevenBeforeFirstBeat.framePosition().getValue(),
-            m_startOffsetFrames.getValue() - beatLengthFrames * 7);
+    const int firstDownbeatIndex = 1;
+    pBeats->setAsDownbeat(firstDownbeatIndex);
+    const int startingBeatIndex = -10;
+    const auto& timeSignature = pBeats->getBeatAtIndex(0).timeSignature();
+    for (int beatIndex = startingBeatIndex; beatIndex < pBeats->size() + 10; beatIndex++) {
+        const auto& beat = pBeats->getBeatAtIndex(beatIndex);
+        EXPECT_NE(beat, kInvalidBeat);
+        EXPECT_EQ(beat.beatIndex(), beatIndex);
+        EXPECT_EQ(beat.barIndex(),
+                std::floor(static_cast<double>(beatIndex - firstDownbeatIndex) /
+                        timeSignature.getBeatsPerBar()));
+        const uint beatInBarIndex = clockModulo(
+                beatIndex - firstDownbeatIndex, timeSignature.getBeatsPerBar());
+        EXPECT_EQ(beatInBarIndex, beat.beatInBarIndex());
+        EXPECT_EQ(beat.type(), beatInBarIndex == 0 ? BeatType::Downbeat : BeatType::Beat);
+        EXPECT_DOUBLE_EQ(beat.framePosition().getValue(),
+                m_startOffsetFrames.getValue() + beatLengthFrames * beatIndex);
+        if (beatIndex == kFirstBeatIndex) {
+            EXPECT_EQ(beat.markers(), BeatMarkers(BeatMarker::Bpm));
+        } else if (beatIndex == firstDownbeatIndex) {
+            EXPECT_EQ(beat.markers(), BeatMarkers(BeatMarker::TimeSignature));
+        } else {
+            EXPECT_EQ(beat.markers(), BeatMarkers(BeatMarker::None));
+        }
+    }
 }
 } // namespace
