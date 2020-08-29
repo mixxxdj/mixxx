@@ -165,15 +165,14 @@ void MacroControl::updateRecording() {
     VERIFY_OR_DEBUG_ASSERT(isRecording()) {
         return;
     }
-    if (m_recordedActions.empty()) {
-        return;
-    }
-    if (getStatus() == Status::Armed) {
-        setStatus(Status::Recording);
-    }
+    bool actionsRecorded = false;
     while (MacroAction* action = m_recordedActions.front()) {
         m_pMacro->addAction(*action);
         m_recordedActions.pop();
+        actionsRecorded = true;
+    }
+    if (actionsRecorded && getStatus() == Armed) {
+        setStatus(Recording);
     }
 }
 
