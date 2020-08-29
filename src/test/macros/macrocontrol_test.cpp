@@ -30,6 +30,11 @@ TEST(MacroControl, LoadTrack) {
 TEST(MacroControlTest, RecordSeek) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     EXPECT_FALSE(macroControl.isRecording());
+    auto seek = [&macroControl](double position) {
+        macroControl.notifySeek(position);
+        macroControl.setCurrentSample(position, 99'000, 44'100);
+        macroControl.process(0, position, 2);
+    };
 
     TrackPointer pTrack = Track::newTemporary();
     macroControl.trackLoaded(pTrack);
@@ -37,21 +42,22 @@ TEST(MacroControlTest, RecordSeek) {
     macroControl.controlRecord();
     EXPECT_TRUE(macroControl.isRecording());
 
-    macroControl.notifySeek(kAction.getSamplePos());
-    macroControl.setCurrentSample(kAction.getSamplePos(), 99000, 44100);
-    macroControl.process(0, kAction.getSamplePos(), 1);
+    seek(0);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Armed);
 
+    double startPos = 0;
     macroControl.slotJumpQueued();
-    macroControl.notifySeek(kAction.getSamplePos());
+    seek(startPos);
+
+    seek(kAction.getSamplePos());
     macroControl.slotJumpQueued();
-    macroControl.notifySeek(kAction.getTargetSamplePos());
-    macroControl.setCurrentSample(kAction.getTargetSamplePos(), 99000, 44100);
-    macroControl.process(0, kAction.getTargetSamplePos(), 1);
+    seek(kAction.getTargetSamplePos());
 
     macroControl.controlRecord();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
+
     checkMacroAction(macroControl.getMacro());
+    EXPECT_EQ(macroControl.getMacro()->getActions().first().getTargetSamplePos(), startPos);
     EXPECT_TRUE(pTrack->isDirty());
 
     macroControl.trackLoaded(nullptr);
