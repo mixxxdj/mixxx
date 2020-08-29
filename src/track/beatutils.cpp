@@ -12,7 +12,7 @@
 #include <QMap>
 
 #include "track/beatutils.h"
-#include "track/beatstats.h"
+#include "util/windowedstatistics.h"
 #include "util/math.h"
 
 namespace {
@@ -75,7 +75,8 @@ QMap<int, double> BeatUtils::findStableTempoRegions(
     // regions of stable tempos and indendently make const tempo or ironed grid for them
     for (double tempo : tempoList) {
         currentBeat += 1;
-        double newStableTempo = mostFrequentTempo(tempoMedianFilter(tempo));
+        double filteredTempo = tempoMedianFilter.pushAndEvaluate(tempo);
+        double newStableTempo = mostFrequentTempo.pushAndEvaluate(filteredTempo);
         // The analyzer has some jitter that causes a steady beat to fluctuate around the correct
         // value so we don't consider changes to a neighboor value at the ordered tempo table
         if (newStableTempo == stableTemposByPosition.last()) {
@@ -226,8 +227,8 @@ QVector<double> BeatUtils::ironBeatmap(
             QMap<double, int> rightTempoFrequency;
             //auto temposRight = computeWindowedBpmsAndFrequencyHistogram(
                     //beatsAtRight, kBeatsToCountTempo, 1, sampleRate, &rightTempoFrequency);
-            double modeAtLeft = BeatStatistics::mode(leftTempoFrequency);
-            double modeAtRight = BeatStatistics::mode(rightTempoFrequency);
+            //double modeAtLeft = BeatStatistics::mode(leftTempoFrequency);
+            //double modeAtRight = BeatStatistics::mode(rightTempoFrequency);
             //leftRighDiff = fabs(modeAtLeft - modeAtRight);
         }
         // if the most frequent tempo (mode) on each side of the region are within our 
