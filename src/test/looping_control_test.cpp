@@ -3,11 +3,18 @@
 #include "control/controlproxy.h"
 #include "engine/controls/loopingcontrol.h"
 #include "test/mockedenginebackendtest.h"
+#include "util/frameadapter.h"
 #include "util/memory.h"
 
+namespace {
 // Due to rounding errors loop positions should be compared with EXPECT_NEAR instead of EXPECT_EQ.
 // NOTE(uklotzde, 2017-12-10): The rounding errors currently only appeared with GCC 7.2.1.
 constexpr double kLoopPositionMaxAbsError = 0.000000001;
+constexpr double kSecondsPerMinute = 60.0;
+mixxx::FrameDiff_t getBeatLengthFrames(mixxx::Bpm bpm, SINT sampleRate) {
+    return sampleRate * kSecondsPerMinute / bpm.getValue();
+}
+} // namespace
 
 class LoopingControlTest : public MockedEngineBackendTest {
   public:
@@ -799,6 +806,40 @@ TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
     m_pButtonBeatJumpBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
+}
+
+TEST_F(LoopingControlTest, Beatjump_JumpsBeforeStartOfTrack) {
+    const mixxx::Bpm bpm(120);
+    m_pTrack1->setBpm(bpm.getValue());
+    double beatLengthSamples = m_pNextBeat->get();
+    mixxx::FrameDiff_t beatLengthFrames = samplesToFrames(beatLengthSamples);
+    // Basic check for 'next_beat' CO
+    EXPECT_EQ(beatLengthFrames, getBeatLengthFrames(bpm, m_pTrack1->getSampleRate()));
+
+    // Seek to some position close the beginning of the track.
+    auto startOffsetFrames = mixxx::FramePos(10);
+    seekToSampleAndProcess(framePosToSamplePos(startOffsetFrames));
+
+    // Execute beat jump backwards.
+    const int beatJumpSizeBeats = 4;
+    m_pBeatJumpSize->set(beatJumpSizeBeats);
+    m_pButtonBeatJumpBackward->set(1.0);
+    m_pButtonBeatJumpBackward->set(0.0);
+    ProcessBuffer();
+    EXPECT_EQ(startOffsetFrames.getValue() -
+                    (beatLengthFrames * beatJumpSizeBeats),
+            m_pChannel1->getEngineBuffer()
+                    ->m_pLoopingControl->getFrameOfTrack()
+                    .currentFrame.getValue());
+
+    // Jump back to initial position.
+    m_pButtonBeatJumpForward->set(1.0);
+    m_pButtonBeatJumpForward->set(0.0);
+    ProcessBuffer();
+    EXPECT_EQ(startOffsetFrames.getValue(),
+            m_pChannel1->getEngineBuffer()
+                    ->m_pLoopingControl->getFrameOfTrack()
+                    .currentFrame.getValue());
 }
 
 TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
