@@ -587,18 +587,11 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
     }
 }
 
-void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
-    WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
-    if (pWaveformWidget != nullptr) {
-        //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
-        double refZoom = pWaveformWidget->getZoomFactor();
-
-        for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); ++i) {
-            WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
-            if (holder.m_waveformViewer != viewer) {
-                holder.m_waveformViewer->setZoom(refZoom);
-            }
-        }
+void WaveformWidgetFactory::setZoom(double zoom) {
+    // Waveforms always have the same zoom
+    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); ++i) {
+        WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
+        holder.m_waveformViewer->setZoom(zoom);
     }
 }
 

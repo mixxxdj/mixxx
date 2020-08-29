@@ -212,10 +212,8 @@ void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOld
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {
-    //qDebug() << "WaveformWidgetRenderer::onZoomChange" << this << zoom;
-    setZoom(zoom);
-    // notify back the factory to sync zoom if needed
-    WaveformWidgetFactory::instance()->notifyZoomChange(this);
+    // WaveformWidgetFactory sets the zoom for all waveforms together
+    WaveformWidgetFactory::instance()->setZoom(zoom);
 }
 
 void WWaveformViewer::setZoom(double zoom) {

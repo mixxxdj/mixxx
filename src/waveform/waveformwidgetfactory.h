@@ -126,7 +126,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
-    void notifyZoomChange(WWaveformViewer *viewer);
+    void setZoom(double zoom);
 
     WaveformWidgetType::Type autoChooseWidgetType() const;
 
