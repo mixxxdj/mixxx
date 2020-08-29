@@ -56,7 +56,14 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
 
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
     Q_UNUSED(dRate);
-    m_bJumpPending = false;
+    if (m_bJumpPending) {
+        // if a cue press doesn't change the position, notifySeek isn't called, thus m_bJumpPending isn't reset
+        if (getStatus() == Status::Armed) {
+            // since the source position doesn't matter for the firs
+            notifySeek(dCurrentSample);
+        }
+        m_bJumpPending = false;
+    }
     if (getStatus() != Status::Playing) {
         return;
     }
