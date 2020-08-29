@@ -109,7 +109,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
 
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
-    virtual void send(QByteArray data) = 0;
+    virtual void sendBytes(const QByteArray& data) = 0;
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.

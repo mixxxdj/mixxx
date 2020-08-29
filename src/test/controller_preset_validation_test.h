@@ -70,7 +70,7 @@ class FakeController : public Controller {
         Q_UNUSED(length);
     }
 
-    void send(QByteArray data) override {
+    void sendBytes(const QByteArray& data) override {
         Q_UNUSED(data);
     }
 
