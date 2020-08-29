@@ -33,11 +33,11 @@ class MacroControl : public EngineControl {
     MacroPtr getMacro() const;
 
   public slots:
-    void controlRecord(double value = 1);
-    void controlToggle(double value = 1);
-    void controlClear(double value = 1);
-    void controlActivate(double value = 1);
-    void gotoAndPlay();
+    void slotRecord(double value = 1);
+    void slotToggle(double value = 1);
+    void slotActivate(double value = 1);
+    void slotGotoPlay(double value = 1);
+    void slotClear(double value = 1);
 
     void slotJumpQueued();
 

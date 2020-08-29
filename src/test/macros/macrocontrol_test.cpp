@@ -11,10 +11,10 @@ TEST(MacroControl, Create) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::NoTrack);
     // Ensure that randomly invoking COs doesn't throw
-    macroControl.controlRecord();
-    macroControl.controlActivate();
-    macroControl.controlToggle();
-    macroControl.controlClear();
+    macroControl.slotRecord();
+    macroControl.slotActivate();
+    macroControl.slotToggle();
+    macroControl.slotClear();
 }
 
 TEST(MacroControl, LoadTrack) {
@@ -39,7 +39,7 @@ TEST(MacroControlTest, RecordSeek) {
     TrackPointer pTrack = Track::newTemporary();
     macroControl.trackLoaded(pTrack);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
-    macroControl.controlRecord();
+    macroControl.slotRecord();
     EXPECT_TRUE(macroControl.isRecording());
 
     seek(0);
@@ -53,7 +53,7 @@ TEST(MacroControlTest, RecordSeek) {
     macroControl.slotJumpQueued();
     seek(kAction.getTargetSamplePos());
 
-    macroControl.controlRecord();
+    macroControl.slotRecord();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
 
     checkMacroAction(macroControl.getMacro());
@@ -106,7 +106,7 @@ TEST(MacroControlTest, LoadTrackAndPlay) {
     macroControl.trackLoaded(pTrack);
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
 
-    macroControl.controlActivate();
+    macroControl.slotActivate();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
     EXPECT_CALL(macroControl, seekExact(kAction.getSamplePos())).Times(1);
     macroControl.process(0, position, 2);
