@@ -68,7 +68,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     // so we use double that as tolerance range to be safe
     // it triggers early because the seek will only be processed in the next EngineBuffer process call
     if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
-        seekExact(nextAction.target * mixxx::kEngineChannelCount);
+        seekExact(nextAction.getTargetSamplePos());
         m_iNextAction++;
         if (m_iNextAction == m_pMacro->size()) {
             if (m_pMacro->isLooped()) {
@@ -232,7 +232,7 @@ void MacroControl::controlActivate(double value) {
 
 void MacroControl::gotoAndPlay() {
     if (getStatus() > Status::Recording) {
-        seekExact(m_pMacro->getActions().first().target * mixxx::kEngineChannelCount);
+        seekExact(m_pMacro->getActions().first().getTargetSamplePos());
         play();
     }
 }

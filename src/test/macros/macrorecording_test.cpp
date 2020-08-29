@@ -43,7 +43,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
 TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
     prepRecording();
 
-    m_pEngineBuffer1->slotControlSeekAbs(kAction.target * mixxx::kEngineChannelCount);
+    m_pEngineBuffer1->slotControlSeekAbs(kAction.getTargetSamplePos());
     ProcessBuffer();
 
     toggleRecording();
@@ -54,11 +54,11 @@ TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
     MacroAction newAction(100, 440);
     getMacro()->addAction(newAction);
     ProcessBuffer();
-    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), kAction.target * mixxx::kEngineChannelCount);
-    m_pEngineBuffer1->slotControlSeekExact(newAction.position * mixxx::kEngineChannelCount);
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), kAction.getTargetSamplePos());
+    m_pEngineBuffer1->slotControlSeekExact(newAction.getSamplePos());
     ProcessBuffer();
     ProcessBuffer();
-    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), newAction.target * mixxx::kEngineChannelCount);
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), newAction.getTargetSamplePos());
     EXPECT_EQ(getStatus(), MacroControl::Status::PlaybackStopped);
 }
 
@@ -71,7 +71,7 @@ TEST_F(MacroRecordingTest, RecordHotcueAndPlay) {
 
     ControlObject::set(ConfigKey(kChannelGroup, "hotcue_1_goto"), 1);
     ProcessBuffer();
-    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action.target * mixxx::kEngineChannelCount);
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action.getTargetSamplePos());
     MacroPtr pMacro = getMacro();
 
     // Check that recording stops gracefully when ejecting

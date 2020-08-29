@@ -37,17 +37,17 @@ TEST(MacroControlTest, RecordSeek) {
     macroControl.controlRecord();
     EXPECT_TRUE(macroControl.isRecording());
 
-    macroControl.notifySeek(kAction.position * mixxx::kEngineChannelCount);
-    macroControl.setCurrentSample(kAction.position * mixxx::kEngineChannelCount, 99000, 44100);
-    macroControl.process(0, kAction.position * mixxx::kEngineChannelCount, 1);
+    macroControl.notifySeek(kAction.getSamplePos());
+    macroControl.setCurrentSample(kAction.getSamplePos(), 99000, 44100);
+    macroControl.process(0, kAction.getSamplePos(), 1);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Armed);
 
     macroControl.slotJumpQueued();
-    macroControl.notifySeek(kAction.position * mixxx::kEngineChannelCount);
+    macroControl.notifySeek(kAction.getSamplePos());
     macroControl.slotJumpQueued();
-    macroControl.notifySeek(kAction.target * mixxx::kEngineChannelCount);
-    macroControl.setCurrentSample(kAction.target * mixxx::kEngineChannelCount, 99000, 44100);
-    macroControl.process(0, kAction.target * mixxx::kEngineChannelCount, 1);
+    macroControl.notifySeek(kAction.getTargetSamplePos());
+    macroControl.setCurrentSample(kAction.getTargetSamplePos(), 99000, 44100);
+    macroControl.process(0, kAction.getTargetSamplePos(), 1);
 
     macroControl.controlRecord();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
@@ -102,6 +102,6 @@ TEST(MacroControlTest, LoadTrackAndPlay) {
 
     macroControl.controlActivate();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
-    EXPECT_CALL(macroControl, seekExact(kAction.position * mixxx::kEngineChannelCount)).Times(1);
+    EXPECT_CALL(macroControl, seekExact(kAction.getSamplePos())).Times(1);
     macroControl.process(0, position, 2);
 }

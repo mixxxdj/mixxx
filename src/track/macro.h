@@ -2,6 +2,7 @@
 
 #include <QtCore>
 
+#include "engine/engine.h"
 #include "proto/macro.pb.h"
 namespace proto = mixxx::track::io;
 
@@ -20,6 +21,13 @@ struct MacroAction {
     // use FramePos once https://github.com/mixxxdj/mixxx/pull/2961 is merged
     double position;
     double target;
+
+    double getSamplePos() const {
+        return position * mixxx::kEngineChannelCount;
+    }
+    double getTargetSamplePos() const {
+        return target * mixxx::kEngineChannelCount;
+    }
 
     bool operator==(const MacroAction& other) const {
         return position == other.position && target == other.target;
