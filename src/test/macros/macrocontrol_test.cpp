@@ -30,31 +30,38 @@ TEST(MacroControl, LoadTrack) {
 TEST(MacroControlTest, RecordSeek) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     EXPECT_FALSE(macroControl.isRecording());
-    auto seek = [&macroControl](double position) {
-        macroControl.notifySeek(position);
-        macroControl.setCurrentSample(position, 99'000, 44'100);
-        macroControl.process(0, position, 2);
-    };
 
+    // Load track & start recording
     TrackPointer pTrack = Track::newTemporary();
     macroControl.trackLoaded(pTrack);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
     macroControl.slotRecord();
     EXPECT_TRUE(macroControl.isRecording());
-
+    // Prepare recording
+    auto seek = [&macroControl](double position) {
+        macroControl.notifySeek(position);
+        macroControl.setCurrentSample(position, 99'000, 44'100);
+        macroControl.process(0, position, 2);
+    };
     seek(0);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Armed);
 
+    // Disable auto-playback after recording
+    // TODO(xerus) create & test control for this
+    macroControl.getMacro()->setState(Macro::StateFlag::Enabled, false);
+
+    // Initial jump
     double startPos = 0;
     macroControl.slotJumpQueued();
     seek(startPos);
 
+    // Jump kAction
     seek(kAction.getSamplePos());
     macroControl.slotJumpQueued();
     seek(kAction.getTargetSamplePos());
 
     macroControl.slotRecord();
-    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
 
     checkMacroAction(macroControl.getMacro());
     EXPECT_EQ(macroControl.getMacro()->getActions().first().getTargetSamplePos(), startPos);
