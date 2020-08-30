@@ -34,7 +34,7 @@ LibraryTest::LibraryTest()
 }
 
 TrackPointer LibraryTest::getOrAddTrackByLocation(
-        const QString& trackLocation) {
+        const QString& trackLocation) const {
     return m_pTrackCollectionManager->getOrAddTrack(
             TrackRef::fromFileInfo(trackLocation));
 }

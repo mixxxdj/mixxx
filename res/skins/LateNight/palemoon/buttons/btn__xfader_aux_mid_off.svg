@@ -23,19 +23,13 @@
   </metadata>
   <defs
      id="defs8" />
-  <g
-     transform="translate(0,-1)"
-     aria-label="M"
-     id="text838-3"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a89a8c;fill-opacity:1;stroke:none" />
-  <g
-     transform="translate(0,-1)"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#555555;fill-opacity:1;stroke:none"
-     id="text838-3-7"
-     aria-label="M">
-    <path
-       id="path885-5"
-       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:13.3333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#555555;fill-opacity:1"
-       d="M 4.7154968,9.5081967 2.3541632,4.5690065 H 2.30208 C 2.375865,5.7495591 2.4127568,7.3381224 2.4127568,8.3711059 V 12 H 1 V 3 h 2.1940048 l 2.2441464,5.053391 h 0.039062 L 7.7994849,3 H 10 v 9 H 8.5026081 V 8.2929811 c 0,-0.4730891 0.010851,-1.089407 0.032552,-1.8489537 0.026041,-0.7595467 0.047743,-1.7014102 0.065104,-1.8620001 H 8.5481809 L 6.0891912,9.5081967 Z" />
-  </g>
+  <rect
+     style="fill:#0f0f0f;fill-opacity:1;stroke:none;stroke-width:0.845999;stroke-linecap:round;stroke-linejoin:round"
+     id="rect868"
+     width="23.206766"
+     height="8"
+     x="-6.8209429"
+     y="2"
+     rx="4"
+     ry="4" />
 </svg>

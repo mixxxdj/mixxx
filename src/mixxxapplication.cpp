@@ -52,12 +52,7 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
             math_max(4, QThreadPool::globalInstance()->maxThreadCount()));
 }
 
-MixxxApplication::~MixxxApplication() {
-}
-
 void MixxxApplication::registerMetaTypes() {
-    // Register custom data types
-
     // PCM audio types
     qRegisterMetaType<mixxx::audio::ChannelCount>("mixxx::audio::ChannelCount");
     qRegisterMetaType<mixxx::audio::OptionalChannelLayout>("mixxx::audio::OptionalChannelLayout");
@@ -65,24 +60,30 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::audio::SampleRate>("mixxx::audio::SampleRate");
     qRegisterMetaType<mixxx::audio::Bitrate>("mixxx::audio::Bitrate");
 
-    // TrackId
+    // Tracks
     qRegisterMetaType<TrackId>();
     qRegisterMetaType<QSet<TrackId>>();
     qRegisterMetaType<QList<TrackId>>();
     qRegisterMetaType<TrackRef>();
     qRegisterMetaType<QList<TrackRef>>();
     qRegisterMetaType<QList<QPair<TrackRef, TrackRef>>>();
+    qRegisterMetaType<TrackPointer>();
+
+    // Crates
     qRegisterMetaType<CrateId>();
     qRegisterMetaType<QSet<CrateId>>();
     qRegisterMetaType<QList<CrateId>>();
-    qRegisterMetaType<TrackPointer>();
+
+    // Sound devices
+    qRegisterMetaType<SoundDeviceId>();
+    QMetaType::registerComparators<SoundDeviceId>();
+
+    // Various custom data types
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::cache_key_t>("mixxx::cache_key_t");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
-    qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
-    QMetaType::registerComparators<SoundDeviceId>();
 }
 
 bool MixxxApplication::touchIsRightButton() {

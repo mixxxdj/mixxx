@@ -28,9 +28,6 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
 
-  private slots:
-    void tracksChanged(QSet<TrackId> trackIds);
-
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const final;
 

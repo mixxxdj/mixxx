@@ -72,8 +72,14 @@ const QString kTrackLocationTest(QDir::currentPath() %
 // - empty trackLocation
 // - absolute coverLocation
 
-TEST_F(CoverArtCacheTest, loadCover) {
+TEST_F(CoverArtCacheTest, loadCoverFromMetadata) {
     loadCoverFromMetadata(kTrackLocationTest);
-    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest); //relative
-    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest); //absolute
+}
+
+TEST_F(CoverArtCacheTest, loadCoverFromFileRelative) {
+    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest);
+}
+
+TEST_F(CoverArtCacheTest, loadCoverFromFileAbsolute) {
+    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest);
 }

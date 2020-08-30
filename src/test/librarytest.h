@@ -23,16 +23,16 @@ class LibraryTest : public MixxxTest {
         return mixxx::DbConnectionPooled(m_dbConnectionPooler);
     }
 
-    TrackCollectionManager* trackCollections() {
+    TrackCollectionManager* trackCollections() const {
         return m_pTrackCollectionManager.get();
     }
 
-    TrackCollection* internalCollection() {
+    TrackCollection* internalCollection() const {
         return trackCollections()->internalCollection();
     }
 
     TrackPointer getOrAddTrackByLocation(
-            const QString& trackLocation);
+            const QString& trackLocation) const;
 
   private:
     const MixxxDb m_mixxxDb;

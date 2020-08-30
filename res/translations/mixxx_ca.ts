@@ -665,12 +665,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="39"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>Suprimeix un color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="52"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix un color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="60"/>
@@ -681,7 +681,7 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="66"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>Suprimeix la paleta</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="82"/>
@@ -691,17 +691,17 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>Assigna a la marca directa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>Editat</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
         <source>Do you really want to remove the palette permanently?</source>
-        <translation type="unfinished"/>
+        <translation>Realment voleu suprimir la paleta permanentment?</translation>
     </message>
 </context>
 <context>
@@ -2722,22 +2722,22 @@
         <location filename="../../src/controllers/controllerengine.cpp" line="572"/>
         <location filename="../../src/controllers/controllerengine.cpp" line="1055"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
-        <translation type="unfinished"/>
+        <translation>Es deshabilitaran les funcions que proveeix la configuració preestablerta del controlador fins que el problema s&apos;hagi resolt.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="576"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
-        <translation type="unfinished"/>
+        <translation>Podeu ignorar l&apos;error per aquesta sessió, però podríeu experimentar comportaments erràtics.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="583"/>
         <source>Controller Preset Error</source>
-        <translation type="unfinished"/>
+        <translation>Error de configuració predefinida</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="584"/>
         <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
-        <translation type="unfinished"/>
+        <translation>La configuració predefinida pel vostre controlador «%1» no funciona correctament.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="588"/>
@@ -2747,22 +2747,22 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1053"/>
         <source>Controller Mapping File Problem</source>
-        <translation type="unfinished"/>
+        <translation>Problema amb el fitxer d&apos;assignacions del controlador</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1054"/>
         <source>The mapping for controller &quot;%1&quot; cannot be opened.</source>
-        <translation type="unfinished"/>
+        <translation>No es podeb obrir les assignacions del controlador «%1».</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1061"/>
         <source>File:</source>
-        <translation type="unfinished"/>
+        <translation>Fitxer:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1062"/>
         <source>Error:</source>
-        <translation type="unfinished"/>
+        <translation>Error:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="579"/>
@@ -3175,45 +3175,55 @@
         <source>Enable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Habilita el DJ automàtic
+
+Drecera: Maj+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="99"/>
         <source>Disable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Inhabilita el DJ automàtic
+
+Drecera: Maj+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="103"/>
         <source>Trigger the transition to the next track
 
 Shortcut: Shift+F11</source>
-        <translation type="unfinished"/>
+        <translation>Desactiva la transició cap a la pista següent
+
+Drecera: Maj+F11</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="107"/>
         <source>Skip the next track in the Auto DJ queue
 
 Shortcut: Shift+F10</source>
-        <translation type="unfinished"/>
+        <translation>Omet la pista següent a la cua del DJ automàtic
+
+Drecera: Maj+F10</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="111"/>
         <source>Shuffle the content of the Auto DJ queue
 
 Shortcut: Shift+F9</source>
-        <translation type="unfinished"/>
+        <translation>Modifica l&apos;ordre de la cua al DJ automàtic
+
+Drecera: Maj+F9</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="118"/>
         <source>Repeat the playlist</source>
-        <translation type="unfinished"/>
+        <translation>Repeteix la llista de reproducció</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="120"/>
         <source>Determines the duration of the transition</source>
-        <translation type="unfinished"/>
+        <translation>Determina la durada de la transició</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="122"/>
@@ -3264,7 +3274,28 @@ Skip Silence:
 Play the whole track except for silence at the beginning and end.
 Begin crossfading from the selected number of seconds before the
 last sound.</source>
-        <translation type="unfinished"/>
+        <translation>Modes d&apos;esvaïment de DJ automàtic
+
+Introducció completa + final:
+Reprodueix la introducció completa i el final. Utilitzeu la longitud 
+de la introducció o final com a crossfade, el que sigui més curt. Si 
+no es marca cap introducció ni final, utilitza el temps de crossfade 
+seleccionat.
+
+Esvaeix a l&apos;inici del final:
+Comença a esvaïr en començar el final. Si el final és més llarg que 
+la introducció, talla&apos;l. Fes servir la longitud de la introducció o el final 
+com el temps de crossfade, el que sigui més curt. Si no hi ha cap 
+introducció ni final marcats, utilitza el temps de crossfade seleccionat.
+
+Pista completa:
+Reprodueix tota la pista. Comença el crossfade quan falti el número 
+seleccionat de segons del final de la pista. Un temps negatiu de 
+crossfade afegirà silenci entre les pistes.
+
+Salta els silencis:
+Reprodueix tota la pista, tret del silenci de l&apos;inici i el final. Comença el 
+crossfade el nombre de segons seleccionat abans del darrer so.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="183"/>
@@ -4156,7 +4187,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="261"/>
         <source>By hotcue number</source>
-        <translation type="unfinished"/>
+        <translation>Per número de marca directa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="269"/>
@@ -4169,38 +4200,38 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="20"/>
         <source>Color Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Preferències de color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="26"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Colors</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="32"/>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="42"/>
         <source>Edit…</source>
-        <translation type="unfinished"/>
+        <translation>Edita...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="49"/>
         <source>Track palette</source>
-        <translation type="unfinished"/>
+        <translation>Paleta de la pista</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="66"/>
         <source>Hotcue palette</source>
-        <translation type="unfinished"/>
+        <translation>Paleta de la marca directa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="73"/>
         <source>Hotcue default color</source>
-        <translation type="unfinished"/>
+        <translation>Color per defecte de la marca directa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="90"/>
         <source>Replace…</source>
-        <translation type="unfinished"/>
+        <translation>Reemplaça...</translation>
     </message>
 </context>
 <context>
@@ -4245,32 +4276,32 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="255"/>
         <source>No Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Cap script</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="267"/>
         <source>missing</source>
-        <translation type="unfinished"/>
+        <translation>perdut</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="271"/>
         <source>built-in</source>
-        <translation type="unfinished"/>
+        <translation>integrat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="456"/>
         <source>Preset has been edited</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;ha editat la configuració predefinida</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="457"/>
         <source>Do you want to save the changes?</source>
-        <translation type="unfinished"/>
+        <translation>Voleu desar els canvis?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>edited</source>
-        <translation type="unfinished"/>
+        <translation>editat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="551"/>
@@ -4338,7 +4369,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
         <source>Script Files:</source>
-        <translation type="unfinished"/>
+        <translation>Fitxers d&apos;script:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>
@@ -5683,7 +5714,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="336"/>
         <source>Show Serato Library</source>
-        <translation type="unfinished"/>
+        <translation>Mostra la llibreria de Serato</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="353"/>
@@ -6764,7 +6795,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="242"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Colors</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="254"/>
@@ -6870,44 +6901,44 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="26"/>
         <source>Replace cue color if …</source>
-        <translation type="unfinished"/>
+        <translation>Reemplaça el color de la marca si...</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="45"/>
         <source>Hotcue index</source>
-        <translation type="unfinished"/>
+        <translation>Índex de marca directa</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="56"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="80"/>
         <source>is</source>
-        <translation type="unfinished"/>
+        <translation>és</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="61"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="85"/>
         <source>is not</source>
-        <translation type="unfinished"/>
+        <translation>no és</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="69"/>
         <source>Current cue color</source>
-        <translation type="unfinished"/>
+        <translation>Color actual de la marca</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="149"/>
         <source>If you don&apos;t specify any conditions, the colors of all cues in the library will be replaced.</source>
-        <translation type="unfinished"/>
+        <translation>Si no indiqueu cap condició, els colors de totes les marques a la llibreria seran reemplaçades.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="171"/>
         <source>… by:</source>
-        <translation type="unfinished"/>
+        <translation>... per:</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="177"/>
         <source>New cue color</source>
-        <translation type="unfinished"/>
+        <translation>Color nou de marca</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="219"/>
@@ -6917,7 +6948,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="350"/>
         <source>No colors changed!</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha canviat cap color!</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="351"/>
@@ -6932,7 +6963,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="359"/>
         <source>The colors of %1 cues in %2 tracks will be replaced. This change cannot be undone! Are you sure?</source>
-        <translation type="unfinished"/>
+        <translation>El color de %1 marques a %2 pistes seran reemplaçats. Aquest canvi no es pot desfer! Segur que voleu continuar?</translation>
     </message>
 </context>
 <context>
@@ -7269,7 +7300,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="532"/>
         <source>Date added:</source>
-        <translation type="unfinished"/>
+        <translation>Data d&apos;addicció:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="574"/>
@@ -7751,7 +7782,7 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="79"/>
         <source>Overwrite File?</source>
-        <translation type="unfinished"/>
+        <translation>Voleu sobreescriure el fitxer?</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="80"/>
@@ -7759,7 +7790,10 @@ OpenGL.</translation>
 The default &quot;m3u&quot; extension was added because none was specified.
 
 Do you really want to overwrite it?</source>
-        <translation type="unfinished"/>
+        <translation>Ja hi ha una llista de reproducció amb aquest mateix nom: «%1».
+S&apos;hi ha afegit l&apos;extensió predeterminada «m3u» perquè no n&apos;havíeu indicat cap altra.
+
+Voleu sobreescriure aquesta llista?</translation>
     </message>
 </context>
 <context>
@@ -9789,12 +9823,12 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/library/serato/seratofeature.cpp" line="984"/>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1128"/>
         <source>Serato</source>
-        <translation type="unfinished"/>
+        <translation>Serato</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="985"/>
         <source>Reads the following from the Serato Music directory and removable devices:</source>
-        <translation type="unfinished"/>
+        <translation>Reconeix els següents paràmetres de Serato en una carpeta de música o dispositiu extern:</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="988"/>
@@ -10540,7 +10574,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="276"/>
         <source>Auxiliary Gain</source>
-        <translation type="unfinished"/>
+        <translation>Ganància auxiliar</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="277"/>
@@ -12529,12 +12563,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="171"/>
         <source>No color</source>
-        <translation type="unfinished"/>
+        <translation>Cap color</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="193"/>
         <source>Custom color</source>
-        <translation type="unfinished"/>
+        <translation>Color personalitzat</translation>
     </message>
 </context>
 <context>
@@ -12573,12 +12607,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="19"/>
         <source>Cue number</source>
-        <translation type="unfinished"/>
+        <translation>Número de marca</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="24"/>
         <source>Cue position</source>
-        <translation type="unfinished"/>
+        <translation>Marca de posició</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="29"/>
@@ -12588,17 +12622,17 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="31"/>
         <source>Label...</source>
-        <translation type="unfinished"/>
+        <translation>Etiqueta...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="40"/>
         <source>Delete this cue</source>
-        <translation type="unfinished"/>
+        <translation>Suprimeix aquesta marca</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="74"/>
         <source>Hotcue #%1</source>
-        <translation type="unfinished"/>
+        <translation>Marca directa #%1</translation>
     </message>
 </context>
 <context>
@@ -13147,7 +13181,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="185"/>
         <source>Clear the search bar input field</source>
-        <translation type="unfinished"/>
+        <translation>Neteja el camp de la barra de cerca</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="191"/>
@@ -13162,7 +13196,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="193"/>
         <source>For more information see User Manual &gt; Mixxx Library</source>
-        <translation type="unfinished"/>
+        <translation>Per a més informació, feu un cop d&apos;ull la Manual d&apos;usuari &gt; Llibreria del Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="187"/>
@@ -13234,7 +13268,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="112"/>
         <source>Update external collections</source>
-        <translation type="unfinished"/>
+        <translation>Actualitza les col·leccions externes</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="115"/>
@@ -13244,7 +13278,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="122"/>
         <source>Adjust BPM</source>
-        <translation type="unfinished"/>
+        <translation>Adjusta els BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="127"/>
@@ -13355,12 +13389,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="229"/>
         <source>Intro</source>
-        <translation type="unfinished"/>
+        <translation>Intro</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="232"/>
         <source>Outro</source>
-        <translation type="unfinished"/>
+        <translation>Final</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="235"/>
@@ -13430,7 +13464,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="284"/>
         <source>Reset BPM</source>
-        <translation type="unfinished"/>
+        <translation>Reinicia els BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="563"/>
@@ -13483,7 +13517,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="953"/>
         <source>Add to New Crate</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix a una caixa nova</translation>
     </message>
 </context>
 <context>
@@ -13549,12 +13583,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/network/webtask.cpp" line="175"/>
         <source>No network access</source>
-        <translation type="unfinished"/>
+        <translation>Sense accés a la xarxa</translation>
     </message>
     <message>
         <location filename="../../src/network/webtask.cpp" line="191"/>
         <source>Start of network task has been aborted</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;ha cancel·lat l&apos;inici de la tasca de xarxa</translation>
     </message>
 </context>
 </TS>

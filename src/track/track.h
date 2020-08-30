@@ -275,7 +275,7 @@ class Track : public QObject {
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
-    enum class CueImportStatus {
+    enum class ImportStatus {
         Pending,
         Complete,
     };
@@ -284,9 +284,9 @@ class Track : public QObject {
     ///
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
-    CueImportStatus importCueInfos(
+    ImportStatus importCueInfos(
             mixxx::CueInfoImporterPointer pCueInfoImporter);
-    CueImportStatus getCueImportStatus() const;
+    ImportStatus getCueImportStatus() const;
 
     bool isDirty();
 
@@ -295,6 +295,15 @@ class Track : public QObject {
 
     // Set the track's Beats
     void setBeats(mixxx::BeatsPointer beats);
+
+    /// Imports the given list of cue infos as cue points,
+    /// thereby replacing all existing cue points!
+    ///
+    /// If the list is empty it tries to complete any pending
+    /// import and returns the corresponding status.
+    ImportStatus importBeats(
+            mixxx::BeatsImporterPointer pBeatsImporter);
+    ImportStatus getBeatsImportStatus() const;
 
     void resetKeys();
     void setKeys(const Keys& keys);
@@ -391,9 +400,30 @@ class Track : public QObject {
     void markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
-    void setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats);
-
     void afterKeysUpdated(QMutexLocker* pLock);
+
+    /// Sets beats and returns a boolean to indicate if BPM/Beats were updated.
+    /// Only supposed to be called while the caller guards this a lock.
+    bool setBeatsWhileLocked(mixxx::BeatsPointer pBeats);
+
+    /// Imports pending beats from a BeatImporter and returns a boolean to
+    /// indicate if BPM/beats were updated. Only supposed to be called while
+    /// the caller guards this a lock.
+    bool importPendingBeatsWhileLocked();
+
+    /// Sets cue points and returns a boolean to indicate if cues were updated.
+    /// Only supposed to be called while the caller guards this a lock.
+    bool setCuePointsWhileLocked(const QList<CuePointer>& cuePoints);
+
+    /// Imports pending cues from a CueInfoImporter and returns a boolean to
+    /// indicate if cues were updated. Only supposed to be called while the
+    /// caller guards this a lock.
+    bool importPendingCueInfosWhileLocked();
+
+    void setBeatsMarkDirtyAndUnlock(
+            QMutexLocker* pLock,
+            mixxx::BeatsPointer pBeats);
+    void importPendingBeatsMarkDirtyAndUnlock(QMutexLocker* pLock);
 
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
@@ -450,6 +480,7 @@ class Track : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
+    mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;

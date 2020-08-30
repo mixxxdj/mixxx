@@ -14,8 +14,6 @@
 #include "engine/engine.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/rekordbox/rekordbox_anlz.h"
 #include "library/rekordbox/rekordbox_pdb.h"

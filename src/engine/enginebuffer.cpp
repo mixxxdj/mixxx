@@ -923,7 +923,6 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
-    bool at_start = m_filepos_play <= 0;
     bool at_end = m_filepos_play >= m_trackSamplesOld;
     bool backwards = rate < 0;
 
@@ -997,7 +996,7 @@ void EngineBuffer::processTrackLocked(
     m_scratching_old = is_scratching;
 
     // Handle repeat mode
-    at_start = m_filepos_play <= 0;
+    bool at_start = m_filepos_play <= 0;
     at_end = m_filepos_play >= m_trackSamplesOld;
 
     bool repeat_enabled = m_pRepeat->toBool();
@@ -1249,13 +1248,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
-
-    double ratio = m_tempo_ratio_old;
-    if (ratio == 0.0) {
-        // In case the track is slowed done to zero we will have INF remaining seconds.
-        // We jump back to a rate of 1.0 to show a useful time.
-        ratio = 1.0;
-    }
 
     const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame
             / m_trackSampleRateOld / m_tempo_ratio_old;

@@ -17,6 +17,7 @@ WBeatSpinBox,
 QSpinBox,
 QComboBox,
 WLibrary QHeaderView,
+WLibrary QHeaderView::item,
 QToolTip,
 WOverview #PassthroughLabel,
 #LibraryContainer QMenu,
@@ -66,16 +67,11 @@ WEffectSelector,
 WOverview #PassthroughLabel {
   font-weight: bold;
 }
-WLibrary QHeaderView {
-  /* not applied: */;
-  font-weight: 500;
-}
 
 /* All capitals */
 #KnobLabel,
 #FxUnitLabel,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
-#LatencyLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
 /* ToolBar */
@@ -202,8 +198,10 @@ WBeatSpinBox, #spinBoxTransition {
 }
 
 
-#LibraryContainer QHeaderView {
-  /* use relative font size, adjusts with OS font size */
+#LibraryContainer QHeaderView::item {
+  /* not applied: */
+  /* BROKEN
+  use relative font size, adjusts with OS font size */
   font-size: 1em;
   line-height: 1.2em;
   border-bottom: 1px solid #000;
@@ -385,8 +383,13 @@ WSpinny { /*
   padding: 1px;
 }
 #VuMeterBoxMaster {
-  /* gap in between Master lft/right Vu */
-  qproperty-layoutSpacing: 1;
+  /* gap in between Master lft/right Vu
+  qproperty-layoutSpacing: 1; */
+  }
+  #VuMeterBoxFull {
+    /* push all VU meters to the right to visullay center it
+      below Pfl buttons */
+    margin-left: 1px;
   }
   #VuMeterChannel_2Decks,
   #VuMeterChannel_4Decks,

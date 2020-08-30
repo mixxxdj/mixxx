@@ -62,14 +62,17 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotReplaceCueColorClicked);
 
-    slotUpdate();
+    loadSettings();
 }
 
 DlgPrefColors::~DlgPrefColors() {
 }
 
-// Loads the config keys and sets the widgets in the dialog to match
 void DlgPrefColors::slotUpdate() {
+    loadSettings();
+}
+
+void DlgPrefColors::loadSettings() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
     for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {

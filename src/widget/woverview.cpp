@@ -85,7 +85,7 @@ WOverview::WOverview(
     m_pPassthroughControl =
             new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
-    onPassthroughChange(m_pPassthroughControl->get());
+    m_bPassthroughEnabled = static_cast<bool>(m_pPassthroughControl->get());
 
     setAcceptDrops(true);
 
@@ -113,11 +113,16 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_scaleFactor = context.getScaleFactor();
     m_signalColors.setup(node, context);
 
-    m_qColorBackground = m_signalColors.getBgColor();
+    m_backgroundColor = m_signalColors.getBgColor();
+    m_axesColor = m_signalColors.getAxesColor();
+    m_playPosColor = m_signalColors.getPlayPosColor();
+    m_passthroughOverlayColor = m_signalColors.getPassthroughOverlayColor();
+    m_playedOverlayColor = m_signalColors.getPlayedOverlayColor();
+    m_lowColor = m_signalColors.getLowColor();
 
     m_labelBackgroundColor = context.selectColor(node, "LabelBackgroundColor");
     if (!m_labelBackgroundColor.isValid()) {
-        m_labelBackgroundColor = m_qColorBackground;
+        m_labelBackgroundColor = m_backgroundColor;
         m_labelBackgroundColor.setAlpha(255 / 2); // 0 == fully transparent
     }
 
@@ -147,8 +152,6 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
     }
-
-    m_passthroughOverlayColor = m_signalColors.getPlayedOverlayColor();
 
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
@@ -496,9 +499,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
         }
 
-        double dValue = positionToValue(m_iPickupPos);
         if (m_pHoveredMark != nullptr) {
-            dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
+            double dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPickupPos = valueToPosition(dValue);
             m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
@@ -558,7 +560,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
-    painter.fillRect(rect(), m_qColorBackground);
+    painter.fillRect(rect(), m_backgroundColor);
 
     if (!m_backgroundPixmap.isNull()) {
         painter.drawPixmap(rect(), m_backgroundPixmap);
@@ -570,6 +572,8 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackBackground(&painter);
         drawAxis(&painter);
         drawWaveformPixmap(&painter);
+        drawPlayedOverlay(&painter);
+        drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
 
@@ -605,7 +609,7 @@ void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
 
 void WOverview::drawAxis(QPainter* pPainter) {
     PainterScope painterScope(pPainter);
-    pPainter->setPen(QPen(m_signalColors.getAxesColor(), 1 * m_scaleFactor));
+    pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
     if (m_orientation == Qt::Horizontal) {
         pPainter->drawLine(0, height() / 2, width(), height() / 2);
     } else {
@@ -640,17 +644,24 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         }
 
         pPainter->drawImage(rect(), m_waveformImageScaled);
+    }
+}
 
-        // Overlay the played part of the overview-waveform with a skin defined color
-        QColor playedOverlayColor = m_signalColors.getPlayedOverlayColor();
-        if (playedOverlayColor.alpha() > 0) {
-            if (m_orientation == Qt::Vertical) {
-                pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPlayPos, playedOverlayColor);
-            } else {
-                pPainter->fillRect(0, 0, m_iPlayPos, m_waveformImageScaled.height(), playedOverlayColor);
-            }
+void WOverview::drawPlayedOverlay(QPainter* pPainter) {
+    // Overlay the played part of the overview-waveform with a skin defined color
+    if (!m_waveformSourceImage.isNull() && m_playedOverlayColor.alpha() > 0) {
+        if (m_orientation == Qt::Vertical) {
+            pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPlayPos, m_playedOverlayColor);
+        } else {
+            pPainter->fillRect(0, 0, m_iPlayPos, m_waveformImageScaled.height(), m_playedOverlayColor);
         }
     }
+}
+
+void WOverview::drawPlayPosition(QPainter* pPainter) {
+    // When the position line is currently dragged with the left mouse button
+    // draw a thin line -without triangles or shadow- at the playposition.
+    // The new playposition is drawn by drawPickupPosition()
     if (m_bLeftClickDragging) {
         PainterScope painterScope(pPainter);
         QLineF line;
@@ -659,7 +670,7 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         } else {
             line.setLine(0.0, m_iPlayPos, width(), m_iPlayPos);
         }
-        pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
+        pPainter->setPen(QPen(m_playPosColor, m_scaleFactor));
         pPainter->setOpacity(0.5);
         pPainter->drawLine(line);
     }
@@ -679,7 +690,7 @@ void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
     if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
             (m_analyzerProgress < kAnalyzerProgressDone)) {
         PainterScope painterScope(pPainter);
-        pPainter->setPen(QPen(m_signalColors.getAxesColor(), 3 * m_scaleFactor));
+        pPainter->setPen(QPen(m_playPosColor, 3 * m_scaleFactor));
 
         if (m_analyzerProgress > kAnalyzerProgressNone) {
             if (m_orientation == Qt::Horizontal) {
@@ -738,11 +749,11 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
         PainterScope painterScope(pPainter);
 
         if (markRange.enabled()) {
-            pPainter->setOpacity(0.4);
+            pPainter->setOpacity(markRange.m_enabledOpacity);
             pPainter->setPen(markRange.m_activeColor);
             pPainter->setBrush(markRange.m_activeColor);
         } else {
-            pPainter->setOpacity(0.2);
+            pPainter->setOpacity(markRange.m_disabledOpacity);
             pPainter->setPen(markRange.m_disabledColor);
             pPainter->setBrush(markRange.m_disabledColor);
         }
@@ -787,16 +798,18 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 static_cast<qreal>(width()));
         pMark->m_linePosition = markPosition;
 
-        QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
-
         QLineF line;
+        QLineF bgLine;
         if (m_orientation == Qt::Horizontal) {
             line.setLine(markPosition, 0.0, markPosition, height());
+            bgLine.setLine(markPosition - 1.0, 0.0, markPosition - 1.0, height());
         } else {
             line.setLine(0.0, markPosition, width(), markPosition);
+            bgLine.setLine(0.0, markPosition - 1.0, width(), markPosition - 1.0);
         }
-        pPainter->setPen(shadowPen);
-        pPainter->drawLine(line);
+
+        pPainter->setPen(pMark->borderColor());
+        pPainter->drawLine(bgLine);
 
         pPainter->setPen(pMark->fillColor());
         pPainter->drawLine(line);
@@ -870,7 +883,14 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
             }
 
-            pMark->m_label.prerender(textPoint, QPixmap(), text, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            pMark->m_label.prerender(textPoint,
+                    QPixmap(),
+                    text,
+                    markerFont,
+                    m_labelTextColor,
+                    m_labelBackgroundColor,
+                    width(),
+                    getDevicePixelRatioF(this));
         }
 
         // Show cue position when hovered
@@ -911,10 +931,26 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 cueTimeDistanceText = "-" + cueTimeDistanceText;
             }
 
-            m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            m_cuePositionLabel.prerender(positionTextPoint,
+                    QPixmap(),
+                    cuePositionText,
+                    markerFont,
+                    m_labelTextColor,
+                    m_labelBackgroundColor,
+                    width(),
+                    getDevicePixelRatioF(this));
 
-            QPointF timeDistancePoint(positionTextPoint.x(), (fontMetrics.height() + height()) / 2);
-            m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            QPointF timeDistancePoint(positionTextPoint.x(),
+                    (fontMetrics.height() + height()) / 2);
+
+            m_cueTimeDistanceLabel.prerender(timeDistancePoint,
+                    QPixmap(),
+                    cueTimeDistanceText,
+                    markerFont,
+                    m_labelTextColor,
+                    m_labelBackgroundColor,
+                    width(),
+                    getDevicePixelRatioF(this));
             markHovered = true;
         }
     }
@@ -931,19 +967,23 @@ void WOverview::drawPickupPosition(QPainter* pPainter) {
         pPainter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
     }
 
-    pPainter->setPen(QPen(QBrush(m_qColorBackground), 1 * m_scaleFactor));
+    // draw dark play position outlines
+    pPainter->setPen(QPen(QBrush(m_backgroundColor), m_scaleFactor));
     pPainter->setOpacity(0.5);
     pPainter->drawLine(m_iPickupPos + 1, 0, m_iPickupPos + 1, breadth());
     pPainter->drawLine(m_iPickupPos - 1, 0, m_iPickupPos - 1, breadth());
 
-    pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
+    // draw colored play position line
+    pPainter->setPen(QPen(m_playPosColor, m_scaleFactor));
     pPainter->setOpacity(1.0);
     pPainter->drawLine(m_iPickupPos, 0, m_iPickupPos, breadth());
 
+    // draw triangle at the top
     pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos, 2);
     pPainter->drawLine(m_iPickupPos, 2, m_iPickupPos + 2, 0);
     pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos + 2, 0);
 
+    // draw triangle at the bottom
     pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos, breadth() - 3);
     pPainter->drawLine(m_iPickupPos, breadth() - 3, m_iPickupPos + 2, breadth() - 1);
     pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos + 2, breadth() - 1);
@@ -970,7 +1010,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             pPainter->setPen(shadowPen);
             pPainter->drawLine(line);
 
-            pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
+            pPainter->setPen(QPen(m_playPosColor, m_scaleFactor));
             pPainter->drawLine(line);
         }
 
@@ -998,7 +1038,14 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
 
         QString timeText = mixxx::Duration::formatTime(timePosition) + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
-        m_timeRulerPositionLabel.prerender(textPoint, QPixmap(), timeText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+        m_timeRulerPositionLabel.prerender(textPoint,
+                QPixmap(),
+                timeText,
+                markerFont,
+                m_labelTextColor,
+                m_labelBackgroundColor,
+                width(),
+                getDevicePixelRatioF(this));
         m_timeRulerPositionLabel.draw(pPainter);
 
         QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
@@ -1007,7 +1054,14 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         if (static_cast<int>(timeDistance) < 0) {
             timeDistanceText = "-" + timeDistanceText;
         }
-        m_timeRulerDistanceLabel.prerender(textPointDistance, QPixmap(), timeDistanceText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+        m_timeRulerDistanceLabel.prerender(textPointDistance,
+                QPixmap(),
+                timeDistanceText,
+                markerFont,
+                m_labelTextColor,
+                m_labelBackgroundColor,
+                width(),
+                getDevicePixelRatioF(this));
         m_timeRulerDistanceLabel.draw(pPainter);
     } else {
         m_timeRulerPositionLabel.clear();
@@ -1072,7 +1126,14 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
 
             QPointF durationBottomLeft(x, fontMetrics.height());
 
-            markRange.m_durationLabel.prerender(durationBottomLeft, QPixmap(), duration, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            markRange.m_durationLabel.prerender(durationBottomLeft,
+                    QPixmap(),
+                    duration,
+                    markerFont,
+                    m_labelTextColor,
+                    m_labelBackgroundColor,
+                    width(),
+                    getDevicePixelRatioF(this));
 
             if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel) || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel) || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel) || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
                 markRange.m_durationLabel.draw(pPainter);
@@ -1090,11 +1151,9 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
 
 void WOverview::paintText(const QString& text, QPainter* pPainter) {
     PainterScope painterScope(pPainter);
-    QColor lowColor = m_signalColors.getLowColor();
-    lowColor.setAlphaF(0.5);
+    m_lowColor.setAlphaF(0.5);
     QPen lowColorPen(
-            QBrush(lowColor), 1.25 * m_scaleFactor,
-            Qt::SolidLine, Qt::RoundCap);
+            QBrush(m_lowColor), 1.25 * m_scaleFactor, Qt::SolidLine, Qt::RoundCap);
     pPainter->setPen(lowColorPen);
     QFont font = pPainter->font();
     QFontMetrics fm(font);

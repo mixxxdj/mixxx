@@ -525,7 +525,9 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
 
 void BaseTrackPlayerImpl::slotCloneDeck() {
     Syncable* syncable = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
-    slotCloneChannel(syncable->getChannel());
+    if (syncable) {
+        slotCloneChannel(syncable->getChannel());
+    }
 }
 
 void BaseTrackPlayerImpl::slotCloneFromGroup(const QString& group) {

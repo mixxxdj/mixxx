@@ -20,7 +20,7 @@
         <Children>
 
           <WidgetGroup><!-- BPM + rate -->
-            <ObjectName>BpmContainer</ObjectName>
+            <ObjectName>BpmRateTapContainer</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <MaximumSize>,46</MaximumSize>
@@ -94,12 +94,12 @@
             <Children>
               <WidgetGroup>
                 <ObjectName></ObjectName>
-                <Size>50f,113f</Size>
+                <Size>45f,119f</Size>
                 <Children>
                   <Label>
                     <ObjectName>RateCenter</ObjectName>
                     <Size>5f,5f</Size>
-                    <Pos>2,55</Pos>
+                    <Pos>2,58</Pos>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
                       <Transform><IsEqual>0.5</IsEqual></Transform>
@@ -108,7 +108,7 @@
                   </Label>
                   <SliderComposed>
                     <ObjectName>RateSlider</ObjectName>
-                    <Size>40f,113f</Size>
+                    <Size>40f,119f</Size>
                     <Pos>5,0</Pos>
                     <TooltipId>rate</TooltipId>
                     <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
