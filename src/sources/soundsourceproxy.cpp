@@ -176,7 +176,7 @@ mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileExt
     if (optProviderRegistration) {
         return optProviderRegistration->getProvider();
     } else {
-        return {};
+        return nullptr;
     }
 }
 
