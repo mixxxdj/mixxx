@@ -308,12 +308,13 @@ void HidController::sendFeatureReport(
     // Append the Report ID to the beginning of dataArray[] per the API..
     dataArray.prepend(reportID);
 
-    int result = hid_send_feature_report(
-            m_pHidDevice, reinterpret_cast<const unsigned char*>(dataArray.constData()), dataArray.size());
+    int result = hid_send_feature_report(m_pHidDevice,
+            reinterpret_cast<const unsigned char*>(dataArray.constData()),
+            dataArray.size());
     if (result == -1) {
         qWarning() << "sendFeatureReport is unable to send data to" << getName()
-        << "serial #" << hid_serial << ":"
-        << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+                   << "serial #" << hid_serial << ":"
+                   << safeDecodeWideString(hid_error(m_pHidDevice), 512);
     } else {
         controllerDebug(result << "bytes sent by sendFeatureReport to" << getName()
                                << "serial #" << hid_serial
