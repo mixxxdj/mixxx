@@ -197,7 +197,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
         if (bEnableIroning) {
-            QVector<double> correctedBeats = BeatUtils::ironBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm);
+            QVector<double> correctedBeats = BeatUtils::correctBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm, bEnableArrytimicRemoval);
             debugBeats(track, beats, correctedBeats, version, subVersion);
             beats = correctedBeats;
         }

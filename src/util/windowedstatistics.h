@@ -8,7 +8,6 @@
 
 #include "util/assert.h"
 #include "util/circularbuffer.h"
-#include "util/fpclassify.h"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 
