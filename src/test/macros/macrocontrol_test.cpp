@@ -71,7 +71,7 @@ TEST(MacroControlTest, RecordSeek) {
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::NoTrack);
 }
 
-TEST(MacroControlTest, Controls) {
+TEST(MacroControlTest, ControlObjects) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     ControlProxy status(kChannelGroup, "macro_2_status");
     ASSERT_EQ(status.get(), MacroControl::Status::NoTrack);
@@ -88,8 +88,22 @@ TEST(MacroControlTest, Controls) {
     ControlProxy activate(kChannelGroup, "macro_2_activate");
     activate.set(1);
     ASSERT_EQ(status.get(), MacroControl::Status::Armed);
+
+    // Record
+    macroControl.slotJumpQueued();
+    macroControl.notifySeek(0);
     activate.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Empty);
+    ASSERT_EQ(status.get(), MacroControl::Status::Playing);
+
+    // Restart
+    activate.set(1);
+    ASSERT_EQ(status.get(), MacroControl::Status::Playing);
+
+    ControlProxy toggle(kChannelGroup, "macro_2_toggle");
+    toggle.set(1);
+    ASSERT_EQ(status.get(), MacroControl::Status::Recorded);
+    toggle.set(1);
+    ASSERT_EQ(status.get(), MacroControl::Status::Playing);
 }
 
 class MacroControlMock : public MacroControl {
