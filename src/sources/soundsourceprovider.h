@@ -2,7 +2,9 @@
 
 #include <QString>
 #include <QStringList>
-#include <QUrl>
+#include <QtDebug>
+
+QT_FORWARD_DECLARE_CLASS(QUrl);
 
 #include "sources/soundsource.h"
 
@@ -12,13 +14,15 @@ namespace mixxx {
 // to the priority for which they have been registered. Only
 // a single provider will be registered for each file extension
 // and priority.
-enum class SoundSourceProviderPriority {
-    Lowest,
-    Lower,
-    Default,
-    Higher,
-    Highest,
+enum class SoundSourceProviderPriority : int {
+    Lowest = 1,
+    Lower = 2,
+    Default = 3,
+    Higher = 4,
+    Highest = 5,
 };
+
+QDebug operator<<(QDebug dbg, SoundSourceProviderPriority arg);
 
 /// Factory interface for SoundSources
 ///
@@ -44,7 +48,7 @@ class SoundSourceProvider {
     /// represented by the file extension.
     virtual SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const {
-        Q_UNUSED(supportedFileExtension);
+        Q_UNUSED(supportedFileExtension)
         return SoundSourceProviderPriority::Default;
     }
 

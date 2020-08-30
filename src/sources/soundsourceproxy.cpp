@@ -55,12 +55,14 @@ const mixxx::Logger kLogger("SoundSourceProxy");
 } // anonymous namespace
 
 // static
-void SoundSourceProxy::registerSoundSourceProviders() {
+bool SoundSourceProxy::registerSoundSourceProviders() {
     // Initialize built-in file types.
     // Fallback providers should be registered before specialized
     // providers to ensure that they are only after the specialized
     // provider failed to open a file. But the order of registration
     // only matters among providers with equal priority.
+    kLogger.debug()
+            << "Registering SoundSource providers";
 #ifdef __FFMPEG__
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
@@ -105,6 +107,11 @@ void SoundSourceProxy::registerSoundSourceProviders() {
 
     const QStringList supportedFileExtensions(
             s_soundSourceProviders.getRegisteredFileExtensions());
+    VERIFY_OR_DEBUG_ASSERT(!supportedFileExtensions.isEmpty()) {
+        kLogger.critical()
+                << "No file extensions registered";
+        return false;
+    }
     if (kLogger.infoEnabled()) {
         for (const auto& supportedFileExtension : supportedFileExtensions) {
             kLogger.info() << "SoundSource providers for file extension" << supportedFileExtension;
@@ -112,8 +119,10 @@ void SoundSourceProxy::registerSoundSourceProviders() {
                     s_soundSourceProviders.getRegistrationsForFileExtension(
                             supportedFileExtension));
             for (const auto& registration : registrationsForFileExtension) {
-                kLogger.info() << " " << static_cast<int>(registration.getProviderPriority())
-                               << ":" << registration.getProvider()->getDisplayName();
+                kLogger.info()
+                        << registration.getProviderPriority()
+                        << ":"
+                        << registration.getProvider()->getDisplayName();
             }
         }
     }
@@ -121,7 +130,7 @@ void SoundSourceProxy::registerSoundSourceProviders() {
     // Turn the file extension list into a [ "*.mp3", "*.wav", ... ] style string list
     s_supportedFileNamePatterns.clear();
     for (const auto& supportedFileExtension : supportedFileExtensions) {
-        s_supportedFileNamePatterns += QString("*.%1").arg(supportedFileExtension);
+        s_supportedFileNamePatterns += QStringLiteral("*.%1").arg(supportedFileExtension);
     }
 
     // Build regular expression of supported file extensions
@@ -129,6 +138,8 @@ void SoundSourceProxy::registerSoundSourceProviders() {
             RegexUtils::fileExtensionsRegex(supportedFileExtensions));
     s_supportedFileNamesRegex =
             QRegExp(supportedFileExtensionsRegex, Qt::CaseInsensitive);
+
+    return true;
 }
 
 // static

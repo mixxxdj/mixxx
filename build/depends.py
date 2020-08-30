@@ -950,6 +950,7 @@ class MixxxCore(Feature):
                    "src/sources/metadatasourcetaglib.cpp",
                    "src/sources/readaheadframebuffer.cpp",
                    "src/sources/soundsource.cpp",
+                   "src/sources/soundsourceprovider.cpp",
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 

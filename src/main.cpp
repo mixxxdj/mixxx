@@ -105,7 +105,10 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-    SoundSourceProxy::registerSoundSourceProviders();
+    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerSoundSourceProviders()) {
+        qCritical() << "Failed to register any SoundSource providers";
+        return -1;
+    }
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

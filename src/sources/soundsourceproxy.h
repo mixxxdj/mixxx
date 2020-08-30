@@ -5,14 +5,17 @@
 #include "track/trackfile.h"
 #include "util/sandbox.h"
 
-// Creates sound sources for tracks. Only intended to be used
-// in a narrow scope and not shareable between multiple threads!
+/// Creates sound sources for tracks. Only intended to be used
+/// in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy {
   public:
-    // Initially registers all built-in SoundSource providers. This function is
-    // not thread-safe and must be called only once upon startup of the
-    // application.
-    static void registerSoundSourceProviders();
+    /// Initially registers all built-in SoundSource providers. This function is
+    /// not thread-safe and must be called only once upon startup of the
+    /// application.
+    ///
+    /// Returns true if providers for one or more file extensions have been
+    /// registered.
+    static bool registerSoundSourceProviders();
 
     static QStringList getSupportedFileExtensions() {
         return s_soundSourceProviders.getRegisteredFileExtensions();
