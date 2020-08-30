@@ -16,13 +16,13 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
           m_bJumpPending(false),
           m_recordedActions(kRecordingQueueSize),
           m_iNextAction(0),
+          m_COPlaying(getConfigKey("playing")),
           m_COStatus(getConfigKey("status")),
-          m_COIndicator(getConfigKey("indicator")),
           m_record(getConfigKey("record")),
           m_toggle(getConfigKey("toggle")),
           m_clear(getConfigKey("clear")),
           m_activate(getConfigKey("activate")) {
-    m_COIndicator.setReadOnly();
+    m_COPlaying.setReadOnly();
     m_COStatus.setReadOnly();
     setStatus(Status::NoTrack);
 
@@ -136,8 +136,9 @@ MacroControl::Status MacroControl::getStatus() const {
 
 void MacroControl::setStatus(Status status) {
     m_COStatus.forceSet(status);
+    m_COPlaying.forceSet(status == Status::Playing ? 1 : 0);
     // TODO(xerus) add blinking for Status::Recording & Status::Playing
-    m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
+    //m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
 }
 
 MacroPointer MacroControl::getMacro() const {

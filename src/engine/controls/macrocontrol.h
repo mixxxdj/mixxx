@@ -61,8 +61,8 @@ class MacroControl : public EngineControl {
     MacroPointer m_pMacro;
     unsigned int m_iNextAction;
 
+    ControlObject m_COPlaying;
     ControlObject m_COStatus;
-    ControlObject m_COIndicator;
 
     ControlPushButton m_record;
     ControlPushButton m_toggle;
