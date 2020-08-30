@@ -1425,7 +1425,7 @@ DJ505.EditMode = function(deck, offset) {
             "outro_start",
             "outro_end",
         ][i];
-        var color = (i % 2) ? DJ505.PadColor.AZURE : DJ505.PadColor.BLUE;
+        var color = (i > 1) ? DJ505.PadColor.AZURE : DJ505.PadColor.BLUE;
 
         this.pads[i] = new components.Button({
             midi: [0x94 + offset, 0x14 + i],
