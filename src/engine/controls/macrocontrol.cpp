@@ -90,6 +90,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     if (isRecording()) {
         stopRecording();
+        m_pMacro->setLabel(QString("%1 [Interrupted]").arg(m_pMacro->getLabel()));
     }
     if (!pNewTrack) {
         m_pMacro = nullptr;
@@ -185,10 +186,19 @@ void MacroControl::stopRecording() {
     updateRecording();
     if (getStatus() == Status::Armed) {
         setStatus(Status::Empty);
+        if (m_pMacro->getLabel() == "[Recording]") {
+            m_pMacro->setLabel("");
+        }
     } else {
         // This will still be the position of the previous track when called from trackLoaded
         // since trackLoaded is invoked before the SampleOfTrack of the controls is updated.
         m_pMacro->setEnd(getSampleOfTrack().current / mixxx::kEngineChannelCount);
+        if (m_pMacro->getLabel() == "[Recording]") {
+            // Automatically set the start position in seconds as label if there
+            // is no user-defined one
+            int secPos = m_pMacro->getStartSamplePos() / getSampleOfTrack().rate;
+            m_pMacro->setLabel(QString::number(secPos, 'f', 1));
+        }
         setStatus(Status::Recorded);
         if (m_pMacro->isEnabled()) {
             slotGotoPlay();
@@ -203,6 +213,9 @@ void MacroControl::slotRecord(double value) {
         setStatus(Status::Armed);
         DEBUG_ASSERT(m_updateRecordingTimer.thread() == QThread::currentThread());
         m_updateRecordingTimer.start(kRecordingTimerInterval);
+        if (m_pMacro->getLabel().isEmpty()) {
+            m_pMacro->setLabel("[Recording]");
+        }
     } else if (isRecording()) {
         stopRecording();
     }
