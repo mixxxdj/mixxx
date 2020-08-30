@@ -796,9 +796,8 @@ QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() con
 SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
         const QString& supportedFileExtension) const {
     Q_UNUSED(supportedFileExtension)
-    // On Windows MediaFoundation is used for decoding M4A files. Neither FFmpeg
-    // nor FAAD2 are enabled in release builds. Nevertheless adjust the priority
-    // to always prefer SoundSourceMediaFoundation.
+    // On Windows SoundSourceMediaFoundation is the preferred decoder for all
+    // supported audio formats.
     return SoundSourceProviderPriority::HIGHER;
 }
 
