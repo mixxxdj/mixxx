@@ -86,12 +86,16 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
         QScriptValue prefix = global.property(prefixName);
         if (!prefix.isValid() || !prefix.isObject()) {
             qWarning() << "ControllerEngine: No" << prefixName << "object in script";
+            // Throw a debug assertion if controllerDebug is enabled
+            DEBUG_ASSERT(!ControllerDebug::enabled());
             continue;
         }
 
         QScriptValue init = prefix.property(function);
         if (!init.isValid() || !init.isFunction()) {
             qWarning() << "ControllerEngine:" << prefixName << "has no" << function << " method";
+            // Throw a debug assertion if controllerDebug is enabled
+            DEBUG_ASSERT(!ControllerDebug::enabled());
             continue;
         }
         controllerDebug("ControllerEngine: Executing" << prefixName << "." << function);
@@ -443,22 +447,28 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
     }
 
     if (functionObject.isError()) {
-        qDebug() << "ControllerEngine::internalExecute:"
-                 << functionObject.toString();
+        qWarning() << "ControllerEngine::internalExecute:"
+                   << functionObject.toString();
+        // Throw a debug assertion if controllerDebug is enabled
+        DEBUG_ASSERT(!ControllerDebug::enabled());
         return false;
     }
 
     // If it's not a function, we're done.
     if (!functionObject.isFunction()) {
-        qDebug() << "ControllerEngine::internalExecute:"
-                 << functionObject.toVariant() << "Not a function";
+        qWarning() << "ControllerEngine::internalExecute:"
+                   << functionObject.toVariant() << "Not a function";
+        // Throw a debug assertion if controllerDebug is enabled
+        DEBUG_ASSERT(!ControllerDebug::enabled());
         return false;
     }
 
     // If it does happen to be a function, call it.
     QScriptValue rc = functionObject.call(thisObject, args);
     if (!rc.isValid()) {
-        qDebug() << "QScriptValue is not a function or ...";
+        qWarning() << "QScriptValue is not a function or ...";
+        // Throw a debug assertion if controllerDebug is enabled
+        DEBUG_ASSERT(!ControllerDebug::enabled());
         return false;
     }
 
@@ -636,6 +646,8 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
 
     if (!key.isValid()) {
         qWarning() << "ControllerEngine: Requested control with invalid key" << key;
+        // Throw a debug assertion if controllerDebug is enabled
+        DEBUG_ASSERT(!ControllerDebug::enabled());
         return nullptr;
     }
 
