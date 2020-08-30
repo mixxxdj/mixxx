@@ -817,7 +817,7 @@ TEST_F(LoopingControlTest, Beatjump_JumpsBeforeStartOfTrack) {
     EXPECT_EQ(beatLengthFrames, getBeatLengthFrames(bpm, m_pTrack1->getSampleRate()));
 
     // Seek to some position close the beginning of the track.
-    auto startOffsetFrames = mixxx::FramePos(10);
+    auto startOffsetFrames = mixxx::FramePos(5000);
     seekToSampleAndProcess(framePosToSamplePos(startOffsetFrames));
 
     // Execute beat jump backwards.
@@ -826,7 +826,27 @@ TEST_F(LoopingControlTest, Beatjump_JumpsBeforeStartOfTrack) {
     m_pButtonBeatJumpBackward->set(1.0);
     m_pButtonBeatJumpBackward->set(0.0);
     ProcessBuffer();
-    EXPECT_EQ(startOffsetFrames.getValue() -
+    EXPECT_DOUBLE_EQ(startOffsetFrames.getValue() -
+                    (beatLengthFrames * beatJumpSizeBeats),
+            m_pChannel1->getEngineBuffer()
+                    ->m_pLoopingControl->getFrameOfTrack()
+                    .currentFrame.getValue());
+
+    // Jump back again
+    m_pButtonBeatJumpBackward->set(1.0);
+    m_pButtonBeatJumpBackward->set(0.0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(startOffsetFrames.getValue() -
+                    (2 * beatLengthFrames * beatJumpSizeBeats),
+            m_pChannel1->getEngineBuffer()
+                    ->m_pLoopingControl->getFrameOfTrack()
+                    .currentFrame.getValue());
+
+    // Jump ahead
+    m_pButtonBeatJumpForward->set(1.0);
+    m_pButtonBeatJumpForward->set(0.0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(startOffsetFrames.getValue() -
                     (beatLengthFrames * beatJumpSizeBeats),
             m_pChannel1->getEngineBuffer()
                     ->m_pLoopingControl->getFrameOfTrack()
@@ -836,7 +856,7 @@ TEST_F(LoopingControlTest, Beatjump_JumpsBeforeStartOfTrack) {
     m_pButtonBeatJumpForward->set(1.0);
     m_pButtonBeatJumpForward->set(0.0);
     ProcessBuffer();
-    EXPECT_EQ(startOffsetFrames.getValue(),
+    EXPECT_DOUBLE_EQ(startOffsetFrames.getValue(),
             m_pChannel1->getEngineBuffer()
                     ->m_pLoopingControl->getFrameOfTrack()
                     .currentFrame.getValue());

@@ -629,8 +629,6 @@ FramePos BeatsInternal::findNBeatsFromFrame(
     int fullBeats = static_cast<int>(beatsFromPrevBeat);
     double fractionBeats = beatsFromPrevBeat - fullBeats;
 
-    // Add the length between this beat and the fullbeats'th beat
-    // to the end position
     if (fullBeats > 0) {
         nthBeat = findNthBeat(nextBeat, fullBeats).framePosition();
     } else {
