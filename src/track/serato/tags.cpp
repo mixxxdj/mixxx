@@ -202,7 +202,6 @@ double SeratoTags::guessTimingOffsetMillis(
 #endif
 #if defined(__MAD__) || defined(__FFMPEG__)
         bool usingMadOrFFmpeg = false;
-#endif
 #if defined(__MAD__)
         if (primaryDecoderName == mixxx::SoundSourceProviderMp3::kDisplayName) {
             DEBUG_ASSERT(!usingMadOrFFmpeg);
@@ -215,7 +214,6 @@ double SeratoTags::guessTimingOffsetMillis(
             usingMadOrFFmpeg = true;
         }
 #endif
-#if defined(__MAD__) || defined(__FFMPEG__)
         if (usingMadOrFFmpeg) {
             DEBUG_ASSERT(!timingOffsetGuessed);
             DEBUG_ASSERT(timingOffset == 0);
