@@ -5,15 +5,12 @@
 #include <cmath>
 #include <memory>
 
-
 #include "util/assert.h"
 #include "util/circularbuffer.h"
-// to tell the msvs compiler about `isnan`
-#include "util/math.h"
+#include "util/fpclassify.h"
 
 /// These classes are used to compute statistics descriptors
 /// of a series of tempo values and are called from beatutils
-
 class WindowedStatistics {
   public:
     WindowedStatistics(int windowSize) {
@@ -25,7 +22,7 @@ class WindowedStatistics {
     virtual ~WindowedStatistics() = default;
 
     double pushAndEvaluate(double newValue) {
-        if (util_isnan(newValue)) {
+        if (isnan(newValue)) {
             return newValue;
         }
         double oldValue = updateWindow(newValue);
@@ -62,6 +59,7 @@ class WindowedStatistics {
 
     virtual double compute() = 0;
     virtual void update(double newValue, double oldValue) = 0;
+
     std::unique_ptr<CircularBuffer<double>> m_window;
     int m_windowSize;
     int m_currentCount;
@@ -73,13 +71,14 @@ class MovingMedian : public WindowedStatistics {
             : WindowedStatistics(windowSize) {
         m_sortedValues.reserve(windowSize);
     };
-
     ~MovingMedian() = default;
 
   private:
-    QList<double> m_sortedValues;
+    
     void update(double, double) override;
     double compute() override;
+
+    QList<double> m_sortedValues;
 };
 
 class MovingMode : public WindowedStatistics {
@@ -91,7 +90,9 @@ class MovingMode : public WindowedStatistics {
     ~MovingMode() = default;
 
   private:
-    QHash<double, int> m_frequencyOfValues;
+
     void update(double, double) override;
     double compute() override;
+
+    QHash<double, int> m_frequencyOfValues;
 };

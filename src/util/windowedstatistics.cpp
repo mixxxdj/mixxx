@@ -7,7 +7,7 @@
 void MovingMode::update(double newValue, double oldValue) {
     // Our update window method returns a nan
     // case the window is not filled yet
-    if (!util_isnan(oldValue)) {
+    if (!isnan(oldValue)) {
         m_frequencyOfValues[oldValue] -= 1;
     }
     m_frequencyOfValues[newValue] += 1;
@@ -21,7 +21,7 @@ double MovingMode::compute() {
 void MovingMedian::update(double newValue, double oldValue) {
     // Our update window method returns a nan
     // case the window is not filled yet
-    if (!util_isnan(oldValue)) {
+    if (!isnan(oldValue)) {
         m_sortedValues.removeAt(m_sortedValues.indexOf(oldValue));
     }
     auto insertPosition = std::lower_bound(m_sortedValues.begin(), m_sortedValues.end(), newValue);
