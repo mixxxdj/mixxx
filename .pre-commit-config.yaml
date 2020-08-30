@@ -65,6 +65,10 @@ repos:
     - commit
     - manual
   - id: no-commit-to-branch
+- repo: https://github.com/codespell-project/codespell
+  rev: v1.17.1
+  hooks:
+  - id: codespell
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.2.0
   hooks:
