@@ -309,18 +309,13 @@ void HidController::sendFeatureReport(
     dataArray.prepend(reportID);
 
     int result = hid_send_feature_report(
-            m_pHidDevice, (unsigned char*)dataArray.constData(), dataArray.size());
+            m_pHidDevice, reinterpret_cast<const unsigned char*>(dataArray.constData()), dataArray.size());
     if (result == -1) {
-        if (ControllerDebug::enabled()) {
-            qWarning() << "Unable to send data to" << getName()
-                       << "serial #" << hid_serial << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
-        } else {
-            qWarning() << "Unable to send data to" << getName() << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
-        }
+        qWarning() << "sendFeatureReport is unable to send data to" << getName()
+        << "serial #" << hid_serial << ":"
+        << safeDecodeWideString(hid_error(m_pHidDevice), 512);
     } else {
-        controllerDebug(result << "bytes sent to" << getName()
+        controllerDebug(result << "bytes sent by sendFeatureReport to" << getName()
                                << "serial #" << hid_serial
                                << "(including report ID of" << reportID << ")");
     }
@@ -346,4 +341,3 @@ QString HidController::safeDecodeWideString(const wchar_t* pStr, size_t max_leng
         return QString::fromUcs4((uint *)pStr, size);
     }
 }
-
