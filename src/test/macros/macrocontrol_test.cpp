@@ -116,12 +116,12 @@ class MacroControlMock : public MacroControl {
 
 TEST(MacroControlTest, LoadTrackAndPlay) {
     MacroControlMock macroControl;
-    int position = 0;
+    MacroAction jumpAction(40'000, 0);
 
     auto pTrack = Track::newTemporary();
     pTrack->setMacros({{2,
             std::make_shared<Macro>(
-                    QList{MacroAction(0, 0), MacroAction(position, kAction.position)},
+                    QList{kAction, jumpAction},
                     "test",
                     Macro::State())}});
     macroControl.trackLoaded(pTrack);
@@ -129,6 +129,23 @@ TEST(MacroControlTest, LoadTrackAndPlay) {
 
     macroControl.slotActivate();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
-    EXPECT_CALL(macroControl, seekExact(kAction.getSamplePos())).Times(1);
-    macroControl.process(0, position, 2);
+    EXPECT_CALL(macroControl, seekExact(jumpAction.target)).Times(1);
+    macroControl.process(0, jumpAction.getSamplePos(), 2);
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
+
+    // LOOP
+    macroControl.getMacro()->setState(Macro::StateFlag::Looped);
+    EXPECT_CALL(macroControl, seekExact(kAction.getTargetSamplePos())).Times(1);
+    macroControl.slotActivate();
+    macroControl.slotActivate();
+    // Jump
+    EXPECT_CALL(macroControl, seekExact(jumpAction.getTargetSamplePos())).Times(1);
+    macroControl.process(0, jumpAction.getSamplePos(), 2);
+    // Loop back
+    EXPECT_CALL(macroControl, seekExact(kAction.getTargetSamplePos())).Times(1);
+    macroControl.process(0, kAction.getSamplePos(), 2);
+    // Jump again
+    EXPECT_CALL(macroControl, seekExact(jumpAction.getTargetSamplePos())).Times(1);
+    macroControl.process(0, jumpAction.getSamplePos(), 2);
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
 }
