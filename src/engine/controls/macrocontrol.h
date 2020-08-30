@@ -26,7 +26,6 @@ class MacroControl : public EngineControl {
         Recording = 2,
         Recorded = 3,
         Playing = 4,
-        PlaybackStopped = 5,
     };
 
     Status getStatus() const;

@@ -87,7 +87,7 @@ TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
     EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action2.getTargetSamplePos());
     ProcessBuffer();
     EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action3.getTargetSamplePos());
-    EXPECT_EQ(getStatus(), MacroControl::Status::PlaybackStopped);
+    EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
 }
 
 TEST_F(MacroRecordingTest, RecordHotcueAndPlay) {

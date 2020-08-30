@@ -81,7 +81,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
             if (m_pMacro->isLooped()) {
                 m_iNextAction = 0;
             } else {
-                setStatus(Status::PlaybackStopped);
+                setStatus(Status::Recorded);
             }
         }
     }
@@ -154,12 +154,14 @@ void MacroControl::play() {
     DEBUG_ASSERT(m_pMacro);
     m_iNextAction = 1;
     setStatus(Status::Playing);
+    m_pMacro->setState(Macro::StateFlag::Enabled);
 }
 
 void MacroControl::stop() {
     DEBUG_ASSERT(m_pMacro);
     m_iNextAction = INT_MAX;
     setStatus(Status::Recorded);
+    m_pMacro->setState(Macro::StateFlag::Enabled, false);
 }
 
 void MacroControl::updateRecording() {
@@ -234,7 +236,7 @@ void MacroControl::slotToggle(double value) {
 void MacroControl::slotClear(double value) {
     if (!value)
         return;
-    if (getStatus() == Status::Recorded || getStatus() == Status::PlaybackStopped) {
+    if (getStatus() == Status::Recorded) {
         m_pMacro->clear();
         setStatus(Status::Empty);
     }
