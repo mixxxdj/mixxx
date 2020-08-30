@@ -187,17 +187,18 @@ double SeratoTags::guessTimingOffsetMillis(
             switch (timingShiftCase) {
             case EXIT_CODE_CASE_A:
                 timingOffset = -12;
+                timingOffsetGuessed = true;
                 break;
             case EXIT_CODE_CASE_B:
                 timingOffset = -40;
+                timingOffsetGuessed = true;
                 break;
             case EXIT_CODE_CASE_C:
             case EXIT_CODE_CASE_D:
                 timingOffset = -60;
+                timingOffsetGuessed = true;
                 break;
             }
-
-            timingOffsetGuessed = true;
         }
 #endif
 #if defined(__MAD__) || defined(__FFMPEG__)
@@ -221,18 +222,18 @@ double SeratoTags::guessTimingOffsetMillis(
             switch (signalInfo.getSampleRate()) {
             case 48000:
                 timingOffset = -24;
+                timingOffsetGuessed = true;
                 break;
             case 44100:
                 // This is an estimate and tracks will vary unpredictably within ~1 ms
                 timingOffset = -26;
+                timingOffsetGuessed = true;
                 break;
             default:
                 qWarning()
                         << "Unknown timing offset for Serato tags with sample rate"
                         << signalInfo.getSampleRate();
             }
-
-            timingOffsetGuessed = true;
         }
 #endif
         if (timingOffsetGuessed) {
