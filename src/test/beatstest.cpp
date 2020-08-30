@@ -421,49 +421,6 @@ TEST_F(BeatsTest, Signature) {
     EXPECT_DOUBLE_EQ(beatLengthCrochet * 2, twentySixthBeatLength);
 }
 
-TEST_F(BeatsTest, Iterator) {
-    const auto& pBeats = m_pTrack1->getBeats();
-    FramePos pos;
-
-    // Full Beatsbeat
-    auto iter1 = pBeats->findBeats(pBeats->getFirstBeatPosition(),
-            pBeats->getLastBeatPosition());
-    EXPECT_DOUBLE_EQ(iter1->next().framePosition().getValue(),
-            pBeats->getFirstBeatPosition().getValue());
-    while (iter1->hasNext()) {
-        auto beat = iter1->next();
-        pos = FramePos(beat.framePosition().getValue());
-        EXPECT_TRUE(pos.getValue());
-    }
-    EXPECT_DOUBLE_EQ(
-            pos.getValue(), pBeats->getLastBeatPosition().getValue());
-
-    // Past end
-    auto iter2 = pBeats->findBeats(pBeats->getFirstBeatPosition(),
-            FramePos(
-                    pBeats->getLastBeatPosition().getValue() + 10000000000));
-    while (iter2->hasNext()) {
-        auto beat = iter2->next();
-        pos = FramePos(beat.framePosition().getValue());
-        EXPECT_TRUE(pos.getValue());
-    }
-    EXPECT_DOUBLE_EQ(
-            pos.getValue(), pBeats->getLastBeatPosition().getValue());
-
-    // Before begining
-    auto iter3 = pBeats->findBeats(
-            FramePos(pBeats->getFirstBeatPosition().getValue() - 1000000),
-            pBeats->getLastBeatPosition());
-    EXPECT_DOUBLE_EQ(iter3->next().framePosition().getValue(),
-            pBeats->getFirstBeatPosition().getValue());
-    while (iter3->hasNext()) {
-        auto beat = iter3->next();
-        pos = FramePos(beat.framePosition().getValue());
-        EXPECT_TRUE(pos.getValue());
-    }
-    EXPECT_DOUBLE_EQ(pos.getValue(), pBeats->getLastBeatPosition().getValue());
-}
-
 TEST_F(BeatsTest, Translate) {
     const auto& pBeats1 = m_pTrack1->getBeats();
     const auto& pBeats2 = m_pTrack2->getBeats();
@@ -473,27 +430,21 @@ TEST_F(BeatsTest, Translate) {
     pBeats1->translate(delta);
 
     // All beats must have been displaced by delta frames
-    auto iter1 = pBeats1->findBeats(pBeats1->getFirstBeatPosition(),
-            pBeats1->getLastBeatPosition());
-    auto iter2 = pBeats2->findBeats(pBeats2->getFirstBeatPosition(),
-            pBeats2->getLastBeatPosition());
-    while (iter1->hasNext()) {
-        double pos1 = iter1->next().framePosition().getValue();
-        double pos2 = iter2->next().framePosition().getValue();
+
+    for (int i = 0; i < pBeats1->size(); i++) {
+        double pos1 = pBeats1->getBeatAtIndex(i).framePosition().getValue();
+        double pos2 = pBeats2->getBeatAtIndex(i).framePosition().getValue();
         EXPECT_DOUBLE_EQ(pos1, pos2 + delta);
     }
-    //    EXPECT_EQ(iter1->hasNext(), iter2->hasNext());
 }
 
 TEST_F(BeatsTest, FindClosest) {
     const auto& pBeats = m_pTrack1->getBeats();
     // Test deltas ranging from previous beat to next beat
     for (FrameDiff_t delta = -m_iSampleRate; delta <= m_iSampleRate; delta++) {
-        auto iter1 = pBeats->findBeats(pBeats->getFirstBeatPosition(),
-                pBeats->getLastBeatPosition());
-        while (iter1->hasNext()) {
-            FramePos pos = FramePos(iter1->next().framePosition().getValue());
-            FramePos foundPos = pBeats->findClosestBeat(pos + delta);
+        for (int i = 0; i < pBeats->size(); i++) {
+            const auto pos = pBeats->getBeatAtIndex(i).framePosition();
+            const auto foundPos = pBeats->findClosestBeat(pos + delta);
             // Correct change of beat
             FramePos expectedPos = pos +
                     (delta > (m_iSampleRate / 2.0) ? m_iSampleRate : 0) +

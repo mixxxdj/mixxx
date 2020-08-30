@@ -58,12 +58,14 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const double lastDisplayedPosition =
             m_waveformRenderer->getLastDisplayedPosition();
 
-    std::unique_ptr<mixxx::Beats::iterator> it(trackBeats->findBeats(
-            mixxx::FramePos(firstDisplayedPosition * trackSamples / 2.0),
-            mixxx::FramePos(lastDisplayedPosition * trackSamples / 2.0)));
+    const auto leftLimit = samplePosToFramePos(firstDisplayedPosition * trackSamples);
+    const auto rightLimit = samplePosToFramePos(lastDisplayedPosition * trackSamples);
+    const int displayBeatsStartIdxInclusive = trackBeats->findNextBeat(leftLimit).beatIndex();
+    const int displayBeatsEndIdxInclusive = trackBeats->findPrevBeat(rightLimit).beatIndex();
 
     // if no beat do not waste time saving/restoring painter
-    if (!it || !it->hasNext()) {
+    // TODO(hacksdump): Implement no beats on screen check
+    if (false) {
         return;
     }
 
@@ -83,8 +85,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int beatMarkerCount = 0;
     QList<WaveformBeat> beatsOnScreen;
 
-    while (it->hasNext()) {
-        auto beat = it->next();
+    for (int i = displayBeatsStartIdxInclusive; i <= displayBeatsEndIdxInclusive; i++) {
+        auto beat = trackBeats->getBeatAtIndex(i);
         double beatSamplePosition = framePosToSamplePos(beat.framePosition());
         int beatPixelPositionInWidgetSpace = qRound(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(

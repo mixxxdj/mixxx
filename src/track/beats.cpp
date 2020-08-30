@@ -115,12 +115,6 @@ Beat Beats::findNthBeat(FramePos frame, int n) const {
     return m_beatsInternal.findNthBeat(frame, n);
 }
 
-std::unique_ptr<Beats::iterator> Beats::findBeats(
-        FramePos startFrame, FramePos stopFrame) const {
-    QMutexLocker locker(&m_mutex);
-    return m_beatsInternal.findBeats(startFrame, stopFrame);
-}
-
 Beat Beats::getBeatAtIndex(int index) const {
     QMutexLocker locker(&m_mutex);
     return m_beatsInternal.getBeatAtIndex(index);
@@ -677,12 +671,6 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
     BeatList::const_iterator it =
             std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat);
 
-    // If the position is within 1/10th of the average beat length,
-    // pretend we are on that beat.
-    // TODO: Use local beat length, not global.
-    const double kFrameEpsilon =
-            kBeatVicinityFactor * getBeatLengthFrames(getGlobalBpm(), getSampleRate());
-
     // Back-up by one.
     if (it != m_beats.begin()) {
         --it;
@@ -694,7 +682,11 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
     BeatList::const_iterator next_beat = m_beats.cend();
     for (; it != m_beats.end(); ++it) {
         qint32 delta = it->framePosition() - beat.framePosition();
-
+        // If the position is within a fraction of the local beat length,
+        // pretend we are on that beat.
+        const double kFrameEpsilon = kBeatVicinityFactor *
+                getBeatLengthFrames(
+                        it->bpm(), getSampleRate(), it->timeSignature());
         // We are "on" this beat.
         if (abs(delta) < kFrameEpsilon) {
             on_beat = it;
@@ -767,29 +759,6 @@ FramePos BeatsInternal::findClosestBeat(FramePos frame) const {
         return prevBeat;
     }
     return (nextBeat - frame > frame - prevBeat) ? prevBeat : nextBeat;
-}
-
-std::unique_ptr<BeatsInternal::iterator> BeatsInternal::findBeats(
-        FramePos startFrame, FramePos stopFrame) const {
-    if (!isValid() || startFrame > stopFrame) {
-        return std::unique_ptr<BeatsInternal::iterator>();
-    }
-
-    Beat startBeat(startFrame), stopBeat(stopFrame);
-
-    BeatList::const_iterator firstBeat =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), startBeat);
-
-    BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.cbegin(), m_beats.cend(), stopBeat);
-    if (lastBeat >= m_beats.cbegin()) {
-        lastBeat = m_beats.cend() - 1;
-    }
-
-    if (firstBeat >= lastBeat) {
-        return std::unique_ptr<BeatsInternal::iterator>();
-    }
-    return std::make_unique<BeatsInternal::iterator>(firstBeat, lastBeat + 1);
 }
 
 Beat BeatsInternal::findNextBeat(FramePos frame) const {
