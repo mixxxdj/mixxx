@@ -5,6 +5,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    width="11"
    height="15"
    version="1.1"
@@ -22,14 +23,59 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs8" />
-  <g
-     aria-label="L"
-     id="text838-3"
-     style="font-style:normal;font-weight:normal;font-size:40.0002px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#f856e7;fill-opacity:1;stroke:none;stroke-width:1.00001">
-    <path
-       d="M 2.9999872,12.018282 3,3 h 1.5559974 l -1.28e-5,7.68364 h 4.029968 v 1.334642 z"
-       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:13.3334px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#f856e7;fill-opacity:1;stroke-width:1.00001"
-       id="path877" />
-  </g>
+     id="defs8">
+    <linearGradient
+       xlink:href="#linearGradient851"
+       id="linearGradient853"
+       x1="-11.258929"
+       y1="8"
+       x2="-1.077"
+       y2="8"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.89425,0,0,0.89425,-4.7598279,-7.9171398)" />
+    <linearGradient
+       id="linearGradient851">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop847" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0"
+         offset="1"
+         id="stop849" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#linearGradient851"
+       id="linearGradient853-3"
+       x1="-11.258929"
+       y1="8"
+       x2="-1.077"
+       y2="8"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.87543597,0,0,0.87544454,-4.8632979,-7.7666139)" />
+  </defs>
+  <rect
+     style="fill:#0f0f0f;fill-opacity:1;stroke:none;stroke-width:0.845999;stroke-linecap:round;stroke-linejoin:round"
+     id="rect868"
+     width="14.764685"
+     height="8"
+     x="1.5"
+     y="3.9999998"
+     rx="4"
+     ry="4" />
+  <circle
+     style="fill:#f856e7;fill-opacity:1;stroke:none;stroke-width:0.846;stroke-linecap:round;stroke-linejoin:round"
+     id="path834"
+     cx="-5.5"
+     cy="8"
+     r="4"
+     transform="scale(-1,1)" />
+  <ellipse
+     style="fill:none;fill-opacity:1;stroke:url(#linearGradient853-3);stroke-width:1.00001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path834-3"
+     cx="-9.6781969"
+     cy="-0.76305789"
+     transform="matrix(-0.50000733,-0.86602117,-0.86602963,0.49999269,0,0)"
+     rx="3.5017438"
+     ry="3.5017784" />
 </svg>

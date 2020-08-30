@@ -29,7 +29,7 @@
       <stop
          id="stop899"
          offset="0"
-         style="stop-color:#333333;stop-opacity:1;" />
+         style="stop-color:#4d4d4d;stop-opacity:1" />
       <stop
          id="stop901"
          offset="1"
@@ -42,12 +42,14 @@
        y1="15.864407"
        x1="11.491526"
        id="linearGradient905"
-       xlink:href="#linearGradient903" />
+       xlink:href="#linearGradient903"
+       gradientTransform="translate(-18,-18)" />
   </defs>
   <circle
-     style="opacity:1;fill:#101010;fill-opacity:1;stroke:url(#linearGradient905);stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="opacity:1;fill:#2a2a2d;fill-opacity:1;stroke:url(#linearGradient905);stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path1001"
-     cx="9"
-     cy="9"
-     r="7" />
+     cx="-9"
+     cy="-9"
+     r="7"
+     transform="scale(-1)" />
 </svg>

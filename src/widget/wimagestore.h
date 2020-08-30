@@ -1,16 +1,14 @@
 
-#ifndef WIMAGESTORE_H
-#define WIMAGESTORE_H
+#pragma once
 
 #include <QHash>
+#include <QImage>
 #include <QSharedPointer>
 #include <unordered_map>
 
 #include "skin/imgsource.h"
 #include "skin/pixmapsource.h"
 #include "util/memory.h"
-
-class QImage;
 
 class WImageStore {
   public:
@@ -30,5 +28,3 @@ class WImageStore {
     static QHash<QString, std::weak_ptr<QImage> > m_dictionary;
     static QSharedPointer<ImgSource> m_loader;
 };
-
-#endif

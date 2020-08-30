@@ -1,5 +1,7 @@
 <Template>
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="BtnType">embedded</SetVariable>
+  <SetVariable name="BtnSize">library</SetVariable>
 
   <WidgetGroup>
     <ObjectName>Waveform</ObjectName>
@@ -16,9 +18,12 @@
             <Channel><Variable name="ChanNum"/></Channel>
             <BgColor><Variable name="BgColorWaveform"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
-            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+            <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+            <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+            <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
+            <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
+            <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
+            <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
             <BeatColor><Variable name="BeatColor"/></BeatColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>
@@ -62,7 +67,8 @@
             </Mark>
             <Mark>
               <Control>loop_end_position</Control>
-              <Align>bottom|right</Align>
+              <Text>&#8635;</Text>
+              <Align>top|right</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
             </Mark>
@@ -78,8 +84,8 @@
             </MarkRange>
             <Mark>
               <Control>intro_start_position</Control>
+              <Text>&#9698;</Text>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-              <Text></Text>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
@@ -112,8 +118,8 @@
             </Mark>
             <Mark>
               <Control>outro_end_position</Control>
+              <Text>&#9699;</Text>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-              <Text></Text>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
@@ -189,6 +195,7 @@
                         <SetVariable name="TooltipId">shift_cues_later</SetVariable>
                         <SetVariable name="ObjectName">HotcuesLater</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="BtnSize">grid</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="Group"/>,shift_cues_later</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_later_small</SetVariable>
                       </Template>
@@ -229,6 +236,7 @@
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatsLater</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
                   </Template>
 
@@ -237,6 +245,7 @@
                     <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_adjust_slower</SetVariable>
                   </Template>
                 </Children>

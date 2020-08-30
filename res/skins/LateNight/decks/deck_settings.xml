@@ -16,9 +16,8 @@
             <Size>0min,15f</Size>
             <Children>
               <StarRating>
-                <Size>0min,15f</Size>
-                <Alignment>center</Alignment>
                 <TooltipId>starrating</TooltipId>
+                <Size>75f,15f</Size>
                 <Channel><Variable name="ChanNum"/></Channel>
               </StarRating>
             </Children>
