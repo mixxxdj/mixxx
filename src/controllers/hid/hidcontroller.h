@@ -49,7 +49,7 @@ class HidController final : public Controller {
     static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);	
+    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
     Q_INVOKABLE void send_feature_report(
             QList<int> data, unsigned int length, unsigned int reportID = 0);
 
