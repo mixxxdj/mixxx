@@ -81,8 +81,10 @@ const Macro::State& Macro::getState() const {
 }
 
 void Macro::setState(StateFlag flag, bool enable) {
-    m_bDirty = true;
-    m_state.setFlag(flag, enable);
+    if (m_state.testFlag(flag) != enable) {
+        m_bDirty = true;
+        m_state.setFlag(flag, enable);
+    }
 }
 
 bool Macro::isEmpty() const {
