@@ -113,6 +113,7 @@ class EngineControl : public QObject {
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
+    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsBeforeStartOfTrack);
 };
 
 #endif /* ENGINECONTROL_H */

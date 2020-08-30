@@ -258,6 +258,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
     FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
+    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsBeforeStartOfTrack);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);

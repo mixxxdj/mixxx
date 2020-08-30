@@ -1,5 +1,4 @@
-#ifndef MATH_H
-#define MATH_H
+#pragma once
 
 // Causes MSVC to define M_PI and friends.
 // http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
@@ -92,4 +91,7 @@ inline const T db2ratio(const T a) {
     return pow(10, a / 20);
 }
 
-#endif /* MATH_H */
+inline uint clockModulo(int dividend, uint divisor) {
+    int rawModulo = dividend % divisor;
+    return rawModulo < 0 ? rawModulo + divisor : rawModulo;
+}
