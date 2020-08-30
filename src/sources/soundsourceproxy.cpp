@@ -167,6 +167,19 @@ bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
     return !s_soundSourceProviders.getRegistrationsForFileExtension(fileExtension).isEmpty();
 }
 
+//static
+mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileExtension(
+        const QString& fileExtension) {
+    const auto optProviderRegistration =
+            s_soundSourceProviders.getPrimaryRegistrationForFileExtension(
+                    fileExtension);
+    if (optProviderRegistration) {
+        return optProviderRegistration->getProvider();
+    } else {
+        return {};
+    }
+}
+
 // static
 QList<mixxx::SoundSourceProviderRegistration>
 SoundSourceProxy::findSoundSourceProviderRegistrations(

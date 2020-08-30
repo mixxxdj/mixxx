@@ -32,6 +32,8 @@ class SoundSourceProxy {
     static bool isFileSupported(const QFileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
+    static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileExtension(
+            const QString& fileExtension);
 
     // The following import functions ensure that the file will not be
     // written while reading it!
