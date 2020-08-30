@@ -293,6 +293,36 @@ void HidController::send(QByteArray data, unsigned int reportID) {
     }
 }
 
+void HidController::send_feature_report(QList<int> data, unsigned int length, unsigned int reportID) {
+    Q_UNUSED(length);
+    QByteArray temp;
+    foreach (int datum, data) {
+        temp.append(datum);
+    }
+    send_feature_report(temp, reportID);
+}
+
+void HidController::send_feature_report(QByteArray data, unsigned int reportID) {
+    // Append the Report ID to the beginning of data[] per the API..
+    data.prepend(reportID);
+
+    int result = hid_send_feature_report(m_pHidDevice, (unsigned char*)data.constData(), data.size());
+    if (result == -1) {
+        if (ControllerDebug::enabled()) {
+            qWarning() << "Unable to send data to" << getName()
+                       << "serial #" << hid_serial << ":"
+                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+        } else {
+            qWarning() << "Unable to send data to" << getName() << ":"
+                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+        }
+    } else {
+        controllerDebug(result << "bytes sent to" << getName()
+                 << "serial #" << hid_serial
+                 << "(including report ID of" << reportID << ")");
+    }
+}
+
 //static
 QString HidController::safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
     if (pStr == NULL) {
