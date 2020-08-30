@@ -23,6 +23,7 @@ enum class ControlFlag {
     NoAssertIfMissing = 1 << 1,
     /// Don't log a warning when trying to access a non-existing CO.
     NoWarnIfMissing = (1 << 2) | NoAssertIfMissing,
+    AllowMissingOrInvalid = AllowInvalidKey | NoAssertIfMissing,
 };
 
 Q_DECLARE_FLAGS(ControlFlags, ControlFlag)
