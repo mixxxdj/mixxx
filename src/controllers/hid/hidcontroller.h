@@ -113,7 +113,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->sendReport(data, length, reportID);
     }
 
-	Q_INVOKABLE void sendFeatureReport(
+    Q_INVOKABLE void sendFeatureReport(
             const QList<int>& dataList, unsigned int reportID) {
         m_pHidController->sendFeatureReport(dataList, reportID);
     }
