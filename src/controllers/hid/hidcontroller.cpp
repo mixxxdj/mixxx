@@ -293,18 +293,18 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
         }
     } else {
         controllerDebug(result << "bytes sent to" << getName()
-                 << "serial #" << hid_serial
-                 << "(including report ID of" << reportID << ")");
+                               << "serial #" << hid_serial
+                               << "(including report ID of" << reportID << ")");
     }
 }
 
 void HidController::sendFeatureReport(
         const QList<int>& dataList, unsigned int reportID) {
     QByteArray dataArray;
-    for (const int datum: dataList) {
+    for (const int datum : dataList) {
         dataArray.append(datum);
     }
-	
+
     // Append the Report ID to the beginning of dataArray[] per the API..
     dataArray.prepend(reportID);
 
@@ -321,8 +321,8 @@ void HidController::sendFeatureReport(
         }
     } else {
         controllerDebug(result << "bytes sent to" << getName()
-                 << "serial #" << hid_serial
-                 << "(including report ID of" << reportID << ")");
+                               << "serial #" << hid_serial
+                               << "(including report ID of" << reportID << ")");
     }
 }
 
@@ -346,3 +346,4 @@ QString HidController::safeDecodeWideString(const wchar_t* pStr, size_t max_leng
         return QString::fromUcs4((uint *)pStr, size);
     }
 }
+
