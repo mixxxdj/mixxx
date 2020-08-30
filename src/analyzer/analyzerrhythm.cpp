@@ -277,10 +277,8 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
     return beats;
 }
 
-std::vector<double> AnalyzerRhythm::computeSnapGrid() {
+std::vector<int> AnalyzerRhythm::computeSnapGrid() {
     int size = m_detectionResults.size();
-
-    int dfType = 3; // ComplexSD
 
     std::vector<double> complexSdMinDiff;
     std::vector<double> minWindow;
@@ -304,7 +302,7 @@ std::vector<double> AnalyzerRhythm::computeSnapGrid() {
         complexSdMinDiff.push_back(result - min * kFloorFactor);
     }
 
-    std::vector<double> allBeats;
+    std::vector<int> allBeats;
     allBeats.reserve(size / 10);
 
     // This is a dynamic threshold that defines which SD is considered as a beat.
@@ -666,10 +664,17 @@ void AnalyzerRhythm::computeTempogramByACF() {
         //m_resultBeats.push_back(result);
     }
 
+    /*
     std::set<int> possible_downbeats_sorted;
     std::set<int> possible_downbeats_auto;
     int lastPos = 0;
     for (size_t block = 0; block < m_tempogramACF.size(); block++) {
+
+        int pos = block * 128 - m_tempogramWindowLength / 2;
+        // possible_downbeats_auto.insert(pos);
+        ///possible_downbeats_auto.insert(pos);
+        possible_downbeats_auto.insert(pos + offsets[block]);
+
         QList<double> keys = m_tempogramACF[block].keys();
         if (keys.size() < 2) {
             continue;
@@ -685,9 +690,9 @@ void AnalyzerRhythm::computeTempogramByACF() {
                 break;
             }
         }
-        while (measureK <= 160) {
-            measureK *= 2;
-        }
+        //while (measureK <= 160) {
+        //    measureK *= 2;
+        //}
         int beatK = keys[0];
         for (int k = 0; k < keys.size(); k++) {
             if (beatK < (measureK / 15)) {
@@ -731,7 +736,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
             }
 
             */
-        /*
+    /*
             // auto deb = qDebug();
             float min = tempogramPhase[i][0];
             float j_min = 0;
@@ -760,40 +765,91 @@ void AnalyzerRhythm::computeTempogramByACF() {
             }
             */
 
+    /*
         std::vector<std::pair<int, float>> tempogramPhase = autocorrelationProcessor.processPhase(
                 &complexSdCurve[0], complexSdCurve.size(), block, beatK, measureK, offsets[block]);
 
-        float max = tempogramPhase[0].second;
-        float i_max = 0;
-        for (size_t i = 1; i < tempogramPhase.size(); i++) {
-            if (max < tempogramPhase[i].second) {
-                //deb << i << j << tempogramPhase[i][j];
-                max = tempogramPhase[i].second;
-                i_max = tempogramPhase[i].first;
+        float max = 0;
+        float min = 0;
+        int k_max = 0;
+        int k_min = 0;
+        int i_max = 0;
+        int i_min = 0;
+        for (int i = 0; i < (static_cast<int>(tempogramPhase.size()) - (measureK / beatK)); i++) {
+            float delta = tempogramPhase[i + (measureK / beatK)].second - tempogramPhase[i].second;
+            qDebug() << block << i << delta;
+            if (min > delta) {
+                min = delta;
+                k_min = i * beatK - m_tempogramWindowLength / 2 + block * 128 + offsets[block];
+                i_min = i;
+            }
+            if (max < delta) {
+                max = delta;
+                k_max = i * beatK + measureK - m_tempogramWindowLength / 2 + block * 128 + offsets[block];
+                i_max = i;
             }
         }
+
+        if (min < -0.1 ) { //&& i_min > 0 && i_min < (static_cast<int>(tempogramPhase.size()) - (measureK / beatK) - 1)) {
+            qDebug() << block << beatK << measureK << "min" << k_min << i_min;
+            possible_downbeats_sorted.insert(k_min);
+        }
+        if (max > 0.1 ) { // && i_min > 0 && i_max < (static_cast<int>(tempogramPhase.size()) - (measureK / beatK) - 1)) {
+            qDebug() << block << beatK << measureK << "max" << k_max << i_max;
+            possible_downbeats_sorted.insert(k_max);
+        }
+        */
+
+    /*
         if (i_max > 0 && i_max < tempogramPhase.back().first) {
-            // Store boundaries for viualsation
+            // Store boundaries for visualization
             possible_downbeats_sorted.insert(i_max);
         }
+        */
 
-        qDebug() << "measure:" << block << beatK << measureK
-                 << ((measureK + beatK / 2) * 2 / beatK) * 0.5 << i_max;
+    //qDebug() << "measure:" << block << beatK << measureK
+    //         << ((measureK + beatK / 2) * 2 / beatK) * 0.5 << i_max;
 
-        int pos = block * 128 + measureK + m_tempogramWindowLength / 2;
-        int delta = pos - lastPos;
-        if (delta > (measureK + 1) / 2) {
-            possible_downbeats_auto.insert(pos);
-            lastPos = pos;
+    //int delta = pos - lastPos;
+    //if (delta > (measureK + 1) / 2) {
+    //    possible_downbeats_auto.insert(pos);
+    //    lastPos = pos;
+    //}
+    //}
+
+    std::set<int> measures_sorted;
+    for (size_t block = 0; block < m_tempogramACF.size(); block++) {
+        QList<double> keys = m_tempogramACF[block].keys();
+        for (double measures : keys) {
+            measures_sorted.insert(measures);
         }
     }
 
-    for (const auto& beat : possible_downbeats_auto) {
+    {
+        QDebug deb = qDebug() << "measure Length";
+        for (int measure : measures_sorted) {
+            deb << measure;
+        }
+    }
+
+    for (int note : m_notes) {
+        std::vector<float> tempogramPhase = autocorrelationProcessor.processPhase2(
+                &complexSdCurve[0], complexSdCurve.size(), measures_sorted, note);
+        QDebug deb2 = qDebug() << note;
+        for (float phase : tempogramPhase) {
+            deb2 << phase;
+        }
+    }
+
+    /*
+    //for (const auto& beat : possible_downbeats_auto) {
+    for (const auto& beat : possible_downbeats_sorted) {
         // Output possible downbeat positions
         // TODO: Snap them to the SnapGrid and pick the most likely measure length from the overlapping AC from on of the eight ACF Runs.
         double result = beat * stepSize();
         m_resultBeats.push_back(result);
     }
+    */
 }
 
 void AnalyzerRhythm::computeMetergram() {
@@ -827,11 +883,11 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_downbeatsProcessor.finalize();
     m_noveltyCurveProcessor.finalize();
 
-    std::vector<double> notes = computeSnapGrid();
+    m_notes = computeSnapGrid();
 
     /*
     // Visualizes Snap Grid as Beats
-    for (const auto& beat : notes) {
+    for (const auto& beat : m_notes) {
         double result = beat * stepSize();
         m_resultBeats.push_back(result);
     }

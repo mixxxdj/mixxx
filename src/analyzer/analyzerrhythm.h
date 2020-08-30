@@ -48,7 +48,7 @@ class AnalyzerRhythm : public Analyzer {
 
     // beats are in detection function increments
     std::vector<double> computeBeats();
-    std::vector<double> computeSnapGrid();
+    std::vector<int> computeSnapGrid();
 
     // these methods are defined at analyzerrhythmbpm
     // TODO(Cristiano) Hide these!! Maybe a friend class?
@@ -119,5 +119,5 @@ class AnalyzerRhythm : public Analyzer {
     std::vector<QMap<double, double>> m_tempogramDFT;
     std::vector<QMap<double, double>> m_tempogramACF;
     std::vector<QMap<double, double>> m_metergram;
-    
+    std::vector<int> m_notes;
 };

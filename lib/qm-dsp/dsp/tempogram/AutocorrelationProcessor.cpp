@@ -72,7 +72,7 @@ AutoCorrelation AutocorrelationProcessor::process(float * input, int inputLength
 
 int AutocorrelationProcessor::processOffset(float * input, int inputLength, int hop, const std::vector<int>& periods) const
 {
-    int readBlockPointerIndex = m_hopSize * hop - m_windowLength/2;
+    int readBlockPointerIndex = m_hopSize * hop - m_windowLength / 2;
     AutoCorrelation autocorrelation;
 
     float max_sum = 0;
@@ -181,17 +181,17 @@ AutoCorrelation AutocorrelationProcessor::processChanges(float * input, int inpu
 
 std::vector<std::pair<int, float> > AutocorrelationProcessor::processPhase(float * input, int inputLength, int hop, int beatsize, int measuresize, int offset) const
 {
-    int readBlockPointerIndex = m_hopSize * hop + offset - 1;
+    int readBlockPointerIndex = m_hopSize * hop - m_windowLength / 2 + offset - 3;
 
     int shift = measuresize / beatsize / 2 + 1;
     std::vector<std::pair<int, float> > autocorrelationBlock;
 
-    for (int lag = -shift * beatsize; lag <= shift * beatsize; lag += beatsize) {
-        int readPointer = readBlockPointerIndex - m_windowLength / 2 + lag;
+    for (int lag = -shift * beatsize; lag <= m_windowLength - measuresize; lag += beatsize) {
+        int readPointer = readBlockPointerIndex + lag;
         int map_index = readPointer;
         float sum = 0;
         int refPointer = readPointer + measuresize;
-        for (int n = 0; n < measuresize * 3; n++) {
+        for (int n = 0; n < measuresize + 1; n++) {
             if (refPointer >= inputLength) {
                 break;
             } else if (readPointer >= 0) {
@@ -205,14 +205,52 @@ std::vector<std::pair<int, float> > AutocorrelationProcessor::processPhase(float
                 } else {
                     sum += 1;
                 }
-            } else if (refPointer > 0) {
+            } else if (refPointer < 0) {
                 sum += 1;
             }
             readPointer++;
             refPointer++;
         }
         // store
-        autocorrelationBlock.push_back(std::pair(map_index + 2 * measuresize, sum / (measuresize + 1)));
+        autocorrelationBlock.push_back(std::pair(map_index, sum / (measuresize + 1)));
     }
     return autocorrelationBlock;
 }
+
+
+std::vector<float> AutocorrelationProcessor::processPhase2(float * input, int inputLength, std::set<int> measuresizes, int offset) const
+{
+    int readBlockPointerIndex = offset - 3;
+    std::vector<float> autocorrelation;
+
+    for (int measuresize: measuresizes) {
+        int readPointer = readBlockPointerIndex;
+        float sum = 0;
+        int refPointer = readPointer + measuresize;
+        for (int n = 0; n < measuresize + 1; n++) {
+            if (refPointer >= inputLength) {
+                break;
+            } else if (readPointer >= 0) {
+                float inref = input[refPointer];
+                float diff = input[readPointer] * inref;
+                float ref1 = input[readPointer] * input[readPointer];
+                float ref2 = inref * inref;
+                float ref = ((ref1 + ref2)/2);
+                if (ref > 0) {
+                    sum += diff /((ref1 + ref2)/2);
+                } else {
+                    sum += 1;
+                }
+            } else if (refPointer < 0) {
+                sum += 1;
+            }
+            readPointer++;
+            refPointer++;
+        }
+        // store
+        autocorrelation.push_back(sum / (measuresize + 1));
+    }
+    return autocorrelation;
+}
+
+
