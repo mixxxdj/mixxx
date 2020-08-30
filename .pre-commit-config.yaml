@@ -69,6 +69,7 @@ repos:
   rev: v1.17.1
   hooks:
   - id: codespell
+    exclude: ^.*\.(pot?|ts)$
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.2.0
   hooks:
