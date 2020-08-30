@@ -15,7 +15,7 @@ QDebug operator<<(QDebug dbg, SoundSourceProviderPriority arg) {
     case SoundSourceProviderPriority::Highest:
         return dbg << static_cast<int>(arg) << "(highest)";
     default:
-        DEBUG_ASSERT(!"reachable");
+        DEBUG_ASSERT(!"unexpected SoundSourceProviderPriority");
         return dbg;
     }
 }
