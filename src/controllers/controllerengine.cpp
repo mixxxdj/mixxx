@@ -683,7 +683,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
+                coScript->getKey(), ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
             coScript->slotSet(newValue);
         }
@@ -720,7 +720,7 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
+                coScript->getKey(), ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
           coScript->setParameter(newParameter);
         }
@@ -1448,7 +1448,7 @@ bool ControllerEngine::isScratching(int deck) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObject* pControl = ControlObject::getControl(key, ControlFlag::AllowMissingOrInvalid);
+    ControlObject* pControl = ControlObject::getControl(key, ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         qWarning() << "Failed to" << (set ? "enable" : "disable")
                    << "softTakeover for invalid control" << key;
@@ -1473,7 +1473,7 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 void ControllerEngine::softTakeoverIgnoreNextValue(
         QString group, const QString name) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObject* pControl = ControlObject::getControl(key, ControlFlag::AllowMissingOrInvalid);
+    ControlObject* pControl = ControlObject::getControl(key, ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         qWarning() << "Failed to call softTakeoverIgnoreNextValue for invalid control" << key;
         return;
