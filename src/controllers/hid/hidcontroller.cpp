@@ -293,15 +293,15 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
         }
     } else {
         controllerDebug(result << "bytes sent to" << getName()
-                               << "serial #" << hid_serial
-                               << "(including report ID of" << reportID << ")");
+                 << "serial #" << hid_serial
+                 << "(including report ID of" << reportID << ")");
     }
 }
 
 void HidController::sendFeatureReport(
-        QList<int> dataList, unsigned int reportID) {
+        const QList<int>& dataList, unsigned int reportID) {
     QByteArray dataArray;
-    foreach (int datum, dataList) {
+    for (const int datum: dataList) {
         dataArray.append(datum);
     }
 	
