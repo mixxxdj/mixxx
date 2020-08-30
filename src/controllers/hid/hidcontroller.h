@@ -51,7 +51,7 @@ class HidController final : public Controller {
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);	
     Q_INVOKABLE void send_feature_report(
-	        QList<int> data, unsigned int length, unsigned int reportID = 0);
+            QList<int> data, unsigned int length, unsigned int reportID = 0);
 
   private slots:
     int open() override;
@@ -67,7 +67,7 @@ class HidController final : public Controller {
     void virtual send(QByteArray data, unsigned int reportID);
 
     void send_feature_report(QByteArray data, unsigned int reportID);
-	
+
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     ControllerPreset* preset() override {

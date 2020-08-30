@@ -288,8 +288,8 @@ void HidController::send(QByteArray data, unsigned int reportID) {
         }
     } else {
         controllerDebug(result << "bytes sent to" << getName()
-							   << "serial #" << hid_serial
-					           << "(including report ID of" << reportID << ")");
+                               << "serial #" << hid_serial
+                               << "(including report ID of" << reportID << ")");
     }
 }
 
@@ -308,7 +308,7 @@ void HidController::send_feature_report(QByteArray data, unsigned int reportID) 
     data.prepend(reportID);
 
     int result = hid_send_feature_report(
-	        m_pHidDevice, (unsigned char*)data.constData(), data.size());
+            m_pHidDevice, (unsigned char*)data.constData(), data.size());
     if (result == -1) {
         if (ControllerDebug::enabled()) {
             qWarning() << "Unable to send data to" << getName()
