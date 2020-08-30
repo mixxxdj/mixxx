@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Henk Gordebeke <scheidsinfo@ziggo.nl>, 2017
 # Mario Moens <marimo.it4u@gmail.com>, 2020
@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2020-05-05 13:41+0000\n"
+"PO-Revision-Date: 2020-06-08 12:31+0000\n"
 "Last-Translator: Mario Moens <marimo.it4u@gmail.com>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/nl_NL/)\n"
 "MIME-Version: 1.0\n"
@@ -304,7 +304,7 @@ msgstr "&Verwijderen"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr "&Sluten"
+msgstr "&Sluiten"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
@@ -336,7 +336,7 @@ msgstr "&Herstarten"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr "&Sluten"
+msgstr "&Sluiten"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
@@ -371,4 +371,4 @@ msgstr "&Herstarten"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr "&Sluten"
+msgstr "&Sluiten"

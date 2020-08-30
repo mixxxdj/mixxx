@@ -1,6 +1,7 @@
-# 
+#
 # Translators:
 # Artem, 2018
+# Irina Fedulova <istartlin@gmail.com>, 2020
 # S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
@@ -10,8 +11,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2019-04-17 21:53+0000\n"
-"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
+"PO-Revision-Date: 2020-08-14 15:06+0000\n"
+"Last-Translator: Irina Fedulova <istartlin@gmail.com>\n"
 "Language-Team: Russian (Russia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ru_RU/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -65,13 +66,13 @@ msgid ""
 "You are about to install the 32-bit version on a 64-bit operating system. We"
 " recommend using the 64-bit version for better performance. You can download"
 " the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Вы пытаетесь установить 32-битную версию на 64-битную версию операционной системы. Мы рекомендуем использовать 64-битную версию для увеличения производительности.Вы можете скачать 64-битную версию программы на http://mixxx.org/download/."
+msgstr "Вы пытаетесь установить 32-битную версию на 64-битную версию операционной системы. Мы рекомендуем использовать 64-битную версию для увеличения производительности. Вы можете скачать 64-битную версию программы на http://mixxx.org/download/."
 
 msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr "Вы установили Mixxx на операционную систему, которая более не поддерживается. Некоторые функции могут не работать или работать некорректно. Рекомендуем Вам обновить операционную систему."
+msgstr "Вы установили Mixxx на операционную систему, которая более не поддерживается. Некоторые функции могут не работать или работать некорректно. Рекомендуем вам обновить операционную систему."
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -94,14 +95,14 @@ msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr "Обнаружена страя версия Mixxx. Так как установщик был изменен, нет возможности обновения версии ПО. Пожалуйста, удалите старую версию перед запуском данного установщика."
+msgstr "Обнаружена старая версия Mixxx. Так как установщик был изменен, нет возможности обновления версии ПО. Пожалуйста, удалите старую версию перед запуском данного установщика."
 
 msgctxt "VCredistNotFound"
 msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
 "Mixxx developers."
-msgstr "Установщик не нашел Microsoft Visual C++ 2015 Redistributable в данной системе. Судя по всему это баг установщика, о котором стоит сообщить создателям Mixxx"
+msgstr "Установщик не нашел Microsoft Visual C++ 2015 Redistributable в данной системе. Судя по всему, это баг установщика, о котором стоит сообщить создателям Mixxx."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
@@ -111,7 +112,7 @@ msgstr "{\\WixUI_Font_Title}Предупреждение"
 #.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
-msgstr "Запуск Mixxx, и выход из режима настройки"
+msgstr "Запуск Mixxx и выход из режима настройки"
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
@@ -152,7 +153,7 @@ msgctxt "FeatureManualDescription"
 msgid ""
 "The Mixxx user manual in PDF form, also available at "
 "http://mixxx.org/manual/"
-msgstr "Руквоводство пользователя Mixxx в формате PDF, так же доступно на http://mixxx.org/manual/"
+msgstr "Руководство пользователя Mixxx в формате PDF также доступно на http://mixxx.org/manual/"
 
 msgctxt "FeatureTranslationsTitle"
 msgid "Translations"
@@ -312,7 +313,7 @@ msgstr "Успешная установка"
 
 msgctxt "SuccessInstallHeader"
 msgid "Mixxx installation has been successful"
-msgstr "Установка Mixxx прошло успешно"
+msgstr "Установка Mixxx прошла успешно"
 
 msgctxt "SuccessRepairHeader"
 msgid "Mixxx repair has been successful"
@@ -344,7 +345,7 @@ msgstr "Ошибка установки"
 
 msgctxt "FailureInstallHeader"
 msgid "Mixxx installation failed"
-msgstr "Установки программы Mixxx не удалось"
+msgstr "Установка программы Mixxx не удалась"
 
 msgctxt "FailureRepairHeader"
 msgid "Mixxx repair failed"
@@ -363,7 +364,7 @@ msgstr "Одна или несколько проблем вызвали сбо�
 msgctxt "FailureRestartText"
 msgid ""
 "You must restart your computer to complete the rollback of the software."
-msgstr "Необходимо перезагрузить компьютер для завершения возврата программного обеспечения."
+msgstr "Необходимо перезагрузить компьютер для завершения отката программного обеспечения."
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"

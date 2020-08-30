@@ -80,12 +80,6 @@ TrackDAO::~TrackDAO() {
     addTracksFinish(true);
 }
 
-void TrackDAO::initialize(
-        const QSqlDatabase& database) {
-    DEBUG_ASSERT(!m_database.isOpen());
-    m_database = database;
-}
-
 void TrackDAO::finish() {
     qDebug() << "TrackDAO::finish()";
 
@@ -789,6 +783,21 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
                 << "Track has already been added to the database"
                 << oldTrackId;
         DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+        const auto trackLocation = pTrack->getLocation();
+        // TODO: These duplicates are only detected by chance when
+        // the other track is currently cached. Instead file aliasing
+        // must be detected reliably in any situation.
+        if (trackFile.location() != trackLocation) {
+            kLogger.warning()
+                    << "Cannot add track:"
+                    << "Both the new track at"
+                    << trackFile.location()
+                    << "and an existing track at"
+                    << trackLocation
+                    << "are referencing the same file"
+                    << trackFile.canonicalLocation();
+            return TrackPointer();
+        }
         return pTrack;
     }
     // Keep the GlobalTrackCache locked until the id of the Track
@@ -1358,19 +1367,31 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
 
     GlobalTrackCacheResolver cacheResolver(TrackFile(trackLocation), trackId);
     pTrack = cacheResolver.getTrack();
-    VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        // Just to be safe, but this should never happen!!
-        return pTrack;
-    }
-    DEBUG_ASSERT(pTrack->getId() == trackId);
-    if (cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::HIT) {
+    if (cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::Hit) {
         // Due to race conditions the track might have been reloaded
         // from the database in the meantime. In this case we abort
         // the operation and simply return the already cached Track
         // object which is up-to-date.
+        DEBUG_ASSERT(pTrack);
         return pTrack;
     }
-    DEBUG_ASSERT(cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::MISS);
+    if (cacheResolver.getLookupResult() ==
+            GlobalTrackCacheLookupResult::ConflictCanonicalLocation) {
+        // Reject requests that would otherwise cause a caching caching conflict
+        // by accessing the same, physical file from multiple tracks concurrently.
+        DEBUG_ASSERT(!pTrack);
+        DEBUG_ASSERT(cacheResolver.getTrackRef().hasId());
+        DEBUG_ASSERT(cacheResolver.getTrackRef().hasCanonicalLocation());
+        kLogger.warning()
+                << "Failed to load track with id"
+                << trackId
+                << "that is referencing the same file"
+                << cacheResolver.getTrackRef().getCanonicalLocation()
+                << "as the cached track with id"
+                << cacheResolver.getTrackRef().getId();
+        return pTrack;
+    }
+    DEBUG_ASSERT(cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::Miss);
     // The cache will immediately be unlocked to reduce lock contention!
     cacheResolver.unlockCache();
 
