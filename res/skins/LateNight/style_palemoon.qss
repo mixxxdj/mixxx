@@ -191,7 +191,9 @@ WSearchLineEdit {
   #KeyText,
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
-  #spinBoxTransition  {
+  #spinBoxTransition,
+  /* Prevent cut-off or shifted stars on macOS */
+  WStarRating {
     background-color: #19191a;
     }
     #KeyText,
