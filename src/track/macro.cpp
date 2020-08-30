@@ -102,8 +102,17 @@ void Macro::addAction(const MacroAction& action) {
     m_actions.append(action);
 }
 
+double Macro::getStartSamplePos() const {
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return 0;
+    }
+    return m_actions.first().getTargetSamplePos();
+}
+
 void Macro::setEnd(double framePos) {
-    DEBUG_ASSERT(!isEmpty());
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return;
+    }
     // can't use replace because MacroAction is immutable
     m_actions.insert(0, MacroAction(framePos, m_actions.first().target));
     m_actions.removeAt(1);

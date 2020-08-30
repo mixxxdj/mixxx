@@ -240,7 +240,7 @@ void MacroControl::slotActivate(double value) {
 
 void MacroControl::slotGotoPlay(double value) {
     if (value && getStatus() > Status::Recording) {
-        seekExact(m_pMacro->getActions().first().getTargetSamplePos());
+        seekExact(m_pMacro->getStartSamplePos());
         play();
     }
 }

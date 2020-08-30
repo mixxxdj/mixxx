@@ -77,6 +77,8 @@ class Macro {
 
     const QList<MacroAction>& getActions() const;
     void addAction(const MacroAction& action);
+
+    double getStartSamplePos() const;
     /// Sets the end of the Macro (relevant for looping)
     void setEnd(double framePos);
 
