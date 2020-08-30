@@ -1,7 +1,8 @@
-#ifndef MIXXX_DESKTOPHELPER_H
-#define MIXXX_DESKTOPHELPER_H
+#pragma once
 
-class QStringList;
+#include <QtGlobal>
+
+QT_FORWARD_DECLARE_CLASS(QStringList);
 
 namespace mixxx {
 
@@ -10,6 +11,4 @@ public:
    static void openInFileBrowser(const QStringList& paths);
 };
 
-}
-
-#endif // MIXXX_DESKTOPHELPER_H
+} // namespace mixxx

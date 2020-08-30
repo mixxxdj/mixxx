@@ -1,9 +1,8 @@
-#ifndef LAUNCHIMAGE_H_
-#define LAUNCHIMAGE_H_
+#pragma once
 
 #include <QWidget>
 
-class QProgressBar;
+QT_FORWARD_DECLARE_CLASS(QProgressBar);
 
 // This is a widget that is shown in the Mixxx main window
 // until the skin is ready to use.
@@ -47,5 +46,3 @@ class LaunchImage: public QWidget {
   private:
     QProgressBar* m_pProgressBar;
 };
-
-#endif // LAUNCHIMAGE_H_
