@@ -47,7 +47,7 @@ class SoundSourceProviderRegistry {
             const SoundSourceProviderPointer& pProvider);
 
     QStringList getRegisteredFileExtensions() const {
-        return m_registry.keys();
+        return m_registrationListsByFileExtension.keys();
     }
 
     /// Returns all registrations for the given file extension.
@@ -70,11 +70,12 @@ class SoundSourceProviderRegistry {
     }
 
   private:
-    typedef QMap<QString, QList<SoundSourceProviderRegistration>> FileExtension2RegistrationList;
-    FileExtension2RegistrationList m_registry;
+    typedef QMap<QString, QList<SoundSourceProviderRegistration>>
+            RegistrationListByFileExtensionMap;
+    RegistrationListByFileExtensionMap m_registrationListsByFileExtension;
 
-    typedef QMap<QString, SoundSourceProviderPointer> DisplayName2Provider;
-    DisplayName2Provider m_providersByDisplayName;
+    typedef QMap<QString, SoundSourceProviderPointer> ProviderByDisplayNameMap;
+    ProviderByDisplayNameMap m_providersByDisplayName;
 };
 
 } // namespace mixxx

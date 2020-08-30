@@ -84,7 +84,7 @@ int SoundSourceProviderRegistry::registerProvider(
                 << priority;
         SoundSourceProviderRegistration registration(pProvider, priority);
         QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
-                m_registry[fileExtension];
+                m_registrationListsByFileExtension[fileExtension];
         insertRegistration(
                 &registrationsForFileExtension,
                 std::move(registration));
@@ -97,8 +97,8 @@ int SoundSourceProviderRegistry::registerProvider(
 QList<SoundSourceProviderRegistration>
 SoundSourceProviderRegistry::getRegistrationsForFileExtension(
         const QString& fileExtension) const {
-    auto i = m_registry.constFind(fileExtension);
-    if (m_registry.constEnd() != i) {
+    auto i = m_registrationListsByFileExtension.constFind(fileExtension);
+    if (m_registrationListsByFileExtension.constEnd() != i) {
         DEBUG_ASSERT(!i.value().isEmpty());
         return i.value();
     } else {
