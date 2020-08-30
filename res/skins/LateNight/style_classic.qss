@@ -40,7 +40,9 @@ WLibrary,
 #PreviewDeck,
 #LibExpandBox,
 #SearchLineBox,
-QAbstractScrollArea::corner {
+QAbstractScrollArea::corner,
+/* Prevent cut-off or shifted stars on macOS */
+WStarRating {
   background-color: #1e1e1e;
 }
 
