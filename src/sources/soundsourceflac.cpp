@@ -83,7 +83,8 @@ QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
 }
 
 SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;
