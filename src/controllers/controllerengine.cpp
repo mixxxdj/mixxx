@@ -681,9 +681,9 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    if (coScript != nullptr) {
+    if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::NoAssertIfMissing);
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
             coScript->slotSet(newValue);
         }
@@ -718,9 +718,9 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    if (coScript != nullptr) {
+    if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::NoAssertIfMissing);
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
           coScript->setParameter(newParameter);
         }
@@ -1447,9 +1447,11 @@ bool ControllerEngine::isScratching(int deck) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
-    ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
+    ConfigKey key = ConfigKey(group, name);
+    ControlObject* pControl = ControlObject::getControl(key, ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
+        qWarning() << "Failed to" << (set ? "enable" : "disable")
+                   << "softTakeover for invalid control" << key;
         return;
     }
     if (set) {
@@ -1470,9 +1472,10 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
      -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeoverIgnoreNextValue(
         QString group, const QString name) {
-    ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
+    ConfigKey key = ConfigKey(group, name);
+    ControlObject* pControl = ControlObject::getControl(key, ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
+        qWarning() << "Failed to call softTakeoverIgnoreNextValue for invalid control" << key;
         return;
     }
 
