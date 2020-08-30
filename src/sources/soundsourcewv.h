@@ -1,10 +1,9 @@
-#ifndef MIXXX_SOUNDSOURCEWV_H
-#define MIXXX_SOUNDSOURCEWV_H
+#pragma once
 
 #include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 
-class QFile;
+QT_FORWARD_DECLARE_CLASS(QFile);
 
 namespace mixxx {
 
@@ -60,5 +59,3 @@ class SoundSourceProviderWV : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEWV_H

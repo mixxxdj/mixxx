@@ -8,7 +8,8 @@
 #include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
-class QDomNode;
+QT_FORWARD_DECLARE_CLASS(QDomNode);
+
 class SkinContext;
 class WaveformSignalColors;
 
