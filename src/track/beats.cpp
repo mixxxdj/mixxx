@@ -665,75 +665,10 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
         *pNextBeatFrame = kInvalidFramePos;
         return false;
     }
-    Beat beat(frame);
-
-    // it points at the first occurrence of beat or the next largest beat
-    BeatList::const_iterator it =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat);
-
-    // Back-up by one.
-    if (it != m_beats.begin()) {
-        --it;
-    }
-
-    // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.cend();
-    BeatList::const_iterator previous_beat = m_beats.cend();
-    BeatList::const_iterator next_beat = m_beats.cend();
-    for (; it != m_beats.end(); ++it) {
-        qint32 delta = it->framePosition() - beat.framePosition();
-        // If the position is within a fraction of the local beat length,
-        // pretend we are on that beat.
-        const double kFrameEpsilon = kBeatVicinityFactor *
-                getBeatLengthFrames(
-                        it->bpm(), getSampleRate(), it->timeSignature());
-        // We are "on" this beat.
-        if (abs(delta) < kFrameEpsilon) {
-            on_beat = it;
-            break;
-        }
-
-        if (delta < 0) {
-            // If we are not on the beat and delta < 0 then this beat comes
-            // before our current position.
-            previous_beat = it;
-        } else {
-            // If we are past the beat and we aren't on it then this beat comes
-            // after our current position.
-            next_beat = it;
-            // Stop because we have everything we need now.
-            break;
-        }
-    }
-
-    // If we are within epsilon samples of a beat then the immediately next and
-    // previous beats are the beat we are on.
-    if (on_beat != m_beats.end()) {
-        previous_beat = on_beat;
-        next_beat = on_beat + 1;
-    }
-
-    *pPrevBeatFrame = kInvalidFramePos;
-    *pNextBeatFrame = kInvalidFramePos;
-
-    for (; next_beat != m_beats.end(); ++next_beat) {
-        pNextBeatFrame->setValue(next_beat->framePosition().getValue());
-        break;
-    }
-    if (previous_beat != m_beats.end()) {
-        for (; true; --previous_beat) {
-            pPrevBeatFrame->setValue(
-                    previous_beat->framePosition().getValue());
-            break;
-
-            // Don't step before the start of the list.
-            if (previous_beat == m_beats.begin()) {
-                break;
-            }
-        }
-    }
-    return *pPrevBeatFrame != kInvalidFramePos &&
-            *pNextBeatFrame != kInvalidFramePos;
+    const auto& prevBeat = findPrevBeat(frame);
+    *pPrevBeatFrame = prevBeat.framePosition();
+    *pNextBeatFrame = getBeatAtIndex(prevBeat.beatIndex() + 1).framePosition();
+    return true;
 }
 
 void BeatsInternal::setGrid(Bpm dBpm, FramePos firstBeatFrame) {

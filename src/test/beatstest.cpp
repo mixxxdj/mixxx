@@ -148,7 +148,6 @@ TEST_F(BeatsTest, PrevNextBeats) {
             pBeats->getLastBeatPosition(), &prevBeat, &nextBeat);
     EXPECT_DOUBLE_EQ(
             pBeats->getLastBeatPosition().getValue(), prevBeat.getValue());
-    EXPECT_EQ(kInvalidFramePos, nextBeat);
 
     pBeats->findPrevNextBeats(
             pBeats->getFirstBeatPosition(), &prevBeat, &nextBeat);
@@ -158,8 +157,6 @@ TEST_F(BeatsTest, PrevNextBeats) {
             (pBeats->getFirstBeatPosition() + getBeatLengthFrames(m_bpm))
                     .getValue(),
             nextBeat.getValue());
-
-    // TODO(JVC) Add some tests in the middle
 }
 
 TEST_F(BeatsTest, NthBeatWhenOnBeat) {
@@ -440,21 +437,18 @@ TEST_F(BeatsTest, Translate) {
 
 TEST_F(BeatsTest, FindClosest) {
     const auto& pBeats = m_pTrack1->getBeats();
+    const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
     // Test deltas ranging from previous beat to next beat
-    for (FrameDiff_t delta = -m_iSampleRate; delta <= m_iSampleRate; delta++) {
-        for (int i = 0; i < pBeats->size(); i++) {
+    for (FrameDiff_t delta = -0.9 * beatLength; delta <= 0.9 * beatLength;
+            delta += 0.1 * beatLength) {
+        for (int i = -pBeats->size(); i < 2 * pBeats->size(); i++) {
             const auto pos = pBeats->getBeatAtIndex(i).framePosition();
             const auto foundPos = pBeats->findClosestBeat(pos + delta);
-            // Correct change of beat
             FramePos expectedPos = pos +
-                    (delta > (m_iSampleRate / 2.0) ? m_iSampleRate : 0) +
-                    (delta < (-m_iSampleRate / 2.0) ? -m_iSampleRate : 0);
-            // Enforce boundaries
-            expectedPos = std::min(expectedPos, pBeats->getLastBeatPosition());
-            expectedPos = std::max(expectedPos, pBeats->getFirstBeatPosition());
-            EXPECT_DOUBLE_EQ(foundPos.getValue(), expectedPos.getValue());
+                    (delta >= (beatLength / 2.0) ? beatLength : 0) +
+                    (delta < (-beatLength / 2.0) ? -beatLength : 0);
+            EXPECT_DOUBLE_EQ(foundPos.getValue(), expectedPos.getValue()) << delta;
         }
-        break;
     }
 }
 
