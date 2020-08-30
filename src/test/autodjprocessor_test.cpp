@@ -121,7 +121,8 @@ class MockPlayerManager : public PlayerManagerInterface {
     virtual ~MockPlayerManager() {
     }
 
-    MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(QString));
+    MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const QString&));
+    MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const ChannelHandle&));
     MOCK_CONST_METHOD1(getDeck, Deck*(unsigned int));
     MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(unsigned int));
     MOCK_CONST_METHOD1(getSampler, Sampler*(unsigned int));

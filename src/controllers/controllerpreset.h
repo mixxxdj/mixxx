@@ -21,7 +21,7 @@ class ControllerPreset {
     ControllerPreset()
             : m_bDirty(false) {
     }
-    virtual ~ControllerPreset() {}
+    virtual ~ControllerPreset() = default;
 
     struct ScriptFileInfo {
         ScriptFileInfo()
@@ -55,6 +55,14 @@ class ControllerPreset {
 
     const QList<ScriptFileInfo>& getScriptFiles() const {
         return m_scripts;
+    }
+
+    void setModuleFileInfo(QFileInfo fileInfo) {
+        m_moduleFileInfo = fileInfo;
+    }
+
+    QFileInfo moduleFileInfo() const {
+        return m_moduleFileInfo;
     }
 
     inline void setDirty(bool bDirty) {
@@ -161,7 +169,6 @@ class ControllerPreset {
     virtual void accept(ConstControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
-    QList<ScriptFileInfo> scripts;
     // Optional list of controller device match details
     QList< QHash<QString,QString> > m_productMatches;
 
@@ -179,6 +186,7 @@ class ControllerPreset {
     QString m_mixxxVersion;
 
     QList<ScriptFileInfo> m_scripts;
+    QFileInfo m_moduleFileInfo;
 };
 
 typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;

@@ -84,7 +84,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         const QList<QFileInfo>& covers) {
     CoverInfoRelative coverInfoRelative;
     DEBUG_ASSERT(coverInfoRelative.type == CoverInfo::NONE);
-    DEBUG_ASSERT(!CoverImageUtils::isValidHash(coverInfoRelative.hash));
+    DEBUG_ASSERT(coverInfoRelative.imageDigest().isNull());
     DEBUG_ASSERT(coverInfoRelative.coverLocation.isNull());
     coverInfoRelative.source = CoverInfo::GUESSED;
     if (covers.isEmpty()) {
@@ -142,13 +142,12 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         }
     }
 
-    if (bestInfo != NULL) {
-        QImage image(bestInfo->filePath());
+    if (bestInfo) {
+        const QImage image(bestInfo->filePath());
         if (!image.isNull()) {
             coverInfoRelative.type = CoverInfo::FILE;
-            // TODO() here we may introduce a duplicate hash code
-            coverInfoRelative.hash = CoverImageUtils::calculateHash(image);
             coverInfoRelative.coverLocation = bestInfo->fileName();
+            coverInfoRelative.setImage(image);
         }
     }
 
@@ -163,7 +162,7 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
         CoverInfoRelative coverInfo;
         coverInfo.source = CoverInfo::GUESSED;
         coverInfo.type = CoverInfo::METADATA;
-        coverInfo.hash = CoverImageUtils::calculateHash(embeddedCover);
+        coverInfo.setImage(embeddedCover);
         DEBUG_ASSERT(coverInfo.coverLocation.isNull());
         return coverInfo;
     }

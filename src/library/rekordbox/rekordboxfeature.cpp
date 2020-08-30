@@ -13,11 +13,8 @@
 
 #include <mp3guessenc.h>
 
-#include "engine/engine.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -28,9 +25,6 @@
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/file.h"
-#include "util/sandbox.h"
-#include "waveform/waveform.h"
 
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -1155,10 +1149,7 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
 }
 
 bool RekordboxPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH)) {
-        return true;
-    }
-    return BaseExternalPlaylistModel::isColumnInternal(column);
+    return column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH) || BaseExternalPlaylistModel::isColumnInternal(column);
 }
 
 RekordboxFeature::RekordboxFeature(

@@ -88,20 +88,19 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        SEEK_NONE = 0x00,
-        SEEK_PHASE = 0x01, // This is set to force an in-phase seek.
-        SEEK_EXACT = 0x02, // This is used to seek to position regardless of
-                           // if Quantize is enabled.
+        SEEK_NONE = 0u,
+        /// Force an in-phase seek
+        SEEK_PHASE = 1u,
+        /// Bypass Quantization
+        SEEK_EXACT = 2u,
+        /// This is an artificial state that happens if an exact seek and a
+        /// phase seek are scheduled at the same time.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
-						   // This is an artificial state that happens if
-                           // an exact seek and a phase seek are scheduled
-                           // at the same time.
-        SEEK_STANDARD = 0x04, // This seeks to the exact position if Quantize is
-                              // disabled or performs an in-phase seek if it is enabled.
+        /// #SEEK_PHASE if Quantize enables, otherwise SEEK_EXACT
+        SEEK_STANDARD = 4u,
+        /// This is an artificial state that happens if a standard seek and a
+        /// phase seek are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
-                              // This is an artificial state that happens if
-                              // a standard seek and a phase seek are scheduled
-                              // at the same time.
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
@@ -117,13 +116,15 @@ class EngineBuffer : public EngineObject {
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
+    QString getGroup() const;
     // Return the current rate (not thread-safe)
-    double getSpeed();
-    bool getScratching();
+    double getSpeed() const;
+    bool getScratching() const;
+    bool isReverse() const;
     // Returns current bpm value (not thread-safe)
-    double getBpm();
+    double getBpm() const;
     // Returns the BPM of the loaded track around the current position (not thread-safe)
-    double getLocalBpm();
+    double getLocalBpm() const;
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -139,29 +140,25 @@ class EngineBuffer : public EngineObject {
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
-    QString getGroup();
-    bool isTrackLoaded();
-    // return true if a seek is currently cueued but not yet processed, false otherwise
-    // if no seek was queued, the seek position is set to -1
-    bool getQueuedSeekPosition(double* pSeekPosition);
+    /// Return true iff a seek is currently queued but not yet processed
+    /// If no seek was queued, the seek position is set to -1
+    bool getQueuedSeekPosition(double* pSeekPosition) const;
+
+    bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
 
-    bool isReverse();
-
-    double getExactPlayPos();
-    double getVisualPlayPos();
-    double getTrackSamples();
-
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+    double getExactPlayPos() const;
+    double getVisualPlayPos() const;
+    double getTrackSamples() const;
 
     double getRateRatio() const;
 
-    // For dependency injection of readers.
-    //void setReader(CachingReader* pReader);
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScaleVinyl,
-                          EngineBufferScale* pScaleKeylock);
+    void setScalerForTest(
+            EngineBufferScale* pScaleVinyl,
+            EngineBufferScale* pScaleKeylock);
 
     // For injection of fake tracks.
     void loadFakeTrack(TrackPointer pTrack, bool bPlay);

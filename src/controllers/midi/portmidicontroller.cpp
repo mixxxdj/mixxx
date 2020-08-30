@@ -14,9 +14,8 @@
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,
         int inputDeviceIndex,
-        int outputDeviceIndex,
-        UserSettingsPointer pConfig)
-        : MidiController(pConfig), m_cReceiveMsg_index(0), m_bInSysex(false) {
+        int outputDeviceIndex)
+        : MidiController(), m_cReceiveMsg_index(0), m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
         // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
         m_midiBuffer[k].message = 0;
@@ -229,7 +228,7 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
     }
 }
 
-void PortMidiController::send(QByteArray data) {
+void PortMidiController::sendBytes(const QByteArray& data) {
     // PortMidi does not receive a length argument for the buffer we provide to
     // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
     // message is over. If one is not provided, it will overflow the buffer and

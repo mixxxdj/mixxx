@@ -42,7 +42,7 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
-    BulkController(UserSettingsPointer pConfig,
+    BulkController(
             libusb_context* context,
             libusb_device_handle* handle,
             struct libusb_device_descriptor* desc);
@@ -72,7 +72,7 @@ class BulkController : public Controller {
     bool matchPreset(const PresetInfo& preset) override;
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length);
+    void send(QList<int> data, unsigned int length) override;
 
   private slots:
     int open() override;
@@ -81,7 +81,7 @@ class BulkController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
+    void sendBytes(const QByteArray& data) override;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.

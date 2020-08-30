@@ -72,7 +72,7 @@
               <WidgetGroup><Size>1min,13f</Size></WidgetGroup>
 
               <WidgetGroup>
-                <ObjectName></ObjectName>
+                <ObjectName>VuMeterBoxFull</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>

@@ -17,8 +17,8 @@
 #include "util/math.h"
 #include "util/screensaver.h"
 
-MidiController::MidiController(UserSettingsPointer pConfig)
-        : Controller(pConfig) {
+MidiController::MidiController()
+        : Controller() {
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -26,6 +26,10 @@ MidiController::~MidiController() {
     destroyOutputHandlers();
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
+}
+
+ControllerJSProxy* MidiController::jsProxy() {
+    return new MidiControllerJSProxy(this);
 }
 
 QString MidiController::presetExtension() {
@@ -198,6 +202,19 @@ void MidiController::commitTemporaryInputMappings() {
 
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value, mixxx::Duration timestamp) {
+    QByteArray byteArray;
+    byteArray.append(status);
+    byteArray.append(control);
+    byteArray.append(value);
+
+    ControllerEngine* pEngine = getEngine();
+    // pEngine is nullptr in tests.
+    if (pEngine) {
+        pEngine->handleInput(byteArray, timestamp);
+    }
+    // legacy stuff below
+
+    // The rest of this function is for legacy mappings
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
@@ -249,9 +266,14 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             return;
         }
 
-        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
-        if (!pEngine->execute(function, channel, control, value, status,
-                              mapping.control.group, timestamp)) {
+        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
+        QJSValueList args;
+        args << QJSValue(channel);
+        args << QJSValue(control);
+        args << QJSValue(value);
+        args << QJSValue(status);
+        args << QJSValue(mapping.control.group);
+        if (!pEngine->executeFunction(function, args)) {
             qDebug() << "MidiController: Invalid script function"
                      << mapping.control.item;
         }
@@ -460,6 +482,8 @@ double MidiController::computeValue(
 
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
+    getEngine()->handleInput(data, timestamp);
+    // legacy stuff below
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
@@ -494,8 +518,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         if (pEngine == NULL) {
             return;
         }
-        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
-        if (!pEngine->execute(function, data, timestamp)) {
+        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
+        if (!pEngine->executeFunction(function, data)) {
             qDebug() << "MidiController: Invalid script function"
                      << mapping.control.item;
         }

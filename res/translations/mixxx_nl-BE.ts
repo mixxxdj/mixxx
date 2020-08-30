@@ -57,7 +57,8 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <source>Banshee database file not found at
 </source>
-        <translation>Banshee database bestand niet gevonden in</translation>
+        <translation>Banshee database bestand niet gevonden op
+</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
@@ -553,7 +554,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="32"/>
         <source>Title</source>
-        <translation>titel</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="33"/>
@@ -741,7 +742,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="10"/>
         <source>Title</source>
-        <translation>titel</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="11"/>
@@ -781,7 +782,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="19"/>
         <source>Microphone %1</source>
-        <translation>Microphone %1</translation>
+        <translation>Microfoon %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="20"/>
@@ -1261,7 +1262,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="37"/>
         <source>Headphone Delay</source>
-        <translation>Hoofdtelefoon Delay</translation>
+        <translation>Hoofdtelefoon Vertraging</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="49"/>
@@ -1281,7 +1282,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="52"/>
         <source>Fast Forward</source>
-        <translation>Snel Voorwaarts</translation>
+        <translation>Snel vooruitspoelen</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="52"/>
@@ -5965,7 +5966,7 @@ en stelt u in staat om de pitch aan te passen voor harmonisch mixen.</translatio
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="289"/>
         <source>Title</source>
-        <translation>titel</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="311"/>
@@ -6996,7 +6997,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="70"/>
         <source>Title</source>
-        <translation>titel</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="75"/>
@@ -7206,7 +7207,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="161"/>
         <source>Title</source>
-        <translation>titel</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="171"/>
@@ -7256,7 +7257,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="701"/>
         <source>Halve BPM</source>
-        <translation>Halve BPM</translation>
+        <translation>1/2 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="805"/>
@@ -7272,7 +7273,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="853"/>
         <source>&amp;Previous</source>
-        <translation>&amp;Vorige</translation>
+        <translation>Vo&amp;rige</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="866"/>
@@ -7283,7 +7284,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="869"/>
         <source>&amp;Next</source>
-        <translation>V&amp;olgende</translation>
+        <translation>Vo&amp;lgende</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="417"/>
@@ -8306,7 +8307,7 @@ Wilt u nu uw bibliotheek scannen op albumhoezen?</translation>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Ongeldig</translation>
     </message>
@@ -8412,67 +8413,67 @@ Wilt u nu uw bibliotheek scannen op albumhoezen?</translation>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Master</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Booth</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Hoofdtelefoon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Bus Links</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Bus Centraal</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Bus Rechts</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Ongeldinge Bus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Deck</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Opnemen/Uitzenden</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Vinyl Control</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Auxiliary</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Ongekend pad-type %1</translation>
     </message>
@@ -8880,7 +8881,7 @@ Met een breedte van nul, maakt dit het mogelijk handmatig over het gehele vertra
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="22"/>
         <source>Emulates the sound of the signal bouncing off the walls of a room</source>
-        <translation>Bootst het geluid van het signaal na dat tegen de muren van een kamer weerkaatst</translation>
+        <translation>Bootst het geluid van het signaal dat tegen de muren van een kamer weerkaatst na</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="27"/>
@@ -8948,7 +8949,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="35"/>
         <source>Kill the Low Filter</source>
-        <translation>Demp de lage filter</translation>
+        <translation>Lage Filter uitzetten</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="45"/>
@@ -8978,7 +8979,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="57"/>
         <source>Kill Mid</source>
-        <translation>Demp Midden</translation>
+        <translation>Midden uitzetten</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="58"/>
@@ -8999,7 +9000,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="80"/>
         <source>Kill High</source>
-        <translation>Demp Hoog</translation>
+        <translation>Hoog uitzetten</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="81"/>
@@ -9081,7 +9082,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/test/metaknob_link_test.cpp" line="216"/>
         <source>Gain for Low Filter (neutral at 1.0)</source>
-        <translation>Versterking voor laagfilter (neutraal op 1.0)</translation>
+        <translation>Versterking voor Lage filter (neutraal op 1.0)</translation>
     </message>
     <message>
         <location filename="../../src/soundio/sounddevicenetwork.cpp" line="45"/>
@@ -9348,7 +9349,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="31"/>
         <source>Adjust balance between left and right channels</source>
-        <translation>Pas de balans tussen linker en rechter kanaal aan.</translation>
+        <translation>Balans aanpassen tussen de linker en rechter kanalen</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="43"/>
@@ -9377,10 +9378,10 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
 Fully left: mono
 Fully right: only side ambiance
 Center: does not change the original signal.</source>
-        <translation>Pas de stereobreedte aan door de balans tussen het midden en de zijkant van het signaal aan te passen.
+        <translation>Pas de stereobreedte aan door de balans tussen het midden en de zijkant van het signaal te veranderen.
 Volledig links: mono
-Volledig rechts: alleen zij-sfeer
-Midden: verandert het oorspronkelijke signaal niet.</translation>
+Geheel rechts: enkel zijdelingse sfeer
+Centrum: verandert het originele signaal niet.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="62"/>
@@ -9754,12 +9755,12 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1294"/>
         <source>Memory cues</source>
-        <translation type="unfinished"/>
+        <translation>Memory cues</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1295"/>
         <source>Loops (after first not usable in Mixxx 2.3 yet)</source>
-        <translation type="unfinished"/>
+        <translation>Loops (nu nog niet bruikbaar in Mixxx2.3 na de eerste)</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1298"/>
@@ -9887,7 +9888,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="377"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
-        <translation>De geschiedenis sectie houdt automatisch een lijst bij van de tracks die je speelt in je DJ sets.</translation>
+        <translation>De geschiedenissectie houdt automatisch een lijst bij van de tracks die je in je dj-sets afspeelt.</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="378"/>
@@ -9936,7 +9937,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="290"/>
         <source>Error setting hostname!</source>
-        <translation>Fout bij het instellen van de hostnaam!</translation>
+        <translation>Fout bij instellen hostname!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="297"/>
@@ -10232,7 +10233,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="46"/>
         <source>Use the mouse to scratch, spin-back or throw tracks.</source>
-        <translation>Gebruik de muis om te scratchen, terug te draaien of op te gooien.</translation>
+        <translation>Gebruik de muis om te scratchen, te backenspinnen of de track in je set te gooien.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="48"/>
@@ -10247,7 +10248,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="51"/>
         <source>Drag with mouse to make temporary pitch adjustments.</source>
-        <translation>Sleep met de muis om tijdelijke aanpassingen in de toonhoogte te maken.</translation>
+        <translation>Sleep met de muis om de toonhoogte tijdelijk aan te passen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="52"/>
@@ -10318,7 +10319,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="110"/>
         <source>Channel Volume Meter</source>
-        <translation>Kanaal Volume Meter</translation>
+        <translation>Volumemeter van het kanaal</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="111"/>
@@ -10403,7 +10404,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="183"/>
         <source>Adjusts the booth output gain.</source>
-        <translation>Past de versterking voor de booth-uitgang aan.</translation>
+        <translation>Pas de booth uitgang aan.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="187"/>
@@ -10428,7 +10429,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="199"/>
         <source>Headphone Volume</source>
-        <translation>Hoofdtelefoon volume</translation>
+        <translation>Volume Hoofdtelefoon</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="200"/>
@@ -10458,7 +10459,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="215"/>
         <source>If activated, the master signal plays in the right channel, while the cueing signal plays in the left channel.</source>
-        <translation>Indien geactiveerd, speelt het hoofdsignaal in het rechterkanaal, terwijl het cueing-signaal in het linkerkanaal speelt.</translation>
+        <translation>Indien geactiveerd, speelt het mastersignaal in het rechterkanaal, terwijl het cueing-signaal in het linkerkanaal speelt.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="217"/>
@@ -10498,7 +10499,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="238"/>
         <source>Preview Deck</source>
-        <translation>Preview Deck</translation>
+        <translation>Voorbeluisterdeck</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="239"/>
@@ -10704,7 +10705,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="324"/>
         <source>Low EQ</source>
-        <translation>Low EQ</translation>
+        <translation>Lage EQ</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="325"/>
@@ -10724,7 +10725,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="334"/>
         <source>High EQ</source>
-        <translation>High EQ</translation>
+        <translation>Hoge EQ</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="335"/>
@@ -11858,7 +11859,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="458"/>
         <source>Cue</source>
-        <translation>Verwijzing</translation>
+        <translation>Cue</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="473"/>
@@ -11975,7 +11976,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="576"/>
         <source>Record Mix</source>
-        <translation>Record Mix</translation>
+        <translation>Opname Mix</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="577"/>
@@ -12227,7 +12228,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="610"/>
         <source>Vinyl Control Mode</source>
-        <translation>Vinyl Control Modus</translation>
+        <translation>Vinylbediening Modus</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="611"/>
@@ -13133,20 +13134,20 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
         <translation>Passthrough</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Gereed om af te spelen, analyzeren ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Track wordt geladen ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finaliseren ..</translation>

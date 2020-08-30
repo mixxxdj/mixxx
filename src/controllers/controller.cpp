@@ -6,27 +6,29 @@
 */
 
 #include <QApplication>
-#include <QScriptValue>
+#include <QJSValue>
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "util/screensaver.h"
 
-Controller::Controller(UserSettingsPointer pConfig)
-        : QObject(),
-          m_pEngine(NULL),
+Controller::Controller()
+        : m_pEngine(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
-          m_bLearning(false),
-          m_pConfig(pConfig) {
+          m_bLearning(false) {
     m_userActivityInhibitTimer.start();
 }
 
 Controller::~Controller() {
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
+}
+
+ControllerJSProxy* Controller::jsProxy() {
+    return new ControllerJSProxy(this);
 }
 
 void Controller::startEngine()
@@ -36,7 +38,7 @@ void Controller::startEngine()
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pEngine = new ControllerEngine(this, m_pConfig);
+    m_pEngine = new ControllerEngine(this);
 }
 
 void Controller::stopEngine() {
@@ -71,6 +73,14 @@ bool Controller::applyPreset(bool initializeScripts) {
     if (success && initializeScripts) {
         m_pEngine->initializeScripts(scriptFiles);
     }
+
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    if (initializeScripts && !pPreset->moduleFileInfo().filePath().isEmpty()) {
+        m_pEngine->loadModule(pPreset->moduleFileInfo());
+    }
     return success;
 }
 
@@ -96,7 +106,7 @@ void Controller::send(QList<int> data, unsigned int length) {
     for (unsigned int i = 0; i < length; ++i) {
         msg[i] = data.at(i);
     }
-    send(msg);
+    sendBytes(msg);
 }
 
 void Controller::triggerActivity()
@@ -138,9 +148,9 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
             continue;
         }
         function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
-        if (!m_pEngine->execute(incomingData, data, timestamp)) {
-            qWarning() << "Controller: Invalid script function" << function;
-        }
+        QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
+        m_pEngine->executeFunction(incomingDataFunction, data);
     }
+
+    m_pEngine->handleInput(data, timestamp);
 }

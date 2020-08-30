@@ -87,11 +87,7 @@
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
-                          <Template src="skin:/decks/overview.xml">
-                            <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-                            <SetVariable name="BgColor"><Variable name="BgColorOverview_12"/></SetVariable>
-                            <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeSampler"/></SetVariable>
-                          </Template>
+                          <Template src="skin:/samplers/overview.xml"/>
                         </Children>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
@@ -129,6 +125,13 @@
                             <Layout>horizontal</Layout>
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
+                              <Template src="skin:/controls/button_2state.xml">
+                                <SetVariable name="TooltipId">keylock</SetVariable>
+                                <SetVariable name="ObjectName">KeylockButton12</SetVariable>
+                                <SetVariable name="BtnType"></SetVariable>
+                                <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
+                                <SetVariable name="Size">21f,18f</SetVariable>
+                              </Template>
                               <PushButton>
                                 <TooltipId>orientation</TooltipId>
                                 <Size>21f,18f</Size>
@@ -153,13 +156,6 @@
                                   <ButtonState>LeftButton</ButtonState>
                                 </Connection>
                               </PushButton>
-                              <Template src="skin:/controls/button_2state.xml">
-                                <SetVariable name="TooltipId">keylock</SetVariable>
-                                <SetVariable name="ObjectName">KeylockButton12</SetVariable>
-                                <SetVariable name="BtnType"></SetVariable>
-                                <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
-                                <SetVariable name="Size">21f,18f</SetVariable>
-                              </Template>
                             </Children>
                           </WidgetGroup>
                         </Children>

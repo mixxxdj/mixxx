@@ -26,7 +26,7 @@
                 <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
                 <ArcColor><Variable name="ArcColorEq"/></ArcColor>
                 <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
-                <KnobCenterYOffset>1.598</KnobCenterYOffset>
+                <KnobCenterYOffset>1.998</KnobCenterYOffset>
                 <Connection>
                   <ConfigKey><Variable name="EqEffect"/>,parameter<Variable name="EqParameter"/></ConfigKey>
                 </Connection>
@@ -34,7 +34,7 @@
               <PushButton>
                 <TooltipId>filter<Variable name="EqRange"/>Kill</TooltipId>
                 <ObjectName>EQKillDot</ObjectName>
-                <Pos>34,28</Pos>
+                <Pos>31,27</Pos>
                 <Size><Variable name="EqKillDotSize"/></Size>
                 <NumberStates>2</NumberStates>
                 <RightClickIsPushButton>false</RightClickIsPushButton>

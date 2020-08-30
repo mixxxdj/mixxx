@@ -974,22 +974,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="101"/>
         <source>Increase internal master BPM by 1</source>
-        <translation>העלאת ביפיאם פנימי ראשי ב1</translation>
+        <translation>העלאת קצב פעימות לדקה פנימי ראשי ב 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="104"/>
         <source>Decrease internal master BPM by 1</source>
-        <translation>הורדת ביפיאם פנימי ראשי ב 1</translation>
+        <translation>הורדת קצב פעימות לדקה פנימי ראשי ב 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="107"/>
         <source>Increase internal master BPM by 0.1</source>
-        <translation>העלאת ביפיאם פנימי ראשי ב 0.1</translation>
+        <translation>העלאת קצב פעימות לדקה פנימי ראשי ב 0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="109"/>
         <source>Decrease internal master BPM by 0.1</source>
-        <translation>הורדת ביפיאם פנימי ראשי ב 0.1</translation>
+        <translation>הורדת קצב פעימות לדקה פנימי ראשי ב 0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="110"/>
@@ -1014,7 +1014,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="123"/>
         <source>Toggle keylock mode</source>
-        <translation>הדלק/כבה מצב שמירת צליל (תו)</translation>
+        <translation>הדלק/כבה מצב שמירת צליל</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="150"/>
@@ -1044,7 +1044,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="197"/>
         <source>Cues</source>
-        <translation>סימונים</translation>
+        <translation>נקודות סימון</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="198"/>
@@ -1054,7 +1054,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
         <source>Set cue point</source>
-        <translation>הגדר נקודת סימון</translation>
+        <translation>קבע נקודת סימון</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
@@ -1205,12 +1205,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
         <source>Beat-Looping</source>
-        <translation>מקצב הלולאה</translation>
+        <translation>לולאה לפי קצב</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="321"/>
         <source>Create %1-beat loop</source>
-        <translation>יצירת מקצב לולאה 1%</translation>
+        <translation>יצירת לולאה לפי קצב 1%</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="322"/>
@@ -1271,12 +1271,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="51"/>
         <source>Fast Rewind</source>
-        <translation>הרצה קדימה</translation>
+        <translation>הרצה אחורה</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="51"/>
         <source>Fast Rewind button</source>
-        <translation>לחצן הרצה קדימה</translation>
+        <translation>לחצן הרצה אחורה</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="52"/>
@@ -1316,7 +1316,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="58"/>
         <source>Jumps to start of track</source>
-        <translation>קפוץ לתחיל השיר</translation>
+        <translation>קפוץ לתחילת השיר</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="59"/>
@@ -1653,7 +1653,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="185"/>
         <source>Toggle Vinyl Control</source>
-        <translation>שליטה כמו פטיפון</translation>
+        <translation>הדלק/כבה שליטה כמו פטיפון</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="186"/>
@@ -8218,7 +8218,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation type="unfinished"/>
     </message>
@@ -8324,67 +8324,67 @@ Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>שליטה כמו פטיפון</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation type="unfinished"/>
     </message>
@@ -12023,7 +12023,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="487"/>
         <source>Fast Rewind</source>
-        <translation>הרצה קדימה</translation>
+        <translation>הרצה אחורה</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="488"/>
@@ -13011,20 +13011,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"/>

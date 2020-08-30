@@ -322,10 +322,8 @@ class Track : public QObject {
     // If the corresponding image has already been loaded it
     // could be provided as a parameter to avoid reloading
     // if actually needed.
-    bool refreshCoverImageHash(
+    bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
-
-    quint16 getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
     void importMetadata(
@@ -382,12 +380,11 @@ class Track : public QObject {
     void slotBeatsUpdated();
 
   private:
-    // Set a unique identifier for the track. Only used by
-    // GlobalTrackCacheResolver!
+    /// Set a unique identifier for the track.
+    /// Only used by GlobalTrackCacheResolver when the track is saved to db for the first time
     void initId(TrackId id);
-    // Reset the unique identifier after purged from library
-    // which undos a previous add. Only used by
-    // GlobalTrackCacheResolver!
+    /// Remove the TrackId.
+    /// Only used by GlobalTrackCacheResolver when the track is purged from the library
     void resetId();
 
     void relocate(

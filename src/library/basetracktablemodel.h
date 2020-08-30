@@ -18,9 +18,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
   public:
     explicit BaseTrackTableModel(
-            const char* settingsNamespace,
+            QObject* parent,
             TrackCollectionManager* const pTrackCollectionManager,
-            QObject* parent);
+            const char* settingsNamespace);
     ~BaseTrackTableModel() override = default;
 
     ///////////////////////////////////////////////////////

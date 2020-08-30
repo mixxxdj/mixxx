@@ -30,7 +30,6 @@
     <path
        id="path3936-0-8-9-7-1"
        d="M 4.4321514,11 11,3.7280156 17.567745,11 H 4.4324631"
-       fill="#3d3d3c"
        style="stroke-width:1.03885;fill:#559b99;fill-opacity:1" />
     <rect
        id="rect4195"
@@ -38,8 +37,6 @@
        y="13"
        width="12"
        height="1.9999993"
-       color="#000001"
-       fill="#3d3d3c"
        style="stroke-width:0.784465;fill:#559b99;fill-opacity:1" />
   </g>
 </svg>

@@ -57,7 +57,8 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <source>Banshee database file not found at
 </source>
-        <translation>Δέν βρέθηκε το αρχείο δεδομένων Banshee σε</translation>
+        <translation>Δέν βρέθηκε το αρχείο δεδομένων Banshee σε
+</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
@@ -88,7 +89,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="41"/>
         <source>Import Playlist</source>
-        <translation>Εισαγωγής λίστας Αναπαραγωγής (Playlist)</translation>
+        <translation>Εισαγωγή λίστας Αναπαραγωγής - Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="119"/>
@@ -149,7 +150,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="86"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="91"/>
         <source>Import Playlist</source>
-        <translation>Εισαγωγής λίστας Αναπαραγωγής (Playlist)</translation>
+        <translation>Εισαγωγή λίστας Αναπαραγωγής - Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="101"/>
@@ -159,7 +160,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="80"/>
         <source>Analyze entire Playlist</source>
-        <translation>Ανάλυση Ολόκληρης της λιστας Αναπαραγωγής</translation>
+        <translation>Ανάλυση Ολόκληρης της λίστας Αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="196"/>
@@ -406,7 +407,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="114"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation>Πρέπει να ενεργοποιήσεις τουλάχιστον μια σύνδεση για την επίτευξη ζωντανης μετάδοσης.</translation>
+        <translation>Πρέπει να ενεργοποιήσεις τουλάχιστον μια σύνδεση για την επίτευξη Ζωντανης Μετάδοσης.</translation>
     </message>
 </context>
 <context>
@@ -600,7 +601,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="41"/>
         <source>Key</source>
-        <translation>Κωδικός</translation>
+        <translation>Κλειδί</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
@@ -7148,7 +7149,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="213"/>
         <source>Key</source>
-        <translation>Κωδικός</translation>
+        <translation>Κλειδί</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="236"/>
@@ -7704,7 +7705,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="37"/>
         <source>Import Playlist</source>
-        <translation>Εισαγωγής λίστας Αναπαραγωγής (Playlist)</translation>
+        <translation>Εισαγωγή λίστας Αναπαραγωγής - Playlist</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="39"/>
@@ -8221,7 +8222,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation type="unfinished"/>
     </message>
@@ -8327,67 +8328,67 @@ Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation type="unfinished"/>
     </message>
@@ -10662,7 +10663,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="361"/>
         <source>Key</source>
-        <translation>Κωδικός</translation>
+        <translation>Κλειδί</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="365"/>
@@ -13014,20 +13015,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"/>

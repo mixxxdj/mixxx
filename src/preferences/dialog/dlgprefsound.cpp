@@ -109,9 +109,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(boothDelaySpinboxChanged(double)));
 
     m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
-    micMonitorModeComboBox->addItem(tr("Master output only"),
+    micMonitorModeComboBox->addItem(tr("Main output only"),
         QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
-    micMonitorModeComboBox->addItem(tr("Master and booth outputs"),
+    micMonitorModeComboBox->addItem(tr("Main and booth outputs"),
         QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
     micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
         QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));

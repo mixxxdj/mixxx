@@ -22,6 +22,8 @@ env:
     - CTEST_OUTPUT_ON_FAILURE=1
     # Render analyzer waveform tests to an offscreen buffer
     - QT_QPA_PLATFORM=offscreen
+    # DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD for deploys.
+    - secure: aS40s8gx1mM01oRj2pskFqR+rBID1nnTY7hwSqkT1bgJT+JF0tMZt/SkMjR08bp+3soNbBtqJgZKAhQ6Tts2DtkWQGbUiXgU5QpowUcecTxge/jqxZeWdJWThpB+qWs70Fm0QhzZXIyBPM8EGljWbLum5ncR7AUBEasRboNZ0P8=
 
 jobs:
   include:
@@ -76,7 +78,7 @@ jobs:
       cache: ccache
       # Ubuntu Bionic build prerequisites
       # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
-      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
+      env: CMAKEFLAGS_EXTRA="-DENGINEPRIME=ON -DFAAD=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -248,6 +250,7 @@ addons:
       - portaudio19-dev
       - protobuf-compiler
       - qt5-default
+      - qtdeclarative5-dev
       - qtscript5-dev
       - qt5keychain-dev
 
@@ -255,3 +258,12 @@ addons:
 notifications:
   webhooks:
     - https://mixxx.zulipchat.com/api/v1/external/travis?stream=travis&topic=build-status&api_key=$ZULIP_API_KEY
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  # Deploy is executed from cmake_build.
+  script: ../build/travis/deploy.sh
+  on:
+    all_branches: true
+    condition: "\"${TRAVIS_JOB_NAME}\" =~ CMake"

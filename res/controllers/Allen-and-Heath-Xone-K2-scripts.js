@@ -795,7 +795,7 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel, twoDeck) {
             libraryEffectUnit.showParametersConnection =
                 engine.makeConnection(unitString,
                                       'show_parameters',
-                                      libraryEffectUnit.onShowParametersChange);
+                                      libraryEffectUnit.onShowParametersChange.bind(this));
 
             libraryEffectUnit.knobs.reconnectComponents();
             libraryEffectUnit.enableButtons.reconnectComponents();

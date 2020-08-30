@@ -6,12 +6,12 @@
 #include <QtDebug>
 #include <QtSql>
 
-#include "library/crate/crateschema.h"
 #include "library/dao/settingsdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "library/trackset/crate/crateschema.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 

@@ -43,10 +43,7 @@ BaseSqlTableModel::BaseSqlTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace)
-        : BaseTrackTableModel(
-                  settingsNamespace,
-                  pTrackCollectionManager,
-                  parent),
+        : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
           m_bInitialized(false),
@@ -744,17 +741,6 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
 BaseCoverArtDelegate* BaseSqlTableModel::doCreateCoverArtDelegate(
         QTableView* pTableView) const {
     return new CoverArtDelegate(pTableView);
-}
-
-void BaseSqlTableModel::slotRefreshCoverRows(QList<int> rows) {
-    if (rows.isEmpty()) {
-        return;
-    }
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
-    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
-        return;
-    }
-    emitDataChangedForMultipleRowsInColumn(rows, column);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
