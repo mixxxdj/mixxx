@@ -64,8 +64,7 @@ class HidController final : public Controller {
     // 0x0.
     void send(QByteArray data) override;
     void virtual send(QByteArray data, unsigned int reportID);
-	
-  //  void send_feature_report(QByteArray data);
+
 	void send_feature_report(QByteArray data, unsigned int reportID);
 	
     // Returns a pointer to the currently loaded controller preset. For internal
