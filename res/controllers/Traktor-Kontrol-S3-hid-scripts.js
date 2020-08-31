@@ -1217,10 +1217,14 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
         if (fxNumber === 0) {
             this.currentState = this.STATE_FILTER;
         } else {
-            // Select this filter instead.
-            // initiate state change
-            // this.activateState(this.STATE_EFFECT, fxNumber);
-            this.currentState = this.STATE_EFFECT;
+            if (fxNumber === this.activeFX) {
+                this.currentState = this.STATE_FOCUS;
+            } else {
+                // Select this filter instead.
+                // initiate state change
+                // this.activateState(this.STATE_EFFECT, fxNumber);
+                this.currentState = this.STATE_EFFECT;
+            }
         }
         this.activeFX = fxNumber;
         break;

@@ -457,9 +457,7 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
     }
 
     // If it does happen to be a function, call it.
-    qDebug() << "execing!";
     QScriptValue rc = functionObject.call(thisObject, args);
-    qDebug() << "we execed the func and the outvalue is " << rc.toString();
     if (outValue != nullptr) {
         *outValue = rc;
     }
@@ -1041,7 +1039,7 @@ void ControllerEngine::trigger(QString group, QString name) {
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
 bool ControllerEngine::evaluate(const QFileInfo& scriptFile) {
-    return evaluateWithReturn(scriptFile, nullptr);
+    return evaluateScriptWithReturn(scriptFile, nullptr);
 }
 
 /* -------- ------------------------------------------------------
@@ -1050,7 +1048,8 @@ bool ControllerEngine::evaluate(const QFileInfo& scriptFile) {
    Output:  false if the script file has errors or doesn't exist, and the result
             of the script if outValue is not nullptr.
    -------- ------------------------------------------------------ */
-bool ControllerEngine::evaluateWithReturn(const QFileInfo& scriptFile, QScriptValue* outValue) {
+bool ControllerEngine::evaluateScriptWithReturn(
+        const QFileInfo& scriptFile, QScriptValue* outValue) {
     if (m_pEngine == nullptr) {
         return false;
     }
@@ -1095,6 +1094,23 @@ bool ControllerEngine::evaluateWithReturn(const QFileInfo& scriptFile, QScriptVa
     scriptCode.append(input.readAll());
     scriptCode.append('\n');
     input.close();
+
+    return evaluateWithReturn(scriptCode, filename, outValue);
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate javascript
+   Input:   Script code, can contain newlines.  Filename can be empty if not
+            applicable
+   Output:  false if the script file has errors or doesn't exist, and the result
+            of the script if outValue is not nullptr.
+   -------- ------------------------------------------------------ */
+bool ControllerEngine::evaluateWithReturn(const QString& scriptCode,
+        const QString& filename,
+        QScriptValue* outValue) {
+    if (m_pEngine == nullptr) {
+        return false;
+    }
 
     // Check syntax
     if (!syntaxIsValid(scriptCode, filename)) {

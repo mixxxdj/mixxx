@@ -167,13 +167,14 @@ class ControllerEngine : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
+    // Filename is only for informational purposes.
     bool syntaxIsValid(const QString& scriptCode, const QString& filename = QString());
     bool evaluate(const QFileInfo& scriptFile);
-    QScriptValue evaluateDirect(const QString& program) {
-        return m_pEngine->evaluate(program);
-    }
-
-    bool evaluateWithReturn(const QFileInfo& filepath, QScriptValue* outValue);
+    bool evaluateScriptWithReturn(const QFileInfo& filepath, QScriptValue* outValue);
+    // Filename is only for informational purposes, it can be empty QString if not applicable.
+    bool evaluateWithReturn(const QString& program,
+            const QString& filename,
+            QScriptValue* outValue);
     bool internalExecute(QScriptValue thisObject,
             const QString& scriptCode,
             QScriptValue* outValue);
