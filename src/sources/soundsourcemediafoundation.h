@@ -90,9 +90,16 @@ class SoundSourceMediaFoundation : public SoundSource {
 
 class SoundSourceProviderMediaFoundation : public SoundSourceProvider {
   public:
-    QString getDisplayName() const override;
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const override;

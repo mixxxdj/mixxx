@@ -9,10 +9,6 @@ namespace {
 
 const Logger kLogger("SoundSourceOpus");
 
-const QStringList kSupportedFileExtensions = {
-        QStringLiteral("opus"),
-};
-
 // Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
 constexpr audio::SampleRate kSampleRate = audio::SampleRate(48000);
 
@@ -72,9 +68,10 @@ class OggOpusFileOwner {
 //static
 const QString SoundSourceProviderOpus::kDisplayName = QStringLiteral("Xiph.org libopusfile");
 
-QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
+//static
+const QStringList SoundSourceProviderOpus::kSupportedFileExtensions = {
+        QStringLiteral("opus"),
+};
 
 SoundSourceProviderPriority SoundSourceProviderOpus::getPriorityHint(
         const QString& supportedFileExtension) const {

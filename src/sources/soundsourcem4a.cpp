@@ -21,11 +21,6 @@ namespace {
 
 const Logger kLogger("SoundSourceM4A");
 
-const QStringList kSupportedFileExtensions = {
-        QStringLiteral("m4a"),
-        QStringLiteral("mp4"),
-};
-
 // MP4SampleId is 1-based
 constexpr MP4SampleId kSampleBlockIdMin = 1;
 
@@ -192,6 +187,12 @@ inline bool startsWithADTSHeader(
 
 //static
 const QString SoundSourceProviderM4A::kDisplayName = QStringLiteral("Nero FAAD2");
+
+//static
+const QStringList SoundSourceProviderM4A::kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+};
 
 QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     if (faad2::LibLoader::Instance()->isLoaded()) {

@@ -77,12 +77,15 @@ class SoundSourceMp3 final : public SoundSource {
 class SoundSourceProviderMp3 : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
     QString getDisplayName() const override {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override;
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceMp3>(url);

@@ -10,10 +10,6 @@ namespace {
 
 const Logger kLogger("SoundSourceFLAC");
 
-const QStringList kSupportedFileExtensions = {
-        QStringLiteral("flac"),
-};
-
 // The maximum number of retries to fix seek errors. On a seek error
 // the next seek will start one (or more) sample blocks before the
 // position of the preceding seek operation that has failed.
@@ -78,9 +74,10 @@ const unsigned kBitsPerSampleDefault = 0;
 //static
 const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
 
-QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
+//static
+const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+        QStringLiteral("flac"),
+};
 
 SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
         const QString& supportedFileExtension) const {

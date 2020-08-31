@@ -1,7 +1,7 @@
+#include "sources/soundsourceproxy.h"
+
 #include <QApplication>
 #include <QStandardPaths>
-
-#include "sources/soundsourceproxy.h"
 
 #include "sources/audiosourcetrackproxy.h"
 
@@ -52,6 +52,117 @@ namespace {
 
 const mixxx::Logger kLogger("SoundSourceProxy");
 
+bool registerSoundSourceProvider(
+        mixxx::SoundSourceProviderRegistry* pProviderRegistry,
+        const mixxx::SoundSourceProviderPointer& pProvider) {
+    VERIFY_OR_DEBUG_ASSERT(pProvider) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(
+            pProviderRegistry->registerProvider(pProvider) > 0) {
+        kLogger.warning()
+                << "Failed to register SoundSource provider"
+                << pProvider->getDisplayName();
+        return false;
+    }
+    return true;
+}
+
+void registerReferenceSoundSourceProvider(
+        mixxx::SoundSourceProviderRegistry* pProviderRegistry,
+        const mixxx::SoundSourceProviderPointer& pProvider) {
+    if (!registerSoundSourceProvider(pProviderRegistry, pProvider)) {
+        return;
+    }
+    // Verify that the provider is the primary provider for all
+    // supported file extensions
+    for (const auto& fileExtension : pProvider->getSupportedFileExtensions()) {
+        const auto pPrimaryProvider =
+                pProviderRegistry->getPrimaryProviderForFileExtension(fileExtension);
+        VERIFY_OR_DEBUG_ASSERT(pPrimaryProvider == pProvider) {
+            kLogger.warning()
+                    << "Using SoundSource provider"
+                    << pPrimaryProvider->getDisplayName()
+                    << "instead of"
+                    << pProvider->getDisplayName()
+                    << "for file extension"
+                    << fileExtension;
+        }
+    }
+}
+
+/// Register the default audio decoder(s) for the platform.
+///
+/// The default providers are chosen with precedence if multiple
+/// SoundSource providers are available for a given file type
+/// and priority level. This is achieved by registering them before
+/// all other providers.
+bool registerPlatformAndFallbackSoundSourceProviders(
+        mixxx::SoundSourceProviderRegistry* pProviderRegistry) {
+    VERIFY_OR_DEBUG_ASSERT(pProviderRegistry) {
+        return false;
+    }
+    kLogger.debug()
+            << "Registering platform and fallback SoundSource providers";
+#if defined(__COREAUDIO__)
+    // Core Audio is exclusively available on macOS and mandatory
+    // if enabled
+    VERIFY_OR_DEBUG_ASSERT(
+            registerSoundSourceProvider(
+                    pProviderRegistry,
+                    std::make_shared<mixxx::SoundSourceProviderCoreAudio>())) {
+        return false;
+    }
+#endif // __COREAUDIO__
+#if defined(__MEDIAFOUNDATION__)
+    // Media Foundation is exclusively available on Windows and mandatory
+    // if enabled
+    VERIFY_OR_DEBUG_ASSERT(
+            registerSoundSourceProvider(
+                    pProviderRegistry,
+                    std::make_shared<mixxx::SoundSourceProviderMediaFoundation>())) {
+        return false;
+    }
+#endif // __MEDIAFOUNDATION__
+#if defined(__FFMPEG__)
+    // FFmpeg might be available on any platform, and is used both
+    // as the common default and fallback provider.
+    registerSoundSourceProvider(
+            pProviderRegistry,
+            std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
+#endif // __FFMPEG__
+    return true;
+}
+
+/// Register the reference audio decoders for their respective formats.
+///
+/// These providers are always chosen with a higher priority and could
+/// therefore be registered after all other providers.
+void registerReferenceSoundSourceProviders(
+        mixxx::SoundSourceProviderRegistry* pProviderRegistry) {
+    VERIFY_OR_DEBUG_ASSERT(pProviderRegistry) {
+        return;
+    }
+    kLogger.debug()
+            << "Registering reference SoundSource providers";
+    registerReferenceSoundSourceProvider(
+            pProviderRegistry,
+            std::make_shared<mixxx::SoundSourceProviderFLAC>());
+    registerReferenceSoundSourceProvider(
+            pProviderRegistry,
+            std::make_shared<mixxx::SoundSourceProviderOggVorbis>());
+#ifdef __OPUS__
+    registerReferenceSoundSourceProvider(
+            pProviderRegistry,
+            std::make_shared<mixxx::SoundSourceProviderOpus>());
+#endif
+#ifdef __WV__
+    registerReferenceSoundSourceProvider(
+            pProviderRegistry,
+            std::make_shared<mixxx::SoundSourceProviderWV>());
+#endif
+}
+
 } // anonymous namespace
 
 // static
@@ -63,47 +174,42 @@ bool SoundSourceProxy::registerSoundSourceProviders() {
     // only matters among providers with equal priority.
     kLogger.debug()
             << "Registering SoundSource providers";
-#ifdef __FFMPEG__
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
-#endif
-#ifdef __SNDFILE__
-    // libsndfile is another fallback
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderSndFile>());
-#endif
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderFLAC>());
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderOggVorbis>());
-#ifdef __OPUS__
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderOpus>());
-#endif
+    // Register the platform and fallback providers BEFORE all other
+    // providers to prioritize them by their order of registration,
+    // preceding any other provider that is registered with the same
+    // priority later.
+    VERIFY_OR_DEBUG_ASSERT(
+            registerPlatformAndFallbackSoundSourceProviders(&s_soundSourceProviders)) {
+        kLogger.warning()
+                << "Failed to register platform and fallback SoundSource providers";
+        // This must not fail
+        return false;
+    }
+    // Register other SoundSource providers
 #ifdef __MAD__
-    s_soundSourceProviders.registerProvider(
+    registerSoundSourceProvider(
+            &s_soundSourceProviders,
             std::make_shared<mixxx::SoundSourceProviderMp3>());
 #endif
 #ifdef __MODPLUG__
-    s_soundSourceProviders.registerProvider(
+    registerSoundSourceProvider(
+            &s_soundSourceProviders,
             std::make_shared<mixxx::SoundSourceProviderModPlug>());
 #endif
-#ifdef __WV__
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderWV>());
-#endif
 #ifdef __FAAD__
-    s_soundSourceProviders.registerProvider(
+    registerSoundSourceProvider(
+            &s_soundSourceProviders,
             std::make_shared<mixxx::SoundSourceProviderM4A>());
 #endif
-#ifdef __COREAUDIO__
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderCoreAudio>());
+#ifdef __SNDFILE__
+    // libsndfile is another fallback
+    registerSoundSourceProvider(
+            &s_soundSourceProviders,
+            std::make_shared<mixxx::SoundSourceProviderSndFile>());
 #endif
-#ifdef __MEDIAFOUNDATION__
-    s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderMediaFoundation>());
-#endif
+    // Register the high-priority reference providers AFTER all other
+    // providers to verify that their priorities are correct.
+    registerReferenceSoundSourceProviders(&s_soundSourceProviders);
 
     const QStringList supportedFileExtensions(
             s_soundSourceProviders.getRegisteredFileExtensions());
@@ -170,14 +276,7 @@ bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
 //static
 mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileExtension(
         const QString& fileExtension) {
-    const auto optProviderRegistration =
-            s_soundSourceProviders.getPrimaryRegistrationForFileExtension(
-                    fileExtension);
-    if (optProviderRegistration) {
-        return optProviderRegistration->getProvider();
-    } else {
-        return nullptr;
-    }
+    return s_soundSourceProviders.getPrimaryProviderForFileExtension(fileExtension);
 }
 
 // static

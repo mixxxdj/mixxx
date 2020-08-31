@@ -10,10 +10,6 @@ namespace {
 
 const Logger kLogger("SoundSourceWV");
 
-const QStringList kSupportedFileExtensions = {
-        QStringLiteral("wv"),
-};
-
 static WavpackStreamReader s_streamReader = {
         SoundSourceWV::ReadBytesCallback,
         SoundSourceWV::GetPosCallback,
@@ -29,9 +25,10 @@ static WavpackStreamReader s_streamReader = {
 //static
 const QString SoundSourceProviderWV::kDisplayName = QStringLiteral("WavPack");
 
-QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
+//static
+const QStringList SoundSourceProviderWV::kSupportedFileExtensions = {
+        QStringLiteral("wv"),
+};
 
 SoundSourceProviderPriority SoundSourceProviderWV::getPriorityHint(
         const QString& supportedFileExtension) const {

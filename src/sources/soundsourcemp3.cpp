@@ -10,11 +10,7 @@ namespace mixxx {
 
 namespace {
 
-const Logger kLogger("SoundSourceMP3");
-
-const QStringList kSupportedFileExtensions = {
-        QStringLiteral("mp3"),
-};
+const Logger kLogger("SoundSourceMp3");
 
 // MP3 does only support 1 or 2 channels
 constexpr SINT kChannelCountMax = 2;
@@ -166,9 +162,10 @@ bool decodeFrameHeader(
 //static
 const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
 
-QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
+//static
+const QStringList SoundSourceProviderMp3::kSupportedFileExtensions = {
+        QStringLiteral("mp3"),
+};
 
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url),

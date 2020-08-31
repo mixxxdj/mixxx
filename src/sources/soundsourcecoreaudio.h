@@ -55,12 +55,15 @@ class SoundSourceCoreAudio
 class SoundSourceProviderCoreAudio : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
     QString getDisplayName() const override {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override;
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const override;

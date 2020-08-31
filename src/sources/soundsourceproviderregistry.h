@@ -69,6 +69,19 @@ class SoundSourceProviderRegistry {
         }
     }
 
+    /// Returns the primary provider for the given file
+    /// extensions if available.
+    SoundSourceProviderPointer getPrimaryProviderForFileExtension(
+            const QString& fileExtension) const {
+        const auto optProviderRegistration =
+                getPrimaryRegistrationForFileExtension(fileExtension);
+        if (optProviderRegistration) {
+            return optProviderRegistration->getProvider();
+        } else {
+            return nullptr;
+        }
+    }
+
   private:
     typedef QMap<QString, QList<SoundSourceProviderRegistration>>
             RegistrationListByFileExtensionMap;

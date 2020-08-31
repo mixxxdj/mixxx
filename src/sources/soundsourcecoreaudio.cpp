@@ -11,15 +11,6 @@ namespace {
 
 const Logger kLogger("SoundSourceCoreAudio");
 
-const QStringList kSupportedFileExtensions = {
-        QStringLiteral("m4a"),
-        QStringLiteral("mp4"),
-        QStringLiteral("mp3"),
-        QStringLiteral("mp2"),
-        // Can add mp3, mp2, ac3, and others here if you want:
-        // http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
-};
-
 // The maximum number of samples per MP3 frame
 constexpr SINT kMp3MaxFrameSize = 1152;
 
@@ -38,9 +29,15 @@ constexpr SINT kMp3MaxSeekPrefetchFrames =
 //static
 const QString SoundSourceProviderCoreAudio::kDisplayName = QStringLiteral("Apple Core Audio");
 
-QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
+//static
+const QStringList SoundSourceProviderCoreAudio::kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+        QStringLiteral("mp3"),
+        QStringLiteral("mp2"),
+        // Can add mp3, mp2, ac3, and others here if you want:
+        // http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
+};
 
 SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
         const QString& supportedFileExtension) const {

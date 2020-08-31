@@ -80,6 +80,7 @@ class SoundSourceM4A : public SoundSource {
 class SoundSourceProviderM4A : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
     QString getDisplayName() const override {
         return kDisplayName;
