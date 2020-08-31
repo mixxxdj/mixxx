@@ -300,13 +300,14 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
 
 void HidController::sendFeatureReport(
         const QList<int>& dataList, unsigned int reportID) {
-    QByteArray dataArray;
+    QByteArray dataArray; dataArray.reserve(1 + dataList.size());
+
+    // Append the Report ID to the beginning of dataArray[] per the API..
+    dataArray.append(reportID);
+
     for (const int datum : dataList) {
         dataArray.append(datum);
     }
-
-    // Append the Report ID to the beginning of dataArray[] per the API..
-    dataArray.prepend(reportID);
 
     int result = hid_send_feature_report(m_pHidDevice,
             reinterpret_cast<const unsigned char*>(dataArray.constData()),
