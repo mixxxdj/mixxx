@@ -69,7 +69,7 @@ class BeatsTest : public testing::Test {
 };
 
 TEST_F(BeatsTest, Scale) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     // Initially must be the base value
     EXPECT_EQ(m_bpm, pBeats->getGlobalBpm());
 
@@ -93,7 +93,7 @@ TEST_F(BeatsTest, Scale) {
 }
 
 TEST_F(BeatsTest, NthBeat) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
 
     // Check edge cases
     EXPECT_EQ(pBeats->getLastBeatPosition(),
@@ -141,7 +141,7 @@ TEST_F(BeatsTest, NthBeat) {
 }
 
 TEST_F(BeatsTest, PrevNextBeats) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     FramePos prevBeat, nextBeat;
 
     pBeats->findPrevNextBeats(
@@ -160,7 +160,7 @@ TEST_F(BeatsTest, PrevNextBeats) {
 }
 
 TEST_F(BeatsTest, NthBeatWhenOnBeat) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     // Pretend we're on the 20th beat;
     const int curBeat = 20;
     const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
@@ -193,7 +193,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat) {
 }
 
 TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     // Pretend we're just before the 20th beat;
     const int curBeat = 20;
     const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
@@ -225,7 +225,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
 }
 
 TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     // Pretend we're just after the 20th beat;
     const int curBeat = 20;
     const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
@@ -262,7 +262,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
 }
 
 TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
     // Pretend we're half way between the 20th and 21st beat
     FramePos previousBeat =
@@ -296,7 +296,7 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
 }
 
 TEST_F(BeatsTest, InstantaneousBpm) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     const FrameDiff_t approxBeatLengthFrames = getBeatLengthFrames(m_bpm);
     const int numBeats = 64;
 
@@ -351,7 +351,7 @@ TEST_F(BeatsTest, InstantaneousBpm) {
 }
 
 TEST_F(BeatsTest, Signature) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     // Undefined time signature must be default
     EXPECT_EQ(pBeats->getBeatAtIndex(0).timeSignature(),
             TimeSignature())
@@ -419,8 +419,8 @@ TEST_F(BeatsTest, Signature) {
 }
 
 TEST_F(BeatsTest, Translate) {
-    const auto& pBeats1 = m_pTrack1->getBeats();
-    const auto& pBeats2 = m_pTrack2->getBeats();
+    const auto pBeats1 = m_pTrack1->getBeats();
+    const auto pBeats2 = m_pTrack2->getBeats();
     FrameDiff_t delta = 500;
 
     // Move the grid delta frames
@@ -436,7 +436,7 @@ TEST_F(BeatsTest, Translate) {
 }
 
 TEST_F(BeatsTest, FindClosest) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     const FrameDiff_t beatLength = getBeatLengthFrames(m_bpm);
     // Test deltas ranging from previous beat to next beat
     for (FrameDiff_t delta = -0.9 * beatLength; delta <= 0.9 * beatLength;
@@ -453,7 +453,7 @@ TEST_F(BeatsTest, FindClosest) {
 }
 
 TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     // Set the track to have multiple BPM values.
     pBeats->setBpm(Bpm(60), 0);
     pBeats->setBpm(Bpm(120), 5);
@@ -471,7 +471,7 @@ TEST_F(BeatsTest, ChangingTimeSignatureShouldNotChangeBpm) {
 }
 
 TEST_F(BeatsTest, IndexRetrieval) {
-    const auto& pBeats = m_pTrack1->getBeats();
+    const auto pBeats = m_pTrack1->getBeats();
     const FrameDiff_t beatLengthFrames = getBeatLengthFrames(m_bpm);
 
     // We assume 4/4 throughout the track

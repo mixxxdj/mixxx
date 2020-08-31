@@ -175,7 +175,7 @@ double BpmControl::getBpm() const {
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (v > 0 && pBeats) {
         auto bpm = pBeats->getGlobalBpm();
         auto adjustedBpm = bpm + kBpmAdjustStep;
@@ -184,7 +184,7 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (v > 0 && pBeats) {
         auto bpm = pBeats->getGlobalBpm();
         auto adjustedBpm = mixxx::Bpm(math_max(kBpmAdjustMin, (bpm - kBpmAdjustStep).getValue()));
@@ -193,7 +193,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (v > 0 && pBeats) {
         const mixxx::FrameDiff_t translateDistFrames = samplesToFrames(
                 getSampleOfTrack().rate * -kSmallBeatsTranslateFactor);
@@ -202,7 +202,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (v > 0 && pBeats) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const mixxx::FrameDiff_t translateDistFrames = samplesToFrames(
@@ -225,7 +225,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
 
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (!pBeats) {
         return;
     }
@@ -386,7 +386,7 @@ double BpmControl::shortestPercentageChange(
 }
 
 double BpmControl::calcSyncedRate(double userTweak) {
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak "
                         << userTweak;
@@ -612,7 +612,7 @@ bool BpmControl::getBeatContextNoLookup(
 mixxx::FramePos BpmControl::getNearestPositionInPhase(
         mixxx::FramePos thisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (!pBeats) {
         return thisPosition;
     }
@@ -776,7 +776,7 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
 mixxx::FramePos BpmControl::getBeatMatchPosition(
         mixxx::FramePos thisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (!pBeats) {
         return thisPosition;
     }
@@ -998,7 +998,7 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void BpmControl::slotBeatsTranslate(double v) {
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (v > 0 && pBeats) {
         mixxx::FramePos currentFrame = getFrameOfTrack().currentFrame;
         mixxx::FramePos closestBeat = pBeats->findClosestBeat(currentFrame);
@@ -1008,7 +1008,7 @@ void BpmControl::slotBeatsTranslate(double v) {
 }
 
 void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (v > 0 && pBeats) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
@@ -1022,7 +1022,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
 double BpmControl::updateLocalBpm() {
     mixxx::Bpm prev_local_bpm(m_pLocalBpm->get());
     mixxx::Bpm local_bpm;
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (pBeats) {
         local_bpm = pBeats->getBpmAtPosition(
                 getFrameOfTrack().currentFrame);
@@ -1074,7 +1074,7 @@ void BpmControl::resetSyncAdjustment() {
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     // Without a beatgrid we don't know any beat details.
     FrameOfTrack frameOfTrack = getFrameOfTrack();
-    const auto& pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
+    const auto pBeats = m_pTrack ? m_pTrack->getBeats() : nullptr;
     if (!frameOfTrack.sampleRate || !m_pTrack || !pBeats) {
         return;
     }

@@ -1259,7 +1259,7 @@ void LoopingControl::slotBeatJumpBackward(double pressed) {
 }
 
 void LoopingControl::slotLoopMove(double beats) {
-    const auto& pBeats = m_pTrack->getBeats();
+    const auto pBeats = m_pTrack->getBeats();
     if (!pBeats || beats == 0) {
         return;
     }
