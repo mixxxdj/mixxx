@@ -20,17 +20,13 @@ class MacroRecordingTest : public BaseSignalPathTest {
         return MacroControl::Status(m_status.get());
     }
 
-    void toggleRecording() {
-        m_record.set(1);
-    }
-
     MacroPointer getMacro() {
         return m_pEngineBuffer1->getLoadedTrack()->getMacros().value(kMacro);
     }
 
     /// Starts recording and performs the initial jump to samplePos + assertions
     void prepRecording(double samplePos = kAction.getSourcePositionSample()) {
-        toggleRecording();
+        m_record.set(1);
         ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
 
         m_pEngineBuffer1->slotControlSeekExact(kStartPos);
@@ -55,7 +51,7 @@ TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
     m_pEngineBuffer1->slotControlSeekAbs(kAction.getTargetPositionSample());
     ProcessBuffer();
 
-    toggleRecording();
+    m_record.set(0);
     checkMacroAction(getMacro());
     // Should activate automatically
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);

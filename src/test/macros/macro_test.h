@@ -10,7 +10,7 @@ const MacroAction kAction(25'000, 7'500);
 /// Checks that a Macro containing the given action was successfully recorded,
 /// including the extra first loop action.
 void checkMacroAction(MacroPointer macro, MacroAction action = kAction) {
-    EXPECT_EQ(macro->size(), 2);
+    ASSERT_EQ(macro->size(), 2);
     EXPECT_EQ(macro->getActions().last().sourceFrame, action.sourceFrame);
     EXPECT_EQ(macro->getActions().last().targetFrame, action.targetFrame);
     // Loopback action
