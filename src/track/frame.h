@@ -107,6 +107,6 @@ inline QDebug operator<<(QDebug dbg, FramePos arg) {
     return dbg;
 }
 
-constexpr FramePos kInvalidFramePos = FramePos(std::numeric_limits<double>::lowest());
+constexpr FramePos kInvalidFramePos = FramePos(std::numeric_limits<value_t>::quiet_NaN());
 constexpr FramePos kStartFramePos = FramePos(0);
 } // namespace mixxx
