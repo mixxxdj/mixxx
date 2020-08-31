@@ -389,7 +389,7 @@ TraktorS3.Deck.prototype.padModeHandler = function(field) {
 };
 
 TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
-    var padNumber = parseInt(field.id[field.id.length - 1]);
+    var padNumber = parseInt(field.name[field.name.length - 1]);
     var action = "";
 
     // Hotcues mode
@@ -1097,8 +1097,26 @@ TraktorS3.FXControl = function() {
     this.FILTER_EFFECT = 0;
     this.activeFX = this.FILTER_EFFECT;
 
-    this.enablePressed = "";
-    this.selectPressed = -1;
+    this.enablePressed = {
+        "[Channel1]": false,
+        "[Channel2]": false,
+        "[Channel3]": false,
+        "[Channel4]": false
+    };
+    this.selectPressed = {
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false
+    };
+
+    // States
+    this.STATE_FILTER = 0;
+    this.STATE_EFFECT = 1;
+    this.STATE_FOCUS = 2;
+
+    this.currentState = this.STATE_FILTER;
 };
 
 TraktorS3.FXControl.prototype.registerInputs = function(messageShort, messageLong) {
@@ -1173,39 +1191,74 @@ TraktorS3.FXControl.prototype.toggleFocusEnable = function(fxNum) {
 // press again to focus, press again to unfocus.  (focus should blink)
 TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     HIDDebug("FX SELECT " + field.group + " " + field.name + " " + field.value);
-    var fxNumber = parseInt(field.id[field.id.length - 1]);
-    if (field.value === 0) {
-        if (this.selectPressed === fxNumber) {
-            this.selectPressed = -1;
+    var fxNumber = parseInt(field.name[field.name.length - 1]);
+    HIDDebug("number " + fxNumber);
+    this.selectPressed[fxNumber] = field.value;
+
+    if (!field.value) {
+        // do lights
+        return;
+    }
+
+    switch (this.currentState) {
+    case this.STATE_FILTER:
+        // If we push filter and filter is already pushed, do nothing.
+        if (fxNumber === 0) {
+            this.currentState = this.STATE_FILTER;
+        } else {
+            // Select this filter instead.
+            // initiate state change
+            // this.activateState(this.STATE_EFFECT, fxNumber);
+            this.currentState = this.STATE_EFFECT;
         }
-        this.StatusDebug();
-        return;
+        this.activeFX = fxNumber;
+        break;
+    case this.STATE_EFFECT:
+        if (fxNumber === 0) {
+            this.currentState = this.STATE_FILTER;
+        } else {
+            // Select this filter instead.
+            // initiate state change
+            // this.activateState(this.STATE_EFFECT, fxNumber);
+            this.currentState = this.STATE_EFFECT;
+        }
+        this.activeFX = fxNumber;
+        break;
+    case this.STATE_FOCUS:
+        break;
     }
-    this.selectPressed = fxNumber;
+    // if (field.value === 0) {
+    //     if (this.selectPressed === fxNumber) {
+    //         this.selectPressed = -1;
+    //     }
+    //     this.StatusDebug();
+    //     return;
+    // }
+    // this.selectPressed = fxNumber;
 
-    // If any fxEnable button is pressed, we are toggling fx unit assignment.
-    if (this.enablePressed !== "") {
-        var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
-        var fxKey = "group_" + this.enablePressed + "_enable";
-        script.toggleControl(fxGroup, fxKey);
-        this.StatusDebug();
-        return;
-    }
+    // // If any fxEnable button is pressed, we are toggling fx unit assignment.
+    // if (this.enablePressed !== "") {
+    //     var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
+    //     var fxKey = "group_" + this.enablePressed + "_enable";
+    //     script.toggleControl(fxGroup, fxKey);
+    //     this.StatusDebug();
+    //     return;
+    // }
 
-    var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
+    // var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
 
-    // Clicked the same fx select, toggle focus state.
-    if (this.activeFX === fxNumber) {
-        // script.toggleControl(fxGroup, "focused_effect");
-        this.toggleFocusEnable(fxNumber);
-        this.StatusDebug();
-        return;
-    }
+    // // Clicked the same fx select, toggle focus state.
+    // if (this.activeFX === fxNumber) {
+    //     // script.toggleControl(fxGroup, "focused_effect");
+    //     this.toggleFocusEnable(fxNumber);
+    //     this.StatusDebug();
+    //     return;
+    // }
 
-    // Default: set new activefx
-    // TODO: disable soft takeover for fx knobs
-    this.activeFX = fxNumber;
-    this.StatusDebug();
+    // // Default: set new activefx
+    // // TODO: disable soft takeover for fx knobs
+    // this.activeFX = fxNumber;
+    // this.StatusDebug();
 };
 
 // in unfocus mode, tap.... does nothing?  Just highlights which FX are enabled for that deck while
@@ -1256,7 +1309,7 @@ TraktorS3.fxGroupPrefix = function(group) {
     if (channelMatch === undefined) {
         return undefined;
     }
-    return fxGroupPrefix = "[EffectRack1_EffectUnit" + channelMatch[1];
+    return "[EffectRack1_EffectUnit" + channelMatch[1];
 };
 
 TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
@@ -1380,7 +1433,7 @@ TraktorS3.registerInputPackets = function() {
 
     // Soft takeovers
     for (var ch = 1; ch <= 4; ch++) {
-        group = "[Channel" + ch + "]";
+        var group = "[Channel" + ch + "]";
         if (!TraktorS3PitchSliderRelativeMode) {
             engine.softTakeover(group, "rate", true);
         }
