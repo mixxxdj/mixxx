@@ -136,7 +136,7 @@ MacroControl::Status MacroControl::getStatus() const {
 }
 
 void MacroControl::setStatus(Status status) {
-    m_COStatus.forceSet(status);
+    m_COStatus.forceSet(static_cast<int>(status));
     m_COPlaying.forceSet(status == Status::Playing ? 1 : 0);
     // TODO(xerus) add blinking for Status::Recording & Status::Playing
     //m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
@@ -175,8 +175,8 @@ void MacroControl::updateRecording() {
         m_recordedActions.pop();
         actionsRecorded = true;
     }
-    if (actionsRecorded && getStatus() == Armed) {
-        setStatus(Recording);
+    if (actionsRecorded && getStatus() == Status::Armed) {
+        setStatus(Status::Recording);
     }
 }
 

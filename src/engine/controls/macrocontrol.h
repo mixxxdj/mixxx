@@ -19,7 +19,7 @@ class MacroControl : public EngineControl {
 
     bool isRecording() const;
 
-    enum Status {
+    enum class Status : int {
         NoTrack = -1,
         Empty = 0,
         Armed = 1,
