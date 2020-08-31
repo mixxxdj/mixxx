@@ -9,12 +9,12 @@ void RecordingManagerBase::slotSetRecording(bool recording) {
 }
 
 void RecordingManagerBase::slotToggleRecording(double value) {
-    bool toggle = static_cast<bool>(value);
-    if (toggle) {
-        if (isRecordingActive()) {
-            stopRecording();
-        } else {
-            startRecording();
-        }
+    if (!value) {
+        return;
+    }
+    if (isRecordingActive()) {
+        stopRecording();
+    } else {
+        startRecording();
     }
 }
