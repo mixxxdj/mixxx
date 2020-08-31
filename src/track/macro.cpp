@@ -6,8 +6,8 @@
 
 proto::Macro_Action* MacroAction::serialize() const {
     auto serialized = new proto::Macro_Action();
-    serialized->set_position(position);
-    serialized->set_target(target);
+    serialized->set_sourceframe(sourceFrame);
+    serialized->set_targetframe(targetFrame);
     serialized->set_type(static_cast<uint32_t>(type));
     return serialized;
 }
@@ -27,7 +27,7 @@ QList<MacroAction> Macro::deserialize(QByteArray serialized) {
     QList<MacroAction> result;
     result.reserve(macroProto.actions_size());
     for (const proto::Macro_Action& action : macroProto.actions()) {
-        result.append(MacroAction(action.position(), action.target()));
+        result.append(MacroAction(action.sourceframe(), action.targetframe()));
     }
     return result;
 }
@@ -108,7 +108,7 @@ double Macro::getStartSamplePos() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return 0;
     }
-    return m_actions.first().getTargetSamplePos();
+    return m_actions.first().getTargetPositionSample();
 }
 
 void Macro::setEnd(double framePos) {
@@ -116,7 +116,7 @@ void Macro::setEnd(double framePos) {
         return;
     }
     // can't use replace because MacroAction is immutable
-    m_actions.insert(0, MacroAction(framePos, m_actions.first().target));
+    m_actions.insert(0, MacroAction(framePos, m_actions.first().targetFrame));
     m_actions.removeAt(1);
 }
 
@@ -141,7 +141,7 @@ bool operator==(const Macro& m1, const Macro& m2) {
 }
 
 QDebug operator<<(QDebug debug, const MacroAction& action) {
-    debug << "Jump from" << action.position << "to" << action.target;
+    debug << "Jump from" << action.sourceFrame << "to" << action.targetFrame;
     return debug;
 }
 QDebug operator<<(QDebug debug, const Macro& macro) {

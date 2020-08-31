@@ -69,13 +69,13 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     }
     double framePos = dCurrentSample / mixxx::kEngineChannelCount;
     const MacroAction& nextAction = m_pMacro->getActions().at(m_iNextAction);
-    double nextActionPos = nextAction.position;
+    double nextActionPos = nextAction.sourceFrame;
     int bufFrames = iBufferSize / 2;
     // The process method is called roughly every iBufferSize/2 samples, the
     // tolerance range is double that to be safe. It is ahead of the position
     // because the seek is executed in the next EngineBuffer process cycle.
     if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
-        seekExact(nextAction.getTargetSamplePos());
+        seekExact(nextAction.getTargetPositionSample());
         m_iNextAction++;
         if (m_iNextAction == m_pMacro->size()) {
             if (m_pMacro->isLooped()) {

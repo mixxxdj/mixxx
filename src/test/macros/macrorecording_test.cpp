@@ -29,7 +29,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
     }
 
     /// Starts recording and performs the initial jump to samplePos + assertions
-    void prepRecording(double samplePos = kAction.getSamplePos()) {
+    void prepRecording(double samplePos = kAction.getSourcePositionSample()) {
         toggleRecording();
         ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
 
@@ -52,41 +52,41 @@ class MacroRecordingTest : public BaseSignalPathTest {
 TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
     prepRecording();
 
-    m_pEngineBuffer1->slotControlSeekAbs(kAction.getTargetSamplePos());
+    m_pEngineBuffer1->slotControlSeekAbs(kAction.getTargetPositionSample());
     ProcessBuffer();
 
     toggleRecording();
     checkMacroAction(getMacro());
     // Should activate automatically
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
-    EXPECT_EQ(getMacro()->getActions().first().getTargetSamplePos(), kStartPos);
+    EXPECT_EQ(getMacro()->getActions().first().getTargetPositionSample(), kStartPos);
     ProcessBuffer();
     EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), kStartPos);
 
     MacroAction action2(1'000, 9'000);
     getMacro()->addAction(action2);
-    MacroAction action3(action2.target + 100, 14'000);
+    MacroAction action3(action2.targetFrame + 100, 14'000);
     getMacro()->addAction(action3);
     EXPECT_EQ(getMacro()->size(), 4);
 
     // Seek to first action
-    m_pEngineBuffer1->slotControlSeekExact(kAction.getSamplePos());
+    m_pEngineBuffer1->slotControlSeekExact(kAction.getSourcePositionSample());
     ProcessBuffer();
 
     ProcessBuffer();
     ProcessBuffer();
-    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), kAction.getTargetSamplePos());
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), kAction.getTargetPositionSample());
     ASSERT_EQ(getStatus(), MacroControl::Status::Playing);
 
     // Seek to next action
-    m_pEngineBuffer1->slotControlSeekExact(action2.getSamplePos());
+    m_pEngineBuffer1->slotControlSeekExact(action2.getSourcePositionSample());
     ProcessBuffer();
 
     // Trigger remaining actions
     ProcessBuffer();
-    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action2.getTargetSamplePos());
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action2.getTargetPositionSample());
     ProcessBuffer();
-    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action3.getTargetSamplePos());
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action3.getTargetPositionSample());
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
 }
 
@@ -95,11 +95,11 @@ TEST_F(MacroRecordingTest, RecordHotcueAndPlay) {
     ControlObject::set(ConfigKey(kChannelGroup, "hotcue_1_set"), 1);
 
     MacroAction action(10'000, 0);
-    prepRecording(action.getSamplePos());
+    prepRecording(action.getSourcePositionSample());
 
     ControlObject::set(ConfigKey(kChannelGroup, "hotcue_1_goto"), 1);
     ProcessBuffer();
-    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action.getTargetSamplePos());
+    EXPECT_EQ(m_pEngineBuffer1->getExactPlayPos(), action.getTargetPositionSample());
     MacroPointer pMacro = getMacro();
 
     // Check that recording stops gracefully when ejecting

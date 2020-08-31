@@ -20,22 +20,23 @@ struct MacroAction {
         Jump = 0
     };
 
-    MacroAction(double position, double target)
-            : position(position), target(target), type(Type::Jump){};
     // use FramePos once https://github.com/mixxxdj/mixxx/pull/2961 is merged
-    const double position;
-    const double target;
+    const double sourceFrame;
+    const double targetFrame;
     const Type type;
 
-    double getSamplePos() const {
-        return position * mixxx::kEngineChannelCount;
+    MacroAction(double sourceFramePos, double targetFramePos)
+            : sourceFrame(sourceFramePos), targetFrame(targetFramePos), type(Type::Jump){};
+
+    double getSourcePositionSample() const {
+        return sourceFrame * mixxx::kEngineChannelCount;
     }
-    double getTargetSamplePos() const {
-        return target * mixxx::kEngineChannelCount;
+    double getTargetPositionSample() const {
+        return targetFrame * mixxx::kEngineChannelCount;
     }
 
     bool operator==(const MacroAction& other) const {
-        return position == other.position && target == other.target;
+        return sourceFrame == other.sourceFrame && targetFrame == other.targetFrame;
     }
     inline bool operator!=(const MacroAction& other) const {
         return !operator==(other);

@@ -11,8 +11,9 @@ const MacroAction kAction(25'000, 7'500);
 /// including the extra first loop action.
 void checkMacroAction(MacroPointer macro, MacroAction action = kAction) {
     EXPECT_EQ(macro->size(), 2);
-    EXPECT_EQ(macro->getActions().last().position, action.position);
-    EXPECT_EQ(macro->getActions().last().target, action.target);
-    EXPECT_EQ(macro->getActions().first().position, action.target);
+    EXPECT_EQ(macro->getActions().last().sourceFrame, action.sourceFrame);
+    EXPECT_EQ(macro->getActions().last().targetFrame, action.targetFrame);
+    // Loopback action
+    EXPECT_EQ(macro->getActions().first().sourceFrame, action.targetFrame);
 }
 } // namespace

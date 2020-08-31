@@ -54,16 +54,16 @@ TEST_F(MacroControlTest, RecordSeek) {
     slotJumpQueued();
     seek(startFramePos * mixxx::kEngineChannelCount);
     // Jump kAction
-    seek(kAction.getSamplePos());
+    seek(kAction.getSourcePositionSample());
     slotJumpQueued();
-    seek(kAction.getTargetSamplePos());
+    seek(kAction.getTargetPositionSample());
 
     // Stop recording
     slotRecord();
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
     // Check recording result
     checkMacroAction(getMacro());
-    EXPECT_EQ(getMacro()->getActions().first().target, startFramePos);
+    EXPECT_EQ(getMacro()->getActions().first().targetFrame, startFramePos);
     EXPECT_TRUE(pLoadedTrack->isDirty());
     // Check generated label
     EXPECT_EQ(startFramePos / frameRate, 1.16);
@@ -122,23 +122,23 @@ TEST_F(MacroControlTest, LoadTrackAndPlay) {
 
     slotActivate();
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
-    EXPECT_CALL(*this, seekExact(jumpAction.target)).Times(1);
-    process(0, jumpAction.getSamplePos(), 2);
+    EXPECT_CALL(*this, seekExact(jumpAction.targetFrame)).Times(1);
+    process(0, jumpAction.getSourcePositionSample(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
 
     // LOOP
     getMacro()->setState(Macro::StateFlag::Looped);
-    EXPECT_CALL(*this, seekExact(kAction.getTargetSamplePos())).Times(1);
+    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample())).Times(1);
     slotActivate();
     slotActivate();
     // Jump
-    EXPECT_CALL(*this, seekExact(jumpAction.getTargetSamplePos())).Times(1);
-    process(0, jumpAction.getSamplePos(), 2);
+    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample())).Times(1);
+    process(0, jumpAction.getSourcePositionSample(), 2);
     // Loop back
-    EXPECT_CALL(*this, seekExact(kAction.getTargetSamplePos())).Times(1);
-    process(0, kAction.getSamplePos(), 2);
+    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample())).Times(1);
+    process(0, kAction.getSourcePositionSample(), 2);
     // Jump again
-    EXPECT_CALL(*this, seekExact(jumpAction.getTargetSamplePos())).Times(1);
-    process(0, jumpAction.getSamplePos(), 2);
+    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample())).Times(1);
+    process(0, jumpAction.getSourcePositionSample(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
 }
