@@ -15,6 +15,7 @@ TEST(MacroControl, Create) {
     macroControl.slotActivate();
     macroControl.slotToggle();
     macroControl.slotClear();
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::NoTrack);
 }
 
 TEST(MacroControl, LoadTrack) {
@@ -31,42 +32,49 @@ TEST(MacroControlTest, RecordSeek) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     EXPECT_FALSE(macroControl.isRecording());
 
-    // Load track & start recording
+    // Load track
     TrackPointer pTrack = Track::newTemporary();
     macroControl.trackLoaded(pTrack);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Empty);
+    // Start recording
     macroControl.slotRecord();
     EXPECT_TRUE(macroControl.isRecording());
+    EXPECT_EQ(macroControl.getMacro()->getLabel(), "[Recording]");
     // Prepare recording
-    auto seek = [&macroControl](double position) {
+    int frameRate = 1'000;
+    auto seek = [&macroControl, frameRate](double position) {
         macroControl.notifySeek(position);
-        macroControl.setCurrentSample(position, 99'000, 44'100);
+        macroControl.setCurrentSample(position, 99'000, frameRate);
         macroControl.process(0, position, 2);
     };
     seek(0);
     ASSERT_EQ(macroControl.getStatus(), MacroControl::Status::Armed);
-
     // Disable auto-playback after recording
     // TODO(xerus) create & test control for this
     macroControl.getMacro()->setState(Macro::StateFlag::Enabled, false);
 
     // Initial jump
-    double startPos = 0;
+    double startFramePos = 1'160;
     macroControl.slotJumpQueued();
-    seek(startPos);
-
+    seek(startFramePos * mixxx::kEngineChannelCount);
     // Jump kAction
     seek(kAction.getSamplePos());
     macroControl.slotJumpQueued();
     seek(kAction.getTargetSamplePos());
 
+    // Stop recording
     macroControl.slotRecord();
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Recorded);
-
+    // Check recording result
     checkMacroAction(macroControl.getMacro());
-    EXPECT_EQ(macroControl.getMacro()->getActions().first().getTargetSamplePos(), startPos);
+    EXPECT_EQ(macroControl.getMacro()->getActions().first().target, startFramePos);
     EXPECT_TRUE(pTrack->isDirty());
-
+    EXPECT_EQ(startFramePos / frameRate, 1.16);
+    EXPECT_EQ(macroControl.getMacro()->getLabel().toStdString(), "1.2");
+    // Activate
+    macroControl.slotGotoPlay();
+    EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::Playing);
+    // Check status on eject
     macroControl.trackLoaded(nullptr);
     EXPECT_EQ(macroControl.getStatus(), MacroControl::Status::NoTrack);
 }

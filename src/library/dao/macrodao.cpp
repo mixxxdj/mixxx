@@ -55,8 +55,8 @@ void MacroDAO::saveMacros(TrackId trackId, QMap<int, MacroPointer> macros) const
         if (pMacro->isDirty()) {
             saveMacro(trackId, pMacro.get(), it.key());
         }
-        // After saving each macro must have a valid id
-        DEBUG_ASSERT(pMacro->getId() >= 0);
+        // After saving each macro must have a valid id and not be dirty
+        DEBUG_ASSERT(pMacro->getId() >= 0 && !pMacro->isDirty());
     }
 }
 
