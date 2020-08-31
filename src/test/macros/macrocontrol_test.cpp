@@ -33,7 +33,7 @@ TEST_F(MacroControlTest, Dirty) {
 
 TEST_F(MacroControlTest, RecordSeek) {
     // Start recording
-    slotRecord();
+    slotRecord(1);
     EXPECT_TRUE(isRecording());
     EXPECT_EQ(getMacro()->getLabel(), "[Recording]");
     // Prepare recording
@@ -45,30 +45,29 @@ TEST_F(MacroControlTest, RecordSeek) {
     };
     seek(0);
     ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
-    // Disable auto-playback after recording
-    // TODO(xerus) create & test control for this
-    getMacro()->setState(Macro::StateFlag::Enabled, false);
 
     // Initial jump
-    double startFramePos = 1'160;
+    double startPos = 1'100;
     slotJumpQueued();
-    seek(startFramePos * mixxx::kEngineChannelCount);
+    seek(startPos);
     // Jump kAction
     seek(kAction.getSourcePositionSample());
     slotJumpQueued();
     seek(kAction.getTargetPositionSample());
 
     // Stop recording
-    slotRecord();
-    EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
+    EXPECT_CALL(*this, seekExact(startPos));
+    slotRecord(0);
+    EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
     // Check recording result
     checkMacroAction(getMacro());
-    EXPECT_EQ(getMacro()->getActions().first().targetFrame, startFramePos);
+    EXPECT_EQ(getMacro()->getActions().first().getTargetPositionSample(), startPos);
     EXPECT_TRUE(pLoadedTrack->isDirty());
     // Check generated label
-    EXPECT_EQ(startFramePos / frameRate, 1.16);
-    EXPECT_EQ(getMacro()->getLabel().toStdString(), "1.2");
+    EXPECT_EQ(startPos / mixxx::kEngineChannelCount / frameRate, 0.55);
+    EXPECT_EQ(getMacro()->getLabel().toStdString(), "0.6");
     // Activate
+    EXPECT_CALL(*this, seekExact(startPos));
     slotGotoPlay();
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
     // Check status on eject
@@ -78,35 +77,41 @@ TEST_F(MacroControlTest, RecordSeek) {
 
 TEST_F(MacroControlTest, ControlObjects) {
     ControlProxy status(kChannelGroup, "macro_2_status");
-    const auto ASSERT_STATUS = [&status](MacroControl::Status expectedStatus) {
-        ASSERT_EQ(MacroControl::Status(status.get()), expectedStatus);
-    };
+#define ASSERT_STATUS(expected) ASSERT_EQ(MacroControl::Status(status.get()), expected);
 
     ControlProxy record(kChannelGroup, "macro_2_record");
     record.set(1);
     ASSERT_STATUS(MacroControl::Status::Armed);
-    record.set(1);
+    record.set(0);
     ASSERT_STATUS(MacroControl::Status::Empty);
 
     ControlProxy activate(kChannelGroup, "macro_2_activate");
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Armed);
+    activate.set(1);
+    ASSERT_STATUS(MacroControl::Status::Empty);
+    activate.set(1);
+    ASSERT_STATUS(MacroControl::Status::Armed);
 
     // Record
+    ControlProxy(kChannelGroup, "macro_2_enable").set(0);
+    ControlProxy(kChannelGroup, "macro_2_loop").set(1);
+    EXPECT_TRUE(getMacro()->isLooped());
     slotJumpQueued();
     notifySeek(0);
+    activate.set(1);
+    ASSERT_STATUS(MacroControl::Status::Recorded);
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Playing);
 
     // Restart
+    EXPECT_CALL(*this, seekExact(0));
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Playing);
 
-    ControlProxy toggle(kChannelGroup, "macro_2_toggle");
-    toggle.set(1);
+    ControlProxy play(kChannelGroup, "macro_2_play");
+    play.set(0);
     ASSERT_STATUS(MacroControl::Status::Recorded);
-    toggle.set(1);
-    ASSERT_STATUS(MacroControl::Status::Playing);
 }
 
 TEST_F(MacroControlTest, LoadTrackAndPlay) {
@@ -122,23 +127,23 @@ TEST_F(MacroControlTest, LoadTrackAndPlay) {
 
     slotActivate();
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
-    EXPECT_CALL(*this, seekExact(jumpAction.targetFrame)).Times(1);
+    EXPECT_CALL(*this, seekExact(jumpAction.targetFrame));
     process(0, jumpAction.getSourcePositionSample(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
 
     // LOOP
-    getMacro()->setState(Macro::StateFlag::Looped);
-    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample())).Times(1);
+    slotLoop(1);
+    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample()));
     slotActivate();
     slotActivate();
     // Jump
-    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample())).Times(1);
+    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample()));
     process(0, jumpAction.getSourcePositionSample(), 2);
     // Loop back
-    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample())).Times(1);
+    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample()));
     process(0, kAction.getSourcePositionSample(), 2);
     // Jump again
-    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample())).Times(1);
+    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample()));
     process(0, jumpAction.getSourcePositionSample(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
 }

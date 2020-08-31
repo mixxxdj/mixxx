@@ -16,13 +16,13 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
           m_bJumpPending(false),
           m_recordedActions(kRecordingQueueSize),
           m_iNextAction(0),
-          m_COPlaying(getConfigKey("playing")),
           m_COStatus(getConfigKey("status")),
-          m_record(getConfigKey("record")),
-          m_toggle(getConfigKey("toggle")),
-          m_clear(getConfigKey("clear")),
-          m_activate(getConfigKey("activate")) {
-    m_COPlaying.setReadOnly();
+          m_CORecord(getConfigKey("record")),
+          m_COPlay(getConfigKey("play")),
+          m_COEnable(getConfigKey("enable")),
+          m_COLoop(getConfigKey("loop")),
+          m_activate(getConfigKey("activate")),
+          m_clear(getConfigKey("clear")) {
     m_COStatus.setReadOnly();
     setStatus(Status::NoTrack);
 
@@ -32,16 +32,26 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
             this,
             &MacroControl::updateRecording);
 
-    m_record.setButtonMode(ControlPushButton::TRIGGER);
-    connect(&m_record,
+    m_CORecord.setButtonMode(ControlPushButton::TOGGLE);
+    connect(&m_CORecord,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotRecord);
-    m_toggle.setButtonMode(ControlPushButton::TRIGGER);
-    connect(&m_toggle,
+    m_COPlay.setButtonMode(ControlPushButton::TOGGLE);
+    connect(&m_COPlay,
             &ControlObject::valueChanged,
             this,
-            &MacroControl::slotToggle);
+            &MacroControl::slotPlay);
+    m_COEnable.setButtonMode(ControlPushButton::TOGGLE);
+    connect(&m_COEnable,
+            &ControlObject::valueChanged,
+            this,
+            &MacroControl::slotEnable);
+    m_COLoop.setButtonMode(ControlPushButton::TOGGLE);
+    connect(&m_COLoop,
+            &ControlObject::valueChanged,
+            this,
+            &MacroControl::slotLoop);
     m_clear.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_clear,
             &ControlObject::valueChanged,
@@ -137,8 +147,9 @@ MacroControl::Status MacroControl::getStatus() const {
 
 void MacroControl::setStatus(Status status) {
     m_COStatus.forceSet(static_cast<int>(status));
-    m_COPlaying.forceSet(status == Status::Playing ? 1 : 0);
-    // TODO(xerus) add blinking for Status::Recording & Status::Playing
+    m_COPlay.set(status == Status::Playing ? 1 : 0);
+    m_CORecord.set(isRecording() ? 1 : 0);
+    // add blinking for Status::Recording & Status::Playing
     //m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
 }
 
@@ -208,26 +219,44 @@ void MacroControl::stopRecording() {
 }
 
 void MacroControl::slotRecord(double value) {
-    if (!value)
-        return;
-    if (getStatus() == Status::Empty) {
-        setStatus(Status::Armed);
+    if (value) {
+        switch (getStatus()) {
+        case Status::Empty:
+            setStatus(Status::Armed);
+            break;
+        case Status::Recorded:
+            setStatus(Status::Recording);
+            break;
+        default:
+            return;
+        }
         DEBUG_ASSERT(m_updateRecordingTimer.thread() == QThread::currentThread());
         m_updateRecordingTimer.start(kRecordingTimerInterval);
         m_pMacro->setLabel(m_pMacro->getLabel().append("[Recording]"));
-    } else if (isRecording()) {
-        stopRecording();
+    } else {
+        if (isRecording()) {
+            stopRecording();
+        }
     }
 }
 
-void MacroControl::slotToggle(double value) {
-    if (!value)
+void MacroControl::slotPlay(double value) {
+    if (static_cast<bool>(value) == (getStatus() == Status::Playing)) {
         return;
-    if (getStatus() == Status::Playing) {
-        stop();
-    } else {
-        slotActivate();
     }
+    if (value) {
+        play();
+    } else {
+        stop();
+    }
+}
+
+void MacroControl::slotEnable(double value) {
+    m_pMacro->setState(Macro::StateFlag::Enabled, value);
+}
+
+void MacroControl::slotLoop(double value) {
+    m_pMacro->setState(Macro::StateFlag::Looped, value);
 }
 
 void MacroControl::slotClear(double value) {
@@ -244,7 +273,7 @@ void MacroControl::slotActivate(double value) {
     if (!value)
         return;
     if (getStatus() < Status::Recorded) {
-        slotRecord();
+        slotRecord(!isRecording());
     } else if (getStatus() == Status::Playing) {
         slotGotoPlay();
     } else {

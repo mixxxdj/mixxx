@@ -32,8 +32,10 @@ class MacroControl : public EngineControl {
     MacroPointer getMacro() const;
 
   public slots:
-    void slotRecord(double value = 1);
-    void slotToggle(double value = 1);
+    void slotRecord(double value);
+    void slotPlay(double value);
+    void slotEnable(double value);
+    void slotLoop(double value);
     void slotActivate(double value = 1);
     void slotGotoPlay(double value = 1);
     void slotClear(double value = 1);
@@ -60,11 +62,13 @@ class MacroControl : public EngineControl {
     MacroPointer m_pMacro;
     unsigned int m_iNextAction;
 
-    ControlObject m_COPlaying;
     ControlObject m_COStatus;
 
-    ControlPushButton m_record;
-    ControlPushButton m_toggle;
-    ControlPushButton m_clear;
+    ControlPushButton m_CORecord;
+    ControlPushButton m_COPlay;
+    ControlPushButton m_COEnable;
+    ControlPushButton m_COLoop;
+
     ControlPushButton m_activate;
+    ControlPushButton m_clear;
 };
