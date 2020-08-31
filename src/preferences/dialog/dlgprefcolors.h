@@ -40,6 +40,8 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void slotEditHotcuePaletteClicked();
 
   private:
+    /// Loads the config keys and sets the widgets in the dialog to match
+    void loadSettings();
     void openColorPaletteEditor(
             const QString& paletteName,
             bool editHotcuePalette);

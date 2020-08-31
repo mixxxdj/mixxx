@@ -221,7 +221,6 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
     if (fHigh) {
         pState->m_high->process(pState->m_pBufs[bufIndex],
                                 pOutput, bufferParameters.samplesPerBuffer());
-        bufIndex = 1 - bufIndex;
     } else {
         SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], bufferParameters.samplesPerBuffer());
         pState->m_high->pauseFilter();

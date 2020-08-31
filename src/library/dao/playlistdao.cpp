@@ -18,7 +18,7 @@ PlaylistDAO::PlaylistDAO()
 }
 
 void PlaylistDAO::initialize(const QSqlDatabase& database) {
-    m_database = database;
+    DAO::initialize(database);
     populatePlaylistMembershipCache();
 }
 

@@ -40,6 +40,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, QString newName) override;
 
   private:
+    void reloadChildModel(int playlistId);
     QString getRootViewHtml() const override;
 
     std::list<TrackId> m_recentTracks;

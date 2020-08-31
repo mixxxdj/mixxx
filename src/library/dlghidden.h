@@ -11,7 +11,6 @@
 class WLibrary;
 class WTrackTableView;
 class HiddenTableModel;
-class QItemSelection;
 
 class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT

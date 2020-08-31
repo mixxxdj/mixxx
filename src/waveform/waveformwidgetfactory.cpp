@@ -1,6 +1,5 @@
 #include <QStringList>
 #include <QTime>
-#include <QTimer>
 #include <QWidget>
 #include <QtDebug>
 #include <QGLFormat>

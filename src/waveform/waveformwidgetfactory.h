@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QTime>
 #include <QVector>
 #include <vector>
 
@@ -15,7 +14,6 @@
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class QTimer;
 class VSyncThread;
 class GuiTick;
 class VisualsManager;
