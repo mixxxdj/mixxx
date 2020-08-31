@@ -66,10 +66,11 @@ repos:
     - manual
   - id: no-commit-to-branch
 - repo: https://github.com/codespell-project/codespell
-  rev: v1.17.1
+  rev: f7f304cb40596e4706be27ca44d1401396a97420
   hooks:
   - id: codespell
-    exclude: ^.*\.(pot?|ts)$
+    args: ["--ignore-regex", "\\W(?:(?:m_)?p(?=[A-Z])|m_(?=\\w))"]
+    exclude: ^(src/dialog/dlgabout.cpp|.*\.(?:pot?|ts))$
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.2.0
   hooks:
