@@ -142,8 +142,7 @@ class Beats final : public QObject {
     void setSubVersion(const QString& subVersion);
 
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
-    /// of firstBeatFrame. Does not generate an updated() signal, since it is
-    /// meant for initialization.
+    /// of firstBeatFrame.
     void setGrid(Bpm dBpm, FramePos firstBeatFrame = kStartFramePos);
 
     /// Starting from frame, return the next beat
@@ -151,24 +150,22 @@ class Beats final : public QObject {
     /// of a beat, the same beat is returned.
     Beat findNextBeat(FramePos frame) const;
 
-    /// Starting from frame frame, return the previous
-    /// beat in the track, or invalid beat if none exists. If frame refers to the
+    /// Starting from frame, return the previous beat
+    /// in the track, or invalid beat if none exists. If frame refers to the
     /// location of beat, the same beat is returned.
     Beat findPrevBeat(FramePos frame) const;
 
     /// Starting from frame, fill the frame numbers of the previous beat
-    /// and next beat.  Either can be -1 if none exists.  If frame refers
+    /// and next beat. If frame refers
     /// to the location of the beat, the first value is frame, and the second
-    /// value is the next beat position.  Non- -1 values are guaranteed to be
-    /// even.  Returns false if *at least one* frame is -1.  (Can return false
-    /// with one beat successfully filled)
+    /// value is the next frame. Returns false if *at least one* frame is kInvalidFramePos.
+    /// (Can return false with one beat successfully filled)
     bool findPrevNextBeats(FramePos frame,
             FramePos* pPrevBeatFrame,
             FramePos* pNextBeatFrame) const;
 
     /// Starting from frame, return the frame number of the closest beat
-    /// in the track, or -1 if none exists.  Non- -1 values are guaranteed to be
-    /// even.
+    /// in the track, or kInvalidFramePos if none exists.
     FramePos findClosestBeat(FramePos frame) const;
 
     /// Find the Nth beat from frame. Works with both positive and
@@ -200,7 +197,7 @@ class Beats final : public QObject {
     /// removed.
     void translate(FrameDiff_t numFrames);
 
-    /// Scale the position of every beat in the song by a fraction.
+    /// Scale the position of every beat in the track by a fraction.
     void scale(BPMScale scale);
 
     /// Set bpm marker at a beat
@@ -209,10 +206,10 @@ class Beats final : public QObject {
     /// Returns the number of beats
     int size() const;
 
-    /// Returns the frame number for the first beat, -1 is no beats
+    /// Returns the frame number for the first beat, kInvalidFramePos if there are no beats.
     FramePos getFirstBeatPosition() const;
 
-    /// Returns the frame number for the last beat, -1 if no beats
+    /// Returns the frame number for the last beat, kInvalidFramePos if there are no beats.
     FramePos getLastBeatPosition() const;
 
     /// Convert a non-downbeat to a downbeat shifting all downbeats
