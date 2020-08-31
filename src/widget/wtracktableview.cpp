@@ -164,7 +164,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
         return;
     } else {
         newModel = trackModel;
-        saveVScrollBarPos(getTrackModel());
+        //saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
         //using address of track model as key
     }
@@ -1012,6 +1012,11 @@ void WTrackTableView::saveCurrentVScrollBarPos() {
 
 void WTrackTableView::restoreCurrentVScrollBarPos() {
     restoreVScrollBarPos(getTrackModel());
+}
+
+void WTrackTableView::slotSaveState() {
+    qDebug() << "WTrackTableView::slotSaveState";
+    saveVScrollBarPos(getTrackModel());
 }
 
 void WTrackTableView::keyNotationChanged() {

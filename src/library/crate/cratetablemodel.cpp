@@ -191,3 +191,12 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
 
     select();
 }
+
+QString CrateTableModel::key() {
+    if(this->m_selectedCrate.isValid()) {
+        return QString("0x%1-%2").arg((quintptr)this, 0, 16, QChar('0')) \
+                                       .arg((quintptr)this->m_selectedCrate.value());
+    } else {
+        return QString("0x%1").arg((quintptr)this, 0, 16, QChar('0'));
+    }
+}

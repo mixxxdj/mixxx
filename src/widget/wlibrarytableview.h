@@ -26,12 +26,12 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
      * can be any value but should invariant for model
      * @param key unique for trackmodel
      */
-    void saveVScrollBarPos(TrackModel* key);
+    void saveVScrollBarPos(TrackModel* model);
     /**
      * Finds scrollbar value associated with model by given key and restores it
      * @param key unique for trackmodel
      */
-    void restoreVScrollBarPos(TrackModel* key);
+    void restoreVScrollBarPos(TrackModel* model);
 
   signals:
     void loadTrack(TrackPointer pTrack);
@@ -58,7 +58,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     const UserSettingsPointer m_pConfig;
     const ConfigKey m_vScrollBarPosKey;
 
-    QMap<TrackModel*, int> m_vScrollBarPosValues;
+    QMap<QString, int> m_vScrollBarPosValues;
 
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed

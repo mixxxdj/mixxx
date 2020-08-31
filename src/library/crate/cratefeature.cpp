@@ -283,6 +283,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
+    emit saveState();
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
     emit enableCoverArtDisplay(true);
@@ -297,6 +298,7 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return false;
     }
+    emit saveState();
     m_lastRightClickedIndex = index;
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
@@ -814,5 +816,5 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 }
 
 void CrateFeature::slotResetSelectedTrack() {
-    slotTrackSelected(TrackPointer());
+    //slotTrackSelected(TrackPointer());
 }

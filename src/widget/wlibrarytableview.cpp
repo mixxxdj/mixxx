@@ -128,14 +128,24 @@ void WLibraryTableView::moveSelection(int delta) {
     }
 }
 
-void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
-    m_vScrollBarPosValues[key] = verticalScrollBar()->value();
+void WLibraryTableView::saveVScrollBarPos(TrackModel* model){
+    if (model == nullptr) {
+        return;
+    }
+    qDebug() << "save: m_vScrollBarPosValues:" << model->key() << verticalScrollBar()->value() << " | " << m_vScrollBarPosValues;
+    m_vScrollBarPosValues[model->key()] = verticalScrollBar()->value();
 }
 
-void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
+void WLibraryTableView::restoreVScrollBarPos(TrackModel* model){
     updateGeometries();
+    if (model == nullptr) {
+        return;
+    }
+    QString key = model->key();
+    qDebug() << "m_vScrollBarPosValues:" << m_vScrollBarPosValues;
 
     if (m_vScrollBarPosValues.contains(key)){
+        qDebug() << "restore key found:" << key << " pos: " << m_vScrollBarPosValues[key];
         verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
     }else{
         m_vScrollBarPosValues[key] = 0;

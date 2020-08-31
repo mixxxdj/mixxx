@@ -57,7 +57,7 @@ void WLibrary::switchToView(const QString& name) {
 
     if (ttView != nullptr){
         //qDebug("trying to save position");
-        ttView->saveCurrentVScrollBarPos();
+        //ttView->saveCurrentVScrollBarPos();
     }
 
     QWidget* widget = m_viewMap.value(name, nullptr);

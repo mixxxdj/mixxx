@@ -115,6 +115,7 @@ class Library: public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+    void saveState();
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);

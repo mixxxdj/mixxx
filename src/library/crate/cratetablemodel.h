@@ -27,6 +27,7 @@ class CrateTableModel final : public BaseSqlTableModel {
     // Returns the number of unsuccessful track additions
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     CapabilitiesFlags getCapabilities() const final;
+    QString key() override;
 
   private:
     CrateId m_selectedCrate;
