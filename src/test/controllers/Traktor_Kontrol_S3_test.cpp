@@ -12,11 +12,15 @@ class TraktorS3Test : public ControllerTest {
   protected:
     void SetUp() override {
         ControllerTest::SetUp();
-        QString hidScript = "./res/controllers/common-hid-packet-parser.js";
+        const QString commonScript = "./res/controllers/common-controller-scripts.js";
+        const QString hidScript = "./res/controllers/common-hid-packet-parser.js";
+        const QString scriptFile = "./res/controllers/Traktor-Kontrol-S3-hid-scripts.js";
+        ASSERT_TRUE(m_pCEngine->evaluate(commonScript));
+        ASSERT_FALSE(m_pCEngine->hasErrors(commonScript));
         ASSERT_TRUE(m_pCEngine->evaluate(hidScript));
         ASSERT_FALSE(m_pCEngine->hasErrors(hidScript));
-        ASSERT_TRUE(m_pCEngine->evaluate(m_sScriptFile));
-        ASSERT_FALSE(m_pCEngine->hasErrors(m_sScriptFile));
+        ASSERT_TRUE(m_pCEngine->evaluate(scriptFile));
+        ASSERT_FALSE(m_pCEngine->hasErrors(scriptFile));
 
         // Create useful objects and getters
         evaluate(
@@ -41,9 +45,6 @@ class TraktorS3Test : public ControllerTest {
         STATE_EFFECT,
         STATE_FOCUS
     };
-
-  private:
-    const QString m_sScriptFile = "./res/controllers/Traktor-Kontrol-S3-hid-scripts.js";
 };
 
 TEST_F(TraktorS3Test, FXSelectButtonSimple) {
@@ -127,26 +128,12 @@ TEST_F(TraktorS3Test, FXSelectButtonSimple) {
 
 TEST_F(TraktorS3Test, FXSelectFocusToggle) {
     ASSERT_TRUE(evaluate(
-            "var pressFx2 = { "
-            "  group: '[ChannelX]', "
-            "  name: '!fx2', "
-            "  value: 1, "
-            "}; "
-            "var unpressFx2 = { "
-            "  group: '[ChannelX]', "
-            "  name: '!fx2', "
-            "  value: 0, "
-            "}; "
-            "var pressFilter = { "
-            "  group: '[ChannelX]', "
-            "  name: '!fx0', "
-            "  value: 1, "
-            "}; "
-            "var unpressFilter = { "
-            "  group: '[ChannelX]', "
-            "  name: '!fx0', "
-            "  value: 0, "
-            "}; ")
+            "var pressFx2 = { group: '[ChannelX]', name: '!fx2', value: 1 };"
+            "var unpressFx2 = { group: '[ChannelX]', name: '!fx2', value: 0 };"
+            "var pressFx3 = { group: '[ChannelX]', name: '!fx3', value: 1 };"
+            "var unpressFx3 = { group: '[ChannelX]', name: '!fx3', value: 0 };"
+            "var pressFilter = { group: '[ChannelX]', name: '!fx0', value: 1 };"
+            "var unpressFilter = { group: '[ChannelX]', name: '!fx0', value: 0 };")
                         .isValid());
 
     // Press FX2 and release
@@ -164,10 +151,91 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
 
-    // Press again
+    // Press 2 again, focus
     evaluate(
             "TestOb.fxc.fxSelectHandler(pressFx2); "
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
+
+    // Press again, back to effect mode
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2); "
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
+    EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
+    EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
+
+    // Press 2 again, focus
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2); "
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
+    EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
+    EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
+
+    // Press 3, effect
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx3); "
+            "TestOb.fxc.fxSelectHandler(unpressFx3);");
+    EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
+    EXPECT_EQ(3, evaluate("getActiveFx();").toInt32());
+
+    // Press 2, press 2, press filter = filter
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2); "
+            "TestOb.fxc.fxSelectHandler(unpressFx2);"
+            "TestOb.fxc.fxSelectHandler(pressFx2); "
+            "TestOb.fxc.fxSelectHandler(unpressFx2);"
+            "TestOb.fxc.fxSelectHandler(pressFilter); "
+            "TestOb.fxc.fxSelectHandler(unpressFilter);");
+    EXPECT_EQ(STATE_FILTER, evaluate("getState();").toInt32());
+    EXPECT_EQ(0, evaluate("getActiveFx();").toInt32());
+}
+
+TEST_F(TraktorS3Test, FXEnablePlusFXSelect) {
+    ASSERT_TRUE(evaluate(
+            "var pressFxEnable1 = { group: '[Channel1]',  name: '!fxEnabled',  value: 1 };"
+            "var unpressFxEnable1 = { group: '[Channel1]', name: '!fxEnabled', value: 0 };"
+            "var pressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 1 };"
+            "var unpressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 0 };"
+            "var pressFx2 = { group: '[ChannelX]', name: '!fx2', value: 1 };"
+            "var unpressFx2 = { group: '[ChannelX]', name: '!fx2', value: 0 };"
+            "var pressFx3 = { group: '[ChannelX]', name: '!fx3', value: 1 };"
+            "var unpressFx3 = { group: '[ChannelX]', name: '!fx3', value: 0 };"
+            "var pressFilter = { group: '[ChannelX]', name: '!fx0', value: 1 };"
+            "var unpressFilter = { group: '[ChannelX]', name: '!fx0', value: 0 };")
+                        .isValid());
+
+    // Press FXEnable 1 and release
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1); ");
+    auto ret = evaluate("getEnablePressed();");
+    ASSERT_TRUE(ret.isValid());
+
+    bool expected_array1[4] = {true, false, false, false};
+    for (int i = 0; i < 4; ++i) {
+        QString group = QString("[Channel%1]").arg(i + 1);
+        EXPECT_TRUE(ret.property(group).isValid());
+        EXPECT_EQ(expected_array1[i], ret.property(group).toBool());
+    }
+
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1); ");
+    ret = evaluate("getEnablePressed();");
+    ASSERT_TRUE(ret.isValid());
+
+    bool expected_array2[5] = {false, false, false, false};
+    for (int i = 1; i <= 4; ++i) {
+        QString group = QString("[Channel%1]").arg(i);
+        EXPECT_TRUE(ret.property(group).isValid());
+        EXPECT_EQ(expected_array2[i], ret.property(group).toBool());
+    }
+
+    // Press enable 1, fx2, should enable effect unit 2 for channel 1
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxSelectHandler(pressFx2);");
+
+    EXPECT_TRUE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2]",
+                                                  "group_1_enable"))
+                        ->get());
 }
