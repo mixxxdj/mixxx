@@ -4,6 +4,7 @@
 #ifndef BEATUTILS_H_
 #define BEATUTILS_H_
 
+#include "audio/types.h"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 
@@ -50,7 +51,7 @@ class BeatUtils {
 
     // Remove jitter and false beats noise from the beats that make a beatmap
     static QVector<double> correctBeatmap(
-            QVector<double>& rawBeats, int SampleRate, double minBpm, double maxBpm, bool removeArrythmic);
+            QVector<double>& rawBeats, const mixxx::audio::SampleRate& sampleRate, bool removeArrythmic);
 
     static double findFirstCorrectBeat(const QVector<double> rawBeats,
                                        const int SampleRate, const double global_bpm);
@@ -81,14 +82,14 @@ class BeatUtils {
         const double filterTolerance,
         QMap<double, int>* filteredFrequencyTable);
     static QMap<int, double> findStableTempoRegions(
-            QMap<double, int> frequencyOfTempos, QList<double> tempoList);
-    static void removeSmallArrhythmic(QVector<double>& rawBeats, const int sampleRate, QMap<int, double>& stableTemposByPosition);
+            const QMap<double, int>& frequencyOfTempos, const QList<double>& tempoList);
+    static void removeSmallArrhythmic(QVector<double>& rawBeats,
+            const mixxx::audio::SampleRate& sampleRate, const QMap<int, double>& stableTemposByPosition);
     static QVector<double> calculateIronedGrid(
-            const QVector<double>& rawbeats, const int sampleRate);
+            const QVector<double>& rawbeats, const mixxx::audio::SampleRate& sampleRate);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
-            const QVector<double> beats, int windowSize, const int windowStep, const int sampleRate, QMap<double, int>* frequencyHistogram);
-    static QVector<double> calculateFixedTempoGrid(
-            const QVector<double>& rawbeats, const int sampleRate, const double localBpm);
+            const QVector<double> beats, int windowSize,
+            const int windowStep, const int sampleRate, QMap<double, int>* pFrequencyHistogram);
 };
 
 #endif /* BEATUTILS_H_ */

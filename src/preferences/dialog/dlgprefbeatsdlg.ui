@@ -162,7 +162,7 @@ by analyzing the beats to discard outliers.</string>
       <item>
        <widget class="QCheckBox" name="bRemoveArrythmic">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sometimes - especially on percussion free, such as ambient music, or effects heavy regions, such as builds and breaks of EDM - the detector fails to keep track of the steady pulse and will deviate from the metronome tempo. Attempts to remove the beats on these outliers tempo values by making them conform to the previous stable detected tempo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sometimes - especially on percussion free, such as ambient music, or effects heavy regions, such as builds and breaks of EDM - the detector fails to keep track of the steady pulse and will deviate from the metronome tempo. Attempts to remove the beats on these outliers tempo values by making them conform to the previous and next stable detected tempo if they are the same and regions is small.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>Enable removal of arrythmic regions (Recommended)</string>

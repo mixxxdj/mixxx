@@ -25,11 +25,11 @@ class BeatFactory {
             const bool bEnableArrytimicRemoval,
             const int iMinBpm,
             const int iMaxBpm,
-            const QHash<QString, QString> extraVersionInfo);
+            const QHash<QString, QString>& extraVersionInfo);
 
     static mixxx::BeatsPointer makePreferredBeats(const Track& track,
             QVector<double> beats,
-            const QHash<QString, QString> extraVersionInfo,
+            const QHash<QString, QString>& extraVersionInfo,
             const bool bEnableFixedTempoCorrection,
             const bool bEnableOffsetCorrection,
             const bool bEnableIroning,

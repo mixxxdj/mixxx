@@ -52,10 +52,10 @@ void debugBeats(const Track& track, const QVector<double>& rawBeats,
     resultHeader = "\nCorrected beats\n";
     debugFile.write(resultHeader.toLocal8Bit());
     debugFile.write(sCorrectedBeats.toLocal8Bit());
-    resultHeader = "\nRaw beat lenght\n";
+    resultHeader = "\nRaw beat length\n";
     debugFile.write(resultHeader.toLocal8Bit());
     debugFile.write(sRawBeatLenght.toLocal8Bit());
-    resultHeader = "\nCorrected beat lenght\n";
+    resultHeader = "\nCorrected beat length\n";
     debugFile.write(resultHeader.toLocal8Bit());
     debugFile.write(sCorrectedBeatLenght.toLocal8Bit());
     debugFile.write("\n");
@@ -107,7 +107,7 @@ QString BeatFactory::getPreferredSubVersion(
         const bool bEnableArrytimicRemoval,
         const int iMinBpm,
         const int iMaxBpm,
-        const QHash<QString, QString> extraVersionInfo) {
+        const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
@@ -166,7 +166,7 @@ QString BeatFactory::getPreferredSubVersion(
 
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         QVector<double> beats,
-        const QHash<QString, QString> extraVersionInfo,
+        const QHash<QString, QString>& extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
         const bool bEnableIroning,
@@ -197,7 +197,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
         if (bEnableIroning) {
-            QVector<double> correctedBeats = BeatUtils::correctBeatmap(beats, iSampleRate, iMinBpm, iMaxBpm, bEnableArrytimicRemoval);
+            QVector<double> correctedBeats = BeatUtils::correctBeatmap(
+                    beats, mixxx::audio::SampleRate(iSampleRate), bEnableArrytimicRemoval);
             debugBeats(track, beats, correctedBeats, version, subVersion);
             beats = correctedBeats;
         }
