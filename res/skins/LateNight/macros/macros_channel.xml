@@ -1,0 +1,20 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <Template src="skin:/macros/macro.xml">
+        <SetVariable name="MacroSlot">1</SetVariable>
+      </Template>
+      <Template src="skin:/macros/macro.xml">
+        <SetVariable name="MacroSlot">2</SetVariable>
+      </Template>
+      <Template src="skin:/macros/macro.xml">
+        <SetVariable name="MacroSlot">3</SetVariable>
+      </Template>
+      <Template src="skin:/macros/macro.xml">
+        <SetVariable name="MacroSlot">4</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

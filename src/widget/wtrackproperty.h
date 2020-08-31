@@ -22,7 +22,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
             const QString& group);
-    ~WTrackProperty() override;
+    ~WTrackProperty() override = default;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -52,6 +52,7 @@ signals:
     const UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
+    int m_macroSlot;
 
     const parented_ptr<WTrackMenu> m_pTrackMenu;
 };

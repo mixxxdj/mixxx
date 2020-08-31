@@ -1,0 +1,14 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <Template src="skin:/macros/macros_channel.xml">
+        <SetVariable name="Group">[Channel1]</SetVariable>
+      </Template>
+      <Template src="skin:/macros/macros_channel.xml">
+        <SetVariable name="Group">[Channel2]</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

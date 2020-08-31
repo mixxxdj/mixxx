@@ -31,14 +31,11 @@ WTrackProperty::WTrackProperty(
     setAcceptDrops(true);
 }
 
-WTrackProperty::~WTrackProperty() {
-    // Required to allow forward declaration of WTrackMenu in header
-}
-
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     m_property = context.selectString(node, "Property");
+    m_macroSlot = context.selectInt(node, "MacroSlot");
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
