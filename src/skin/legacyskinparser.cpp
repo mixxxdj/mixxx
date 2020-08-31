@@ -1246,10 +1246,13 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
-    if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
-        return nullptr;
+    BaseTrackPlayer* pPlayer = nullptr;
+    if (!group.isEmpty()) {
+        pPlayer = m_pPlayerManager->getPlayer(group);
+        if (!pPlayer) {
+            SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+            return nullptr;
+        }
     }
     WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, group, pPlayer);
     commonWidgetSetup(node, pCoverArt);

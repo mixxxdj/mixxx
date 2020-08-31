@@ -395,7 +395,7 @@ QByteArray SeratoBeatGrid::dumpID3() const {
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
     stream << kVersion << numMarkers;
-    for (const SeratoBeatGridNonTerminalMarkerPointer pMarker : m_nonTerminalMarkers) {
+    for (const SeratoBeatGridNonTerminalMarkerPointer& pMarker : m_nonTerminalMarkers) {
         stream.writeRawData(pMarker->dumpID3(), kMarkerSizeID3);
     }
     stream.writeRawData(m_pTerminalMarker->dumpID3(), kMarkerSizeID3);
