@@ -95,12 +95,11 @@ class BpmControl : public EngineControl {
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotBpmLock(double);
+    void slotBeatgridLock(double);
     void slotUpdateRateSlider(double v = 0.0);
     void slotUpdateEngineBpm(double v = 0.0);
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
-    void slotUpdateBPMLock(bool);
 
   private:
     SyncMode getSyncMode() const {

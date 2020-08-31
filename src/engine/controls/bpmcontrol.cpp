@@ -85,7 +85,7 @@ BpmControl::BpmControl(QString group,
     m_pLockBeatgrid = new ControlPushButton(ConfigKey(group, "beatgrid_lock"));
     m_pLockBeatgrid->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pLockBeatgrid, &ControlObject::valueChanged,
-            this, &BpmControl::slotBpmLock,
+            this, &BpmControl::slotBeatgridLock,
             Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
@@ -201,7 +201,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     }
 }
 
-void BpmControl::slotBpmLock(double v) {
+void BpmControl::slotBeatgridLock(double v) {
     TrackPointer track = getEngineBuffer()->getLoadedTrack();
     if (track) {
         track->setBpmLocked(v > 0);
@@ -965,7 +965,9 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
                 pNewTrack.get(),
                 &Track::bpmLockUpdated,
                 this,
-                &BpmControl::slotUpdateBPMLock,
+                [this] (bool locked) {
+                    m_pLockBeatgrid->forceSet(locked ? 1.0 : 0.0);
+                },
                 Qt::DirectConnection);
     }
     trackBeatsUpdated(pBeats);
@@ -979,10 +981,6 @@ void BpmControl::trackUnloaded(TrackPointer pOldTrack) {
                 this,
                 nullptr);
     }
-}
-
-void BpmControl::slotUpdateBPMLock(bool locked) {
-    m_pLockBeatgrid->forceSet(locked ? 1.0 : 0.0);
 }
 
 void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
