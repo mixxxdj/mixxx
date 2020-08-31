@@ -12,36 +12,26 @@ class MacroControlTest : public MacroControl, public testing::Test {
   public:
     MacroControlTest()
             : MacroControl(kChannelGroup, nullptr, 2) {
+        EXPECT_EQ(getStatus(), MacroControl::Status::NoTrack);
+        trackLoaded(pLoadedTrack);
+        EXPECT_EQ(getStatus(), MacroControl::Status::Empty);
+        EXPECT_FALSE(getMacro()->isDirty());
+        EXPECT_FALSE(pLoadedTrack->isDirty());
+        EXPECT_FALSE(isRecording());
     }
+
     MOCK_METHOD1(seekExact, void(double));
+
+    const TrackPointer pLoadedTrack = Track::newTemporary();
 };
 
-TEST_F(MacroControlTest, Create) {
-    EXPECT_EQ(getStatus(), MacroControl::Status::NoTrack);
-    // Ensure that randomly invoking COs doesn't throw
-    slotRecord();
-    slotActivate();
-    slotToggle();
-    slotClear();
-    EXPECT_EQ(getStatus(), MacroControl::Status::NoTrack);
-}
-
-TEST_F(MacroControlTest, LoadTrack) {
-    TrackPointer pTrack = Track::newTemporary();
-    trackLoaded(pTrack);
-    EXPECT_EQ(getStatus(), MacroControl::Status::Empty);
-
+TEST_F(MacroControlTest, Dirty) {
     getMacro()->setLabel("hello");
-    EXPECT_TRUE(pTrack->isDirty());
+    EXPECT_TRUE(getMacro()->isDirty());
+    EXPECT_TRUE(pLoadedTrack->isDirty());
 }
 
 TEST_F(MacroControlTest, RecordSeek) {
-    EXPECT_FALSE(isRecording());
-
-    // Load track
-    TrackPointer pTrack = Track::newTemporary();
-    trackLoaded(pTrack);
-    ASSERT_EQ(getStatus(), MacroControl::Status::Empty);
     // Start recording
     slotRecord();
     EXPECT_TRUE(isRecording());
@@ -74,7 +64,7 @@ TEST_F(MacroControlTest, RecordSeek) {
     // Check recording result
     checkMacroAction(getMacro());
     EXPECT_EQ(getMacro()->getActions().first().target, startFramePos);
-    EXPECT_TRUE(pTrack->isDirty());
+    EXPECT_TRUE(pLoadedTrack->isDirty());
     // Check generated label
     EXPECT_EQ(startFramePos / frameRate, 1.16);
     EXPECT_EQ(getMacro()->getLabel().toStdString(), "1.2");
@@ -91,10 +81,6 @@ TEST_F(MacroControlTest, ControlObjects) {
     const auto ASSERT_STATUS = [&status](MacroControl::Status expectedStatus) {
         ASSERT_EQ(MacroControl::Status(status.get()), expectedStatus);
     };
-    ASSERT_STATUS(MacroControl::Status::NoTrack);
-
-    trackLoaded(Track::newTemporary());
-    ASSERT_STATUS(MacroControl::Status::Empty);
 
     ControlProxy record(kChannelGroup, "macro_2_record");
     record.set(1);
@@ -126,13 +112,12 @@ TEST_F(MacroControlTest, ControlObjects) {
 TEST_F(MacroControlTest, LoadTrackAndPlay) {
     MacroAction jumpAction(40'000, 0);
 
-    auto pTrack = Track::newTemporary();
-    pTrack->setMacros({{2,
+    pLoadedTrack->setMacros({{2,
             std::make_shared<Macro>(
                     QList{kAction, jumpAction},
                     "test",
                     Macro::State())}});
-    trackLoaded(pTrack);
+    trackLoaded(pLoadedTrack);
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
 
     slotActivate();
