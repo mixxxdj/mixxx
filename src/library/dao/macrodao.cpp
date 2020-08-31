@@ -8,7 +8,7 @@
 bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     QSqlQuery query(m_database);
     DEBUG_ASSERT(slot > 0);
-    if (macro->getId() == -1) {
+    if (macro->getId() == DbId::s_invalidValue) {
         query.prepare(QStringLiteral(
                 "INSERT INTO macros "
                 "(track_id, slot, label, state, content) "
@@ -32,7 +32,7 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     query.bindValue(":content", Macro::serialize(macro->getActions()));
 
     if (query.exec()) {
-        if (macro->getId() == -1) {
+        if (macro->getId() == DbId::s_invalidValue) {
             macro->setId(query.lastInsertId().toInt());
         }
         macro->setDirty(false);

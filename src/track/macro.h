@@ -4,6 +4,7 @@
 
 #include "engine/engine.h"
 #include "proto/macro.pb.h"
+#include "util/db/dbid.h"
 namespace proto = mixxx::track::io;
 
 const QLoggingCategory macroLoggingCategory("macros");
@@ -59,7 +60,7 @@ class Macro {
     explicit Macro(QList<MacroAction> actions = {},
             QString label = "",
             State state = State(StateFlag::Enabled),
-            int dbId = -1);
+            int dbId = DbId::s_invalidValue);
 
     bool isDirty() const;
     int getId() const;
