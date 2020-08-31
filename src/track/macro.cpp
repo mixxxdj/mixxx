@@ -21,7 +21,7 @@ Macro::Macro(QList<MacroAction> actions, QString label, State state, int dbId)
 }
 
 // static
-QList<MacroAction> Macro::deserialize(QByteArray serialized) {
+QList<MacroAction> Macro::deserialize(const QByteArray& serialized) {
     proto::Macro macroProto = proto::Macro();
     macroProto.ParseFromArray(serialized.data(), serialized.length());
     QList<MacroAction> result;
@@ -33,7 +33,7 @@ QList<MacroAction> Macro::deserialize(QByteArray serialized) {
 }
 
 // static
-QByteArray Macro::serialize(QList<MacroAction> actions) {
+QByteArray Macro::serialize(const QList<MacroAction>& actions) {
     proto::Macro macroProto;
     auto actionsProto = macroProto.mutable_actions();
     for (const MacroAction& action : actions) {
@@ -41,14 +41,6 @@ QByteArray Macro::serialize(QList<MacroAction> actions) {
     }
     auto string = macroProto.SerializeAsString();
     return QByteArray(string.data(), string.length());
-}
-
-// static
-int Macro::getFreeSlot(QList<int> taken) {
-    int number = 1;
-    while (taken.contains(number))
-        number++;
-    return number;
 }
 
 bool Macro::isDirty() const {

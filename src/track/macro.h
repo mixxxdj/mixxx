@@ -48,9 +48,8 @@ struct MacroAction {
 /// A Macro stores a list of MacroActions as well as its current state and label.
 class Macro {
   public:
-    static QByteArray serialize(QList<MacroAction> actions);
-    static QList<MacroAction> deserialize(QByteArray serialized);
-    static int getFreeSlot(QList<int> taken);
+    static QByteArray serialize(const QList<MacroAction>& actions);
+    static QList<MacroAction> deserialize(const QByteArray& serialized);
 
     enum class StateFlag {
         Enabled = 1u,
