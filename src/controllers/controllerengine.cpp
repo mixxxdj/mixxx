@@ -22,12 +22,22 @@
 // (closure compatible version of connectControl)
 #include <QUuid>
 
-const int kDecks = 16;
+namespace {
+constexpr int kDecks = 16;
 
 // Use 1ms for the Alpha-Beta dt. We're assuming the OS actually gives us a 1ms
 // timer.
-const int kScratchTimerMs = 1;
-const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
+constexpr int kScratchTimerMs = 1;
+constexpr double kAlphaBetaDt = kScratchTimerMs / 1000.0;
+
+inline ControlFlags onlyAssertOnControllerDebug() {
+    if (ControllerDebug::enabled()) {
+        return ControlFlag::None;
+    }
+
+    return ControlFlag::AllowMissingOrInvalid;
+}
+} // namespace
 
 ControllerEngine::ControllerEngine(
         Controller* controller, UserSettingsPointer pConfig)
@@ -695,7 +705,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
+                coScript->getKey(), onlyAssertOnControllerDebug());
         if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
             coScript->slotSet(newValue);
         }
@@ -732,7 +742,7 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
+                coScript->getKey(), onlyAssertOnControllerDebug());
         if (pControl && !m_st.ignore(pControl, newParameter)) {
           coScript->setParameter(newParameter);
         }
@@ -1460,7 +1470,7 @@ bool ControllerEngine::isScratching(int deck) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObject* pControl = ControlObject::getControl(key, ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
+    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {
         qWarning() << "Failed to" << (set ? "enable" : "disable")
                    << "softTakeover for invalid control" << key;
@@ -1485,7 +1495,7 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 void ControllerEngine::softTakeoverIgnoreNextValue(
         QString group, const QString name) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObject* pControl = ControlObject::getControl(key, ControllerDebug::enabled() ? ControlFlag::None : ControlFlag::AllowMissingOrInvalid);
+    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {
         qWarning() << "Failed to call softTakeoverIgnoreNextValue for invalid control" << key;
         return;
