@@ -74,36 +74,39 @@ TEST(MacroControlTest, RecordSeek) {
 TEST(MacroControlTest, ControlObjects) {
     MacroControl macroControl(kChannelGroup, nullptr, 2);
     ControlProxy status(kChannelGroup, "macro_2_status");
-    ASSERT_EQ(status.get(), MacroControl::Status::NoTrack);
+    const auto ASSERT_STATUS = [&status](MacroControl::Status expectedStatus) {
+        ASSERT_EQ(MacroControl::Status(status.get()), expectedStatus);
+    };
+    ASSERT_STATUS(MacroControl::Status::NoTrack);
 
     macroControl.trackLoaded(Track::newTemporary());
-    ASSERT_EQ(status.get(), MacroControl::Status::Empty);
+    ASSERT_STATUS(MacroControl::Status::Empty);
 
     ControlProxy record(kChannelGroup, "macro_2_record");
     record.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Armed);
+    ASSERT_STATUS(MacroControl::Status::Armed);
     record.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Empty);
+    ASSERT_STATUS(MacroControl::Status::Empty);
 
     ControlProxy activate(kChannelGroup, "macro_2_activate");
     activate.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Armed);
+    ASSERT_STATUS(MacroControl::Status::Armed);
 
     // Record
     macroControl.slotJumpQueued();
     macroControl.notifySeek(0);
     activate.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Playing);
+    ASSERT_STATUS(MacroControl::Status::Playing);
 
     // Restart
     activate.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Playing);
+    ASSERT_STATUS(MacroControl::Status::Playing);
 
     ControlProxy toggle(kChannelGroup, "macro_2_toggle");
     toggle.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Recorded);
+    ASSERT_STATUS(MacroControl::Status::Recorded);
     toggle.set(1);
-    ASSERT_EQ(status.get(), MacroControl::Status::Playing);
+    ASSERT_STATUS(MacroControl::Status::Playing);
 }
 
 class MacroControlMock : public MacroControl {
