@@ -47,7 +47,7 @@ TEST_F(MacroControlTest, RecordSeek) {
     ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
 
     // Initial jump
-    double startPos = 1'100;
+    double startPos = 1'008;
     slotJumpQueued();
     seek(startPos);
     // Jump kAction
@@ -64,8 +64,8 @@ TEST_F(MacroControlTest, RecordSeek) {
     EXPECT_EQ(getMacro()->getActions().first().getTargetPositionSample(), startPos);
     EXPECT_TRUE(pLoadedTrack->isDirty());
     // Check generated label
-    EXPECT_EQ(startPos / mixxx::kEngineChannelCount / frameRate, 0.55);
-    EXPECT_EQ(getMacro()->getLabel().toStdString(), "0.6");
+    EXPECT_EQ(startPos / mixxx::kEngineChannelCount / frameRate, 0.504);
+    EXPECT_EQ(getMacro()->getLabel().toStdString(), "0.50");
     // Activate
     EXPECT_CALL(*this, seekExact(startPos));
     slotGotoPlay();
@@ -78,12 +78,16 @@ TEST_F(MacroControlTest, RecordSeek) {
 TEST_F(MacroControlTest, ControlObjects) {
     ControlProxy status(kChannelGroup, "macro_2_status");
 #define ASSERT_STATUS(expected) ASSERT_EQ(MacroControl::Status(status.get()), expected);
+    QString label("Intro");
+    getMacro()->setLabel(label);
 
     ControlProxy record(kChannelGroup, "macro_2_record");
     record.set(1);
     ASSERT_STATUS(MacroControl::Status::Armed);
+    EXPECT_EQ(getMacro()->getLabel(), "Intro[Recording]");
     record.set(0);
     ASSERT_STATUS(MacroControl::Status::Empty);
+    EXPECT_EQ(getMacro()->getLabel(), label);
 
     ControlProxy activate(kChannelGroup, "macro_2_activate");
     activate.set(1);
@@ -92,6 +96,7 @@ TEST_F(MacroControlTest, ControlObjects) {
     ASSERT_STATUS(MacroControl::Status::Empty);
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Armed);
+    EXPECT_EQ(getMacro()->getLabel(), "Intro[Recording]");
 
     // Record
     ControlProxy(kChannelGroup, "macro_2_enable").set(0);
@@ -101,6 +106,7 @@ TEST_F(MacroControlTest, ControlObjects) {
     notifySeek(0);
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Recorded);
+    EXPECT_EQ(getMacro()->getLabel(), label);
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Playing);
 

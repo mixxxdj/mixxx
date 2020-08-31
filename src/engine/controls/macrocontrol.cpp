@@ -209,7 +209,7 @@ void MacroControl::stopRecording() {
             // is no user-defined one
             double secPos = m_pMacro->getStartSamplePos() /
                     mixxx::kEngineChannelCount / getSampleOfTrack().rate;
-            m_pMacro->setLabel(QString::number(secPos, 'f', 1));
+            m_pMacro->setLabel(QString::number(secPos, 'f', 2));
         }
         setStatus(Status::Recorded);
         if (m_pMacro->isEnabled()) {
