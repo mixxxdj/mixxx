@@ -300,7 +300,8 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
 
 void HidController::sendFeatureReport(
         const QList<int>& dataList, unsigned int reportID) {
-    QByteArray dataArray; dataArray.reserve(1 + dataList.size());
+    QByteArray dataArray;
+    dataArray.reserve(1 + dataList.size());
 
     // Append the Report ID to the beginning of dataArray[] per the API..
     dataArray.append(reportID);
