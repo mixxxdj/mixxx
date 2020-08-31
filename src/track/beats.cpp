@@ -319,58 +319,55 @@ Beat BeatsInternal::findNthBeat(FramePos frame, int n) const {
         } else { // n < 0
             return getBeatAtIndex(previous_beat->beatIndex() + n + 1);
         }
-    } else { // Pivot frame is on either side of track.
-        if (frame < getFirstBeatPosition()) {
-            const auto& firstBeat = getBeatAtIndex(0);
-            const FrameDiff_t beatLength = getBeatLengthFrames(firstBeat.bpm(),
-                    getSampleRate(),
-                    firstBeat.timeSignature());
-            double beatFraction = (frame - getFirstBeatPosition()) / beatLength;
-            int prevBeatIdx = floor(beatFraction);
-            int nextBeatIdx = ceil(beatFraction);
+    } else if (frame < getFirstBeatPosition()) {
+        const auto& firstBeat = getBeatAtIndex(0);
+        const FrameDiff_t beatLength = getBeatLengthFrames(firstBeat.bpm(),
+                getSampleRate(),
+                firstBeat.timeSignature());
+        double beatFraction = (frame - getFirstBeatPosition()) / beatLength;
+        int prevBeatIdx = floor(beatFraction);
+        int nextBeatIdx = ceil(beatFraction);
 
-            if (fabs(nextBeatIdx - beatFraction) < kBeatVicinityFactor) {
-                // If we are going to pretend we were actually on nextBeat then prevBeat
-                // needs to be re-calculated. Since it is floor(beatFraction), that's
-                // the same as nextBeat.  We only use prevBeat so no need to increment
-                // nextBeat.
-                prevBeatIdx = nextBeatIdx;
-            } else if (fabs(prevBeatIdx - beatFraction) < kBeatVicinityFactor) {
-                // If we are going to pretend we were actually on prevBeat then nextBeat
-                // needs to be re-calculated. Since it is ceil(beatFraction), that's
-                // the same as prevBeat.  We will only use nextBeat so no need to
-                // decrement prevBeat.
-                nextBeatIdx = prevBeatIdx;
-            }
+        if (fabs(nextBeatIdx - beatFraction) < kBeatVicinityFactor) {
+            // If we are going to pretend we were actually on nextBeat then prevBeat
+            // needs to be re-calculated. Since it is floor(beatFraction), that's
+            // the same as nextBeat.  We only use prevBeat so no need to increment
+            // nextBeat.
+            prevBeatIdx = nextBeatIdx;
+        } else if (fabs(prevBeatIdx - beatFraction) < kBeatVicinityFactor) {
+            // If we are going to pretend we were actually on prevBeat then nextBeat
+            // needs to be re-calculated. Since it is ceil(beatFraction), that's
+            // the same as prevBeat.  We will only use nextBeat so no need to
+            // decrement prevBeat.
+            nextBeatIdx = prevBeatIdx;
+        }
 
-            if (n > 0) {
-                return getBeatAtIndex(nextBeatIdx + n - 1);
-            } else { // n < 0
-                return getBeatAtIndex(prevBeatIdx + n + 1);
-            }
-        } else { // frame > getLastFramePosition()
-            const int lastBeatIdx = size() - 1;
-            const auto& lastBeat = getBeatAtIndex(lastBeatIdx);
-            const FrameDiff_t beatLength = getBeatLengthFrames(
-                    lastBeat.bpm(), getSampleRate(), lastBeat.timeSignature());
-            double beatFraction = (frame - getLastBeatPosition()) / beatLength;
-            int prevBeatIdxRelativeToLast = floor(beatFraction);
-            int nextBeatIdxRelativeToLast = ceil(beatFraction);
+        if (n > 0) {
+            return getBeatAtIndex(nextBeatIdx + n - 1);
+        } else { // n < 0
+            return getBeatAtIndex(prevBeatIdx + n + 1);
+        }
+    } else { // frame > getLastFramePosition()
+        const int lastBeatIdx = size() - 1;
+        const auto& lastBeat = getBeatAtIndex(lastBeatIdx);
+        const FrameDiff_t beatLength = getBeatLengthFrames(
+                lastBeat.bpm(), getSampleRate(), lastBeat.timeSignature());
+        double beatFraction = (frame - getLastBeatPosition()) / beatLength;
+        int prevBeatIdxRelativeToLast = floor(beatFraction);
+        int nextBeatIdxRelativeToLast = ceil(beatFraction);
 
-            if (fabs(nextBeatIdxRelativeToLast - beatFraction) < kBeatVicinityFactor) {
-                prevBeatIdxRelativeToLast = nextBeatIdxRelativeToLast;
-            } else if (fabs(prevBeatIdxRelativeToLast - beatFraction) < kBeatVicinityFactor) {
-                nextBeatIdxRelativeToLast = prevBeatIdxRelativeToLast;
-            }
+        if (fabs(nextBeatIdxRelativeToLast - beatFraction) < kBeatVicinityFactor) {
+            prevBeatIdxRelativeToLast = nextBeatIdxRelativeToLast;
+        } else if (fabs(prevBeatIdxRelativeToLast - beatFraction) < kBeatVicinityFactor) {
+            nextBeatIdxRelativeToLast = prevBeatIdxRelativeToLast;
+        }
 
-            if (n > 0) {
-                return getBeatAtIndex(nextBeatIdxRelativeToLast + lastBeatIdx + n - 1);
-            } else { // n < 0
-                return getBeatAtIndex(prevBeatIdxRelativeToLast + lastBeatIdx + n + 1);
-            }
+        if (n > 0) {
+            return getBeatAtIndex(nextBeatIdxRelativeToLast + lastBeatIdx + n - 1);
+        } else { // n < 0
+            return getBeatAtIndex(prevBeatIdxRelativeToLast + lastBeatIdx + n + 1);
         }
     }
-    return kInvalidBeat;
 }
 
 Bpm BeatsInternal::getGlobalBpm() const {
