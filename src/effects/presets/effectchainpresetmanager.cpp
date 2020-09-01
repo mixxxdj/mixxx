@@ -12,7 +12,9 @@
 #include "util/xml.h"
 
 namespace {
-const QString kEffectChainPresetDirectory = "/effects/chains";
+const QString kEffectChainPresetDirectory = QStringLiteral("/effects/chains");
+const QString kXmlFileExtension = QStringLiteral(".xml");
+const QString kFolderDelimiter = QStringLiteral("/");
 } // anonymous namespace
 
 EffectChainPresetManager::EffectChainPresetManager(UserSettingsPointer pConfig,
@@ -74,7 +76,8 @@ void EffectChainPresetManager::importPreset() {
     QStringList fileNames = QFileDialog::getOpenFileNames(nullptr,
             tr("Import effect chain preset"),
             QString(),
-            tr("Mixxx Effect Chain Presets") + " (*.xml)");
+            tr("Mixxx Effect Chain Presets") + QStringLiteral(" (") +
+                    kXmlFileExtension + QStringLiteral(")"));
 
     QString importFailed = tr("Error importing effect chain preset");
     for (int i = 0; i < fileNames.size(); ++i) {
@@ -83,12 +86,12 @@ void EffectChainPresetManager::importPreset() {
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly)) {
             QMessageBox::critical(
-                    nullptr, importFailed, importFailed + " " + filePath);
+                    nullptr, importFailed, importFailed + QStringLiteral(" ") + filePath);
             continue;
         } else if (!doc.setContent(&file)) {
             file.close();
             QMessageBox::critical(
-                    nullptr, importFailed, importFailed + " " + filePath);
+                    nullptr, importFailed, importFailed + QStringLiteral(" ") + filePath);
             continue;
         }
         file.close();
@@ -100,8 +103,8 @@ void EffectChainPresetManager::importPreset() {
                 bool okay = false;
                 QString newName = QInputDialog::getText(nullptr,
                         tr("Rename effect chain preset"),
-                        tr("An effect chain preset with the name") + " \"" +
-                                pPreset->name() + "\" " +
+                        tr("An effect chain preset with the name") + QStringLiteral(" \"") +
+                                pPreset->name() + QStringLiteral("\" ") +
                                 tr("already exists. Choose a new name for the "
                                    "imported effect chain preset:"),
                         QLineEdit::Normal,
@@ -132,11 +135,14 @@ void EffectChainPresetManager::importPreset() {
                 if (!effectSupported) {
                     QMessageBox::critical(nullptr,
                             importFailed,
-                            tr("The effect chain imported from") + " " +
-                                    filePath + " " +
+                            tr("The effect chain imported from") +
+                                    QStringLiteral(" ") + filePath +
+                                    QStringLiteral(" ") +
                                     tr("contains an effect that Mixxx does not "
                                        "support") +
-                                    ":\n\n" + pEffectPreset->id() + "\n\n" +
+                                    QStringLiteral(":\n\n") +
+                                    pEffectPreset->id() +
+                                    QStringLiteral("\n\n") +
                                     tr("If you load this chain preset, the "
                                        "unsupported effect will not be loaded "
                                        "with it."));
@@ -169,15 +175,18 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
     QString fileName = QFileDialog::getSaveFileName(nullptr,
             tr("Save effect chain preset"),
             QString(),
-            tr("Mixxx Effect Chain Presets") + " (*.xml)");
+            tr("Mixxx Effect Chain Presets") + QStringLiteral(" (") +
+                    kXmlFileExtension + QStringLiteral(")"));
 
     QFile file(fileName);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
         file.close();
         QMessageBox::critical(nullptr,
                 tr("Error exporting effect chain preset"),
-                tr("Could not save effect chain preset") + " \"" +
-                        chainPresetName + "\" " + tr("to file") + " " + fileName);
+                tr("Could not save effect chain preset") +
+                        QStringLiteral(" \"") + chainPresetName +
+                        QStringLiteral("\" ") + tr("to file") +
+                        QStringLiteral(" ") + fileName);
         return;
     }
 
@@ -196,7 +205,8 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
     bool okay = false;
     QString newName = QInputDialog::getText(nullptr,
             tr("Rename effect chain preset"),
-            tr("New name for effect chain preset") + " \"" + oldName + "\"",
+            tr("New name for effect chain preset") + QStringLiteral(" \"") +
+                    oldName + QStringLiteral("\""),
             QLineEdit::Normal,
             oldName,
             &okay);
@@ -204,9 +214,10 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
         return;
     }
 
-    QString directoryPath = m_pConfig->getSettingsPath() + kEffectChainPresetDirectory + "/";
-    QFile file(directoryPath + oldName + ".xml");
-    if (!file.rename(directoryPath + newName + ".xml")) {
+    QString directoryPath = m_pConfig->getSettingsPath() +
+            kEffectChainPresetDirectory + kFolderDelimiter;
+    QFile file(directoryPath + oldName + kXmlFileExtension);
+    if (!file.rename(directoryPath + newName + kXmlFileExtension)) {
         QMessageBox::critical(
                 nullptr,
                 tr("Could not rename effect chain preset"),
@@ -236,13 +247,13 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     auto pressedButton = QMessageBox::question(nullptr,
             tr("Remove effect chain preset"),
             tr("Are you sure you want to delete the effect chain preset") +
-                    " \"" + chainPresetName + "\"?");
+                    QStringLiteral(" \"") + chainPresetName + QStringLiteral("\"?"));
     if (pressedButton != QMessageBox::Yes) {
         return;
     }
 
     QFile file(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory +
-            "/" + chainPresetName + ".xml");
+            kFolderDelimiter + chainPresetName + kXmlFileExtension);
     if (!file.remove()) {
         QMessageBox::critical(
                 nullptr,
@@ -305,15 +316,15 @@ void EffectChainPresetManager::loadEffectChainPresets() {
         QDir defaultChainPresetsDir(defaultPresetsPath);
         defaultChainPresetsDir.setFilter(QDir::Files | QDir::Readable);
         for (const auto& fileName : defaultChainPresetsDir.entryList()) {
-            QFile::copy(defaultPresetsPath + "/" + fileName,
-                    savedPresetsPath + "/" + fileName);
+            QFile::copy(defaultPresetsPath + kFolderDelimiter + fileName,
+                    savedPresetsPath + kFolderDelimiter + fileName);
         }
     }
 
     savedPresetsDir.setFilter(QDir::Files | QDir::Readable);
     const QStringList fileList = savedPresetsDir.entryList();
     for (const auto& filePath : fileList) {
-        QFile file(savedPresetsPath + "/" + filePath);
+        QFile file(savedPresetsPath + kFolderDelimiter + filePath);
         if (!file.open(QIODevice::ReadOnly)) {
             continue;
         }
@@ -370,7 +381,8 @@ void EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     // The file name does not matter as long as it is unique. The actual name string
     // is safely stored in the UTF8 document, regardless of what the filesystem
     // supports for file names.
-    QFile file(path + "/" + mixxx::filename::sanitize(pPreset->name()) + ".xml");
+    QFile file(path + kFolderDelimiter +
+            mixxx::filename::sanitize(pPreset->name()) + kXmlFileExtension);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
         return;
     }
@@ -479,7 +491,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     for (int i = 0; i < quickEffectNodeList.count(); ++i) {
         QDomElement presetNameElement = quickEffectNodeList.at(i).toElement();
         if (!presetNameElement.isNull()) {
-            QString deckGroup = presetNameElement.attribute("group");
+            QString deckGroup = presetNameElement.attribute(QStringLiteral("group"));
             auto pPreset = m_effectChainPresets.value(presetNameElement.text());
             if (pPreset != nullptr) {
                 quickEffectPresets.insert(deckGroup, pPreset);
@@ -534,7 +546,7 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, EffectsXmlData
                 quickEffectPresetsElement,
                 EffectXml::ChainPresetName,
                 it.value()->name());
-        quickEffectElement.setAttribute("group", it.key());
+        quickEffectElement.setAttribute(QStringLiteral("group"), it.key());
     }
     rootElement.appendChild(quickEffectPresetsElement);
 }
