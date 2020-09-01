@@ -5,10 +5,12 @@
 
 #include "controllers/controllerdebug.h"
 #include "controllers/controllerengine.h"
-#include "test/mixxxtest.h"
+#include "test/signalpathtest.h"
 #include "util/time.h"
 
-class ControllerTest : public MixxxTest {
+// ControllerTest inherits from BaseSignalPathTest so that all of the standard
+// channels, effects units, etc exist.
+class ControllerTest : public BaseSignalPathTest {
   protected:
     void SetUp() override {
         mixxx::Time::setTestMode(true);

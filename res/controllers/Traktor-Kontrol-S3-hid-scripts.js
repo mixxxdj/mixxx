@@ -1207,24 +1207,22 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
         return;
     }
 
-    // // If any fxEnable button is pressed, we are toggling fx unit assignment.
-    // if (this.enablePressed !== "") {
-    if (this.anyEnablePressed()) {
-        var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
-        for (var key in this.enablePressed) {
-            if (this.enablePressed[key]) {
-                HIDDebug("key? " + key);
-                var fxKey = "group_" + key + "_enable";
-                script.toggleControl(fxGroup, fxKey);
-            }
-        }
-        //     this.StatusDebug();
-        return;
-    }
-
-    // Un-shifted presses
     switch (this.currentState) {
     case this.STATE_FILTER:
+        // If any fxEnable button is pressed, we are toggling fx unit assignment.
+        if (this.anyEnablePressed()) {
+            var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
+            for (var key in this.enablePressed) {
+                if (this.enablePressed[key]) {
+                    HIDDebug("key? " + key);
+                    var fxKey = "group_" + key + "_enable";
+                    script.toggleControl(fxGroup, fxKey);
+                }
+            }
+            //     this.StatusDebug();
+            return;
+        }
+
         // If we push filter and filter is already pushed, do nothing.
         if (fxNumber === 0) {
             this.currentState = this.STATE_FILTER;

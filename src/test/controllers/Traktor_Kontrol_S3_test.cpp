@@ -6,12 +6,17 @@
 #include "controllers/controllerdebug.h"
 #include "controllers/controllerengine.h"
 #include "controllers/softtakeover.h"
+#include "effects/effectchain.h"
+#include "effects/effectsmanager.h"
 #include "test/controllers/controllertest.h"
+#include "test/signalpathtest.h"
 
 class TraktorS3Test : public ControllerTest {
   protected:
     void SetUp() override {
         ControllerTest::SetUp();
+        m_pRack = m_pEffectsManager->addStandardEffectRack();
+
         const QString commonScript = "./res/controllers/common-controller-scripts.js";
         const QString hidScript = "./res/controllers/common-hid-packet-parser.js";
         const QString scriptFile = "./res/controllers/Traktor-Kontrol-S3-hid-scripts.js";
@@ -45,6 +50,7 @@ class TraktorS3Test : public ControllerTest {
         STATE_EFFECT,
         STATE_FOCUS
     };
+    StandardEffectRackPointer m_pRack;
 };
 
 TEST_F(TraktorS3Test, FXSelectButtonSimple) {
@@ -233,9 +239,42 @@ TEST_F(TraktorS3Test, FXEnablePlusFXSelect) {
     // Press enable 1, fx2, should enable effect unit 2 for channel 1
     evaluate(
             "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
-            "TestOb.fxc.fxSelectHandler(pressFx2);");
+            "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
 
     EXPECT_TRUE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2]",
-                                                  "group_1_enable"))
+                                                  "group_[Channel1]_enable"))
                         ->get());
+
+    // Press enable fx2 again, should disable effect unit 2 for channel 1
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
+
+    EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2]",
+                                                   "group_[Channel1]_enable"))
+                         ->get());
+
+    // Unpress fxenable, back where we started.
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1); ");
+    ret = evaluate("getEnablePressed();");
+    ASSERT_TRUE(ret.isValid());
+
+    for (int i = 1; i <= 4; ++i) {
+        QString group = QString("[Channel%1]").arg(i);
+        EXPECT_TRUE(ret.property(group).isValid());
+        EXPECT_EQ(expected_array2[i], ret.property(group).toBool());
+    }
+
+    // If we're not in filter mode, fxenable doesn't cause us to enable/disable units
+    // (this would enable/disable the effectunit, but that's tested elsewhere)
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx3);"
+            "TestOb.fxc.fxSelectHandler(unpressFx3);"
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxSelectHandler(pressFx2);");
+    EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2]",
+                                                   "group_[Channel1]_enable"))
+                         ->get());
 }
