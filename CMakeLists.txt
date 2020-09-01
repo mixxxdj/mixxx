@@ -410,6 +410,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/effectsmessenger.cpp
   src/effects/specialeffectchainslots.cpp
   src/effects/visibleeffectslist.cpp
+  src/effects/backends/effectsbackend.cpp
   src/effects/backends/effectmanifest.cpp
   src/effects/backends/effectmanifestparameter.cpp
   src/effects/backends/builtin/autopaneffect.cpp

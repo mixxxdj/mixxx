@@ -802,6 +802,7 @@ class MixxxCore(Feature):
                    "src/effects/effectbuttonparameterslot.cpp",
                    "src/effects/effectsmanager.cpp",
 
+                   "src/effects/backends/effectsbackend.cpp",
                    "src/effects/backends/effectmanifest.cpp",
                    "src/effects/backends/effectmanifestparameter.cpp",
 
