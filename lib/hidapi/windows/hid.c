@@ -830,62 +830,54 @@ int HID_API_EXPORT_CALL HID_API_CALL hid_get_manufacturer_string(hid_device *dev
 {
 	BOOL res;
 
-        res = HidD_GetManufacturerString(dev->device_handle,
-                string,
-                sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
-        if (!res) {
-            register_error(dev, "HidD_GetManufacturerString");
-            return -1;
-        }
+	res = HidD_GetManufacturerString(dev->device_handle, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
+	if (!res) {
+		register_error(dev, "HidD_GetManufacturerString");
+		return -1;
+	}
 
-        return 0;
+	return 0;
 }
 
-int HID_API_EXPORT_CALL HID_API_CALL hid_get_product_string(
-        hid_device* dev, wchar_t* string, size_t maxlen) {
-    BOOL res;
+int HID_API_EXPORT_CALL HID_API_CALL hid_get_product_string(hid_device *dev, wchar_t *string, size_t maxlen)
+{
+	BOOL res;
 
-    res = HidD_GetProductString(dev->device_handle,
-            string,
-            sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
-    if (!res) {
-        register_error(dev, "HidD_GetProductString");
-        return -1;
-    }
+	res = HidD_GetProductString(dev->device_handle, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
+	if (!res) {
+		register_error(dev, "HidD_GetProductString");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
-int HID_API_EXPORT_CALL HID_API_CALL hid_get_serial_number_string(
-        hid_device* dev, wchar_t* string, size_t maxlen) {
-    BOOL res;
+int HID_API_EXPORT_CALL HID_API_CALL hid_get_serial_number_string(hid_device *dev, wchar_t *string, size_t maxlen)
+{
+	BOOL res;
 
-    res = HidD_GetSerialNumberString(dev->device_handle,
-            string,
-            sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
-    if (!res) {
-        register_error(dev, "HidD_GetSerialNumberString");
-        return -1;
-    }
+	res = HidD_GetSerialNumberString(dev->device_handle, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
+	if (!res) {
+		register_error(dev, "HidD_GetSerialNumberString");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
-int HID_API_EXPORT_CALL HID_API_CALL hid_get_indexed_string(
-        hid_device* dev, int string_index, wchar_t* string, size_t maxlen) {
-    BOOL res;
+int HID_API_EXPORT_CALL HID_API_CALL hid_get_indexed_string(hid_device *dev, int string_index, wchar_t *string, size_t maxlen)
+{
+	BOOL res;
 
-    res = HidD_GetIndexedString(dev->device_handle,
-            string_index,
-            string,
-            sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
-    if (!res) {
-        register_error(dev, "HidD_GetIndexedString");
-        return -1;
-    }
+	res = HidD_GetIndexedString(dev->device_handle, string_index, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
+	if (!res) {
+		register_error(dev, "HidD_GetIndexedString");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
+
 
 HID_API_EXPORT const wchar_t * HID_API_CALL  hid_error(hid_device *dev)
 {

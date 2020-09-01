@@ -64,25 +64,24 @@ typedef struct pthread_barrier {
     int trip_count;
 } pthread_barrier_t;
 
-static int pthread_barrier_init(pthread_barrier_t* barrier,
-        const pthread_barrierattr_t* attr,
-        unsigned int count) {
-    if (count == 0) {
-        errno = EINVAL;
-        return -1;
-    }
+static int pthread_barrier_init(pthread_barrier_t *barrier, const pthread_barrierattr_t *attr, unsigned int count)
+{
+	if(count == 0) {
+		errno = EINVAL;
+		return -1;
+	}
 
-    if (pthread_mutex_init(&barrier->mutex, 0) < 0) {
-        return -1;
-    }
-    if (pthread_cond_init(&barrier->cond, 0) < 0) {
-        pthread_mutex_destroy(&barrier->mutex);
-        return -1;
-    }
-    barrier->trip_count = count;
-    barrier->count = 0;
+	if(pthread_mutex_init(&barrier->mutex, 0) < 0) {
+		return -1;
+	}
+	if(pthread_cond_init(&barrier->cond, 0) < 0) {
+		pthread_mutex_destroy(&barrier->mutex);
+		return -1;
+	}
+	barrier->trip_count = count;
+	barrier->count = 0;
 
-    return 0;
+	return 0;
 }
 
 static int pthread_barrier_destroy(pthread_barrier_t *barrier)

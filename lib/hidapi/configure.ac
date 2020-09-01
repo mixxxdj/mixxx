@@ -66,13 +66,12 @@ case $host in
 	LIBS_HIDRAW_PR="${LIBS_HIDRAW_PR} $libudev_LIBS"
 	CFLAGS_HIDRAW="${CFLAGS_HIDRAW} $libudev_CFLAGS"
 
-#HIDAPI / libusb libs
+	# HIDAPI/libusb libs
 	AC_CHECK_LIB([rt], [clock_gettime], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lrt"], [hidapi_lib_error librt])
 	PKG_CHECK_MODULES([libusb], [libusb-1.0 >= 1.0.9], true, [hidapi_lib_error libusb-1.0])
 	LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} $libusb_LIBS"
 	CFLAGS_LIBUSB="${CFLAGS_LIBUSB} $libusb_CFLAGS"
-	;
-;
+	;;
 *-darwin*)
 	AC_MSG_RESULT([ (Mac OS X back-end)])
 	AC_DEFINE(OS_DARWIN, 1, [Mac implementation])
@@ -81,8 +80,7 @@ case $host in
 	os="darwin"
 	threads="pthreads"
 	LIBS="${LIBS} -framework IOKit -framework CoreFoundation"
-	;
-;
+	;;
 *-freebsd*)
 	AC_MSG_RESULT([ (FreeBSD back-end)])
 	AC_DEFINE(OS_FREEBSD, 1, [FreeBSD implementation])
@@ -97,8 +95,7 @@ case $host in
 	AC_CHECK_LIB([usb], [libusb_init], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lusb"], [hidapi_lib_error libusb])
 	AC_CHECK_LIB([iconv], [iconv_open], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -liconv"], [hidapi_lib_error libiconv])
 	echo libs_priv: $LIBS_LIBUSB_PRIVATE
-	;
-;
+	;;
 *-kfreebsd*)
 	AC_MSG_RESULT([ (kFreeBSD back-end)])
 	AC_DEFINE(OS_KFREEBSD, 1, [kFreeBSD implementation])
@@ -109,8 +106,7 @@ case $host in
 
 	AC_CHECK_LIB([usb], [libusb_init], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lusb"], [hidapi_lib_error libusb])
 	echo libs_priv: $LIBS_LIBUSB_PRIVATE
-	;
-;
+	;;
 *-mingw*)
 	AC_MSG_RESULT([ (Windows back-end, using MinGW)])
 	backend="windows"
