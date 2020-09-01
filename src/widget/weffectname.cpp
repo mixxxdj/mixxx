@@ -29,8 +29,7 @@ void WEffectName::setup(const QDomNode& node, const SkinContext& context) {
 void WEffectName::setEffectSlot(EffectSlotPointer pEffectSlot) {
     if (pEffectSlot) {
         m_pEffectSlot = pEffectSlot;
-        connect(pEffectSlot.data(), SIGNAL(effectChanged()),
-                this, SLOT(effectUpdated()));
+        connect(pEffectSlot.data(), &EffectSlot::effectChanged, this, &WEffectName::effectUpdated);
         effectUpdated();
     }
 }
