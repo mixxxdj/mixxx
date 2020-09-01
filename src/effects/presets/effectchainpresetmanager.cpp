@@ -116,7 +116,7 @@ void EffectChainPresetManager::importPreset() {
             // An imported chain preset might contain an LV2 plugin that the user does not
             // have installed.
             for (const auto& pEffectPreset : pPreset->effectPresets()) {
-                if (pEffectPreset == nullptr || pEffectPreset->isEmpty()) {
+                if (!pEffectPreset || pEffectPreset->isEmpty()) {
                     continue;
                 }
 

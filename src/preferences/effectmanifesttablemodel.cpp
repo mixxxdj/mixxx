@@ -111,7 +111,7 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
         EffectManifestPointer pManifest =
                 m_pBackendManager->getManifestFromUniqueId(manifestUniqueId);
         // Do not VERIFY_OR_DEBUG_ASSERT here because MIME data could come from anywhere.
-        if (pManifest != nullptr) {
+        if (pManifest) {
             manifestList.append(pManifest);
         }
     }

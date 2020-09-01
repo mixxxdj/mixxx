@@ -163,7 +163,7 @@ void EngineEffectsManager::processInner(
         // modifying the original input buffer
         SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
         for (EngineEffectChain* pChain : chains) {
-            if (pChain != nullptr) {
+            if (pChain) {
                 if (pChain->process(inputHandle, outputHandle,
                                     pIn, pOut,
                                     numSamples, sampleRate, groupFeatures)) {
@@ -190,7 +190,7 @@ void EngineEffectsManager::processInner(
 
         CSAMPLE* pIntermediateOutput;
         for (EngineEffectChain* pChain : chains) {
-            if (pChain != nullptr) {
+            if (pChain) {
                 // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {
                     pIntermediateOutput = m_buffer2.data();
