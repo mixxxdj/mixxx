@@ -199,7 +199,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
         return false;
     }
 
-    QString scriptCode = "";
+    QString scriptCode;
     scriptCode.append(input.readAll());
     scriptCode.append('\n');
     input.close();
