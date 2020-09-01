@@ -91,7 +91,7 @@ void DetectionFunction::deInitialise()
     delete m_window;
 }
 
-double DetectionFunction::processTimeDomain(const double *samples)
+DFresults DetectionFunction::processTimeDomain(const double *samples)
 {
     m_window->cut(samples, m_windowed);
 
@@ -103,7 +103,7 @@ double DetectionFunction::processTimeDomain(const double *samples)
     return runDF();
 }
 
-double DetectionFunction::processFrequencyDomain(const double *reals,
+DFresults DetectionFunction::processFrequencyDomain(const double *reals,
                                                  const double *imags)
 {
     m_phaseVoc->processFrequencyDomain(reals, imags,
@@ -116,6 +116,35 @@ double DetectionFunction::processFrequencyDomain(const double *reals,
 
 void DetectionFunction::whiten()
 {
+    static int count = 0;
+    static double oldPitch = 0;
+
+    if (count >= 109 && count <= 120) {
+        for (int i = 0; i < m_halfLength; ++i) {
+                double m = m_magnitude[i];
+                std::cout << m << " ";
+        }
+        std::cout << "\n";
+    }
+
+    for (int i = 1; i < m_halfLength; ++i) {
+        m_magnitude[i] *= log((i+300)/((double)i+2));
+    }
+
+
+    /*
+
+    if (count == 35 || count == 52 || count == 53 || count == 54) {
+        for (int i = 0; i < m_halfLength; ++i) {
+                double m = m_magnitude[i];
+                std::cout << m << " ";
+        }
+        std::cout << "\n";
+    }
+    */
+
+
+    /*
     for (int i = 0; i < m_halfLength; ++i) {
         double m = m_magnitude[i];
         if (m < m_magPeaks[i]) {
@@ -125,40 +154,34 @@ void DetectionFunction::whiten()
         m_magPeaks[i] = m;
         m_magnitude[i] /= m;
     }
+    */
+
+    count++;
 }
 
-double DetectionFunction::runDF()
+DFresults DetectionFunction::runDF()
 {
-    double retVal = 0;
-
-    switch( m_DFType )
-    {
-    case DF_HFC:
-        retVal = HFC( m_halfLength, m_magnitude);
-        break;
-        
-    case DF_SPECDIFF:
-        retVal = specDiff( m_halfLength, m_magnitude);
-        break;
-        
-    case DF_PHASEDEV:
-        // Using the instantaneous phases here actually provides the
-        // same results (for these calculations) as if we had used
-        // unwrapped phases, but without the possible accumulation of
-        // phase error over time
-        retVal = phaseDev( m_halfLength, m_thetaAngle);
-        break;
-        
-    case DF_COMPLEXSD:
-        retVal = complexSD( m_halfLength, m_magnitude, m_thetaAngle);
-        break;
-
-    case DF_BROADBAND:
-        retVal = broadband( m_halfLength, m_magnitude);
-        break;
+    DFresults result = {};
+    if (m_DFType & dfHfc) {
+        result.t.hiFrequency = HFC(m_halfLength, m_magnitude);
     }
-        
-    return retVal;
+    if (m_DFType & dfSpecDiff) {
+        result.t.specDiff = specDiff(m_halfLength, m_magnitude);
+    }
+    // Using the instantaneous phases here actually provides the
+    // same results (for these calculations) as if we had used
+    // unwrapped phases, but without the possible accumulation of
+    // phase error over time
+    if (m_DFType & dfPhaseDev) {
+        result.t.phaseDev = phaseDev(m_halfLength, m_thetaAngle);
+    }
+    if (m_DFType & dfComplexSd) {
+        result.t.complexSpecDiff = complexSD(m_halfLength, m_magnitude, m_thetaAngle);
+    }
+    if (m_DFType & dfBroadBand) {
+        result.t.broadband = broadband(m_halfLength, m_magnitude);
+    }
+    return result;
 }
 
 double DetectionFunction::HFC(int length, double *src)

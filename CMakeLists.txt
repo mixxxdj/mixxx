@@ -330,6 +330,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzersilence.cpp
   src/analyzer/analyzerthread.cpp
   src/analyzer/analyzerwaveform.cpp
+  src/analyzer/analyzerrhythm.cpp
+  src/analyzer/analyzerrhythmstats.cpp
+  src/analyzer/analyzerrhythmbpm.cpp
   src/analyzer/plugins/analyzerqueenmarybeats.cpp
   src/analyzer/plugins/analyzerqueenmarykey.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
@@ -646,6 +649,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
   src/preferences/dialog/dlgprefbeatsdlg.ui
+  src/preferences/dialog/dlgprefrhythm.cpp
+  src/preferences/dialog/dlgprefrhythm.ui
   src/preferences/dialog/dlgprefcolors.cpp
   src/preferences/dialog/dlgprefcolorsdlg.ui
   src/preferences/dialog/dlgprefcrossfader.cpp
@@ -1828,6 +1833,11 @@ add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   lib/qm-dsp/maths/KLDivergence.cpp lib/qm-dsp/maths/MathUtilities.cpp
   # lib/qm-dsp/maths/pca/pca.c
   # lib/qm-dsp/thread/Thread.cpp
+  lib/qm-dsp/dsp/tempogram/FIRFilter.cpp
+  lib/qm-dsp/dsp/tempogram/WindowFunction.cpp
+  lib/qm-dsp/dsp/tempogram/NoveltyCurveProcessor.cpp
+  lib/qm-dsp/dsp/tempogram/SpectrogramProcessor.cpp
+  lib/qm-dsp/dsp/tempogram/AutocorrelationProcessor.cpp
 )
 target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
 if(UNIX)

@@ -21,11 +21,24 @@
 #include "dsp/phasevocoder/PhaseVocoder.h"
 #include "base/Window.h"
 
-#define DF_HFC (1)
-#define DF_SPECDIFF (2)
-#define DF_PHASEDEV (3)
-#define DF_COMPLEXSD (4)
-#define DF_BROADBAND (5)
+constexpr int dfHfc = 1;
+constexpr int dfSpecDiff = 2;
+constexpr int dfPhaseDev = 4;
+constexpr int dfComplexSd = 8;
+constexpr int dfBroadBand = 16;
+constexpr int dfAll = 31;
+
+struct DFTypes {
+    double hiFrequency;
+    double specDiff;
+    double phaseDev;
+    double complexSpecDiff;
+    double broadband;
+};
+union DFresults {
+    DFTypes t;
+    double results[5]; //c style so it has exact same memory locations of t items
+};
 
 struct DFConfig{
     int stepSize; // DF step in samples
@@ -48,17 +61,17 @@ public:
      * Process a single time-domain frame of audio, provided as
      * frameLength samples.
      */
-    double processTimeDomain(const double* samples);
+    DFresults processTimeDomain(const double* samples);
 
     /**
      * Process a single frequency-domain frame, provided as
      * frameLength/2+1 real and imaginary component values.
      */
-    double processFrequencyDomain(const double* reals, const double* imags);
+    DFresults processFrequencyDomain(const double* reals, const double* imags);
 
 private:
     void whiten();
-    double runDF();
+    DFresults runDF();
 
     double HFC(int length, double* src);
     double specDiff(int length, double* src);

@@ -111,14 +111,13 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     // and get best path
 
     int wv_len = 128;
-
     // MEPD 28/11/12
     // the default value of inputtempo in the beat tracking plugin is 120
     // so if the user specifies a different inputtempo, the rayparam will be updated
     // accordingly.
     // note: 60*44100/512 is a magic number
     // this might (will?) break if a user specifies a different frame rate for the onset detection function
-    double rayparam = (60*44100/512)/inputtempo;
+    double rayparam = (60*m_rate/m_increment)/120;
 
     // make rayleigh weighting curve
     d_vec_t wv(wv_len);
@@ -166,7 +165,6 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
             rcfmat[col_counter].push_back( rcf[j] );
         }
     }
-
     // now call viterbi decoding function
     viterbi_decode(rcfmat,wv,beat_period,tempi);
 }
@@ -248,7 +246,7 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     // formed of Gaussians on diagonal - implies slow tempo change
     double sigma = 8.;
     // don't want really short beat periods, or really long ones
-    for (int i = 20; i  < wv_len - 20; i++) {
+    for (int i = 20; i < wv_len - 20; i++) { // we actually want the long periods for measure level, this limits 20~60 bars per minute.
         for (int j = 20; j < wv_len - 20; j++) {
             double mu = double(i);
             tmat[i][j] = exp( (-1.*pow((j-mu),2.)) / (2.*pow(sigma,2.)) );
