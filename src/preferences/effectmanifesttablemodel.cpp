@@ -8,7 +8,7 @@ namespace {
 const int kColumnType = 0;
 const int kColumnName = 1;
 const int kNumberOfColumns = 2;
-const QString kMimeTextDelimeter = "\n";
+const QString kMimeTextDelimiter = QStringLiteral("\n");
 const QStringList kAcceptedMimeTypes = {QLatin1String("text/plain")};
 } // anonymous namespace
 
@@ -87,7 +87,7 @@ QMimeData* EffectManifestTableModel::mimeData(
         EffectManifestPointer pManifest = m_manifests.at(index.row());
         manifestUniqueIds << pManifest->uniqueId();
     }
-    mimeData->setText(manifestUniqueIds.join(kMimeTextDelimeter));
+    mimeData->setText(manifestUniqueIds.join(kMimeTextDelimiter));
     return mimeData;
 }
 
@@ -102,7 +102,7 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
     }
     QStringList mimeTextLines =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-            data->text().split(kMimeTextDelimeter, Qt::SkipEmptyParts);
+            data->text().split(kMimeTextDelimiter, Qt::SkipEmptyParts);
 #else
             data->text().split(kMimeTextDelimeter, QString::SkipEmptyParts);
 #endif
