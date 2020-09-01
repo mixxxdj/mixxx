@@ -4,7 +4,6 @@
 #include <QVector>
 
 #include "control/controlproxy.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/scripting/legacy/scriptconnection.h"
 
 // this is used for communicate with controller scripts

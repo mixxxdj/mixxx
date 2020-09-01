@@ -3,6 +3,7 @@
 
 #include <QDebug>
 
+#include "control/control.h"
 
 // Specifies whether or not we should dump incoming data to the console at
 // runtime. This is useful for end-user debugging and script-writing.
@@ -22,6 +23,14 @@ class ControllerDebug {
     /// Override the command-line argument (for testing)
     static void disable() {
         s_enabled = false;
+    }
+
+    static ControlFlags shouldAssertForInvalidControlObjects() {
+        if (enabled()) {
+            return ControlFlag::None;
+        }
+
+        return ControlFlag::AllowMissingOrInvalid;
     }
 
   private:
