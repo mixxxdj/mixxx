@@ -6,7 +6,7 @@
 #include "preferences/usersettings.h"
 #include <lilv-0/lilv/lilv.h>
 
-// Refer to EffectsBackend for documentation
+/// Refer to EffectsBackend for documentation
 class LV2Backend : public EffectsBackend {
   public:
     LV2Backend();

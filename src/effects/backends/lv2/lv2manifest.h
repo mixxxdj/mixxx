@@ -6,7 +6,7 @@
 #include "effects/defs.h"
 #include <lilv-0/lilv/lilv.h>
 
-// Refer to EffectManifest for documentation
+/// Refer to EffectManifest for documentation
 class LV2Manifest : public EffectManifest {
   public:
     enum Status {

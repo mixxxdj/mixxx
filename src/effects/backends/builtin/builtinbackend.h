@@ -3,6 +3,7 @@
 #include "effects/defs.h"
 #include "effects/backends/effectsbackend.h"
 
+/// Refer to EffectsBackend for documentation
 class BuiltInBackend : public EffectsBackend {
   public:
     BuiltInBackend();
