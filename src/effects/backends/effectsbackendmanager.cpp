@@ -89,7 +89,7 @@ const QString EffectsBackendManager::getDisplayNameForEffectPreset(
     }
 
     bool manifestFound = false;
-    for (const auto pManifest : m_manifests) {
+    for (const auto& pManifest : std::as_const(m_manifests)) {
         if (pManifest->id() == pPreset->id() &&
                 pManifest->backendType() == pPreset->backendType()) {
             displayName = pManifest->name();

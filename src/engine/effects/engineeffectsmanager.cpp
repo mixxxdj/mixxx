@@ -36,7 +36,7 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
                 {
                     bool chainExists = false;
-                    for (auto &chains : m_chainsByStage) {
+                    for (const auto& chains : std::as_const(m_chainsByStage)) {
                         if (chains.contains(request->pTargetChain)) {
                             chainExists = true;
                         }

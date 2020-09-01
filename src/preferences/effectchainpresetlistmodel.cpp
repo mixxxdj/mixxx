@@ -36,7 +36,7 @@ bool EffectChainPresetListModel::dropMimeData(
             row = stringList().size();
         }
     }
-    QStringList mimeTextLines = data->text().split(kMimeTextDelimeter);
+    const QStringList mimeTextLines = data->text().split(kMimeTextDelimeter);
     QStringList chainList = stringList();
     for (const auto& line : mimeTextLines) {
         int oldIndex = chainList.indexOf(line);
