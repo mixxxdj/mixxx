@@ -5,10 +5,6 @@
 #include "util/math.h"
 
 namespace{
-
-// Gain correction was verified with replay gain and default parameters
-const double kGainCorrection = 1.4125375446227544; // 3 dB
-
 inline CSAMPLE tanh_approx(CSAMPLE input) {
     // return tanhf(input); // 142ns for process;
     return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
@@ -23,6 +19,10 @@ QString FlangerEffect::getId() {
 // static
 EffectManifestPointer FlangerEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setEffectRampsFromDry(true);
+    pManifest->setAddDryToWet(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Flanger"));
     pManifest->setShortName(QObject::tr("Flanger"));
@@ -231,9 +231,8 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
         pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
 
-        double gain = (1 - mix_ramped + kGainCorrection * mix_ramped);
-        pOutput[i] = (pInput[i] + mix_ramped * delayedSampleLeft) / gain;
-        pOutput[i + 1] = (pInput[i + 1] + mix_ramped * delayedSampleRight) / gain;
+        pOutput[i] = delayedSampleLeft * mix_ramped;
+        pOutput[i + 1] = delayedSampleRight * mix_ramped;
     }
 
     if (enableState == EffectEnableState::Disabling) {

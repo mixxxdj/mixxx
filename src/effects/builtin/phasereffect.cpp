@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include "util/math.h"
+#include "util/rampingvalue.h"
 
 const unsigned int updateCoef = 32;
 
@@ -14,6 +15,10 @@ QString PhaserEffect::getId() {
 // static
 EffectManifestPointer PhaserEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setEffectRampsFromDry(true);
+    pManifest->setAddDryToWet(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Phaser"));
     pManifest->setShortName(QObject::tr("Phaser"));
@@ -22,7 +27,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
         "Mixes the input signal with a copy passed through a series of "
         "all-pass filters to create comb filtering"));
-    pManifest->setEffectRampsFromDry(true);
 
     EffectManifestParameterPointer period = pManifest->addParameter();
     period->setId("lfo_period");
@@ -88,7 +92,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setMinimum(0.5);
+    depth->setMinimum(0.0);
     depth->setMaximum(1.0);
     depth->setDefault(0.5);
 
@@ -143,15 +147,6 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    if (enableState == EffectEnableState::Enabling) {
-        pState->clear();
-    }
-
-    CSAMPLE depth = 0;
-    if (enableState != EffectEnableState::Disabling) {
-        depth = m_pDepthParameter->value();
-    }
-
     double periodParameter = m_pLFOPeriodParameter->value();
     double periodSamples;
     if (groupFeatures.has_beat_length_sec) {
@@ -173,10 +168,10 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE range = m_pRangeParameter->value();
     int stages = 2 * m_pStagesParameter->value();
 
-    CSAMPLE* oldInLeft = pState->oldInLeft;
-    CSAMPLE* oldOutLeft = pState->oldOutLeft;
-    CSAMPLE* oldInRight = pState->oldInRight;
-    CSAMPLE* oldOutRight = pState->oldOutRight;
+    CSAMPLE* oldInLeft = pState->inLeftPrevious;
+    CSAMPLE* oldOutLeft = pState->outLeftPrevious;
+    CSAMPLE* oldInRight = pState->inRightPrevious;
+    CSAMPLE* oldOutRight = pState->outRightPrevious;
 
     // Using two sets of coefficients for left and right channel
     CSAMPLE filterCoefLeft = 0;
@@ -184,10 +179,12 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE left = 0, right = 0;
 
-    CSAMPLE_GAIN oldDepth = pState->oldDepth;
-    const CSAMPLE_GAIN depthDelta = (depth - oldDepth)
-            / bufferParameters.framesPerBuffer();
-    const CSAMPLE_GAIN depthStart = oldDepth + depthDelta;
+    CSAMPLE depthCurrent = m_pDepthParameter->value();
+    if (enableState == EffectEnableState::Disabling) {
+        depthCurrent = 0;
+    }
+    RampingValue<CSAMPLE> depth(depthCurrent, pState->depthPrevious,
+                                bufferParameters.framesPerBuffer());
 
     int stereoCheck = m_pStereoParameter->value();
     int counter = 0;
@@ -223,12 +220,15 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
-        const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / bufferParameters.channelCount());
+        const CSAMPLE_GAIN depthRamped = depth.getNext();
 
-        // Computing output combining the original and processed sample
-        pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
-        pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
+        pOutput[i] = left * depthRamped;
+        pOutput[i + 1] = right * depthRamped;
     }
 
-    pState->oldDepth = depth;
+    pState->depthPrevious = depthCurrent;
+
+    if (enableState == EffectEnableState::Disabling) {
+        pState->clear();
+    }
 }
