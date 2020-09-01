@@ -4,6 +4,7 @@
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");
+const QStringList kAcceptedMimeTypes = {QLatin1String("text/plain")};
 } // anonymous namespace
 
 QMimeData* EffectChainPresetListModel::mimeData(const QModelIndexList& indexes) const {
@@ -54,7 +55,7 @@ bool EffectChainPresetListModel::dropMimeData(
 }
 
 QStringList EffectChainPresetListModel::mimeTypes() const {
-    return {QLatin1String("text/plain")};
+    return kAcceptedMimeTypes;
 }
 
 Qt::DropActions EffectChainPresetListModel::supportedDropActions() const {
