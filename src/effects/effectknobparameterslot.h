@@ -25,7 +25,6 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
         return QString("parameter%1").arg(iParameterSlotNumber + 1);
     }
 
-    // Load the parameter of the given effect into this EffectKnobParameterSlot
     void loadParameter(EffectParameterPointer pEffectParameter) override;
 
     double getValueParameter() const;
