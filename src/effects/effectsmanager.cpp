@@ -13,15 +13,15 @@
 #include "util/assert.h"
 
 namespace {
-const QString kStandardEffectRackGroup = "[EffectRack1]";
-const QString kOutputEffectRackGroup = "[OutputEffectRack]";
-const QString kQuickEffectRackGroup = "[QuickEffectRack1]";
-const QString kEqualizerEffectRackGroup = "[EqualizerRack1]";
-const QString kEffectGroupSeparator = "_";
-const QString kGroupClose = "]";
+const QString kStandardEffectRackGroup = QStringLiteral("[EffectRack1]");
+const QString kOutputEffectRackGroup = QStringLiteral("[OutputEffectRack]");
+const QString kQuickEffectRackGroup = QStringLiteral("[QuickEffectRack1]");
+const QString kEqualizerEffectRackGroup = QStringLiteral("[EqualizerRack1]");
+const QString kEffectGroupSeparator = QStringLiteral("_");
+const QString kGroupClose = QStringLiteral("]");
 const unsigned int kEffectMessagePipeFifoSize = 2048;
 const int kNumStandardEffectChains = 4;
-const QString kEffectsXmlFile = "effects.xml";
+const QString kEffectsXmlFile = QStringLiteral("effects.xml");
 } // anonymous namespace
 
 EffectsManager::EffectsManager(
