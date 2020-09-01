@@ -87,7 +87,7 @@ const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
             EffectsBackend::backendTypeToString(m_backendType));
 
     QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
-    for (const auto& pParameter : m_effectParameterPresets) {
+    for (const auto& pParameter : std::as_const(m_effectParameterPresets)) {
         parametersElement.appendChild(pParameter.toXml(doc));
     }
     effectElement.appendChild(parametersElement);

@@ -42,7 +42,7 @@ void LV2Backend::initializeProperties() {
 
 const QList<QString> LV2Backend::getEffectIds() const {
     QList<QString> availableEffects;
-    for (const auto& lv2Manifest : m_registeredEffects) {
+    for (const auto& lv2Manifest : std::as_const(m_registeredEffects)) {
         if (lv2Manifest->isValid()) {
             availableEffects.append(lv2Manifest->id());
         }

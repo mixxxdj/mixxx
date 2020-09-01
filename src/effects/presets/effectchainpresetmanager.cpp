@@ -311,7 +311,7 @@ void EffectChainPresetManager::loadEffectChainPresets() {
     }
 
     savedPresetsDir.setFilter(QDir::Files | QDir::Readable);
-    QStringList fileList = savedPresetsDir.entryList();
+    const QStringList fileList = savedPresetsDir.entryList();
     for (const auto& filePath : fileList) {
         QFile file(savedPresetsPath + "/" + filePath);
         if (!file.open(QIODevice::ReadOnly)) {

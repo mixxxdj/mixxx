@@ -162,7 +162,8 @@ class EffectProcessorImpl : public EffectProcessor {
                             "EffectStates for input" << inputChannel;
             }
             ChannelHandleMap<EffectSpecificState*> outputChannelMap;
-            for (const ChannelHandleAndGroup& outputChannel : m_registeredOutputChannels) {
+            for (const ChannelHandleAndGroup& outputChannel :
+                    std::as_const(m_registeredOutputChannels)) {
                 outputChannelMap.insert(outputChannel.handle(),
                         createSpecificState(bufferParameters));
                 if (kEffectDebugOutput) {
@@ -210,7 +211,8 @@ class EffectProcessorImpl : public EffectProcessor {
           }
 
           QSet<ChannelHandleAndGroup> receivedOutputChannels = m_registeredOutputChannels;
-          for (const ChannelHandleAndGroup& outputChannel : m_registeredOutputChannels) {
+          for (const ChannelHandleAndGroup& outputChannel :
+                  std::as_const(m_registeredOutputChannels)) {
               if (kEffectDebugOutput) {
                   qDebug() << "EffectProcessorImpl::loadStatesForInputChannel"
                            << this << "output" << outputChannel;
