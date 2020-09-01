@@ -47,8 +47,8 @@ class EffectChainSlot : public QObject {
 
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group,
-                              const double initialValue = 0.0);
+    void registerInputChannel(const ChannelHandleAndGroup& handleGroup,
+            const double initialValue = 0.0);
     /// Do not store this in EffectSlot! The enabled input channels are a property
     /// of the chain, not the effect.
     const QSet<ChannelHandleAndGroup>& getActiveChannels() const {
@@ -112,8 +112,8 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
 
     // Activates EffectChain processing for the provided channel.
-    void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
-    void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
+    void enableForInputChannel(const ChannelHandleAndGroup& handleGroup);
+    void disableForInputChannel(const ChannelHandleAndGroup& handleGroup);
 
     // Protected so QuickEffectChainSlot can use the separate QuickEffect
     // chain preset list.
@@ -133,7 +133,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainSelector(double value);
     void slotControlChainNextPreset(double value);
     void slotControlChainPrevPreset(double value);
-    void slotChannelStatusChanged(double value, const ChannelHandleAndGroup& handle_group);
+    void slotChannelStatusChanged(double value, const ChannelHandleAndGroup& handleGroup);
 
   private:
     QString debugString() const {
