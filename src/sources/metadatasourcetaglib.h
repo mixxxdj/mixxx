@@ -2,7 +2,7 @@
 
 #include "sources/metadatasource.h"
 
-#include "track/trackmetadatataglib.h"
+#include "track/taglib/trackmetadata.h"
 
 namespace mixxx {
 
@@ -36,4 +36,4 @@ class MetadataSourceTagLib : public MetadataSource {
     taglib::FileType m_fileType;
 };
 
-} //namespace mixxx
+} // namespace mixxx

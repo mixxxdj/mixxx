@@ -15,7 +15,9 @@ using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
+#include "recording/defs_recording.h"
 #include "defs_urls.h"
+#include "util/compatibility.h"
 #include "util/xml.h"
 #include "util/memory.h"
 #include "util/logger.h"
@@ -74,6 +76,7 @@ const bool kDefaultNoDelayFirstReconnect = true;
 const bool kDefaultOggDynamicupdate = false;
 double kDefaultReconnectFirstDelay = 0.0;
 double kDefaultReconnectPeriod = 5.0;
+const QString kDefaultStreamName = QStringLiteral("Mixxx");
 const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
@@ -235,7 +238,7 @@ void BroadcastProfile::adoptDefaultValues() {
     m_mountpoint = QString();
     m_streamDesc = kDefaultStreamDesc;
     m_streamGenre = kDefaultStreamGenre;
-    m_streamName = QString();
+    m_streamName = kDefaultStreamName;
     m_streamPublic = kDefaultStreamPublic;
     m_streamWebsite = MIXXX_WEBSITE_URL;
     m_streamIRC.clear();
@@ -321,6 +324,10 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_streamICQ = XmlParse::selectNodeQString(doc, kStreamICQ);
 
     m_format = XmlParse::selectNodeQString(doc, kFormat);
+    if (m_format == BROADCAST_FORMAT_OV_LEGACY) {
+        // Upgrade to have the same codec name than the recording define.
+        m_format = ENCODING_OGG;
+    }
     m_bitrate = XmlParse::selectNodeInt(doc, kBitrate);
     m_channels = XmlParse::selectNodeInt(doc, kChannels);
 
@@ -416,7 +423,7 @@ void BroadcastProfile::setProfileName(const QString &profileName) {
     QString oldName(m_profileName);
     m_profileName = QString(profileName);
 
-    emit(profileNameChanged(oldName, m_profileName));
+    emit profileNameChanged(oldName, m_profileName);
 }
 
 QString BroadcastProfile::getProfileName() const {
@@ -425,11 +432,11 @@ QString BroadcastProfile::getProfileName() const {
 
 void BroadcastProfile::setConnectionStatus(int newState) {
     m_connectionStatus = newState;
-    emit(connectionStatusChanged(connectionStatus()));
+    emit connectionStatusChanged(connectionStatus());
 }
 
 int BroadcastProfile::connectionStatus() {
-    return m_connectionStatus.load();
+    return atomicLoadRelaxed(m_connectionStatus);
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
@@ -532,7 +539,7 @@ bool BroadcastProfile::getEnabled() const {
 
 void BroadcastProfile::setEnabled(bool value) {
     m_enabled = value;
-    emit(statusChanged(m_enabled));
+    emit statusChanged(m_enabled);
 }
 
 QString BroadcastProfile::getHost() const {

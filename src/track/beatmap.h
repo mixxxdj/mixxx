@@ -18,6 +18,8 @@
 
 typedef QList<mixxx::track::io::Beat> BeatList;
 
+namespace mixxx {
+
 class BeatMap final : public Beats {
   public:
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
@@ -75,10 +77,13 @@ class BeatMap final : public Beats {
 
     void addBeat(double dBeatSample) override;
     void removeBeat(double dBeatSample) override;
-    virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     void translate(double dNumSamples) override;
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;
+
+    SINT getSampleRate() const override {
+        return m_iSampleRate;
+    }
 
   private:
     BeatMap(const BeatMap& other);
@@ -106,4 +111,5 @@ class BeatMap final : public Beats {
     BeatList m_beats;
 };
 
+} // namespace mixxx
 #endif /* BEATMAP_H_ */

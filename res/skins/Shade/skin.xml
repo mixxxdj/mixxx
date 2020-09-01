@@ -53,8 +53,8 @@
   <manifest>
     <title>Shade</title>
     <author>jus</author>
-    <version>2.1.0.01</version>
-    <description>A 2-deck split-waveform skin with 4 samplers.</description>
+    <version>2.3.0.1</version>
+    <description>A very compact skin with split waveforms, 2 decks and 8 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
@@ -168,10 +168,12 @@
   <Schemes>
     <Scheme>
       <Name>Classic</Name>
+      <SetVariable name="color_scheme">classic</SetVariable>
       <Filters/>
     </Scheme>
     <Scheme>
       <Name>Dark</Name>
+      <SetVariable name="color_scheme">dark</SetVariable>
       <Filters>
         <HSVTweak>
           <HConst>75</HConst>
@@ -186,6 +188,7 @@
     </Scheme>
     <Scheme>
       <Name>Summer Sunset</Name>
+      <SetVariable name="color_scheme">summersunset</SetVariable>
       <Filters>
         <HSVTweak>
           <SMin>100</SMin>
@@ -247,8 +250,8 @@
     Singletons - create singletons for scrolling waveforms
         Above the maximized library there are minimal decks which contain overview waveforms.
         For the end-of-track warning in those overviews to work instances of scrolling waveforms
-        are required. We load in the maximzed library view, as well, but they are invisble as
-        they are 0px tall. 
+        are required. We load in the maximzed library view, as well, but they are invisible as
+        they are 0px tall.
     ############################################################################################
     ############################################################################################
     -->
@@ -288,67 +291,27 @@
       </Children>
     </SingletonDefinition>
 
-    <WidgetGroup>
-      <Size>0e,2f</Size>
-    </WidgetGroup>
-
-    <WidgetGroup>
-      <ObjectName>DecksAndMixer</ObjectName>
-      <Layout>horizontal</Layout>
+    <SingletonDefinition>
+      <ObjectName>LibraryTable</ObjectName>
       <Children>
-        <WidgetGroup>
-          <ObjectName>DeckLeftBorder</ObjectName>
-          <Size>3f,0min</Size>
-        </WidgetGroup>
-
-        <Template src="skin:deck.xml">
-          <SetVariable name="channum">1</SetVariable>
-          <SetVariable name="effectunitnum">1</SetVariable>
-          <SetVariable name="effectgroup">BusLeft</SetVariable>
-          <SetVariable name="samplernum1">1</SetVariable>
-          <SetVariable name="samplernum2">2</SetVariable>
-          <SetVariable name="samplernum3">3</SetVariable>
-          <SetVariable name="samplernum4">4</SetVariable>
-          <SetVariable name="micnum">1</SetVariable>
-          <SetVariable name="auxnum">1</SetVariable>
-        </Template>
-
-        <WidgetGroup>
-          <Size>261f,0min</Size>
-          <Children>
-            <Template src="skin:mixer_panel.xml"/>
-          </Children>
-        </WidgetGroup>
-
-        <Template src="skin:deck.xml">
-          <SetVariable name="channum">2</SetVariable>
-          <SetVariable name="effectunitnum">2</SetVariable>
-          <SetVariable name="effectgroup">BusRight</SetVariable>
-          <SetVariable name="samplernum1">5</SetVariable>
-          <SetVariable name="samplernum2">6</SetVariable>
-          <SetVariable name="samplernum3">7</SetVariable>
-          <SetVariable name="samplernum4">8</SetVariable>
-          <SetVariable name="micnum">2</SetVariable>
-          <SetVariable name="auxnum">2</SetVariable>
-        </Template>
-
-        <WidgetGroup>
-          <ObjectName>DeckRightBorder</ObjectName>
-          <Size>3f,0min</Size>
-        </WidgetGroup>
+        <Library>
+          <ShowButtonText>false</ShowButtonText>
+          <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+        </Library>
       </Children>
-      <Connection>
-        <ConfigKey>[Master],maximize_library</ConfigKey>
-        <BindProperty>visible</BindProperty>
-        <Transform>
-          <Not/>
-        </Transform>
-      </Connection>
-    </WidgetGroup>
+    </SingletonDefinition>
+    <!--
+    ############################################################################################
+    ############################################################################################
+    Skin widgets
+    ############################################################################################
+    ############################################################################################
+    -->
 
     <WidgetGroup>
       <Size>0e,2f</Size>
     </WidgetGroup>
+
 
     <!--
     ############################################################################################
@@ -358,20 +321,60 @@
     ############################################################################################
     -->
     <WidgetGroup>
-      <MinimumSize>1008,105</MinimumSize>
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
-      <!--deactivate the standard
-      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-      cause push buttons in library will show up with wrong margin/padding -->
       <Children>
         <WidgetGroup>
-          <SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
+          <SizePolicy>me,min</SizePolicy>
+          <Layout>vertical</Layout>
           <!-- I don't now why this works but a WidgetGroup wrapper around a
             WidgetStack with a 'fixed' size policy makes the group track the
             minimum size of the current stack widget. -->
           <Children>
+
+            <WidgetGroup>
+              <ObjectName>DecksAndMixer</ObjectName>
+              <SizePolicy>me,min</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                <Template src="skin:deck.xml">
+                  <SetVariable name="channum">1</SetVariable>
+                  <SetVariable name="effectunitnum">1</SetVariable>
+                  <SetVariable name="effectgroup">BusLeft</SetVariable>
+                  <SetVariable name="samplernum1">1</SetVariable>
+                  <SetVariable name="samplernum2">2</SetVariable>
+                  <SetVariable name="samplernum3">3</SetVariable>
+                  <SetVariable name="samplernum4">4</SetVariable>
+                  <SetVariable name="micnum"></SetVariable>
+                  <SetVariable name="auxnum">1</SetVariable>
+                </Template>
+
+                <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                <Template src="skin:mixer_panel.xml"/>
+
+                <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                <Template src="skin:deck.xml">
+                  <SetVariable name="channum">2</SetVariable>
+                  <SetVariable name="effectunitnum">2</SetVariable>
+                  <SetVariable name="effectgroup">BusRight</SetVariable>
+                  <SetVariable name="samplernum1">5</SetVariable>
+                  <SetVariable name="samplernum2">6</SetVariable>
+                  <SetVariable name="samplernum3">7</SetVariable>
+                  <SetVariable name="samplernum4">8</SetVariable>
+                  <SetVariable name="micnum">2</SetVariable>
+                  <SetVariable name="auxnum">2</SetVariable>
+                </Template>
+
+                <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+              </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+
             <WidgetGroup>
               <SizePolicy>me,min</SizePolicy>
               <Layout>horizontal</Layout>
@@ -392,6 +395,23 @@
                 <BindProperty>visible</BindProperty>
               </Connection>
             </WidgetGroup>
+            <Template src="skin:effectrow.xml"/>
+            <Template src="skin:srcrow.xml"/>
+            <Template src="skin:samplerrow.xml">
+              <SetVariable name="row">1</SetVariable>
+              <SetVariable name="samplernum1">1</SetVariable>
+              <SetVariable name="samplernum2">2</SetVariable>
+              <SetVariable name="samplernum3">5</SetVariable>
+              <SetVariable name="samplernum4">6</SetVariable>
+            </Template>
+            <Template src="skin:samplerrow.xml">
+              <SetVariable name="row">2</SetVariable>
+              <SetVariable name="samplernum1">3</SetVariable>
+              <SetVariable name="samplernum2">4</SetVariable>
+              <SetVariable name="samplernum3">7</SetVariable>
+              <SetVariable name="samplernum4">8</SetVariable>
+            </Template>
+
           </Children>
           <Connection>
             <ConfigKey>[Master],maximize_library</ConfigKey>
@@ -399,22 +419,6 @@
             <Transform><Not/></Transform>
           </Connection>
         </WidgetGroup>
-        <Template src="skin:effectrow.xml"/>
-        <Template src="skin:srcrow.xml"/>
-        <Template src="skin:samplerrow.xml">
-          <SetVariable name="row">1</SetVariable>
-          <SetVariable name="samplernum1">1</SetVariable>
-          <SetVariable name="samplernum2">2</SetVariable>
-          <SetVariable name="samplernum3">5</SetVariable>
-          <SetVariable name="samplernum4">6</SetVariable>
-        </Template>
-        <Template src="skin:samplerrow.xml">
-          <SetVariable name="row">2</SetVariable>
-          <SetVariable name="samplernum1">3</SetVariable>
-          <SetVariable name="samplernum2">4</SetVariable>
-          <SetVariable name="samplernum3">7</SetVariable>
-          <SetVariable name="samplernum4">8</SetVariable>
-        </Template>
 
         <!-- minimal decks, visible with maximized library -->
         <Template src="skin:decks_row_small.xml"/>
@@ -425,17 +429,10 @@
         **********************************************
         -->
         <WidgetGroup>
-          <ObjectName>Library</ObjectName>
-          <Size>e,e</Size>
-          <SizePolicy>me,me</SizePolicy>
+          <ObjectName>LibraryContainer</ObjectName>
+          <SizePolicy>me,i</SizePolicy>
           <Layout>horizontal</Layout>
           <Style>
-          <!--
-          <BgColor>#101010</BgColor>
-          <FgColor>#C1C1C1</FgColor>
-          <BgColorRowEven>#101010</BgColorRowEven>
-          <BgColorRowUneven>#151515</BgColorRowUneven>
-          -->
           </Style>
           <Children>
             <Splitter>
@@ -444,26 +441,17 @@
               <Collapsible>1,0</Collapsible>
               <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
               <Children>
+                <!-- Sidebar etc. -->
                 <WidgetGroup>
                   <Layout>vertical</Layout>
                   <Children>
-                    <WidgetGroup>
-                      <Style>
-                        QGroupBox {
-                          margin: 2px 0px 4px 3px;
-                        }
-                      </Style>
-                      <Layout>horizontal</Layout>
-                      <Children>
-                        <Template src="skin:preview_deck.xml"/>
-                      </Children>
-                      <Connection>
-                        <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup>
+                    <Template src="skin:preview_deck.xml"/>
+
                     <!--Search Input Field-->
                     <SearchBox></SearchBox>
+
+                    <WidgetGroup><Size>,5f</Size></WidgetGroup>
+
                     <!--Library Tree View-->
                     <Splitter>
                       <Size>e,me</Size>
@@ -482,22 +470,18 @@
                         </CoverArt>
                       </Children>
                     </Splitter>
+
                   </Children>
-                </WidgetGroup>
-                <WidgetGroup>
-                  <!-- Library Table-->
-                  <Layout>vertical</Layout>
-                  <SizePolicy>me,me</SizePolicy>
-                  <Children>
-                    <Library>
-                      <ShowButtonText>false</ShowButtonText>
-                    </Library>
-                  </Children>
-                </WidgetGroup>
+                </WidgetGroup><!-- Sidebar etc. -->
+
+                <SingletonContainer>
+                  <ObjectName>LibraryTable</ObjectName>
+                </SingletonContainer>
+
               </Children>
             </Splitter>
           </Children>
-        </WidgetGroup>
+        </WidgetGroup><!-- LibraryContainer -->
       </Children>
     </WidgetGroup>
   </Children>

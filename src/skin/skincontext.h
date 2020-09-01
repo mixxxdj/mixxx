@@ -1,5 +1,6 @@
-#ifndef SKINCONTEXT_H
-#define SKINCONTEXT_H
+#pragma once
+
+#include <memory>
 
 #include <QHash>
 #include <QString>
@@ -9,10 +10,8 @@
 #include <QDir>
 #include <QScriptEngineDebugger>
 #include <QtDebug>
-#include <QSharedPointer>
 #include <QRegExp>
 
-#include "../util/color/predefinedcolorsrepresentation.h"
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
@@ -21,16 +20,25 @@
 
 #define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
 
-class SvgParser;
-
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
 // evaluate skin XML nodes while loading the skin.
 class SkinContext {
   public:
-    SkinContext(UserSettingsPointer pConfig, const QString& xmlPath);
-    SkinContext(const SkinContext& parent);
+    SkinContext(
+            UserSettingsPointer pConfig,
+            const QString& xmlPath);
+    SkinContext(
+            const SkinContext* parent);
     virtual ~SkinContext();
+
+    // Not copiable
+    SkinContext(const SkinContext&) = delete;
+    SkinContext& operator=(const SkinContext&) = delete;
+
+    // Moveable
+    SkinContext(SkinContext&&) = default;
+    SkinContext& operator=(SkinContext&&) = default;
 
     // Gets a path relative to the skin path.
     QString makeSkinPath(const QString& relativePath) const {
@@ -93,16 +101,16 @@ class SkinContext {
         return nodeToString(child);
     }
 
-    inline float selectFloat(const QDomNode& node, const QString& nodeName) const {
+    inline float selectFloat(const QDomNode& node, const QString& nodeName, float defaultValue = 0.0) const {
         bool ok = false;
         float conv = nodeToString(selectElement(node, nodeName)).toFloat(&ok);
-        return ok ? conv : 0.0f;
+        return ok ? conv : defaultValue;
     }
 
-    inline double selectDouble(const QDomNode& node, const QString& nodeName) const {
+    inline double selectDouble(const QDomNode& node, const QString& nodeName, double defaultValue = 0.0) const {
         bool ok = false;
         double conv = nodeToString(selectElement(node, nodeName)).toDouble(&ok);
-        return ok ? conv : 0.0;
+        return ok ? conv : defaultValue;
     }
 
     inline int selectInt(const QDomNode& node, const QString& nodeName,
@@ -222,19 +230,21 @@ class SkinContext {
 
     QScriptValue evaluateScript(const QString& expression,
                                 const QString& filename=QString(),
-                                int lineNumber=1);
+                                int lineNumber=1) const;
     QScriptValue importScriptExtension(const QString& extensionName);
-    const QSharedPointer<QScriptEngine> getScriptEngine() const;
+    bool hasUncaughtScriptException() const {
+        return m_pSharedState->scriptEngine.hasUncaughtException();
+    }
     void enableDebugger(bool state) const;
 
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
     void defineSingleton(QString objectName, QWidget* widget) {
-        return m_pSingletons->insertSingleton(objectName, widget);
+        return m_pSharedState->singletons.insertSingleton(objectName, widget);
     }
 
     QWidget* getSingletonWidget(QString objectName) const {
-        return m_pSingletons->getSingletonWidget(objectName);
+        return m_pSharedState->singletons.getSingletonWidget(objectName);
     }
 
     const QRegExp& getHookRegex() const {
@@ -247,18 +257,8 @@ class SkinContext {
         return m_scaleFactor;
     }
 
-    PredefinedColorsRepresentation getCueColorRepresentation(const QDomNode& node, QColor defaultColor) const {
-        PredefinedColorsRepresentation colorRepresentation = Color::kPredefinedColorsSet.defaultRepresentation();
-        for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
-            QString sColorName(color->m_sName);
-            QColor skinRgba = selectColor(node, "Cue" + sColorName);
-            if (skinRgba.isValid()) {
-                PredefinedColorPointer originalColor = Color::kPredefinedColorsSet.predefinedColorFromName(sColorName);
-                colorRepresentation.setCustomRgba(originalColor, skinRgba);
-            }
-        }
-        colorRepresentation.setCustomRgba(Color::kPredefinedColorsSet.noColor, defaultColor);
-        return colorRepresentation;
+    UserSettingsPointer getConfig() const {
+        return m_pConfig;
     }
 
   private:
@@ -272,22 +272,30 @@ class SkinContext {
 
     QString variableNodeToText(const QDomElement& element) const;
 
-    QString m_xmlPath;
-    QString m_skinBasePath;
     UserSettingsPointer m_pConfig;
 
+    QString m_xmlPath;
+    QString m_skinBasePath;
+
+    struct SharedState final {
+        SharedState() = default;
+        SharedState(const SharedState&) = delete;
+        SharedState(SharedState&&) = delete;
+
+        QScriptEngine scriptEngine;
+        QScriptEngineDebugger scriptDebugger;
+        QHash<QString, QDomElement> svgCache;
+        // The SingletonContainer map is passed to child SkinContexts, so that all
+        // templates in the tree can share a single map.
+        SingletonMap singletons;
+    };
+    // Use std::shared_ptr instead of QSharedPointer to guarantee
+    // correct move semantics!
+    std::shared_ptr<SharedState> m_pSharedState;
+
     QHash<QString, QString> m_variables;
-    QSharedPointer<QScriptEngine> m_pScriptEngine;
-    QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
     QRegExp m_hookRx;
 
-    QSharedPointer<QHash<QString, QDomElement>> m_pSvgCache;
-
-    // The SingletonContainer map is passed to child SkinContexts, so that all
-    // templates in the tree can share a single map.
-    QSharedPointer<SingletonMap> m_pSingletons;
     double m_scaleFactor;
 };
-
-#endif /* SKINCONTEXT_H */

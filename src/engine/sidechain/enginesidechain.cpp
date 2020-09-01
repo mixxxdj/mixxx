@@ -28,17 +28,23 @@
 #include <QMutexLocker>
 
 #include "engine/sidechain/sidechainworker.h"
+#include "engine/engine.h"
 #include "util/counter.h"
 #include "util/event.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
 
-EngineSideChain::EngineSideChain(UserSettingsPointer pConfig)
+#define SIDECHAIN_BUFFER_SIZE 65536
+
+EngineSideChain::EngineSideChain(
+        UserSettingsPointer pConfig,
+        CSAMPLE* sidechainMix)
         : m_pConfig(pConfig),
           m_bStopThread(false),
           m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
-          m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)) {
+          m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)),
+          m_pSidechainMix(sidechainMix) {
     // We use HighPriority to prevent starvation by lower-priority processes (Qt
     // main thread, analysis, etc.). This used to be LowPriority but that is not
     // a suitable choice since we do semi-realtime tasks
@@ -76,11 +82,13 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
 void EngineSideChain::receiveBuffer(AudioInput input,
                                     const CSAMPLE* pBuffer,
                                     unsigned int iFrames) {
-    if (input.getType() != AudioInput::RECORD_BROADCAST) {
+    VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioInput::RECORD_BROADCAST) {
         qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
         return;
     }
-    writeSamples(pBuffer, iFrames);
+    // Just copy the received samples form the sound card input to the
+    // engine. After processing we get it back via writeSamples()
+    SampleUtil::copy(m_pSidechainMix, pBuffer, iFrames * mixxx::kEngineChannelCount);
 }
 
 void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {

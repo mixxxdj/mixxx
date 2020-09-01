@@ -1,25 +1,27 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-#include <QString>
-#include <QScopedPointer>
-
-#include "test/librarytest.h"
 #include "library/autodj/autodjprocessor.h"
-#include "control/controlpushbutton.h"
-#include "control/controlpotmeter.h"
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <QScopedPointer>
+#include <QString>
+
 #include "control/controllinpotmeter.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "engine/engine.h"
-#include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
-#include "track/track.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
+#include "test/librarytest.h"
+#include "track/track.h"
 
 using ::testing::_;
 using ::testing::Return;
 
 static int kDefaultTransitionTime = 10;
-const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
+const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test-png.mp3");
 
@@ -39,8 +41,9 @@ class FakeDeck : public BaseTrackPlayer {
   public:
     FakeDeck(const QString& group)
             : BaseTrackPlayer(NULL, group),
-              duration(ConfigKey(group, "duration")),
+              trackSamples(ConfigKey(group, "track_samples")),
               samplerate(ConfigKey(group, "track_samplerate")),
+              rateratio(ConfigKey(group, "rate_ratio"), true, false, false, 1.0),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
@@ -50,13 +53,15 @@ class FakeDeck : public BaseTrackPlayer {
               outroEndPos(ConfigKey(group, "outro_end_position")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
+        outroStartPos.set(Cue::kNoPosition);
+        outroEndPos.set(Cue::kNoPosition);
     }
 
     void fakeTrackLoadedEvent(TrackPointer pTrack) {
         loadedTrack = pTrack;
-        duration.set(pTrack->getDuration());
+        trackSamples.set(pTrack->getDuration() * pTrack->getSampleRate() * 2);
         samplerate.set(pTrack->getSampleRate());
-        emit(newTrackLoaded(pTrack));
+        emit newTrackLoaded(pTrack);
     }
 
     void fakeTrackLoadFailedEvent(TrackPointer pTrack) {
@@ -68,12 +73,12 @@ class FakeDeck : public BaseTrackPlayer {
 
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
-        emit(loadingTrack(TrackPointer(), pTrack));
+        emit loadingTrack(TrackPointer(), pTrack);
         loadedTrack.reset();
-        emit(playerEmpty());
+        emit playerEmpty();
     }
 
-    TrackPointer getLoadedTrack() const {
+    TrackPointer getLoadedTrack() const override {
         return loadedTrack;
     }
 
@@ -84,7 +89,6 @@ class FakeDeck : public BaseTrackPlayer {
     // fakeTrackLoadFailedEvent.
     void slotLoadTrack(TrackPointer pTrack, bool bPlay) override {
         loadedTrack = pTrack;
-        duration.set(pTrack->getDuration());
         samplerate.set(pTrack->getSampleRate());
         play.set(bPlay);
     }
@@ -93,8 +97,9 @@ class FakeDeck : public BaseTrackPlayer {
     MOCK_METHOD0(slotCloneDeck, void());
 
     TrackPointer loadedTrack;
-    ControlObject duration;
+    ControlObject trackSamples;
     ControlObject samplerate;
+    ControlObject rateratio;
     ControlLinPotmeter playposition;
     ControlPushButton play;
     ControlPushButton repeat;
@@ -143,10 +148,10 @@ class MockAutoDJProcessor : public AutoDJProcessor {
     MockAutoDJProcessor(QObject* pParent,
                         UserSettingsPointer pConfig,
                         PlayerManagerInterface* pPlayerManager,
-                        int iAutoDJPlaylistId,
-                        TrackCollection* pCollection)
+                        TrackCollectionManager* pTrackCollectionManager,
+                        int iAutoDJPlaylistId)
             : AutoDJProcessor(pParent, pConfig, pPlayerManager,
-                              iAutoDJPlaylistId, pCollection) {
+                              pTrackCollectionManager, iAutoDJPlaylistId) {
     }
 
     virtual ~MockAutoDJProcessor() {
@@ -175,7 +180,7 @@ class AutoDJProcessorTest : public LibraryTest {
                deck4("[Channel4]") {
         qRegisterMetaType<TrackPointer>("TrackPointer");
 
-        PlaylistDAO& playlistDao = collection()->getPlaylistDAO();
+        PlaylistDAO& playlistDao = internalCollection()->getPlaylistDAO();
         m_iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         // If the AutoDJ playlist does not exist yet then create it.
         if (m_iAutoDJPlaylistId < 0) {
@@ -184,6 +189,7 @@ class AutoDJProcessorTest : public LibraryTest {
         }
 
         pPlayerManager.reset(new MockPlayerManager());
+        PlayerInfo::create();
 
         // Setup 4 fake decks.
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
@@ -202,15 +208,17 @@ class AutoDJProcessorTest : public LibraryTest {
         EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
 
         pProcessor.reset(new MockAutoDJProcessor(
-                NULL, config(), pPlayerManager.data(),
-                m_iAutoDJPlaylistId, collection()));
+                nullptr, config(), pPlayerManager.data(),
+                trackCollections(), m_iAutoDJPlaylistId));
     }
 
     virtual ~AutoDJProcessorTest() {
+        PlayerInfo::destroy();
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack(collection()->getTrackDAO().addSingleTrack(trackLocation, false));
+        TrackPointer pTrack =
+                getOrAddTrackByLocation(trackLocation);
         return pTrack ? pTrack->getId() : TrackId();
     }
 
@@ -539,9 +547,14 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+
+    // We need to call reset *before* constructing a new MockAutoDJProcessor,
+    // because otherwise the new object will try to create COs that already
+    // exist because they were created by the previous instance.
+    pProcessor.reset();
     pProcessor.reset(new MockAutoDJProcessor(
-            NULL, config(), pPlayerManager.data(),
-            m_iAutoDJPlaylistId, collection()));
+            nullptr, config(), pPlayerManager.data(),
+            trackCollections(), m_iAutoDJPlaylistId));
     EXPECT_EQ(25, pProcessor->getTransitionTime());
 }
 
@@ -606,7 +619,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
 
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
-    TrackPointer pTrack = collection()->getTrackDAO().getTrack(testId);
+    TrackPointer pTrack = internalCollection()->getTrackById(testId);
     deck1.slotLoadTrack(pTrack, true);
 
     // Signal that the request to load pTrack succeeded.
@@ -1020,7 +1033,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1109,7 +1122,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1209,7 +1222,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1298,7 +1311,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1418,7 +1431,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
 
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1481,7 +1494,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     deck2.slotLoadTrack(pTrack, false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
-    // The newly loaded track should have been seeked back by the duration of transition.
+    // The newly loaded track should have been seeked back by the trackSamples of transition.
     EXPECT_DOUBLE_EQ(-0.1, deck2.playposition.get());
 
     // No change to the mode, crossfader or play states.
@@ -1500,7 +1513,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 

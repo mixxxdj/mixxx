@@ -4,14 +4,16 @@
 #include <QLineEdit>
 #include <QPushButton>
 
+#include "preferences/colorpalettesettings.h"
 #include "track/cue.h"
 #include "track/track.h"
+#include "util/widgethelper.h"
 #include "widget/wcolorpicker.h"
 
 class WCueMenuPopup : public QWidget {
     Q_OBJECT
   public:
-    WCueMenuPopup(QWidget* parent = nullptr);
+    WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent = nullptr);
 
     ~WCueMenuPopup() {
         delete m_pCueNumber;
@@ -23,27 +25,23 @@ class WCueMenuPopup : public QWidget {
 
     void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
 
-    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
+    void setColorPalette(const ColorPalette& palette) {
         if (m_pColorPicker != nullptr) {
-            m_pColorPicker->useColorSet(pColorRepresentation);
+            m_pColorPicker->setColorPalette(palette);
         }
     }
 
-    void popup(const QPoint& p, QAction* atAction = nullptr) {
-        Q_UNUSED(atAction);
-        qDebug() << "Showing menu at" << p;
-        move(p);
+    void popup(const QPoint& p) {
+        auto parentWidget = static_cast<QWidget*>(parent());
+        QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
+        move(topLeft);
         show();
     }
 
-    void hide() {
-        emit(aboutToHide());
-        QWidget::hide();
-    }
-
     void show() {
+        setColorPalette(m_colorPaletteSettings.getHotcueColorPalette());
         m_pEditLabel->setFocus();
-        emit(aboutToShow());
+        emit aboutToShow();
         QWidget::show();
     }
 
@@ -54,9 +52,10 @@ class WCueMenuPopup : public QWidget {
   private slots:
     void slotEditLabel();
     void slotDeleteCue();
-    void slotChangeCueColor(PredefinedColorPointer pColor);
+    void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
+    ColorPaletteSettings m_colorPaletteSettings;
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
@@ -65,4 +64,7 @@ class WCueMenuPopup : public QWidget {
     QLineEdit* m_pEditLabel;
     WColorPicker* m_pColorPicker;
     QPushButton* m_pDeleteCue;
+
+  protected:
+    void closeEvent(QCloseEvent* event) override;
 };

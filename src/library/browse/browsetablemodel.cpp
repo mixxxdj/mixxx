@@ -9,19 +9,20 @@
 #include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
-#include "library/dao/trackdao.h"
 #include "library/previewbuttondelegate.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "widget/wlibrarytableview.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
-                                   TrackCollection* pTrackCollection,
+                                   TrackCollectionManager* pTrackCollectionManager,
                                    RecordingManager* pRecordingManager)
-        : TrackModel(pTrackCollection->database(),
+        : TrackModel(pTrackCollectionManager->internalCollection()->database(),
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
-          m_pTrackCollection(pTrackCollection),
+          m_pTrackCollectionManager(pTrackCollectionManager),
           m_pRecordingManager(pRecordingManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
     QStringList header_data;
@@ -153,13 +154,16 @@ void BrowseTableModel::setPath(const MDir& path) {
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
-    QString track_location = getTrackLocation(index);
-    if (m_pRecordingManager->getRecordingLocation() == track_location) {
+    return getTrackByRef(TrackRef::fromFileInfo(getTrackLocation(index)));
+}
+
+TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
+    if (m_pRecordingManager->getRecordingLocation() == trackRef.getLocation()) {
         QMessageBox::critical(
             0, tr("Mixxx Library"),
             tr("Could not load the following file because"
                " it is in use by Mixxx or another application.")
-            + "\n" +track_location);
+            + "\n" + trackRef.getLocation());
         return TrackPointer();
     }
     // NOTE(uklotzde, 2015-12-08): Accessing tracks from the browse view
@@ -170,8 +174,7 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     // them edit the tracks in a way that persists across sessions
     // and we didn't want to edit the files on disk by default
     // unless the user opts in to that.
-    return m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(track_location, true, NULL);
+    return m_pTrackCollectionManager->getOrAddTrack(trackRef);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -195,10 +198,10 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
-const QLinkedList<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
+const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
-    return QLinkedList<int>();
+    return QVector<int>();
 }
 
 void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
@@ -297,7 +300,6 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
     // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    QString track_location = getTrackLocation(index);
     int column = index.column();
 
     switch (column) {

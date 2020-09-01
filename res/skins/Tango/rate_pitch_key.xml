@@ -101,7 +101,7 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /Key Display/Match + Key adjust buttons -->
 
-          <WidgetGroup><!-- BPM display & invisble sync button -->
+          <WidgetGroup><!-- BPM display & invisible sync button -->
             <ObjectName>BPM</ObjectName>
             <Layout>stacked</Layout>
             <MinimumSize>50,18</MinimumSize>
@@ -126,7 +126,7 @@ Variables:
                 </Connection>
               </Number>
             </Children>
-          </WidgetGroup><!-- /BPM display & invisble sync button -->
+          </WidgetGroup><!-- /BPM display & invisible sync button -->
 
           <WidgetGroup><!-- Rate adjust buttons -->
             <Layout>horizontal</Layout>

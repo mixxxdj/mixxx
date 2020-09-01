@@ -11,7 +11,7 @@
 namespace mixxx {
 
 class AlbumInfo final {
-    // Album and release properties (in alphabetical order)
+    // Properties in alphabetical order
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,                    Artist)
 #if defined(__EXTRA_METADATA__)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    copyright,                 Copyright)
@@ -32,9 +32,6 @@ public:
 
     AlbumInfo& operator=(AlbumInfo&&) = default;
     AlbumInfo& operator=(const AlbumInfo&) = default;
-
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues();
 
     // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.

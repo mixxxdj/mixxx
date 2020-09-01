@@ -1,11 +1,14 @@
 #pragma once
 
-#include "util/audiosignal.h"
+#include "audio/signalinfo.h"
 
 
 namespace mixxx {
     // TODO(XXX): When we move from stereo to multi-channel this needs updating.
-    static constexpr mixxx::AudioSignal::ChannelCount kEngineChannelCount(2);
+    static constexpr audio::ChannelCount kEngineChannelCount =
+            audio::ChannelCount(2);
+    static constexpr audio::SampleLayout kEngineSampleLayout =
+            audio::SampleLayout::Interleaved;
 
     // Contains the information needed to process a buffer of audio
     class EngineParameters {
@@ -14,28 +17,30 @@ namespace mixxx {
             return m_framesPerBuffer;
         }
         SINT samplesPerBuffer() const {
-            return m_audioSignal.frames2samples(framesPerBuffer());
+            return m_outputSignal.frames2samples(framesPerBuffer());
         }
 
-        mixxx::AudioSignal::ChannelCount channelCount() const {
-            return m_audioSignal.channelCount();
+        audio::ChannelCount channelCount() const {
+            return m_outputSignal.getChannelCount();
         }
 
-        mixxx::AudioSignal::SampleRate sampleRate() const {
-            return m_audioSignal.sampleRate();
+        audio::SampleRate sampleRate() const {
+            return m_outputSignal.getSampleRate();
         }
 
         explicit EngineParameters(
-                AudioSignal::SampleRate sampleRate,
+                audio::SampleRate sampleRate,
                 SINT framesPerBuffer)
-          : m_audioSignal(mixxx::AudioSignal::SampleLayout::Interleaved,
-                          kEngineChannelCount, sampleRate),
-            m_framesPerBuffer(framesPerBuffer) {
+                : m_outputSignal(
+                          kEngineChannelCount,
+                          sampleRate,
+                          kEngineSampleLayout),
+                  m_framesPerBuffer(framesPerBuffer) {
             DEBUG_ASSERT(framesPerBuffer > 0);
         }
 
       private:
-        const mixxx::AudioSignal m_audioSignal;
+        const audio::SignalInfo m_outputSignal;
         const SINT m_framesPerBuffer;
     };
 }

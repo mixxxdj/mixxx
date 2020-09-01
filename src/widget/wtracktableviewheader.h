@@ -8,7 +8,6 @@
 #include <QHeaderView>
 #include <QMap>
 #include <QMenu>
-#include <QSignalMapper>
 #include <QWidget>
 #include <QContextMenuEvent>
 
@@ -80,7 +79,6 @@ class WTrackTableViewHeader : public QHeaderView {
 
     QMenu m_menu;
     QMap<int, QAction*> m_columnActions;
-    QSignalMapper m_signalMapper;
 };
 
 #endif /* WTRACKTABLEVIEWHEADER_H */

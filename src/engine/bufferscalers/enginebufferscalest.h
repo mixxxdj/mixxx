@@ -1,8 +1,8 @@
-#ifndef ENGINEBUFFERSCALEST_H
-#define ENGINEBUFFERSCALEST_H
+#pragma once
 
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "util/memory.h"
+#include "util/samplebuffer.h"
 
 class ReadAheadManager;
 
@@ -22,8 +22,6 @@ class EngineBufferScaleST : public EngineBufferScale {
                             double* pTempoRatio,
                             double* pPitchRatio) override;
 
-    void setSampleRate(SINT iSampleRate) override;
-
     // Scale buffer.
     double scaleBuffer(
             CSAMPLE* pOutputBuffer,
@@ -33,6 +31,8 @@ class EngineBufferScaleST : public EngineBufferScale {
     void clear() override;
 
   private:
+    void onSampleRateChanged() override;
+
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
 
@@ -40,11 +40,8 @@ class EngineBufferScaleST : public EngineBufferScale {
     std::unique_ptr<soundtouch::SoundTouch> m_pSoundTouch;
 
     // Temporary buffer for reading from the RAMAN.
-    SINT buffer_back_size;
-    CSAMPLE* buffer_back;
+    mixxx::SampleBuffer buffer_back;
 
     // Holds the playback direction.
     bool m_bBackwards;
 };
-
-#endif

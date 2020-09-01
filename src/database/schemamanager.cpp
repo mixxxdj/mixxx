@@ -13,7 +13,7 @@ const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_c
 namespace {
     mixxx::Logger kLogger("SchemaManager");
 
-    int readCurrentSchemaVersion(SettingsDAO& settings) {
+    int readCurrentSchemaVersion(const SettingsDAO& settings) {
         QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
         // May be a null string if the schema has not been created. We default the
         // startVersion to 0 so that we automatically try to upgrade to revision 1.
@@ -32,9 +32,9 @@ namespace {
 }
 
 SchemaManager::SchemaManager(const QSqlDatabase& database)
-    : m_database(database),
-      m_settingsDao(database),
-      m_currentVersion(readCurrentSchemaVersion(m_settingsDao)) {
+        : m_database(database),
+          m_settingsDao(m_database),
+          m_currentVersion(readCurrentSchemaVersion(m_settingsDao)) {
 }
 
 bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
@@ -189,6 +189,24 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             }
             FwdSqlQuery query(m_database, statement);
             result = query.isPrepared() && query.execPrepared();
+            if (!result &&
+                    query.hasError() &&
+                    query.lastError().databaseText().startsWith(
+                            QStringLiteral("duplicate column name: "))) {
+                // New columns may have already been added during a previous
+                // migration to a different (= preceding) schema version. This
+                // is a very common situation during development when switching
+                // between schema versions. Since SQLite does not allow to add
+                // new columns only if they do not yet exist we need to account
+                // for and handle those errors here after they occurred. If the
+                // remaining migration finishes without other errors this is
+                // probably ok.
+                kLogger.warning()
+                        << "Ignoring failed statement"
+                        << statement
+                        << "and continuing with schema migration";
+                result = true;
+            }
         }
 
         if (result) {

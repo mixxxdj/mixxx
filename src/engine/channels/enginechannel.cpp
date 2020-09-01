@@ -21,18 +21,21 @@
 #include "control/controlpushbutton.h"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
-                             EngineChannel::ChannelOrientation defaultOrientation,
-                             EffectsManager* pEffectsManager, bool isTalkoverChannel)
+        EngineChannel::ChannelOrientation defaultOrientation,
+        EffectsManager* pEffectsManager,
+        bool isTalkoverChannel,
+        bool isPrimaryDeck)
         : m_group(handle_group),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
           m_sampleBuffer(nullptr),
+          m_bIsPrimaryDeck(isPrimaryDeck),
           m_bIsTalkoverChannel(isTalkoverChannel) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
-    m_pMaster->setButtonMode(ControlPushButton::TOGGLE);
+    m_pMaster->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);

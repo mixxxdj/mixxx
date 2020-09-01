@@ -11,10 +11,10 @@
 #include "library/stardelegate.h"
 #include "library/basesqltablemodel.h"
 
-class BansheePlaylistModel : public BaseSqlTableModel {
+class BansheePlaylistModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection);
+    BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection);
     ~BansheePlaylistModel() final;
 
     void setTableModel(int playlistId);
@@ -28,19 +28,9 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
 
-    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) final;
-
-  protected:
-    // Use this if you want a model that is read-only.
-    Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const final;
-    // Use this if you want a model that can be changed
-    Qt::ItemFlags readWriteFlags(const QModelIndex &index) const final;
-
-  private slots:
-    void tracksChanged(QSet<TrackId> trackIds);
-    void trackLoaded(QString group, TrackPointer pTrack);
-
   private:
+    TrackId doGetTrackId(const TrackPointer& pTrack) const final;
+
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
     QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
     void dropTempTable();

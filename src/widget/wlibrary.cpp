@@ -1,23 +1,37 @@
 // wlibrary.cpp
 // Created 8/28/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
-#include <QMutexLocker>
-
 #include "widget/wlibrary.h"
-#include "library/libraryview.h"
+
+#include <QMutexLocker>
+#include <QtDebug>
+
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "wtracktableview.h"
+#include "library/libraryview.h"
+#include "util/math.h"
+#include "widget/wtracktableview.h"
 
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
           m_mutex(QMutex::Recursive),
+          m_trackTableBackgroundColorOpacity(kDefaultTrackTableBackgroundColorOpacity),
           m_bShowButtonText(true) {
 }
 
 void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
-    m_bShowButtonText = context.selectBool(node, "ShowButtonText", true);
+    m_bShowButtonText =
+            context.selectBool(
+                    node,
+                    "ShowButtonText",
+                    true);
+    m_trackTableBackgroundColorOpacity = math_clamp(
+            context.selectDouble(
+                    node,
+                    "TrackTableBackgroundColorOpacity",
+                    kDefaultTrackTableBackgroundColorOpacity),
+            kMinTrackTableBackgroundColorOpacity,
+            kMaxTrackTableBackgroundColorOpacity);
 }
 
 bool WLibrary::registerView(QString name, QWidget* view) {

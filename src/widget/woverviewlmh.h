@@ -6,7 +6,7 @@
 class WOverviewLMH : public WOverview {
   public:
     WOverviewLMH(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);

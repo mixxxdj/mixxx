@@ -6,7 +6,7 @@
 class BatteryWindows : public Battery {
   public:
     BatteryWindows(QObject* pParent=nullptr);
-    virtual ~BatteryWindows();
+    ~BatteryWindows() override = default;
 
   protected:
     void read() override;

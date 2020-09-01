@@ -16,12 +16,13 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
+#include "defs_urls.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
-#include "preferences/usersettings.h"
-#include "soundio/soundmanagerconfig.h"
-#include "soundio/sounddeviceerror.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceerror.h"
+#include "soundio/soundmanagerconfig.h"
 
 class SoundManager;
 class PlayerManager;
@@ -47,6 +48,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
                  UserSettingsPointer pSettings);
     virtual ~DlgPrefSound();
 
+    QUrl helpUrl() const override;
+
   signals:
     void loadPaths(const SoundManagerConfig &config);
     void writePaths(SoundManagerConfig *config);
@@ -56,9 +59,9 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void updatedAPI();
 
   public slots:
-    void slotUpdate(); // called on show
-    void slotApply();  // called on ok button
-    void slotResetToDefaults();
+    void slotUpdate() override; // called on show
+    void slotApply() override;  // called on ok button
+    void slotResetToDefaults() override;
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
     void latencyCompensationSpinboxChanged(double value);
@@ -93,6 +96,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
+    bool eventFilter(QObject* object, QEvent* event) override;
 
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;

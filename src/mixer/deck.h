@@ -15,7 +15,7 @@ class Deck : public BaseTrackPlayerImpl {
          VisualsManager* pVisualsManager,
          EngineChannel::ChannelOrientation defaultOrientation,
          const QString& group);
-    virtual ~Deck();
+    ~Deck() override = default;
 };
 
 #endif // MIXER_DECK_H

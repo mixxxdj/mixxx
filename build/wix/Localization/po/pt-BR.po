@@ -2,15 +2,17 @@
 # Translators:
 # Felipe Morato <me@fmorato.com>, 2017
 # Fer22f <Fer22f@gmail.com>, 2016
+# Radagásio Fernandes <dasodj@gmail.com>, 2020
 # Rui <xymarior@yandex.com>, 2018
 # S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
+# Seila Oxe <wymeg@getnada.com>, 2020
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2018-12-16 20:41+0000\n"
-"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
+"PO-Revision-Date: 2020-04-11 18:29+0000\n"
+"Last-Translator: Radagásio Fernandes <dasodj@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -100,7 +102,7 @@ msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
 "Mixxx developers."
-msgstr ""
+msgstr "O instalador não conseguiu encontrar o Microsoft Visual C ++ 2015 Redistributable neste sistema. Provavelmente, é um erro do instalador que deve ser relatado aos desenvolvedores do Mixxx."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
@@ -166,7 +168,7 @@ msgstr "Arquivos de recursos que premitem o Mixxx mostrar outras linguagens alé
 #.  Bootstrapper
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
-msgstr ""
+msgstr "Configuração"
 
 msgctxt "Title"
 msgid "[WixBundleName]"
@@ -174,15 +176,15 @@ msgstr ""
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr ""
+msgstr "Você tem certeza que deseja cancelar?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "Versão anterior"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
-msgstr ""
+msgstr "Ajuda de configuração"
 
 msgctxt "HelpText"
 msgid ""
@@ -196,7 +198,7 @@ msgid ""
 " /norestart - suppress any attempts to restart. By default user interface will prompt before restart.\n"
 "\n"
 " /log log.txt - logs to a specific file. By default a log file is created in %TEMP%."
-msgstr ""
+msgstr "/instalar | /reparar | /desinstalar | /layout [diretório] - instala, repara, desinstala ou\ncria uma cópia local completa do pacote configurável no diretório.\nInstalar é o padrão.\n\n/passivo | /silencioso - exibe uma interface de usuário mínima sem prompts ou nenhuma interface de usuário\n     e sem avisos. Por padrão, a interface do usuário e todos os prompts são exibidos.\n\n/sem reinício - suprime qualquer tentativa de reiniciar. Por padrão, a interface do usuário solicitará antes de reiniciar.\n/log log.txt - registra em um arquivo específico. Por padrão, um arquivo de log é criado em %TEMP%."
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
@@ -211,7 +213,7 @@ msgid ""
 "Setup will install Mixxx on your computer.\n"
 "It will first install required third party libraries, then Mixxx itself.\n"
 "Click Install to continue or Close to exit."
-msgstr ""
+msgstr "O instalador instalará o Mixxx no seu computador.\nPrimeiro ele instala as bibliotecas de terceiros necessárias e depois o próprio Mixxx.\nClique em Instalar para continuar ou Fechar para sair."
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
@@ -231,19 +233,19 @@ msgstr "&Fechar"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
-msgstr ""
+msgstr "Opções de Configuração"
 
 msgctxt "OptionsLocationLabel"
 msgid "Install location:"
-msgstr ""
+msgstr "Local de instalação:"
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&Navegador"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
@@ -251,23 +253,23 @@ msgstr "&Cancelar"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
-msgstr ""
+msgstr "Arquivos em Uso"
 
 msgctxt "FilesInUseLabel"
 msgid "The following applications are using files that need to be updated:"
-msgstr ""
+msgstr "Os seguintes aplicativos estão usando arquivos que precisam ser atualizados:"
 
 msgctxt "FilesInUseCloseRadioButton"
 msgid "Close the &applications and attempt to restart them."
-msgstr ""
+msgstr "Feche os &aplicativos e tente reiniciá-los."
 
 msgctxt "FilesInUseDontCloseRadioButton"
 msgid "&Do not close applications. A reboot will be required."
-msgstr ""
+msgstr "&Não feche as aplicações. Uma reinicialização será necessária."
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
@@ -275,15 +277,15 @@ msgstr "&Cancelar"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
-msgstr ""
+msgstr "Progresso da instalação"
 
 msgctxt "ProgressLabel"
 msgid "Processing:"
-msgstr ""
+msgstr "Processando:"
 
 msgctxt "OverallProgressPackageText"
 msgid "Initializing..."
-msgstr ""
+msgstr "Inicializando..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
@@ -291,15 +293,15 @@ msgstr "&Cancelar"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
-msgstr ""
+msgstr "Modificar a instalação"
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&Reparar"
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
-msgstr ""
+msgstr "&Desinstalar"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
@@ -307,31 +309,31 @@ msgstr "&Fechar"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
-msgstr ""
+msgstr "Instalação bem sucedida"
 
 msgctxt "SuccessInstallHeader"
 msgid "Mixxx installation has been successful"
-msgstr ""
+msgstr "A instalação do Mixxx foi bem-sucedida"
 
 msgctxt "SuccessRepairHeader"
 msgid "Mixxx repair has been successful"
-msgstr ""
+msgstr "O reparo do Mixxx foi bem sucedido"
 
 msgctxt "SuccessUninstallHeader"
 msgid "Mixxx uninstall has been successful"
-msgstr ""
+msgstr "A desinstalação do Mixxx foi bem sucedida"
 
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
-msgstr ""
+msgstr "&Iniciar o Mixxx"
 
 msgctxt "SuccessRestartText"
 msgid "You must restart your computer before you can use the software."
-msgstr ""
+msgstr "Você deve reiniciar o computador antes de poder usar o software."
 
 msgctxt "SuccessRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Reiniciar"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
@@ -339,34 +341,34 @@ msgstr "&Fechar"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
-msgstr ""
+msgstr "Falha na instalação"
 
 msgctxt "FailureInstallHeader"
 msgid "Mixxx installation failed"
-msgstr ""
+msgstr "Falha na instalação do Mixxx"
 
 msgctxt "FailureRepairHeader"
 msgid "Mixxx repair failed"
-msgstr ""
+msgstr "Falha no reparo do MIxxx"
 
 msgctxt "FailureUninstallHeader"
 msgid "Mixxx uninstall failed"
-msgstr ""
+msgstr "Falha na desinstalação do Mixxx"
 
 msgctxt "FailureHyperlinkLogText"
 msgid ""
 "One or more issues caused the setup to fail. Please fix the issues and then "
 "retry setup. For more information see the <a href=\"#\">log file</a>."
-msgstr ""
+msgstr "Um ou mais problemas causaram falha na instalação. Corrija os problemas e tente novamente a instalação. Para mais informações, consulte o <a href=\"#\">arquivo de log</a>."
 
 msgctxt "FailureRestartText"
 msgid ""
 "You must restart your computer to complete the rollback of the software."
-msgstr ""
+msgstr "Você deve reiniciar o computador para concluir a reversão do software."
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Reiniciar"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"

@@ -8,7 +8,7 @@
 class GLVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLVSyncTestWidget(const char* group, QWidget* parent);
+    GLVSyncTestWidget(const QString& group, QWidget* parent);
     virtual ~GLVSyncTestWidget();
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLVSyncTest; }

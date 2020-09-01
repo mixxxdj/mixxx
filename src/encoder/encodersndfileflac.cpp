@@ -15,9 +15,6 @@ EncoderSndfileFlac::EncoderSndfileFlac(EncoderCallback* pCallback)
     :EncoderWave(pCallback) {
 }
 
-EncoderSndfileFlac::~EncoderSndfileFlac() {
-}
-
 void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
 {
     m_sfInfo.format = SF_FORMAT_FLAC;
@@ -32,11 +29,11 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
             break;
         default:
             m_sfInfo.format |= SF_FORMAT_PCM_16;
-            qWarning() << " Unexpected radio index on setEncoderSettings: " 
-                    << radio << ". reverting to Flac 16bits";
+            qWarning() << " Unexpected radio index on setEncoderSettings: "
+                       << radio << ". reverting to Flac 16bits";
             break;
     }
-    
+
     m_compression = static_cast<double>(settings.getCompression()) / 8.0;
 }
 

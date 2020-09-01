@@ -287,10 +287,13 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonBeatJumpForward->set(1);
     m_pButtonBeatJumpForward->set(0);
     ProcessBuffer();
+    EXPECT_DOUBLE_EQ(m_pPlayPosition->get() * kTrackLengthSamples, (44100 * 2 * 4) + 500);
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     ProcessBuffer();
-    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopEndPoint->get());
+    EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
+    EXPECT_DOUBLE_EQ(m_pPlayPosition->get() * kTrackLengthSamples, (44100 * 2 * 4) + 500);
+
     EXPECT_EQ(4, m_pBeatLoopSize->get());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
 

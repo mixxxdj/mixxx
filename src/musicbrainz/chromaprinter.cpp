@@ -37,7 +37,7 @@ QString calcFingerprint(
 
     mixxx::SampleBuffer sampleBuffer(math_max(
             fingerprintRange.length(),
-            audioSourceProxy.frames2samples(fingerprintRange.length())));
+            audioSourceProxy.getSignalInfo().frames2samples(fingerprintRange.length())));
     const auto readableSampleFrames =
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(
@@ -49,7 +49,7 @@ QString calcFingerprint(
     }
 
     std::vector<SAMPLE> fingerprintSamples(
-            audioSourceProxy.frames2samples(
+            audioSourceProxy.getSignalInfo().frames2samples(
                     readableSampleFrames.frameLength()));
     // Convert floating-point to integer
     SampleUtil::convertFloat32ToS16(
@@ -60,11 +60,17 @@ QString calcFingerprint(
     qDebug() << "reading file took" << timerReadingFile.elapsed().debugMillisWithUnit();
 
     ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
-    chromaprint_start(ctx, audioSourceProxy.sampleRate(), audioSourceProxy.channelCount());
+    chromaprint_start(
+            ctx,
+            audioSourceProxy.getSignalInfo().getSampleRate(),
+            audioSourceProxy.getSignalInfo().getChannelCount());
 
     PerformanceTimer timerGeneratingFingerprint;
     timerGeneratingFingerprint.start();
-    int success = chromaprint_feed(ctx, &fingerprintSamples[0], static_cast<int>(fingerprintSamples.size()));
+    const int success = chromaprint_feed(
+            ctx,
+            &fingerprintSamples[0],
+            static_cast<int>(fingerprintSamples.size()));
     chromaprint_finish(ctx);
     if (!success) {
         qWarning() << "Failed to generate fingerprint from sample data";
@@ -105,7 +111,8 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 
 QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     mixxx::AudioSource::OpenParams config;
-    config.setChannelCount(2); // always stereo / 2 channels (see below)
+    // always stereo / 2 channels (see below)
+    config.setChannelCount(mixxx::audio::ChannelCount(2));
     auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(config);
     if (!pAudioSource) {
         qDebug()
@@ -118,7 +125,7 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
             pAudioSource->frameIndexRange(),
             mixxx::IndexRange::forward(
                     pAudioSource->frameIndexMin(),
-                    kFingerprintDuration * pAudioSource->sampleRate()));
+                    kFingerprintDuration * pAudioSource->getSignalInfo().getSampleRate()));
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
             fingerprintRange.length());

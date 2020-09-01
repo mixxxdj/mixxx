@@ -13,9 +13,12 @@
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 
-QtHSVWaveformWidget::QtHSVWaveformWidget(const char* group, QWidget* parent)
-    : QGLWidget(parent),
-      WaveformWidgetAbstract(group) {
+QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
+        : QGLWidget(parent),
+          WaveformWidgetAbstract(group) {
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

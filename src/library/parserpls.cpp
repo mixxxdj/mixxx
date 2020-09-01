@@ -128,7 +128,7 @@ QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
     return QString();
 }
 
-bool ParserPls::writePLSFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
+bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &items, bool useRelativePath)
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {

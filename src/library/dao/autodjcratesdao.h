@@ -1,5 +1,4 @@
-#ifndef AUTODJCRATESDAO_H
-#define AUTODJCRATESDAO_H
+#pragma once
 
 #include <QObject>
 #include <QSqlDatabase>
@@ -120,5 +119,3 @@ class AutoDJCratesDAO : public QObject {
     // The ID of every set-log playlist.
     QList<int> m_lstSetLogPlaylistIds;
 };
-
-#endif // AUTODJCRATESDAO_H

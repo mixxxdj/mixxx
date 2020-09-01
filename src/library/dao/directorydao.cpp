@@ -1,17 +1,34 @@
-#include <QtSql>
+#include "library/dao/directorydao.h"
+
 #include <QDir>
 #include <QtDebug>
-#include <QRegExp>
-#include <QStringBuilder>
 
-#include "library/dao/directorydao.h"
 #include "library/queryutil.h"
-
-#include "util/db/sqllikewildcards.h"
 #include "util/db/sqllikewildcardescaper.h"
+#include "util/db/sqllikewildcards.h"
 
+namespace {
 
-int DirectoryDAO::addDirectory(const QString& newDir) {
+bool isChildDir(QString testDir, QString dirStr) {
+    QDir test = QDir(testDir);
+    QDir dir = QDir(dirStr);
+    bool child = dir == test;
+    while (test.cdUp()) {
+        if (dir == test) {
+            child = true;
+        }
+    }
+    // qDebug() << "--- test related function ---";
+    // qDebug() << "testDir " << testDir;
+    // qDebug() << "dir" << dirStr;
+    // qDebug() << "child = " << child;
+    // qDebug() << "-----------------------------";
+    return child;
+}
+
+} // anonymous namespace
+
+int DirectoryDAO::addDirectory(const QString& newDir) const {
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.
     QStringList dirs = getDirs();
@@ -48,24 +65,7 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     return ALL_FINE;
 }
 
-bool DirectoryDAO::isChildDir(QString testDir, QString dirStr) {
-    QDir test = QDir(testDir);
-    QDir dir = QDir(dirStr);
-    bool child = dir == test;
-    while (test.cdUp()) {
-        if (dir == test) {
-            child = true;
-        }
-    }
-    // qDebug() << "--- test related function ---";
-    // qDebug() << "testDir " << testDir;
-    // qDebug() << "dir" << dirStr;
-    // qDebug() << "child = " << child;
-    // qDebug() << "-----------------------------";
-    return child;
-}
-
-int DirectoryDAO::removeDirectory(const QString& dir) {
+int DirectoryDAO::removeDirectory(const QString& dir) const {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
                    % DIRECTORYDAO_DIR % "= :dir");
@@ -77,9 +77,9 @@ int DirectoryDAO::removeDirectory(const QString& dir) {
     return ALL_FINE;
 }
 
-
-QList<TrackRef> DirectoryDAO::relocateDirectory(const QString& oldFolder,
-                                          const QString& newFolder) {
+QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
+        const QString& oldFolder,
+        const QString& newFolder) const {
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldFolder also has a zombie
     // track location in newFolder then the replace query will fail because the
@@ -114,19 +114,28 @@ QList<TrackRef> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     }
 
     QList<DbId> loc_ids;
-    QList<TrackRef> trackRefs;
+    QList<RelocatedTrack> relocatedTracks;
     while (query.next()) {
         loc_ids.append(DbId(query.value(1).toInt()));
-        trackRefs.append(TrackRef::fromFileInfo(query.value(2).toString(), TrackId(query.value(0))));
+        auto trackId = TrackId(query.value(0));
+        auto oldLocation = query.value(2).toString();
+        auto missingTrackRef = TrackRef::fromFileInfo(
+                TrackFile(oldLocation),
+                std::move(trackId));
+        const int oldSuffixLen = oldLocation.size() - oldFolder.size();
+        QString newLocation = newFolder + oldLocation.right(oldSuffixLen);
+        auto addedTrackRef = TrackRef::fromFileInfo(
+            TrackFile(newLocation) /*without TrackId*/);
+        relocatedTracks.append(RelocatedTrack(
+                std::move(missingTrackRef),
+                std::move(addedTrackRef)));
     }
 
     QString replacement = "UPDATE track_locations SET location = :newloc "
             "WHERE id = :id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
-        QString newloc = trackRefs.at(i).getLocation();
-        newloc.replace(0, oldFolder.size(), newFolder);
-        query.bindValue("newloc", newloc);
+        query.bindValue("newloc", relocatedTracks.at(i).updatedTrackRef().getLocation());
         query.bindValue("id", loc_ids.at(i).toVariant());
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
@@ -134,11 +143,11 @@ QList<TrackRef> DirectoryDAO::relocateDirectory(const QString& oldFolder,
         }
     }
 
-    qDebug() << "Relocated tracks:" << trackRefs.size();
-    return trackRefs;
+    qDebug() << "Relocated tracks:" << relocatedTracks.size();
+    return relocatedTracks;
 }
 
-QStringList DirectoryDAO::getDirs() {
+QStringList DirectoryDAO::getDirs() const {
     QSqlQuery query(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     if (!query.exec()) {

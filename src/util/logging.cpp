@@ -74,14 +74,12 @@ void MessageHandler(QtMsgType type,
                     isControllerDebug;
             shouldFlush = Logging::flushing(LogLevel::Debug);
             break;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         case QtInfoMsg:
             tag = "Info [";
             baSize += strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Info);
             shouldFlush = Logging::flushing(LogLevel::Info);
             break;
-#endif
         case QtWarningMsg:
             tag = "Warning [";
             baSize += strlen(tag);
@@ -150,46 +148,54 @@ void MessageHandler(QtMsgType type,
 }  // namespace
 
 // static
-void Logging::initialize(const QDir& settingsDir,
-                         LogLevel logLevel,
-                         LogLevel logFlushLevel,
-                         bool debugAssertBreak) {
+void Logging::initialize(
+        const QDir& logDir,
+        LogLevel logLevel,
+        LogLevel logFlushLevel,
+        bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
         return;
     }
 
-    g_logLevel = logLevel;
-    g_logFlushLevel = logFlushLevel;
+    setLogLevel(logLevel);
 
-    QString logFileName;
+    if (logDir.exists()) {
+        QString logFileName;
 
-    // Rotate old logfiles.
-    for (int i = 9; i >= 0; --i) {
-        if (i == 0) {
-            logFileName = settingsDir.filePath("mixxx.log");
-        } else {
-            logFileName = settingsDir.filePath(QString("mixxx.log.%1").arg(i));
-        }
-        QFileInfo logbackup(logFileName);
-        if (logbackup.exists()) {
-            QString olderlogname =
-                    settingsDir.filePath(QString("mixxx.log.%1").arg(i + 1));
-            // This should only happen with number 10
-            if (QFileInfo::exists(olderlogname)) {
-                QFile::remove(olderlogname);
+        // Rotate old logfiles.
+        for (int i = 9; i >= 0; --i) {
+            if (i == 0) {
+                logFileName = logDir.filePath("mixxx.log");
+            } else {
+                logFileName = logDir.filePath(QString("mixxx.log.%1").arg(i));
             }
-            if (!QFile::rename(logFileName, olderlogname)) {
-                fprintf(stderr, "Error rolling over logfile %s",
-                        logFileName.toLocal8Bit().constData());
+            QFileInfo logbackup(logFileName);
+            if (logbackup.exists()) {
+                QString olderlogname =
+                        logDir.filePath(QString("mixxx.log.%1").arg(i + 1));
+                // This should only happen with number 10
+                if (QFileInfo::exists(olderlogname)) {
+                    QFile::remove(olderlogname);
+                }
+                if (!QFile::rename(logFileName, olderlogname)) {
+                    fprintf(stderr,
+                            "Error rolling over logfile %s",
+                            logFileName.toLocal8Bit().constData());
+                }
             }
         }
+        // Since the message handler is not installed yet, we can touch s_logfile
+        // without the lock.
+        g_logfile.setFileName(logFileName);
+        g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+        g_logFlushLevel = logFlushLevel;
+    } else {
+        qInfo() << "No directory for writing a log file";
+        // No need to flush anything
+        g_logFlushLevel = LogLevel::Critical;
     }
 
-    // Since the message handler is not installed yet, we can touch g_logfile
-    // without the lock.
-    g_logfile.setFileName(logFileName);
-    g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     g_debugAssertBreak = debugAssertBreak;
 
     // Install the Qt message handler.
@@ -201,8 +207,16 @@ void Logging::initialize(const QDir& settingsDir,
     // Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1227295
     // Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=886437
     // Ubuntu: https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1731646
+    // Somehow this causes a segfault on macOS though?? https://bugs.launchpad.net/mixxx/+bug/1871238
+#ifdef __LINUX__
     QLoggingCategory::setFilterRules("*.debug=true\n"
                                      "qt.*.debug=false");
+#endif
+}
+
+// static
+void Logging::setLogLevel(LogLevel logLevel) {
+    g_logLevel = logLevel;
 }
 
 // static

@@ -8,7 +8,8 @@
 #include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
-class QDomNode;
+QT_FORWARD_DECLARE_CLASS(QDomNode);
+
 class SkinContext;
 class WaveformSignalColors;
 
@@ -19,7 +20,7 @@ class WaveformMarkRange {
             const QDomNode& node,
             const SkinContext& context,
             const WaveformSignalColors& signalColors);
-    // This class is only moveable, but not copyable!
+    // This class is only moveable, but not copiable!
     WaveformMarkRange(WaveformMarkRange&&) = default;
     WaveformMarkRange(const WaveformMarkRange&) = delete;
 
@@ -60,6 +61,8 @@ class WaveformMarkRange {
 
     QColor m_activeColor;
     QColor m_disabledColor;
+    double m_enabledOpacity;
+    double m_disabledOpacity;
     QColor m_durationTextColor;
 
     QImage m_activeImage;

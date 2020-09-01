@@ -38,13 +38,17 @@ TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
-const QLinkedList<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
-    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QLinkedList<int>();
+const QVector<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
+    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QVector<int>();
 }
 
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getTrack(indexSource) : TrackPointer();
+}
+
+TrackPointer ProxyTrackModel::getTrackByRef(const TrackRef& trackRef) const {
+    return m_pTrackModel ? m_pTrackModel->getTrackByRef(trackRef) : TrackPointer();
 }
 
 QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
@@ -102,7 +106,11 @@ QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* 
 }
 
 TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
-    return m_pTrackModel ? m_pTrackModel->getCapabilities() : TrackModel::TRACKMODELCAPS_NONE;
+    if (m_pTrackModel) {
+        return m_pTrackModel->getCapabilities();
+    } else {
+        return static_cast<CapabilitiesFlags>(TRACKMODELCAPS_NONE);
+    }
 }
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,

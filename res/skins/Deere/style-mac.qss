@@ -7,15 +7,15 @@
 }
 
 
-/* hack to hide the checkmark, otherwise text gets cut off
+/* Previously necessayr hack to hide the checkmark, otherwise text gets cut off
 on the right on Retina screens. This can only be done for macOS
-because it cuts off text on the left on KDE */
+because it cuts off text on the left on KDE
 WEffectSelector QAbstractItemView {
   margin: 0 0 0 -24px;
-}
+} */
 
 /* hide the checkmark just in case the above shows a
-partial checkmark on some untested screen */
+partial checkmark on some untested screen
 WEffectSelector::indicator {
     border: 0;
-}
+} */

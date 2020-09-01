@@ -9,6 +9,7 @@
 #include <QMutexLocker>
 #include <QSharedPointer>
 
+#include "util/cache.h"
 #include "util/task.h"
 #include "util/performancetimer.h"
 
@@ -37,7 +38,7 @@ class DirInfo {
 class ScannerGlobal {
   public:
     ScannerGlobal(const QSet<QString>& trackLocations,
-                  const QHash<QString, int>& directoryHashes,
+                  const QHash<QString, mixxx::cache_key_t>& directoryHashes,
                   const QRegExp& supportedExtensionsMatcher,
                   const QRegExp& supportedCoverExtensionsMatcher,
                   const QStringList& directoriesBlacklist)
@@ -62,7 +63,7 @@ class ScannerGlobal {
     }
 
     // Returns the directory hash if it exists or -1 if it doesn't.
-    inline int directoryHashInDatabase(const QString& directoryPath) const {
+    inline mixxx::cache_key_t directoryHashInDatabase(const QString& directoryPath) const {
         return m_directoryHashes.value(directoryPath, -1);
     }
 
@@ -177,7 +178,7 @@ class ScannerGlobal {
     TaskWatcher m_watcher;
 
     QSet<QString> m_trackLocations;
-    QHash<QString, int> m_directoryHashes;
+    QHash<QString, mixxx::cache_key_t> m_directoryHashes;
 
     mutable QMutex m_supportedExtensionsMatcherMutex;
     QRegExp m_supportedExtensionsMatcher;

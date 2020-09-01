@@ -87,5 +87,5 @@ void MidiOptionsDelegate::setModelData(QWidget* editor,
         return;
     }
     options.all = pComboBox->itemData(pComboBox->currentIndex()).toInt();
-    model->setData(index, qVariantFromValue(options), Qt::EditRole);
+    model->setData(index, QVariant::fromValue(options), Qt::EditRole);
 }

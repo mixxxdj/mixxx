@@ -2,11 +2,11 @@
 
 #include "engine/enginesidechaincompressor.h"
 
-EngineSideChainCompressor::EngineSideChainCompressor(const char* group)
-        : m_compressRatio(0.0),
+EngineSideChainCompressor::EngineSideChainCompressor(const QString& group)
+        : m_compressRatio(1.0),
           m_bAboveThreshold(false),
           m_threshold(1.0),
-          m_strength(0.0),
+          m_strength(1.0),
           m_attackTime(0),
           m_decayTime(0),
           m_attackPerFrame(0.0),
@@ -34,15 +34,16 @@ void EngineSideChainCompressor::calculateRates() {
     if (m_decayPerFrame <= 0) {
         m_decayPerFrame = 0.005;
     }
-    qDebug() << "Compressor attack per frame: " << m_attackPerFrame
-             << "decay per frame: " << m_decayPerFrame;
+    //qDebug() << "Compressor attack per frame: " << m_attackPerFrame
+    //         << "decay per frame: " << m_decayPerFrame;
 }
 
-void EngineSideChainCompressor::clearKeys() {
-    m_bAboveThreshold = false;
+void EngineSideChainCompressor::setAboveThreshold(bool value) {
+    m_bAboveThreshold = value;
 }
 
 void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBufferSize) {
+    m_bAboveThreshold = false;
     for (int i = 0; i + 1 < iBufferSize; i += 2) {
         CSAMPLE val = (pIn[i] + pIn[i + 1]) / 2;
         if (val > m_threshold) {
@@ -54,28 +55,27 @@ void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBuffer
 
 double EngineSideChainCompressor::calculateCompressedGain(int frames) {
     if (m_bAboveThreshold) {
-        if (m_compressRatio < m_strength) {
-            m_compressRatio += m_attackPerFrame * frames;
-            if (m_compressRatio > m_strength) {
+        if (m_compressRatio > m_strength) {
+            m_compressRatio -= m_attackPerFrame * frames;
+            if (m_compressRatio < m_strength) {
                 // If we overshot, clamp.
                 m_compressRatio = m_strength;
             }
-        } else if (m_compressRatio > m_strength) {
+        } else if (m_compressRatio < m_strength) {
             // If the strength param was changed, we might be compressing too much.
-            m_compressRatio -= m_decayPerFrame * frames;
+            m_compressRatio += m_decayPerFrame * frames;
         }
     } else {
-        if (m_compressRatio > 0) {
-            m_compressRatio -= m_decayPerFrame * frames;
-            if (m_compressRatio < 0) {
-                // If we overshot, clamp.
-                m_compressRatio = 0;
-            }
-        } else if (m_compressRatio < 0) {
-            // Complain loudly.
+        VERIFY_OR_DEBUG_ASSERT(m_compressRatio >= 0) {
             qWarning() << "Programming error, below-zero compression detected.";
-            m_compressRatio += m_attackPerFrame * frames;
+        }
+        if (m_compressRatio < 1) {
+            m_compressRatio += m_decayPerFrame * frames;
+            if (m_compressRatio > 1) {
+                // If we overshot, clamp.
+                m_compressRatio = 1;
+            }
         }
     }
-    return (1. - m_compressRatio);
+    return m_compressRatio;
 }

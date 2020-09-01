@@ -18,9 +18,6 @@ Description:
         <Layout>stacked</Layout>
         <SizePolicy>max,max</SizePolicy>
         <Children>
-          <!-- index 0 due to bug -->
-          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
           <!-- Headphone controls greyed out if no headphone device configured -->
           <WidgetGroup>
             <Layout>vertical</Layout>
@@ -49,7 +46,6 @@ Description:
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-
               <WidgetGroup>
                 <ObjectName>MixerbarKnob</ObjectName>
                 <Layout>vertical</Layout>
@@ -69,10 +65,9 @@ Description:
                   </KnobComposed>
                 </Children>
               </WidgetGroup>
-
               <SliderComposed>
                 <TooltipId>headMix</TooltipId>
-                <Size>60f,24f</Size>
+                <Size>54f,24f</Size>
                 <ObjectName>MixerbarSlider</ObjectName>
                 <Handle scalemode="STRETCH_ASPECT">knobs_sliders/headMix_handle.svg</Handle>
                 <Slider scalemode="STRETCH_ASPECT">knobs_sliders/headMix_scale.svg</Slider>
@@ -81,9 +76,7 @@ Description:
                   <ConfigKey>[Master],headMix</ConfigKey>
                 </Connection>
               </SliderComposed>
-
-              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">headSplit</SetVariable>
                 <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -92,9 +85,7 @@ Description:
                 <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
                 <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
               </Template>
-
-              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
+                <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- /actual headphone controls -->
 

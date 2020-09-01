@@ -59,9 +59,9 @@ TEST_F(TrackExporterTest, SimpleListExport) {
     EXPECT_EQ(3, m_answerer->currentProgressCount());
 
     // The destination folder should have all the files.
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.ogg")).exists());
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.flac")).exists());
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a")).exists());
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test.ogg")));
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test.flac")));
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a")));
 }
 
 TEST_F(TrackExporterTest, OverwriteSkip) {

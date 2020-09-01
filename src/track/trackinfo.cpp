@@ -3,32 +3,10 @@
 
 namespace mixxx {
 
-void TrackInfo::resetUnsupportedValues() {
-#if defined(__EXTRA_METADATA__)
-    setConductor(QString());
-    setDiscNumber(QString());
-    setDiscTotal(QString());
-    setEncoder(QString());
-    setEncoderSettings(QString());
-    setISRC(QString());
-    setLanguage(QString());
-    setLyricist(QString());
-    setMood(QString());
-    setMovement(QString());
-    setMusicBrainzArtistId(QString());
-    setMusicBrainzRecordingId(QString());
-    setMusicBrainzReleaseId(QString());
-    setMusicBrainzWorkId(QString());
-    setRemixer(QString());
-    setSubtitle(QString());
-    setWork(QString());
-#endif // __EXTRA_METADATA__
-}
-
 namespace {
 
-const QString kArtistTitleSeparatorWithSpaces = " - ";
-const QString kArtistTitleSeparator = "_-_";
+const QString kArtistTitleSeparatorWithSpaces = QStringLiteral(" - ");
+const QString kArtistTitleSeparator = QStringLiteral("_-_");
 
 const QChar kFileExtensionSeparator = '.';
 
@@ -64,51 +42,53 @@ bool TrackInfo::parseArtistTitleFromFileName(
     return modified;
 }
 
-bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
-    return (lhs.getArtist() == rhs.getArtist()) &&
-            (lhs.getBpm() == rhs.getBpm()) &&
-            (lhs.getComment() == rhs.getComment()) &&
-            (lhs.getComposer() == rhs.getComposer()) &&
+bool TrackInfo::compareEq(
+        const TrackInfo& trackInfo,
+        Bpm::Comparison cmpBpm) const {
+    return (getArtist() == trackInfo.getArtist()) &&
+            getBpm().compareEq(trackInfo.getBpm(), cmpBpm) &&
+            (getComment() == trackInfo.getComment()) &&
+            (getComposer() == trackInfo.getComposer()) &&
 #if defined(__EXTRA_METADATA__)
-            (lhs.getConductor() == rhs.getConductor()) &&
-            (lhs.getDiscNumber() == rhs.getDiscNumber()) &&
-            (lhs.getDiscTotal() == rhs.getDiscTotal()) &&
-            (lhs.getEncoder() == rhs.getEncoder()) &&
-            (lhs.getEncoderSettings() == rhs.getEncoderSettings()) &&
+            (getConductor() == trackInfo.getConductor()) &&
+            (getDiscNumber() == trackInfo.getDiscNumber()) &&
+            (getDiscTotal() == trackInfo.getDiscTotal()) &&
+            (getEncoder() == trackInfo.getEncoder()) &&
+            (getEncoderSettings() == trackInfo.getEncoderSettings()) &&
 #endif // __EXTRA_METADATA__
-            (lhs.getGenre() == rhs.getGenre()) &&
-            (lhs.getGrouping() == rhs.getGrouping()) &&
+            (getGenre() == trackInfo.getGenre()) &&
+            (getGrouping() == trackInfo.getGrouping()) &&
 #if defined(__EXTRA_METADATA__)
-            (lhs.getISRC() == rhs.getISRC()) &&
+            (getISRC() == trackInfo.getISRC()) &&
 #endif // __EXTRA_METADATA__
-            (lhs.getKey() == rhs.getKey()) &&
+            (getKey() == trackInfo.getKey()) &&
 #if defined(__EXTRA_METADATA__)
-            (lhs.getLanguage() == rhs.getLanguage()) &&
-            (lhs.getLyricist() == rhs.getLyricist()) &&
-            (lhs.getMood() == rhs.getMood()) &&
-            (lhs.getMovement() == rhs.getMovement()) &&
-            (lhs.getMusicBrainzArtistId() == rhs.getMusicBrainzArtistId()) &&
-            (lhs.getMusicBrainzRecordingId() == rhs.getMusicBrainzRecordingId()) &&
-            (lhs.getMusicBrainzReleaseId() == rhs.getMusicBrainzReleaseId()) &&
-            (lhs.getMusicBrainzWorkId() == rhs.getMusicBrainzWorkId()) &&
-            (lhs.getRemixer() == rhs.getRemixer()) &&
+            (getLanguage() == trackInfo.getLanguage()) &&
+            (getLyricist() == trackInfo.getLyricist()) &&
+            (getMood() == trackInfo.getMood()) &&
+            (getMovement() == trackInfo.getMovement()) &&
+            (getMusicBrainzArtistId() == trackInfo.getMusicBrainzArtistId()) &&
+            (getMusicBrainzRecordingId() == trackInfo.getMusicBrainzRecordingId()) &&
+            (getMusicBrainzReleaseId() == trackInfo.getMusicBrainzReleaseId()) &&
+            (getMusicBrainzWorkId() == trackInfo.getMusicBrainzWorkId()) &&
+            (getRemixer() == trackInfo.getRemixer()) &&
 #endif // __EXTRA_METADATA__
-            (lhs.getReplayGain() == rhs.getReplayGain()) &&
+            (getReplayGain() == trackInfo.getReplayGain()) &&
+            (getSeratoTags() == trackInfo.getSeratoTags()) &&
 #if defined(__EXTRA_METADATA__)
-            (lhs.getSeratoMarkers2() == rhs.getSeratoMarkers2()) &&
-            (lhs.getSubtitle() == rhs.getSubtitle()) &&
+            (getSubtitle() == trackInfo.getSubtitle()) &&
 #endif // __EXTRA_METADATA__
-            (lhs.getTitle() == rhs.getTitle()) &&
-            (lhs.getTrackNumber() == rhs.getTrackNumber()) &&
-            (lhs.getTrackTotal() == rhs.getTrackTotal()) &&
+            (getTitle() == trackInfo.getTitle()) &&
+            (getTrackNumber() == trackInfo.getTrackNumber()) &&
+            (getTrackTotal() == trackInfo.getTrackTotal()) &&
 #if defined(__EXTRA_METADATA__)
-            (lhs.getWork() == rhs.getWork()) &&
+            (getWork() == trackInfo.getWork()) &&
 #endif // __EXTRA_METADATA__
-            (lhs.getYear() == rhs.getYear());
+            (getYear() == trackInfo.getYear());
 }
 
 QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
-    dbg << '{';
+    dbg << "TrackInfo{";
     arg.dbgArtist(dbg);
     arg.dbgBpm(dbg);
     arg.dbgComment(dbg);
@@ -138,8 +118,8 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgRemixer(dbg);
 #endif // __EXTRA_METADATA__
     arg.dbgReplayGain(dbg);
+    arg.dbgSeratoTags(dbg);
 #if defined(__EXTRA_METADATA__)
-    arg.dbgSeratoMarkers2(dbg);
     arg.dbgSubtitle(dbg);
 #endif // __EXTRA_METADATA__
     arg.dbgTitle(dbg);

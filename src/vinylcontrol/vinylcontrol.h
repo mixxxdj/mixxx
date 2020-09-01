@@ -23,7 +23,7 @@ class VinylControl : public QObject {
     virtual float getAngle() = 0;
 
     UserSettingsPointer m_pConfig;
-    QString m_group;
+    const QString m_group;
 
     // The VC input gain preference.
     ControlProxy* m_pVinylControlInputGain;

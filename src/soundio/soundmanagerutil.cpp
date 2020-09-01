@@ -311,10 +311,6 @@ AudioOutput::AudioOutput(AudioPathType type,
     }
 }
 
-AudioOutput::~AudioOutput() {
-
-}
-
 /**
  * Writes this AudioOutput's data to an XML element, preallocated from an XML
  * DOM document.
@@ -459,6 +455,14 @@ void AudioInput::setType(AudioPathType type) {
         m_type = type;
     } else {
         m_type = AudioPath::INVALID;
+    }
+}
+
+QString SoundDeviceId::debugName() const {
+    if (alsaHwDevice.isEmpty()) {
+        return name + QStringLiteral(", ") + QString::number(portAudioIndex);
+    } else {
+        return name + QStringLiteral(", ") + alsaHwDevice + QStringLiteral(", ") + QString::number(portAudioIndex);
     }
 }
 

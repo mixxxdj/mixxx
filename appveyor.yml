@@ -1,10 +1,11 @@
 ---
 version: '{branch}-{build}'
 skip_tags: true
+shallow_clone: true
 max_jobs: 1
 image:
   - Visual Studio 2017
-  - Ubuntu1804
+  - Ubuntu2004
 
 configuration:
   - release-fastbuild
@@ -21,7 +22,7 @@ platform:
 matrix:
   exclude:
     # Ubuntu doesn't support "release-fastbuild".
-    - image: Ubuntu1804
+    - image: Ubuntu2004
       configuration: release-fastbuild
     # We only want "release-fastbuild" for Windows since "release" consumes too
     # much memory due to link-time code generation / whole-program optimization.
@@ -31,7 +32,8 @@ matrix:
 skip_commits:
   files:
     - doc/
-    - LICENCE
+    - .travis.yml
+    - LICENSE
     - README
     - README.md
     - CHANGELOG
@@ -41,31 +43,106 @@ skip_commits:
 for:
 
 ########## UBUNTU SPECIFIC CONFIGURATION ##########
+
 -
   matrix:
     only:
-      - image: Ubuntu1804
+      - image: Ubuntu2004
 
   clone_folder: /home/appveyor/projects/mixxx
 
+  cache:
+    - /home/appveyor/.ccache
+
   install:
-    - sudo apt-get update
-    - sudo apt-get -y install gdb libavformat-dev libchromaprint-dev libfaad-dev libflac-dev libid3tag0-dev libmad0-dev libmodplug-dev libmp3lame-dev libmp4v2-dev libopus-dev libopusfile-dev libportmidi-dev libprotobuf-dev libqt5opengl5-dev libqt5sql5-sqlite libqt5svg5-dev librubberband-dev libshout3-dev libsndfile1-dev libsqlite3-dev libtag1-dev libupower-glib-dev libusb-1.0-0-dev libwavpack-dev portaudio19-dev protobuf-compiler qt5-default qtscript5-dev libqt5x11extras5-dev scons qt5keychain-dev liblilv-dev libsoundtouch-dev
+    - sudo apt update
+    - sudo apt -y install
+      ccache
+      cmake
+      libavcodec-dev
+      libavformat-dev
+      libavutil-dev
+      libchromaprint-dev
+      libebur128-dev
+      libflac-dev
+      libid3tag0-dev
+      liblilv-dev
+      libmad0-dev
+      libmodplug-dev
+      libmp3lame-dev
+      libopus-dev
+      libopusfile-dev
+      libportmidi-dev
+      libprotobuf-dev
+      libqt5opengl5-dev
+      libqt5sql5-sqlite
+      libqt5svg5-dev
+      libqt5x11extras5-dev
+      librubberband-dev
+      libshout3-dev
+      libsndfile1-dev
+      libsoundtouch-dev
+      libsqlite3-dev
+      libswresample-dev
+      libtag1-dev
+      libupower-glib-dev
+      libusb-1.0-0-dev
+      libwavpack-dev
+      portaudio19-dev
+      protobuf-compiler
+      qt5-default
+      qtdeclarative5-dev
+      qt5keychain-dev
+      qtscript5-dev
+      xsltproc
+
+  before_build:
+     # Limit cache size to 100 MB
+    - ccache -M 100M
+    - ccache -c
+    - ccache -s
 
   build_script:
-    # ffmpeg=1 requires FFmpeg 4.0, but Ubuntu 18.04 still provides only FFmpeg 3.4.x
-    - scons -j4 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0 localecompare=1
+    - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+    - mkdir cmake_build
+    - cd cmake_build
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
+    - cmake
+      -L
+      -DCMAKE_BUILD_TYPE=Release
+      -DWARNINGS_FATAL=ON
+      -DDEBUG_ASSERTIONS_FATAL=ON
+      -DBATTERY=ON
+      -DBROADCAST=ON
+      -DBULK=ON
+      -DFFMPEG=ON
+      -DHID=ON
+      -DLILV=ON
+      -DLOCALECOMPARE=ON
+      -DMAD=ON
+      -DMODPLUG=ON
+      -DOPUS=ON
+      -DQTKEYCHAIN=ON
+      -DVINYLCONTROL=ON
+      -DWAVPACK=ON
+      ..
+    - cmake --build .
+    - sudo cmake --build . --target install
 
   test_script:
-    - xvfb-run -- ./mixxx-test --gtest_output=xml:test_results.xml
-    - xvfb-run -- ./mixxx-test --benchmark
+    - export CTEST_OUTPUT_ON_FAILURE=1
+    - export QT_QPA_PLATFORM=offscreen
+    - ctest -T test --no-compress-output --timeout 45
+    - cmake --build . --target benchmark
 
   after_test:
-    - curl -F 'file=@test_results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+    - xsltproc -o ctest-to-junit-results.xml ../cmake/ctest-to-junit.xsl Testing/*/Test.xml
+    - curl -F 'file=@ctest-to-junit-results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
 
 ########## END UBUNTU SPECIFIC CONFIGURATION ##########
 
 ########## WINDOWS SPECIFIC CONFIGURATION ##########
+
 -
   matrix:
     only:
@@ -81,41 +158,134 @@ for:
 
   cache:
     - C:\mixxx-buildserver
+    - C:\Users\appveyor\clcache
 
   environment:
     ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
     ENVIRONMENTS_PATH: C:\mixxx-buildserver
+    MSVC_PATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community"
+    PATH: 'C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%'
+    CODESIGN_CERTIFICATE_PATH: build\certificates\windows_sectigo_codesign_certificate.pfx
+    CODESIGN_CERTIFICATE_SECURE_FILE_SECRET:
+      secure: 1xzNVbLop/5/ySSgZxPzyOz5cm8nVMLEIEW4x0XOJjI=
+    CODESIGN_CERTIFICATE_SECURE_FILE_SALT:
+      secure: tw+bg3qfia7+WQdBdXtC301Z9Dv7yQ6SwpWcFJav9YC4zwyyGztev6pAbGE93sln4VO0WRCJ+4/KTviBMPXvXQ==
+    CODESIGN_CERTIFICATE_PASSWORD:
+      secure: EiAsLAgrsS+N3rr71AAkXPCrxIe2vLvlOvCipnTw6pg=
 
   install:
     - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
-    - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
-    - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
-    - cd %TEMP%
-    - echo *** Downloading precompiled build environment if not in build-cache
-    - cd %APPVEYOR_BUILD_FOLDER%
-    - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
+    - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
+    - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
+    - set WINLIB_PATH=%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
+    - IF EXIST %WINLIB_PATH% (
+        echo Using cached environment %WINLIB_PATH%...
+      ) else (
+        mkdir %ENVIRONMENTS_PATH% &
+        echo Downloading environment %ENVIRONMENT_NAME%... &&
+        curl -fsS -L -o%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip %ENVIRONMENTS_URL%/%ENVIRONMENT_NAME%.zip &&
+        echo Unpacking environment %ENVIRONMENT_NAME% to %ENVIRONMENTS_PATH%... &&
+        7z -o%ENVIRONMENTS_PATH% x %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip || exit 1
+      )
+    - choco install ninja
+    - python -m pip install git+https://github.com/frerich/clcache.git
+    # Decrypt the code signing certificate.
+    - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
+        appveyor-tools\secure-file -decrypt %CODESIGN_CERTIFICATE_PATH%.enc -secret %CODESIGN_CERTIFICATE_SECURE_FILE_SECRET% -salt %CODESIGN_CERTIFICATE_SECURE_FILE_SALT%
+      ) else (
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
+      )
 
   before_build:
+    - FOR /D %%G IN (%WINLIB_PATH%\Qt-*) DO SET QT_PATH=%%G
+    - IF "%QT_PATH%" EQU "" (
+        echo QT not found on %WINLIB_PATH%
+      )
+    # Remove C:\Program Files\Git\usr\bin from the PATH
+    - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+    - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
+    - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
     - cd %APPVEYOR_BUILD_FOLDER%
+     # Limit cache size to 100 MB
+    - clcache -M 100000000
+    - clcache -c
+    - clcache -s
+    # Improve clcache performance
+    - set CLCACHE_SERVER=1
+    - set CLCACHE_HARDLINK=1
+    - IF [%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%] == [] (
+        set "MIXXX_PACKAGE_NAME=mixxx-%APPVEYOR_REPO_BRANCH:/=-%-%APPVEYOR_REPO_COMMIT%"
+      ) else (
+        set "MIXXX_PACKAGE_NAME=mixxx-pr-%APPVEYOR_PULL_REQUEST_NUMBER%-%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH:/=-%-%APPVEYOR_REPO_COMMIT%"
+      )
+    - ps: Start-Process clcache-server
 
   build_script:
-    - build\appveyor\build_mixxx.bat %platform% %configuration% %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
+    - mkdir cmake_build
+    - cd cmake_build
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
+    - cmake
+      -L
+      -DCPACK_PACKAGE_FILE_NAME=%MIXXX_PACKAGE_NAME%
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX=C:\mixxx
+      -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
+      -DDEBUG_ASSERTIONS_FATAL=ON
+      -DBATTERY=ON
+      -DBROADCAST=ON
+      -DBULK=ON
+      -DHID=ON
+      -DHSS1394=ON
+      -DLOCALECOMPARE=ON
+      -DMAD=ON
+      -DMEDIAFOUNDATION=ON
+      -DOPUS=ON
+      -DQTKEYCHAIN=ON
+      -DVINYLCONTROL=ON
+      -DSTATIC_DEPS=ON
+      -G "Ninja"
+      ..
+    - cmake --build .
+    - cmake --build . --target install
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
+        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.exe
+      ) else (
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
+      )
+    # Generate WIX installer
+    - cpack -G "WIX"
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
+        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi
+      ) else (
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
+      )
 
   test_script:
-    - echo *** Testing
-    # Calling mixxx-test under bash to have standard output
-    # and use stdbuf to unbuffer standard & error output
-    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --gtest_output=xml:test_results.xml 2>&1"
-    - timeout 5 > NUL
-    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --benchmark 2>&1"
-    - timeout 5 > NUL
+    # Calling mixxx-test under bash to have standard output and use stdbuf to
+    # unbuffer standard & error output
+    - set CTEST_OUTPUT_ON_FAILURE=1
+    - ctest -C "Release" -T test --no-compress-output --timeout 45
+    - cmake --build . --target benchmark
 
   after_test:
-    - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
+    # Found at https://help.appveyor.com/discussions/suggestions/5298-support-ctest-xml-test-results
+    - ps: |
+        $ctest_xml = Get-ChildItem -Path Testing\*\Test.xml
+        $ctest_to_junit_xsl = Get-ChildItem -Path ..\cmake\ctest-to-junit.xsl
+        $XSLInputElement = New-Object System.Xml.Xsl.XslCompiledTransform
+        $XSLInputElement.Load($ctest_to_junit_xsl)
+        $XSLInputElement.Transform((Resolve-Path $ctest_xml), (Join-Path (Resolve-Path .) "ctest-to-junit-results.xml"))
+        $wc = New-Object 'System.Net.WebClient'
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\ctest-to-junit-results.xml))
+
 
   artifacts:
-    - path: '*.exe'
-    - path: '*.msi'
+    - path: 'cmake_build/*.exe'
+    - path: 'cmake_build/*.msi'
 
   on_finish:
     # Uncomment the following line if you don't want the build VM to be destroyed
@@ -147,7 +317,5 @@ notifications:
     headers:
       Authorization:
         secure: 95cbVBcC4rogjE5VNdhuYm8cnjPF8+7SeQXySqcxAqrFZxK+/Kcn3Q2hRb2iZfUEKZ+EdCYwx7EbpZdSiZc5goAuJT+/QXXT/Ls+fzc+eSy4Sz1Ic5t2BjLhmYZLdnBL3uIVceNSb8GzYPQx0+xy7g==
-    on_build_success: true
-    on_build_failure: true
     on_build_status_changed: true
-    body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#isPullRequest}} (PR #{{pullRequestId}}) {{/isPullRequest}}{{#failed}} :cross_mark:{{/failed}}{{#passed}} :check_mark:{{/passed}} {{buildUrl}}"
+    body: "type=stream&to=appveyor&subject={{^isPullRequest}}{{branch}}&content={{#failed}}:cross_mark:{{/failed}}{{#passed}}:check_mark:{{/passed}} {{status}} {{buildUrl}}\n{{commitId}} {{commitAuthor}}\n{{commitMessage}}\n{{commitMessageExtended}}{{/isPullRequest}}"

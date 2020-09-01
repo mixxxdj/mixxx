@@ -58,7 +58,7 @@ class SoundManager : public QObject {
     Q_OBJECT
   public:
     SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
-    virtual ~SoundManager();
+    ~SoundManager() override;
 
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
@@ -156,7 +156,7 @@ class SoundManager : public QObject {
     SoundManagerConfig m_config;
     SoundDevicePointer m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
-    QHash<AudioInput, AudioDestination*> m_registeredDestinations;
+    QMultiHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
 

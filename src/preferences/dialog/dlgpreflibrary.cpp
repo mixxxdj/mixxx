@@ -30,18 +30,30 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
 
-    connect(this, SIGNAL(requestAddDir(QString)),
-            m_pLibrary, SLOT(slotRequestAddDir(QString)));
-    connect(this, SIGNAL(requestRemoveDir(QString, Library::RemovalType)),
-            m_pLibrary, SLOT(slotRequestRemoveDir(QString, Library::RemovalType)));
-    connect(this, SIGNAL(requestRelocateDir(QString,QString)),
-            m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
-    connect(PushButtonAddDir, SIGNAL(clicked()),
-            this, SLOT(slotAddDir()));
-    connect(PushButtonRemoveDir, SIGNAL(clicked()),
-            this, SLOT(slotRemoveDir()));
-    connect(PushButtonRelocateDir, SIGNAL(clicked()),
-            this, SLOT(slotRelocateDir()));
+    connect(this,
+            &DlgPrefLibrary::requestAddDir,
+            m_pLibrary,
+            &Library::slotRequestAddDir);
+    connect(this,
+            &DlgPrefLibrary::requestRemoveDir,
+            m_pLibrary,
+            &Library::slotRequestRemoveDir);
+    connect(this,
+            &DlgPrefLibrary::requestRelocateDir,
+            m_pLibrary,
+            &Library::slotRequestRelocateDir);
+    connect(PushButtonAddDir,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefLibrary::slotAddDir);
+    connect(PushButtonRemoveDir,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefLibrary::slotRemoveDir);
+    connect(PushButtonRelocateDir,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefLibrary::slotRelocateDir);
 
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -110,9 +122,13 @@ void DlgPrefLibrary::slotHide() {
     msgBox.exec();
 
     if (msgBox.clickedButton() == scanButton) {
-        emit(scanLibrary());
+        emit scanLibrary();
         return;
     }
+}
+
+QUrl DlgPrefLibrary::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_LIBRARY_URL);
 }
 
 void DlgPrefLibrary::initializeDirList() {
@@ -171,6 +187,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
+    checkBox_show_serato->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "ShowSeratoLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
             ConfigKey("[Library]","TrackLoadAction"), LOAD_TO_DECK)) {
@@ -208,7 +226,7 @@ void DlgPrefLibrary::slotAddDir() {
         this, tr("Choose a music directory"),
         QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
-        emit(requestAddDir(fd));
+        emit requestAddDir(fd);
         slotUpdate();
         m_bAddedDirectory = true;
     }
@@ -253,20 +271,17 @@ void DlgPrefLibrary::slotRemoveDir() {
         return;
     }
 
-    bool deleteAll = removeMsgBox.clickedButton() == deleteAllButton;
-    bool hideAll = removeMsgBox.clickedButton() == hideAllButton;
-    bool leaveUnchanged = removeMsgBox.clickedButton() == leaveUnchangedButton;
-
-    Library::RemovalType removalType = Library::LeaveTracksUnchanged;
-    if (leaveUnchanged) {
-        removalType = Library::LeaveTracksUnchanged;
-    } else if (deleteAll) {
-        removalType = Library::PurgeTracks;
-    } else if (hideAll) {
-        removalType = Library::HideTracks;
+    Library::RemovalType removalType;
+    if (removeMsgBox.clickedButton() == hideAllButton) {
+        removalType = Library::RemovalType::HideTracks;
+    } else if (removeMsgBox.clickedButton() == deleteAllButton) {
+        removalType = Library::RemovalType::PurgeTracks;
+    } else {
+        DEBUG_ASSERT(removeMsgBox.clickedButton() == leaveUnchangedButton);
+        removalType = Library::RemovalType::KeepTracks;
     }
 
-    emit(requestRemoveDir(fd, removalType));
+    emit requestRemoveDir(fd, removalType);
     slotUpdate();
 }
 
@@ -289,7 +304,7 @@ void DlgPrefLibrary::slotRelocateDir() {
         this, tr("Relink music directory to new location"), startDir);
 
     if (!fd.isEmpty()) {
-        emit(requestRelocateDir(currentFd, fd));
+        emit requestRelocateDir(currentFd, fd);
         slotUpdate();
     }
 }
@@ -311,6 +326,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
+            ConfigValue((int)checkBox_show_serato->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
             dbclick_status = ADD_TO_AUTODJ_BOTTOM;

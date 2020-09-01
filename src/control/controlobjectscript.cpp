@@ -3,7 +3,7 @@
 #include "control/controlobjectscript.h"
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
-        : ControlProxy(key, pParent) {
+        : ControlProxy(key, pParent, ControlFlag::NoAssertIfMissing) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {

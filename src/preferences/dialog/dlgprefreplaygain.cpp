@@ -134,8 +134,11 @@ void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
 
 void DlgPrefReplayGain::setLabelCurrentReplayGainBoost(int value) {
     LabelCurrentReplayGainBoost->setText(
-            QString(tr("%1 LUFS (adjust by %2 dB)")).arg(
-                  QString::number(value + kReplayGainReferenceLUFS), QString().sprintf("%+d", value)));
+        QString(tr("%1 LUFS (adjust by %2 dB)")).arg(
+              QString::number(value + kReplayGainReferenceLUFS),
+              (value < 0) ? QString() : (QString("+") + QString::number(value))
+        )
+    );
 }
 
 void DlgPrefReplayGain::slotUpdateDefaultBoost() {

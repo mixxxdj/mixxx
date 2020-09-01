@@ -5,10 +5,10 @@
 #include <QMessageBox>
 #include <QTranslator>
 #include <QDir>
+#include <QPointer>
 
 #include "database/mixxxdb.h"
 
-#include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/librarycontrol.h"
@@ -16,8 +16,11 @@
 #include "library/librarytablemodel.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
+#include "library/externaltrackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 
+#include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
@@ -26,10 +29,15 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/playlistfeature.h"
 #include "library/recording/recordingfeature.h"
+#include "library/rekordbox/rekordboxfeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
-#include "library/rekordbox/rekordboxfeature.h"
+
+#include "mixer/playermanager.h"
+
+#include "recording/recordingmanager.h"
 
 #include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
@@ -43,8 +51,6 @@
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
-#include "library/externaltrackcollection.h"
-
 namespace {
 
 const mixxx::Logger kLogger("Library");
@@ -53,9 +59,6 @@ const mixxx::Logger kLogger("Library");
 
 //static
 const QString Library::kConfigGroup("[Library]");
-
-//static
-const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
 
 // This is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -68,97 +71,62 @@ Library::Library(
         QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        TrackCollectionManager* pTrackCollectionManager,
         PlayerManager* pPlayerManager,
         RecordingManager* pRecordingManager)
-    : m_pConfig(pConfig),
-      m_pDbConnectionPool(pDbConnectionPool),
-      m_pSidebarModel(new SidebarModel(parent)),
-      m_pTrackCollection(new TrackCollection(pConfig)),
-      m_pLibraryControl(new LibraryControl(this)),
+    : QObject(parent),
+      m_pConfig(pConfig),
+      m_pDbConnectionPool(std::move(pDbConnectionPool)),
+      m_pTrackCollectionManager(pTrackCollectionManager),
+      m_pSidebarModel(make_parented<SidebarModel>(this)),
+      m_pLibraryControl(make_parented<LibraryControl>(this)),
       m_pMixxxLibraryFeature(nullptr),
       m_pPlaylistFeature(nullptr),
       m_pCrateFeature(nullptr),
-      m_pAnalysisFeature(nullptr),
-      m_scanner(pDbConnectionPool, m_pTrackCollection, pConfig) {
-
-    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
-
-    // TODO(XXX): Add a checkbox in the library preferences for checking
-    // and repairing the database on the next restart of the application.
-    if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
-        kLogger.info() << "Checking and repairing database (if necessary)";
-        m_pTrackCollection->repairDatabase(dbConnection);
-        // Reset config value
-        pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
-    }
-
-    kLogger.info() << "Connecting database";
-    m_pTrackCollection->connectDatabase(dbConnection);
-
-#if defined(__AOIDE__)
-    m_externalTrackCollections += new mixxx::aoide::TrackCollection(pConfig, m_pTrackCollection, this);
-#endif
+      m_pAnalysisFeature(nullptr) {
 
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
 
-    connect(&m_scanner,
-            &LibraryScanner::scanStarted,
-            this,
-            &Library::scanStarted);
-    connect(&m_scanner,
-            &LibraryScanner::scanFinished,
-            this,
-            &Library::scanFinished);
-    connect(&m_scanner,
-            &LibraryScanner::scanFinished,
+    connect(m_pTrackCollectionManager,
+            &TrackCollectionManager::libraryScanFinished,
             this,
             &Library::slotRefreshLibraryModels);
-    connect(&m_scanner,
-            &LibraryScanner::trackAdded,
-            this,
-            &Library::slotScanTrackAdded);
-    connect(&m_scanner,
-            &LibraryScanner::tracksChanged,
-            this,
-            &Library::slotScanTracksUpdated);
-    connect(&m_scanner,
-            &LibraryScanner::tracksReplaced,
-            this,
-            &Library::slotScanTracksReplaced);
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(
+            this,
+            m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
+    addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
+    m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
+    m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
 
     BrowseFeature* browseFeature = new BrowseFeature(
-        this, pConfig, m_pTrackCollection, pRecordingManager);
+        this, m_pConfig, pRecordingManager);
     connect(browseFeature,
             &BrowseFeature::scanLibrary,
-            &m_scanner,
-            &LibraryScanner::scan);
-    connect(&m_scanner,
-            &LibraryScanner::scanStarted,
+            m_pTrackCollectionManager,
+            &TrackCollectionManager::startLibraryScan);
+    connect(m_pTrackCollectionManager,
+            &TrackCollectionManager::libraryScanStarted,
             browseFeature,
             &BrowseFeature::slotLibraryScanStarted);
-    connect(&m_scanner,
-            &LibraryScanner::scanFinished,
+    connect(m_pTrackCollectionManager,
+            &TrackCollectionManager::libraryScanFinished,
             browseFeature,
             &BrowseFeature::slotLibraryScanFinished);
     addFeature(browseFeature);
 
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
+    addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
 
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig);
+    m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
     connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks,
             m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
     connect(m_pCrateFeature, &CrateFeature::analyzeTracks,
@@ -175,34 +143,38 @@ Library::Library(
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValue(ConfigKey(kConfigGroup,"ShowRhythmboxLibrary"), true)) {
-        addFeature(new RhythmboxFeature(this, m_pTrackCollection));
+        m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowRhythmboxLibrary"), true)) {
+        addFeature(new RhythmboxFeature(this, m_pConfig));
     }
-    if (pConfig->getValue(ConfigKey(kConfigGroup,"ShowBansheeLibrary"), true)) {
-        BansheeFeature::prepareDbPath(pConfig);
+    if (m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowBansheeLibrary"), true)) {
+        BansheeFeature::prepareDbPath(m_pConfig);
         if (BansheeFeature::isSupported()) {
-            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+            addFeature(new BansheeFeature(this, m_pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValue(ConfigKey(kConfigGroup,"ShowITunesLibrary"), true)) {
-        addFeature(new ITunesFeature(this, m_pTrackCollection));
+        m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowITunesLibrary"), true)) {
+        addFeature(new ITunesFeature(this, m_pConfig));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
-        addFeature(new TraktorFeature(this, m_pTrackCollection));
+        m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
+        addFeature(new TraktorFeature(this, m_pConfig));
     }
-              
+
     // TODO(XXX) Rekordbox feature added persistently as the only way to enable it to
     // dynamically appear/disappear when correctly prepared removable devices
     // are mounted/unmounted would be to have some form of timed thread to check
-    // periodically. Not ideal perfomance wise.
-    if (pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
-        addFeature(new RekordboxFeature(this, m_pTrackCollection));
+    // periodically. Not ideal performance wise.
+    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
+        addFeature(new RekordboxFeature(this, m_pConfig));
     }
-              
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        auto feature = externalTrackCollection->newLibraryFeature(this);
+
+    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
+        addFeature(new SeratoFeature(this, m_pConfig));
+    }
+
+    for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
+        auto feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
             kLogger.info()
                     << "Adding library feature for"
@@ -219,10 +191,8 @@ Library::Library(
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
     // sandboxing then we will need them to give us permission.
-    QStringList directories = m_pTrackCollection->getDirectoryDAO().getDirs();
-
     qDebug() << "Checking for access to user's library directories:";
-    foreach (QString directoryPath, directories) {
+    foreach (QString directoryPath, getDirs()) {
         QFileInfo directory(directoryPath);
         bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
@@ -243,39 +213,40 @@ Library::Library(
 }
 
 Library::~Library() {
-    // Delete the sidebar model first since it depends on the LibraryFeatures.
-    delete m_pSidebarModel;
-
-    QMutableListIterator<LibraryFeature*> features_it(m_features);
-    while(features_it.hasNext()) {
-        LibraryFeature* feature = features_it.next();
-        features_it.remove();
-        delete feature;
-    }
-
-    delete m_pLibraryControl;
-
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        externalTrackCollection->shutdown();
-    }
-
-    kLogger.info() << "Disconnecting database";
-    m_pTrackCollection->disconnectDatabase();
-
-    //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
-    //           Qt does it for us due to the way RJ wrote all this stuff.
-    //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
-    // we never see the TrackCollection's destructor being called... - Albert
-    // Has to be deleted at last because the features holds references of it.
-    delete m_pTrackCollection;
+    // Empty but required due to forward declarations in header file!
 }
 
-void Library::stopFeatures() {
+TrackCollectionManager* Library::trackCollections() const {
+    // Cannot be implemented inline due to forward declarations
+    return m_pTrackCollectionManager;
+}
+
+void Library::stopPendingTasks() {
     if (m_pAnalysisFeature) {
-        m_pAnalysisFeature->stop();
+        m_pAnalysisFeature->stopAnalysis();
         m_pAnalysisFeature = nullptr;
     }
-    m_scanner.slotCancel();
+}
+
+void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::search,
+            this,
+            &Library::search);
+    connect(this,
+            &Library::disableSearch,
+            pSearchboxWidget,
+            &WSearchLineEdit::slotDisableSearch);
+    connect(this,
+            &Library::restoreSearch,
+            pSearchboxWidget,
+            &WSearchLineEdit::slotRestoreSearch);
+    connect(this,
+            &Library::setTrackTableFont,
+            pSearchboxWidget,
+            &WSearchLineEdit::slotSetFont);
+    emit setTrackTableFont(m_trackTableFont);
+    m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -324,9 +295,9 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
             new WTrackTableView(
                     pLibraryWidget,
                     m_pConfig,
-                    m_pTrackCollection,
-                    true,
-                    m_externalTrackCollections);
+                    m_pTrackCollectionManager,
+                    pLibraryWidget->getTrackTableBackgroundColorOpacity(),
+                    true);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this,
             &Library::showTrackModel,
@@ -373,9 +344,9 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
 
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
-    emit(setTrackTableFont(m_trackTableFont));
-    emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
-    emit(setSelectedClick(m_editMetadataSelectedClick));
+    emit setTrackTableFont(m_trackTableFont);
+    emit setTrackTableRowHeight(m_iTrackTableRowHeight);
+    emit setSelectedClick(m_editMetadataSelectedClick);
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -403,11 +374,11 @@ void Library::addFeature(LibraryFeature* feature) {
     connect(feature,
             &LibraryFeature::restoreSearch,
             this,
-            &Library::slotRestoreSearch);
+            &Library::restoreSearch); // forward signal
     connect(feature,
             &LibraryFeature::disableSearch,
             this,
-            &Library::slotDisableSearch);
+            &Library::disableSearch); // forward signal
     connect(feature,
             &LibraryFeature::enableCoverArtDisplay,
             this,
@@ -437,38 +408,30 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
-    emit(showTrackModel(model));
-    emit(switchToView(m_sTrackViewName));
-    emit(restoreSearch(trackModel->currentSearch()));
+    emit showTrackModel(model);
+    emit switchToView(m_sTrackViewName);
+    emit restoreSearch(trackModel->currentSearch());
 }
 
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
-    emit(switchToView(view));
+    emit switchToView(view);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
-    emit(loadTrack(pTrack));
+    emit loadTrack(pTrack);
 }
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, NULL);
+    auto trackRef = TrackRef::fromFileInfo(location);
+    TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
-        emit(loadTrackToPlayer(pTrack, group));
+        emit loadTrackToPlayer(pTrack, group);
     }
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
-    emit(loadTrackToPlayer(pTrack, group, play));
-}
-
-void Library::slotRestoreSearch(const QString& text) {
-    emit restoreSearch(text);
-}
-
-void Library::slotDisableSearch() {
-    emit disableSearch();
+    emit loadTrackToPlayer(pTrack, group, play);
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -499,7 +462,7 @@ void Library::slotRequestAddDir(QString dir) {
     QDir directory(dir);
     Sandbox::createSecurityToken(directory);
 
-    if (!m_pTrackCollection->addDirectory(dir)) {
+    if (!m_pTrackCollectionManager->addDirectory(dir)) {
         QMessageBox::information(0, tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
                     "directory is already in your library or you are currently "
@@ -514,30 +477,30 @@ void Library::slotRequestAddDir(QString dir) {
 
 void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     switch (removalType) {
-        case Library::HideTracks:
-            // Mark all tracks in this directory as deleted but DON'T purge them
-            // in case the user re-adds them manually.
-            m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
-            break;
-        case Library::PurgeTracks:
-            // The user requested that we purge all metadata.
-            purgeAllTracks(dir);
-            break;
-        case Library::LeaveTracksUnchanged:
-        default:
-            break;
-
+    case RemovalType::KeepTracks:
+        break;
+    case RemovalType::HideTracks:
+        // Mark all tracks in this directory as deleted but DON'T purge them
+        // in case the user re-adds them manually.
+        m_pTrackCollectionManager->hideAllTracks(dir);
+        break;
+    case RemovalType::PurgeTracks:
+        // The user requested that we purge all metadata.
+        m_pTrackCollectionManager->purgeAllTracks(dir);
+        break;
+    default:
+        DEBUG_ASSERT(!"unreachable");
     }
 
     // Remove the directory from the directory list.
-    m_pTrackCollection->getDirectoryDAO().removeDirectory(dir);
+    m_pTrackCollectionManager->removeDirectory(dir);
 
     // Also update the config file if necessary so that downgrading is still
     // possible.
     QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
 
     if (QDir(dir) == QDir(confDir)) {
-        QStringList dirList = m_pTrackCollection->getDirectoryDAO().getDirs();
+        QStringList dirList = getDirs();
         if (!dirList.isEmpty()) {
             m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first());
         } else {
@@ -549,7 +512,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
 }
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
-    relocateDirectory(oldDir, newDir);
+    m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
 
     // also update the config file if necessary so that downgrading is still
     // possible
@@ -560,252 +523,26 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
 }
 
 QStringList Library::getDirs() {
-    return m_pTrackCollection->getDirectoryDAO().getDirs();
+    return m_pTrackCollectionManager->internalCollection()->getDirectoryDAO().getDirs();
 }
 
 void Library::setFont(const QFont& font) {
     m_trackTableFont = font;
-    emit(setTrackTableFont(font));
+    emit setTrackTableFont(font);
 }
 
 void Library::setRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
-    emit(setTrackTableRowHeight(rowHeight));
+    emit setTrackTableRowHeight(rowHeight);
 }
 
 void Library::setEditMedatataSelectedClick(bool enabled) {
     m_editMetadataSelectedClick = enabled;
-    emit(setSelectedClick(enabled));
+    emit setSelectedClick(enabled);
 }
 
-void Library::saveEvictedTrack(Track* pTrack) noexcept {
-    // It can produce dangerous signal loops if the track is still
-    // sending signals while being saved!
-    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    DEBUG_ASSERT(pTrack->signalsBlocked());
-
-    // The metadata must be exported while the cache is locked to
-    // ensure that we have exclusive (write) access on the file
-    // and not reader or writer is accessing the same file
-    // concurrently.
-    m_pTrackCollection->exportTrackMetadata(pTrack);
-
-    // Th dirty flag is reset while saving the track in the internal
-    // collection!
-    const bool trackDirty = pTrack->isDirty();
-
-    // This operation must be executed synchronously while the cache is
-    // locked to prevent that a new track is created from outdated
-    // metadata in the database before saving finished.
-    kLogger.debug()
-            << "Saving cached track"
-            << pTrack->getLocation()
-            << "in internal collection";
-    m_pTrackCollection->saveTrack(pTrack);
-
-    if (m_externalTrackCollections.isEmpty()) {
-        return;
-    }
-    if (pTrack->getId().isValid()) {
-        // Track still exists in the internal collection/database
-        if (trackDirty) {
-            kLogger.debug()
-                    << "Saving modified track"
-                    << pTrack->getLocation()
-                    << "in"
-                    << m_externalTrackCollections.size()
-                    << "external collection(s)";
-            for (const auto& externalTrackCollection : m_externalTrackCollections) {
-                externalTrackCollection->saveTrack(
-                        *pTrack,
-                        ExternalTrackCollection::ChangeHint::Modified);
-            }
-        }
-    } else {
-        // Track has been deleted from the local internal collection/database
-        // while it was cached in-memory
-        kLogger.debug()
-                << "Purging deleted track"
-                << pTrack->getLocation()
-                << "from"
-                << m_externalTrackCollections.size()
-                << "external collection(s)";
-        for (const auto& externalTrackCollection : m_externalTrackCollections) {
-            externalTrackCollection->purgeTracks(
-                    QStringList{pTrack->getLocation()});
-        }
-    }
-}
-
-void Library::relocateDirectory(QString oldDir, QString newDir) {
-    kLogger.debug()
-            << "Relocating directory in internal track collection:"
-            << oldDir
-            << "->"
-            << newDir;
-    // TODO(XXX): Add error handling in TrackCollection::relocateDirectory()
-    m_pTrackCollection->relocateDirectory(oldDir, newDir);
-    if (m_externalTrackCollections.isEmpty()) {
-        return;
-    }
-    kLogger.debug()
-            << "Relocating directory in"
-            << m_externalTrackCollections.size()
-            << "external track collection(s):"
-            << oldDir
-            << "->"
-            << newDir;
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        externalTrackCollection->relocateDirectory(oldDir, newDir);
-    }
-}
-
-void Library::purgeTracks(const QList<TrackId>& trackIds) {
-    if (trackIds.isEmpty()) {
-        return;
-    }
-    // Collect the corresponding track locations BEFORE purging the
-    // tracks from the internal collection!
-    QList<QString> trackLocations;
-    if (!m_externalTrackCollections.isEmpty()) {
-        trackLocations =
-                m_pTrackCollection->getTrackDAO().getTrackLocations(trackIds);
-    }
-    DEBUG_ASSERT(trackLocations.size() <= trackIds.size());
-    kLogger.debug()
-            << "Purging"
-            << trackIds.size()
-            << "tracks from internal collection";
-    if (!m_pTrackCollection->purgeTracks(trackIds)) {
-        kLogger.warning()
-                << "Failed to purge tracks from internal collection";
-        return;
-    }
-    if (m_externalTrackCollections.isEmpty()) {
-        return;
-    }
-    VERIFY_OR_DEBUG_ASSERT(trackLocations.size() == trackIds.size()) {
-        kLogger.warning()
-                << "Purging only"
-                << trackLocations.size()
-                << "of"
-                << trackIds.size()
-                << "tracks from"
-                << m_externalTrackCollections.size()
-                << "external collection(s)";
-    } else {
-        kLogger.debug()
-                << "Purging"
-                << trackLocations.size()
-                << "tracks from"
-                << m_externalTrackCollections.size()
-                << "external collection(s)";
-    }
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        externalTrackCollection->purgeTracks(trackLocations);
-    }
-}
-
-void Library::purgeAllTracks(const QDir& rootDir) {
-    kLogger.debug()
-            << "Purging directory"
-            << rootDir
-            << "from internal track collection";
-    if (!m_pTrackCollection->purgeAllTracks(rootDir)) {
-        kLogger.warning()
-                << "Failed to purge directory from internal collection";
-        return;
-    }
-    if (m_externalTrackCollections.isEmpty()) {
-        return;
-    }
-    kLogger.debug()
-            << "Purging directory"
-            << rootDir
-            << "from"
-            << m_externalTrackCollections.size()
-            << "external track collection(s)";
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        externalTrackCollection->purgeAllTracks(rootDir);
-    }
-}
-
-void Library::slotScanTrackAdded(TrackPointer pTrack) {
-    DEBUG_ASSERT(pTrack);
-    // Already added to m_pTrackCollection
-    if (m_externalTrackCollections.isEmpty()) {
-        return;
-    }
-    kLogger.debug()
-            << "Adding new track"
-            << pTrack->getLocation()
-            << "to"
-            << m_externalTrackCollections.size()
-            << "external track collection(s)";
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        externalTrackCollection->saveTrack(*pTrack, ExternalTrackCollection::ChangeHint::Added);
-    }
-}
-
-void Library::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds) {
-    // Already updated in m_pTrackCollection
-    if (updatedTrackIds.isEmpty()) {
-        return;
-    }
-    if (m_externalTrackCollections.isEmpty()) {
-        return;
-    }
-    QList<TrackRef> trackRefs;
-    trackRefs.reserve(updatedTrackIds.size());
-    for (const auto& trackId : updatedTrackIds) {
-        auto trackLocation = m_pTrackCollection->getTrackDAO().getTrackLocation(trackId);
-        if (!trackLocation.isEmpty()) {
-            trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
-        }
-    }
-    DEBUG_ASSERT(trackRefs.size() <= updatedTrackIds.size());
-    VERIFY_OR_DEBUG_ASSERT(trackRefs.size() == updatedTrackIds.size()) {
-        kLogger.warning()
-                << "Updating only"
-                << trackRefs.size()
-                << "of"
-                << updatedTrackIds.size()
-                << "track(s) in"
-                << m_externalTrackCollections.size()
-                << "external collection(s)";
-    } else {
-        kLogger.debug()
-                << "Updating"
-                << trackRefs.size()
-                << "track(s) in"
-                << m_externalTrackCollections.size()
-                << "external collection(s)";
-    }
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        externalTrackCollection->updateTracks(trackRefs);
-    }
-}
-
-void Library::slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
-    // Already replaced in m_pTrackCollection
-    if (m_externalTrackCollections.isEmpty()) {
-        return;
-    }
-    QList<ExternalTrackCollection::DuplicateTrack> duplicateTracks;
-    duplicateTracks.reserve(replacedTracks.size());
-    for (const auto& replacedTrack : replacedTracks) {
-        ExternalTrackCollection::DuplicateTrack duplicateTrack;
-        duplicateTrack.removed = replacedTrack.first;
-        duplicateTrack.replacedBy = replacedTrack.second;
-        duplicateTracks.append(duplicateTrack);
-    }
-    kLogger.debug()
-            << "Deduplicating"
-            << duplicateTracks.size()
-            << "replaced track(s) in"
-            << m_externalTrackCollections.size()
-            << "external collection(s)";
-    for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        externalTrackCollection->deduplicateTracks(duplicateTracks);
-    }
+TrackCollection& Library::trackCollection() {
+    DEBUG_ASSERT(m_pTrackCollectionManager);
+    DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
+    return *m_pTrackCollectionManager->internalCollection();
 }

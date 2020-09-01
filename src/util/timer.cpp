@@ -106,7 +106,7 @@ void GuiTickTimer::slotGuiTick(double) {
         auto time = mixxx::Time::elapsed();
         if (time - m_lastUpdate >= m_interval) {
             m_lastUpdate = time;
-            emit(timeout());
+            emit timeout();
         }
     }
 }

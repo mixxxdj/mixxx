@@ -90,7 +90,7 @@ NumarkDJ2Go.deck = function(deckNum) {
 		var yesno = (engine.getValue(this.group, "track_samples") > 0)?true:false;
 		return yesno;
 	};
-	//Brake effect introduced in Mixx 1.11 	
+	//Brake effect introduced in Mixxx 1.11
 	this.brakeOn = function(factor) {
         	engine.brake(this.deckNum, true, factor);
 		this.braked= true;
@@ -110,7 +110,7 @@ NumarkDJ2Go.deck = function(deckNum) {
 	this.scratchOn = function() {
 		var intervalsPerRev = 60; //DJ2Go jog wheel is 60 intervals per revolution.
 		var rpm = 85; //Adjust to suit.
-		var alpha = (0.1); //Adjust to suit. 
+		var alpha = (0.1); //Adjust to suit.
 		var beta = (alpha/30); //Adjust to suit.
 		engine.scratchEnable(this.deckNum, intervalsPerRev, rpm, alpha, beta);
 	};
@@ -127,7 +127,7 @@ NumarkDJ2Go.deck = function(deckNum) {
 			engine.stopTimer(this.scratchTimer);
 			};
 		var playDelay = 40; //Adjust to suit.
-		var scrConst = 1;  //Adjust to suit. 
+		var scrConst = 1;  //Adjust to suit.
 		var scrVal = (forwards)?scrConst:-scrConst;
 		engine.scratchTick(this.deckNum, scrVal);
 		this.scratchTimer = engine.beginTimer(playDelay,"NumarkDJ2Go.decks.D" + this.deckNum + ".scratchOff()", true);
@@ -139,8 +139,8 @@ NumarkDJ2Go.deck = function(deckNum) {
 	//The alternative mode to scratching for the jog wheel.
 	this.pitchBend = function(forwards) {
 		//For some reason the ramping pitchbend option in Mixx menu together with temp_rate_up/down doesn't seem
-		//to work for the jog wheel. So this function allows the pitch bend to ramp the faster/more 
-		//revolutions of the wheel. 
+		//to work for the jog wheel. So this function allows the pitch bend to ramp the faster/more
+		//revolutions of the wheel.
 		if (this.pitchTimer !== 0)
 			{
 			engine.stopTimer(this.pitchTimer);
@@ -170,14 +170,14 @@ NumarkDJ2Go.deck = function(deckNum) {
         this.jump2begin = function (){
             engine.setValue(this.group,"playposition",0);
             };
-	
+
 };
 
 //Control class for control objects, e.g. play button. Objects for the two jog wheels are not created this way, instead they are
 //represented directly by the deck objects. This was just an easier way to do it, and there will only ever be one jog wheel
 //per deck anyway.
 NumarkDJ2Go.control = function(key, midino, group) {
-	this.key = key;	
+	this.key = key;
 	this.midino = midino;
 	this.group = group;
 	this.onOff = function(value) {
@@ -211,12 +211,12 @@ NumarkDJ2Go.light = function(group, midino, deckID, controlID) {
 	};
 	this.flashOff = function(relight) {
 		if (this.flashTimer !== 0)
-			{		
+			{
 			engine.stopTimer(this.flashTimer);
 			this.flashTimer= 0;
 			};
 		if (this.flashOnceTimer !== 0)
-			{		
+			{
 			engine.stopTimer(this.flashOnceTimer);
 			this.flashOnceTimer= 0;
 			};
@@ -237,7 +237,7 @@ NumarkDJ2Go.light = function(group, midino, deckID, controlID) {
 		if (flashNo)
 			{
 			engine.beginTimer((flashNo * 600) -50, this.objStr + ".flashOff(" + relight + ")", true);
-			};			
+			};
 	};
 };
 
@@ -393,7 +393,7 @@ NumarkDJ2Go.pfl = function(channel, midino, value, status, group) {
 		      NumarkDJ2Go.decks.D2.control.pfl.onOff(0);
 		      deck.control.pfl.onOff(1);
 		      };
-             };	
+             };
         };
 
 
@@ -485,7 +485,7 @@ NumarkDJ2Go.wheel = function (channel, midino, value, status, group) {
 };
 
 //Pitch bend down. This toggles off the pitch bend up and pitches down while the
-//button is held. Turns off when button released. 
+//button is held. Turns off when button released.
 NumarkDJ2Go.pitchBendMinus = function(channel, midino, value, status, group) {
 	var deck = NumarkDJ2Go.decks["D" + group.substring(8,9)];
 	if (!deck.control.bendPlus.checkOn())
@@ -503,7 +503,7 @@ NumarkDJ2Go.pitchBendMinus = function(channel, midino, value, status, group) {
 };
 
 //Pitch bend up. This toggles off the pitch bend down and pitches up while the
-//button is held. Turns off when button released. 
+//button is held. Turns off when button released.
 NumarkDJ2Go.pitchBendPlus = function(channel, midino, value, status, group) {
 	var deck = NumarkDJ2Go.decks["D" + group.substring(8,9)];
 	if (!deck.control.bendMinus.checkOn())
@@ -547,7 +547,7 @@ NumarkDJ2Go.sync =function (channel, midino, value, status, group) {
 //Light functions. These are connected to Mixxx controls in the 'init'
 //part of the script (see top) and are called whenever the Mixxx control
 //changes, e.g. play value changes from 1 to 0. The lights are handled this
-//way so that they activate both when using the controller and when 
+//way so that they activate both when using the controller and when
 //using the mouse on screen.
 //===================================================================
 
@@ -556,7 +556,7 @@ NumarkDJ2Go.sync =function (channel, midino, value, status, group) {
 NumarkDJ2Go.loadLights = function(value,group) {
 	var deck = NumarkDJ2Go.decks["D" + group.substring(8,9)];
 	if (value !== 0)
-		{	
+		{
 		deck.control.play.light.onOff(0);
 		deck.control.sync.light.flashOn(2);
 		deck.control.pfl.light.flashOn(2);
@@ -597,12 +597,12 @@ NumarkDJ2Go.cueLights = function(value, group, key) {
 		};
 };
 
-//Play lights. If play paused, both cue and play flash. If play resumed, play button 
+//Play lights. If play paused, both cue and play flash. If play resumed, play button
 //lights up and cue goes off. This is how the buttons behave with VirtualDJ.
 NumarkDJ2Go.playLights = function(value, group, key) {
 	var deck = NumarkDJ2Go.decks["D" + group.substring(8,9)];
 	if (deck.loadedCheck())
-		{	
+		{
 		if (value == 1)
 			{
 			deck.control.play.light.flashOff(1);
@@ -616,7 +616,7 @@ NumarkDJ2Go.playLights = function(value, group, key) {
 		};
 };
 
-//Mixx's sync feature is not the same as VDJ, where syncing appears to
+//Mixxx's sync feature is not the same as VDJ, where syncing appears to
 //be continuously going on. Therefore less relevance with Mixxx to having a sync button
 //that illuminates. Have set it so that it flashes twice when pressed.
 NumarkDJ2Go.syncLights = function(value, group, key) {

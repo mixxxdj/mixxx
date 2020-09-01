@@ -29,9 +29,8 @@ class WLibrarySidebar;
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(Library* parent,
+    BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
-            TrackCollection* pTrackCollection,
             RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 
@@ -67,10 +66,10 @@ class BrowseFeature : public LibraryFeature {
     void saveQuickLinks();
     void loadQuickLinks();
 
-    UserSettingsPointer m_pConfig;
+    TrackCollection* const m_pTrackCollection;
+
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;

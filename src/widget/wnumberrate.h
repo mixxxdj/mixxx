@@ -19,7 +19,9 @@ class ControlProxy;
 class WNumberRate final : public WNumber {
     Q_OBJECT
   public:
-    explicit WNumberRate(const char *group, QWidget *parent=nullptr);
+    explicit WNumberRate(const QString& group, QWidget* parent = nullptr);
+
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void setValue(double dValue) override;

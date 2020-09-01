@@ -514,7 +514,7 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
 
 void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
     double pos = m_currentSample.getValue();
@@ -616,7 +616,7 @@ void LoopingControl::slotLoopInGoto(double pressed) {
 }
 
 void LoopingControl::setLoopOutToCurrentPosition() {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
     int pos = m_currentSample.getValue();
@@ -851,12 +851,13 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
             setLoopingEnabled(false);
         }
     }
+    EngineControl::notifySeek(dNewPlaypos);
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->set(enabled);
-    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop.load();
+    BeatLoopingControl* pActiveBeatLoop = atomicLoadRelaxed(m_pActiveBeatLoop);
     if (pActiveBeatLoop != nullptr) {
         if (enabled) {
             pActiveBeatLoop->activate();
@@ -871,19 +872,18 @@ bool LoopingControl::isLoopingEnabled() {
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                   this, &LoopingControl::slotUpdatedTrackBeats);
-    }
-
-    clearActiveBeatLoop();
-
+    m_pTrack = pNewTrack;
+    mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &LoopingControl::slotUpdatedTrackBeats);
+        pBeats = pNewTrack->getBeats();
+    }
+    trackBeatsUpdated(pBeats);
+}
 
+void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    clearActiveBeatLoop();
+    m_pBeats = pBeats;
+    if (m_pBeats) {
         LoopSamples loopSamples = m_loopSamples.getValue();
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
             double loaded_loop_size = findBeatloopSizeForLoop(
@@ -892,16 +892,6 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
                 m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
             }
         }
-    } else {
-        m_pTrack.reset();
-        m_pBeats.clear();
-    }
-}
-
-void LoopingControl::slotUpdatedTrackBeats() {
-    TrackPointer pTrack = m_pTrack;
-    if (pTrack) {
-        m_pBeats = pTrack->getBeats();
     }
 }
 
@@ -968,7 +958,7 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 bool LoopingControl::currentLoopMatchesBeatloopSize() {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return false;
     }
@@ -984,7 +974,7 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
 }
 
 double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return -1;
     }
@@ -1042,7 +1032,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     int samples = m_pTrackSamples->get();
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (samples == 0 || !pBeats) {
         clearActiveBeatLoop();
         m_pCOBeatLoopSize->setAndConfirm(beats);
@@ -1208,7 +1198,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
 }
 
 void LoopingControl::slotBeatJump(double beats) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return;
     }
@@ -1239,7 +1229,7 @@ void LoopingControl::slotBeatJumpBackward(double pressed) {
 }
 
 void LoopingControl::slotLoopMove(double beats) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats || beats == 0) {
         return;
     }
@@ -1332,13 +1322,13 @@ BeatJumpControl::~BeatJumpControl() {
 
 void BeatJumpControl::slotJumpBackward(double pressed) {
     if (pressed > 0) {
-        emit(beatJump(-m_dBeatJumpSize));
+        emit beatJump(-m_dBeatJumpSize);
     }
 }
 
 void BeatJumpControl::slotJumpForward(double pressed) {
     if (pressed > 0) {
-        emit(beatJump(m_dBeatJumpSize));
+        emit beatJump(m_dBeatJumpSize);
     }
 }
 
@@ -1363,13 +1353,13 @@ LoopMoveControl::~LoopMoveControl() {
 
 void LoopMoveControl::slotMoveBackward(double v) {
     if (v > 0) {
-        emit(loopMove(-m_dLoopMoveSize));
+        emit loopMove(-m_dLoopMoveSize);
     }
 }
 
 void LoopMoveControl::slotMoveForward(double v) {
     if (v > 0) {
-        emit(loopMove(m_dLoopMoveSize));
+        emit loopMove(m_dLoopMoveSize);
     }
 }
 
@@ -1437,9 +1427,9 @@ void BeatLoopingControl::activate() {
 void BeatLoopingControl::slotLegacy(double v) {
     //qDebug() << "slotLegacy" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
-        emit(activateBeatLoop(this));
+        emit activateBeatLoop(this);
     } else {
-        emit(deactivateBeatLoop(this));
+        emit deactivateBeatLoop(this);
     }
 }
 
@@ -1448,15 +1438,15 @@ void BeatLoopingControl::slotActivate(double v) {
     if (!v) {
         return;
     }
-    emit(activateBeatLoop(this));
+    emit activateBeatLoop(this);
 }
 
 void BeatLoopingControl::slotActivateRoll(double v) {
     //qDebug() << "slotActivateRoll" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
-        emit(activateBeatLoopRoll(this));
+        emit activateBeatLoopRoll(this);
     } else {
-        emit(deactivateBeatLoopRoll(this));
+        emit deactivateBeatLoopRoll(this);
     }
 }
 
@@ -1466,8 +1456,8 @@ void BeatLoopingControl::slotToggle(double v) {
         return;
     }
     if (m_bActive) {
-        emit(deactivateBeatLoop(this));
+        emit deactivateBeatLoop(this);
     } else {
-        emit(activateBeatLoop(this));
+        emit activateBeatLoop(this);
     }
 }

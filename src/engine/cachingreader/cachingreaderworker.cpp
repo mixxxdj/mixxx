@@ -89,7 +89,7 @@ void CachingReaderWorker::run() {
     QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
 
     Event::start(m_tag);
-    while (!m_stop.load()) {
+    while (!atomicLoadAcquire(m_stop)) {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
         if (m_newTrackAvailable) {
@@ -180,7 +180,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 
     // Adjust the internal buffer
     const SINT tempReadBufferSize =
-            m_pAudioSource->frames2samples(CachingReaderChunk::kFrames);
+            m_pAudioSource->getSignalInfo().frames2samples(
+                    CachingReaderChunk::kFrames);
     if (m_tempReadBuffer.size() != tempReadBufferSize) {
         mixxx::SampleBuffer(tempReadBufferSize).swap(m_tempReadBuffer);
     }
@@ -194,7 +195,10 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     const SINT sampleCount =
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->frameLength());
-    emit trackLoaded(pTrack, m_pAudioSource->sampleRate(), sampleCount);
+    emit trackLoaded(
+            pTrack,
+            m_pAudioSource->getSignalInfo().getSampleRate(),
+            sampleCount);
 }
 
 void CachingReaderWorker::quitWait() {

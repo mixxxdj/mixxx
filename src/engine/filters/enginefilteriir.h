@@ -62,13 +62,21 @@ class EngineFilterIIR : public EngineFilterIIRBase {
     // this is can be used instead off a final process() call before pause
     // It fades to dry or 0 according to the m_startFromDry parameter
     // it is an alternative for using pauseFillter() calls
-    void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                       const int iBufferSize) {
+    void processAndPauseFilter(
+            const CSAMPLE* pIn,
+            CSAMPLE* pOutput,
+            int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
-        SampleUtil::copy2WithRampingGain(pOutput,
-                pOutput, 1.0, 0,  // fade out filtered
-                pIn, 0, m_startFromDry ? 1.0 : 0,  // fade in dry if requested
-                iBufferSize);
+        if (m_startFromDry) {
+            SampleUtil::linearCrossfadeBuffersOut(
+                    pOutput, // fade out filtered
+                    pIn,     // fade in dry
+                    iBufferSize);
+        } else {
+            SampleUtil::applyRampingGain(
+                    pOutput, 1.0, 0, // fade out filtered
+                    iBufferSize);
+        }
         pauseFilterInner();
     }
 

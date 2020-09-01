@@ -3,12 +3,10 @@
 
 #include "library/basesqltablemodel.h"
 
-class Library;
-
-class HiddenTableModel : public BaseSqlTableModel {
+class HiddenTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    HiddenTableModel(QObject* parent, Library* pLibrary);
+    HiddenTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~HiddenTableModel() final;
 
     void setTableModel(int id = -1);
@@ -18,9 +16,6 @@ class HiddenTableModel : public BaseSqlTableModel {
     void unhideTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
-
-  private:
-    Library* m_pLibrary;
 };
 
 #endif

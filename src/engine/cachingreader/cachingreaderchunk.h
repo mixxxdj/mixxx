@@ -16,7 +16,7 @@
 // and the worker.
 class CachingReaderChunk {
 public:
-    static const mixxx::AudioSignal::ChannelCount kChannels;
+    static const mixxx::audio::ChannelCount kChannels;
     static const SINT kFrames;
     static const SINT kSamples;
 

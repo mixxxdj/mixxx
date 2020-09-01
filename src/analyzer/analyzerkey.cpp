@@ -4,6 +4,9 @@
 #include <QtDebug>
 
 #include "analyzer/constants.h"
+#if defined __KEYFINDER__
+#include "analyzer/plugins/analyzerkeyfinder.h"
+#endif
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
 #include "track/keyfactory.h"
@@ -12,8 +15,17 @@
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> analyzers;
     // First one below is the default
+#if defined __KEYFINDER__
+    analyzers.push_back(mixxx::AnalyzerKeyFinder::pluginInfo());
+#endif
     analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
     return analyzers;
+}
+
+// static
+mixxx::AnalyzerPluginInfo AnalyzerKey::defaultPlugin() {
+    DEBUG_ASSERT(availablePlugins().size() > 0);
+    return availablePlugins().at(0);
 }
 
 AnalyzerKey::AnalyzerKey(KeyDetectionSettings keySettings)
@@ -41,10 +53,10 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    if (AnalyzerKey::availablePlugins().size() > 0) {
-        m_pluginId = AnalyzerKey::availablePlugins().at(0).id; // first is default
+    if (availablePlugins().size() > 0) {
+        m_pluginId = defaultPlugin().id;
         QString pluginId = m_keySettings.getKeyPluginId();
-        for (const auto& info : AnalyzerKey::availablePlugins()) {
+        for (const auto& info : availablePlugins()) {
             if (info.id == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;
@@ -75,6 +87,10 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     if (bShouldAnalyze) {
         if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
+#if defined __KEYFINDER__
+        } else if (m_pluginId == mixxx::AnalyzerKeyFinder::pluginInfo().id) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerKeyFinder>();
+#endif
         } else {
             // This must not happen, because we have already verified above
             // that the PlugInId is valid
@@ -99,6 +115,9 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
+    if (pluginID.isEmpty()) {
+        pluginID = defaultPlugin().id;
+    }
 
     const Keys keys(tio->getKeys());
     if (keys.isValid()) {

@@ -1,35 +1,19 @@
-/***************************************************************************
-                          mixxx.h  -  description
-                             -------------------
-    begin                : Mon Feb 18 09:48:17 CET 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef MIXXX_H
-#define MIXXX_H
+#pragma once
 
 #include <QMainWindow>
 #include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "preferences/configobject.h"
-#include "preferences/usersettings.h"
 #include "preferences/constants.h"
+#include "preferences/usersettings.h"
+#include "soundio/sounddeviceerror.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
-#include "util/timer.h"
 #include "util/db/dbconnectionpool.h"
-#include "soundio/sounddeviceerror.h"
+#include "util/parented_ptr.h"
+#include "util/timer.h"
 
 class ChannelHandleFactory;
 class ControlPushButton;
@@ -42,6 +26,7 @@ class GuiTick;
 class VisualsManager;
 class LaunchImage;
 class Library;
+class TrackCollectionManager;
 class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
@@ -99,11 +84,12 @@ class MixxxMainWindow : public QMainWindow {
 
     // Warn the user when inputs are not configured.
     void slotNoMicrophoneInputConfigured();
+    void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
 
   signals:
-    void newSkinLoaded();
+    void skinLoaded();
     // used to uncheck the menu when the dialog of develeoper tools is closed
     void developerToolsDlgClosed(int r);
     void closeDeveloperToolsDlgChecked(int r);
@@ -140,9 +126,7 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pWidgetParent;
     LaunchImage* m_pLaunchImage;
 
-    SettingsManager* m_pSettingsManager;
-
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    std::unique_ptr<SettingsManager> m_pSettingsManager;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;
@@ -176,10 +160,12 @@ class MixxxMainWindow : public QMainWindow {
     // The Mixxx database connection pool
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
+    TrackCollectionManager* m_pTrackCollectionManager;
+
     // The library management object
     Library* m_pLibrary;
 
-    WMainMenuBar* m_pMenuBar;
+    parented_ptr<WMainMenuBar> m_pMenuBar;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
@@ -198,8 +184,8 @@ class MixxxMainWindow : public QMainWindow {
     ControlPushButton* m_pTouchShift;
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
 
+    QSet<ControlObject*> m_skinCreatedControls;
+
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;
 };
-
-#endif

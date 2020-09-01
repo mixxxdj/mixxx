@@ -11,16 +11,24 @@
 #include "util/assert.h"
 #include "util/logger.h"
 
+#define ENABLE_TRACE_LOG false
+
 namespace {
 
 const mixxx::Logger kLogger("WSearchLineEdit");
 
-const QColor kDefaultForegroundColor = QColor(0, 0, 0);
-const QColor kDefaultBackgroundColor = QColor(255, 255, 255);
+const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
-const QString kEmptySearch = "";
+const QString kEmptySearch = QStringLiteral("");
 
-const QString kDisabledText = "- - -";
+const QString kDisabledText = QStringLiteral("- - -");
+
+inline QString clearButtonStyleSheet(int pxPaddingRight) {
+    DEBUG_ASSERT(pxPaddingRight >= 0);
+    return QString(
+            QStringLiteral("QLineEdit { padding-right: %1px; }"))
+            .arg(pxPaddingRight);
+}
 
 int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     VERIFY_OR_DEBUG_ASSERT(debouncingTimeoutMillis >= WSearchLineEdit::kMinDebouncingTimeoutMillis) {
@@ -54,41 +62,63 @@ void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
       WBaseWidget(this),
-      m_clearButton(new QToolButton(this)),
-      m_foregroundColor(kDefaultForegroundColor),
-      m_state(State::Inactive) {
+      m_clearButton(make_parented<QToolButton>(this)) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
 
     setAcceptDrops(false);
 
-    m_clearButton->setCursor(Qt::ArrowCursor);
-    m_clearButton->setToolTip(tr("Clear input", "Clear the search bar input field"));
-    m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
-    m_clearButton->hide();
-    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clearSearch()));
+    //: Shown in the library search bar when it is empty.
+    setPlaceholderText(tr("Search..."));
 
+    m_clearButton->setCursor(Qt::ArrowCursor);
+    m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
+    // Assume the qss border is at least 1px wide
+    m_frameWidth = 1;
+    m_clearButton->hide();
+    connect(m_clearButton,
+            &QAbstractButton::clicked,
+            this,
+            &WSearchLineEdit::slotClearSearch);
+
+    // This prevents the searchbox from being focused by Tab key (real or emulated)
+    // so it is skipped when using the library controls 'MoveFocus[...]'
+    // The Clear button can still be focused by Tab.
     setFocusPolicy(Qt::ClickFocus);
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut, SIGNAL(activated()), this, SLOT(setShortcutFocus()));
+    connect(setFocusShortcut,
+            &QShortcut::activated,
+            this,
+            &WSearchLineEdit::slotSetShortcutFocus);
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
-    connect(&m_debouncingTimer, SIGNAL(timeout()), this, SLOT(triggerSearch()));
+    connect(&m_debouncingTimer,
+            &QTimer::timeout,
+            this,
+            &WSearchLineEdit::slotTriggerSearch);
+    connect(this,
+            &QLineEdit::textChanged,
+            this,
+            &WSearchLineEdit::slotTextChanged);
 
-    connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateText(const QString&)));
+    // When you hit enter, it will trigger or clear the search.
+    connect(this,
+            &QLineEdit::returnPressed,
+            this,
+            [this] {
+                if (!slotClearSearchIfClearButtonHasFocus()) {
+                    slotTriggerSearch();
+                }
+            });
 
-    // When you hit enter, it will trigger the search.
-    connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
+    QSize clearButtonSize = m_clearButton->sizeHint();
 
-    // The width of the frame for the widget based on the styling.
-    const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     // Ensures the text does not obscure the clear image.
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
-                          .arg(m_clearButton->sizeHint().width() + frameWidth + 1));
+    setStyleSheet(clearButtonStyleSheet(clearButtonSize.width() + m_frameWidth + 1));
 
-    showPlaceholder();
+    refreshState();
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
@@ -111,100 +141,52 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             << backgroundColor;
 
     const auto defaultForegroundColor =
-            QColor(
+            QColor::fromRgb(
                     255 - backgroundColor.red(),
                     255 - backgroundColor.green(),
                     255 - backgroundColor.blue());
-    m_foregroundColor = defaultForegroundColor;
+    auto foregroundColor = defaultForegroundColor;
     QString fgColorName;
     if (context.hasNodeSelectString(node, "FgColor", &fgColorName)) {
         auto namedColor = QColor(fgColorName);
         if (namedColor.isValid()) {
-            m_foregroundColor = namedColor;
+            foregroundColor = namedColor;
         } else {
             kLogger.warning()
                     << "Failed to parse foreground color"
                     << fgColorName;
         }
     }
-    m_foregroundColor = WSkinColor::getCorrectColor(m_foregroundColor);
-    VERIFY_OR_DEBUG_ASSERT(m_foregroundColor != backgroundColor) {
+    foregroundColor = WSkinColor::getCorrectColor(foregroundColor);
+    VERIFY_OR_DEBUG_ASSERT(foregroundColor != backgroundColor) {
         kLogger.warning()
                 << "Invisible foreground color - using default color as fallback";
-        m_foregroundColor = defaultForegroundColor;
+        foregroundColor = defaultForegroundColor;
     }
     kLogger.debug()
             << "Foreground color:"
-            << m_foregroundColor;
+            << foregroundColor;
 
     QPalette pal = palette();
-    DEBUG_ASSERT(backgroundColor != m_foregroundColor);
+    DEBUG_ASSERT(backgroundColor != foregroundColor);
     pal.setBrush(backgroundRole(), backgroundColor);
-    pal.setBrush(foregroundRole(), m_foregroundColor);
+    pal.setBrush(foregroundRole(), foregroundColor);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    auto placeholderColor = foregroundColor;
+    placeholderColor.setAlpha(placeholderColor.alpha() * 3 / 4); // 75% opaque
+    kLogger.debug()
+            << "Placeholder color:"
+            << placeholderColor;
+    pal.setBrush(QPalette::PlaceholderText, placeholderColor);
+#endif
     setPalette(pal);
-}
 
-void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
-    QLineEdit::resizeEvent(e);
-    QSize sz = m_clearButton->sizeHint();
-    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    int height = (rect().bottom() + 1 - sz.height()) / 2;
-    if (layoutDirection() == Qt::LeftToRight) {
-        m_clearButton->move(rect().right() - frameWidth - sz.width() - 1, height);
-    } else {
-        m_clearButton->move(frameWidth + 1, height);
-    }
-}
+    m_clearButton->setToolTip(tr("Clear input") + "\n" +
+            tr("Clear the search bar input field") + "\n\n" +
 
-QString WSearchLineEdit::getSearchText() const {
-    if (isEnabled() && (m_state == State::Active)) {
-        return text();
-    } else {
-        return QString();
-    }
-}
+            tr("Shortcut") + ": \n" +
+            tr("Ctrl+Backspace"));
 
-void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
-    QLineEdit::focusInEvent(event);
-    showSearchText(getSearchText());
-}
-
-void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
-    QLineEdit::focusOutEvent(event);
-    updateEditBox(getSearchText());
-}
-
-// slot
-void WSearchLineEdit::disableSearch() {
-    restoreSearch(QString());
-}
-
-// slot
-void WSearchLineEdit::restoreSearch(const QString& text) {
-    if (text.isNull()) {
-        // disable
-        setEnabled(false);
-        setText(kDisabledText);
-    } else {
-        setEnabled(true);
-        // Updating the placeholder implicitly updates the text and the clear button
-        updateEditBox(text);
-    }
-}
-
-// slot
-void WSearchLineEdit::triggerSearch() {
-    m_debouncingTimer.stop();
-    emit search(getSearchText());
-}
-
-void WSearchLineEdit::showPlaceholder() {
-    DEBUG_ASSERT(isEnabled());
-
-    // Deactivate text change listener
-    m_state = State::Inactive;
-
-    setText(tr("Search...", "noun"));
     setToolTip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for") + "\n" +
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") + "\n" +
@@ -214,47 +196,169 @@ void WSearchLineEdit::showPlaceholder() {
             tr("Ctrl+F") + "  " + tr("Focus", "Give search bar input focus") + "\n" +
             tr("Ctrl+Backspace") + "  " + tr("Clear input", "Clear the search bar input field") + "\n" +
             tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
-
-    QPalette pal = palette();
-    pal.setColor(foregroundRole(), Qt::lightGray);
-    setPalette(pal);
 }
 
-void WSearchLineEdit::showSearchText(const QString& text) {
+void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
+    QLineEdit::resizeEvent(e);
+    m_innerHeight = this->height() - 2 * m_frameWidth;
+    // Test if this is a vertical resize due to changed library font.
+    // Assuming current button height is innerHeight from last resize,
+    // we will resize the Clear button icon only if height has changed.
+    if (m_clearButton->size().height() != m_innerHeight) {
+        QSize newSize = QSize(m_innerHeight, m_innerHeight);
+        m_clearButton->resize(newSize);
+        m_clearButton->setIconSize(newSize);
+        // Note(ronso0): For some reason this ensures the search text
+        // is being displayed after skin change/reload.
+        refreshState();
+    }
+    int top = rect().top() + m_frameWidth;
+    if (layoutDirection() == Qt::LeftToRight) {
+        m_clearButton->move(rect().right() - m_innerHeight - m_frameWidth, top);
+    } else {
+        m_clearButton->move(m_frameWidth, top);
+    }
+}
+
+QString WSearchLineEdit::getSearchText() const {
+    if (isEnabled()) {
+        DEBUG_ASSERT(!text().isNull());
+        return text();
+    } else {
+        return QString();
+    }
+}
+
+void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "focusInEvent";
+#endif // ENABLE_TRACE_LOG
+    QLineEdit::focusInEvent(event);
+}
+
+void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "focusOutEvent";
+#endif // ENABLE_TRACE_LOG
+    QLineEdit::focusOutEvent(event);
+    if (m_debouncingTimer.isActive()) {
+        // Trigger a pending search before leaving the edit box.
+        // Otherwise the entered text might be ignored and get lost
+        // due to the debouncing timeout!
+        slotTriggerSearch();
+    }
+}
+
+void WSearchLineEdit::setTextBlockSignals(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "setTextBlockSignals"
+            << text;
+#endif // ENABLE_TRACE_LOG
+    blockSignals(true);
+    setText(text);
+    blockSignals(false);
+}
+
+void WSearchLineEdit::slotDisableSearch() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "slotDisableSearch";
+#endif // ENABLE_TRACE_LOG
+    if (!isEnabled()) {
+        return;
+    }
+    setTextBlockSignals(kDisabledText);
+    setEnabled(false);
+}
+
+void WSearchLineEdit::enableSearch(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "enableSearch"
+            << text;
+#endif // ENABLE_TRACE_LOG
+    // Set enabled BEFORE updating the edit box!
+    setEnabled(true);
+    updateEditBox(text);
+}
+
+void WSearchLineEdit::slotRestoreSearch(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "slotRestoreSearch"
+            << text;
+#endif // ENABLE_TRACE_LOG
+    if (text.isNull()) {
+        slotDisableSearch();
+    } else {
+        enableSearch(text);
+    }
+}
+
+void WSearchLineEdit::slotTriggerSearch() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "slotTriggerSearch"
+            << getSearchText();
+#endif // ENABLE_TRACE_LOG
+    DEBUG_ASSERT(isEnabled());
+    m_debouncingTimer.stop();
+    emit search(getSearchText());
+}
+
+void WSearchLineEdit::refreshState() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "refreshState";
+#endif // ENABLE_TRACE_LOG
+    if (isEnabled()) {
+        enableSearch(getSearchText());
+    } else {
+        slotDisableSearch();
+    }
+}
+
+void WSearchLineEdit::updateEditBox(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "updateEditBox"
+            << text;
+#endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
 
-    // Reactivate text change listener
-    m_state = State::Active;
-
-    // Update the displayed text without (re-)starting the timer
-    blockSignals(true);
-    if (text.isNull()) {
-        setText(kEmptySearch);
+    if (text.isEmpty()) {
+        setTextBlockSignals(kEmptySearch);
     } else {
-        setText(text);
+        setTextBlockSignals(text);
     }
-    blockSignals(false);
-
     updateClearButton(text);
-
-    QPalette pal = palette();
-    pal.setColor(foregroundRole(), m_foregroundColor);
-    setPalette(pal);
 
     // This gets rid of the blue mac highlight.
     setAttribute(Qt::WA_MacShowFocusRect, false);
 }
 
-void WSearchLineEdit::updateEditBox(const QString& text) {
-    if (text.isEmpty()) {
-        showPlaceholder();
-    } else {
-        showSearchText(text);
-    }
-}
-
 void WSearchLineEdit::updateClearButton(const QString& text) {
-    m_clearButton->setVisible(!text.isEmpty() && (m_state == State::Active));
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "updateClearButton"
+            << text;
+#endif // ENABLE_TRACE_LOG
+    DEBUG_ASSERT(isEnabled());
+
+    if (text.isEmpty()) {
+        // Disable while placeholder is shown
+        m_clearButton->setVisible(false);
+        // no right padding
+        setStyleSheet(clearButtonStyleSheet(0));
+    } else {
+        // Enable otherwise
+        m_clearButton->setVisible(true);
+        // make sure the text won't be drawn behind the Clear button icon
+        setStyleSheet(clearButtonStyleSheet(m_innerHeight + m_frameWidth));
+    }
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {
@@ -264,37 +368,58 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
     return QLineEdit::event(pEvent);
 }
 
-// slot
-void WSearchLineEdit::clearSearch() {
-    DEBUG_ASSERT(m_state == State::Active);
-    setText(kEmptySearch);
+void WSearchLineEdit::slotClearSearch() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "slotClearSearch";
+#endif // ENABLE_TRACE_LOG
+    DEBUG_ASSERT(isEnabled());
     // Clearing the edit field will engage the debouncing timer
     // and gives the user the chance for entering a new search
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
+    setText(kEmptySearch);
+    // Refocus the edit field
+    setFocus(Qt::OtherFocusReason);
 }
 
-// slot
-void WSearchLineEdit::updateText(const QString& text) {
-    if (isEnabled() && (m_state == State::Active)) {
-        updateClearButton(text);
-        DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-        if (s_debouncingTimeoutMillis > 0) {
-            m_debouncingTimer.start(s_debouncingTimeoutMillis);
-        } else {
-            // Deactivate the timer if the timeout is invalid.
-            // Disabling the timer permanently by setting the timeout
-            // to an invalid value is an expected and valid use case.
-            m_debouncingTimer.stop();
-        }
+bool WSearchLineEdit::slotClearSearchIfClearButtonHasFocus() {
+    if (!m_clearButton->hasFocus()) {
+        return false;
+    }
+    slotClearSearch();
+    return true;
+}
+
+void WSearchLineEdit::slotTextChanged(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "slotTextChanged"
+            << text;
+#endif // ENABLE_TRACE_LOG
+    m_debouncingTimer.stop();
+    if (!isEnabled()) {
+        setTextBlockSignals(kDisabledText);
+        return;
+    }
+    updateClearButton(text);
+    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
+    if (s_debouncingTimeoutMillis > 0) {
+        m_debouncingTimer.start(s_debouncingTimeoutMillis);
     } else {
-        updateClearButton(QString());
-        m_debouncingTimer.stop();
+        // Don't (re-)activate the timer if the timeout is invalid.
+        // Disabling the timer permanently by setting the timeout
+        // to an invalid value is an expected and valid use case.
+        DEBUG_ASSERT(!m_debouncingTimer.isActive());
     }
 }
 
-// slot
-void WSearchLineEdit::setShortcutFocus() {
+void WSearchLineEdit::slotSetShortcutFocus() {
     setFocus(Qt::ShortcutFocusReason);
+}
+
+// Use the same font as the library table and the sidebar
+void WSearchLineEdit::slotSetFont(const QFont& font) {
+    setFont(font);
 }

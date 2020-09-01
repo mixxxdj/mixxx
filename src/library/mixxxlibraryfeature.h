@@ -21,18 +21,16 @@
 
 class DlgHidden;
 class DlgMissing;
-class Library;
 class BaseTrackCache;
 class LibraryTableModel;
 class TrackCollection;
 
-class MixxxLibraryFeature : public LibraryFeature {
+class MixxxLibraryFeature final : public LibraryFeature {
     Q_OBJECT
-    public:
+  public:
     MixxxLibraryFeature(Library* pLibrary,
-                        TrackCollection* pTrackCollection,
                         UserSettingsPointer pConfig);
-    virtual ~MixxxLibraryFeature();
+    ~MixxxLibraryFeature() override = default;
 
     QVariant title() override;
     QIcon getIcon() override;
@@ -54,16 +52,16 @@ class MixxxLibraryFeature : public LibraryFeature {
   private:
     const QString kMissingTitle;
     const QString kHiddenTitle;
-    Library* m_pLibrary;
+    const QIcon m_icon;
+    TrackCollection* const m_pTrackCollection;
+
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
+
+    TreeItemModel m_childModel;
+
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
-    TreeItemModel m_childModel;
-    TrackDAO& m_trackDao;
-    UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
-    QIcon m_icon;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

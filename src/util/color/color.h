@@ -1,15 +1,13 @@
 #pragma once
 
-#include "util/color/predefinedcolorsset.h"
+#include <QColor>
 
 namespace Color {
-
-extern const PredefinedColorsSet kPredefinedColorsSet;
 
 int brightness(int red, int green, int blue);
 
 inline int brightness(const QColor& color) {
-    return brightness(color.red(), color.green(), color.red());
+    return brightness(color.red(), color.green(), color.blue());
 }
 
 inline bool isDimmColor(const QColor& color) {

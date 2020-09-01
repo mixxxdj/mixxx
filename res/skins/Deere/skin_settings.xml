@@ -118,7 +118,7 @@
             <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_intro_outro_cues</SetVariable>
           </Template>
-          
+
           <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="text">Vinyl Control Options</SetVariable>
@@ -307,4 +307,3 @@
     </Connection>
   </WidgetGroup>
 </Template>
-

@@ -1,5 +1,6 @@
 #include "sources/soundsourcemodplug.h"
 
+#include "audio/streaminfo.h"
 #include "track/trackmetadata.h"
 #include "util/logger.h"
 #include "util/sample.h"
@@ -82,10 +83,10 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 
         pTrackMetadata->refTrackInfo().setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->refTrackInfo().setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setChannels(ChannelCount(kChannelCount));
-        pTrackMetadata->setSampleRate(SampleRate(kSampleRate));
+        pTrackMetadata->setChannelCount(audio::ChannelCount(kChannelCount));
+        pTrackMetadata->setSampleRate(audio::SampleRate(kSampleRate));
+        pTrackMetadata->setBitrate(audio::Bitrate(8));
         pTrackMetadata->setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
-        pTrackMetadata->setBitrate(Bitrate(8)); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
 
         return std::make_pair(ImportResult::Succeeded, QFileInfo(modFile).lastModified());
@@ -163,12 +164,12 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(
                     << m_sampleBuf.capacity() - m_sampleBuf.size()
                     << " samples unused capacity.";
 
-    setChannelCount(kChannelCount);
-    setSampleRate(kSampleRate);
+    initChannelCountOnce(kChannelCount);
+    initSampleRateOnce(kSampleRate);
     initFrameIndexRangeOnce(
             IndexRange::forward(
                     0,
-                    samples2frames(m_sampleBuf.size())));
+                    getSignalInfo().samples2frames(m_sampleBuf.size())));
 
     return OpenResult::Succeeded;
 }
@@ -182,8 +183,8 @@ void SoundSourceModPlug::close() {
 
 ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-    const SINT readOffset = frames2samples(writableSampleFrames.frameIndexRange().start());
-    const SINT readSamples = frames2samples(writableSampleFrames.frameLength());
+    const SINT readOffset = getSignalInfo().frames2samples(writableSampleFrames.frameIndexRange().start());
+    const SINT readSamples = getSignalInfo().frames2samples(writableSampleFrames.frameLength());
     SampleUtil::convertS16ToFloat32(
             writableSampleFrames.writableData(),
             &m_sampleBuf[readOffset],

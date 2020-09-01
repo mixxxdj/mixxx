@@ -20,7 +20,7 @@ class BansheePlaylistModel;
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, UserSettingsPointer pConfig);
+    BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
@@ -40,9 +40,8 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     BansheePlaylistModel* m_pBansheePlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
-    TrackCollection* m_pTrackCollection;
-    //a new DB connection for the worker thread
 
+    //a new DB connection for the worker thread
     BansheeDbConnection m_connection;
 
     QSqlDatabase m_database;

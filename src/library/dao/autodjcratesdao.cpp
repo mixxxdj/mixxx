@@ -1,16 +1,19 @@
+#include "library/dao/autodjcratesdao.h"
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+#include <QRandomGenerator>
+#endif
 #include <QtDebug>
 #include <QtSql>
 
-#include "library/dao/autodjcratesdao.h"
-
-#include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
 #include "library/crate/crateschema.h"
 #include "library/dao/settingsdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"
@@ -34,8 +37,21 @@
 namespace {
 // Percentage of most and least played tracks to ignore [0,50)
 const int kLeastPreferredPercent = 15;
+
+// These consts are only used for DEBUG_ASSERTs
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 const int kLeastPreferredPercentMin = 0;
 const int kLeastPreferredPercentMax = 50;
+#endif
+
+int bounded_rand(int highest) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    return QRandomGenerator::global()->bounded(highest);
+#else
+    return qrand() % highest;
+#endif
+}
+
 } // anonymous namespace
 
 AutoDJCratesDAO::AutoDJCratesDAO(
@@ -194,8 +210,8 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
 
     // Be notified when a track is modified.
     // We only care when the number of times it's been played changes.
-    connect(&m_pTrackCollection->getTrackDAO(),
-            &TrackDAO::trackDirty,
+    connect(m_pTrackCollection,
+            &TrackCollection::trackDirty,
             this,
             &AutoDJCratesDAO::slotTrackDirty);
 
@@ -710,8 +726,8 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
 // Signaled by the track DAO when a track's information is updated.
 void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
     // Update our record of the number of times played, if that changed.
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
-    if (pTrack == NULL) {
+    TrackPointer pTrack = m_pTrackCollection->getTrackById(trackId);
+    if (!pTrack) {
         return;
     }
     const PlayCounter playCounter(pTrack->getPlayCounter());
@@ -1168,25 +1184,25 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
         // Least Preferred is not disabled
         iIgnoreIndex1 = (kLeastPreferredPercent * iTotalTracks) / 100;
         iIgnoreIndex2 = iTotalTracks - iIgnoreIndex1;
-        int iRandomNo = qrand() % 16 ;
+        int iRandomNo = bounded_rand(16);
         if(iRandomNo == 0 && iIgnoreIndex1 != 0) {
             // Select a track from the first [1, iIgnoredIndex1]
             beginIndex = 0;
-            offset = qrand() % iIgnoreIndex1 + 1 ;
+            offset = bounded_rand(iIgnoreIndex1) + 1;
         } else if(iRandomNo == 1 && iTotalTracks > iIgnoreIndex2){
             // Select from [iIgnoredIndex2 + 1, iTotalTracks];
             beginIndex = iIgnoreIndex2;
             // We need a number between [1, Total - iIgnoreIndex2]
-            offset = qrand() % (iTotalTracks - iIgnoreIndex2) + 1;
+            offset = bounded_rand(iTotalTracks - iIgnoreIndex2) + 1;
         } else {
             // Select from [iIgnoreIndex1 + 1, iIgnoreIndex2];
             beginIndex = iIgnoreIndex1;
             // We need a number between [1, iIgnoreIndex2 - iIgnoreIndex1]
-            offset = qrand() % (iIgnoreIndex2 - iIgnoreIndex1) + 1;
+            offset = bounded_rand(iIgnoreIndex2 - iIgnoreIndex1) + 1;
         }
         offset = beginIndex + offset;
         // In case we end up doing a qRand()%1 above
-        if( offset >= iTotalTracks) {
+        if (offset >= iTotalTracks) {
             offset= 0 ;
         }
     }

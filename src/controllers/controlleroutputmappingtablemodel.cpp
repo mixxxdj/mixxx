@@ -18,12 +18,13 @@ void ControllerOutputMappingTableModel::apply() {
     if (m_pMidiPreset != NULL) {
         // Clear existing output mappings and insert all the output mappings in
         // the table into the preset.
-        m_pMidiPreset->outputMappings.clear();
-        foreach (const MidiOutputMapping& mapping, m_midiOutputMappings) {
-            // Use insertMulti because we support multiple outputs from the same
-            // control.
-            m_pMidiPreset->outputMappings.insertMulti(mapping.controlKey, mapping);
+        QMultiHash<ConfigKey, MidiOutputMapping> mappings;
+        for (const MidiOutputMapping& mapping : m_midiOutputMappings) {
+            // There can be multiple output mappings for the same output
+            // control, so we need to use a QMultiHash here.
+            mappings.insert(mapping.controlKey, mapping);
         }
+        m_pMidiPreset->setOutputMappings(mappings);
     }
 }
 
@@ -42,9 +43,9 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_MAX, Qt::Horizontal, tr("On Range Max"));
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
-        if (!m_pMidiPreset->outputMappings.isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->outputMappings.size() - 1);
-            m_midiOutputMappings = m_pMidiPreset->outputMappings.values();
+        if (!m_pMidiPreset->getOutputMappings().isEmpty()) {
+            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->getOutputMappings().size() - 1);
+            m_midiOutputMappings = m_pMidiPreset->getOutputMappings().values();
             endInsertRows();
         }
     }
@@ -151,7 +152,6 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
         }
 
         const MidiOutputMapping& mapping = m_midiOutputMappings.at(row);
-        QString value;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.output.status);
@@ -170,9 +170,9 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.controlKey.group + "," + mapping.controlKey.item;
+                    return QVariant(mapping.controlKey.group + QStringLiteral(",") + mapping.controlKey.item);
                 }
-                return qVariantFromValue(mapping.controlKey);
+                return QVariant::fromValue(mapping.controlKey);
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:
@@ -203,41 +203,41 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 mapping.output.status = static_cast<unsigned char>(
                     MidiUtils::opCodeFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OPCODE:
                 mapping.output.status = static_cast<unsigned char>(
                     MidiUtils::channelFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_CONTROL:
                 mapping.output.control = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_ON:
                 mapping.output.on = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OFF:
                 mapping.output.off = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_MIN:
                 mapping.output.min = value.toDouble();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_MAX:
                 mapping.output.max = value.toDouble();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_ACTION:
                 mapping.controlKey = value.value<ConfigKey>();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_COMMENT:
                 mapping.description = value.toString();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             default:
                 return false;

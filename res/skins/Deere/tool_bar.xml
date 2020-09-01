@@ -24,7 +24,7 @@
       <WidgetGroup>
         <ObjectName>ToolBarLeft</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup>
@@ -34,19 +34,17 @@
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Time</ObjectName>
-                <Size>58f,20f</Size>
+                <Size>52f,20f</Size>
                 <CustomFormat>hh:mm</CustomFormat>
               </Time>
 
-            <Template src="skin:vumeter_latency.xml">
-              <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
-              <SetVariable name="group">[Master]</SetVariable>
-              <SetVariable name="control">audio_latency_usage</SetVariable>
-            </Template>
+              <Template src="skin:vumeter_latency.xml">
+                <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="control">audio_latency_usage</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
-
-          <WidgetGroup><Size>0f,0min</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>MasterControls</ObjectName>
@@ -75,8 +73,8 @@
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
-                <SetVariable name="MinimumSize">22,22</SetVariable>
-                <SetVariable name="MaximumSize">22,22</SetVariable>
+                <SetVariable name="MinimumSize">18,22</SetVariable>
+                <SetVariable name="MaximumSize">18,22</SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">2</SetVariable>
                 <SetVariable name="state_1_text">2</SetVariable>
@@ -86,8 +84,8 @@
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
-                <SetVariable name="MinimumSize">22,22</SetVariable>
-                <SetVariable name="MaximumSize">22,22</SetVariable>
+                <SetVariable name="MinimumSize">18,22</SetVariable>
+                <SetVariable name="MaximumSize">18,22</SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">3</SetVariable>
                 <SetVariable name="state_1_text">3</SetVariable>
@@ -97,8 +95,8 @@
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
-                <SetVariable name="MinimumSize">22,22</SetVariable>
-                <SetVariable name="MaximumSize">22,22</SetVariable>
+                <SetVariable name="MinimumSize">18,22</SetVariable>
+                <SetVariable name="MaximumSize">18,22</SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">4</SetVariable>
                 <SetVariable name="state_1_text">4</SetVariable>
@@ -138,7 +136,7 @@
 
           <WidgetGroup>
             <ObjectName>HeadphoneControls</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Connection>
               <ConfigKey>[Master],headEnabled</ConfigKey>
@@ -194,9 +192,9 @@
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">headSplit</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
-                <SetVariable name="MinimumSize">40,22</SetVariable>
-                <SetVariable name="MaximumSize">40,22</SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
+                <SetVariable name="MinimumSize">38,22</SetVariable>
+                <SetVariable name="MaximumSize">38,22</SetVariable>
+                <SetVariable name="SizePolicy">f,f</SetVariable>
                 <SetVariable name="state_0_text">SPLIT</SetVariable>
                 <SetVariable name="state_1_text">SPLIT</SetVariable>
                 <SetVariable name="left_connection_control">[Master],headSplit</SetVariable>

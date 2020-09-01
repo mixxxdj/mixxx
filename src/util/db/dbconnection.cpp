@@ -31,6 +31,7 @@ QSqlDatabase createDatabase(
 
     QSqlDatabase database =
             QSqlDatabase::addDatabase(params.type, connectionName);
+    database.setConnectOptions(params.connectOptions);
     database.setHostName(params.hostName);
     database.setDatabaseName(params.filePath);
     database.setUserName(params.userName);
@@ -81,8 +82,6 @@ void makeLatinLow(QChar* c, int count) {
         }
     }
 }
-
-const QChar kSqlLikeEscapeDefault = '\0';
 
 // Compare two strings for equality where the first string is
 // a "LIKE" expression. Return true (1) if they are the same and
@@ -166,6 +165,12 @@ int likeCompareInner(
 
 #ifdef __SQLITE3__
 
+namespace {
+
+const QChar kSqlLikeEscapeDefault = '\0';
+
+} // anonymous namespace
+
 // The collating function callback is invoked with a copy of the pArg
 // application data pointer and with two strings in the encoding specified
 // by the eTextRep argument.
@@ -242,6 +247,15 @@ bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
                << v.typeName();
         return false; // abort
     }
+    // Ensure initialization. sqlite recommends doing this before using it
+    // and might become required in future versions
+    int rc = sqlite3_initialize();
+    VERIFY_OR_DEBUG_ASSERT(rc == SQLITE_OK) {
+        kLogger.warning()
+            << "sqlite3_initialize failed with the code: "
+            << rc;
+    }
+
     // v.data() returns a pointer to the handle
     sqlite3* handle = *static_cast<sqlite3**>(v.data());
     VERIFY_OR_DEBUG_ASSERT(handle != nullptr) {

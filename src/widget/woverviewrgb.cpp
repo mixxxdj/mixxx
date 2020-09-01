@@ -7,11 +7,11 @@
 #include "waveform/waveform.h"
 
 WOverviewRGB::WOverviewRGB(
-        const char* group,
+        const QString& group,
         PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig,
         QWidget* parent)
-        : WOverview(group, pPlayerManager, pConfig, parent)  {
+        : WOverview(group, pPlayerManager, pConfig, parent) {
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {

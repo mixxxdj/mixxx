@@ -12,24 +12,23 @@
 #ifndef WOVERVIEW_H
 #define WOVERVIEW_H
 
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QPixmap>
 #include <QColor>
 #include <QList>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
-#include "track/track.h"
-#include "widget/wcuemenupopup.h"
-#include "widget/trackdroptarget.h"
-#include "widget/wwidget.h"
-
-#include "util/color/color.h"
-
-#include "waveform/renderers/waveformsignalcolors.h"
-#include "waveform/renderers/waveformmarkset.h"
-#include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
+#include "track/track.h"
+#include "util/color/color.h"
+#include "util/parented_ptr.h"
+#include "waveform/renderers/waveformmarkrange.h"
+#include "waveform/renderers/waveformmarkset.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class PlayerManager;
 class PainterScope;
@@ -52,7 +51,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
   protected:
     WOverview(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
@@ -97,7 +96,8 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
-    void onRateSliderChange(double v);
+    void onRateRatioChange(double v);
+    void onPassthroughChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
@@ -110,6 +110,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
     void drawWaveformPixmap(QPainter* pPainter);
+    void drawPlayedOverlay(QPainter* pPainter);
+    void drawPlayPosition(QPainter* pPainter);
     void drawEndOfTrackFrame(QPainter* pPainter);
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
@@ -117,6 +119,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawPickupPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
+    void drawPassthroughOverlay(QPainter* pPainter);
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
@@ -132,18 +135,18 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
-    ControlProxy* m_pRateDirControl;
-    ControlProxy* m_pRateRangeControl;
-    ControlProxy* m_pRateSliderControl;
+    bool m_bPassthroughEnabled;
+    ControlProxy* m_pRateRatioControl;
     ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
     ControlProxy* m_playpositionControl;
+    ControlProxy* m_pPassthroughControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
 
-    std::unique_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
@@ -151,11 +154,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
     int m_iPickupPos;
-    // position of the overlay shaddow
+    // position of the overlay shadow
     int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;
-    bool m_bHotcueMenuShowing;
     bool m_bTimeRulerActive;
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
@@ -165,13 +167,18 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
-    QColor m_qColorBackground;
+    QColor m_backgroundColor;
     int m_iLabelFontSize;
     QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
+    QColor m_axesColor;
+    QColor m_playPosColor;
     QColor m_endOfTrackColor;
+    QColor m_passthroughOverlayColor;
+    QColor m_playedOverlayColor;
+    QColor m_lowColor;
+    QLabel* m_pPassthroughLabel;
 
-    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     // All WaveformMarks
     WaveformMarkSet m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track

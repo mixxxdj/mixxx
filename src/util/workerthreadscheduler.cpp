@@ -29,22 +29,22 @@ bool WorkerThreadScheduler::resumeWorkers() {
     }
 }
 
-WorkerThread::FetchWorkResult WorkerThreadScheduler::tryFetchWorkItems() {
+WorkerThread::TryFetchWorkItemsResult WorkerThreadScheduler::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_fetchedWorker);
     WorkerThread* worker;
     if (m_scheduledWorkers.read(&worker, 1) == 1) {
         DEBUG_ASSERT(worker);
         m_fetchedWorker = worker;
-        return FetchWorkResult::Ready;
+        return TryFetchWorkItemsResult::Ready;
     } else {
-        // Suspend the thread after all scheduled workers have
-        // have been resumed.
-        return FetchWorkResult::Suspend;
+        // Fall asleep after all scheduled workers have have
+        // been resumed.
+        return TryFetchWorkItemsResult::Idle;
     }
 }
 
 void WorkerThreadScheduler::doRun() {
-    while (waitUntilWorkItemsFetched()) {
+    while (awaitWorkItemsFetched()) {
         m_fetchedWorker->resume();
         m_fetchedWorker = nullptr;
     }

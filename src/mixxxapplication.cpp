@@ -4,11 +4,14 @@
 
 #include "mixxxapplication.h"
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "library/crate/crateid.h"
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
+#include "util/cache.h"
+#include "util/color/rgbcolor.h"
 #include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
@@ -49,26 +52,38 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
             math_max(4, QThreadPool::globalInstance()->maxThreadCount()));
 }
 
-MixxxApplication::~MixxxApplication() {
-}
-
 void MixxxApplication::registerMetaTypes() {
-    // Register custom data types for signal processing
+    // PCM audio types
+    qRegisterMetaType<mixxx::audio::ChannelCount>("mixxx::audio::ChannelCount");
+    qRegisterMetaType<mixxx::audio::OptionalChannelLayout>("mixxx::audio::OptionalChannelLayout");
+    qRegisterMetaType<mixxx::audio::OptionalSampleLayout>("mixxx::audio::OptionalSampleLayout");
+    qRegisterMetaType<mixxx::audio::SampleRate>("mixxx::audio::SampleRate");
+    qRegisterMetaType<mixxx::audio::Bitrate>("mixxx::audio::Bitrate");
+
+    // Tracks
     qRegisterMetaType<TrackId>();
     qRegisterMetaType<QSet<TrackId>>();
     qRegisterMetaType<QList<TrackId>>();
     qRegisterMetaType<TrackRef>();
     qRegisterMetaType<QList<TrackRef>>();
     qRegisterMetaType<QList<QPair<TrackRef, TrackRef>>>();
+    qRegisterMetaType<TrackPointer>();
+
+    // Crates
     qRegisterMetaType<CrateId>();
     qRegisterMetaType<QSet<CrateId>>();
     qRegisterMetaType<QList<CrateId>>();
-    qRegisterMetaType<TrackPointer>();
+
+    // Sound devices
+    qRegisterMetaType<SoundDeviceId>();
+    QMetaType::registerComparators<SoundDeviceId>();
+
+    // Various custom data types
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
+    qRegisterMetaType<mixxx::cache_key_t>("mixxx::cache_key_t");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
-    qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
-    QMetaType::registerComparators<SoundDeviceId>();
+    qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
 }
 
 bool MixxxApplication::touchIsRightButton() {

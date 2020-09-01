@@ -40,9 +40,10 @@ class EngineChannel : public EngineObject {
     };
 
     EngineChannel(const ChannelHandleAndGroup& handle_group,
-                  ChannelOrientation defaultOrientation = CENTER,
-                  EffectsManager* pEffectsManager = nullptr,
-                  bool isTalkoverChannel = false);
+            ChannelOrientation defaultOrientation,
+            EffectsManager* pEffectsManager,
+            bool isTalkoverChannel,
+            bool isPrimaryDeck);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
@@ -63,6 +64,9 @@ class EngineChannel : public EngineObject {
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
+    inline bool isPrimaryDeck() {
+        return m_bIsPrimaryDeck;
+    };
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const = 0;
@@ -80,6 +84,10 @@ class EngineChannel : public EngineObject {
     EngineVuMeter m_vuMeter;
     ControlProxy* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
+
+    // If set to true, this engine channel represents one of the primary playback decks.
+    // It is used to check for valid bpm targets by the sync code.
+    const bool m_bIsPrimaryDeck;
 
   private slots:
     void slotOrientationLeft(double v);

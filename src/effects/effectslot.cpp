@@ -192,13 +192,13 @@ void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
             slotEffectMetaParameter(pEffect->getMetaknobDefault(), true);
         }
 
-        emit(effectLoaded(pEffect, m_iEffectNumber));
+        emit effectLoaded(pEffect, m_iEffectNumber);
     } else {
         clear();
         // Broadcasts a null effect pointer
-        emit(effectLoaded(EffectPointer(), m_iEffectNumber));
+        emit effectLoaded(EffectPointer(), m_iEffectNumber);
     }
-    emit(updated());
+    emit updated();
 }
 
 void EffectSlot::clear() {
@@ -215,7 +215,7 @@ void EffectSlot::clear() {
         pParameter->clear();
     }
     m_pEffect.clear();
-    emit(updated());
+    emit updated();
 }
 
 void EffectSlot::slotPrevEffect(double v) {
@@ -232,15 +232,15 @@ void EffectSlot::slotNextEffect(double v) {
 
 void EffectSlot::slotEffectSelector(double v) {
     if (v > 0) {
-        emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+        emit nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect);
     } else if (v < 0) {
-        emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+        emit prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect);
     }
 }
 
 void EffectSlot::slotClear(double v) {
     if (v > 0) {
-        emit(clearEffect(m_iEffectNumber));
+        emit clearEffect(m_iEffectNumber);
     }
 }
 

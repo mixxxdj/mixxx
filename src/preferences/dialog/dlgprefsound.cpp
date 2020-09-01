@@ -190,10 +190,41 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     // the limits warning is a Linux only thing
     limitsHint->hide();
 #endif // __LINUX__
+
+    // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
+    // connect them to the custom event filter below so they don't accept focus
+    // when we scroll the preferences page.
+    QObjectList objList = this->children();
+    for (int i = 0; i < objList.length(); ++i) {
+        QComboBox* combo = qobject_cast<QComboBox*>(objList[i]);
+        QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(objList[i]);
+        if (combo) {
+            combo->setFocusPolicy(Qt::StrongFocus);
+            combo->installEventFilter(this);
+        } else if (spin) {
+            spin->setFocusPolicy(Qt::StrongFocus);
+            spin->installEventFilter(this);
+        }
+    }
 }
 
 DlgPrefSound::~DlgPrefSound() {
     delete m_pLatencyCompensation;
+}
+
+// Catch scroll events over comboboxes and pass them to the scroll area instead.
+bool DlgPrefSound::eventFilter(QObject* obj, QEvent* e) {
+    if (e->type() == QEvent::Wheel) {
+        // Reject scrolling only if widget is unfocused.
+        // Object to widget cast is needed to check the focus state.
+        QComboBox* combo = qobject_cast<QComboBox*>(obj);
+        QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(obj);
+        if ((combo && !combo->hasFocus()) || (spin && !spin->hasFocus())) {
+            QApplication::sendEvent(verticalLayout_2, e);
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, e);
 }
 
 /**
@@ -222,7 +253,7 @@ void DlgPrefSound::slotApply() {
 
     m_config.clearInputs();
     m_config.clearOutputs();
-    emit(writePaths(&m_config));
+    emit writePaths(&m_config);
 
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
@@ -244,6 +275,10 @@ void DlgPrefSound::slotApply() {
     loadSettings(); // in case SM decided to change anything it didn't like
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
+}
+
+QUrl DlgPrefSound::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_SOUND_URL);
 }
 
 /**
@@ -420,7 +455,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
-    emit(loadPaths(m_config));
+    emit loadPaths(m_config);
 }
 
 /**
@@ -452,7 +487,7 @@ void DlgPrefSound::apiChanged(int index) {
  */
 void DlgPrefSound::updateAPIs() {
     QString currentAPI(apiComboBox->itemData(apiComboBox->currentIndex()).toString());
-    emit(updatingAPI());
+    emit updatingAPI();
     while (apiComboBox->count() > 1) {
         apiComboBox->removeItem(apiComboBox->count() - 1);
     }
@@ -463,7 +498,7 @@ void DlgPrefSound::updateAPIs() {
     if (newIndex > -1) {
         apiComboBox->setCurrentIndex(newIndex);
     }
-    emit(updatedAPI());
+    emit updatedAPI();
 }
 
 /**
@@ -558,8 +593,8 @@ void DlgPrefSound::refreshDevices() {
         m_inputDevices =
             m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
     }
-    emit(refreshOutputDevices(m_outputDevices));
-    emit(refreshInputDevices(m_inputDevices));
+    emit refreshOutputDevices(m_outputDevices);
+    emit refreshInputDevices(m_inputDevices);
 }
 
 /**
@@ -686,7 +721,7 @@ void DlgPrefSound::checkLatencyCompensation() {
         m_config.clearOutputs();
     }
 
-    emit(writePaths(&m_config));
+    emit writePaths(&m_config);
 
     if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
         micMonitorModeComboBox->setEnabled(true);

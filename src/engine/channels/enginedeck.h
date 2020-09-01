@@ -40,9 +40,12 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const ChannelHandleAndGroup& handle_group, UserSettingsPointer pConfig,
-               EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
-               EngineChannel::ChannelOrientation defaultOrientation = CENTER);
+    EngineDeck(const ChannelHandleAndGroup& handle_group,
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            bool primaryDeck);
     virtual ~EngineDeck();
 
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
@@ -73,8 +76,12 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;
 
+  signals:
+    void noPassthroughInputConfigured();
+
   public slots:
     void slotPassingToggle(double v);
+    void slotPassthroughChangeRequest(double v);
 
   private:
     UserSettingsPointer m_pConfig;

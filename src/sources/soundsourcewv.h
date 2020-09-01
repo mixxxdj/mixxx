@@ -1,12 +1,9 @@
-#ifndef MIXXX_SOUNDSOURCEWV_H
-#define MIXXX_SOUNDSOURCEWV_H
+#pragma once
 
 #include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 
-class QFile;
-
-typedef void WavpackContext;
+QT_FORWARD_DECLARE_CLASS(QFile);
 
 namespace mixxx {
 
@@ -35,7 +32,13 @@ class SoundSourceWV : public SoundSource {
             OpenMode mode,
             const OpenParams& params) override;
 
-    WavpackContext* m_wpc;
+    // A WavpackContext* type
+    // we cannot use the type directly, because it has 
+    // changing definitions with different wavpack.h versions. 
+    // wavpack.h can't be included here, because it has concurrent definitions 
+    // with other decoder's header.     
+    void* m_wpc;
+ 
     CSAMPLE m_sampleScaleFactor;
     QFile* m_pWVFile;
     QFile* m_pWVCFile;
@@ -56,5 +59,3 @@ class SoundSourceProviderWV : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEWV_H

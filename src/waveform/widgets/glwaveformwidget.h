@@ -8,7 +8,7 @@
 class GLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLWaveformWidget(const char* group, QWidget* parent);
+    GLWaveformWidget(const QString& group, QWidget* parent);
     virtual ~GLWaveformWidget();
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLFilteredWaveform; }

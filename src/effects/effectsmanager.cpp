@@ -19,9 +19,9 @@ const QString kGroupClose = "]";
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
-
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                               ChannelHandleFactory* pChannelHandleFactory)
+EffectsManager::EffectsManager(QObject* pParent,
+        UserSettingsPointer pConfig,
+        ChannelHandleFactoryPointer pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
@@ -321,10 +321,10 @@ void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool v
                                                 m_visibleEffectManifests.end(),
                                                 pManifest, alphabetizeEffectManifests);
         m_visibleEffectManifests.insert(insertion_point, pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     } else if (!visible) {
         m_visibleEffectManifests.removeOne(pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     }
 }
 

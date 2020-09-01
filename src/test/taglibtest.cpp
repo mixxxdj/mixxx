@@ -15,10 +15,11 @@ class TagLibTest : public testing::Test {
   protected:
     static QString generateTemporaryFileName(const QString& fileNameTemplate) {
         QTemporaryFile tmpFile(fileNameTemplate);
-        tmpFile.setAutoRemove(true);
+        // The file must be opened to create it and to obtain
+        // its file name!
         tmpFile.open();
-        DEBUG_ASSERT(tmpFile.exists());
         const QString tmpFileName = tmpFile.fileName();
+        DEBUG_ASSERT(!tmpFileName.isEmpty());
         return tmpFileName;
     }
 

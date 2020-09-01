@@ -40,6 +40,7 @@ class DlgPrefNoVinyl;
 class DlgPrefInterface;
 class DlgPrefWaveform;
 class DlgPrefDeck;
+class DlgPrefColors;
 class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
@@ -66,11 +67,16 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
-                   PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, LV2Backend* pLV2Backend, 
-                   EffectsManager* pEffectsManager,
-                   SettingsManager* pSettingsManager, Library *pLibrary);
+    DlgPreferences(MixxxMainWindow* mixxx,
+            SkinLoader* pSkinLoader,
+            SoundManager* soundman,
+            PlayerManager* pPlayerManager,
+            ControllerManager* controllers,
+            VinylControlManager* pVCManager,
+            LV2Backend* pLV2Backend,
+            EffectsManager* pEffectsManager,
+            SettingsManager* pSettingsManager,
+            Library* pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);
@@ -115,6 +121,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefInterface* m_interfacePage;
     DlgPrefWaveform* m_waveformPage;
     DlgPrefDeck* m_deckPage;
+    DlgPrefColors* m_colorsPage;
     DlgPrefEQ* m_equalizerPage;
     DlgPrefCrossfader* m_crossfaderPage;
     DlgPrefEffects* m_effectsPage;
@@ -138,6 +145,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pInterfaceButton;
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pDecksButton;
+    QTreeWidgetItem* m_pColorsButton;
     QTreeWidgetItem* m_pEqButton;
 #ifdef __LILV__
     QTreeWidgetItem* m_pLV2Button;

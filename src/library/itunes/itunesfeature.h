@@ -23,7 +23,7 @@ class WLibrarySidebar;
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    ITunesFeature(QObject* parent, TrackCollection* pTrackCollection);
+    ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig);
     virtual ~ITunesFeature();
     static bool isSupported();
 
@@ -58,7 +58,6 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
-    TrackCollection* m_pTrackCollection;
     // a new DB connection for the worker thread
     QSqlDatabase m_database;
     bool m_cancelImport;

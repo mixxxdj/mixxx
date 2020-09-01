@@ -1,20 +1,18 @@
-#ifndef WAVEFORMWIDGETFACTORY_H
-#define WAVEFORMWIDGETFACTORY_H
+#pragma once
 
 #include <QObject>
-#include <QTime>
 #include <QVector>
+#include <vector>
 
-#include "util/singleton.h"
 #include "preferences/usersettings.h"
-#include "waveform/widgets/waveformwidgettype.h"
-#include "waveform/waveform.h"
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
+#include "util/singleton.h"
+#include "waveform/waveform.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class QTimer;
 class VSyncThread;
 class GuiTick;
 class VisualsManager;
@@ -36,11 +34,14 @@ class WaveformWidgetAbstractHandle {
 class WaveformWidgetHolder {
   public:
     WaveformWidgetHolder();
+    WaveformWidgetHolder(WaveformWidgetHolder&&) = default;
+    WaveformWidgetHolder& operator=(WaveformWidgetHolder&&) = default;
   private:
-    WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
-                         WWaveformViewer* waveformViewer,
-                         const QDomNode& skinNode,
-                         const SkinContext& skinContext);
+    WaveformWidgetHolder(
+            WaveformWidgetAbstract* waveformWidget,
+            WWaveformViewer* waveformViewer,
+            const QDomNode& skinNode,
+            const SkinContext& parentContext);
 
     WaveformWidgetAbstract* m_waveformWidget;
     WWaveformViewer* m_waveformViewer;
@@ -60,10 +61,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool setConfig(UserSettingsPointer config);
 
-    //creates the waveform widget and bind it to the viewer
-    //clean-up every thing if needed
-    bool setWaveformWidget(WWaveformViewer* viewer,
-                           const QDomElement &node, const SkinContext& context);
+    /// Creates the waveform widget using the type set with setWidgetType
+    /// and binds it to the viewer.
+    /// Deletes older widget and resets positions to config defaults.
+    bool setWaveformWidget(
+            WWaveformViewer* viewer,
+            const QDomElement &node,
+            const SkinContext& parentContext);
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
@@ -77,10 +81,23 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
+    /// Sets the widget type and saves it to configuration.
+    /// Returns false and sets EmtpyWaveform if type is invalid
     bool setWidgetType(WaveformWidgetType::Type type);
-    bool setWidgetTypeFromHandle(int handleIndex);
+    /// Changes the widget type to that loaded from config and recreates them.
+    /// Used as a workaround on Windows due to a problem with GL and QT 5.14.2
+    bool setWidgetTypeFromConfig();
+    /// Changes the widget type and recreates them. Used from the preferences
+    /// dialog.
+    bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
 
+  protected:
+    bool setWidgetType(
+            WaveformWidgetType::Type type,
+            WaveformWidgetType::Type* pCurrentType);
+
+  public:
     void setDefaultZoom(double zoom);
     double getDefaultZoom() const { return m_defaultZoom;}
 
@@ -119,6 +136,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void renderSpinnies(VSyncThread*);
     void swapSpinnies();
 
+  public slots:
+    void slotSkinLoaded();
+
   protected:
     WaveformWidgetFactory();
     virtual ~WaveformWidgetFactory();
@@ -134,14 +154,18 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
+    WaveformWidgetType::Type findTypeFromHandleIndex(int index);
+    int findHandleIndexFromType(WaveformWidgetType::Type type);
+
     //All type of available widgets
 
     QVector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
 
     //Currently in use widgets/visual/node
-    QVector<WaveformWidgetHolder> m_waveformWidgetHolders;
+    std::vector<WaveformWidgetHolder> m_waveformWidgetHolders;
 
     WaveformWidgetType::Type m_type;
+    WaveformWidgetType::Type m_configType;
 
     UserSettingsPointer m_config;
 
@@ -170,5 +194,3 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_vSyncType;
     double m_playMarkerPosition;
 };
-
-#endif // WAVEFORMWIDGETFACTORY_H

@@ -23,7 +23,7 @@ class RGBWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     virtual void paintEvent(QPaintEvent* event);
 
   private:
-    RGBWaveformWidget(const char* group, QWidget* parent);
+    RGBWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
 

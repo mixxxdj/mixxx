@@ -49,7 +49,7 @@
                   <TrackProperty>
                     <TooltipId>track_title</TooltipId>
                     <SizePolicy>me,min</SizePolicy>
-                    <Property>title</Property>
+                    <Property>titleInfo</Property>
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
                     <Connection>
@@ -156,8 +156,41 @@
                             <Layout>horizontal</Layout>
                             <SizePolicy>p,me</SizePolicy>
                             <MinimumSize>100,20</MinimumSize>
-                            <MaximumSize>180,30</MaximumSize>
+                            <MaximumSize>228,30</MaximumSize>
                             <Children>
+
+                              <WidgetGroup>
+                                <ObjectName>HotcueShiftButtons</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>min,me</SizePolicy>
+                                <Children>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
+                                    <SetVariable name="ObjectName">HotcuesEarlierButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_hotcues_earlier_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_hotcues_earlier_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,shift_cues_earlier</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">shift_cues_later</SetVariable>
+                                    <SetVariable name="ObjectName">HotcuesLaterButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_hotcues_later_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_hotcues_later_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,shift_cues_later</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,shift_cues_later_small</SetVariable>
+                                  </Template>
+                                </Children>
+                              </WidgetGroup>
 
                               <Template src="skin:left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
@@ -222,8 +255,9 @@
 
                               <PushButton>
                                 <TooltipId>bpm_tap</TooltipId>
-                                <MinimumSize>40,20</MinimumSize>
+                                <MinimumSize>30,20</MinimumSize>
                                 <MaximumSize>60,30</MaximumSize>
+                                <SizePolicy>me,me</SizePolicy>
                                 <NumberStates>1</NumberStates>
                                 <State>
                                   <Number>0</Number>
@@ -390,7 +424,7 @@
                               <ConfigKey>[Deere],key_layout_next</ConfigKey>
                             </Connection>
                           </PushButton>
-  
+
                           <WidgetGroup>
                             <Layout>horizontal</Layout>
                             <Children>
@@ -398,7 +432,7 @@
                                 <Size>10f,20f</Size>
                                 <ObjectName>BpmKeyInfoShow</ObjectName>
                               </Label>
-  
+
                               <Key>
                                 <ObjectName>BpmKeyEditTriggerLabel</ObjectName>
                                 <MinimumSize>30,20</MinimumSize>
@@ -413,7 +447,7 @@
                           </WidgetGroup>
                         </Children>
                       </WidgetGroup>
-  
+
                       <WidgetGroup><!-- KeyEditRowExpanded -->
                         <ObjectName>BpmKeyEditRowExpanded</ObjectName>
                         <Layout>horizontal</Layout>
@@ -437,7 +471,7 @@
                                 <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_down</SetVariable>
                                 <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_down_small</SetVariable>
                               </Template>
-  
+
                               <Template src="skin:left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">pitch_up</SetVariable>
                                 <SetVariable name="ObjectName">PitchUpButton</SetVariable>
@@ -450,7 +484,7 @@
                                 <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_up</SetVariable>
                                 <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_up_small</SetVariable>
                               </Template>
-  
+
                               <Template src="skin:left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                                 <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
@@ -465,7 +499,7 @@
                               </Template>
                             </Children>
                           </WidgetGroup><!-- KeyEditRowControls -->
-  
+
                           <WidgetGroup>
                             <!-- The key edit controls are aligned to the right because the key
                                   widget widths can rapidly change, especially with traditional
@@ -487,7 +521,7 @@
                                   <ConfigKey>[Deere],key_layout_next</ConfigKey>
                                 </Connection>
                               </PushButton>
-  
+
                               <WidgetGroup>
                                 <ObjectName>KeyDisplay</ObjectName>
                                 <Layout>horizontal</Layout>
@@ -497,7 +531,7 @@
                                     <Size>10f,20f</Size>
                                     <ObjectName>BpmKeyInfoHide</ObjectName>
                                   </Label>
-  
+
                                   <Key>
                                     <ObjectName>BpmKeyEditTriggerLabel</ObjectName>
                                     <Group><Variable name="group"/></Group>
@@ -510,7 +544,7 @@
                                       <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                                     </Connection>
                                   </Key>
-  
+
                                   <Key>
                                     <ObjectName>BpmKeyEditTriggerLabel</ObjectName>
                                     <Group><Variable name="group"/></Group>

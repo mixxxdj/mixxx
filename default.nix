@@ -3,7 +3,7 @@
 , lv2Plugins ? []
 }:
 let inherit (nixroot) stdenv pkgs lib
-    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv 
+    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
     rubberband scons sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
     libGLU x11 lame lv2 makeWrapper

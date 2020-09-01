@@ -31,6 +31,10 @@ void EngineControl::trackLoaded(TrackPointer pNewTrack) {
     Q_UNUSED(pNewTrack);
 }
 
+void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    Q_UNUSED(pBeats);
+}
+
 void EngineControl::hintReader(HintVector*) {
 }
 
@@ -86,23 +90,28 @@ void EngineControl::seek(double sample) {
 }
 
 void EngineControl::notifySeek(double dNewPlaypos) {
-    Q_UNUSED(dNewPlaypos);
+    SampleOfTrack sot = m_sampleOfTrack.getValue();
+    sot.current = dNewPlaypos;
+    m_sampleOfTrack.setValue(sot);
 }
 
 EngineBuffer* EngineControl::pickSyncTarget() {
     EngineMaster* pMaster = getEngineMaster();
     if (!pMaster) {
-        return NULL;
+        return nullptr;
     }
 
     EngineSync* pEngineSync = pMaster->getEngineSync();
-    if (pEngineSync == NULL) {
-        return NULL;
+    if (!pEngineSync) {
+        return nullptr;
     }
 
-    // TODO(rryan): Remove. This is a linear search over groups in
-    // EngineMaster. We should pass the EngineChannel into EngineControl.
     EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
-    EngineChannel* pChannel = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
-    return pChannel ? pChannel->getEngineBuffer() : NULL;
+    Syncable* pSyncable = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
+    // pickNonSyncSyncTarget can return nullptr, but if it doesn't the Syncable
+    // definitely has an EngineChannel.
+    if (pSyncable) {
+        return pSyncable->getChannel()->getEngineBuffer();
+    }
+    return nullptr;
 }

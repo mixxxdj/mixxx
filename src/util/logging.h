@@ -27,10 +27,15 @@ extern LogLevel g_logFlushLevel;
 class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
-    static void initialize(const QDir& settingsDir,
-                           LogLevel logLevel,
-                           LogLevel logFlushLevel,
-                           bool debugAssertBreak);
+    static void initialize(
+            const QDir& logDir,
+            LogLevel logLevel,
+            LogLevel logFlushLevel,
+            bool debugAssertBreak);
+
+    // Sets only the loglevel without the on-disk settings.  Used by mixxx-test.
+    static void setLogLevel(LogLevel logLevel);
+
     static void shutdown();
 
     static void flushLogFile();

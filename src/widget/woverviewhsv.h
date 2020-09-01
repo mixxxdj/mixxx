@@ -6,7 +6,7 @@
 class WOverviewHSV : public WOverview {
   public:
     WOverviewHSV(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);

@@ -34,7 +34,6 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
               </Template>
-
               <Template src="skin:statuslight_4state.xml">
                 <SetVariable name="ObjectName">VinylControlStatus</SetVariable>
                 <SetVariable name="Size">40f,27f</SetVariable>
@@ -79,14 +78,11 @@ Variables:
 
           <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
 
-          <WidgetGroup><!-- Cue mode button with translucent cover -->
+          <!-- Cue mode button. Active only if Vinyl mode is not RELATIVE -->
+          <WidgetGroup>
             <Layout>stacked</Layout>
             <Size>40f,21f</Size>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-              <!-- Block mouse when Vinyl control is not in RELATIVE mode -->
               <WidgetGroup>
                 <TooltipId>vinylcontrol_cueing</TooltipId>
                 <ObjectName>SubmenuCover</ObjectName>
@@ -98,7 +94,6 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
                 <SetVariable name="ObjectName">VinylModeButton</SetVariable>
@@ -109,7 +104,7 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
               </Template>
             </Children>
-          </WidgetGroup><!-- /Cue mode button with translucent covers -->
+          </WidgetGroup><!-- /Cue mode button -->
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 

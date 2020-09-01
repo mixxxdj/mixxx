@@ -37,7 +37,7 @@ RateControl::RateControl(QString group,
       m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
-    // This is the resulting rate ratio that can used for dispaly or calculations.
+    // This is the resulting rate ratio that can be used for display or calculations.
     // The track original rate ratio is 1.
     m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
                   true, false, false, 1.0);
@@ -325,6 +325,7 @@ void RateControl::slotControlRatePermDown(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100 * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -333,6 +334,7 @@ void RateControl::slotControlRatePermDownSmall(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -341,6 +343,7 @@ void RateControl::slotControlRatePermUp(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -349,6 +352,7 @@ void RateControl::slotControlRatePermUpSmall(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
                            m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -388,7 +392,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
 
     processTempRate(iSamplesPerBuffer);
 
-    double rate = (paused ? 0 : 1.0);
+    double rate;
     double searching = m_pRateSearch->get();
     if (searching) {
         // If searching is in progress, it overrides everything else
@@ -589,6 +593,7 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+    EngineControl::notifySeek(playPos);
 }
 
 bool RateControl::isReverseButtonPressed() {

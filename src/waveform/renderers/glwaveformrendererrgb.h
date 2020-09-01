@@ -1,7 +1,7 @@
-#ifndef GLWAVEFORMRENDERERRGB_H
-#define GLWAVEFORMRENDERERRGB_H
+#pragma once
 
 #include <QOpenGLFunctions_2_1>
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "waveformrenderersignalbase.h"
 
@@ -21,4 +21,4 @@ class GLWaveformRendererRGB: public WaveformRendererSignalBase,
     DISALLOW_COPY_AND_ASSIGN(GLWaveformRendererRGB);
 };
 
-#endif // GLWAVEFORMRENDERERRGB_H
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2

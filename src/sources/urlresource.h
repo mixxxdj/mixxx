@@ -9,8 +9,7 @@ namespace mixxx {
 
 class UrlResource {
   public:
-    virtual ~UrlResource() {
-    }
+    virtual ~UrlResource() = default;
 
     QUrl getUrl() const {
         return m_url;

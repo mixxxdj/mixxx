@@ -40,25 +40,26 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
 
-class TrackCollection;
+class TrackCollectionManager;
 class BaseExternalPlaylistModel;
 
 class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
   public:
     RekordboxPlaylistModel(QObject* parent,
-            TrackCollection* pTrackCollection,
+            TrackCollectionManager* pTrackCollectionManager,
             QSharedPointer<BaseTrackCache> trackSource);
     TrackPointer getTrack(const QModelIndex& index) const override;
     bool isColumnHiddenByDefault(int column) override;
+    bool isColumnInternal(int column) override;
 
   protected:
-    virtual void initSortColumnMapping();
+    void initSortColumnMapping() override;
 };
 
 class RekordboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    RekordboxFeature(QObject* parent, TrackCollection*);
+    RekordboxFeature(Library* pLibrary, UserSettingsPointer pConfig);
     ~RekordboxFeature() override;
 
     QVariant title() override;
@@ -67,11 +68,11 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void refreshLibraryModels();
     void onRekordboxDevicesFound();
     void onTracksFound();
@@ -84,7 +85,6 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
 
     TreeItemModel m_childModel;
-    TrackCollection* m_pTrackCollection;
     RekordboxPlaylistModel* m_pRekordboxPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_devicesFutureWatcher;

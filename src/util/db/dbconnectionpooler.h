@@ -31,6 +31,10 @@ class DbConnectionPooler final {
         return static_cast<bool>(m_pDbConnectionPool);
     }
 
+    operator const DbConnectionPoolPtr&() const {
+        return m_pDbConnectionPool;
+    }
+
     DbConnectionPooler& operator=(const DbConnectionPooler&) = delete;
     DbConnectionPooler& operator=(DbConnectionPooler&&) = default;
 

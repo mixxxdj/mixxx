@@ -25,10 +25,10 @@
 namespace {
 constexpr double kdMaxDelayPot = 500;
 const int kiMaxDelay = (kdMaxDelayPot + 8) / 1000 *
-    mixxx::AudioSignal::SampleRate::kValueMax * mixxx::kEngineChannelCount;
+    mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount;
 } // anonymous namespace
 
-EngineDelay::EngineDelay(const char* group, ConfigKey delayControl, bool bPersist)
+EngineDelay::EngineDelay(const QString& group, ConfigKey delayControl, bool bPersist)
         : m_iDelayPos(0),
           m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);

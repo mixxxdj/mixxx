@@ -40,4 +40,4 @@ SoundSourcePointer newSoundSourceFromUrl(QUrl url) {
     return std::make_shared<T>(url);
 }
 
-} //namespace mixxx
+} // namespace mixxx

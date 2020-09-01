@@ -2,14 +2,13 @@
 #define PLAYLISTTABLEMODEL_H
 
 #include "library/basesqltablemodel.h"
-#include "library/dao/playlistdao.h"
 
-class PlaylistTableModel : public BaseSqlTableModel {
+class PlaylistTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
+    PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager,
                        const char* settingsNamespace, bool showAll = false);
-    ~PlaylistTableModel() final;
+    ~PlaylistTableModel() final = default;
 
     void setTableModel(int playlistId = -1);
     int getPlaylist() const {
@@ -33,7 +32,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     CapabilitiesFlags getCapabilities() const final;
 
   private slots:
-    void playlistChanged(int playlistId);
+    void playlistsChanged(QSet<int> playlistIds);
 
   private:
     void initSortColumnMapping() override;

@@ -1,13 +1,13 @@
-#ifndef TRACKMODEL_H
-#define TRACKMODEL_H
+#pragma once
 
-#include <QList>
-#include <QLinkedList>
 #include <QItemDelegate>
+#include <QList>
+#include <QVector>
 #include <QtSql>
 
-#include "track/track.h"
 #include "library/dao/settingsdao.h"
+#include "track/track.h"
+#include "track/trackref.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -79,14 +79,17 @@ class TrackModel {
         SORTCOLUMN_FILENAME,
         SORTCOLUMN_FILE_MODIFIED_TIME,
         SORTCOLUMN_FILE_CREATION_TIME,
+        SORTCOLUMN_SAMPLERATE,
+        SORTCOLUMN_COLOR,
 
         // NUM_SORTCOLUMNS should always be the last item.
         NUM_SORTCOLUMNIDS
     };
 
-    // Deserialize and return the track at the given QModelIndex in this result
-    // set.
+    // Deserialize and return the track at the given QModelIndex
+    // or TrackRef in this result set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
+    virtual TrackPointer getTrackByRef(const TrackRef& trackRef) const = 0;
 
     // Gets the on-disk location of the track at the given location
     // with Qt separator "/".
@@ -98,7 +101,7 @@ class TrackModel {
 
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
-    virtual const QLinkedList<int> getTrackRows(TrackId trackId) const = 0;
+    virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
@@ -142,6 +145,9 @@ class TrackModel {
     }
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
         return TRACKMODELCAPS_NONE;
+    }
+    /*non-virtual*/ bool hasCapabilities(TrackModel::CapabilitiesFlags caps) const {
+        return (getCapabilities() & caps) == caps;
     }
     virtual QString getModelSetting(QString name) {
         SettingsDAO settings(m_db);
@@ -199,5 +205,3 @@ class TrackModel {
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
 };
-
-#endif

@@ -22,17 +22,15 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                const QString& idColumn,
                                const QStringList& columns,
                                bool isCaching)
-        : QObject(),
-          m_tableName(tableName),
+        : m_tableName(tableName),
           m_idColumn(idColumn),
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(columns),
+          m_pQueryParser(new SearchQueryParser(pTrackCollection)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
-          m_database(pTrackCollection->database()),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection)) {
+          m_database(pTrackCollection->database()) {
     m_searchColumns << "artist"
                     << "album"
                     << "album_artist"
@@ -52,7 +50,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
 }
 
 BaseTrackCache::~BaseTrackCache() {
-    delete m_pQueryParser;
+    // Required to allow forward declarations of (managed pointer) members
+    // in header file
 }
 
 int BaseTrackCache::columnCount() const {
@@ -75,22 +74,18 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
     return m_columnCache.columnSortForFieldIndex(index);
 }
 
-void BaseTrackCache::slotTracksAdded(QSet<TrackId> trackIds) {
+void BaseTrackCache::slotTracksAddedOrChanged(QSet<TrackId> trackIds) {
     if (sDebug) {
-        qDebug() << this << "slotTracksAdded" << trackIds.size();
+        qDebug() << this << "slotTracksAddedOrChanged" << trackIds.size();
     }
-    QSet<TrackId> updateTrackIds;
-    for (const auto& trackId: qAsConst(trackIds)) {
-        updateTrackIds.insert(trackId);
-    }
-    updateTracksInIndex(updateTrackIds);
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
+void BaseTrackCache::slotScanTrackAdded(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << this << "slotDbTrackAdded";
+        qDebug() << this << "slotScanTrackAdded";
     }
-    updateIndexWithTrackpointer(pTrack);
+    updateTrackInIndex(pTrack);
 }
 
 void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
@@ -110,20 +105,12 @@ void BaseTrackCache::slotTrackDirty(TrackId trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
-void BaseTrackCache::slotTrackChanged(TrackId trackId) {
-    if (sDebug) {
-        qDebug() << this << "slotTrackChanged" << trackId;
-    }
-    QSet<TrackId> trackIds;
-    trackIds.insert(trackId);
-    emit(tracksChanged(trackIds));
-}
-
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    // The track might have been reloaded from the database
     updateTrackInIndex(trackId);
 }
 
@@ -220,13 +207,13 @@ void BaseTrackCache::resetRecentTrack() const {
     m_recentTrackPtr.reset();
 }
 
-bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
-    if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFileInfo();
-    }
-
-    if (!pTrack) {
+bool BaseTrackCache::updateTrackInIndex(
+        const TrackPointer& pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return false;
+    }
+    if (sDebug) {
+        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
     }
 
     int numColumns = columnCount();
@@ -354,7 +341,7 @@ void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
         qDebug() << "updateTracksInIndex failed!";
         return;
     }
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
@@ -416,6 +403,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->isBpmLocked());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
@@ -489,8 +478,20 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         }
     }
 
-    std::unique_ptr<QueryNode> pQuery(parseQuery(
-        searchQuery, extraFilter, idStrings));
+    QStringList queryFragments;
+    if (!extraFilter.isNull() && extraFilter != "") {
+        queryFragments << QString("(%1)").arg(extraFilter);
+    }
+    if (idStrings.size() > 0) {
+        queryFragments << QString("%1 in (%2)")
+                .arg(m_idColumn, idStrings.join(","));
+    }
+
+    const std::unique_ptr<QueryNode> pQuery =
+            m_pQueryParser->parseQuery(
+                    searchQuery,
+                    m_searchColumns,
+                    queryFragments.join(" AND "));
 
     QString filter = pQuery->toSql();
     if (!filter.isEmpty()) {
@@ -607,22 +608,6 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
             }
         }
     }
-}
-
-std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString extraFilter,
-                                      QStringList idStrings) const {
-    QStringList queryFragments;
-    if (!extraFilter.isNull() && extraFilter != "") {
-        queryFragments << QString("(%1)").arg(extraFilter);
-    }
-
-    if (idStrings.size() > 0) {
-        queryFragments << QString("%1 in (%2)")
-                .arg(m_idColumn, idStrings.join(","));
-    }
-
-    return m_pQueryParser->parseQuery(query, m_searchColumns,
-                                      queryFragments.join(" AND "));
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,

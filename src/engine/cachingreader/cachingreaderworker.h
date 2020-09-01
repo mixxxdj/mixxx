@@ -119,7 +119,7 @@ class CachingReaderWorker : public EngineWorker {
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
-    QString m_group;
+    const QString m_group;
     QString m_tag;
 
     // Thread-safe FIFOs for communication between the engine callback and

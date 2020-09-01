@@ -1,16 +1,25 @@
 #include "library/dlgmissing.h"
 
 #include "library/missingtablemodel.h"
+#include "library/trackcollectionmanager.h"
+#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
-                       Library* pLibrary,
-                       TrackCollection* pTrackCollection, KeyboardEventFilter* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgMissing(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+DlgMissing::DlgMissing(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        KeyboardEventFilter* pKeyboard)
+        : QWidget(parent),
+          Ui::DlgMissing(),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary->trackCollections(),
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -23,7 +32,7 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pLibrary);
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollections());
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);
@@ -80,5 +89,5 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
 }
 
 bool DlgMissing::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }

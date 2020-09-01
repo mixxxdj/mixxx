@@ -16,13 +16,11 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
-    setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SIGNAL(coverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-            this, SIGNAL(reloadCoverArt()));
+    connect(m_pCoverMenu,
+            &WCoverArtMenu::coverInfoSelected,
+            this,
+            &WCoverArtLabel::coverInfoSelected);
+    connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArtLabel::reloadCoverArt);
 
     m_defaultCover.setDevicePixelRatio(getDevicePixelRatioF(this));
     m_defaultCover = m_defaultCover.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
@@ -39,18 +37,22 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
                                  QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
 
-    m_loadedCover = px.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_loadedCover.setDevicePixelRatio(getDevicePixelRatioF(this));
     m_pCoverMenu->setCoverArt(coverInfo);
-
-    if (m_loadedCover.isNull()) {
+    if (px.isNull()) {
+        m_loadedCover = px;
         setPixmap(m_defaultCover);
     } else {
+        m_loadedCover = px.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
+                Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        m_loadedCover.setDevicePixelRatio(getDevicePixelRatioF(this));
         setPixmap(m_loadedCover);
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    QSize frameSize = pixmap(Qt::ReturnByValue).size() / getDevicePixelRatioF(this);
+#else
     QSize frameSize = pixmap()->size() / getDevicePixelRatioF(this);
+#endif
     frameSize += QSize(2,2); // margin
     setMinimumSize(frameSize);
     setMaximumSize(frameSize);
@@ -58,6 +60,11 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
     m_pCoverMenu->popup(mapToGlobal(pos));
+}
+
+void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
+    m_pCoverMenu->popup(event->globalPos());
 }
 
 void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
@@ -77,4 +84,3 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         }
     }
 }
-

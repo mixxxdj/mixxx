@@ -28,6 +28,7 @@
 class PlayerInfo : public QObject {
     Q_OBJECT
   public:
+    static PlayerInfo& create();
     static PlayerInfo& instance();
     static void destroy();
     TrackPointer getTrackInfo(const QString& group);
@@ -61,12 +62,12 @@ class PlayerInfo : public QObject {
     };
 
     void clearControlCache();
-    void timerEvent(QTimerEvent* pTimerEvent);
+    void timerEvent(QTimerEvent* pTimerEvent) override;
     void updateCurrentPlayingDeck();
     DeckControls* getDeckControls(int i);
 
     PlayerInfo();
-    virtual ~PlayerInfo();
+    ~PlayerInfo() override;
 
     mutable QMutex m_mutex;
     ControlProxy* m_pCOxfader;

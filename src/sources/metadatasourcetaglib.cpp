@@ -1,6 +1,6 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include "track/trackmetadatataglib.h"
+#include "track/taglib/trackmetadata.h"
 
 #include "util/logger.h"
 #include "util/memory.h"
@@ -8,13 +8,10 @@
 #include <QFile>
 #include <QFileInfo>
 
-#include <taglib/mp4file.h>
 #include <taglib/vorbisfile.h>
 #if (TAGLIB_HAS_OPUSFILE)
 #include <taglib/opusfile.h>
 #endif
-#include <taglib/aifffile.h>
-#include <taglib/wavfile.h>
 
 namespace mixxx {
 
@@ -26,12 +23,12 @@ Logger kLogger("MetadataSourceTagLib");
 const bool kExportTrackMetadataIntoTemporaryFile = true;
 
 // Appended to the original file name of the temporary file used for writing
-const QString kSafelyWritableTempFileSuffix = "_temp";
+const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 
 // Appended to the original file name for renaming and before deleting this
 // file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
 // potential failures caused by exceeded path length.
-const QString kSafelyWritableOrigFileSuffix = "_orig";
+const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
 
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
@@ -122,187 +119,164 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
     switch (m_fileType) {
     case taglib::FileType::MP3: {
         TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::ID3v2::Tag* pID3v2Tag =
-                    taglib::hasID3v2Tag(file) ? file.ID3v2Tag() : nullptr;
-            if (pID3v2Tag) {
-                taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
-                taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        // ID3v2 tag takes precedence over APE tag
+        if (taglib::hasID3v2Tag(file)) {
+            const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
+            DEBUG_ASSERT(pTag);
+            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
+        } else if (taglib::hasAPETag(file)) {
+            const TagLib::APE::Tag* pTag = file.APETag();
+            DEBUG_ASSERT(pTag);
+            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::ape::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
+        } else if (taglib::hasID3v1Tag(file)) {
+            // Note (TagLib 1.1.11): TagLib::MPEG::File::tag() returns a
+            // valid pointer even if neither an ID3v2 nor an ID3v1 tag is
+            // present!
+            // See also: https://bugs.launchpad.net/mixxx/+bug/1865957
+            const TagLib::Tag* pTag = file.tag();
+            if (pTag) {
+                taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
                 return afterImport(ImportResult::Succeeded);
-            } else {
-                const TagLib::APE::Tag* pAPETag =
-                        taglib::hasAPETag(file) ? file.APETag() : nullptr;
-                if (pAPETag) {
-                    taglib::importTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
-                    taglib::importCoverImageFromAPETag(pCoverImage, *pAPETag);
-                    return afterImport(ImportResult::Succeeded);
-                } else {
-                    // fallback
-                    const TagLib::Tag* pTag(file.tag());
-                    if (pTag) {
-                        taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                        return afterImport(ImportResult::Succeeded);
-                    }
-                }
             }
         }
         break;
     }
     case taglib::FileType::MP4: {
         TagLib::MP4::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::MP4::Tag* pMP4Tag = file.tag();
-            if (pMP4Tag) {
-                taglib::importTrackMetadataFromMP4Tag(pTrackMetadata, *pMP4Tag);
-                taglib::importCoverImageFromMP4Tag(pCoverImage, *pMP4Tag);
-                return afterImport(ImportResult::Succeeded);
-            } else {
-                // fallback
-                const TagLib::Tag* pTag(file.tag());
-                if (pTag) {
-                    taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImport(ImportResult::Succeeded);
-                }
-            }
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        if (taglib::hasMP4Tag(file)) {
+            const TagLib::MP4::Tag* pTag = file.tag();
+            DEBUG_ASSERT(pTag);
+            taglib::mp4::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::mp4::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
         }
         break;
     }
     case taglib::FileType::FLAC: {
         TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        // Read cover art directly from the file first. Will be
-        // overwritten with cover art contained in on of the tags.
-        if (pCoverImage != nullptr) {
-            *pCoverImage = taglib::importCoverImageFromVorbisCommentPictureList(file.pictureList());
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
         }
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
-            // VorbisComment tag takes precedence over ID3v2 tag
-            TagLib::Ogg::XiphComment* pXiphComment =
-                    taglib::hasXiphComment(file) ? file.xiphComment() : nullptr;
-            if (pXiphComment) {
-                taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
-                taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                return afterImport(ImportResult::Succeeded);
-            } else {
-                const TagLib::ID3v2::Tag* pID3v2Tag =
-                        taglib::hasID3v2Tag(file) ? file.ID3v2Tag() : nullptr;
-                if (pID3v2Tag) {
-                    taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
-                    taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                    return afterImport(ImportResult::Succeeded);
-                } else {
-                    // fallback
-                    const TagLib::Tag* pTag(file.tag());
-                    if (pTag) {
-                        taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                        return afterImport(ImportResult::Succeeded);
-                    }
-                }
-            }
+        bool importSucceeded = false;
+        bool coverImageImported = false;
+        // VorbisComment tag takes precedence over ID3v2 tag
+        if (taglib::hasXiphComment(file)) {
+            TagLib::Ogg::XiphComment* pTag = file.xiphComment();
+            DEBUG_ASSERT(pTag);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::FLAC);
+            coverImageImported = taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
+            importSucceeded = true;
+        } else if (taglib::hasID3v2Tag(file)) {
+            const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
+            DEBUG_ASSERT(pTag);
+            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            coverImageImported = taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
+            importSucceeded = true;
+        }
+        // Only import cover images from picture list as a fallback if file tags
+        // are available but no cover image has been found yet! Otherwise until
+        // file tags have been successfully imported once, Mixxx would retry to
+        // import the missing file tags over and over again when loading the
+        // cover image.
+        if (pCoverImage && // cover image is requested
+                importSucceeded &&
+                !coverImageImported) { // no cover image found in file tags
+            // Read cover art directly from the file as a fallback
+            *pCoverImage = taglib::xiph::importCoverImageFromPictureList(file.pictureList());
+        }
+        if (importSucceeded) {
+            return afterImport(ImportResult::Succeeded);
         }
         break;
     }
     case taglib::FileType::OGG: {
         TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
-            TagLib::Ogg::XiphComment* pXiphComment = file.tag();
-            if (pXiphComment) {
-                taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
-                taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                return afterImport(ImportResult::Succeeded);
-            } else {
-                // fallback
-                const TagLib::Tag* pTag(file.tag());
-                if (pTag) {
-                    taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImport(ImportResult::Succeeded);
-                }
-            }
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        TagLib::Ogg::XiphComment* pTag = file.tag();
+        if (pTag) {
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OGG);
+            taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
         }
         break;
     }
 #if (TAGLIB_HAS_OPUSFILE)
     case taglib::FileType::OPUS: {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
-            TagLib::Ogg::XiphComment* pXiphComment = file.tag();
-            if (pXiphComment) {
-                taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
-                taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                return afterImport(ImportResult::Succeeded);
-            } else {
-                // fallback
-                const TagLib::Tag* pTag(file.tag());
-                if (pTag) {
-                    taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImport(ImportResult::Succeeded);
-                }
-            }
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        TagLib::Ogg::XiphComment* pTag = file.tag();
+        if (pTag) {
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OPUS);
+            taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
         }
         break;
     }
 #endif // TAGLIB_HAS_OPUSFILE
     case taglib::FileType::WV: {
         TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::APE::Tag* pAPETag =
-                    taglib::hasAPETag(file) ? file.APETag() : nullptr;
-            if (pAPETag) {
-                taglib::importTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
-                taglib::importCoverImageFromAPETag(pCoverImage, *pAPETag);
-                return afterImport(ImportResult::Succeeded);
-            } else {
-                // fallback
-                const TagLib::Tag* pTag(file.tag());
-                if (pTag) {
-                    taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImport(ImportResult::Succeeded);
-                }
-            }
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        if (taglib::hasAPETag(file)) {
+            const TagLib::APE::Tag* pTag = file.APETag();
+            DEBUG_ASSERT(pTag);
+            taglib::ape::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::ape::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
         }
         break;
     }
     case taglib::FileType::WAV: {
         TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        if (taglib::hasID3v2Tag(file)) {
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
-            const TagLib::ID3v2::Tag* pID3v2Tag =
-                    file.hasID3v2Tag() ? file.ID3v2Tag() : nullptr;
+            const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
 #else
-            const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
+            const TagLib::ID3v2::Tag* pTag = file.tag();
 #endif
-            if (pID3v2Tag) {
-                taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
-                taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                return afterImport(ImportResult::Succeeded);
-            } else {
-                // fallback
-                const TagLib::RIFF::Info::Tag* pTag = file.InfoTag();
-                if (pTag) {
-                    taglib::importTrackMetadataFromRIFFTag(pTrackMetadata, *pTag);
-                    return afterImport(ImportResult::Succeeded);
-                }
-            }
+            DEBUG_ASSERT(pTag);
+            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
+        } else if (file.hasInfoTag()) {
+            const TagLib::RIFF::Info::Tag* pTag = file.InfoTag();
+            DEBUG_ASSERT(pTag);
+            taglib::riff::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            return afterImport(ImportResult::Succeeded);
         }
         break;
     }
     case taglib::FileType::AIFF: {
         AiffFile file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
-        if (taglib::readAudioProperties(pTrackMetadata, file)) {
-#if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
-            const TagLib::ID3v2::Tag* pID3v2Tag = file.hasID3v2Tag() ? file.tag() : nullptr;
-#else
-            const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
-#endif
-            if (pID3v2Tag) {
-                taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
-                taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                return afterImport(ImportResult::Succeeded);
-            } else {
-                // fallback
-                if (file.importTrackMetadataFromTextChunks(pTrackMetadata)) {
-                    return afterImport(ImportResult::Succeeded);
-                }
-            }
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        if (taglib::hasID3v2Tag(file)) {
+            const TagLib::ID3v2::Tag* pTag = file.tag();
+            DEBUG_ASSERT(pTag);
+            taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
+            return afterImport(ImportResult::Succeeded);
+        } else if (file.importTrackMetadataFromTextChunks(pTrackMetadata)) {
+            return afterImport(ImportResult::Succeeded);
         }
         break;
     }
@@ -314,12 +288,10 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         return afterImport(ImportResult::Failed);
     }
 
-    if (kLogger.debugEnabled()) {
-        kLogger.debug()
-                << "No track metadata or cover art found"
-                << "in file" << m_fileName
-                << "with type" << m_fileType;
-    }
+    kLogger.info()
+            << "No track metadata or cover art found"
+            << "in file" << m_fileName
+            << "with type" << m_fileType;
     return afterImport(ImportResult::Unavailable);
 }
 
@@ -329,8 +301,7 @@ namespace {
 // and variants of this function in derived subclasses.
 class TagSaver {
   public:
-    virtual ~TagSaver() {
-    }
+    virtual ~TagSaver() = default;
 
     virtual bool hasModifiedTags() const = 0;
 
@@ -364,7 +335,7 @@ class MpegTagSaver : public TagSaver {
         if (pFile->isOpen()) {
             TagLib::ID3v2::Tag* pID3v2Tag = nullptr;
             if (taglib::hasAPETag(*pFile)) {
-                if (taglib::exportTrackMetadataIntoAPETag(pFile->APETag(), trackMetadata)) {
+                if (taglib::ape::exportTrackMetadataIntoTag(pFile->APETag(), trackMetadata)) {
                     modifiedTagsBitmask |= TagLib::MPEG::File::APE;
                 }
                 // Only write ID3v2 tag if it already exists
@@ -373,7 +344,7 @@ class MpegTagSaver : public TagSaver {
                 // Get or create ID3v2 tag
                 pID3v2Tag = pFile->ID3v2Tag(true);
             }
-            if (taglib::exportTrackMetadataIntoID3v2Tag(pID3v2Tag, trackMetadata)) {
+            if (taglib::id3v2::exportTrackMetadataIntoTag(pID3v2Tag, trackMetadata)) {
                 modifiedTagsBitmask |= TagLib::MPEG::File::ID3v2;
             }
         }
@@ -403,7 +374,7 @@ class Mp4TagSaver : public TagSaver {
 
   private:
     static bool exportTrackMetadata(TagLib::MP4::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen() && taglib::exportTrackMetadataIntoMP4Tag(pFile->tag(), trackMetadata);
+        return pFile->isOpen() && taglib::mp4::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
     }
 
     TagLib::MP4::File m_file;
@@ -433,14 +404,15 @@ class FlacTagSaver : public TagSaver {
         if (pFile->isOpen()) {
             TagLib::Ogg::XiphComment* pXiphComment = nullptr;
             if (taglib::hasID3v2Tag(*pFile)) {
-                modifiedTags |= taglib::exportTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
+                modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->ID3v2Tag(), trackMetadata);
                 // Only write VorbisComment tag if it already exists
                 pXiphComment = pFile->xiphComment(false);
             } else {
                 // Get or create VorbisComment tag
                 pXiphComment = pFile->xiphComment(true);
             }
-            modifiedTags |= taglib::exportTrackMetadataIntoXiphComment(pXiphComment, trackMetadata);
+            modifiedTags |= taglib::xiph::exportTrackMetadataIntoTag(
+                    pXiphComment, trackMetadata, taglib::FileType::FLAC);
         }
         return modifiedTags;
     }
@@ -467,20 +439,23 @@ class OggTagSaver : public TagSaver {
     }
 
   private:
-    static bool exportTrackMetadata(TagLib::Ogg::Vorbis::File* pFile, const TrackMetadata& trackMetadata) {
-#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && (TAGLIB_PATCH_VERSION == 1)
+    static bool exportTrackMetadata(TagLib::Ogg::Vorbis::File* pFile,
+            const TrackMetadata& trackMetadata) {
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && \
+        (TAGLIB_PATCH_VERSION == 1)
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
         // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
         Q_UNUSED(pFile);
         Q_UNUSED(trackMetadata);
-        kLogger.warning()
-                << "Skipping export of metadata into Ogg file due to serious bug in TagLib 1.11.1"
-                << "(https://github.com/taglib/taglib/issues/864)";
+        kLogger.warning() << "Skipping export of metadata into Ogg file due to "
+                             "serious bug in TagLib 1.11.1 "
+                             "(https://github.com/taglib/taglib/issues/864)";
         return false;
 #else
         return pFile->isOpen() &&
-                taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+                taglib::xiph::exportTrackMetadataIntoTag(
+                        pFile->tag(), trackMetadata, taglib::FileType::OGG);
 #endif
     }
 
@@ -507,8 +482,11 @@ class OpusTagSaver : public TagSaver {
     }
 
   private:
-    static bool exportTrackMetadata(TagLib::Ogg::Opus::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen() && taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+    static bool exportTrackMetadata(TagLib::Ogg::Opus::File* pFile,
+            const TrackMetadata& trackMetadata) {
+        return pFile->isOpen() &&
+                taglib::xiph::exportTrackMetadataIntoTag(
+                        pFile->tag(), trackMetadata, taglib::FileType::OPUS);
     }
 
     TagLib::Ogg::Opus::File m_file;
@@ -535,7 +513,7 @@ class WavPackTagSaver : public TagSaver {
 
   private:
     static bool exportTrackMetadata(TagLib::WavPack::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen() && taglib::exportTrackMetadataIntoAPETag(pFile->APETag(true), trackMetadata);
+        return pFile->isOpen() && taglib::ape::exportTrackMetadataIntoTag(pFile->APETag(true), trackMetadata);
     }
 
     TagLib::WavPack::File m_file;
@@ -547,7 +525,7 @@ bool exportTrackMetadataIntoRIFFTag(TagLib::RIFF::Info::Tag* pTag, const TrackMe
         return false;
     }
 
-    taglib::exportTrackMetadataIntoTag(pTag, trackMetadata, taglib::WRITE_TAG_OMIT_NONE);
+    taglib::exportTrackMetadataIntoTag(pTag, trackMetadata, taglib::WriteTagFlag::OmitNone);
 
     return true;
 }
@@ -575,9 +553,9 @@ class WavTagSaver : public TagSaver {
         if (pFile->isOpen()) {
             // Write into all available tags
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
-            modifiedTags |= taglib::exportTrackMetadataIntoID3v2Tag(pFile->ID3v2Tag(), trackMetadata);
+            modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->ID3v2Tag(), trackMetadata);
 #else
-            modifiedTags |= taglib::exportTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+            modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
 #endif
             modifiedTags |= exportTrackMetadataIntoRIFFTag(pFile->InfoTag(), trackMetadata);
         }
@@ -607,7 +585,7 @@ class AiffTagSaver : public TagSaver {
 
   private:
     static bool exportTrackMetadata(TagLib::RIFF::AIFF::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen() && taglib::exportTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+        return pFile->isOpen() && taglib::id3v2::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
     }
 
     TagLib::RIFF::AIFF::File m_file;
@@ -838,7 +816,7 @@ MetadataSourceTagLib::exportTrackMetadata(
         break;
     }
     default:
-        kLogger.warning()
+        kLogger.debug()
                 << "Cannot export track metadata"
                 << "into file" << m_fileName
                 << "with unknown or unsupported type"

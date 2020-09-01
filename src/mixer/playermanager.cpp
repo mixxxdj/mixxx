@@ -5,9 +5,8 @@
 #include <QMutexLocker>
 
 #include "control/controlobject.h"
-#include "control/controlobject.h"
-#include "effects/effectsmanager.h"
 #include "effects/effectrack.h"
+#include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
@@ -17,14 +16,14 @@
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
 #include "mixer/samplerbank.h"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "soundio/soundmanager.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/defs.h"
 #include "util/logger.h"
-#include "util/stat.h"
 #include "util/sleepableqthread.h"
-#include "preferences/dialog/dlgprefdeck.h"
-
+#include "util/stat.h"
 
 namespace {
 
@@ -43,30 +42,29 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
-                             SoundManager* pSoundManager,
-                             EffectsManager* pEffectsManager,
-                             VisualsManager* pVisualsManager,
-                             EngineMaster* pEngine) :
-        m_mutex(QMutex::Recursive),
-        m_pConfig(pConfig),
-        m_pSoundManager(pSoundManager),
-        m_pEffectsManager(pEffectsManager),
-        m_pVisualsManager(pVisualsManager),
-        m_pEngine(pEngine),
-        // NOTE(XXX) LegacySkinParser relies on these controls being Controls
-        // and not ControlProxies.
-        m_pCONumDecks(new ControlObject(
-                ConfigKey("[Master]", "num_decks"), true, true)),
-        m_pCONumSamplers(new ControlObject(
-                ConfigKey("[Master]", "num_samplers"), true, true)),
-        m_pCONumPreviewDecks(new ControlObject(
-                ConfigKey("[Master]", "num_preview_decks"), true, true)),
-        m_pCONumMicrophones(new ControlObject(
-                ConfigKey("[Master]", "num_microphones"), true, true)),
-        m_pCONumAuxiliaries(new ControlObject(
-                ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-        m_pAutoDjEnabled(make_parented<ControlProxy>("[AutoDJ]", "enabled", this)),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+        SoundManager* pSoundManager,
+        EffectsManager* pEffectsManager,
+        VisualsManager* pVisualsManager,
+        EngineMaster* pEngine)
+        : m_mutex(QMutex::Recursive),
+          m_pConfig(pConfig),
+          m_pSoundManager(pSoundManager),
+          m_pEffectsManager(pEffectsManager),
+          m_pVisualsManager(pVisualsManager),
+          m_pEngine(pEngine),
+          // NOTE(XXX) LegacySkinParser relies on these controls being Controls
+          // and not ControlProxies.
+          m_pCONumDecks(new ControlObject(
+                  ConfigKey("[Master]", "num_decks"), true, true)),
+          m_pCONumSamplers(new ControlObject(
+                  ConfigKey("[Master]", "num_samplers"), true, true)),
+          m_pCONumPreviewDecks(new ControlObject(
+                  ConfigKey("[Master]", "num_preview_decks"), true, true)),
+          m_pCONumMicrophones(new ControlObject(
+                  ConfigKey("[Master]", "num_microphones"), true, true)),
+          m_pCONumAuxiliaries(new ControlObject(
+                  ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
@@ -213,7 +211,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumDecks = m_pCOPNumDecks.load();
+    ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
     if (pCOPNumDecks == nullptr) {
         pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
         if (!pCOPNumDecks->valid()) {
@@ -231,7 +229,7 @@ unsigned int PlayerManager::numDecks() {
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumSamplers = m_pCOPNumSamplers.load();
+    ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
     if (pCOPNumSamplers == nullptr) {
         pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
         if (!pCOPNumSamplers->valid()) {
@@ -249,7 +247,7 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumPreviewDecks = m_pCOPNumPreviewDecks.load();
+    ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
@@ -268,6 +266,13 @@ void PlayerManager::slotChangeNumDecks(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
 
+    VERIFY_OR_DEBUG_ASSERT(num <= kMaxNumberOfDecks) {
+        qWarning() << "Number of decks exceeds the maximum we expect."
+                   << num << "vs" << kMaxNumberOfDecks
+                   << " Refusing to add another deck. Please update util/defs.h";
+        return;
+    }
+
     // Update the soundmanager config even if the number of decks has been
     // reduced.
     m_pSoundManager->setConfiguredDeckCount(num);
@@ -283,7 +288,7 @@ void PlayerManager::slotChangeNumDecks(double v) {
             addDeckInner();
         } while (m_decks.size() < num);
         m_pCONumDecks->setAndConfirm(m_decks.size());
-        emit(numberOfDecksChanged(m_decks.count()));
+        emit numberOfDecksChanged(m_decks.count());
     }
 }
 
@@ -370,8 +375,10 @@ void PlayerManager::addDeckInner() {
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
             m_pVisualsManager, orientation, group);
-    connect(pDeck, SIGNAL(noPassthroughInputConfigured()),
-            this, SIGNAL(noDeckPassthroughInputConfigured()));
+    connect(pDeck->getEngineDeck(),
+            &EngineDeck::noPassthroughInputConfigured,
+            this,
+            &PlayerManager::noDeckPassthroughInputConfigured);
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 
@@ -499,6 +506,8 @@ void PlayerManager::addAuxiliaryInner() {
 
     Auxiliary* pAuxiliary = new Auxiliary(this, group, index, m_pSoundManager,
                                           m_pEngine, m_pEffectsManager);
+    connect(pAuxiliary, SIGNAL(noAuxiliaryInputConfigured()),
+            this, SIGNAL(noAuxiliaryInputConfigured()));
     m_auxiliaries.append(pAuxiliary);
 }
 
@@ -592,8 +601,8 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     // button repeatedly.
     // AutoDJProcessor is initialized after PlayerManager, so check that the
     // ControlProxy is pointing to the real ControlObject.
-    if (!m_pAutoDjEnabled->valid()) {
-        m_pAutoDjEnabled->initialize(ConfigKey("[AutoDJ]", "enabled"));
+    if (!m_pAutoDjEnabled) {
+        m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
     }
     bool autoDjSkipClone = m_pAutoDjEnabled->get() && (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 
@@ -613,7 +622,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
-    emit(loadLocationToPlayer(location, group));
+    emit loadLocationToPlayer(location, group);
 }
 
 void PlayerManager::slotLoadToDeck(QString location, int deck) {

@@ -19,6 +19,7 @@ enum AnalyzerModeFlags {
     None = 0x00,
     WithBeats = 0x01,
     WithWaveform = 0x02,
+    LowPriority = 0x04,
     All = WithBeats | WithWaveform,
 };
 
@@ -88,7 +89,7 @@ class AnalyzerThread : public WorkerThread {
   protected:
     void doRun() override;
 
-    FetchWorkResult tryFetchWorkItems() override;
+    TryFetchWorkItemsResult tryFetchWorkItems() override;
 
   private:
     /////////////////////////////////////////////////////////////////////////

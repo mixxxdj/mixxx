@@ -24,7 +24,7 @@ class QtHSVWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     virtual mixxx::Duration render();
 
   private:
-    QtHSVWaveformWidget(const char* group, QWidget* parent);
+    QtHSVWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
 

@@ -20,7 +20,6 @@
 
 #include <QObject>
 #include <QMessageBox>
-#include <QSignalMapper>
 #include <QMutex>
 #include <QString>
 #include <QList>
@@ -69,8 +68,9 @@ class ErrorDialogProperties {
     }
 
     /** Set detailed text (causes "Show Details" button to appear.) */
-    inline void setDetails(const QString& text) {
+    inline void setDetails(const QString& text, bool bUseMonospaceFont = false) {
         m_details = text;
+        m_detailsUseMonospaceFont = bUseMonospaceFont;
     }
 
     /** Set whether the box is modal (blocks the GUI) or not */
@@ -113,6 +113,7 @@ class ErrorDialogProperties {
     QString m_text;
     QString m_infoText;
     QString m_details;
+    bool m_detailsUseMonospaceFont;
     bool m_modal;
     bool m_shouldQuit;
     DialogType m_type;
@@ -142,7 +143,7 @@ class ErrorDialogHandler : public QObject {
     }
     static void setEnabled(bool enabled);
 
-    virtual ~ErrorDialogHandler();
+    ~ErrorDialogHandler() override;
     // Call this to get a new instance of ErrorDialogProperties to populate with
     // data
     ErrorDialogProperties* newDialogProperties();
@@ -166,7 +167,7 @@ class ErrorDialogHandler : public QObject {
   private slots:
     /** Actually displays the box */
     void errorDialog(ErrorDialogProperties* props);
-    void boxClosed(QString key);
+    void boxClosed(QString key, QMessageBox* msgBox);
 
   private:
     // Private constructor
@@ -177,7 +178,6 @@ class ErrorDialogHandler : public QObject {
 
     bool m_errorCondition;
     QList<QString> m_dialogKeys;
-    QSignalMapper m_signalMapper;
     QMutex m_mutex;
 
     DISALLOW_COPY_AND_ASSIGN(ErrorDialogHandler);

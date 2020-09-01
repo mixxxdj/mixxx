@@ -15,6 +15,20 @@ class LearningUtilsTest : public MixxxTest {
         m_messages.append(qMakePair(MidiKey(status, control), value));
     }
 
+    /// Check if mapping in present in mapping list.
+    /// Similar to MidiInputMappings::contains(const MidiInputMapping&), but
+    /// does not compare the description.
+    bool containsMapping(const MidiInputMappings& haystack, const MidiInputMapping& needle) {
+        for (const MidiInputMapping& mapping : haystack) {
+            if (mapping.key == needle.key &&
+                    mapping.options == needle.options &&
+                    mapping.control == needle.control) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     QList<QPair<MidiKey, unsigned char> > m_messages;
 };
 
@@ -29,8 +43,10 @@ TEST_F(LearningUtilsTest, NoteOnButton) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.first());
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, NoteOnNoteOffButton) {
@@ -44,11 +60,15 @@ TEST_F(LearningUtilsTest, NoteOnNoteOffButton) {
 
     ASSERT_EQ(2, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(0));
+                      MidiOptions(),
+                      control,
+                      mappings.at(0).description),
+            mappings.at(0));
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(1));
+                      MidiOptions(),
+                      control,
+                      mappings.at(1).description),
+            mappings.at(1));
 }
 
 TEST_F(LearningUtilsTest, CC7BitKnob) {
@@ -69,8 +89,10 @@ TEST_F(LearningUtilsTest, CC7BitKnob) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(0));
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
@@ -103,10 +125,13 @@ TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
             LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(2, mappings.size());
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   MidiOptions(), control)));
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
-                                                   MidiOptions(), resetControl)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(
+                    MidiKey(MIDI_CC | 0x01, 0x10), MidiOptions(), control)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
+                    MidiOptions(),
+                    resetControl)));
 
     m_messages.clear();
 
@@ -124,10 +149,13 @@ TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
     addMessage(MIDI_CC | 0x01, 0x10, 0x00);
 
     ASSERT_EQ(2, mappings.size());
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   MidiOptions(), control)));
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
-                                                   MidiOptions(), resetControl)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(
+                    MidiKey(MIDI_CC | 0x01, 0x10), MidiOptions(), control)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
+                    MidiOptions(),
+                    resetControl)));
 }
 
 TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
@@ -167,12 +195,14 @@ TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
     ASSERT_EQ(2, mappings.size());
     MidiOptions lsb_option;
     lsb_option.fourteen_bit_lsb = true;
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   lsb_option, control)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(
+                    MidiKey(MIDI_CC | 0x01, 0x10), lsb_option, control)));
     MidiOptions msb_option;
     msb_option.fourteen_bit_msb = true;
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x11),
-                                                   msb_option, control)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(
+                    MidiKey(MIDI_CC | 0x01, 0x11), msb_option, control)));
 }
 
 TEST_F(LearningUtilsTest, CC14BitKnob_LSBFirst) {
@@ -212,12 +242,14 @@ TEST_F(LearningUtilsTest, CC14BitKnob_LSBFirst) {
     ASSERT_EQ(2, mappings.size());
     MidiOptions lsb_option;
     lsb_option.fourteen_bit_lsb = true;
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   lsb_option, control)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(
+                    MidiKey(MIDI_CC | 0x01, 0x10), lsb_option, control)));
     MidiOptions msb_option;
     msb_option.fourteen_bit_msb = true;
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x11),
-                                                   msb_option, control)));
+    EXPECT_TRUE(containsMapping(mappings,
+            MidiInputMapping(
+                    MidiKey(MIDI_CC | 0x01, 0x11), msb_option, control)));
 }
 
 TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_Zeroes) {
@@ -236,8 +268,11 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_Zeroes) {
     MidiOptions options;
     options.selectknob = true;
     ASSERT_EQ(1, mappings.size());
-    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10), options, control),
-              mappings.at(0));
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 
     m_messages.clear();
 
@@ -252,8 +287,10 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_Zeroes) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(0));
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_ZeroIncluded) {
@@ -285,8 +322,10 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_ZeroIncluded) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(0));
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker) {
@@ -312,11 +351,14 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(0));
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
-TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_StartAndStopOn41) {
+TEST_F(LearningUtilsTest,
+        CC7BitKnob_ConfusableForSpread64Ticker_StartAndStopOn41) {
     // Moving a CC knob through its range multiple times is confusable for
     // Spread64 select knobs when a 0x41 or 0x3F is repeated. If we start and
     // stop on 0x41 (and don't pass through 0x40) then this can set off Spread64
@@ -342,8 +384,10 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_StartAndStopOn4
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(0));
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_0x40Included) {
@@ -375,8 +419,10 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_0x40Included) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.at(0));
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, CC7BitTicker) {
@@ -401,8 +447,10 @@ TEST_F(LearningUtilsTest, CC7BitTicker) {
     MidiOptions options;
     options.selectknob = true;
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, Spread64Ticker) {
@@ -425,8 +473,10 @@ TEST_F(LearningUtilsTest, Spread64Ticker) {
     MidiOptions options;
     options.spread64 = true;
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, CC7BitTicker_SingleDirection) {
@@ -452,8 +502,10 @@ TEST_F(LearningUtilsTest, CC7BitTicker_SingleDirection) {
             LearningUtils::guessMidiInputMappings(control, m_messages);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 
     m_messages.clear();
 
@@ -466,8 +518,10 @@ TEST_F(LearningUtilsTest, CC7BitTicker_SingleDirection) {
     mappings = LearningUtils::guessMidiInputMappings(control, m_messages);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, SingleMessageSwitchMode_NoteOn) {
@@ -485,8 +539,10 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_NoteOn) {
     MidiOptions options;
     options.sw = true;
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 
     m_messages.clear();
 
@@ -497,8 +553,10 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_NoteOn) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, SingleMessageSwitchMode_CC) {
@@ -516,8 +574,10 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_CC) {
     MidiOptions options;
     options.sw = true;
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 
     m_messages.clear();
 
@@ -528,10 +588,11 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_CC) {
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                               options, control),
-              mappings.at(0));
+                      options,
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
-
 
 TEST_F(LearningUtilsTest, MultipleControlsUnrecognized_BindsFirst) {
     // Status 0x91, Control 0x10
@@ -547,8 +608,10 @@ TEST_F(LearningUtilsTest, MultipleControlsUnrecognized_BindsFirst) {
             LearningUtils::guessMidiInputMappings(control, m_messages);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.first());
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }
 
 TEST_F(LearningUtilsTest, MultipleChannelsUnrecognized_BindsFirst) {
@@ -565,6 +628,8 @@ TEST_F(LearningUtilsTest, MultipleChannelsUnrecognized_BindsFirst) {
             LearningUtils::guessMidiInputMappings(control, m_messages);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
-                               MidiOptions(), control),
-              mappings.first());
+                      MidiOptions(),
+                      control,
+                      mappings.first().description),
+            mappings.first());
 }

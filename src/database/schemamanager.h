@@ -33,8 +33,8 @@ class SchemaManager {
             int targetVersion);
 
   private:
-    QSqlDatabase m_database;
-    SettingsDAO m_settingsDao;
+    const QSqlDatabase m_database;
+    const SettingsDAO m_settingsDao;
 
     int m_currentVersion;
 };

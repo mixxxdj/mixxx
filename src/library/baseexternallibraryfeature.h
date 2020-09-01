@@ -1,53 +1,60 @@
-#ifndef BASEEXTERNALLIBRARYFEATURE_H
-#define BASEEXTERNALLIBRARYFEATURE_H
+#pragma once
 
 #include <QAction>
 #include <QModelIndex>
 #include <QPointer>
 
 #include "library/libraryfeature.h"
+#include "library/dao/playlistdao.h"
+#include "util/parented_ptr.h"
 
 class BaseSqlTableModel;
 class TrackCollection;
-class WLibrarySidebar;
 
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pCollection);
-    virtual ~BaseExternalLibraryFeature();
+    BaseExternalLibraryFeature(
+            Library* pLibrary,
+            UserSettingsPointer pConfig);
+    ~BaseExternalLibraryFeature() override = default;
 
   public slots:
-    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
-    virtual void onRightClick(const QPoint& globalPos);
-    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+    void onRightClick(const QPoint& globalPos) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   protected:
     // Must be implemented by external Libraries copied to Mixxx DB
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) {
         Q_UNUSED(playlist);
-        return NULL;
+        return nullptr;
     }
     // Must be implemented by external Libraries not copied to Mixxx DB
     virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
 
-    QModelIndex m_lastRightClickedIndex;
-
-    TrackCollection* const m_pTrackCollection;
-
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
+    void slotAddToAutoDJReplace();
     void slotImportAsMixxxPlaylist();
 
-  private:
-    void addToAutoDJ(bool bTop);
+  protected:
+    QModelIndex lastRightClickedIndex() const {
+        return m_lastRightClickedIndex;
+    }
 
-    QAction* m_pAddToAutoDJAction;
-    QAction* m_pAddToAutoDJTopAction;
-    QAction* m_pImportAsMixxxPlaylistAction;
+    TrackCollection* const m_pTrackCollection;
+
+  private:
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+
+    QModelIndex m_lastRightClickedIndex;
+
+    parented_ptr<QAction> m_pAddToAutoDJAction;
+    parented_ptr<QAction> m_pAddToAutoDJTopAction;
+    parented_ptr<QAction> m_pAddToAutoDJReplaceAction;
+    parented_ptr<QAction> m_pImportAsMixxxPlaylistAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-#endif // BASEEXTERNALLIBRARYFEATURE_H

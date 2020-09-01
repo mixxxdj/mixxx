@@ -8,11 +8,14 @@
 
 QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9.,/ ]");
 
-WBeatSpinBox::WBeatSpinBox(QWidget* parent, const ConfigKey& configKey,
-                           int decimals, double minimum, double maximum)
+WBeatSpinBox::WBeatSpinBox(QWidget* parent,
+        const ConfigKey& configKey,
+        int decimals,
+        double minimum,
+        double maximum)
         : QDoubleSpinBox(parent),
           WBaseWidget(this),
-          m_valueControl(configKey, this),
+          m_valueControl(configKey, this, ControlFlag::NoAssertIfMissing),
           m_scaleFactor(1.0) {
     // replace the original QLineEdit by one that supports font scaling.
     setLineEdit(new WBeatLineEdit(this));

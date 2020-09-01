@@ -39,6 +39,12 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             }
         }
 
+        if (!bSelectedColorSchemeFound) {
+            // If we didn't find a matching color scheme, pick the first one
+            schemeNode = schemesNode.firstChild();
+            bSelectedColorSchemeFound = !schemeNode.isNull();
+        }
+
         if (bSelectedColorSchemeFound) {
             QSharedPointer<ImgSource> imsrc =
                     QSharedPointer<ImgSource>(parseFilters(schemeNode.namedItem("Filters")));
@@ -50,12 +56,12 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             // iterates over all <SetVariable> nodes in the selected color scheme node
             pContext->updateVariables(schemeNode);
 
-
             if (pStyle) {
                 *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
             }
         }
     }
+
     if (!bSelectedColorSchemeFound) {
         QSharedPointer<ImgSource> imsrc =
                 QSharedPointer<ImgSource>(new ImgLoader());

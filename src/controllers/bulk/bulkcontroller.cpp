@@ -11,6 +11,7 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
+#include "util/compatibility.h"
 #include "util/trace.h"
 #include "util/time.h"
 
@@ -32,7 +33,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (m_stop.load() == 0) {
+    while (atomicLoadAcquire(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -52,7 +53,7 @@ void BulkReader::run() {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData, mixxx::Time::elapsed()));
+            emit incomingData(outData, mixxx::Time::elapsed());
         }
     }
     qDebug() << "Stopped Reader";
@@ -68,15 +69,15 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
     return QString::fromLatin1((char*)buf);
 }
 
-
-BulkController::BulkController(libusb_context* context,
-                               libusb_device_handle *handle,
-                               struct libusb_device_descriptor *desc)
-        : m_context(context),
+BulkController::BulkController(UserSettingsPointer pConfig,
+        libusb_context* context,
+        libusb_device_handle* handle,
+        struct libusb_device_descriptor* desc)
+        : Controller(pConfig),
+          m_context(context),
           m_phandle(handle),
           in_epaddr(0),
-          out_epaddr(0)
-{
+          out_epaddr(0) {
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
@@ -112,12 +113,7 @@ void BulkController::visit(const MidiControllerPreset* preset) {
 void BulkController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
-    emit(presetLoaded(getPreset()));
-}
-
-bool BulkController::savePreset(const QString fileName) const {
-    HidControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
+    emit presetLoaded(getPreset());
 }
 
 bool BulkController::matchPreset(const PresetInfo& preset) {
@@ -185,8 +181,7 @@ int BulkController::open() {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
-        connect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                this, SLOT(receive(QByteArray, mixxx::Duration)));
+        connect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -209,8 +204,7 @@ int BulkController::close() {
         qWarning() << "BulkReader not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                   this, SLOT(receive(QByteArray, mixxx::Duration)));
+        disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
         controllerDebug("  Waiting on reader to finish");
         m_pReader->wait();

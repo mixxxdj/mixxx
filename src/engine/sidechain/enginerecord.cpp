@@ -58,8 +58,9 @@ void EngineRecord::updateFromPreferences() {
     }
     Encoder::Format format = EncoderFactory::getFactory().getSelectedFormat(m_pConfig);
     m_encoding = format.internalName;
-    m_pEncoder = EncoderFactory::getFactory().getNewEncoder(format,  m_pConfig, this);
-    m_pEncoder->updateMetaData(m_baAuthor,m_baTitle,m_baAlbum);
+    m_pEncoder = EncoderFactory::getFactory().createRecordingEncoder(
+            format, m_pConfig, this);
+    m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
 
     QString errorMsg;
     if(m_pEncoder->initEncoder(m_sampleRate, errorMsg) < 0) {
@@ -119,7 +120,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             if (m_bCueIsEnabled) {
                 closeCueFile();
             }
-            emit(isRecording(false, false));
+            emit isRecording(false, false);
         }
     } else if (recordingStatus == RECORD_READY) {
         // If we are ready for recording, i.e, the output file has been selected, we
@@ -129,7 +130,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             Event::start(tag);
             qDebug("Setting record flag to: ON");
             m_pRecReady->set(RECORD_ON);
-            emit(isRecording(true, false));  // will notify the RecordingManager
+            emit isRecording(true, false);  // will notify the RecordingManager
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
@@ -148,7 +149,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             qDebug("Setting record flag to: OFF");
             m_pRecReady->slotSet(RECORD_OFF);
             // An error occurred.
-            emit(isRecording(false, true));
+            emit isRecording(false, true);
         }
     } else if (recordingStatus == RECORD_SPLIT_CONTINUE) {
         if (fileOpen()) {
@@ -161,7 +162,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (openFile()) {
             qDebug() << "Splitting to a new file: "<< m_fileName;
             m_pRecReady->set(RECORD_ON);
-            emit(isRecording(true, false));  // will notify the RecordingManager
+            emit isRecording(true, false);  // will notify the RecordingManager
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
@@ -182,7 +183,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             qDebug("Setting record flag to: OFF");
             m_pRecReady->slotSet(RECORD_OFF);
             // An error occurred.
-            emit(isRecording(false, true));
+            emit isRecording(false, true);
         }
     }
 
@@ -209,7 +210,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // gets recorded duration and emit signal that will be used
         // by RecordingManager to update the label besides start/stop button
         if (lastDuration != m_recordedDuration) {
-            emit(durationRecorded(m_recordedDuration));
+            emit durationRecorded(m_recordedDuration);
         }
     }
 }
@@ -259,7 +260,7 @@ void EngineRecord::write(const unsigned char *header, const unsigned char *body,
     }
     // Always write body
     m_dataStream.writeRawData((const char*) body, bodyLen);
-    emit(bytesRecorded((headerLen+bodyLen)));
+    emit bytesRecorded((headerLen+bodyLen));
 
 }
 // Encoder calls this method to write compressed audio

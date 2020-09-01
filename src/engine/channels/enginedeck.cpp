@@ -27,11 +27,14 @@
 #include "waveform/waveformwidgetfactory.h"
 
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
-                       UserSettingsPointer pConfig,
-                       EngineMaster* pMixingEngine,
-                       EffectsManager* pEffectsManager,
-                       EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(handle_group, defaultOrientation, pEffectsManager),
+        UserSettingsPointer pConfig,
+        EngineMaster* pMixingEngine,
+        EffectsManager* pEffectsManager,
+        EngineChannel::ChannelOrientation defaultOrientation,
+        bool primaryDeck)
+        : EngineChannel(handle_group, defaultOrientation, pEffectsManager,
+                  /*isTalkoverChannel*/ false,
+                  primaryDeck),
           m_pConfig(pConfig),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
@@ -44,9 +47,10 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
     m_bPassthroughIsActive = false;
     m_bPassthroughWasActive = false;
 
-    // Set up passthrough toggle button
-    connect(m_pPassing, &ControlObject::valueChanged,
-            this, &EngineDeck::slotPassingToggle,
+    // Ensure that input is configured before enabling passthrough
+    m_pPassing->connectValueChangeRequest(
+            this,
+            &EngineDeck::slotPassthroughChangeRequest,
             Qt::DirectConnection);
 
     m_pPregain = new EnginePregain(getGroup());
@@ -162,4 +166,17 @@ bool EngineDeck::isPassthroughActive() const {
 
 void EngineDeck::slotPassingToggle(double v) {
     m_bPassthroughIsActive = v > 0;
+}
+
+void EngineDeck::slotPassthroughChangeRequest(double v) {
+    if (v <= 0 || m_pInputConfigured->get() > 0) {
+        m_pPassing->setAndConfirm(v);
+
+        // Pass confirmed value to slotPassingToggle. We cannot use the
+        // valueChanged signal for this, because the change originates from the
+        // same ControlObject instance.
+        slotPassingToggle(v);
+    } else {
+        emit noPassthroughInputConfigured();
+    }
 }

@@ -12,17 +12,17 @@ double MovingInterquartileMean::insert(double value) {
     m_bChanged = true;
 
     // Insert new value
-    if (m_list.isEmpty()) {
-        m_list.prepend(value);
+    if (m_list.empty()) {
+        m_list.push_front(value);
         m_queue.enqueue(m_list.begin());
-    } else if (value < m_list.first()) {
-        m_list.prepend(value);
+    } else if (value < m_list.front()) {
+        m_list.push_front(value);
         m_queue.enqueue(m_list.begin());
-    } else if (value >= m_list.last()) {
-        m_list.append(value);
+    } else if (value >= m_list.back()) {
+        m_list.push_back(value);
         m_queue.enqueue(--m_list.end());
     } else {
-        QLinkedList<double>::iterator it = m_list.begin()++;
+        std::list<double>::iterator it = m_list.begin()++;
         while (value >= *it) {
             ++it;
         }
@@ -32,7 +32,7 @@ double MovingInterquartileMean::insert(double value) {
     }
 
     // If list was already full, delete the oldest value:
-    if (m_list.size() == m_iListMaxSize + 1) {
+    if (m_list.size() == static_cast<std::size_t>(m_iListMaxSize + 1)) {
         m_list.erase(m_queue.dequeue());
     }
     return mean();
@@ -60,7 +60,8 @@ double MovingInterquartileMean::mean() {
         int quartileSize = m_list.size() / 4;
         double interQuartileRange = 2 * quartileSize;
         double d_sum = 0;
-        QLinkedList<double>::iterator it = m_list.begin() + quartileSize;
+        std::list<double>::iterator it = m_list.begin();
+        std::advance(it, quartileSize);
         for (int k = 0; k < 2 * quartileSize; ++k, ++it) {
             d_sum += *it;
         }
@@ -71,7 +72,8 @@ double MovingInterquartileMean::mean() {
         double interQuartileRange = 2 * quartileSize;
         int nFullValues = m_list.size() - 2*static_cast<int>(quartileSize) - 2;
         double quartileWeight = (interQuartileRange - nFullValues) / 2;
-        QLinkedList<double>::iterator it = m_list.begin() + static_cast<int>(quartileSize);
+        std::list<double>::iterator it = m_list.begin();
+        std::advance(it, static_cast<int>(quartileSize));
         double d_sum = *it * quartileWeight;
         ++it;
         for (int k = 0; k < nFullValues; ++k, ++it) {

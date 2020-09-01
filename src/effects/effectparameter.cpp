@@ -114,7 +114,7 @@ void EffectParameter::setValue(double value) {
     }
 
     updateEngineState();
-    emit(valueChanged(m_value));
+    emit valueChanged(m_value);
 }
 
 double EffectParameter::getDefault() const {

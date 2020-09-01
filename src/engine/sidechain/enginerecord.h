@@ -24,7 +24,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     Q_OBJECT
   public:
     EngineRecord(UserSettingsPointer pConfig);
-    virtual ~EngineRecord();
+    ~EngineRecord() override;
 
     void process(const CSAMPLE* pBuffer, const int iBufferSize) override;
     void shutdown() override {}

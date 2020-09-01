@@ -2419,7 +2419,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>prev_chain</key>
-                <description>Preview Effekt 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 1 active)</description>
+                <description>Preview Effect 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x68</midino>
                 <options>
@@ -2429,7 +2429,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>prev_chain</key>
-                <description>Preview Effekt 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 2 active)</description>
+                <description>Preview Effect 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x68</midino>
                 <options>
@@ -2439,7 +2439,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>prev_chain</key>
-                <description>Preview Effekt 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 3 active)</description>
+                <description>Preview Effect 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x68</midino>
                 <options>
@@ -2449,7 +2449,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>prev_chain</key>
-                <description>Preview Effekt 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 4 active)</description>
+                <description>Preview Effect 1, Button: SHIFT &amp; PAD1 (in CUE LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x68</midino>
                 <options>
@@ -3059,7 +3059,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>next_chain</key>
-                <description>Next Effekt 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 1 active)</description>
+                <description>Next Effect 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x69</midino>
                 <options>
@@ -3069,7 +3069,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>next_chain</key>
-                <description>Next Effekt 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 2 active)</description>
+                <description>Next Effect 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x69</midino>
                 <options>
@@ -3079,7 +3079,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>next_chain</key>
-                <description>Next Effekt 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 3 active)</description>
+                <description>Next Effect 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x69</midino>
                 <options>
@@ -3089,7 +3089,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>next_chain</key>
-                <description>Next Effekt 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 4 active)</description>
+                <description>Next Effect 1, Button: SHIFT &amp; PAD2 (in CUE LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x69</midino>
                 <options>

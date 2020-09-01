@@ -1,11 +1,10 @@
-#include "glwaveformrenderersimplesignal.h"
+#include "waveform/renderers/glwaveformrenderersimplesignal.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-
-#include "waveform/waveformwidgetfactory.h"
 #include "util/math.h"
-
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -158,3 +157,5 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

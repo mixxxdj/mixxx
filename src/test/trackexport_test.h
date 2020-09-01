@@ -7,6 +7,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QPair>
+#include <QTemporaryDir>
 
 #include "track/track.h"
 
@@ -70,26 +71,13 @@ class TrackExporterTest : public testing::Test {
                 "src/test/id3-test-data")) { }
 
     void SetUp() override {
-        // QTemporaryDir only in QT5, that would be more convenient.
-        QDir tempPath(QDir::tempPath());
-        qsrand(QDateTime::currentDateTime().toTime_t());
-        const int randnum = qrand() % 100000;
-        QString export_subdir = QString("ExportTest-%2/").arg(randnum);
-        m_exportDir = QDir(tempPath.filePath(export_subdir));
-        tempPath.mkpath(export_subdir);
-    }
-
-    void TearDown() override {
-        QFileInfoList files =
-                m_exportDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
-        for (const auto& file : files) {
-            ASSERT_TRUE(m_exportDir.remove(file.absoluteFilePath()));
-        }
-        ASSERT_TRUE(m_exportDir.rmdir(m_exportDir.absolutePath()));
+        ASSERT_TRUE(m_exportTempDir.isValid());
+        m_exportDir = QDir(m_exportTempDir.path());
     }
 
   protected:
     const QDir m_testDataDir;
+    QTemporaryDir m_exportTempDir;
     QDir m_exportDir;
     QScopedPointer<FakeOverwriteAnswerer> m_answerer;
 };

@@ -31,10 +31,15 @@ ControlObject::ControlObject() {
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
                              bool bPersist, double defaultValue)
         : m_key(key) {
-    // Don't bother looking up the control if key is NULL. Prevents log spew.
-    if (!m_key.isNull()) {
-        m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                bIgnoreNops, bTrack, bPersist, defaultValue);
+    // Don't bother looking up the control if key is invalid. Prevents log spew.
+    if (m_key.isValid()) {
+        m_pControl = ControlDoublePrivate::getControl(m_key,
+                ControlFlag::None,
+                this,
+                bIgnoreNops,
+                bTrack,
+                bPersist,
+                defaultValue);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
@@ -49,7 +54,9 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
 
 ControlObject::~ControlObject() {
     if (m_pControl) {
-        m_pControl->removeCreatorCO();
+        const bool success = m_pControl->resetCreatorCO(this);
+        Q_UNUSED(success);
+        DEBUG_ASSERT(success);
     }
 }
 
@@ -57,14 +64,14 @@ ControlObject::~ControlObject() {
 void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
     if (pSender != this) {
-        emit(valueChanged(dValue));
+        emit valueChanged(dValue);
     }
 }
 
 // static
-ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
+ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flags) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, warn);
+    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, flags);
     if (pCDP) {
         return pCDP->getCreatorCO();
     }

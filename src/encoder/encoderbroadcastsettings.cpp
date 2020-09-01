@@ -26,30 +26,9 @@ EncoderBroadcastSettings::EncoderBroadcastSettings(
     m_qualList.append(256);
     m_qualList.append(320);
 }
-EncoderBroadcastSettings::~EncoderBroadcastSettings() {
-}
 
 QList<int> EncoderBroadcastSettings::getQualityValues() const {
     return m_qualList;
-}
-
-// Sets the value
-void EncoderBroadcastSettings::setQualityByValue(int qualityValue) {
-    if (m_qualList.contains(qualityValue)) {
-        m_pProfile->setBitrate(qualityValue);
-    } else {
-        qWarning() << "Invalid qualityValue given to EncoderBroadcastSettings: " 
-            << qualityValue << ". Ignoring it";
-    }
-}
-
-void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
-    if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
-        m_pProfile->setBitrate(m_qualList.at(qualityIndex));
-    } else {
-        qWarning() << "Invalid qualityIndex given to EncoderBroadcastSettings: " 
-            << qualityIndex << ". Ignoring it";
-    }
 }
 
 int EncoderBroadcastSettings::getQuality() const {
@@ -68,11 +47,6 @@ int EncoderBroadcastSettings::getQualityIndex() const {
     return m_qualList.indexOf(getQuality());
 }
 
-void EncoderBroadcastSettings::setChannelMode(EncoderSettings::ChannelMode mode)
-{
-    m_pProfile->setChannels(static_cast<int>(mode));
-}
-
 EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
     switch(m_pProfile->getChannels()) {
         case 1: return EncoderSettings::ChannelMode::MONO;
@@ -80,5 +54,9 @@ EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
         case 0: // fallthrough
         default: return EncoderSettings::ChannelMode::AUTOMATIC;
     }
+}
+
+QString EncoderBroadcastSettings::getFormat() const {
+    return m_pProfile->getFormat();
 }
 

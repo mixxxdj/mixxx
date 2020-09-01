@@ -16,8 +16,9 @@
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
 
-HidController::HidController(const hid_device_info deviceInfo)
-        : m_pHidDevice(NULL) {
+HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
+        : Controller(pConfig),
+          m_pHidDevice(NULL) {
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
@@ -97,12 +98,7 @@ void HidController::visit(const MidiControllerPreset* preset) {
 void HidController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
-    emit(presetLoaded(getPreset()));
-}
-
-bool HidController::savePreset(const QString fileName) const {
-    HidControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
+    emit presetLoaded(getPreset());
 }
 
 bool HidController::matchPreset(const PresetInfo& preset) {
@@ -151,7 +147,8 @@ void HidController::guessDeviceCategory() {
                 case 0x6: info = tr("Generic HID Keyboard"); break;
                 case 0x8: info = tr("Generic HID Multiaxis Controller"); break;
                 default: info = tr("Unknown HID Desktop Device") +
-                        QString().sprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
+                    QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                    QStringLiteral("/0x") + QString::number(hid_usage, 16);
                     break;
             }
         } else if (hid_vendor_id==0x5ac) {
@@ -159,19 +156,22 @@ void HidController::guessDeviceCategory() {
             if (hid_product_id==0x8242) {
                 info = tr("HID Infrared Control");
             } else {
-                info = tr("Unknown Apple HID Device") + QString().sprintf(
-                    " 0x%0x/0x%0x",hid_usage_page,hid_usage);
+                info = tr("Unknown Apple HID Device") +
+                    QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                    QStringLiteral("/0x") + QString::number(hid_usage, 16);
             }
         } else {
             // Fill in the usage page and usage fields for debugging info
-            info = tr("HID Unknown Device") + QString().sprintf(
-                " 0x%0x/0x%0x", hid_usage_page, hid_usage);
+            info = tr("HID Unknown Device") +
+                QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                QStringLiteral("/0x") + QString::number(hid_usage, 16);
         }
     } else {
         // Guess linux device types somehow as well. Or maybe just fill in the
         // interface number?
-        info = tr("HID Interface Number") + QString().sprintf(
-            " 0x%0x", hid_interface_number);
+        info = tr("HID Interface Number") +
+            QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+            QStringLiteral("/0x") + QString::number(hid_usage, 16);
     }
     setDeviceCategory(info);
 }

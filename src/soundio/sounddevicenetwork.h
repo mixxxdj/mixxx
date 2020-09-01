@@ -87,8 +87,7 @@ class SoundDeviceNetworkThread : public QThread {
     }
 
   private:
-    void run() {
-
+    void run() override {
 #ifdef __LINUX__
         struct sched_param spm = { 0 };
         spm.sched_priority = 1;

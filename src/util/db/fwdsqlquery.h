@@ -1,5 +1,4 @@
-#ifndef MIXXX_FWDSQLQUERY_H
-#define MIXXX_FWDSQLQUERY_H
+#pragma once
 
 
 #include <QSqlQuery>
@@ -45,7 +44,11 @@ class FwdSqlQuery: protected QSqlQuery {
     }
 
     bool hasError() const {
-        return lastError().isValid() && (lastError().type() != QSqlError::NoError);
+        return lastError().isValid() &&
+                (lastError().type() != QSqlError::NoError);
+    }
+    QSqlError lastError() const {
+        return QSqlQuery::lastError();
     }
 
     static const int BOOLEAN_FALSE = 0;
@@ -112,6 +115,3 @@ class FwdSqlQuery: protected QSqlQuery {
 
     bool m_prepared;
 };
-
-
-#endif // MIXXX_FWDSQLQUERY_H

@@ -17,6 +17,7 @@
 #endif
 
 #include "broadcast/defs_broadcast.h"
+#include "recording/defs_recording.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -117,10 +118,10 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      }
 
      // Encoding format combobox
-     comboBoxEncodingFormat->addItem(tr("MP3"), BROADCAST_FORMAT_MP3);
-     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), BROADCAST_FORMAT_OV);
+     comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
+     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
 #ifdef __OPUS__
-     comboBoxEncodingFormat->addItem(tr("Opus"), BROADCAST_FORMAT_OPUS);
+     comboBoxEncodingFormat->addItem(tr("Opus"), ENCODING_OPUS);
 #endif
 
      // Encoding channels combobox
@@ -166,6 +167,10 @@ void DlgPrefBroadcast::slotUpdate() {
     connectOnApply->setEnabled(!enabled);
 
     btnDisconnectAll->setEnabled(enabled);
+}
+
+QUrl DlgPrefBroadcast::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_BROADCAST_URL);
 }
 
 void DlgPrefBroadcast::applyModel() {

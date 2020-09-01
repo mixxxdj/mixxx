@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOURCES_SOUNDSOURCEPROXY_H
-#define MIXXX_SOURCES_SOUNDSOURCEPROXY_H
+#pragma once
 
 #include "track/track.h"
 
@@ -89,11 +88,12 @@ class SoundSourceProxy {
     // properly. The application log will contain warning messages for a detailed
     // analysis in case unexpected behavior has been reported.
     void updateTrackFromSource(
-            ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default) const;
+            ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default);
 
     // Parse only the metadata from the file without modifying
     // the referenced track.
-    mixxx::MetadataSource::ImportResult importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
+    mixxx::MetadataSource::ImportResult importTrackMetadata(
+            mixxx::TrackMetadata* pTrackMetadata) const;
 
     // Opening the audio source through the proxy will update the
     // audio properties of the corresponding track object. Returns
@@ -108,8 +108,8 @@ class SoundSourceProxy {
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
-    friend class TrackCollection;
-    static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
+    friend class TrackCollectionManager;
+    static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
@@ -143,5 +143,3 @@ class SoundSourceProxy {
     // that keeps it alive.
     mixxx::AudioSourcePointer m_pAudioSource;
 };
-
-#endif // MIXXX_SOURCES_SOUNDSOURCEPROXY_H

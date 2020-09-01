@@ -98,7 +98,7 @@ void TrackNumbers::splitString(
 }
 
 //static
-QString TrackNumbers::joinStrings(
+QString TrackNumbers::joinAsString(
         const QString& actualText,
         const QString& totalText) {
     if (totalText.isEmpty()) {
@@ -141,5 +141,5 @@ QString TrackNumbers::toString() const {
     QString actualText;
     QString totalText;
     toStrings(&actualText, &totalText);
-    return joinStrings(actualText, totalText);
+    return joinAsString(actualText, totalText);
 }

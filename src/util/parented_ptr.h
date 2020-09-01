@@ -1,5 +1,4 @@
-#ifndef UTIL_PARENTED_PTR_H
-#define UTIL_PARENTED_PTR_H
+#pragma once
 
 #include <QPointer>
 #include <memory>
@@ -14,7 +13,7 @@
 // NOTE: A parented_ptr must not dangle! Therefore, the lifetime of the parent must exceed the
 // lifetime of the parented_ptr.
 template<typename T>
-class parented_ptr {
+class parented_ptr final {
   public:
     parented_ptr() noexcept
             : m_ptr{nullptr} {
@@ -29,9 +28,7 @@ class parented_ptr {
     }
 
     ~parented_ptr() noexcept {
-        if (m_ptr != nullptr) {
-            DEBUG_ASSERT(m_ptr->parent() != nullptr);
-        }
+        DEBUG_ASSERT(!m_ptr || m_ptr->parent());
     }
 
     // Delete copy constructor and copy assignment operator
@@ -61,6 +58,9 @@ class parented_ptr {
         parented_ptr{std::move(*this)}; // move *this into a temporary that gets destructed
         return *this;
     }
+
+    // Prevent unintended invocation of delete on parented_ptr
+    operator void*() const = delete;
 
     operator T*() const noexcept {
         return m_ptr;
@@ -92,8 +92,6 @@ class parented_ptr {
     template<typename>
     friend class parented_ptr;
 };
-
-namespace {
 
 template<typename T, typename... Args>
 inline parented_ptr<T> make_parented(Args&&... args) {
@@ -146,7 +144,3 @@ template<typename T, typename U>
 inline bool operator!=(const parented_ptr<T>& lhs, const parented_ptr<U>& rhs) noexcept {
     return !(lhs.get() == rhs.get());
 }
-
-} // namespace
-
-#endif // UTIL_PARENTED_PTR_H

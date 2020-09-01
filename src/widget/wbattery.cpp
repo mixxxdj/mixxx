@@ -84,6 +84,10 @@ int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
     return result;
 }
 
+QString WBattery::formatTooltip(double dPercentage) {
+    return QString::number(dPercentage, 'f', 0) + QStringLiteral("%");
+}
+
 void WBattery::update() {
     int minutesLeft = m_pBattery ? m_pBattery->getMinutesLeft() : 0;
     Battery::ChargingState chargingState = m_pBattery ?
@@ -91,7 +95,7 @@ void WBattery::update() {
     double dPercentage = m_pBattery ? m_pBattery->getPercentage() : 0;
 
     if (chargingState != Battery::UNKNOWN) {
-        setBaseTooltip(QString("%1\%").arg(dPercentage, 0, 'f', 0));
+        setBaseTooltip(formatTooltip(dPercentage));
     }
 
     m_pCurrentPixmap.clear();

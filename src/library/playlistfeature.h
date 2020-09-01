@@ -1,16 +1,12 @@
-// playlistfeature.h
-// Created 8/17/09 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef PLAYLISTFEATURE_H
-#define PLAYLISTFEATURE_H
-
-#include <QVariant>
 #include <QIcon>
 #include <QModelIndex>
-#include <QUrl>
 #include <QObject>
 #include <QPoint>
 #include <QPointer>
+#include <QUrl>
+#include <QVariant>
 
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
@@ -22,8 +18,9 @@ class WLibrarySidebar;
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
   public:
-    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection,
-                    UserSettingsPointer pConfig);
+    PlaylistFeature(
+            Library* pLibrary,
+            UserSettingsPointer pConfig);
     virtual ~PlaylistFeature();
 
     QVariant title() override;
@@ -40,18 +37,16 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(int playlistId) override;
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName) override;
+    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistTableRenamed(int playlistId, QString newName) override;
 
- protected:
+  protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
     QString fetchPlaylistLabel(int playlistId) override;
-    void decorateChild(TreeItem *pChild, int playlist_id) override;
+    void decorateChild(TreeItem* pChild, int playlist_id) override;
 
   private:
     QString getRootViewHtml() const override;
-    QIcon m_icon;
+    const QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-#endif /* PLAYLISTFEATURE_H */

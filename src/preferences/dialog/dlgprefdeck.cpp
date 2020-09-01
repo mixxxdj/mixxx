@@ -34,22 +34,29 @@ constexpr int kDefaultRateRampSensitivity = 250;
 // to playermanager.cpp
 }
 
-DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
-                         PlayerManager* pPlayerManager,
-                         UserSettingsPointer  pConfig)
-        :  DlgPreferencePage(parent),
-           m_pConfig(pConfig),
-           m_mixxx(mixxx),
-           m_pPlayerManager(pPlayerManager),
-           m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0) {
+DlgPrefDeck::DlgPrefDeck(QWidget* parent,
+        MixxxMainWindow* mixxx,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig)
+        : DlgPreferencePage(parent),
+          m_mixxx(mixxx),
+          m_pPlayerManager(pPlayerManager),
+          m_pConfig(pConfig),
+          m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
+                  ConfigKey("[Controls]", "ShowDurationRemaining"))),
+          m_pControlTrackTimeFormat(std::make_unique<ControlObject>(
+                  ConfigKey("[Controls]", "TimeFormat"))),
+          m_pNumDecks(
+                  make_parented<ControlProxy>("[Master]", "num_decks", this)),
+          m_pNumSamplers(make_parented<ControlProxy>(
+                  "[Master]", "num_samplers", this)),
+          m_iNumConfiguredDecks(0),
+          m_iNumConfiguredSamplers(0) {
     setupUi(this);
 
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
     slotNumDecksChanged(m_pNumDecks->get(), true);
 
-    m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
     m_pNumSamplers->connectValueChanged(this, [=](double value){slotNumSamplersChanged(value);});
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
@@ -74,20 +81,14 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
     // Track time display configuration
-    m_pControlTrackTimeDisplay = new ControlObject(
-            ConfigKey("[Controls]", "ShowDurationRemaining"));
-    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetTrackTimeDisplay(double)));
-
-    // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
-          QString::number(static_cast<int>(TrackTime::DisplayMode::REMAINING)));
-    }
+    connect(m_pControlTrackTimeDisplay.get(),
+            &ControlObject::valueChanged,
+            this,
+            QOverload<double>::of(&DlgPrefDeck::slotSetTrackTimeDisplay));
 
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
     if (positionDisplayType ==
             static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);
@@ -107,15 +108,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
 
     // display time format
-
-    m_pControlTrackTimeFormat = new ControlObject(
-            ConfigKey("[Controls]", "TimeFormat"));
-    connect(m_pControlTrackTimeFormat,
+    connect(m_pControlTrackTimeFormat.get(),
             &ControlObject::valueChanged,
             this,
             &DlgPrefDeck::slotTimeFormatChanged);
 
-    QLocale locale;
     // Track Display model
     comboBoxTimeFormat->clear();
 
@@ -207,17 +204,9 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this,
             SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
 
-    // Automatically assign a color to new hot cues
-    m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
-    checkBoxAssignHotcueColors->setChecked(m_bAssignHotcueColors);
-    connect(checkBoxAssignHotcueColors,
-            SIGNAL(toggled(bool)),
-            this,
-            SLOT(slotAssignHotcueColorsCheckbox(bool)));
-
-    m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
-    setRateDirectionForAllDecks(m_bRateInverted);
-    checkBoxInvertSpeedSlider->setChecked(m_bRateInverted);
+    m_bRateDownIncreasesSpeed = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), true);
+    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
+    checkBoxInvertSpeedSlider->setChecked(m_bRateDownIncreasesSpeed);
     connect(checkBoxInvertSpeedSlider, SIGNAL(toggled(bool)),
             this, SLOT(slotRateInversionCheckbox(bool)));
 
@@ -366,7 +355,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 }
 
 DlgPrefDeck::~DlgPrefDeck() {
-    delete m_pControlTrackTimeDisplay;
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
     qDeleteAll(m_cueControls);
@@ -386,9 +374,6 @@ void DlgPrefDeck::slotUpdate() {
 
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
-
-    checkBoxAssignHotcueColors->setChecked(m_pConfig->getValue(
-            ConfigKey("[Controls]", "auto_hotcue_colors"), false));
 
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
@@ -502,7 +487,7 @@ void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
 }
 
 void DlgPrefDeck::slotRateInversionCheckbox(bool inverted) {
-    m_bRateInverted = inverted;
+    m_bRateDownIncreasesSpeed = inverted;
 }
 
 void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
@@ -550,10 +535,6 @@ void DlgPrefDeck::slotCueModeCombobox(int index) {
 
 void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
     m_bCloneDeckOnLoadDoubleTap = checked;
-}
-
-void DlgPrefDeck::slotAssignHotcueColorsCheckbox(bool checked) {
-    m_bAssignHotcueColors = checked;
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
@@ -643,16 +624,15 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
-    m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), m_bAssignHotcueColors);
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
                         m_iRateRangePercent);
 
-    setRateDirectionForAllDecks(m_bRateInverted);
+    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
-                        static_cast<int>(m_bRateInverted));
+            static_cast<int>(m_bRateDownIncreasesSpeed));
 
     int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 

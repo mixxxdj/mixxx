@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <QStringBuilder>
 #include <QFileInfo>
 
 #include "library/coverartcache.h"
@@ -20,34 +19,35 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(info, NULL, 0, false);
-        EXPECT_QSTRING_EQ(QString(), res.cover.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.hash);
+        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
+        EXPECT_QSTRING_EQ(QString(), res.coverArt.coverLocation);
+        EXPECT_TRUE(CoverImageUtils::isValidHash(res.coverArt.hash));
+        EXPECT_TRUE(res.coverInfoUpdated);
 
         SecurityTokenPointer securityToken =
                 Sandbox::openSecurityToken(QDir(trackLocation), true);
         QImage img = SoundSourceProxy::importTemporaryCoverImage(
                 trackLocation, securityToken);
         EXPECT_FALSE(img.isNull());
-        EXPECT_EQ(img, res.cover.image);
+        EXPECT_EQ(img, res.coverArt.loadedImage.image);
     }
 
     void loadCoverFromFile(QString trackLocation, QString coverLocation, QString absoluteCoverLocation) {
-        QImage img = QImage(absoluteCoverLocation);
+        const QImage img = QImage(absoluteCoverLocation);
+        ASSERT_FALSE(img.isNull());
 
         CoverInfo info;
         info.type = CoverInfo::FILE;
         info.source = CoverInfo::GUESSED;
         info.coverLocation = coverLocation;
         info.trackLocation = trackLocation;
-        info.hash = 4321; // fake cover hash
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(info, NULL, 0, false);
-        EXPECT_QSTRING_EQ(info.coverLocation, res.cover.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.hash);
-        EXPECT_FALSE(img.isNull());
-        EXPECT_EQ(img, res.cover.image);
+        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
+        EXPECT_TRUE(res.coverInfoUpdated); // hash updated
+        EXPECT_EQ(img, res.coverArt.loadedImage.image);
+        EXPECT_EQ(CoverImageUtils::calculateHash(img), res.coverArt.hash);
+        EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }
 };
 
@@ -72,8 +72,14 @@ const QString kTrackLocationTest(QDir::currentPath() %
 // - empty trackLocation
 // - absolute coverLocation
 
-TEST_F(CoverArtCacheTest, loadCover) {
+TEST_F(CoverArtCacheTest, loadCoverFromMetadata) {
     loadCoverFromMetadata(kTrackLocationTest);
-    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest); //relative
-    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest); //absolute
+}
+
+TEST_F(CoverArtCacheTest, loadCoverFromFileRelative) {
+    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest);
+}
+
+TEST_F(CoverArtCacheTest, loadCoverFromFileAbsolute) {
+    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest);
 }

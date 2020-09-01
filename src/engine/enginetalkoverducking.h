@@ -15,7 +15,7 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
         MANUAL,
     };
 
-    EngineTalkoverDucking(UserSettingsPointer pConfig, const char* group);
+    EngineTalkoverDucking(UserSettingsPointer pConfig, const QString& group);
     virtual ~EngineTalkoverDucking();
 
     TalkoverDuckSetting getMode() const {
@@ -31,7 +31,7 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
 
   private:
     UserSettingsPointer m_pConfig;
-    const char* m_group;
+    const QString m_group;
 
     ControlProxy* m_pMasterSampleRate;
     ControlPotmeter* m_pDuckStrength;

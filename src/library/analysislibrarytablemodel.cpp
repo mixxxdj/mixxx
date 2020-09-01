@@ -1,22 +1,18 @@
-#include <QObject>
+#include "library/analysislibrarytablemodel.h"
 
-#include "analysislibrarytablemodel.h"
-#include "library/trackcollection.h"
+namespace {
 
 const QString RECENT_FILTER = "datetime_added > datetime('now', '-7 days')";
 
+} // anonymous namespace
+
 AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
-                                                   TrackCollection* pTrackCollection)
-        : LibraryTableModel(parent, pTrackCollection,
+                                                   TrackCollectionManager* pTrackCollectionManager)
+        : LibraryTableModel(parent, pTrackCollectionManager,
                             "mixxx.db.model.prepare") {
     // Default to showing recent tracks.
     setSearch("", RECENT_FILTER);
 }
-
-
-AnalysisLibraryTableModel::~AnalysisLibraryTableModel() {
-}
-
 
 void AnalysisLibraryTableModel::showRecentSongs() {
     // Search with the recent filter.

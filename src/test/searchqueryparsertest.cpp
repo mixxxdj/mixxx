@@ -7,17 +7,28 @@
 #include "library/searchqueryparser.h"
 #include "util/assert.h"
 
+TrackPointer newTestTrack(int sampleRate) {
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setAudioProperties(
+            mixxx::audio::ChannelCount(2),
+            mixxx::audio::SampleRate(sampleRate),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(180));
+    return pTrack;
+}
+
 class SearchQueryParserTest : public LibraryTest {
   protected:
     SearchQueryParserTest()
-            : m_parser(collection()) {
+            : m_parser(internalCollection()) {
     }
 
     virtual ~SearchQueryParserTest() {
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack(collection()->getTrackDAO().addSingleTrack(trackLocation, false));
+        TrackPointer pTrack =
+                getOrAddTrackByLocation(trackLocation);
         return pTrack ? pTrack->getId() : TrackId();
     }
 
@@ -359,8 +370,7 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     auto pQuery(
         m_parser.parseQuery("bpm:127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -379,8 +389,7 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     auto pQuery(
         m_parser.parseQuery("bpm:", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
@@ -397,8 +406,7 @@ TEST_F(SearchQueryParserTest, NumericFilterNegation) {
     auto pQuery(
         m_parser.parseQuery("-bpm:127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -417,8 +425,7 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     auto pQuery(
         m_parser.parseQuery("bpm: 127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -437,8 +444,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     auto pQuery(
         m_parser.parseQuery("bpm:>127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.13);
@@ -484,8 +490,7 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     auto pQuery(
         m_parser.parseQuery("bpm:127.12-129", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -507,8 +512,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
         m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision",
                             searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(128);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("Com Truise");
@@ -530,7 +534,7 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, "1 > 2"));
 
-    TrackPointer pTrack(Track::newTemporary());
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setArtist("zxcv");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("asdf");
@@ -549,8 +553,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     auto pQuery(
         m_parser.parseQuery("duration:1:30", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setDuration(91);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(90);
@@ -589,8 +592,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     auto pQuery(
         m_parser.parseQuery("duration:>1:30", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setDuration(89);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(91);
@@ -689,8 +691,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     auto pQuery(
         m_parser.parseQuery("duration:2:30-3:20", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
@@ -703,7 +704,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2:30-200", searchColumns, "");
-    pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
@@ -716,7 +716,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:150-200", searchColumns, "");
-    pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
@@ -729,7 +728,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2m30s-3m20s", searchColumns, "");
-    pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
@@ -760,7 +758,7 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
     Crate testCrate;
     testCrate.setName(searchTerm);
     CrateId testCrateId;
-    collection()->insertCrate(testCrate, &testCrateId);
+    internalCollection()->insertCrate(testCrate, &testCrateId);
 
     // Add the track in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -771,7 +769,7 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
     // Add track A to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->addCrateTracks(testCrateId, trackIds);
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
 
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
@@ -806,7 +804,7 @@ TEST_F(SearchQueryParserTest, ShortCrateFilter) {
     Crate testCrate;
     testCrate.setName(crateName);
     CrateId testCrateId;
-    collection()->insertCrate(testCrate, &testCrateId);
+    internalCollection()->insertCrate(testCrate, &testCrateId);
 
     // Add the track in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -820,7 +818,7 @@ TEST_F(SearchQueryParserTest, ShortCrateFilter) {
     // Add track A to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->addCrateTracks(testCrateId, trackIds);
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
 
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
@@ -860,7 +858,7 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
     Crate testCrate;
     testCrate.setName(searchTerm);
     CrateId testCrateId;
-    collection()->insertCrate(testCrate, &testCrateId);
+    internalCollection()->insertCrate(testCrate, &testCrateId);
 
     // Add the tracks in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -871,7 +869,7 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
     // Add track A to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->addCrateTracks(testCrateId, trackIds);
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
 
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
@@ -904,7 +902,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     Crate testCrate;
     testCrate.setName(searchTerm);
     CrateId testCrateId;
-    collection()->insertCrate(testCrate, &testCrateId);
+    internalCollection()->insertCrate(testCrate, &testCrateId);
 
     // Add the tracks in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -915,7 +913,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     // Add trackA to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->addCrateTracks(testCrateId, trackIds);
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
 
     pTrackA->setArtist("asdf");
     pTrackB->setArtist("asdf");
@@ -949,11 +947,11 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     Crate testCrateA;
     testCrateA.setName(searchTermA);
     CrateId testCrateAId;
-    collection()->insertCrate(testCrateA, &testCrateAId);
+    internalCollection()->insertCrate(testCrateA, &testCrateAId);
     Crate testCrateB;
     testCrateB.setName(searchTermB);
     CrateId testCrateBId;
-    collection()->insertCrate(testCrateB, &testCrateBId);
+    internalCollection()->insertCrate(testCrateB, &testCrateBId);
 
     // Add the tracks in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -964,12 +962,12 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     // Add trackA and trackB to crate A
     QList<TrackId> trackIdsA;
     trackIdsA << trackAId << trackBId;
-    collection()->addCrateTracks(testCrateAId, trackIdsA);
+    internalCollection()->addCrateTracks(testCrateAId, trackIdsA);
 
     // Add trackA to crate B
     QList<TrackId> trackIdsB;
     trackIdsB << trackAId;
-    collection()->addCrateTracks(testCrateBId, trackIdsB);
+    internalCollection()->addCrateTracks(testCrateBId, trackIdsB);
 
     EXPECT_TRUE(pQueryA->match(pTrackA));
     EXPECT_FALSE(pQueryA->match(pTrackB));

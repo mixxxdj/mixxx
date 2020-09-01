@@ -54,7 +54,7 @@ bool ControllerMappingTableModel::setHeaderData(int section,
     }
 
     m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
+    emit headerDataChanged(orientation, section, section);
     return true;
 }
 

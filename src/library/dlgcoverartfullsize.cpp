@@ -14,11 +14,11 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
           m_pPlayer(pPlayer),
           m_pCoverMenu(make_parented<WCoverArtMenu>(this)) {
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgCoverArtFullSize::slotCoverFound);
     }
 
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -112,21 +112,22 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
-    if (m_pLoadedTrack != nullptr) {
-        CoverArtCache::requestCover(*m_pLoadedTrack, this);
+    if (m_pLoadedTrack) {
+        CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     }
 }
 
-void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
-                                         const CoverInfoRelative& info, QPixmap pixmap,
-                                         bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
-
-    if (pRequestor == this && m_pLoadedTrack != nullptr &&
-            m_pLoadedTrack->getCoverHash() == info.hash) {
-        // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
-        //          << pixmap.size();
+void DlgCoverArtFullSize::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        quint16 requestedHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedHash);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor == this &&
+            m_pLoadedTrack &&
+            m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_pixmap = pixmap;
         // Scale down dialog if the pixmap is larger than the screen.
         // Use 90% of screen size instead of 100% to prevent an issue with
@@ -166,18 +167,20 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
 
 // slots to handle signals from the context menu
 void DlgCoverArtFullSize::slotReloadCoverArt() {
-    if (m_pLoadedTrack != nullptr) {
-        auto coverInfo =
-                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-        slotCoverInfoSelected(coverInfo);
+    if (!m_pLoadedTrack) {
+        return;
     }
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
-void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    // qDebug() << "DlgCoverArtFullSize::slotCoverInfoSelected" << coverInfo;
-    if (m_pLoadedTrack != nullptr) {
-        m_pLoadedTrack->setCoverInfo(coverInfo);
+void DlgCoverArtFullSize::slotCoverInfoSelected(
+        const CoverInfoRelative& coverInfo) {
+    if (!m_pLoadedTrack) {
+        return;
     }
+    m_pLoadedTrack->setCoverInfo(coverInfo);
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
@@ -236,15 +239,20 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // Scale the image size
     int oldWidth = width();
     int oldHeight = height();
-    int newWidth = oldWidth + (0.2 * event->delta());
-    int newHeight = oldHeight + (0.2 * event->delta());
+    int newWidth = oldWidth + (0.2 * event->angleDelta().y());
+    int newHeight = oldHeight + (0.2 * event->angleDelta().y());
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
 
     // To keep the same part of the image under the cursor, shift the
     // origin (top left point) by the distance the point moves under the cursor.
     QPoint oldOrigin = geometry().topLeft();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QPoint oldPointUnderCursor = event->position().toPoint();
+#else
     QPoint oldPointUnderCursor = event->pos();
+#endif
+
     int newPointX = (double) oldPointUnderCursor.x() / oldWidth * newSize.width();
     int newPointY = (double) oldPointUnderCursor.y() / oldHeight * newSize.height();
     QPoint newOrigin = QPoint(

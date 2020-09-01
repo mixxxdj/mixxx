@@ -33,22 +33,13 @@ QuantizeControl::~QuantizeControl() {
 }
 
 void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &QuantizeControl::slotBeatsUpdated);
-    }
-
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &QuantizeControl::slotBeatsUpdated);
+        m_pBeats = pNewTrack->getBeats();
         // Initialize prev and next beat as if current position was zero.
         // If there is a cue point, the value will be updated.
         lookupBeatPositions(0.0);
         updateClosestBeat(0.0);
     } else {
-        m_pTrack.reset();
         m_pBeats.clear();
         m_pCOPrevBeat->set(-1);
         m_pCONextBeat->set(-1);
@@ -56,38 +47,39 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
     }
 }
 
-void QuantizeControl::slotBeatsUpdated() {
-    TrackPointer pTrack = m_pTrack;
-    if (pTrack) {
-        m_pBeats = pTrack->getBeats();
-        double current = getSampleOfTrack().current;
-        lookupBeatPositions(current);
-        updateClosestBeat(current);
-    }
+void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    m_pBeats = pBeats;
+    double current = getSampleOfTrack().current;
+    lookupBeatPositions(current);
+    updateClosestBeat(current);
 }
 
 void QuantizeControl::setCurrentSample(const double dCurrentSample,
                                        const double dTotalSamples,
                                        const double dTrackSampleRate) {
-    if (dCurrentSample == getSampleOfTrack().current) {
-        // No need to recalculate.
-        return;
-    }
-
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, dTrackSampleRate);
+    playPosChanged(dCurrentSample);
+}
+
+void QuantizeControl::notifySeek(double dNewPlaypos) {
+    EngineControl::notifySeek(dNewPlaypos);
+    playPosChanged(dNewPlaypos);
+}
+
+void QuantizeControl::playPosChanged(double dNewPlaypos) {
     // We only need to update the prev or next if the current sample is
     // out of range of the existing beat positions or if we've been forced to
     // do so.
     // NOTE: This bypasses the epsilon calculation, but is there a way
     //       that could actually cause a problem?
-    if (dCurrentSample < m_pCOPrevBeat->get() || dCurrentSample > m_pCONextBeat->get()) {
-        lookupBeatPositions(dCurrentSample);
+    if (dNewPlaypos < m_pCOPrevBeat->get() || dNewPlaypos > m_pCONextBeat->get()) {
+        lookupBeatPositions(dNewPlaypos);
     }
-    updateClosestBeat(dCurrentSample);
+    updateClosestBeat(dNewPlaypos);
 }
 
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         double prevBeat, nextBeat;
         pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);

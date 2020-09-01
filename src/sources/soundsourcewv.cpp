@@ -42,8 +42,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((params.channelCount() == 1) ||
-            (params.channelCount() == 2)) {
+    if ((params.getSignalInfo().getChannelCount() == 1) ||
+            (params.getSignalInfo().getChannelCount() == 2)) {
         openFlags |= OPEN_2CH_MAX;
     }
 
@@ -64,17 +64,17 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
         return OpenResult::Failed;
     }
 
-    setChannelCount(WavpackGetReducedChannels(m_wpc));
-    setSampleRate(WavpackGetSampleRate(m_wpc));
+    initChannelCountOnce(WavpackGetReducedChannels(static_cast<WavpackContext*>(m_wpc)));
+    initSampleRateOnce(WavpackGetSampleRate(static_cast<WavpackContext*>(m_wpc)));
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
-                    WavpackGetNumSamples(m_wpc)));
+                    WavpackGetNumSamples(static_cast<WavpackContext*>(m_wpc))));
 
-    if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
+    if (WavpackGetMode(static_cast<WavpackContext*>(m_wpc)) & MODE_FLOAT) {
         m_sampleScaleFactor = CSAMPLE_PEAK;
     } else {
-        const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
+        const int bitsPerSample = WavpackGetBitsPerSample(static_cast<WavpackContext*>(m_wpc));
         if ((bitsPerSample >= 8) && (bitsPerSample <= 32)) {
             // Range of signed sample values: [-2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
             const uint32_t absSamplePeak = 1u << (bitsPerSample - 1);
@@ -96,7 +96,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
 
 void SoundSourceWV::close() {
     if (m_wpc) {
-        WavpackCloseFile(m_wpc);
+        WavpackCloseFile(static_cast<WavpackContext*>(m_wpc));
         m_wpc = nullptr;
     }
     if (m_pWVFile) {
@@ -116,13 +116,13 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
-        if (WavpackSeekSample(m_wpc, firstFrameIndex)) {
+        if (WavpackSeekSample(static_cast<WavpackContext*>(m_wpc), firstFrameIndex)) {
             m_curFrameIndex = firstFrameIndex;
         } else {
             kLogger.warning()
                     << "Could not seek to first frame index"
                     << firstFrameIndex;
-            m_curFrameIndex = WavpackGetSampleIndex(m_wpc);
+            m_curFrameIndex = WavpackGetSampleIndex(static_cast<WavpackContext*>(m_wpc));
             return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
         }
     }
@@ -133,14 +133,14 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
     static_assert(sizeof(CSAMPLE) == sizeof(int32_t),
             "CSAMPLE and int32_t must have the same size");
     CSAMPLE* pOutputBuffer = writableSampleFrames.writableData();
-    SINT unpackCount = WavpackUnpackSamples(m_wpc,
+    SINT unpackCount = WavpackUnpackSamples(static_cast<WavpackContext*>(m_wpc),
             reinterpret_cast<int32_t*>(pOutputBuffer),
             numberOfFramesTotal);
     DEBUG_ASSERT(unpackCount >= 0);
     DEBUG_ASSERT(unpackCount <= numberOfFramesTotal);
-    if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
+    if (!(WavpackGetMode(static_cast<WavpackContext*>(m_wpc)) & MODE_FLOAT)) {
         // signed integer -> float
-        const SINT sampleCount = frames2samples(unpackCount);
+        const SINT sampleCount = getSignalInfo().frames2samples(unpackCount);
         for (SINT i = 0; i < sampleCount; ++i) {
             const int32_t sampleValue =
                     *reinterpret_cast<int32_t*>(pOutputBuffer);
@@ -153,7 +153,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
             resultRange,
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    frames2samples(unpackCount)));
+                    getSignalInfo().frames2samples(unpackCount)));
 }
 
 QString SoundSourceProviderWV::getName() const {

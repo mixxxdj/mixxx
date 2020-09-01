@@ -1,0 +1,49 @@
+libshout 2.4.1 (20151120)
+
+* Fixed issue with missing file in distribution
+
+libshout 2.4.0 (20151111)
+
+* Audio only WebM support.
+* Protocol level meta data support improved.
+  Some API calls got replaced and marked as obsolete.
+* Code hardened.
+* Fixed overlinking.
+* Removed Debian packaging.
+* TLS support (RFC2818 and RFC2817, mode can be autodetected).
+* Improved HTTP protocol:
+  * Set Host:-header (vhosting),
+  * Check for server capabilities.
+* Basic support for RoarAudio protocol.
+
+libshout 2.3.1 (20120525)
+
+* Opus support
+
+libshout 2.3.0 (20120201)
+
+* Rough WebM support
+* removed the shout-config script
+
+libshout 2.2.2 (20060619)
+
+* Handle Oggs that don't begin with zero granulepos.
+* Install header in correct location (broken in 2.2.1).
+* Theora memory leak fix.
+* Non-blocking shout_open was failing unnecessarily in the
+  connect_pending state.
+* Cast some size_ts to ints for display purposes.
+
+libshout 2.2.1 (20060417)
+
+* Fix error handling while opening a connection, so that shout_open
+  can be retried.
+* pkgconfig fix for header installation
+* Fix a memory leak in HTTP authentication
+
+libshout 2.2 (20060103)
+
+* Speex support
+* Fix a double-free bug when login fails
+* More robust server response parser
+* Theora timing fix

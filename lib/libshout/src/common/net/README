@@ -1,0 +1,10 @@
+This is a name resolving library that's threadsafe.
+
+Right now it only implements this with mutexes, but we should extend it to use gethostbyXXXX_r()
+if it's available.
+
+It shoudl work on win32, but i'm probably forgetting a headerfile.
+
+API is basically not going to change.  Please consult with the rest of the team before changing the interface.
+
+jack.

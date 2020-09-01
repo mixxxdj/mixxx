@@ -62,7 +62,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
 
     if (isVisible()) {
         QString status = tr("Scanning: ") + path;
-        emit(progress(status));
+        emit progress(status);
     }
 }
 
@@ -76,14 +76,14 @@ void LibraryScannerDlg::slotUpdateCover(QString path) {
         QString status = QString("%1: %2")
                 .arg(tr("Scanning cover art (safe to cancel)"))
                 .arg(path);
-        emit(progress(status));
+        emit progress(status);
     }
 }
 
 void LibraryScannerDlg::slotCancel() {
     qDebug() << "Cancelling library scan...";
     m_bCancelled = true;
-    emit(scanCancelled());
+    emit scanCancelled();
     hide();
 }
 

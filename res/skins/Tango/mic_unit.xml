@@ -54,7 +54,7 @@ Variables:
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="TooltipId">microphone_pregain</SetVariable>
             <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>
@@ -68,12 +68,8 @@ Variables:
             <Size>20f,20f</Size>
             <Layout>stacked</Layout>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- Greyed out if no headphone device is configured -->
               <Template src="skin:pfl_cover.xml"/>
-
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
