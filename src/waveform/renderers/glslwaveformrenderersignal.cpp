@@ -181,7 +181,7 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
                                                            bufferHeight);
 
     if (!m_framebuffer->isValid()) {
-        qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
+        qInfo() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
     }
 }
 

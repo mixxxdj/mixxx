@@ -964,12 +964,12 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         }
         widget->castToQWidget();
         if (!widget->isValid()) {
-            qWarning() << "failed to init WafeformWidget" << type << "fall back to \"Empty\"";
+            qInfo() << "failed to init WafeformWidget" << type << "fall back to \"Empty\"";
             delete widget;
             widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
             widget->castToQWidget();
             if (!widget->isValid()) {
-                qWarning() << "failed to init EmptyWaveformWidget";
+                qInfo() << "failed to init EmptyWaveformWidget";
                 delete widget;
                 widget = NULL;
             }

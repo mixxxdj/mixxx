@@ -26,7 +26,7 @@ QMap<QString, TrackFile> createCopylist(const QList<TrackPointer>& tracks) {
     QMap<QString, TrackFile> copylist;
     for (const auto& it : tracks) {
         if (it->getCanonicalLocation().isEmpty()) {
-            qWarning()
+            qInfo()
                     << "File not found or inaccessible while exporting"
                     << it->getFileInfo();
             // Skip file
@@ -53,7 +53,7 @@ QMap<QString, TrackFile> createCopylist(const QList<TrackPointer>& tracks) {
                 break;
             }
             if (++duplicateCounter >= 10000) {
-                qWarning()
+                qInfo()
                         << "Failed to generate a unique file name from"
                         << fileName
                         << "while exporting"
@@ -125,7 +125,7 @@ void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
             const QString error_message = tr(
                     "Error removing file %1: %2. Stopping.").arg(
                     dest_path, dest_file.errorString());
-            qWarning() << error_message;
+            qInfo() << error_message;
             m_errorMessage = error_message;
             stop();
             return;
@@ -138,7 +138,7 @@ void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
         const QString error_message = tr(
                 "Error exporting track %1 to %2: %3. Stopping.").arg(
                 sourceFilename, dest_path, source_file.errorString());
-        qWarning() << error_message;
+        qInfo() << error_message;
         m_errorMessage = error_message;
         stop();
         return;
@@ -165,7 +165,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
     }
 
     if (!mode_future.valid()) {
-        qWarning() << "TrackExportWorker::makeOverwriteRequest invalid answer from future";
+        qInfo() << "TrackExportWorker::makeOverwriteRequest invalid answer from future";
         m_errorMessage = tr("Error exporting tracks");
         stop();
         return OverwriteAnswer::CANCEL;

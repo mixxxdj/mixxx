@@ -112,7 +112,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             // Continue processing in this function.
             break;
         default:
-            qWarning() << "Invalid vinyl cue setting";
+            qInfo() << "Invalid vinyl cue setting";
             return;
         }
 

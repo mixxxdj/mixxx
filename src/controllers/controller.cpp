@@ -33,7 +33,7 @@ void Controller::startEngine()
 {
     controllerDebug("  Starting engine");
     if (m_pEngine != NULL) {
-        qWarning() << "Controller: Engine already exists! Restarting:";
+        qInfo() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
     m_pEngine = new ControllerEngine(this, m_pConfig);
@@ -42,7 +42,7 @@ void Controller::startEngine()
 void Controller::stopEngine() {
     controllerDebug("  Shutting down engine");
     if (m_pEngine == NULL) {
-        qWarning() << "Controller::stopEngine(): No engine exists!";
+        qInfo() << "Controller::stopEngine(): No engine exists!";
         return;
     }
     m_pEngine->gracefulShutdown();
@@ -57,13 +57,14 @@ bool Controller::applyPreset(bool initializeScripts) {
 
     // Load the script code into the engine
     if (m_pEngine == NULL) {
-        qWarning() << "Controller::applyPreset(): No engine exists!";
+        qInfo() << "Controller::applyPreset(): No engine exists!";
         return false;
     }
 
     QList<ControllerPreset::ScriptFileInfo> scriptFiles = pPreset->getScriptFiles();
     if (scriptFiles.isEmpty()) {
-        qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
+        qInfo() << "No script functions available! Did the XML file(s) load "
+                   "successfully? See above for any errors.";
         return true;
     }
 
@@ -110,7 +111,7 @@ void Controller::triggerActivity()
 void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
 
     if (m_pEngine == NULL) {
-        //qWarning() << "Controller::receive called with no active engine!";
+        //qInfo() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
         return;
@@ -140,7 +141,7 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
         function.append(".incomingData");
         QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
         if (!m_pEngine->execute(incomingData, data, timestamp)) {
-            qWarning() << "Controller: Invalid script function" << function;
+            qInfo() << "Controller: Invalid script function" << function;
         }
     }
 }

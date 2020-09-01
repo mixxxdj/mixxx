@@ -446,9 +446,9 @@ void EffectsManager::processEffectsResponses() {
                 m_activeRequests.find(response.request_id);
 
         VERIFY_OR_DEBUG_ASSERT(it != m_activeRequests.end()) {
-            qWarning() << debugString()
-                       << "WARNING: EffectsResponse with an inactive request_id:"
-                       << response.request_id;
+            qInfo() << debugString()
+                    << "WARNING: EffectsResponse with an inactive request_id:"
+                    << response.request_id;
         }
 
         while (it != m_activeRequests.end() &&

@@ -101,11 +101,12 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
     LV2EffectGroupState* pState = m_channelStateMatrix[inputHandle][outputHandle];
     VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
         if (kEffectDebugOutput) {
-            qWarning() << "LV2EffectProcessor::process could not retrieve"
-                          "handle for input" << inputHandle
-                       << "and output" << outputHandle
-                       << "Handle should have been preallocated in the"
-                          "main thread.";
+            qInfo() << "LV2EffectProcessor::process could not retrieve"
+                       "handle for input"
+                    << inputHandle
+                    << "and output" << outputHandle
+                    << "Handle should have been preallocated in the"
+                       "main thread.";
         }
         pState = createGroupState(bufferParameters);
         m_channelStateMatrix[inputHandle][outputHandle] = pState;

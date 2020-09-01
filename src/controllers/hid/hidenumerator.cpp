@@ -95,7 +95,8 @@ QList<Controller*> HidEnumerator::queryDevices() {
                      QString("Interface %1").arg(cur_dev->interface_number));
 
         if (!cur_dev->serial_number && !cur_dev->product_string) {
-            qWarning() << "USB permissions problem (or device error.) Your account needs write access to USB HID controllers.";
+            qInfo() << "USB permissions problem (or device error.) Your "
+                       "account needs write access to USB HID controllers.";
             continue;
         }
 

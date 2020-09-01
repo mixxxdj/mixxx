@@ -4,9 +4,8 @@
 #include <QtDebug>
 #include <QtSql>
 
-
-#define LOG_FAILED_QUERY(query) qWarning() << __FILE__ << __LINE__ << "FAILED QUERY [" \
-    << (query).executedQuery() << "]" << (query).lastError()
+#define LOG_FAILED_QUERY(query) qInfo() << __FILE__ << __LINE__ << "FAILED QUERY [" \
+                                        << (query).executedQuery() << "]" << (query).lastError()
 
 class ScopedTransaction {
   public:

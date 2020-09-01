@@ -145,11 +145,12 @@ class EffectProcessorImpl : public EffectProcessor {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
-                qWarning() << "EffectProcessorImpl::process could not retrieve"
-                              "EffectState for input" << inputHandle
-                           << "and output" << outputHandle
-                           << "EffectState should have been preallocated in the"
-                              "main thread.";
+                qInfo() << "EffectProcessorImpl::process could not retrieve"
+                           "EffectState for input"
+                        << inputHandle
+                        << "and output" << outputHandle
+                        << "EffectState should have been preallocated in the"
+                           "main thread.";
             }
             pState = createSpecificState(bufferParameters);
             m_channelStateMatrix[inputHandle][outputHandle] = pState;

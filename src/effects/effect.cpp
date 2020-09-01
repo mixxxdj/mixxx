@@ -23,7 +23,9 @@ Effect::Effect(EffectsManager* pEffectsManager,
                 this, pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(pParameter->id())) {
-            qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
+            qInfo() << debugString()
+                    << "WARNING: Loaded EffectManifest that had parameters "
+                       "with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[pParameter->id()] = pParameter;
     }
@@ -159,8 +161,8 @@ unsigned int Effect::numButtonParameters() const {
 EffectParameter* Effect::getParameterById(const QString& id) const {
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
     if (pParameter == NULL) {
-        qWarning() << debugString() << "getParameterById"
-                   << "WARNING: parameter for id does not exist:" << id;
+        qInfo() << debugString() << "getParameterById"
+                << "WARNING: parameter for id does not exist:" << id;
     }
     return pParameter;
 }

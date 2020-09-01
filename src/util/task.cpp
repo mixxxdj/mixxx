@@ -8,7 +8,7 @@ TaskWatcher::TaskWatcher(QObject* pParent) : QObject(pParent) {
 
 TaskWatcher::~TaskWatcher() {
     if (atomicLoadRelaxed(m_activeTasks) > 0) {
-        qWarning() << "TaskWatcher destroyed before all tasks were done.";
+        qInfo() << "TaskWatcher destroyed before all tasks were done.";
     }
 }
 

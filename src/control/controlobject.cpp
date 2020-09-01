@@ -132,5 +132,5 @@ void ControlObject::setReadOnly() {
 }
 
 void ControlObject::readOnlyHandler(double v) {
-    qWarning() << m_key << "is read-only. Ignoring set of value:" << v;
+    qInfo() << m_key << "is read-only. Ignoring set of value:" << v;
 }

@@ -174,7 +174,7 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
         EffectPointer pEffect;
 
         if (effects.size() > m_slots.size()) {
-            qWarning() << debugString() << "has too few slots for effect";
+            qInfo() << debugString() << "has too few slots for effect";
         }
 
         if (effectSlotNumber < (unsigned) m_slots.size()) {
@@ -351,7 +351,7 @@ void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_slots.size())) {
-        qWarning() << "WARNING: slotNumber out of range";
+        qInfo() << "WARNING: slotNumber out of range";
         return EffectSlotPointer();
     }
     return m_slots[slotNumber];
@@ -375,7 +375,7 @@ void EffectChainSlot::slotControlChainMix(double v) {
 
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
-        qWarning() << debugString() << "value out of limits";
+        qInfo() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0, 1.0);
         m_pControlChainMix->set(v);
     }
@@ -389,7 +389,7 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
 
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
-        qWarning() << debugString() << "value out of limits";
+        qInfo() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0, 1.0);
         m_pControlChainSuperParameter->set(v);
     }

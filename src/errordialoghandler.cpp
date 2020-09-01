@@ -149,7 +149,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Check we are in the main thread.
     if (QThread::currentThread()->objectName() != "Main") {
-        qWarning() << "WARNING: errorDialog not called in the main thread. Not showing error dialog.";
+        qInfo() << "WARNING: errorDialog not called in the main thread. Not showing error dialog.";
         return;
     }
 
@@ -224,18 +224,18 @@ void ErrorDialogHandler::boxClosed(QString key, QMessageBox* msgBox) {
     // If the user clicks "Ignore," we leave the key in the list so the same
     // error is not displayed again for the duration of the session
     if (whichStdButton == QMessageBox::Ignore) {
-        qWarning() << "Suppressing this" << msgBox->windowTitle()
-                   << "error box for the duration of the application.";
+        qInfo() << "Suppressing this" << msgBox->windowTitle()
+                << "error box for the duration of the application.";
         return;
     }
 
     QMutexLocker locker2(&m_mutex);
     if (m_dialogKeys.contains(key)) {
         if (!m_dialogKeys.removeOne(key)) {
-            qWarning() << "Error dialog key removal from list failed!";
+            qInfo() << "Error dialog key removal from list failed!";
         }
     } else {
-        qWarning() << "Error dialog key is missing from key list!";
+        qInfo() << "Error dialog key is missing from key list!";
     }
 }
 

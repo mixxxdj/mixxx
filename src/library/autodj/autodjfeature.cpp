@@ -40,7 +40,7 @@ namespace {
             playlistId = playlistDAO.createPlaylist(
                     AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
             VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
-                qWarning() << "Failed to create Auto DJ playlist!";
+                qInfo() << "Failed to create Auto DJ playlist!";
             }
         }
         return playlistId;
@@ -254,14 +254,14 @@ void AutoDJFeature::slotAddRandomTrack() {
             if (randomTrackId.isValid()) {
                 pRandomTrack = m_pTrackCollection->getTrackById(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
-                    qWarning() << "Track does not exist:"
+                    qInfo() << "Track does not exist:"
                             << randomTrackId;
                     continue;
                 }
                 if (!pRandomTrack->checkFileExists()) {
-                    qWarning() << "Track does not exist:"
-                               << pRandomTrack->getInfo()
-                               << pRandomTrack->getFileInfo();
+                    qInfo() << "Track does not exist:"
+                            << pRandomTrack->getInfo()
+                            << pRandomTrack->getFileInfo();
                     pRandomTrack.reset();
                 }
             }
@@ -273,7 +273,7 @@ void AutoDJFeature::slotAddRandomTrack() {
             return; // success
         }
     }
-    qWarning() << "Could not load random track.";
+    qInfo() << "Could not load random track.";
 }
 
 void AutoDJFeature::constructCrateChildModel() {

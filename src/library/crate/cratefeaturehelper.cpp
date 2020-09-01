@@ -74,8 +74,8 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
         qDebug() << "Created new crate" << newCrate;
     } else {
         DEBUG_ASSERT(!newCrateId.isValid());
-        qWarning() << "Failed to create new crate"
-                << "->"  << newCrate.getName();
+        qInfo() << "Failed to create new crate"
+                << "->" << newCrate.getName();
         QMessageBox::warning(
                 nullptr,
                 tr("Creating Crate Failed"),
@@ -141,11 +141,11 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
             qDebug() << "Duplicated crate"
                 << oldCrate << "->" << newCrate;
         } else {
-            qWarning() << "Failed to copy tracks from"
+            qInfo() << "Failed to copy tracks from"
                     << oldCrate << "into" << newCrate;
         }
     } else {
-        qWarning() << "Failed to duplicate crate"
+        qInfo() << "Failed to duplicate crate"
                 << oldCrate << "->" << newCrate.getName();
         QMessageBox::warning(
                 nullptr,

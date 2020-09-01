@@ -24,8 +24,8 @@ Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
     }
 
     // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode string in DrawModeFromString:"
-               << str << "using FIXED";
+    qInfo() << "Unknown DrawMode string in DrawModeFromString:"
+            << str << "using FIXED";
     return FIXED;
 }
 
@@ -42,8 +42,8 @@ QString Paintable::DrawModeToString(DrawMode mode) {
             return "TILE";
     }
     // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode in DrawModeToString " << mode
-               << "using FIXED";
+    qInfo() << "Unknown DrawMode in DrawModeToString " << mode
+            << "using FIXED";
     return "FIXED";
 }
 
@@ -239,7 +239,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
         }
     } else if (m_pSvg) {
         if (m_drawMode == TILE) {
-            qWarning() << "Tiled SVG should have been rendered to pixmap!";
+            qInfo() << "Tiled SVG should have been rendered to pixmap!";
         } else {
             // NOTE(rryan): QSvgRenderer render does not clip for us -- it
             // applies a world transformation using viewBox and renders the

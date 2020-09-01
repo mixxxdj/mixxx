@@ -58,7 +58,7 @@ void AnalyzerGain::storeResults(TrackPointer tio) {
 
     float fReplayGainOutput = m_pReplayGain->end();
     if (fReplayGainOutput == GAIN_NOT_ENOUGH_SAMPLES) {
-        qWarning() << "ReplayGain 1.0 analysis failed";
+        qInfo() << "ReplayGain 1.0 analysis failed";
         return;
     }
 

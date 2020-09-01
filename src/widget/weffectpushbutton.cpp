@@ -24,8 +24,7 @@ void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectButtonParameterSlotPointer pParameterSlot =
             m_pEffectsManager->getEffectButtonParameterSlot(configKey);
     if (!pParameterSlot) {
-        qWarning() << "EffectPushButton" << configKey <<
-                "is not an effect button parameter.";
+        qInfo() << "EffectPushButton" << configKey << "is not an effect button parameter.";
         return;
     }
     setEffectParameterSlot(pParameterSlot);

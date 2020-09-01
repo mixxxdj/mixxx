@@ -119,7 +119,7 @@ QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
                 return trackFile.location();
             }
             // We couldn't match this to a real file so ignore it
-            qWarning() << trackFile << "not found";
+            qInfo() << trackFile << "not found";
         }
         textline = stream->readLine();
     }

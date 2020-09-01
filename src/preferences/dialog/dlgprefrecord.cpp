@@ -54,7 +54,9 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     if (!found) {
         // If no format was available, set to WAVE as default.
         if (!prefformat.isEmpty()) {
-            qWarning() << prefformat <<" format was set in the configuration, but it is not recognized!";
+            qInfo() << prefformat
+                    << " format was set in the configuration, but it is not "
+                       "recognized!";
         }
         m_selFormat = EncoderFactory::getFactory().getFormats().first();
         m_formatButtons.first()->setChecked(true);

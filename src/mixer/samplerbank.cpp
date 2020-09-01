@@ -66,14 +66,14 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
     // register a security bookmark.
 
     VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager != nullptr) {
-        qWarning() << "SamplerBank::saveSamplerBankToPath called with no PlayerManager";
+        qInfo() << "SamplerBank::saveSamplerBankToPath called with no PlayerManager";
         return false;
     }
 
     QFile file(samplerBankPath);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "Error saving sampler bank: Could not write to file"
-                   << samplerBankPath;
+        qInfo() << "Error saving sampler bank: Could not write to file"
+                << samplerBankPath;
         return false;
     }
 
@@ -136,26 +136,26 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
     // register a security bookmark.
 
     VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager != nullptr) {
-        qWarning() << "SamplerBank::loadSamplerBankFromPath called with no PlayerManager";
+        qInfo() << "SamplerBank::loadSamplerBankFromPath called with no PlayerManager";
         return false;
     }
 
     QFile file(samplerBankPath);
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not read sampler bank file" << samplerBankPath;
+        qInfo() << "Could not read sampler bank file" << samplerBankPath;
         return false;
     }
 
     QDomDocument doc;
 
     if (!doc.setContent(file.readAll())) {
-        qWarning() << "Could not read sampler bank file" << samplerBankPath;
+        qInfo() << "Could not read sampler bank file" << samplerBankPath;
         return false;
     }
 
     QDomElement root = doc.documentElement();
     if (root.tagName() != "samplerbank") {
-        qWarning() << "Could not read sampler bank file" << samplerBankPath;
+        qInfo() << "Could not read sampler bank file" << samplerBankPath;
         return false;
     }
 

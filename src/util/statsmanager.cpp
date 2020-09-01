@@ -189,8 +189,8 @@ bool StatsManager::maybeWriteReport(StatReport report) {
     }
     static bool warnedAboutOverflow = false;
     if (!success && !warnedAboutOverflow) {
-        qWarning() << "StatsManager FIFO for thread overflowed at least once."
-                   << "Some stats are lost. Your measurements may be affected.";
+        qInfo() << "StatsManager FIFO for thread overflowed at least once."
+                << "Some stats are lost. Your measurements may be affected.";
         warnedAboutOverflow = true;
     }
     return success;

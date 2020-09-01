@@ -69,7 +69,7 @@ QDomElement XmlParse::openXMLFile(const QString& path, const QString& name) {
 
         QString errorLog = QString("Error parsing XML file %1: %2")
                             .arg(file.fileName(), errorString);
-        qWarning() << errorLog;
+        qInfo() << errorLog;
 
         // Set up error dialog
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();

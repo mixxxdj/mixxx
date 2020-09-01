@@ -297,7 +297,7 @@ int DlgPrefVinyl::getDefaultLeadIn(QString vinyl_type) const {
     } else if (vinyl_type == MIXXX_VINYL_MIXVIBESDVS) {
         return MIXXX_VINYL_MIXVIBESDVS_LEADIN;
     }
-    qWarning() << "Unknown vinyl type " << vinyl_type;
+    qInfo() << "Unknown vinyl type " << vinyl_type;
     return 0;
 }
 
@@ -374,7 +374,7 @@ void DlgPrefVinyl::VinylTypeSlotApply()
         }
         break;
     default:
-        qWarning() << "Unexpected number of vinyl speed preference items";
+        qInfo() << "Unexpected number of vinyl speed preference items";
     }
 }
 
@@ -414,7 +414,7 @@ void DlgPrefVinyl::setDeckWidgetsVisible(int deck, bool visible) {
         setDeck4WidgetsVisible(visible);
         break;
     default:
-        qWarning() << "Tried to set a vinyl preference widget visible that doesn't exist: " << deck;
+        qInfo() << "Tried to set a vinyl preference widget visible that doesn't exist: " << deck;
     }
 }
 

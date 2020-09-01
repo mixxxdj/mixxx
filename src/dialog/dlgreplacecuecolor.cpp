@@ -257,8 +257,8 @@ void DlgReplaceCueColor::slotApply() {
 
     // Open the database connection in this thread.
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
-        qWarning() << "Failed to open database for cue color replace dialog."
-                   << database.lastError();
+        qInfo() << "Failed to open database for cue color replace dialog."
+                << database.lastError();
         m_bDatabaseChangeInProgress = false;
         slotUpdateWidgets();
         return;

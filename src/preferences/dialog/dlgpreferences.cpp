@@ -424,7 +424,7 @@ void DlgPreferences::onShow() {
     if (primaryScreen) {
         screenSpace = primaryScreen->geometry().size();
     } else {
-        qWarning() << "Assuming screen size of 800x600px.";
+        qInfo() << "Assuming screen size of 800x600px.";
         screenSpace = QSize(800, 600);
     }
     newX = std::max(0, std::min(newX, screenSpace.width()- m_geometry[2].toInt()));

@@ -121,7 +121,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
                 caps |= TRACKMODELCAPS_LOCKED;
             }
         } else {
-            qWarning() << "Failed to read create" << m_selectedCrate;
+            qInfo() << "Failed to read create" << m_selectedCrate;
         }
     }
     return caps;
@@ -150,9 +150,9 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
             locations);
     if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(m_selectedCrate, trackIds)) {
-        qWarning() << "CrateTableModel::addTracks could not add"
-                 << locations.size()
-                 << "tracks to crate" << m_selectedCrate;
+        qInfo() << "CrateTableModel::addTracks could not add"
+                << locations.size()
+                << "tracks to crate" << m_selectedCrate;
         return 0;
     }
 
@@ -170,7 +170,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
 
     Crate crate;
     if (!m_pTrackCollectionManager->internalCollection()->crates().readCrateById(m_selectedCrate, &crate)) {
-        qWarning() << "Failed to read create" << m_selectedCrate;
+        qInfo() << "Failed to read create" << m_selectedCrate;
         return;
     }
 
@@ -184,7 +184,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
     if (!m_pTrackCollectionManager->internalCollection()->removeCrateTracks(crate.getId(), trackIds)) {
-        qWarning() << "Failed to remove tracks from crate" << crate;
+        qInfo() << "Failed to remove tracks from crate" << crate;
         return;
     }
 

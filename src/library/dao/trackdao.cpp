@@ -658,7 +658,7 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
     if (!SoundSourceProxy::isFileSupported(trackFile)) {
-        qWarning() << "TrackDAO::addTracksAddFile:"
+        qInfo() << "TrackDAO::addTracksAddFile:"
                 << "Unsupported file type"
                 << trackFile.location();
         return TrackPointer();
@@ -667,7 +667,7 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
     GlobalTrackCacheResolver cacheResolver(trackFile);
     TrackPointer pTrack = cacheResolver.getTrack();
     if (!pTrack) {
-        qWarning() << "TrackDAO::addTracksAddFile:"
+        qInfo() << "TrackDAO::addTracksAddFile:"
                 << "File not found"
                 << trackFile.location();
         return TrackPointer();
@@ -702,7 +702,7 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource();
     if (!pTrack->isMetadataSynchronized()) {
-        qWarning() << "TrackDAO::addTracksAddFile:"
+        qInfo() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
         // Continue with adding the track to the library, no matter
@@ -711,7 +711,7 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
 
     const TrackId newTrackId = addTracksAddTrack(pTrack, unremove);
     if (!newTrackId.isValid()) {
-        qWarning() << "TrackDAO::addTracksAddTrack:"
+        qInfo() << "TrackDAO::addTracksAddTrack:"
                 << "Failed to add track to database"
                 << pTrack->getFileInfo();
         // GlobalTrackCache will be unlocked implicitly
@@ -1393,7 +1393,7 @@ TrackPointer TrackDAO::getTrackByRef(
         trackId = getTrackIdByLocation(trackRef.getLocation());
     }
     if (!trackId.isValid()) {
-        qWarning() << "Track not found:" << trackRef;
+        qInfo() << "Track not found:" << trackRef;
         return TrackPointer();
     }
     return getTrackById(trackId);
@@ -1468,7 +1468,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
     }
 
     if (query.numRowsAffected() == 0) {
-        qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
+        qInfo() << "updateTrack had no effect: trackId" << trackId << "invalid";
         return false;
     }
 
@@ -1897,8 +1897,8 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         CoverInfo::Source source = static_cast<CoverInfo::Source>(
             query.value(4).toInt());
         VERIFY_OR_DEBUG_ASSERT(source != CoverInfo::USER_SELECTED) {
-            qWarning() << "PROGRAMMING ERROR! detectCoverArtForTracksWithoutCover()"
-                       << "got a USER_SELECTED track. Skipping.";
+            qInfo() << "PROGRAMMING ERROR! detectCoverArtForTracksWithoutCover()"
+                    << "got a USER_SELECTED track. Skipping.";
             continue;
         }
         tracksWithoutCover.append(track);
@@ -1975,7 +1975,7 @@ TrackPointer TrackDAO::getOrAddTrack(
             return pTrack;
         }
         if (!trackRef.hasLocation()) {
-            qWarning()
+            qInfo()
                     << "Failed to get track"
                     << trackRef;
             return TrackPointer();
@@ -1987,7 +1987,7 @@ TrackPointer TrackDAO::getOrAddTrack(
     const auto pTrack = addTracksAddFile(trackRef.getLocation(), true);
     addTracksFinish(!pTrack);
     if (!pTrack) {
-        qWarning()
+        qInfo()
                 << "Failed to add track"
                 << trackRef;
         return TrackPointer();

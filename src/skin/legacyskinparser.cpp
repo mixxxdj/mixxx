@@ -109,9 +109,9 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
 
     // TODO(rryan): Make this configurable by the skin.
     if (CmdlineArgs::Instance().getDeveloper()) {
-        qWarning() << "Requested control does not exist:"
-                   << QString("%1,%2").arg(key.group, key.item)
-                   << "Creating it.";
+        qInfo() << "Requested control does not exist:"
+                << QString("%1,%2").arg(key.group, key.item)
+                << "Creating it.";
     }
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
@@ -126,7 +126,7 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
     // controls, so that it can be deleted when the MixxxMainWindow is
     // destroyed.
     VERIFY_OR_DEBUG_ASSERT(m_pSkinCreatedControls) {
-        qWarning() << "Can't add skin-created control" << key << "to set, control will be leaked!";
+        qInfo() << "Can't add skin-created control" << key << "to set, control will be leaked!";
         return controlButton;
     }
     DEBUG_ASSERT(!m_pSkinCreatedControls->contains(controlButton));
@@ -1491,7 +1491,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
     QFile templateFile(absolutePath);
 
     if (!templateFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open template file:" << absolutePath;
+        qInfo() << "Could not open template file:" << absolutePath;
     }
 
     QDomDocument tmpl("template");
@@ -1501,9 +1501,9 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
     if (!tmpl.setContent(&templateFile, &errorMessage,
                          &errorLine, &errorColumn)) {
-        qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
-                   << absolutePath << "line:" << errorLine << "column:" << errorColumn;
-        qWarning() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
+        qInfo() << "LegacySkinParser::loadTemplate - setContent failed see"
+                << absolutePath << "line:" << errorLine << "column:" << errorColumn;
+        qInfo() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
         return QDomElement();
     }
 

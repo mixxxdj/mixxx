@@ -1279,8 +1279,8 @@ double LoopingControl::seekInsideAdjustedLoop(
         VERIFY_OR_DEBUG_ASSERT(adjusted_position > new_loop_in) {
             // I'm not even sure this is possible.  The new loop would have to be bigger than the
             // old loop, and the playhead was somehow outside the old loop.
-            qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
-                       << " seeking to in point";
+            qInfo() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
+                    << " seeking to in point";
             adjusted_position = new_loop_in;
             break;
         }
@@ -1288,8 +1288,8 @@ double LoopingControl::seekInsideAdjustedLoop(
     while (adjusted_position < new_loop_in) {
         adjusted_position += new_loop_size;
         VERIFY_OR_DEBUG_ASSERT(adjusted_position < new_loop_out) {
-            qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
-                       << " seeking to in point";
+            qInfo() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
+                    << " seeking to in point";
             adjusted_position = new_loop_in;
             break;
         }

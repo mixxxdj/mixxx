@@ -36,7 +36,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                 // guarantee uniqueness even if there is a misdesigned skin
                 QString item = pMark->getItem();
                 if (!controlItemSet.insert(item).second) {
-                    qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
+                    qInfo() << "WaveformRenderMark::setup - redefinition of" << item;
                 } else  {
                     m_marks.push_back(pMark);
                     if (pMark->getHotCue() >= 0) {

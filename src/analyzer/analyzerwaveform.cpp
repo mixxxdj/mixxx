@@ -36,7 +36,7 @@ AnalyzerWaveform::~AnalyzerWaveform() {
 
 bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     if (totalSamples == 0) {
-        qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
+        qInfo() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
     }
 
@@ -221,7 +221,7 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLen
 
         if (fmod(m_stride.m_position, m_stride.m_length) < 1) {
             VERIFY_OR_DEBUG_ASSERT(m_currentStride + ChannelCount <= m_waveform->getDataSize()) {
-                qWarning() << "AnalyzerWaveform::process - currentStride > waveform size";
+                qInfo() << "AnalyzerWaveform::process - currentStride > waveform size";
                 return false;
             }
             m_stride.store(m_waveformData + m_currentStride);
@@ -231,7 +231,8 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLen
 
         if (fmod(m_stride.m_position, m_stride.m_averageLength) < 1) {
             VERIFY_OR_DEBUG_ASSERT(m_currentSummaryStride + ChannelCount <= m_waveformSummary->getDataSize()) {
-                qWarning() << "AnalyzerWaveform::process - current summary stride > waveform summary size";
+                qInfo() << "AnalyzerWaveform::process - current summary stride "
+                           "> waveform summary size";
                 return false;
             }
             m_stride.averageStore(m_waveformSummaryData + m_currentSummaryStride);

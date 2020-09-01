@@ -56,7 +56,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     QString logFileName = QDir(pConfig->getSettingsPath()).filePath("mixxx.log");
     m_logFile.setFileName(logFileName);
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "ERROR: Could not open log file:" << logFileName;
+        qInfo() << "ERROR: Could not open log file:" << logFileName;
     }
 
     // Connect search box signals to the library
@@ -140,7 +140,7 @@ void DlgDeveloperTools::slotControlDump() {
     // Note: QFile is closed if it falls out of scope
     dumpFile.setFileName(dumpFileName);
     if (!dumpFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "open" << dumpFileName << "failed";
+        qInfo() << "open" << dumpFileName << "failed";
         return;
     }
 

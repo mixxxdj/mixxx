@@ -42,7 +42,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                     velocity = pBuffer[i+2];
                     emit incomingData(status, note, velocity, timestamp);
                 } else {
-                    qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
+                    qInfo() << "Buffer underflow in DeviceChannelListener::Process()";
                 }
                 i += 3;
                 break;
@@ -134,7 +134,7 @@ int Hss1394Controller::open() {
         int iPeriod = 60000/1000;   // 1000Hz = 1ms. (Internal clock is 60kHz.)
         int iTimer = 3; // 3 for new event timer, 4 for second �same position repeated� timer
         if (m_pChannel->SendUserControl(iTimer, (const hss1394::uint8*)&iPeriod, 3) == 0)
-            qWarning() << "Unable to set SCS.1d platter timer period.";
+            qInfo() << "Unable to set SCS.1d platter timer period.";
     }
 
     setOpen(true);

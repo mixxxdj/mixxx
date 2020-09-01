@@ -342,7 +342,7 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
     if (pSyncable == nullptr) {
-        qWarning() << "WARNING: Logic Error: Called activateFollower on a nullptr Syncable.";
+        qInfo() << "WARNING: Logic Error: Called activateFollower on a nullptr Syncable.";
         return;
     }
 
@@ -353,7 +353,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
 
 void EngineSync::activateMaster(Syncable* pSyncable, bool explicitMaster) {
     VERIFY_OR_DEBUG_ASSERT(pSyncable) {
-        qWarning() << "WARNING: Logic Error: Called activateMaster on a nullptr Syncable.";
+        qInfo() << "WARNING: Logic Error: Called activateMaster on a nullptr Syncable.";
         return;
     }
     if (kLogger.traceEnabled()) {

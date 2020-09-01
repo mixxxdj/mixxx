@@ -63,8 +63,8 @@ void EncoderMp3Settings::setQualityByIndex(int qualityIndex)
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality"), ConfigValue(qualityIndex));
     } else {
-        qWarning() << "Invalid qualityIndex given to EncoderMp3Settings: "
-                   << qualityIndex << ". Ignoring it";
+        qInfo() << "Invalid qualityIndex given to EncoderMp3Settings: "
+                << qualityIndex << ". Ignoring it";
     }
 }
 
@@ -80,9 +80,9 @@ int EncoderMp3Settings::getQualityIndex() const
         return qualityIndex;
     }
     else {
-        qWarning() << "Invalid qualityIndex in EncoderMp3Settings"
-                   << qualityIndex << "(Max is:" << m_qualList.size() << "). Ignoring it"
-                   << "and returning default, which is:" << DEFAULT_BITRATE_INDEX;
+        qInfo() << "Invalid qualityIndex in EncoderMp3Settings"
+                << qualityIndex << "(Max is:" << m_qualList.size() << "). Ignoring it"
+                << "and returning default, which is:" << DEFAULT_BITRATE_INDEX;
     }
     return DEFAULT_BITRATE_INDEX;
 }
@@ -104,13 +104,13 @@ void EncoderMp3Settings::setGroupOption(QString groupCode, int optionIndex)
                 m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, ENCODING_MODE_GROUP),
                     ConfigValue(optionIndex));
             } else {
-                qWarning() << "Received an index out of range for: "
-                           << groupCode << ", index: " << optionIndex;
+                qInfo() << "Received an index out of range for: "
+                        << groupCode << ", index: " << optionIndex;
             }
         }
     }
     if (!found) {
-        qWarning() << "Received an unknown groupCode on setGroupOption: " << groupCode;
+        qInfo() << "Received an unknown groupCode on setGroupOption: " << groupCode;
     }
 }
 // Return the selected option of the group. If it is a single-element option,
@@ -124,15 +124,15 @@ int EncoderMp3Settings::getSelectedOption(QString groupCode) const
         if (groupCode == group.groupCode) {
             found=true;
             if (value >= group.controlNames.size() && value > 1) {
-                qWarning() << "Value saved for " << groupCode
-                           << " on preferences is out of range " << value
-                           << ". Returning 0";
+                qInfo() << "Value saved for " << groupCode
+                        << " on preferences is out of range " << value
+                        << ". Returning 0";
                 value=0;
             }
         }
     }
     if (!found) {
-        qWarning() << "Received an unknown groupCode on getSelectedOption: " << groupCode;
+        qInfo() << "Received an unknown groupCode on getSelectedOption: " << groupCode;
     }
     return value;
 }

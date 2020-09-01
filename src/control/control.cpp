@@ -78,13 +78,13 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 
     auto it = s_qCOHash.constFind(key);
     if (it == s_qCOHash.constEnd()) {
-        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
+        qInfo() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
         return;
     }
 
     QSharedPointer<ControlDoublePrivate> pControl = it.value();
     if (pControl.isNull()) {
-        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for expired control" << key;
+        qInfo() << "WARNING: ControlDoublePrivate::insertAlias called for expired control" << key;
         return;
     }
 
@@ -102,8 +102,8 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         bool bPersist,
         double defaultValue) {
     VERIFY_OR_DEBUG_ASSERT(key.isValid()) {
-        qWarning() << "ControlDoublePrivate::getControl returning nullptr"
-                   << "for invalid ConfigKey" << key;
+        qInfo() << "ControlDoublePrivate::getControl returning nullptr"
+                << "for invalid ConfigKey" << key;
         return nullptr;
     }
 
@@ -116,7 +116,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
             if (pControl) {
                 // Control object already exists
                 VERIFY_OR_DEBUG_ASSERT(!pCreatorCO) {
-                    qWarning()
+                    qInfo()
                             << "ControlObject"
                             << key.group << key.item
                             << "already created";
@@ -145,8 +145,8 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     }
 
     if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
-        qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                   << key.group << "," << key.item << ")";
+        qInfo() << "ControlDoublePrivate::getControl returning NULL for ("
+                << key.group << "," << key.item << ")";
         DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
     }
     return nullptr;
@@ -256,7 +256,7 @@ double ControlDoublePrivate::getParameterForValue(double value) const {
 double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     VERIFY_OR_DEBUG_ASSERT(pBehavior) {
-        qWarning() << "Cannot set" << m_key << "by Midi";
+        qInfo() << "Cannot set" << m_key << "by Midi";
         return 0;
     }
     return pBehavior->midiToParameter(midiParam);
@@ -265,7 +265,7 @@ double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
 void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     VERIFY_OR_DEBUG_ASSERT(pBehavior) {
-        qWarning() << "Cannot set" << m_key << "by Midi";
+        qInfo() << "Cannot set" << m_key << "by Midi";
         return;
     }
     pBehavior->setValueFromMidi(opcode, midiParam, this);
@@ -274,7 +274,7 @@ void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam)
 double ControlDoublePrivate::getMidiParameter() const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     VERIFY_OR_DEBUG_ASSERT(pBehavior) {
-        qWarning() << "Cannot get" << m_key << "by Midi";
+        qInfo() << "Cannot get" << m_key << "by Midi";
         return 0;
     }
     return pBehavior->valueToMidiParameter(get());

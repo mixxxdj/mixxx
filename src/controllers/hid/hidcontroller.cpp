@@ -92,7 +92,7 @@ QString HidController::presetExtension() {
 void HidController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qInfo() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
 void HidController::visit(const HidControllerPreset* preset) {
@@ -197,21 +197,21 @@ int HidController::open() {
     // If it does fail, try without serial number WARNING: This will only open
     // one of multiple identical devices
     if (m_pHidDevice == NULL) {
-        qWarning() << "Unable to open specific HID device" << getName()
-                   << "Trying now with just make and model."
-                   << "(This may only open the first of multiple identical devices.)";
+        qInfo() << "Unable to open specific HID device" << getName()
+                << "Trying now with just make and model."
+                << "(This may only open the first of multiple identical devices.)";
         m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, NULL);
     }
 
     // If that fails, we give up!
     if (m_pHidDevice == NULL) {
-        qWarning()  << "Unable to open HID device" << getName();
+        qInfo() << "Unable to open HID device" << getName();
         return -1;
     }
 
     // Set hid controller to non-blocking
     if (hid_set_nonblocking(m_pHidDevice, 1) != 0) {
-        qWarning() << "Unable to set HID device " << getName() << " to non-blocking";
+        qInfo() << "Unable to set HID device " << getName() << " to non-blocking";
         return -1;
     }
 
@@ -279,12 +279,12 @@ void HidController::send(QByteArray data, unsigned int reportID) {
     int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(), data.size());
     if (result == -1) {
         if (ControllerDebug::enabled()) {
-            qWarning() << "Unable to send data to" << getName()
-                       << "serial #" << hid_serial << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+            qInfo() << "Unable to send data to" << getName()
+                    << "serial #" << hid_serial << ":"
+                    << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         } else {
-            qWarning() << "Unable to send data to" << getName() << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+            qInfo() << "Unable to send data to" << getName() << ":"
+                    << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         }
     } else {
         controllerDebug(result << "bytes sent to" << getName()

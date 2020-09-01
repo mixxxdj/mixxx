@@ -271,7 +271,7 @@ void DlgControllerLearning::slotFirstMessageTimeout() {
     if (m_messages.length() == 0) {
         labelErrorText->setText(tr("Didn't get any midi messages.  Please try again."));
     } else {
-        qWarning() << "we shouldn't time out if we got something";
+        qInfo() << "we shouldn't time out if we got something";
         m_messages.clear();
     }
     stackedWidget->setCurrentWidget(page1Choose);
@@ -397,12 +397,12 @@ void DlgControllerLearning::visit(MidiController* pMidiController) {
 }
 
 void DlgControllerLearning::visit(HidController* pHidController) {
-    qWarning() << "ERROR: DlgControllerLearning does not support HID devices.";
+    qInfo() << "ERROR: DlgControllerLearning does not support HID devices.";
     Q_UNUSED(pHidController);
 }
 
 void DlgControllerLearning::visit(BulkController* pBulkController) {
-    qWarning() << "ERROR: DlgControllerLearning does not support Bulk devices.";
+    qInfo() << "ERROR: DlgControllerLearning does not support Bulk devices.";
     Q_UNUSED(pBulkController);
 }
 
@@ -463,8 +463,9 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
 
     ConfigKey key = pControl->getKey();
     if (!m_controlPickerMenu.controlExists(key)) {
-        qWarning() << "Mixxx UI element clicked for which there is no "
-                      "learnable control " << key.group << " " << key.item;
+        qInfo() << "Mixxx UI element clicked for which there is no "
+                   "learnable control "
+                << key.group << " " << key.item;
         QMessageBox::warning(
                     this,
                     Version::applicationName(),

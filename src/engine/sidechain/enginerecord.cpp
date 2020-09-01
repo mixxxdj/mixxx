@@ -64,7 +64,7 @@ void EngineRecord::updateFromPreferences() {
 
     QString errorMsg;
     if(m_pEncoder->initEncoder(m_sampleRate, errorMsg) < 0) {
-        qWarning() << errorMsg;
+        qInfo() << errorMsg;
         m_pEncoder.reset();
     }
 }

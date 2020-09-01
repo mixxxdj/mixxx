@@ -38,8 +38,8 @@ void EncoderVorbisSettings::setQualityByIndex(int qualityIndex)
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
         m_pConfig->setValue<int>(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), qualityIndex);
     } else {
-        qWarning() << "Invalid qualityIndex given to EncoderVorbisSettings: "
-                   << qualityIndex << ". Ignoring it";
+        qInfo() << "Invalid qualityIndex given to EncoderVorbisSettings: "
+                << qualityIndex << ". Ignoring it";
     }
 }
 
@@ -64,9 +64,9 @@ int EncoderVorbisSettings::getQualityIndex() const
         return qualityIndex;
     }
     else {
-        qWarning() << "Invalid qualityIndex in EncoderVorbisSettings "
-                   << qualityIndex << "(Max is:" << m_qualList.size() << ") . Ignoring it and"
-                   << "returning default which is" << DEFAULT_BITRATE_INDEX;
+        qInfo() << "Invalid qualityIndex in EncoderVorbisSettings "
+                << qualityIndex << "(Max is:" << m_qualList.size() << ") . Ignoring it and"
+                << "returning default which is" << DEFAULT_BITRATE_INDEX;
         return DEFAULT_BITRATE_INDEX;
     }
 }

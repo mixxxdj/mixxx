@@ -10,7 +10,7 @@ class Singleton {
   public:
     static T* createInstance() {
         VERIFY_OR_DEBUG_ASSERT(!m_instance) {
-            qWarning() << "Singleton class has already been created!";
+            qInfo() << "Singleton class has already been created!";
             return m_instance;
         }
 
@@ -20,14 +20,14 @@ class Singleton {
 
     static T* instance() {
         VERIFY_OR_DEBUG_ASSERT(m_instance) {
-            qWarning() << "Singleton class has not been created yet, returning nullptr";
+            qInfo() << "Singleton class has not been created yet, returning nullptr";
         }
         return m_instance;
     }
 
     static void destroy() {
         VERIFY_OR_DEBUG_ASSERT(m_instance) {
-            qWarning() << "Singleton class has already been destroyed!";
+            qInfo() << "Singleton class has already been destroyed!";
             return;
         }
         delete m_instance;

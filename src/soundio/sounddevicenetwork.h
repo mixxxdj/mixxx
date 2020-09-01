@@ -92,7 +92,7 @@ class SoundDeviceNetworkThread : public QThread {
         struct sched_param spm = { 0 };
         spm.sched_priority = 1;
         if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &spm)) {
-            qWarning() << "SoundDeviceNetworkThread: Failed bumping priority";
+            qInfo() << "SoundDeviceNetworkThread: Failed bumping priority";
         }
 #endif
 

@@ -152,29 +152,29 @@ bool checkUrl(const QString& url) {
 bool lintPresetInfo(const PresetInfo& preset) {
     bool result = true;
     if (preset.getName().trimmed().isEmpty()) {
-        qWarning() << "LINT:" << preset.getPath() << "has no name.";
+        qInfo() << "LINT:" << preset.getPath() << "has no name.";
         result = false;
     }
 
     if (preset.getAuthor().trimmed().isEmpty()) {
-        qWarning() << "LINT:" << preset.getPath() << "has no author.";
+        qInfo() << "LINT:" << preset.getPath() << "has no author.";
     }
 
     if (preset.getDescription().trimmed().isEmpty()) {
-        qWarning() << "LINT:" << preset.getPath() << "has no description.";
+        qInfo() << "LINT:" << preset.getPath() << "has no description.";
     }
 
     if (preset.getForumLink().trimmed().isEmpty()) {
-        qWarning() << "LINT:" << preset.getPath() << "has no forum link.";
+        qInfo() << "LINT:" << preset.getPath() << "has no forum link.";
     } else if (!checkUrl(preset.getForumLink())) {
-        qWarning() << "LINT:" << preset.getPath() << "has invalid forum link";
+        qInfo() << "LINT:" << preset.getPath() << "has invalid forum link";
         result = false;
     }
 
     if (preset.getWikiLink().trimmed().isEmpty()) {
-        qWarning() << "LINT:" << preset.getPath() << "has no wiki link.";
+        qInfo() << "LINT:" << preset.getPath() << "has no wiki link.";
     } else if (!checkUrl(preset.getWikiLink())) {
-        qWarning() << "LINT:" << preset.getPath() << "has invalid wiki link";
+        qInfo() << "LINT:" << preset.getPath() << "has invalid wiki link";
         result = false;
     }
     return result;

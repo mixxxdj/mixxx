@@ -156,7 +156,7 @@ class BaseSignalPathTest : public MixxxTest {
             for (; i < iBufferSize && !in.atEnd(); i += 2) {
                 QStringList line = in.readLine().split(',');
                 if (line.length() != 2) {
-                    qWarning() << "Unexpected line length in reference file";
+                    qInfo() << "Unexpected line length in reference file";
                     pass = false;
                     break;
                 }
@@ -165,13 +165,13 @@ class BaseSignalPathTest : public MixxxTest {
                 double gold_value1 = line[1].toDouble(&ok);
                 EXPECT_TRUE(ok);
                 if (fabs(gold_value0 - pBuffer[i]) > delta) {
-                    qWarning() << "Golden check failed at index" << i << ", "
-                               << gold_value0 << "vs" << pBuffer[i];
+                    qInfo() << "Golden check failed at index" << i << ", "
+                            << gold_value0 << "vs" << pBuffer[i];
                     pass = false;
                 }
                 if (fabs(gold_value1 - pBuffer[i + 1]) > delta) {
-                    qWarning() << "Golden check failed at index" << i + 1 << ", "
-                               << gold_value1 << "vs" << pBuffer[i + 1];
+                    qInfo() << "Golden check failed at index" << i + 1 << ", "
+                            << gold_value1 << "vs" << pBuffer[i + 1];
                     pass = false;
                 }
             }
@@ -179,9 +179,9 @@ class BaseSignalPathTest : public MixxxTest {
         // Fail if either we didn't pass, or the comparison file was empty.
         if (!pass || i == 0) {
             QString fname_actual = reference_title + ".actual";
-            qWarning() << "Buffer does not match" << reference_title
-                       << ", actual buffer written to "
-                       << "reference_buffers/" + fname_actual;
+            qInfo() << "Buffer does not match" << reference_title
+                    << ", actual buffer written to "
+                    << "reference_buffers/" + fname_actual;
             QFile actual(QDir::currentPath() + "/src/test/reference_buffers/" + fname_actual);
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);

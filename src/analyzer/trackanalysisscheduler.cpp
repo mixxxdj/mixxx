@@ -232,7 +232,7 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
 
 bool TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
-        qWarning()
+        qInfo()
                 << "Cannot schedule track with invalid id"
                 << trackId;
         return false;

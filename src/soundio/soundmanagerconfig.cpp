@@ -502,7 +502,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         } else if (!sampleRates.isEmpty()) {
             m_sampleRate = sampleRates.first();
         } else {
-            qWarning() << "got empty sample rate list from SoundManager, this is a bug";
+            qInfo() << "got empty sample rate list from SoundManager, this is a bug";
             m_sampleRate = kFallbackSampleRate;
         }
         m_audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;

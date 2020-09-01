@@ -63,7 +63,9 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             if (dValue > dMaximum || dValue < dMinimum ||
                 dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
                 dDefault > dMaximum || dDefault < dMinimum) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+                qInfo() << debugString()
+                        << "WARNING: EffectParameter does not satisfy basic "
+                           "sanity checks.";
             }
 
             // qDebug() << debugString()

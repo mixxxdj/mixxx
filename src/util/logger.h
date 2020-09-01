@@ -63,7 +63,7 @@ public:
     }
 
     QDebug warning() const {
-        return log(qWarning());
+        return log(qInfo());
     }
 
     QDebug critical() const {

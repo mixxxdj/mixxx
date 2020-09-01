@@ -191,7 +191,7 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     if (pTrack) {
         return pTrack->getId();
     } else {
-        qWarning()
+        qInfo()
                 << "Track is not available in library"
                 << getTrackLocation(index);
         return TrackId();
@@ -329,7 +329,7 @@ bool BrowseTableModel::setData(
 
     TrackPointer pTrack(getTrack(index));
     if (!pTrack) {
-        qWarning() << "BrowseTableModel::setData():"
+        qInfo() << "BrowseTableModel::setData():"
                 << "Failed to resolve track"
                 << getTrackLocation(index);
         // restore previous item content
@@ -378,8 +378,8 @@ bool BrowseTableModel::setData(
         pTrack->setGrouping(value.toString());
         break;
     default:
-        qWarning() << "BrowseTableModel::setData():"
-            << "No tagger column";
+        qInfo() << "BrowseTableModel::setData():"
+                << "No tagger column";
         // restore previous item context
         item->setText(index.data().toString());
         item->setToolTip(item->text());

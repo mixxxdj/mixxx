@@ -44,7 +44,7 @@ QString calcFingerprint(
                             fingerprintRange,
                             mixxx::SampleBuffer::WritableSlice(sampleBuffer)));
     if (fingerprintRange != readableSampleFrames.frameIndexRange()) {
-        qWarning() << "Failed to read sample data for fingerprint";
+        qInfo() << "Failed to read sample data for fingerprint";
         return QString();
     }
 
@@ -73,7 +73,7 @@ QString calcFingerprint(
             static_cast<int>(fingerprintSamples.size()));
     chromaprint_finish(ctx);
     if (!success) {
-        qWarning() << "Failed to generate fingerprint from sample data";
+        qInfo() << "Failed to generate fingerprint from sample data";
         chromaprint_free(ctx);
         return QString();
     }

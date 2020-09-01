@@ -163,11 +163,11 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
         QByteArray data = buffer->read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
             QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
-            qWarning() << "Failed to read "
-                       << fieldSize
-                       << " bytes for "
-                       << fieldName
-                       << " field.";
+            qInfo() << "Failed to read "
+                    << fieldSize
+                    << " bytes for "
+                    << fieldName
+                    << " field.";
             return false;
         }
 
@@ -274,16 +274,16 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
     }
 
     if (headerData.length() != 0) {
-        qWarning() << "Found "
-                   << headerData.length()
-                   << " extra bytes at end of track definition.";
+        qInfo() << "Found "
+                << headerData.length()
+                << " extra bytes at end of track definition.";
         return false;
     }
 
     // Ignore tracks with empty location fields. The track location is used as
     // identifier by Serato (e.g. it's also used to reference them in Crates).
     if (track->location.isEmpty()) {
-        qWarning() << "Found track with empty location field.";
+        qInfo() << "Found track with empty location field.";
         return false;
     }
 
@@ -301,11 +301,11 @@ inline QString parseCrateTrackPath(QIODevice* buffer) {
         QByteArray data = buffer->read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
             QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
-            qWarning() << "Failed to read "
-                       << fieldSize
-                       << " bytes for "
-                       << fieldName
-                       << " field.";
+            qInfo() << "Failed to read "
+                    << fieldSize
+                    << " bytes for "
+                    << fieldName
+                    << " field.";
             return QString();
         }
 
@@ -328,9 +328,9 @@ inline QString parseCrateTrackPath(QIODevice* buffer) {
     }
 
     if (headerData.length() != 0) {
-        qWarning() << "Found "
-                   << headerData.length()
-                   << " extra bytes at end of track definition.";
+        qInfo() << "Found "
+                << headerData.length()
+                << " extra bytes at end of track definition.";
         return QString();
     }
 
@@ -349,23 +349,23 @@ QString parseCrate(
 
     //Open the database connection in this thread.
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
-        qWarning() << "Failed to open database for Serato parser."
-                   << database.lastError();
+        qInfo() << "Failed to open database for Serato parser."
+                << database.lastError();
         return QString();
     }
 
     QFile crateFile(crateFilePath);
     if (!crateFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open file "
-                   << crateFilePath
-                   << " for reading.";
+        qInfo() << "Failed to open file "
+                << crateFilePath
+                << " for reading.";
         return QString();
     }
 
     int playlistId = createPlaylist(database, crateFilePath, databasePath);
     if (playlistId < 0) {
-        qWarning() << "Failed to create library playlist for "
-                   << crateFilePath;
+        qInfo() << "Failed to create library playlist for "
+                << crateFilePath;
         return QString();
     }
 
@@ -379,13 +379,13 @@ QString parseCrate(
         QByteArray data = crateFile.read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
             QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
-            qWarning() << "Failed to read "
-                       << fieldSize
-                       << " bytes for "
-                       << fieldName
-                       << " field from "
-                       << crateFilePath
-                       << ".";
+            qInfo() << "Failed to read "
+                    << fieldSize
+                    << " bytes for "
+                    << fieldName
+                    << " field from "
+                    << crateFilePath
+                    << ".";
             return QString();
         }
 
@@ -425,11 +425,11 @@ QString parseCrate(
     }
 
     if (headerData.length() != 0) {
-        qWarning() << "Found "
-                   << headerData.length()
-                   << " extra bytes at end of Serato database file "
-                   << crateFilePath
-                   << ".";
+        qInfo() << "Found "
+                << headerData.length()
+                << " extra bytes at end of Serato database file "
+                << crateFilePath
+                << ".";
     }
 
     return crateName;
@@ -470,8 +470,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
              << "at" << databaseFilePath;
 
     if (!QFile(databaseFilePath).exists()) {
-        qWarning() << "Serato database file not found: "
-                   << databaseFilePath;
+        qInfo() << "Serato database file not found: "
+                << databaseFilePath;
         return databaseFilePath;
     }
 
@@ -482,8 +482,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 
     //Open the database connection in this thread.
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
-        qWarning() << "Failed to open database for Serato parser."
-                   << database.lastError();
+        qInfo() << "Failed to open database for Serato parser."
+                << database.lastError();
         return QString();
     }
 
@@ -537,16 +537,16 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 
     QFile databaseFile(databaseFilePath);
     if (!databaseFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open file "
-                   << databaseFilePath
-                   << " for reading.";
+        qInfo() << "Failed to open file "
+                << databaseFilePath
+                << " for reading.";
         return QString();
     }
 
     int playlistId = createPlaylist(database, databaseFilePath, databaseDir.path());
     if (playlistId < 0) {
-        qWarning() << "Failed to create library playlist for "
-                   << databaseFilePath;
+        qInfo() << "Failed to create library playlist for "
+                << databaseFilePath;
         return QString();
     }
 
@@ -561,13 +561,13 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
         QByteArray data = databaseFile.read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
             QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
-            qWarning() << "Failed to read "
-                       << fieldSize
-                       << " bytes for "
-                       << fieldName
-                       << " field from "
-                       << databaseFilePath
-                       << ".";
+            qInfo() << "Failed to read "
+                    << fieldSize
+                    << " bytes for "
+                    << fieldName
+                    << " field from "
+                    << databaseFilePath
+                    << ".";
             return QString();
         }
 
@@ -631,11 +631,11 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     }
 
     if (headerData.length() != 0) {
-        qWarning() << "Found "
-                   << headerData.length()
-                   << " extra bytes at end of Serato database file "
-                   << databaseFilePath
-                   << ".";
+        qInfo() << "Found "
+                << headerData.length()
+                << " extra bytes at end of Serato database file "
+                << databaseFilePath
+                << ".";
     }
 
     // Parse Crates
@@ -659,8 +659,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             }
         }
     } else {
-        qWarning() << "Failed to open crate directory: "
-                   << databaseDir.filePath(kCrateDirectory);
+        qInfo() << "Failed to open crate directory: "
+                << databaseDir.filePath(kCrateDirectory);
     }
 
     // TODO: Parse Smart Crates

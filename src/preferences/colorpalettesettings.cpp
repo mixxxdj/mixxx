@@ -76,7 +76,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
 
 void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalette& colorPalette) {
     VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
-        qWarning() << "Palette name must not be empty!";
+        qInfo() << "Palette name must not be empty!";
         return;
     }
 
@@ -128,7 +128,7 @@ ColorPalette ColorPaletteSettings::getHotcueColorPalette(
 void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalette) {
     QString name = colorPalette.getName();
     VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
-        qWarning() << "Palette name must not be empty!";
+        qInfo() << "Palette name must not be empty!";
         return;
     }
     m_pConfig->setValue(kHotcueColorPaletteConfigKey, name);
@@ -150,7 +150,7 @@ ColorPalette ColorPaletteSettings::getTrackColorPalette() const {
 void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette) {
     QString name = colorPalette.getName();
     VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
-        qWarning() << "Palette name must not be empty!";
+        qInfo() << "Palette name must not be empty!";
         return;
     }
     m_pConfig->setValue(kTrackColorPaletteConfigKey, name);

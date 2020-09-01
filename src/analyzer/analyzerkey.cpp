@@ -168,7 +168,7 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
     }
 
     if (!m_pPlugin->finalize()) {
-        qWarning() << "Key detection failed";
+        qInfo() << "Key detection failed";
         return;
     }
 

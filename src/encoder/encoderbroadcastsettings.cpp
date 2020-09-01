@@ -37,8 +37,8 @@ int EncoderBroadcastSettings::getQuality() const {
         return bitrate;
     }
     else {
-        qWarning() << "Invalid bitrate in EncoderBroadcastSettings " 
-            << bitrate << ". Ignoring it and returning default";
+        qInfo() << "Invalid bitrate in EncoderBroadcastSettings "
+                << bitrate << ". Ignoring it and returning default";
     }
     return DEFAULT_BITRATE;
 }
@@ -59,4 +59,3 @@ EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
 QString EncoderBroadcastSettings::getFormat() const {
     return m_pProfile->getFormat();
 }
-

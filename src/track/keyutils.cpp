@@ -188,7 +188,7 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
 
     for (auto it = s_notation.constBegin(); it != s_notation.constEnd(); ++it) {
         if (s_reverseNotation.contains(it.value())) {
-            qWarning() << "Key notation is surjective (has duplicate values).";
+            qInfo() << "Key notation is surjective (has duplicate values).";
         }
         s_reverseNotation.insert(it.value(), it.key());
     }

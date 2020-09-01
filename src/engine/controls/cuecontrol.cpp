@@ -1219,15 +1219,15 @@ void CueControl::introStartSet(double v) {
     double outroStart = m_pOutroStartPosition->get();
     double outroEnd = m_pOutroEndPosition->get();
     if (introEnd != Cue::kNoPosition && position >= introEnd) {
-        qWarning() << "Trying to place intro start cue on or after intro end cue.";
+        qInfo() << "Trying to place intro start cue on or after intro end cue.";
         return;
     }
     if (outroStart != Cue::kNoPosition && position >= outroStart) {
-        qWarning() << "Trying to place intro start cue on or after outro start cue.";
+        qInfo() << "Trying to place intro start cue on or after outro start cue.";
         return;
     }
     if (outroEnd != Cue::kNoPosition && position >= outroEnd) {
-        qWarning() << "Trying to place intro start cue on or after outro end cue.";
+        qInfo() << "Trying to place intro start cue on or after outro end cue.";
         return;
     }
 
@@ -1295,15 +1295,15 @@ void CueControl::introEndSet(double v) {
     double outroStart = m_pOutroStartPosition->get();
     double outroEnd = m_pOutroEndPosition->get();
     if (introStart != Cue::kNoPosition && position <= introStart) {
-        qWarning() << "Trying to place intro end cue on or before intro start cue.";
+        qInfo() << "Trying to place intro end cue on or before intro start cue.";
         return;
     }
     if (outroStart != Cue::kNoPosition && position >= outroStart) {
-        qWarning() << "Trying to place intro end cue on or after outro start cue.";
+        qInfo() << "Trying to place intro end cue on or after outro start cue.";
         return;
     }
     if (outroEnd != Cue::kNoPosition && position >= outroEnd) {
-        qWarning() << "Trying to place intro end cue on or after outro end cue.";
+        qInfo() << "Trying to place intro end cue on or after outro end cue.";
         return;
     }
 
@@ -1371,15 +1371,15 @@ void CueControl::outroStartSet(double v) {
     double introEnd = m_pIntroEndPosition->get();
     double outroEnd = m_pOutroEndPosition->get();
     if (introStart != Cue::kNoPosition && position <= introStart) {
-        qWarning() << "Trying to place outro start cue on or before intro start cue.";
+        qInfo() << "Trying to place outro start cue on or before intro start cue.";
         return;
     }
     if (introEnd != Cue::kNoPosition && position <= introEnd) {
-        qWarning() << "Trying to place outro start cue on or before intro end cue.";
+        qInfo() << "Trying to place outro start cue on or before intro end cue.";
         return;
     }
     if (outroEnd != Cue::kNoPosition && position >= outroEnd) {
-        qWarning() << "Trying to place outro start cue on or after outro end cue.";
+        qInfo() << "Trying to place outro start cue on or after outro end cue.";
         return;
     }
 
@@ -1447,15 +1447,15 @@ void CueControl::outroEndSet(double v) {
     double introEnd = m_pIntroEndPosition->get();
     double outroStart = m_pOutroStartPosition->get();
     if (introStart != Cue::kNoPosition && position <= introStart) {
-        qWarning() << "Trying to place outro end cue on or before intro start cue.";
+        qInfo() << "Trying to place outro end cue on or before intro start cue.";
         return;
     }
     if (introEnd != Cue::kNoPosition && position <= introEnd) {
-        qWarning() << "Trying to place outro end cue on or before intro end cue.";
+        qInfo() << "Trying to place outro end cue on or before intro end cue.";
         return;
     }
     if (outroStart != Cue::kNoPosition && position <= outroStart) {
-        qWarning() << "Trying to place outro end cue on or before outro start cue.";
+        qInfo() << "Trying to place outro end cue on or before outro start cue.";
         return;
     }
 
@@ -1920,7 +1920,7 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 
 void HotcueControl::slotHotcueColorChangeRequest(double color) {
     if (color < 0 || color > 0xFFFFFF) {
-        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+        qInfo() << "slotHotcueColorChanged got invalid value:" << color;
         return;
     }
     m_hotcueColor->setAndConfirm(color);

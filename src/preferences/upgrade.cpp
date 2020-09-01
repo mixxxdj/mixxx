@@ -116,7 +116,10 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         newFilePath = newLocation.filePath("MixxxMIDIBindings.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
-            qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
+            qInfo() << "The MIDI mapping file format has changed in this "
+                       "version of Mixxx. You will need to reconfigure your "
+                       "MIDI controller. See the Wiki for full details on the "
+                       "new format.";
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
             else {
@@ -422,8 +425,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion == MIXXX_VERSION) qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
     else {
-        qWarning() << "Configuration file is at version" << configVersion
-                   << "instead of the current" << MIXXX_VERSION;
+        qInfo() << "Configuration file is at version" << configVersion
+                << "instead of the current" << MIXXX_VERSION;
     }
 
     return config;

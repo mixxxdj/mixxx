@@ -71,8 +71,8 @@ Encoder::Format EncoderFactory::getFormatFor(QString formatText) const
             return format;
         }
     }
-    qWarning() << "Format: " << formatText << " not recognized! Returning format "
-        << m_formats.first().internalName;
+    qInfo() << "Format: " << formatText << " not recognized! Returning format "
+            << m_formats.first().internalName;
     return m_formats.first();
 }
 
@@ -120,7 +120,7 @@ EncoderPointer EncoderFactory::createEncoder(
     }
 #endif
     else {
-        qWarning() << "Unsupported format requested! "
+        qInfo() << "Unsupported format requested! "
                 << QString(pSettings ? pSettings->getFormat() : QString("NULL"));
         DEBUG_ASSERT(false);
         pEncoder = std::make_shared<EncoderWave>(pCallback);;
@@ -144,7 +144,7 @@ EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Enco
     } else if (format.internalName == ENCODING_OPUS) {
         return std::make_shared<EncoderOpusSettings>(pConfig);
     } else {
-        qWarning() << "Unsupported format requested! " << format.internalName;
+        qInfo() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
         return std::make_shared<EncoderWaveSettings>(pConfig, ENCODING_WAVE);
     }

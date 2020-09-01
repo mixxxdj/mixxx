@@ -92,7 +92,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
 }
 
 void WaveformSignalColors::fallBackFromSignalColor() {
-    // qWarning() << "WaveformSignalColors::fallBackFromSignalColor - "
+    // qInfo() << "WaveformSignalColors::fallBackFromSignalColor - "
     //           << "skin do not provide low/mid/high signal colors";
 
     // NOTE(rryan): On ARM, qreal is float so it's important we use qreal here
@@ -141,8 +141,8 @@ void WaveformSignalColors::fallBackFromSignalColor() {
 }
 
 void WaveformSignalColors::fallBackDefaultColor() {
-    qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
-                  "skin do not provide valid signal colors ! Default colors is use ...";
+    qInfo() << "WaveformSignalColors::fallBackDefaultColor - "
+               "skin do not provide valid signal colors ! Default colors is use ...";
 
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();

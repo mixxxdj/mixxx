@@ -43,7 +43,7 @@ Console::Console()
             // the input is not already redirected
             FILE* pStdin = stdin;
             if (freopen_s(&pStdin, "CONIN$", "r", stdin)) {
-                qWarning() << "Could not open stdin. Error code:" << GetLastError();
+                qInfo() << "Could not open stdin. Error code:" << GetLastError();
             }
         }
 
@@ -51,10 +51,10 @@ Console::Console()
             // the output is not already redirected
             FILE* pStdout = stdout;
             if (freopen_s(&pStdout, "CONOUT$", "w", stdout)) {
-                qWarning() << "Could not open stdout. Error code:" << GetLastError();
+                qInfo() << "Could not open stdout. Error code:" << GetLastError();
             } else {
                 if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
-                    qWarning() << "Setting no buffer for stdout failed.";
+                    qInfo() << "Setting no buffer for stdout failed.";
                 }
             }
         }
@@ -63,10 +63,10 @@ Console::Console()
             // the error is not already redirected
             FILE* pStderr = stderr;
             if (freopen_s(&pStderr, "CONOUT$", "w", stderr)) {
-                qWarning() << "Could not open stderr. Error code:" << GetLastError();
+                qInfo() << "Could not open stderr. Error code:" << GetLastError();
             } else {
                 if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
-                    qWarning() << "Setting no buffer for stderr failed.";
+                    qInfo() << "Setting no buffer for stderr failed.";
                 }
             }
         }
@@ -110,8 +110,8 @@ Console::Console()
                     pfSCCFX(hStdOut, FALSE, &newFont);
                 } else {
                     // This happens on Windows XP
-                    qWarning() << "The console font may not support non ANSI characters." <<
-                                  "In case of character issues switch to font \"Lucida Console\"";
+                    qInfo() << "The console font may not support non ANSI characters."
+                            << "In case of character issues switch to font \"Lucida Console\"";
                 }
             }
 
@@ -130,7 +130,7 @@ Console::Console()
                 if (SetConsoleTitle(szNewTitle)) {
                     m_shouldResetConsoleTitle = true;
                 } else {
-                    qWarning() << "SetConsoleTitle failed" << GetLastError();
+                    qInfo() << "SetConsoleTitle failed" << GetLastError();
                 }
             }
         }
@@ -156,7 +156,7 @@ Console::Console()
                           sizeof(defaultCodePage)) != 0) {
             SetConsoleOutputCP(defaultCodePage);
         } else {
-            qWarning() << "GetLocaleInfo failed. Error code:" << GetLastError();
+            qInfo() << "GetLocaleInfo failed. Error code:" << GetLastError();
         }
     } else {
         // started by double click
@@ -173,7 +173,7 @@ Console::~Console() {
     }
     if (m_shouldResetConsoleTitle) {
         if (!SetConsoleTitle(m_oldTitle)) {
-            qWarning() << "SetConsoleTitle failed" << GetLastError();
+            qInfo() << "SetConsoleTitle failed" << GetLastError();
         }
     }
     if (m_shouldFreeConsole) {

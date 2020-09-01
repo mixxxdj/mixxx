@@ -16,8 +16,8 @@ EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig,
           m_format(std::move(format)) {
     VERIFY_OR_DEBUG_ASSERT(m_format == ENCODING_WAVE || m_format == ENCODING_AIFF) {
         m_format = ENCODING_WAVE;
-        qWarning() << "EncoderWaveSettings setup with " << m_format
-                   << ". This is an error! Changing it to " << m_format;
+        qInfo() << "EncoderWaveSettings setup with " << m_format
+                << ". This is an error! Changing it to " << m_format;
     }
     QList<QString> names;
     names.append(QObject::tr("16 bits"));
@@ -44,13 +44,13 @@ void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex) {
                         ConfigKey(RECORDING_PREF_KEY, m_format + "_" + groupCode),
                         ConfigValue(optionIndex));
             } else {
-                qWarning() << "Received an index out of range for: "
-                           << groupCode << ", index: " << optionIndex;
+                qInfo() << "Received an index out of range for: "
+                        << groupCode << ", index: " << optionIndex;
             }
         }
     }
     if (!found) {
-        qWarning() << "Received an unknown groupCode on setGroupOption: " << groupCode;
+        qInfo() << "Received an unknown groupCode on setGroupOption: " << groupCode;
     }
 }
 // Return the selected option of the group. If it is a single-element option,
@@ -63,15 +63,15 @@ int EncoderWaveSettings::getSelectedOption(QString groupCode) const {
         if (groupCode == group.groupCode) {
             found=true;
             if (value >= group.controlNames.size() && value > 1) {
-                qWarning() << "Value saved for " << groupCode
-                           << " on preferences is out of range " << value
-                           << ". Returning 0";
+                qInfo() << "Value saved for " << groupCode
+                        << " on preferences is out of range " << value
+                        << ". Returning 0";
                 value=0;
             }
         }
     }
     if (!found) {
-        qWarning() << "Received an unknown groupCode on getSelectedOption: " << groupCode;
+        qInfo() << "Received an unknown groupCode on getSelectedOption: " << groupCode;
     }
     return value;
 }

@@ -759,7 +759,7 @@ int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
             return i;
         }
     }
-    qWarning() << "No default cue behavior found for value" << userData
-               << "returning default";
+    qInfo() << "No default cue behavior found for value" << userData
+            << "returning default";
     return 0;
 }

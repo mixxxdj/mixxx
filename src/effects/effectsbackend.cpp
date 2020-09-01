@@ -18,7 +18,7 @@ void EffectsBackend::registerEffect(const QString& id,
                                     EffectManifestPointer pManifest,
                                     EffectInstantiatorPointer pInstantiator) {
     if (m_registeredEffects.contains(id)) {
-        qWarning() << "WARNING: Effect" << id << "already registered";
+        qInfo() << "WARNING: Effect" << id << "already registered";
         return;
     }
 
@@ -35,7 +35,7 @@ const QList<QString> EffectsBackend::getEffectIds() const {
 
 EffectManifestPointer EffectsBackend::getManifest(const QString& effectId) const {
     if (!m_registeredEffects.contains(effectId)) {
-        qWarning() << "WARNING: Effect" << effectId << "is not registered.";
+        qInfo() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectManifestPointer();
     }
     return m_registeredEffects[effectId].manifest();
@@ -48,7 +48,7 @@ bool EffectsBackend::canInstantiateEffect(const QString& effectId) const {
 EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
                                                 const QString& effectId) {
     if (!m_registeredEffects.contains(effectId)) {
-        qWarning() << "WARNING: Effect" << effectId << "is not registered.";
+        qInfo() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
     RegisteredEffect& effectInfo = m_registeredEffects[effectId];

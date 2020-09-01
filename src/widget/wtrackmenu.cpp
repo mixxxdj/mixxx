@@ -942,7 +942,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
 void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
     const TrackIdList trackIds = getTrackIds();
     if (trackIds.isEmpty()) {
-        qWarning() << "No tracks selected for playlist";
+        qInfo() << "No tracks selected for playlist";
         return;
     }
 
@@ -1051,7 +1051,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
-        qWarning() << "crateId is not of CrateId type";
+        qInfo() << "crateId is not of CrateId type";
         return;
     }
     CrateId crateId = pCheckBox->property("crateId").value<CrateId>();
@@ -1059,7 +1059,7 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     const TrackIdList trackIds = getTrackIds();
 
     if (trackIds.isEmpty()) {
-        qWarning() << "No tracks selected for crate";
+        qInfo() << "No tracks selected for crate";
         return;
     }
 
@@ -1086,7 +1086,7 @@ void WTrackMenu::addSelectionToNewCrate() {
     const TrackIdList trackIds = getTrackIds();
 
     if (trackIds.isEmpty()) {
-        qWarning() << "No tracks selected for crate";
+        qInfo() << "No tracks selected for crate";
         return;
     }
 
@@ -1517,7 +1517,7 @@ void WTrackMenu::slotAddToAutoDJReplace() {
 void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     const TrackIdList trackIds = getTrackIds();
     if (trackIds.empty()) {
-        qWarning() << "No tracks selected for AutoDJ";
+        qInfo() << "No tracks selected for AutoDJ";
         return;
     }
 

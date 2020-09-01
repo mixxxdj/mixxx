@@ -53,7 +53,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
 
     QFile file(sFilename);
     if (isBinary(sFilename) || !file.open(QIODevice::ReadOnly)) {
-        qWarning()
+        qInfo()
                 << "Failed to open playlist file"
                 << sFilename;
         return m_sLocations;
@@ -105,7 +105,7 @@ QString ParserM3u::getFilePath(QTextStream* stream, const QString& basePath) {
             return trackFile.location();
         }
         // We couldn't match this to a real file so ignore it
-        qWarning() << trackFile << "not found";
+        qInfo() << trackFile << "not found";
     }
     // Signal we reached the end
     return QString();

@@ -377,7 +377,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (column < 0 ||
             column >= trackSourceColumnCount + m_sortColumns.size() - 1) {
         // -1 because id column is in both tables
-        qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
+        qInfo() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
 
@@ -691,9 +691,9 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else {
         // We never should get up to this point!
         VERIFY_OR_DEBUG_ASSERT(false) {
-            qWarning() << "Column"
-                       << columnNameForFieldIndex(column)
-                       << "is not editable!";
+            qInfo() << "Column"
+                    << columnNameForFieldIndex(column)
+                    << "is not editable!";
         }
         return false;
     }

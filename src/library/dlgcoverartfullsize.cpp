@@ -140,7 +140,7 @@ void DlgCoverArtFullSize::slotCoverFound(
         if (primaryScreen) {
             availableScreenGeometry = primaryScreen->availableGeometry();
         } else {
-            qWarning() << "Assuming screen size of 800x600px.";
+            qInfo() << "Assuming screen size of 800x600px.";
             availableScreenGeometry = QRect(0, 0, 800, 600);
         }
         const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;

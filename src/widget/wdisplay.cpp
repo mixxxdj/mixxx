@@ -83,7 +83,7 @@ void WDisplay::setPositions(int iNoPos) {
     resetPositions();
 
     if (iNoPos < 0) {
-        qWarning() << "Negative NumberStates for Display.";
+        qInfo() << "Negative NumberStates for Display.";
         iNoPos = 0;
     }
 

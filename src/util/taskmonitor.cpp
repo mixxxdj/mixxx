@@ -20,7 +20,7 @@ TaskMonitor::TaskMonitor(
 TaskMonitor::~TaskMonitor() {
     VERIFY_OR_DEBUG_ASSERT(m_taskInfos.isEmpty()) {
         // All tasks should have finished now!
-        qWarning()
+        qInfo()
                 << "Aborting"
                 << m_taskInfos.size()
                 << "pending tasks";

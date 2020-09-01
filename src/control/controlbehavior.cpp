@@ -108,7 +108,8 @@ ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue,
         double dMaxValue, double minDB)
         : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
     if (minDB >= 0) {
-        qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
+        qInfo() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() "
+                   "minDB must be negative";
         m_minDB = -1;
     } else {
         m_minDB = minDB;

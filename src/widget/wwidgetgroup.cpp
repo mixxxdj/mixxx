@@ -161,8 +161,8 @@ void WWidgetGroup::setPixmapBackground(
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!m_pPixmapBack) {
-        qWarning() << "WWidgetGroup: Error loading background pixmap:"
-                 << source.getPath();
+        qInfo() << "WWidgetGroup: Error loading background pixmap:"
+                << source.getPath();
     }
 }
 
@@ -173,8 +173,8 @@ void WWidgetGroup::setPixmapBackgroundHighlighted(
     // Load background pixmap for the highlighted state
     m_pPixmapBackHighlighted = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!m_pPixmapBackHighlighted) {
-        qWarning() << "WWidgetGroup: Error loading background highlighted pixmap:"
-                 << source.getPath();
+        qInfo() << "WWidgetGroup: Error loading background highlighted pixmap:"
+                << source.getPath();
     }
 }
 

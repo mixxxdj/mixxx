@@ -60,8 +60,8 @@ void WSingletonContainer::showEvent(QShowEvent* event) {
 
 void SingletonMap::insertSingleton(QString objectName, QWidget* widget) {
     if (m_singletons.contains(objectName)){
-        qWarning() << "ERROR: Tried to insert a singleton with a name that has"
-                   << "already been inserted:" << objectName;
+        qInfo() << "ERROR: Tried to insert a singleton with a name that has"
+                << "already been inserted:" << objectName;
         return;
     }
     m_singletons.insert(objectName, widget);

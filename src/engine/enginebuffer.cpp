@@ -1187,7 +1187,7 @@ void EngineBuffer::processSeek(bool paused) {
             // new position was already set above
             break;
         default:
-            qWarning() << "Unhandled seek request type: " << seekType;
+            qInfo() << "Unhandled seek request type: " << seekType;
             return;
     }
 

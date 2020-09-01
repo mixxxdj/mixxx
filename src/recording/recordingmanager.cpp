@@ -267,7 +267,7 @@ void RecordingManager::slotBytesRecorded(int bytes)
 }
 
 void RecordingManager::warnFreespace() {
-    qWarning() << "RecordingManager: less than 1 GiB free space";
+    qInfo() << "RecordingManager: less than 1 GiB free space";
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Low Disk Space Warning"));

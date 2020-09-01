@@ -123,7 +123,7 @@ ShoutConnection::~ShoutConnection() {
 
     // Signal user if thread doesn't die
     VERIFY_OR_DEBUG_ASSERT(!isRunning()) {
-       qWarning() << "ShoutOutput::~ShoutOutput(): Thread didn't die.\
+        qInfo() << "ShoutOutput::~ShoutOutput(): Thread didn't die.\
        Ignored but file a bug report if problems rise!";
     }
 }
@@ -370,7 +370,7 @@ void ShoutConnection::updateFromPreferences() {
     } else if (m_format_is_ov || m_format_is_opus) {
         format = SHOUT_FORMAT_OGG;
     } else {
-        qWarning() << "Error: unknown format:" << baFormat.constData();
+        qInfo() << "Error: unknown format:" << baFormat.constData();
         return;
     }
 
@@ -380,7 +380,7 @@ void ShoutConnection::updateFromPreferences() {
     }
 
     if (iBitrate < 0) {
-        qWarning() << "Error: unknown bit rate:" << iBitrate;
+        qInfo() << "Error: unknown bit rate:" << iBitrate;
     }
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
@@ -521,8 +521,8 @@ bool ShoutConnection::processConnect() {
             m_iShoutStatus == SHOUTERR_NOLOGIN ||
             m_iShoutStatus == SHOUTERR_MALLOC) {
             m_lastErrorStr = shout_get_error(m_pShout);
-            qWarning() << "Streaming server made fatal error. Can't continue connecting:"
-                       << m_lastErrorStr;
+            qInfo() << "Streaming server made fatal error. Can't continue connecting:"
+                    << m_lastErrorStr;
             break;
         }
 
@@ -551,7 +551,7 @@ bool ShoutConnection::processConnect() {
             if (m_iShoutStatus != SHOUTERR_BUSY &&
                     m_iShoutStatus != SHOUTERR_SUCCESS &&
                     m_iShoutStatus != SHOUTERR_CONNECTED) {
-                qWarning() << "Streaming server made error:" << m_iShoutStatus;
+                qInfo() << "Streaming server made error:" << m_iShoutStatus;
             }
 
             // If socket is busy then we wait half second
@@ -860,7 +860,7 @@ void ShoutConnection::updateMetaData() {
 }
 
 void ShoutConnection::errorDialog(QString text, QString detailedError) {
-    qWarning() << "Streaming error: " << detailedError;
+    qInfo() << "Streaming error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Connection error"));

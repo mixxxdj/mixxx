@@ -27,7 +27,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "LICENSE file not found";
+        qInfo() << "LICENSE file not found";
     } else {
         licenseText->setPlainText(licenseFile.readAll());
     }

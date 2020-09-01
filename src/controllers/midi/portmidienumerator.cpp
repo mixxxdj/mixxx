@@ -26,7 +26,7 @@ PortMidiEnumerator::PortMidiEnumerator(UserSettingsPointer pConfig)
     PmError err = Pm_Initialize();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
-        qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+        qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }
 
@@ -39,7 +39,7 @@ PortMidiEnumerator::~PortMidiEnumerator() {
     PmError err = Pm_Terminate();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
-        qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+        qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }
 

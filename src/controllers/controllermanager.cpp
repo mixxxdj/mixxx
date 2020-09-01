@@ -180,7 +180,7 @@ void ControllerManager::slotShutdown() {
 void ControllerManager::updateControllerList() {
     QMutexLocker locker(&m_mutex);
     if (m_enumerators.isEmpty()) {
-        qWarning() << "updateControllerList called but no enumerators have been added!";
+        qInfo() << "updateControllerList called but no enumerators have been added!";
         return;
     }
     QList<ControllerEnumerator*> enumerators = m_enumerators;
@@ -283,7 +283,7 @@ void ControllerManager::slotSetUpDevices() {
 
         int value = pController->open();
         if (value != 0) {
-            qWarning() << "There was a problem opening" << name;
+            qInfo() << "There was a problem opening" << name;
             continue;
         }
         pController->applyPreset();
@@ -401,7 +401,7 @@ void ControllerManager::slotApplyPreset(Controller* pController,
         ControllerPresetPointer pPreset,
         bool bEnabled) {
     VERIFY_OR_DEBUG_ASSERT(pController) {
-        qWarning() << "slotApplyPreset got invalid controller!";
+        qInfo() << "slotApplyPreset got invalid controller!";
         return;
     }
 
@@ -414,7 +414,7 @@ void ControllerManager::slotApplyPreset(Controller* pController,
     }
 
     VERIFY_OR_DEBUG_ASSERT(!pPreset->isDirty()) {
-        qWarning() << "Preset is dirty, changes might be lost on restart!";
+        qInfo() << "Preset is dirty, changes might be lost on restart!";
     }
 
     pController->setPreset(*pPreset);

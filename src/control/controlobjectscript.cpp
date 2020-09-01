@@ -24,10 +24,10 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
 
     for (const auto& priorConnection: m_scriptConnections) {
         if (conn == priorConnection) {
-            qWarning() << "Connection " + conn.id.toString() +
-                          " already connected to (" +
-                          conn.key.group + ", " + conn.key.item +
-                          "). Ignoring attempt to connect again.";
+            qInfo() << "Connection " + conn.id.toString() +
+                            " already connected to (" +
+                            conn.key.group + ", " + conn.key.item +
+                            "). Ignoring attempt to connect again.";
             return false;
         }
     }
@@ -46,9 +46,9 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
                         conn.key.group + ", " + conn.key.item +
                         ") from connection " + conn.id.toString());
     } else {
-        qWarning() << "Failed to disconnect (" +
-                      conn.key.group + ", " + conn.key.item +
-                      ") from connection " + conn.id.toString();
+        qInfo() << "Failed to disconnect (" +
+                        conn.key.group + ", " + conn.key.item +
+                        ") from connection " + conn.id.toString();
     }
     if (m_scriptConnections.isEmpty()) {
         // no ScriptConnections left, so disconnect signals

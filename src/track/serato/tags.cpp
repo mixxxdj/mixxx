@@ -39,20 +39,20 @@ mixxx::RgbColor getColorFromOtherPalette(
 
 std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
     VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
-        qWarning() << "SeratoTags::getCues: Cue without number found!";
+        qInfo() << "SeratoTags::getCues: Cue without number found!";
         return std::nullopt;
     }
 
     int index = *cueInfo.getHotCueNumber();
     VERIFY_OR_DEBUG_ASSERT(index >= 0) {
-        qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
+        qInfo() << "SeratoTags::getCues: Cue with number < 0 found!";
         return std::nullopt;
     }
 
     switch (cueInfo.getType()) {
     case mixxx::CueType::HotCue:
         if (index >= kLoopIndexOffset) {
-            qWarning()
+            qInfo()
                     << "SeratoTags::getCues: Non-loop Cue with number >="
                     << kLoopIndexOffset << "found!";
             return std::nullopt;
@@ -183,7 +183,7 @@ double SeratoTags::guessTimingOffsetMillis(
             timingOffset = -26;
             break;
         default:
-            qWarning()
+            qInfo()
                     << "Unknown timing offset for Serato tags with sample rate"
                     << signalInfo.getSampleRate();
         }

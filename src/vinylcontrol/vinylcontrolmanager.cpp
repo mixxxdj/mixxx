@@ -71,9 +71,9 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     // Complain if we try to create more decks than we can handle.
     if (num_decks > kMaxNumberOfDecks) {
-        qWarning() << "Number of decks increased to " << num_decks << ", but Mixxx only supports "
-                   << kMaxNumberOfDecks << " vinyl inputs.  Decks above the maximum will not have "
-                   << " vinyl control";
+        qInfo() << "Number of decks increased to " << num_decks << ", but Mixxx only supports "
+                << kMaxNumberOfDecks << " vinyl inputs.  Decks above the maximum will not have "
+                << " vinyl control";
         num_decks = kMaxNumberOfDecks;
     }
 

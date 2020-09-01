@@ -97,7 +97,8 @@ void VinylControlProcessor::run() {
                 int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
 
                 if (samplesRead % 2 != 0) {
-                    qWarning() << "VinylControlProcessor received non-even number of samples via sample FIFO.";
+                    qInfo() << "VinylControlProcessor received non-even number "
+                               "of samples via sample FIFO.";
                     samplesRead--;
                 }
                 int framesRead = samplesRead / 2;
@@ -106,7 +107,7 @@ void VinylControlProcessor::run() {
                     pProcessor->analyzeSamples(m_pWorkBuffer, framesRead);
                 } else {
                     // Samples are being written to a non-existent processor. Warning?
-                    qWarning() << "Samples written to non-existent VinylControl processor:" << i;
+                    qInfo() << "Samples written to non-existent VinylControl processor:" << i;
                 }
             }
 
@@ -117,7 +118,9 @@ void VinylControlProcessor::run() {
                 if (pProcessor->writeQualityReport(&report)) {
                     report.processor = i;
                     if (m_signalQualityFifo.write(&report, 1) != 1) {
-                        qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
+                        qInfo() << "VinylControlProcessor could not write "
+                                   "signal quality report for VC index:"
+                                << i;
                     }
                 }
             }
@@ -162,7 +165,7 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
 
     if (index >= kMaximumVinylControlInputs) {
         // Should not be possible.
-        qWarning() << "VinylControlProcessor::onInputConnected got invalid index:" << index;
+        qInfo() << "VinylControlProcessor::onInputConnected got invalid index:" << index;
         return;
     }
 
@@ -187,7 +190,7 @@ void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
 
     if (index >= kMaximumVinylControlInputs) {
         // Should not be possible.
-        qWarning() << "VinylControlProcessor::onInputDisconnected got invalid index:" << index;
+        qInfo() << "VinylControlProcessor::onInputDisconnected got invalid index:" << index;
         return;
     }
 
@@ -231,8 +234,8 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
     int samplesWritten = pSamplePipe->write(pBuffer, nSamples);
 
     if (samplesWritten < nSamples) {
-        qWarning() << "ERROR: Buffer overflow in VinylControlProcessor. Dropping samples on the floor."
-                   << "VCIndex:" << vcIndex;
+        qInfo() << "ERROR: Buffer overflow in VinylControlProcessor. Dropping samples on the floor."
+                << "VCIndex:" << vcIndex;
     }
 
     m_samplesAvailableSignal.wakeAll();

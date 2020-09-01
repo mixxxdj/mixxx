@@ -62,7 +62,7 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
                 int iKey = m_pKeyMode->process(pWindow);
 
                 VERIFY_OR_DEBUG_ASSERT(ChromaticKey_IsValid(iKey)) {
-                    qWarning() << "No valid key detected in analyzed window:" << iKey;
+                    qInfo() << "No valid key detected in analyzed window:" << iKey;
                     return false;
                 }
                 const auto key = static_cast<ChromaticKey>(iKey);

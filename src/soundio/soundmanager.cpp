@@ -466,8 +466,8 @@ SoundDeviceError SoundManager::setupDevices() {
         if (pNewMasterClockRef.isNull() &&
                 (!haveOutput || mode.isOutput)) {
             pNewMasterClockRef = pDevice;
-            qWarning() << "Output sound device clock reference not set! Using"
-                       << pDevice->getDisplayName();
+            qInfo() << "Output sound device clock reference not set! Using"
+                    << pDevice->getDisplayName();
         }
 
         int syncBuffers = m_config.getSyncBuffers();
@@ -491,13 +491,13 @@ SoundDeviceError SoundManager::setupDevices() {
         qDebug() << "Using" << pNewMasterClockRef->getDisplayName()
                  << "as output sound device clock reference";
     } else {
-        qWarning() << "No output devices opened, no clock reference device set";
+        qInfo() << "No output devices opened, no clock reference device set";
     }
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
     qDebug() << inputDevicesOpened << "input sound devices opened";
     for (const auto& device: devicesNotFound) {
-        qWarning() << device << "not found";
+        qInfo() << device << "not found";
     }
 
     m_pControlObjectSoundStatusCO->set(
@@ -673,10 +673,10 @@ void SoundManager::setJACKName() const {
             char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
             if (!func(jackNameCopy)) qDebug() << "JACK client name set";
         } else {
-            qWarning() << "failed to resolve JACK name method";
+            qInfo() << "failed to resolve JACK name method";
         }
     } else {
-        qWarning() << "failed to load portaudio for JACK rename";
+        qInfo() << "failed to load portaudio for JACK rename";
     }
 #endif
 }

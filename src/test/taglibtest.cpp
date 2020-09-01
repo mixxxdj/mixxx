@@ -27,7 +27,7 @@ class TagLibTest : public testing::Test {
         QFile srcFile(srcFileName);
         DEBUG_ASSERT(srcFile.exists());
         if (!srcFile.copy(dstFileName)) {
-            qWarning()
+            qInfo()
                     << srcFile.errorString()
                     << "- Failed to copy file"
                     << srcFileName

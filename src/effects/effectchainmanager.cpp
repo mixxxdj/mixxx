@@ -119,7 +119,9 @@ EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEf
 
     int indexOf = m_effectChains.lastIndexOf(pEffectChain);
     if (indexOf == -1) {
-        qWarning() << debugString() << "WARNING: getNextEffectChain called for an unmanaged EffectChain";
+        qInfo() << debugString()
+                << "WARNING: getNextEffectChain called for an unmanaged "
+                   "EffectChain";
         return m_effectChains[0];
     }
 
@@ -136,7 +138,9 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
 
     int indexOf = m_effectChains.lastIndexOf(pEffectChain);
     if (indexOf == -1) {
-        qWarning() << debugString() << "WARNING: getPrevEffectChain called for an unmanaged EffectChain";
+        qInfo() << debugString()
+                << "WARNING: getPrevEffectChain called for an unmanaged "
+                   "EffectChain";
         return m_effectChains[m_effectChains.size()-1];
     }
 

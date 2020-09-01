@@ -343,7 +343,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
                         (void*) this); // pointer passed to the callback function
 
     if (err != paNoError) {
-        qWarning() << "Error opening stream:" << Pa_GetErrorText(err);
+        qInfo() << "Error opening stream:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
         return SOUNDDEVICE_ERROR_ERR;
     } else {
@@ -356,7 +356,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     //in order to enable RT priority with ALSA.
     QLibrary portaudio("libportaudio.so.2");
     if (!portaudio.load())
-       qWarning() << "Failed to dynamically load PortAudio library";
+        qInfo() << "Failed to dynamically load PortAudio library";
     else
        qDebug() << "Dynamically loaded PortAudio library";
 
@@ -371,12 +371,12 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // Start stream
     err = Pa_StartStream(pStream);
     if (err != paNoError) {
-        qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
+        qInfo() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
         err = Pa_CloseStream(pStream);
         if (err != paNoError) {
-            qWarning() << "PortAudio: Close stream error:"
-                       << Pa_GetErrorText(err) << m_deviceId;
+            qInfo() << "PortAudio: Close stream error:"
+                    << Pa_GetErrorText(err) << m_deviceId;
         }
         return SOUNDDEVICE_ERROR_ERR;
     } else {
@@ -421,8 +421,8 @@ SoundDeviceError SoundDevicePortAudio::close() {
         }
         // Real PaErrors are always negative.
         if (err < 0) {
-            qWarning() << "PortAudio: Stream already stopped:"
-                       << Pa_GetErrorText(err) << m_deviceId;
+            qInfo() << "PortAudio: Stream already stopped:"
+                    << Pa_GetErrorText(err) << m_deviceId;
             return SOUNDDEVICE_ERROR_ERR;
         }
 
@@ -437,16 +437,16 @@ SoundDeviceError SoundDevicePortAudio::close() {
                                                    //state. Don't use it!
 
         if (err != paNoError) {
-            qWarning() << "PortAudio: Stop stream error:"
-                       << Pa_GetErrorText(err) << m_deviceId;
+            qInfo() << "PortAudio: Stop stream error:"
+                    << Pa_GetErrorText(err) << m_deviceId;
             return SOUNDDEVICE_ERROR_ERR;
         }
 
         // Close stream
         err = Pa_CloseStream(pStream);
         if (err != paNoError) {
-            qWarning() << "PortAudio: Close stream error:"
-                       << Pa_GetErrorText(err) << m_deviceId;
+            qInfo() << "PortAudio: Close stream error:"
+                    << Pa_GetErrorText(err) << m_deviceId;
             return SOUNDDEVICE_ERROR_ERR;
         }
 
@@ -928,14 +928,16 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #else
 #if defined( __i386__ ) || defined( __i486__ ) || defined( __i586__ ) || \
          defined( __i686__ ) || defined( __x86_64__ ) || defined (_M_I86)
-        qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
+        qInfo() << "No SSE: No denormals to zero mode available. EQs and "
+                   "effects may suffer high CPU load";
 #endif
 #endif
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
         VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
+            qInfo() << "Denormals to zero mode is not working. EQs and effects "
+                       "may suffer high CPU load";
         } else {
             qDebug() << "Denormals to zero mode is working";
         }
@@ -983,7 +985,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
                 m_deviceId.debugName());
 
         if (m_outputParams.channelCount <= 0) {
-            qWarning()
+            qInfo()
                     << "SoundDevicePortAudio::callbackProcess m_outputParams channel count is zero or less:"
                     << m_outputParams.channelCount;
             // Bail out.
@@ -1050,12 +1052,12 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
         if (m_invalidTimeInfoCount == m_invalidTimeInfoWarningCount) {
             if (CmdlineArgs::Instance().getDeveloper()) {
-                qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
-                           << "syncing waveforms with a CPU Timer"
-                           << "DacTime:" << timeInfo->outputBufferDacTime
-                           << "EntrytoDac:" << callbackEntrytoDacSecs
-                           << "TimeSinceLastCb:" << timeSinceLastCbSecs
-                           << "diff:" << diff;
+                qInfo() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
+                        << "syncing waveforms with a CPU Timer"
+                        << "DacTime:" << timeInfo->outputBufferDacTime
+                        << "EntrytoDac:" << callbackEntrytoDacSecs
+                        << "TimeSinceLastCb:" << timeSinceLastCbSecs
+                        << "diff:" << diff;
             }
         }
 

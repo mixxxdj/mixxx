@@ -49,7 +49,7 @@ static sf_count_t  sf_f_read (void *ptr, sf_count_t count, void *user_data)
     Q_UNUSED(ptr);
     Q_UNUSED(count);
     Q_UNUSED(user_data);
-    qWarning() << "sf_f_read called for EncoderWave. Call not implemented!";
+    qInfo() << "sf_f_read called for EncoderWave. Call not implemented!";
     return 0;
 }
 
@@ -106,7 +106,7 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
     } else if (format == ENCODING_AIFF) {
         m_sfInfo.format = SF_FORMAT_AIFF;
     } else {
-        qWarning() << "Unexpected Format when setting EncoderWave: " << format << ". Reverting to wav";
+        qInfo() << "Unexpected Format when setting EncoderWave: " << format << ". Reverting to wav";
         // Other possibly interesting formats
         // There is a n option for RF64 to automatically downgrade to RIFF WAV if less than 4GB using an
         // sf_command, so it could be interesting to use it in place of FORMAT_WAVE.
@@ -132,7 +132,7 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
             break;
         default:
             m_sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-            qWarning() << " Unexpected radio index on EncoderWave: "
+            qInfo() << " Unexpected radio index on EncoderWave: "
                     << radio << ". reverting to PCM 16bits";
             break;
     }

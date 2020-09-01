@@ -219,7 +219,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
     }
 
     if (!m_pPlugin->finalize()) {
-        qWarning() << "Beat/BPM analysis failed";
+        qInfo() << "Beat/BPM analysis failed";
         return;
     }
 

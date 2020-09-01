@@ -135,7 +135,7 @@ void EffectSlot::slotEffectEnabledChanged(bool enabled) {
 EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_parameters.size())) {
-        qWarning() << "WARNING: slotNumber out of range";
+        qInfo() << "WARNING: slotNumber out of range";
         return EffectParameterSlotPointer();
     }
     return m_parameters[slotNumber];
@@ -144,7 +144,7 @@ EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotN
 EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_buttonParameters.size())) {
-        qWarning() << "WARNING: slotNumber out of range";
+        qInfo() << "WARNING: slotNumber out of range";
         return EffectButtonParameterSlotPointer();
     }
     return m_buttonParameters[slotNumber];
@@ -268,7 +268,7 @@ void EffectSlot::setMetaParameter(double v, bool force) {
 void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
-        qWarning() << debugString() << "value out of limits";
+        qInfo() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0, 1.0);
         m_pControlMetaParameter->set(v);
     }
@@ -344,8 +344,8 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
     QDomElement effectIdElement = XmlParse::selectElement(effectElement,
                                                           EffectXml::EffectId);
     if (m_pEffect->getManifest()->id() != effectIdElement.text()) {
-        qWarning() << "EffectSlot::loadEffectSlotFromXml"
-                   << "effect ID in XML does not match presently loaded effect, ignoring.";
+        qInfo() << "EffectSlot::loadEffectSlotFromXml"
+                << "effect ID in XML does not match presently loaded effect, ignoring.";
         return;
     }
 

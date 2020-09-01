@@ -67,7 +67,7 @@ int PortMidiController::open() {
         PmError err = m_pInputDevice->openInput(MIXXX_PORTMIDI_BUFFER_LEN);
 
         if (err != pmNoError) {
-            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+            qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
             return -2;
         }
     }
@@ -78,7 +78,7 @@ int PortMidiController::open() {
 
         PmError err = m_pOutputDevice->openOutput();
         if (err != pmNoError) {
-            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+            qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
             return -2;
         }
     }
@@ -102,7 +102,7 @@ int PortMidiController::close() {
     if (m_pInputDevice && m_pInputDevice->isOpen()) {
         PmError err = m_pInputDevice->close();
         if (err != pmNoError) {
-            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+            qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
             result = -1;
         }
     }
@@ -110,7 +110,7 @@ int PortMidiController::close() {
     if (m_pOutputDevice && m_pOutputDevice->isOpen()) {
         PmError err = m_pOutputDevice->close();
         if (err != pmNoError) {
-            qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+            qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
             result = -1;
         }
     }
@@ -131,7 +131,7 @@ bool PortMidiController::poll() {
         return false;
     }
     if (gotEvents < 0) {
-        qWarning() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
+        qInfo() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
         return false;
     }
 
@@ -140,7 +140,7 @@ bool PortMidiController::poll() {
     //qDebug() << "PortMidiController::poll()" << numEvents;
 
     if (numEvents < 0) {
-        qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
+        qInfo() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
         return false;
     }
 
@@ -174,7 +174,7 @@ bool PortMidiController::poll() {
             if (status > 0x7F && status < 0xF7) {
                 m_bInSysex = false;
                 m_cReceiveMsg_index = 0;
-                qWarning() << "Buggy MIDI device: SysEx interrupted!";
+                qInfo() << "Buggy MIDI device: SysEx interrupted!";
                 goto reprocessMessage;    // Don't lose the new message
             }
 
@@ -220,12 +220,14 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
                                                      MidiUtils::opCodeFromStatus(status)));
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
-        qWarning() << "Error sending short message"
-                      << MidiUtils::formatMidiMessage(getName(),
-                                                      status, byte1, byte2,
-                                                      MidiUtils::channelFromStatus(status),
-                                                      MidiUtils::opCodeFromStatus(status));
-        qWarning()    << "PortMidi error:" << Pm_GetErrorText(err);
+        qInfo() << "Error sending short message"
+                << MidiUtils::formatMidiMessage(getName(),
+                           status,
+                           byte1,
+                           byte2,
+                           MidiUtils::channelFromStatus(status),
+                           MidiUtils::opCodeFromStatus(status));
+        qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }
 
@@ -248,8 +250,8 @@ void PortMidiController::send(QByteArray data) {
         controllerDebug(MidiUtils::formatSysexMessage(getName(), data));
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
-        qWarning() << "Error sending SysEx message:"
-                   << MidiUtils::formatSysexMessage(getName(), data);
-        qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+        qInfo() << "Error sending SysEx message:"
+                << MidiUtils::formatSysexMessage(getName(), data);
+        qInfo() << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }

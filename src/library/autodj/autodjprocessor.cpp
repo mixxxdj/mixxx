@@ -151,7 +151,7 @@ AutoDJProcessor::AutoDJProcessor(
         BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
         // Shouldn't be possible.
         if (pPlayer == NULL) {
-            qWarning() << "PROGRAMMING ERROR deck does not exist" << i;
+            qInfo() << "PROGRAMMING ERROR deck does not exist" << i;
             continue;
         }
         EngineChannel::ChannelOrientation orientation =
@@ -1428,8 +1428,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     // the track duration.
     double duration = getEndSecond(pDeck);
     if (duration < 0.2) {
-        qWarning() << "Skip track with" << duration << "Duration"
-                   << pTrack->getLocation();
+        qInfo() << "Skip track with" << duration << "Duration"
+                << pTrack->getLocation();
         // Remove Tack with duration smaller than two callbacks
         removeTrackFromTopOfQueue(pTrack);
 

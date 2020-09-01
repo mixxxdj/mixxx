@@ -772,13 +772,13 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
 
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qInfo() << "No selected tracks available";
         return trackIds;
     }
 
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qInfo() << "No selected tracks available";
         return trackIds;
     }
 
@@ -801,13 +801,13 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
 void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qInfo() << "No selected tracks available";
         return;
     }
 
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-        qWarning() << "No selected tracks available";
+        qInfo() << "No selected tracks available";
         return;
     }
 
@@ -829,7 +829,7 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 
     const QList<TrackId> trackIds = getSelectedTrackIds();
     if (trackIds.isEmpty()) {
-        qWarning() << "No tracks selected for AutoDJ";
+        qInfo() << "No tracks selected for AutoDJ";
         return;
     }
 

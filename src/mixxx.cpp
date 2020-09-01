@@ -503,7 +503,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                                fileBytes.length());
         setStyleSheet(style);
     } else {
-        qWarning() << "Failed to load default skin styles!";
+        qInfo() << "Failed to load default skin styles!";
     }
 
     // Load skin to a QWidget that we set as the central widget. Assignment
@@ -699,7 +699,7 @@ void MixxxMainWindow::finalize() {
     }
     // Our central widget is now deleted.
     VERIFY_OR_DEBUG_ASSERT(pSkin.isNull()) {
-        qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
+        qInfo() << "Central widget was not deleted by our sendPostedEvents trick.";
     }
 
     // Delete Controls created by skins
@@ -726,7 +726,7 @@ void MixxxMainWindow::finalize() {
     }
     // Our main menu is now deleted.
     VERIFY_OR_DEBUG_ASSERT(pMenuBar.isNull()) {
-        qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
+        qInfo() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
     // SoundManager depend on Engine and Config
@@ -813,13 +813,13 @@ void MixxxMainWindow::finalize() {
         QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
                 ControlDoublePrivate::takeAllInstances();
         if (!leakedControls.isEmpty()) {
-            qWarning()
+            qInfo()
                     << "The following"
                     << leakedControls.size()
                     << "controls were leaked:";
             for (auto pCDP : leakedControls) {
                 ConfigKey key = pCDP->getKey();
-                qWarning() << key.group << key.item << pCDP->getCreatorCO();
+                qInfo() << key.group << key.item << pCDP->getCreatorCO();
                 // Deleting leaked objects helps to satisfy valgrind.
                 // These delete calls could cause crashes if a destructor for a control
                 // we thought was leaked is triggered after this one exits.
@@ -1509,7 +1509,7 @@ void MixxxMainWindow::rebootMixxxView() {
             newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pWidgetParent->height()));
             move(newX,newY);
         } else {
-            qWarning() << "Unable to move window inside screen borders.";
+            qInfo() << "Unable to move window inside screen borders.";
         }
     }
 

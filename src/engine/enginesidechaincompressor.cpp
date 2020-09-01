@@ -67,7 +67,7 @@ double EngineSideChainCompressor::calculateCompressedGain(int frames) {
         }
     } else {
         VERIFY_OR_DEBUG_ASSERT(m_compressRatio >= 0) {
-            qWarning() << "Programming error, below-zero compression detected.";
+            qInfo() << "Programming error, below-zero compression detected.";
         }
         if (m_compressRatio < 1) {
             m_compressRatio += m_decayPerFrame * frames;

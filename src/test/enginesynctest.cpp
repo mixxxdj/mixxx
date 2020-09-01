@@ -95,7 +95,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
             }
             // Internal Clock doesn't have explicit mode
             if (explicitMaster) {
-                qWarning() << "test error, internal clock can never be explicit master";
+                qInfo() << "test error, internal clock can never be explicit master";
                 return false;
             }
             return true;

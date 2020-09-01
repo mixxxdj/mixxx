@@ -74,7 +74,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
             pTrack->setBpm(bpm);
         }
     } else {
-        qWarning() << "Failed to load external track" << location;
+        qInfo() << "Failed to load external track" << location;
     }
     return pTrack;
 }

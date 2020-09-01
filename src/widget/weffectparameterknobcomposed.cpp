@@ -10,8 +10,7 @@ void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& con
     EffectParameterSlotPointer pParameterSlot =
             m_pEffectsManager->getEffectParameterSlot(configKey);
     if (!pParameterSlot) {
-        qWarning() << "EffectParameterKnobComposed" << configKey <<
-                "is not an effect parameter.";
+        qInfo() << "EffectParameterKnobComposed" << configKey << "is not an effect parameter.";
         return;
     }
     setEffectParameterSlot(pParameterSlot);

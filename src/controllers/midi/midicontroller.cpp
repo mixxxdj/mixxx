@@ -44,7 +44,7 @@ int MidiController::close() {
 
 void MidiController::visit(const HidControllerPreset* preset) {
     Q_UNUSED(preset);
-    qWarning() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
+    qInfo() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
     // TODO(XXX): throw a hissy fit.
 }
 
@@ -107,7 +107,7 @@ void MidiController::createOutputHandlers() {
                         .arg(QString::number(status, 16).toUpper(),
                              QString::number(control, 16).toUpper().rightJustified(2,'0'))
                         .arg(group, key).toUtf8();
-            qWarning() << errorLog;
+            qInfo() << errorLog;
 
             int deckNum = 0;
             if (ControllerDebug::enabled()) {
@@ -270,9 +270,9 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     bool mapping_is_14bit = mapping.options.fourteen_bit_msb ||
             mapping.options.fourteen_bit_lsb;
     if (!mapping_is_14bit && !m_fourteen_bit_queued_mappings.isEmpty()) {
-        qWarning() << "MidiController was waiting for the MSB/LSB of a 14-bit"
-                   << "message but the next message received was not mapped as 14-bit."
-                   << "Ignoring the original message.";
+        qInfo() << "MidiController was waiting for the MSB/LSB of a 14-bit"
+                << "message but the next message received was not mapped as 14-bit."
+                << "Ignoring the original message.";
         m_fourteen_bit_queued_mappings.clear();
     }
 
@@ -285,8 +285,9 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             if (it->first.control == mapping.control) {
                 if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
                     (it->first.options.fourteen_bit_msb && mapping.options.fourteen_bit_msb)) {
-                    qWarning() << "MidiController: 14-bit MIDI mapping has mis-matched LSB/MSB options."
-                               << "Ignoring both messages.";
+                    qInfo() << "MidiController: 14-bit MIDI mapping has "
+                               "mis-matched LSB/MSB options."
+                            << "Ignoring both messages.";
                     m_fourteen_bit_queued_mappings.erase(it);
                     return;
                 }
@@ -501,6 +502,6 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         }
         return;
     }
-    qWarning() << "MidiController: No script function specified for"
-               << MidiUtils::formatSysexMessage(getName(), data, timestamp);
+    qInfo() << "MidiController: No script function specified for"
+            << MidiUtils::formatSysexMessage(getName(), data, timestamp);
 }

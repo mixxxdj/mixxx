@@ -54,7 +54,7 @@ void EncoderFlacSettings::setCompression(int compression) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, GROUP_COMPRESSION),
             ConfigValue(compression));
     } else {
-        qWarning() << "Received a compression value out of range: " << compression;
+        qInfo() << "Received a compression value out of range: " << compression;
     }
 }
 int EncoderFlacSettings::getCompression() const
@@ -62,8 +62,8 @@ int EncoderFlacSettings::getCompression() const
     int value = m_pConfig->getValue(ConfigKey(RECORDING_PREF_KEY, GROUP_COMPRESSION),
             DEFAULT_QUALITY_VALUE);
     if (!m_qualList.contains(value)) {
-        qWarning() << "Value saved for compression on preferences is out of range "
-                   << value << ". Returning default compression";
+        qInfo() << "Value saved for compression on preferences is out of range "
+                << value << ". Returning default compression";
         value=DEFAULT_QUALITY_VALUE;
     }
     return value;
@@ -87,13 +87,13 @@ void EncoderFlacSettings::setGroupOption(QString groupCode, int optionIndex) {
                 m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, groupCode),
                     ConfigValue(optionIndex));
             } else {
-                qWarning() << "Received an index out of range for: "
-                           << groupCode << ", index: " << optionIndex;
+                qInfo() << "Received an index out of range for: "
+                        << groupCode << ", index: " << optionIndex;
             }
         }
     }
     if (!found) {
-        qWarning() << "Received an unknown groupCode on setGroupOption: " << groupCode;
+        qInfo() << "Received an unknown groupCode on setGroupOption: " << groupCode;
     }
 }
 // Return the selected option of the group. If it is a single-element option,
@@ -105,15 +105,15 @@ int EncoderFlacSettings::getSelectedOption(QString groupCode) const {
         if (groupCode == group.groupCode) {
             found=true;
             if (value >= group.controlNames.size() && value > 1) {
-                qWarning() << "Value saved for " << groupCode
-                           << " on preferences is out of range " << value
-                           << ". Returning 0";
+                qInfo() << "Value saved for " << groupCode
+                        << " on preferences is out of range " << value
+                        << ". Returning 0";
                 value=0;
             }
         }
     }
     if (!found) {
-        qWarning() << "Received an unknown groupCode on getSelectedOption: " << groupCode;
+        qInfo() << "Received an unknown groupCode on getSelectedOption: " << groupCode;
     }
     return value;
 }

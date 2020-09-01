@@ -80,10 +80,10 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     }
 
     if (m_pRubberBand->getInputIncrement() == 0) {
-        qWarning() << "EngineBufferScaleRubberBand inputIncrement is 0."
-                   << "On RubberBand <=1.8.1 a SIGFPE is imminent despite"
-                   << "our workaround. Taking evasive action."
-                   << "Please report this message to mixxx-devel@lists.sourceforge.net.";
+        qInfo() << "EngineBufferScaleRubberBand inputIncrement is 0."
+                << "On RubberBand <=1.8.1 a SIGFPE is imminent despite"
+                << "our workaround. Taking evasive action."
+                << "Please report this message to mixxx-devel@lists.sourceforge.net.";
 
         // This is much slower than the minimum seek speed workaround above.
         while (m_pRubberBand->getInputIncrement() == 0) {

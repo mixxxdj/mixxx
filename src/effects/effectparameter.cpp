@@ -20,7 +20,7 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
      m_maximum = m_pParameter->getMaximum();
      // Sanity check the maximum and minimum
      if (m_minimum > m_maximum) {
-         qWarning() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
+         qInfo() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
          m_maximum = m_minimum;
      }
 
@@ -28,7 +28,9 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
      // value.
      m_default = m_pParameter->getDefault();
      if (m_default < m_minimum || m_default > m_maximum) {
-         qWarning() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
+         qInfo() << debugString()
+                 << "WARNING: Parameter default is outside of minimum/maximum "
+                    "range.";
          m_default = m_minimum;
      }
 
@@ -110,7 +112,7 @@ void EffectParameter::setValue(double value) {
     m_value = value;
 
     if (clampValue()) {
-        qWarning() << debugString() << "WARNING: Value was outside of limits, clamped.";
+        qInfo() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
 
     updateEngineState();
@@ -125,7 +127,9 @@ void EffectParameter::setDefault(double dflt) {
     m_default = dflt;
 
     if (clampDefault()) {
-        qWarning() << debugString() << "WARNING: Default parameter value was outside of range, clamped.";
+        qInfo() << debugString()
+                << "WARNING: Default parameter value was outside of range, "
+                   "clamped.";
     }
 
     m_default = dflt;
@@ -149,21 +153,23 @@ void EffectParameter::setMinimum(double minimum) {
 
     m_minimum = minimum;
     if (m_minimum < m_pParameter->getMinimum()) {
-        qWarning() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
+        qInfo() << debugString()
+                << "WARNING: Minimum value is less than plugin's absolute "
+                   "minimum, clamping.";
         m_minimum = m_pParameter->getMinimum();
     }
 
     if (m_minimum > m_maximum) {
-        qWarning() << debugString() << "WARNING: New minimum was above maximum, clamped.";
+        qInfo() << debugString() << "WARNING: New minimum was above maximum, clamped.";
         m_minimum = m_maximum;
     }
 
     if (clampValue()) {
-        qWarning() << debugString() << "WARNING: Value was outside of new minimum, clamped.";
+        qInfo() << debugString() << "WARNING: Value was outside of new minimum, clamped.";
     }
 
     if (clampDefault()) {
-        qWarning() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
+        qInfo() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
     }
 
     updateEngineState();
@@ -185,21 +191,23 @@ void EffectParameter::setMaximum(double maximum) {
 
     m_maximum = maximum;
     if (m_maximum > m_pParameter->getMaximum()) {
-        qWarning() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
+        qInfo() << debugString()
+                << "WARNING: Maximum value is less than plugin's absolute "
+                   "maximum, clamping.";
         m_maximum = m_pParameter->getMaximum();
     }
 
     if (m_maximum < m_minimum) {
-        qWarning() << debugString() << "WARNING: New maximum was below the minimum, clamped.";
+        qInfo() << debugString() << "WARNING: New maximum was below the minimum, clamped.";
         m_maximum = m_minimum;
     }
 
     if (clampValue()) {
-        qWarning() << debugString() << "WARNING: Value was outside of new maximum, clamped.";
+        qInfo() << debugString() << "WARNING: Value was outside of new maximum, clamped.";
     }
 
     if (clampDefault()) {
-        qWarning() << debugString() << "WARNING: Default was outside of new maximum, clamped.";
+        qInfo() << debugString() << "WARNING: Default was outside of new maximum, clamped.";
     }
 
     updateEngineState();

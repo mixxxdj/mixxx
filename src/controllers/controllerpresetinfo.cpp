@@ -39,7 +39,7 @@ PresetInfo::PresetInfo(const QString& preset_path)
 
     QDomElement root = XmlParse::openXMLFile(m_path, "controller");
     if (root.isNull()) {
-        qWarning() << "ERROR parsing" << m_path;
+        qInfo() << "ERROR parsing" << m_path;
         return;
     }
     QDomElement info = root.firstChildElement("info");

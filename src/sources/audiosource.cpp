@@ -40,10 +40,10 @@ AudioSource::OpenResult AudioSource::open(
     try {
         result = tryOpen(mode, params);
     } catch (const std::exception& e) {
-        qWarning() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
+        qInfo() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
         result = OpenResult::Failed;
     } catch (...) {
-        qWarning() << "Caught unknown exception from SoundSource::tryOpen()";
+        qInfo() << "Caught unknown exception from SoundSource::tryOpen()";
         result = OpenResult::Failed;
     }
     if (OpenResult::Succeeded != result) {

@@ -36,7 +36,7 @@ class FontUtils {
     static bool addFont(const QString& path) {
         int result = QFontDatabase::addApplicationFont(path);
         if (result == -1) {
-            qWarning() << "Failed to add font:" << path;
+            qInfo() << "Failed to add font:" << path;
             return false;
         }
 

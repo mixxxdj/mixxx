@@ -137,9 +137,9 @@ void SyncControl::setSyncMode(SyncMode mode) {
     if (mode != SYNC_NONE && m_pPassthroughEnabled->get()) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
         // This is very unlikely to happen so this deserves a warning.
-        qWarning() << "Notified of sync mode change when passthrough was "
-                      "active -- "
-                      "must disable passthrough";
+        qInfo() << "Notified of sync mode change when passthrough was "
+                   "active -- "
+                   "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
     if (isMaster(mode)) {
@@ -223,7 +223,7 @@ void SyncControl::setMasterBpm(double bpm) {
     }
 
     VERIFY_OR_DEBUG_ASSERT(isSynchronized()) {
-        qWarning() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
+        qInfo() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
         return;
     }
 

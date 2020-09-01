@@ -107,7 +107,7 @@ QString BulkController::presetExtension() {
 void BulkController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qInfo() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
 void BulkController::visit(const HidControllerPreset* preset) {
@@ -157,7 +157,7 @@ int BulkController::open() {
     }
 
     if (bulk_supported[i].vendor_id == 0) {
-        qWarning() << "USB Bulk device" << getName() << "unsupported";
+        qInfo() << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
 
@@ -168,7 +168,7 @@ int BulkController::open() {
     }
 
     if (m_phandle == NULL) {
-        qWarning()  << "Unable to open USB Bulk device" << getName();
+        qInfo() << "Unable to open USB Bulk device" << getName();
         return -1;
     }
 
@@ -176,7 +176,7 @@ int BulkController::open() {
     startEngine();
 
     if (m_pReader != NULL) {
-        qWarning() << "BulkReader already present for" << getName();
+        qInfo() << "BulkReader already present for" << getName();
     } else {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
@@ -201,8 +201,8 @@ int BulkController::close() {
 
     // Stop the reading thread
     if (m_pReader == NULL) {
-        qWarning() << "BulkReader not present for" << getName()
-                   << "yet the device is open!";
+        qInfo() << "BulkReader not present for" << getName()
+                << "yet the device is open!";
     } else {
         disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
@@ -243,8 +243,8 @@ void BulkController::send(QByteArray data) {
                                (unsigned char *)data.constData(), data.size(),
                                &transferred, 0);
     if (ret < 0) {
-        qWarning() << "Unable to send data to" << getName()
-                   << "serial #" << m_sUID;
+        qInfo() << "Unable to send data to" << getName()
+                << "serial #" << m_sUID;
     } else {
         controllerDebug(ret << "bytes sent to" << getName()
                  << "serial #" << m_sUID);

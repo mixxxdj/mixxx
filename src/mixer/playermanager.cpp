@@ -267,9 +267,9 @@ void PlayerManager::slotChangeNumDecks(double v) {
     int num = (int)v;
 
     VERIFY_OR_DEBUG_ASSERT(num <= kMaxNumberOfDecks) {
-        qWarning() << "Number of decks exceeds the maximum we expect."
-                   << num << "vs" << kMaxNumberOfDecks
-                   << " Refusing to add another deck. Please update util/defs.h";
+        qInfo() << "Number of decks exceeds the maximum we expect."
+                << num << "vs" << kMaxNumberOfDecks
+                << " Refusing to add another deck. Please update util/defs.h";
         return;
     }
 
@@ -573,7 +573,7 @@ void PlayerManager::slotCloneDeck(QString source_group, QString target_group) {
     BaseTrackPlayer* pPlayer = getPlayer(target_group);
 
     if (pPlayer == nullptr) {
-        qWarning() << "Invalid group argument " << target_group << " to slotCloneDeck.";
+        qInfo() << "Invalid group argument " << target_group << " to slotCloneDeck.";
         return;
     }
 

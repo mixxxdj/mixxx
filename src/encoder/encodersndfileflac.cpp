@@ -29,8 +29,8 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
             break;
         default:
             m_sfInfo.format |= SF_FORMAT_PCM_16;
-            qWarning() << " Unexpected radio index on setEncoderSettings: "
-                       << radio << ". reverting to Flac 16bits";
+            qInfo() << " Unexpected radio index on setEncoderSettings: "
+                    << radio << ". reverting to Flac 16bits";
             break;
     }
 

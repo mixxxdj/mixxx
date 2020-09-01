@@ -313,11 +313,11 @@ bool CrateFeature::activateCrate(CrateId crateId) {
 bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
     CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
-        qWarning() << "Failed to determine id of selected crate";
+        qInfo() << "Failed to determine id of selected crate";
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pTrackCollection->crates().readCrateById(crateId, pCrate)) {
-        qWarning() << "Failed to read selected crate with id" << crateId;
+        qInfo() << "Failed to read selected crate with id" << crateId;
         return false;
     }
     return true;
@@ -384,7 +384,7 @@ void CrateFeature::slotDeleteCrate() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
         if (crate.isLocked()) {
-            qWarning() << "Refusing to delete locked crate" << crate;
+            qInfo() << "Refusing to delete locked crate" << crate;
             return;
         }
         if (m_pTrackCollection->deleteCrate(crate.getId())) {
@@ -392,7 +392,7 @@ void CrateFeature::slotDeleteCrate() {
             return;
         }
     }
-    qWarning() << "Failed to delete selected crate";
+    qInfo() << "Failed to delete selected crate";
 }
 
 void CrateFeature::slotRenameCrate() {

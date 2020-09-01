@@ -84,14 +84,15 @@ inline QScreen* getPrimaryScreen() {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
     VERIFY_OR_DEBUG_ASSERT(app) {
-        qWarning() << "Unable to get applications QCoreApplication instance, cannot determine primary screen!";
+        qInfo() << "Unable to get applications QCoreApplication instance, "
+                   "cannot determine primary screen!";
     } else {
         return app->primaryScreen();
     }
 #endif
     const QList<QScreen*> screens = QGuiApplication::screens();
     VERIFY_OR_DEBUG_ASSERT(!screens.isEmpty()) {
-        qWarning() << "No screens found, cannot determine primary screen!";
+        qInfo() << "No screens found, cannot determine primary screen!";
     } else {
         return screens.first();
     }

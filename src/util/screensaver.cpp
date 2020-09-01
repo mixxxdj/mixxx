@@ -216,7 +216,7 @@ void ScreenSaverHelper::triggerUserActivity()
         } 
     }
     if (!s_sendActivity) {
-        qWarning() << "Could not send activity using the registered DBus methods. " 
+        qInfo() << "Could not send activity using the registered DBus methods. " 
         << "Errors were: " << errors << 
         "\nWill try to use the Xlib XResetScreensaver instead.";
     }
@@ -246,8 +246,8 @@ void ScreenSaverHelper::inhibitInternal()
                 qDebug() << "DBus screensaver " << SCREENSAVERS[i][0] <<" inhibited";
                 break;
             } else {
-                qWarning() << "Call to inhibit for " << SCREENSAVERS[i][0] << " failed: " 
-                    << reply.error().message();
+                qInfo() << "Call to inhibit for " << SCREENSAVERS[i][0] << " failed: "
+                        << reply.error().message();
             }
         } else {
             qDebug() << "DBus interface " << SCREENSAVERS[i][0] << " not valid";
@@ -266,8 +266,8 @@ void ScreenSaverHelper::uninhibitInternal()
                 s_cookie = 0;
                 qDebug() << "DBus screensaver " << SCREENSAVERS[s_saverindex][0] << " uninhibited";
             } else {
-                qWarning() << "Call to uninhibit for " << SCREENSAVERS[s_saverindex][0] << " failed: " 
-                    << reply.error().message();
+                qInfo() << "Call to uninhibit for " << SCREENSAVERS[s_saverindex][0] << " failed: "
+                        << reply.error().message();
             }
         } else {
             qDebug() << "DBus interface " << SCREENSAVERS[s_saverindex][0] << " not valid";
@@ -336,4 +336,3 @@ void ScreenSaverHelper::uninhibitInternal()
 
 
 } // namespace mixxx
-
