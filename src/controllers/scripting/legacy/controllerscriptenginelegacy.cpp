@@ -57,9 +57,9 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
 
     QJSValue wrappedFunction;
 
-    auto i = m_scriptWrappedFunctionCache.constFind(codeSnippet);
-    if (i != m_scriptWrappedFunctionCache.constEnd()) {
-        wrappedFunction = i.value();
+    const auto it = m_scriptWrappedFunctionCache.constFind(codeSnippet);
+    if (it != m_scriptWrappedFunctionCache.constEnd()) {
+        wrappedFunction = it.value();
     } else {
         QStringList wrapperArgList;
         for (int i = 1; i <= numberOfArgs; i++) {
