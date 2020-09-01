@@ -1205,8 +1205,6 @@ TraktorS3.FXControl.prototype.anyEnablePressed = function() {
     return false;
 };
 
-// pressing FX SELECT buttons changes the activeFX
-// press again to focus, press again to unfocus.  (focus should blink)
 TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     var fxNumber = parseInt(field.name[field.name.length - 1]);
     this.selectPressed[fxNumber] = field.value;
@@ -1244,20 +1242,7 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
         this.activeFX = fxNumber;
         break;
     case this.STATE_EFFECT:
-        if (fxNumber === 0) {
-            this.currentState = this.STATE_FILTER;
-        } else {
-            // if (fxNumber === this.activeFX) {
-            //     this.currentState = this.STATE_FOCUS;
-            // } else {
-            //     // Select this filter instead.
-            //     // initiate state change
-            //     // this.activateState(this.STATE_EFFECT, fxNumber);
-            this.currentState = this.STATE_EFFECT;
-            // }
-        }
-        this.activeFX = fxNumber;
-        break;
+        // Fallthrough intended
     case this.STATE_FOCUS:
         if (fxNumber === 0) {
             this.currentState = this.STATE_FILTER;
@@ -1270,8 +1255,6 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     // var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
 };
 
-// in unfocus mode, tap.... does nothing?  Just highlights which FX are enabled for that deck while
-// held.
 TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
     HIDDebug("we are here: " + field.group + " " + field.value);
     this.enablePressed[field.group] = field.value;
@@ -1315,45 +1298,6 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
         script.toggleControl(group, key);
         break;
     }
-
-    // HIDDebug("FX ENABLE " + field.group + " " + field.name + " " + field.value);
-    // if (field.value === 0) {
-    //     if (this.enablePressed === field.group) {
-    //         this.enablePressed = "";
-    //     }
-    //     this.StatusDebug();
-    //     return;
-    // }
-
-    // // in unfocus mode, preess and hold + tap fxselect to enable/disable per channel
-    // // if select was pressed first though, ignore pressing enable as a press-and-hold.
-    // if (this.selectPressed === -1) {
-    //     HIDDebug("TOGGLE");
-    //     this.enablePressed = field.group;
-    // }
-
-    // // in focus mode, tap fxenable enables/disables individual fx in units.
-    // // var fxGroupPrefix = TraktorS3.fxGroupPrefix(this.);
-    // // if (fxGroupPrefix === undefined) {
-    // //     HIDDebug("Programming Error: Didn't match channel number in fxSelectHandler: " + field.group);
-    // //     return;
-    // // }
-    // var fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
-    // var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
-    // if (focusedEffect > 0) {
-    //     HIDDebug("toggle subeffect!");
-    //     var buttonNumber = this.channelToIndex(field.group);
-    //     if (buttonNumber === undefined) {
-    //         HIDDebug("Programming Error: unexpectedly couldn't parse group: " + field.group);
-    //         return;
-    //     }
-
-    //     var group = fxGroupPrefix + "_Effect" + buttonNumber + "]";
-    //     var key = "enabled";
-    //     HIDDebug("flipping " + group + " " + key);
-    //     script.toggleControl(group, key);
-    // }
-    // this.StatusDebug();
 };
 
 TraktorS3.fxGroupPrefix = function(group) {
@@ -1382,10 +1326,6 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
         engine.setParameter("[QuickEffectRack1_" + field.group + "]", "super1", value);
         break;
     case this.STATE_EFFECT:
-        // if (TraktorS3.anyShiftPressed()) {
-        //     HIDDebug("load preset");
-        //     engine.setValue(effectUnitGroup, "load_preset", buttonNumber+1);
-        // } else {
         HIDDebug("effect");
         if (knobIdx === 4) {
             engine.setParameter(fxGroupPrefix + "]", "mix", value);
@@ -1394,7 +1334,6 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
             var group = fxGroupPrefix + "_Effect" + knobIdx + "]";
             engine.setParameter(group, "meta", value);
         }
-        // }
         break;
     case this.STATE_FOCUS:
         var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
@@ -1405,33 +1344,6 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
         engine.setParameter(group, key, value);
         break;
     }
-
-    // var fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
-    // HIDDebug("asking for: " + fxGroupPrefix + "]");
-    // var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
-    // if (focusedEffect > 0) {
-    //     // focus: shift + adjust selects effect
-    //     // if (TraktorS3.anyShiftPressed()) {
-    //     //     // engine.setValue(field.group, "load_preset", knobIdx+1);
-    //     // }
-    //     HIDDebug("focused?? ");
-
-    //     // focus: adjusts params for that effect
-    //     HIDDebug("PARAM: " + fxGroupPrefix + "_Effect" + focusedEffect + "]");
-    //     engine.setParameter(fxGroupPrefix + "_Effect" + focusedEffect + "]",
-    //         "parameter" + knobIdx,
-    //         field.value / 4096);
-    //     this.StatusDebug();
-    //     return;
-    // }
-
-    // // unfocus: other fx selected: adjust meta knob per channel
-    // //XXXXX there's only meta knob per effect, not channel!
-    // HIDDebug("HERE?");
-    // engine.setParameter(fxGroupPrefix + "]",
-    //     "super1",
-    //     field.value / 4096);
-    // this.StatusDebug();
 };
 
 // FX LIGHTS:
