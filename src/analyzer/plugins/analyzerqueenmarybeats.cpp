@@ -26,7 +26,7 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
     // 2.0.
     DFConfig config;
-    config.DFType = DF_COMPLEXSD;
+    config.DFType = dfComplexSd;
     config.stepSize = stepSize;
     config.frameLength = windowSize;
     config.dbRise = 3;
@@ -55,7 +55,7 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(m_stepSize, m_windowSize));
     qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << m_stepSize;
-
+    /*
     m_helper.initialize(
             m_windowSize, m_stepSize, [this](double* pWindow, size_t) {
                 // TODO(rryan) reserve?
@@ -63,6 +63,7 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
                         m_pDetectionFunction->processTimeDomain(pWindow));
                 return true;
             });
+            */
     return true;
 }
 
@@ -77,7 +78,7 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) 
 
 bool AnalyzerQueenMaryBeats::finalize() {
     m_helper.finalize();
-
+    /*
     int nonZeroCount = m_detectionResults.size();
     while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {
         --nonZeroCount;
@@ -89,7 +90,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
     const auto required_size = std::max(0, nonZeroCount - 2);
     df.reserve(required_size);
     beatPeriod.reserve(required_size);
-
+    
     // skip first 2 results as it might have detect noise as onset
     // that's how vamp does and seems works best this way
     for (int i = 2; i < nonZeroCount; ++i) {
@@ -108,7 +109,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
         double result = (beats.at(i) * m_stepSize) - m_stepSize / 2;
         m_resultBeats.push_back(result);
     }
-
+    */
     m_pDetectionFunction.reset();
     return true;
 }

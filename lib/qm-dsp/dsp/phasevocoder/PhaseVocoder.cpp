@@ -72,23 +72,20 @@ void PhaseVocoder::processTimeDomain(const double *src,
     }
     FFTShift(m_time);
     m_fft->forward(m_time, m_real, m_imag);
-    getMagnitudes(mag);
-    getPhases(theta);
+    getMagnitudes(m_real, m_imag, mag, m_n/2 + 1);
+    getPhases(m_real, m_imag, theta, m_n/2 + 1);
     unwrapPhases(theta, unwrapped);
 }
 
 void PhaseVocoder::processFrequencyDomain(const double *reals, 
                                           const double *imags,
                                           double *mag, double *theta,
-                                          double *unwrapped)
+                                          double *unwrapped,
+                                          int size)
 {
-    for (int i = 0; i < m_n/2 + 1; ++i) {
-        m_real[i] = reals[i];
-        m_imag[i] = imags[i];
-    }
-    getMagnitudes(mag);
-    getPhases(theta);
-    unwrapPhases(theta, unwrapped);
+    getMagnitudes(reals, imags, mag, size);
+    getPhases(reals, imags, theta, size);
+    //unwrapPhases(theta, unwrapped);
 }
 
 void PhaseVocoder::reset()
@@ -104,21 +101,29 @@ void PhaseVocoder::reset()
     }
 }
 
-void PhaseVocoder::getMagnitudes(double *mag)
+void PhaseVocoder::getMagnitudes(
+        const double *reals,
+        const double *imags,
+        double *mag,
+        int size)
 {       
-    for (int i = 0; i < m_n/2 + 1; i++) {
-        mag[i] = sqrt(m_real[i] * m_real[i] + m_imag[i] * m_imag[i]);
+    for (int i = 0; i < size; i++) {
+        mag[i] = sqrt(reals[i] * reals[i] + imags[i] * imags[i]);
     }
 }
 
-void PhaseVocoder::getPhases(double *theta)
+void PhaseVocoder::getPhases(
+        const double *reals,
+        const double *imags,
+        double *theta,
+        int size)
 {
-    for (int i = 0; i < m_n/2 + 1; i++) {
-        theta[i] = atan2(m_imag[i], m_real[i]);
-    }   
+    for (int i = 0; i < size + 1; i++) {
+        theta[i] = atan2(imags[i], reals[i]);
+    }
 }
 
-void PhaseVocoder::unwrapPhases(double *theta, double *unwrapped)
+void PhaseVocoder::unwrapPhases(const double *theta, double *unwrapped)
 {
     for (int i = 0; i < m_n/2 + 1; ++i) {
 

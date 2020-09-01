@@ -8,6 +8,9 @@
 
 class BeatFactory {
   public:
+    
+    static void deleteBeats(mixxx::Beats* pBeats);
+
     static mixxx::BeatsPointer loadBeatsFromByteArray(const Track& track,
             QString beatsVersion,
             QString beatsSubVersion,
@@ -34,8 +37,10 @@ class BeatFactory {
             const int iMinBpm,
             const int iMaxBpm);
 
+        
+
   private:
-    static void deleteBeats(mixxx::Beats* pBeats);
+    
 };
 
 #endif /* BEATFACTORY_H */
