@@ -74,7 +74,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainSuperParameter.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotControlChainSuperParameter(value); });
+            [=](double value) { slotControlChainSuperParameter(value, false); });
     m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 
