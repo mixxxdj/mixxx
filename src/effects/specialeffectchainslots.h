@@ -1,5 +1,4 @@
-#ifndef SPECIALEFFECTCHAINSLOTS_H
-#define SPECIALEFFECTCHAINSLOTS_H
+#pragma once
 
 #include "effects/effectchainslot.h"
 #include "effects/effectsmanager.h"
@@ -66,5 +65,3 @@ class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {
     void setupLegacyAliasesForGroup(const QString& group);
     std::unique_ptr<ControlObject> m_pCOFilterWaveform;
 };
-
-#endif /* SPECIALEFFECTCHAINSLOTS_H */
