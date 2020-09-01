@@ -100,7 +100,11 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
         return false;
     }
     QStringList mimeTextLines =
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            data->text().split(kMimeTextDelimeter, Qt::SkipEmptyParts);
+#else
             data->text().split(kMimeTextDelimeter, QString::SkipEmptyParts);
+#endif
     QList<EffectManifestPointer> manifestList;
     for (int lineNumber = 0; lineNumber < mimeTextLines.size(); lineNumber++) {
         QString manifestUniqueId = mimeTextLines.at(lineNumber);
