@@ -206,7 +206,7 @@ bool SeratoBeatGrid::parseID3(
 
     if (numMarkers <= 0) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                          << "Expected at leat one marker, but found"
+                          << "Expected at least one marker, but found"
                           << numMarkers;
         return false;
     }
