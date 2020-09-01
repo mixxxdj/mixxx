@@ -130,7 +130,7 @@ class SeratoMarkers final {
   public:
     SeratoMarkers() = default;
 
-    /// Parse a binary Serato repesentation of the "Markers_" data from a
+    /// Parse a binary Serato representation of the "Markers_" data from a
     /// `QByteArray` and write the results to the `SeratoMarkers` instance.
     /// The `fileType` parameter determines the exact format of the data being
     /// used.
@@ -139,7 +139,7 @@ class SeratoMarkers final {
             const QByteArray& data,
             taglib::FileType fileType);
 
-    /// Create a binary Serato repesentation of the "Markers_" data suitable
+    /// Create a binary Serato representation of the "Markers_" data suitable
     /// for `fileType` and dump it into a `QByteArray`. The content of that
     /// byte array can be used for round-trip tests or written to the
     /// appropriate tag to make it accessible to Serato.

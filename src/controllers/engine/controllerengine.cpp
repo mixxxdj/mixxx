@@ -13,12 +13,22 @@
 #include "util/math.h"
 #include "util/time.h"
 
-const int kDecks = 16;
+namespace {
+constexpr int kDecks = 16;
 
 // Use 1ms for the Alpha-Beta dt. We're assuming the OS actually gives us a 1ms
 // timer.
-const int kScratchTimerMs = 1;
-const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
+constexpr int kScratchTimerMs = 1;
+constexpr double kAlphaBetaDt = kScratchTimerMs / 1000.0;
+
+inline ControlFlags onlyAssertOnControllerDebug() {
+    if (ControllerDebug::enabled()) {
+        return ControlFlag::None;
+    }
+
+    return ControlFlag::AllowMissingOrInvalid;
+}
+} // namespace
 
 ControllerEngine::ControllerEngine(Controller* controller)
         : m_bDisplayingExceptionDialog(false),
@@ -537,6 +547,8 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
 
     if (!key.isValid()) {
         qWarning() << "ControllerEngine: Requested control with invalid key" << key;
+        // Throw a debug assertion if controllerDebug is enabled
+        DEBUG_ASSERT(!ControllerDebug::enabled());
         return nullptr;
     }
 
@@ -574,7 +586,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
+                coScript->getKey(), onlyAssertOnControllerDebug());
         if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
             coScript->slotSet(newValue);
         }
@@ -601,7 +613,7 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
+                coScript->getKey(), onlyAssertOnControllerDebug());
         if (pControl && !m_st.ignore(pControl, newParameter)) {
             coScript->setParameter(newParameter);
         }
@@ -978,9 +990,11 @@ void ControllerEngine::timerEvent(QTimerEvent* event) {
 }
 
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
-    ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
+    ConfigKey key = ConfigKey(group, name);
+    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {
+        qWarning() << "Failed to" << (set ? "enable" : "disable")
+                   << "softTakeover for invalid control" << key;
         return;
     }
     if (set) {
@@ -991,9 +1005,10 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 }
 
 void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString name) {
-    ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
+    ConfigKey key = ConfigKey(group, name);
+    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {
+        qWarning() << "Failed to call softTakeoverIgnoreNextValue for invalid control" << key;
         return;
     }
 

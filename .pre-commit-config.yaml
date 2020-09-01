@@ -69,7 +69,8 @@ repos:
   rev: f7f304cb40596e4706be27ca44d1401396a97420
   hooks:
   - id: codespell
-    entry: tools/codespell.py --ignore-regex "\\W(?:(?:m_)?p(?=[A-Z])|m_(?=\\w))" --files
+    # ignore-regex is substituted by ' '
+    entry: tools/codespell.py --ignore-regex "\\W(?:pInOut|m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
     exclude: ^(src/dialog/dlgabout.cpp|.*\.(?:pot?|ts))$
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.2.0
