@@ -18,7 +18,8 @@ const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 } // anonymous namespace
 
-ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine)
+ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
+        ControllerScriptEngineLegacy* m_pEngine)
         : m_pScriptEngineLegacy(m_pEngine) {
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
@@ -739,7 +740,8 @@ bool ControllerScriptInterfaceLegacy::isScratching(int deck) {
     return getValue(group, "scratch2_enable") > 0;
 }
 
-void ControllerScriptInterfaceLegacy::spinback(int deck, bool activate, double factor, double rate) {
+void ControllerScriptInterfaceLegacy::spinback(
+        int deck, bool activate, double factor, double rate) {
     // defaults for args set in header file
     brake(deck, activate, factor, rate);
 }

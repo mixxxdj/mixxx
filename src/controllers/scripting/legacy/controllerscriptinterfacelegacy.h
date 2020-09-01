@@ -30,13 +30,21 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
     Q_INVOKABLE QJSValue makeConnection(QString group, QString name, const QJSValue callback);
     // DEPRECATED: Use makeConnection instead.
-    Q_INVOKABLE QJSValue connectControl(QString group, QString name, const QJSValue passedCallback, bool disconnect = false);
+    Q_INVOKABLE QJSValue connectControl(QString group,
+            QString name,
+            const QJSValue passedCallback,
+            bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QJSValue scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
-    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm, double alpha, double beta, bool ramp = true);
+    Q_INVOKABLE void scratchEnable(int deck,
+            int intervalsPerRev,
+            double rpm,
+            double alpha,
+            double beta,
+            bool ramp = true);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
