@@ -1,4 +1,4 @@
-#include "controllerscriptinterface.h"
+#include "controllerscriptinterfacelegacy.h"
 
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
@@ -18,7 +18,7 @@ const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 } // anonymous namespace
 
-ControllerScriptInterface::ControllerScriptInterface(ControllerScriptEngineLegacy* m_pEngine)
+ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine)
         : m_pScriptEngineLegacy(m_pEngine) {
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
@@ -38,7 +38,7 @@ ControllerScriptInterface::ControllerScriptInterface(ControllerScriptEngineLegac
     }
 }
 
-ControllerScriptInterface::~ControllerScriptInterface() {
+ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
     // Stop all timers
     QMutableHashIterator<int, TimerInfo> i(m_timers);
     while (i.hasNext()) {
@@ -81,7 +81,7 @@ ControllerScriptInterface::~ControllerScriptInterface() {
     }
 }
 
-ControlObjectScript* ControllerScriptInterface::getControlObjectScript(
+ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
         const QString& group, const QString& name) {
     ConfigKey key = ConfigKey(group, name);
     ControlObjectScript* coScript = m_controlCache.value(key, nullptr);
@@ -98,7 +98,7 @@ ControlObjectScript* ControllerScriptInterface::getControlObjectScript(
     return coScript;
 }
 
-double ControllerScriptInterface::getValue(QString group, QString name) {
+double ControllerScriptInterfaceLegacy::getValue(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerScriptInterface: Unknown control" << group << name
@@ -108,7 +108,7 @@ double ControllerScriptInterface::getValue(QString group, QString name) {
     return coScript->get();
 }
 
-void ControllerScriptInterface::setValue(
+void ControllerScriptInterfaceLegacy::setValue(
         QString group, QString name, double newValue) {
     if (isnan(newValue)) {
         qWarning() << "ControllerScriptInterface: script setting [" << group << ","
@@ -129,7 +129,7 @@ void ControllerScriptInterface::setValue(
     }
 }
 
-double ControllerScriptInterface::getParameter(QString group, QString name) {
+double ControllerScriptInterfaceLegacy::getParameter(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerScriptInterface: Unknown control" << group << name
@@ -139,7 +139,7 @@ double ControllerScriptInterface::getParameter(QString group, QString name) {
     return coScript->getParameter();
 }
 
-void ControllerScriptInterface::setParameter(
+void ControllerScriptInterfaceLegacy::setParameter(
         QString group, QString name, double newParameter) {
     if (isnan(newParameter)) {
         qWarning() << "ControllerScriptInterface: script setting [" << group << ","
@@ -158,7 +158,7 @@ void ControllerScriptInterface::setParameter(
     }
 }
 
-double ControllerScriptInterface::getParameterForValue(
+double ControllerScriptInterfaceLegacy::getParameterForValue(
         QString group, QString name, double value) {
     if (isnan(value)) {
         qWarning() << "ControllerScriptInterface: script setting [" << group << ","
@@ -177,14 +177,14 @@ double ControllerScriptInterface::getParameterForValue(
     return coScript->getParameterForValue(value);
 }
 
-void ControllerScriptInterface::reset(QString group, QString name) {
+void ControllerScriptInterfaceLegacy::reset(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->reset();
     }
 }
 
-double ControllerScriptInterface::getDefaultValue(QString group, QString name) {
+double ControllerScriptInterfaceLegacy::getDefaultValue(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -196,7 +196,7 @@ double ControllerScriptInterface::getDefaultValue(QString group, QString name) {
     return coScript->getDefault();
 }
 
-double ControllerScriptInterface::getDefaultParameter(
+double ControllerScriptInterfaceLegacy::getDefaultParameter(
         QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
@@ -209,7 +209,7 @@ double ControllerScriptInterface::getDefaultParameter(
     return coScript->getParameterForValue(coScript->getDefault());
 }
 
-QJSValue ControllerScriptInterface::makeConnection(
+QJSValue ControllerScriptInterfaceLegacy::makeConnection(
         QString group, QString name, const QJSValue callback) {
     QJSEngine* jsEngine = m_pScriptEngineLegacy->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(jsEngine) {
@@ -252,7 +252,7 @@ QJSValue ControllerScriptInterface::makeConnection(
     return QJSValue();
 }
 
-bool ControllerScriptInterface::removeScriptConnection(
+bool ControllerScriptInterfaceLegacy::removeScriptConnection(
         const ScriptConnection connection) {
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
@@ -264,7 +264,7 @@ bool ControllerScriptInterface::removeScriptConnection(
     return coScript->removeScriptConnection(connection);
 }
 
-void ControllerScriptInterface::triggerScriptConnection(
+void ControllerScriptInterfaceLegacy::triggerScriptConnection(
         const ScriptConnection connection) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
         return;
@@ -287,7 +287,7 @@ void ControllerScriptInterface::triggerScriptConnection(
 // it is disconnected.
 // WARNING: These behaviors are quirky and confusing, so if you change this function,
 // be sure to run the ControllerScriptInterfaceTest suite to make sure you do not break old scripts.
-QJSValue ControllerScriptInterface::connectControl(
+QJSValue ControllerScriptInterfaceLegacy::connectControl(
         QString group, QString name, QJSValue passedCallback, bool disconnect) {
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
@@ -403,17 +403,17 @@ QJSValue ControllerScriptInterface::connectControl(
     return makeConnection(group, name, actualCallbackFunction);
 }
 
-void ControllerScriptInterface::trigger(QString group, QString name) {
+void ControllerScriptInterfaceLegacy::trigger(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->emitValueChanged();
     }
 }
 
-void ControllerScriptInterface::log(QString message) {
+void ControllerScriptInterfaceLegacy::log(QString message) {
     controllerDebug(message);
 }
-int ControllerScriptInterface::beginTimer(
+int ControllerScriptInterfaceLegacy::beginTimer(
         int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
         timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(timerCallback.toString());
@@ -453,7 +453,7 @@ int ControllerScriptInterface::beginTimer(
     return timerId;
 }
 
-void ControllerScriptInterface::stopTimer(int timerId) {
+void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
         qWarning() << "Killing timer" << timerId
                    << ": That timer does not exist!";
@@ -464,7 +464,7 @@ void ControllerScriptInterface::stopTimer(int timerId) {
     m_timers.remove(timerId);
 }
 
-void ControllerScriptInterface::timerEvent(QTimerEvent* event) {
+void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
     int timerId = event->timerId();
 
     // See if this is a scratching timer
@@ -492,7 +492,7 @@ void ControllerScriptInterface::timerEvent(QTimerEvent* event) {
     m_pScriptEngineLegacy->executeFunction(timerTarget.callback, QJSValueList());
 }
 
-void ControllerScriptInterface::softTakeover(
+void ControllerScriptInterfaceLegacy::softTakeover(
         QString group, QString name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
@@ -506,7 +506,7 @@ void ControllerScriptInterface::softTakeover(
     }
 }
 
-void ControllerScriptInterface::softTakeoverIgnoreNextValue(
+void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
         QString group, const QString name) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
@@ -517,7 +517,7 @@ void ControllerScriptInterface::softTakeoverIgnoreNextValue(
     m_st.ignoreNext(pControl);
 }
 
-double ControllerScriptInterface::getDeckRate(const QString& group) {
+double ControllerScriptInterfaceLegacy::getDeckRate(const QString& group) {
     double rate = 0.0;
     ControlObjectScript* pRateRatio =
             getControlObjectScript(group, "rate_ratio");
@@ -533,7 +533,7 @@ double ControllerScriptInterface::getDeckRate(const QString& group) {
     return rate;
 }
 
-bool ControllerScriptInterface::isDeckPlaying(const QString& group) {
+bool ControllerScriptInterfaceLegacy::isDeckPlaying(const QString& group) {
     ControlObjectScript* pPlay = getControlObjectScript(group, "play");
 
     if (pPlay == nullptr) {
@@ -545,7 +545,7 @@ bool ControllerScriptInterface::isDeckPlaying(const QString& group) {
     return pPlay->get() > 0.0;
 }
 
-void ControllerScriptInterface::scratchEnable(int deck,
+void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
         int intervalsPerRev,
         double rpm,
         double alpha,
@@ -621,12 +621,12 @@ void ControllerScriptInterface::scratchEnable(int deck,
     }
 }
 
-void ControllerScriptInterface::scratchTick(int deck, int interval) {
+void ControllerScriptInterfaceLegacy::scratchTick(int deck, int interval) {
     m_lastMovement[deck] = mixxx::Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
-void ControllerScriptInterface::scratchProcess(int timerId) {
+void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
@@ -709,7 +709,7 @@ void ControllerScriptInterface::scratchProcess(int timerId) {
     }
 }
 
-void ControllerScriptInterface::scratchDisable(int deck, bool ramp) {
+void ControllerScriptInterfaceLegacy::scratchDisable(int deck, bool ramp) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -733,18 +733,18 @@ void ControllerScriptInterface::scratchDisable(int deck, bool ramp) {
     m_ramp[deck] = true; // Activate the ramping in scratchProcess()
 }
 
-bool ControllerScriptInterface::isScratching(int deck) {
+bool ControllerScriptInterfaceLegacy::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
     return getValue(group, "scratch2_enable") > 0;
 }
 
-void ControllerScriptInterface::spinback(int deck, bool activate, double factor, double rate) {
+void ControllerScriptInterfaceLegacy::spinback(int deck, bool activate, double factor, double rate) {
     // defaults for args set in header file
     brake(deck, activate, factor, rate);
 }
 
-void ControllerScriptInterface::brake(int deck, bool activate, double factor, double rate) {
+void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double factor, double rate) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -807,7 +807,7 @@ void ControllerScriptInterface::brake(int deck, bool activate, double factor, do
     }
 }
 
-void ControllerScriptInterface::softStart(int deck, bool activate, double factor) {
+void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double factor) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 

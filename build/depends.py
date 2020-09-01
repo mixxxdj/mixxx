@@ -927,7 +927,7 @@ class MixxxCore(Feature):
                    "src/controllers/scripting/colormapper.cpp",
                    "src/controllers/scripting/colormapperjsproxy.cpp",
                    "src/controllers/scripting/legacy/controllerscriptenginelegacy.cpp",
-                   "src/controllers/scripting/legacy/controllerscriptinterface.cpp",
+                   "src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp",
                    "src/controllers/scripting/legacy/scriptconnection.cpp",
                    "src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp",
                    "src/controllers/midi/midimessage.cpp",

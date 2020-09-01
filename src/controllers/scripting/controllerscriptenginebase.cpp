@@ -4,7 +4,6 @@
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/scripting/colormapperjsproxy.h"
-#include "controllers/scripting/legacy/controllerscriptinterface.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 

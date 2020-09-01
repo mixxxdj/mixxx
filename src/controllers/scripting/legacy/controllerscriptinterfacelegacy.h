@@ -11,14 +11,14 @@ class ControlObjectScript;
 class ScriptConnection;
 class ConfigKey;
 
-/// ControllerScriptInterface is the legacy API for controller scripts to interact
+/// ControllerScriptInterfaceLegacy is the legacy API for controller scripts to interact
 /// with Mixxx. It is inserted into the JS environment as the "engine" object.
-class ControllerScriptInterface : public QObject {
+class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
-    ControllerScriptInterface(ControllerScriptEngineLegacy* m_pEngine);
+    ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine);
 
-    virtual ~ControllerScriptInterface();
+    virtual ~ControllerScriptInterfaceLegacy();
 
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);

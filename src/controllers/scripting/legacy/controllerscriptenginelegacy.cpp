@@ -4,7 +4,7 @@
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/scripting/colormapperjsproxy.h"
-#include "controllers/scripting/legacy/controllerscriptinterface.h"
+#include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 
@@ -84,8 +84,8 @@ bool ControllerScriptEngineLegacy::initialize() {
 
     // Make this ControllerScriptHandler instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
-    ControllerScriptInterface* legacyScriptInterface =
-            new ControllerScriptInterface(this);
+    ControllerScriptInterfaceLegacy* legacyScriptInterface =
+            new ControllerScriptInterfaceLegacy(this);
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 

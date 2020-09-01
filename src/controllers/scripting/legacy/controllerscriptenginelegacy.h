@@ -10,7 +10,7 @@
 #include "util/duration.h"
 
 class Controller;
-class ControllerScriptInterface;
+class ControllerScriptInterfaceLegacy;
 class EvaluationException;
 class ScriptConnection;
 
@@ -58,7 +58,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<ControllerPreset::ScriptFileInfo> m_scriptFiles;
 
     friend class ScriptConnection;
-    friend class ControllerScriptInterface;
+    friend class ControllerScriptInterfaceLegacy;
     friend class ColorJSProxy;
     friend class ColorMapperJSProxy;
     friend class ControllerEngineTest;
