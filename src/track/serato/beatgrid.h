@@ -87,7 +87,7 @@ class SeratoBeatGrid final {
               m_extraBase64Byte('A') {
     }
 
-    /// Parse a binary Serato repesentation of the beatgrid data from a
+    /// Parse a binary Serato representation of the beatgrid data from a
     /// `QByteArray` and write the results to the `SeratoBeatGrid` instance.
     /// The `fileType` parameter determines the exact format of the data being
     /// used.
@@ -96,7 +96,7 @@ class SeratoBeatGrid final {
             const QByteArray& data,
             taglib::FileType fileType);
 
-    /// Create a binary Serato repesentation of the beatgrid data suitable for
+    /// Create a binary Serato representation of the beatgrid data suitable for
     /// `fileType` and dump it into a `QByteArray`. The content of that byte
     /// array can be used for round-trip tests or written to the appropriate
     /// tag to make it accessible to Serato.
