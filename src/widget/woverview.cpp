@@ -651,9 +651,17 @@ void WOverview::drawPlayedOverlay(QPainter* pPainter) {
     // Overlay the played part of the overview-waveform with a skin defined color
     if (!m_waveformSourceImage.isNull() && m_playedOverlayColor.alpha() > 0) {
         if (m_orientation == Qt::Vertical) {
-            pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPlayPos, m_playedOverlayColor);
+            pPainter->fillRect(0,
+                    0,
+                    m_waveformImageScaled.width(),
+                    m_iPlayPos,
+                    m_playedOverlayColor);
         } else {
-            pPainter->fillRect(0, 0, m_iPlayPos, m_waveformImageScaled.height(), m_playedOverlayColor);
+            pPainter->fillRect(0,
+                    0,
+                    m_iPlayPos,
+                    m_waveformImageScaled.height(),
+                    m_playedOverlayColor);
         }
     }
 }
