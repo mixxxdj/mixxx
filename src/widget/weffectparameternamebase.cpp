@@ -7,7 +7,7 @@
 #include "effects/effectsmanager.h"
 
 namespace {
-const QString kMimeTextDelimiter = "\n";
+const QString kMimeTextDelimiter = QStringLiteral("\n");
 } // anonymous namespace
 
 WEffectParameterNameBase::WEffectParameterNameBase(
