@@ -22,7 +22,6 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
         return QString("button_parameter%1").arg(iParameterSlotNumber + 1);
     }
 
-    // Load the parameter of the given effect into this EffectButtonParameterSlot
     void loadParameter(EffectParameterPointer pEffectParameter) override;
 
     void clear() override;
