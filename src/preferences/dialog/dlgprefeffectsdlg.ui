@@ -240,7 +240,7 @@
          <item row="0" column="0" colspan="2">
           <widget class="QLabel" name="effectsTablesHeaderLabel">
            <property name="text">
-            <string>Drag and drop to rearrange effects list and hide effects.</string>
+            <string>Drag and drop to rearrange lists and show or hide effects.</string>
            </property>
           </widget>
          </item>
