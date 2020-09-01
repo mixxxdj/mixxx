@@ -263,6 +263,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/effectsmessenger.cpp
   src/effects/specialeffectchainslots.cpp
   src/effects/visibleeffectslist.cpp
+  src/effects/backends/effectsbackend.cpp
   src/effects/backends/effectsbackendmanager.cpp
   src/effects/presets/effectchainpreset.cpp
   src/effects/presets/effectchainpresetmanager.cpp
