@@ -20,6 +20,7 @@
    <string>Effects Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+
    <item>
     <widget class="QTabWidget" name="effectsTabs">
      <property name="sizePolicy">
@@ -31,6 +32,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
+
      <widget class="QWidget" name="chainPresetsTab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
@@ -41,15 +43,7 @@
       <attribute name="title">
        <string>Effect Chain Presets</string>
       </attribute>
-      <widget class="QWidget" name="layoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>520</width>
-         <height>371</height>
-        </rect>
-       </property>
+
        <layout class="QGridLayout" name="chainPresetGridLayout">
         <item row="3" column="1">
          <widget class="QListView" name="quickEffectListView">
@@ -201,8 +195,8 @@
          </widget>
         </item>
        </layout>
-      </widget>
      </widget>
+
      <widget class="QWidget" name="visibleEffectsTab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
