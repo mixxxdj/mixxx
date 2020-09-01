@@ -45,16 +45,21 @@
       </attribute>
 
        <layout class="QGridLayout" name="chainPresetGridLayout">
-        <item row="3" column="1">
-         <widget class="QListView" name="quickEffectListView">
+
+        <item row="0" column="0" colspan="2">
+         <widget class="QLabel" name="chainPresetsTabHeader">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="text">
+           <string>Drag and drop to rearrange lists and move chains between lists.</string>
+          </property>
          </widget>
         </item>
+
         <item row="1" column="0" colspan="2">
          <widget class="QLabel" name="label">
           <property name="sizePolicy">
@@ -68,29 +73,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="quickEffectChainPresetsLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>QuickEffect Chain Presets</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QListView" name="chainListView">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
+
         <item row="2" column="0">
          <widget class="QLabel" name="chainPresetsLabel">
           <property name="sizePolicy">
@@ -104,6 +87,43 @@
           </property>
          </widget>
         </item>
+
+        <item row="2" column="1">
+         <widget class="QLabel" name="quickEffectChainPresetsLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>QuickEffect Chain Presets</string>
+          </property>
+         </widget>
+        </item>
+
+        <item row="3" column="0">
+         <widget class="QListView" name="chainListView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+
+        <item row="3" column="1">
+         <widget class="QListView" name="quickEffectListView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+
         <item row="4" column="0" colspan="2">
          <layout class="QVBoxLayout" name="chainDetailsVBoxLayout">
           <item>
@@ -181,19 +201,7 @@
           </item>
          </layout>
         </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QLabel" name="chainPresetsTabHeader">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Drag and drop to rearrange lists and move chains between lists.</string>
-          </property>
-         </widget>
-        </item>
+
        </layout>
      </widget>
 
@@ -210,19 +218,7 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <layout class="QGridLayout" name="effectsTablesGridLayout">
-         <item row="1" column="0">
-          <widget class="QLabel" name="visibleEffectsTableLabel">
-           <property name="text">
-            <string>Visible Effects</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QTableView" name="hiddenEffectsTableView"/>
-         </item>
-         <item row="2" column="0">
-          <widget class="QTableView" name="visibleEffectsTableView"/>
-         </item>
+
          <item row="0" column="0" colspan="2">
           <widget class="QLabel" name="effectsTablesHeaderLabel">
            <property name="text">
@@ -230,6 +226,15 @@
            </property>
           </widget>
          </item>
+
+         <item row="1" column="0">
+          <widget class="QLabel" name="visibleEffectsTableLabel">
+           <property name="text">
+            <string>Visible Effects</string>
+           </property>
+          </widget>
+         </item>
+
          <item row="1" column="1">
           <widget class="QLabel" name="hiddenEffectsTableLabel">
            <property name="text">
@@ -237,6 +242,15 @@
            </property>
           </widget>
          </item>
+
+         <item row="2" column="0">
+          <widget class="QTableView" name="visibleEffectsTableView"/>
+         </item>
+
+         <item row="2" column="1">
+          <widget class="QTableView" name="hiddenEffectsTableView"/>
+         </item>
+
          <item row="3" column="0" colspan="2">
           <widget class="QGroupBox" name="groupBox">
            <property name="sizePolicy">
@@ -249,38 +263,6 @@
             <string>Effect Info</string>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="4" column="0">
-             <widget class="QLabel" name="effectDescriptionLabel">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Description:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="effectType">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string notr="true">(effect type)</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
              <widget class="QLabel" name="effectNameLabel">
               <property name="sizePolicy">
@@ -313,8 +295,8 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="effectAuthorLabel">
+            <item row="1" column="0">
+             <widget class="QLabel" name="effectVersionLabel">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -322,10 +304,26 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Author:</string>
+               <string>Version:</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="effectVersion">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string notr="true">(effect version)</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -345,8 +343,24 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="effectVersionLabel">
+            <item row="2" column="1">
+             <widget class="QLabel" name="effectType">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string notr="true">(effect type)</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="effectAuthorLabel">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -354,7 +368,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Version:</string>
+               <string>Author:</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
@@ -377,19 +391,19 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="effectVersion">
+            <item row="4" column="0">
+             <widget class="QLabel" name="effectDescriptionLabel">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
               <property name="text">
-               <string notr="true">(effect version)</string>
+               <string>Description:</string>
               </property>
-              <property name="wordWrap">
-               <bool>true</bool>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
               </property>
              </widget>
             </item>
@@ -412,6 +426,7 @@
            </layout>
           </widget>
          </item>
+
         </layout>
        </item>
       </layout>
