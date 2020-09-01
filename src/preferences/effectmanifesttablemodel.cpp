@@ -9,6 +9,7 @@ const int kColumnType = 0;
 const int kColumnName = 1;
 const int kNumberOfColumns = 2;
 const QString kMimeTextDelimeter = "\n";
+const QStringList kAcceptedMimeTypes = {QLatin1String("text/plain")};
 } // anonymous namespace
 
 EffectManifestTableModel::EffectManifestTableModel(EffectsBackendManagerPointer pBackendManager)
@@ -134,7 +135,7 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
 }
 
 QStringList EffectManifestTableModel::mimeTypes() const {
-    return {QLatin1String("text/plain")};
+    return kAcceptedMimeTypes;
 }
 
 Qt::DropActions EffectManifestTableModel::supportedDropActions() const {
