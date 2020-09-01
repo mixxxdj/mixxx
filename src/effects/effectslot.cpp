@@ -32,7 +32,7 @@ EffectSlot::EffectSlot(const QString& group,
           m_pChainSlot(pChainSlot),
           m_pEngineEffectChain(pEngineEffectChain),
           m_pEngineEffect(nullptr) {
-    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffectChain != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffectChain) {
         return;
     }
 
@@ -134,7 +134,7 @@ void EffectSlot::addToEngine() {
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pEngineEffect) {
         return;
     }
 
@@ -199,7 +199,7 @@ void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
         }
     } else {
         for (EffectState* pState : *pStatesMap) {
-            if (pState != nullptr) {
+            if (pState) {
                 delete pState;
             }
         }
@@ -252,7 +252,7 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 }
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
-    if (pPreset == nullptr) {
+    if (!pPreset) {
         loadEffectInner(nullptr, nullptr, true);
         return;
     }
@@ -262,7 +262,7 @@ void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
 }
 
 void EffectSlot::loadEffectWithDefaults(const EffectManifestPointer pManifest) {
-    if (pManifest == nullptr) {
+    if (!pManifest) {
         loadEffectInner(nullptr, nullptr, false);
         return;
     }
@@ -274,7 +274,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         EffectPresetPointer pEffectPreset,
         bool adoptMetaknobFromPreset) {
     if (kEffectDebugOutput) {
-        if (pManifest != nullptr) {
+        if (pManifest) {
             qDebug() << this << m_group << "loading effect" << pManifest->id();
         } else {
             qDebug() << this << m_group << "unloading effect";
@@ -284,7 +284,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     m_pManifest = pManifest;
 
-    if (pManifest == nullptr || pEffectPreset == nullptr) {
+    if (!pManifest || !pEffectPreset) {
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
         return;
@@ -297,7 +297,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     for (const auto& pManifestParameter : m_pManifest->parameters()) {
         // match the manifest parameter to the preset parameter
         EffectParameterPreset parameterPreset = EffectParameterPreset();
-        if (pEffectPreset != nullptr) {
+        if (pEffectPreset) {
             for (const auto& p : pEffectPreset->getParameterPresets()) {
                 if (p.id() == pManifestParameter->id()) {
                     parameterPreset = p;
@@ -319,7 +319,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         const EffectParameterType parameterType =
                 static_cast<EffectParameterType>(parameterTypeId);
 
-        if (pEffectPreset != nullptr && !pEffectPreset.isNull()) {
+        if (pEffectPreset && !pEffectPreset.isNull()) {
             m_loadedParameters[parameterType].clear();
             int slot = 0;
             for (const auto& parameterPreset :
