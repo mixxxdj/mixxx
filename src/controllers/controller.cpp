@@ -34,7 +34,7 @@ ControllerJSProxy* Controller::jsProxy() {
 void Controller::startEngine()
 {
     controllerDebug("  Starting engine");
-    if (m_pScriptEngineLegacy != nullptr) {
+    if (m_pScriptEngineLegacy) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
@@ -43,7 +43,7 @@ void Controller::startEngine()
 
 void Controller::stopEngine() {
     controllerDebug("  Shutting down engine");
-    if (m_pScriptEngineLegacy == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
     }
@@ -57,7 +57,7 @@ bool Controller::applyPreset(bool initializeScripts) {
     const ControllerPreset* pPreset = preset();
 
     // Load the script code into the engine
-    if (m_pScriptEngineLegacy == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         qWarning() << "Controller::applyPreset(): No engine exists!";
         return false;
     }
@@ -112,7 +112,7 @@ void Controller::triggerActivity()
     }
 }
 void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
-    if (m_pScriptEngineLegacy == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out

@@ -80,7 +80,7 @@ void ControllerScriptEngineBase::shutdown() {
 
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
-    if (m_pJSEngine != nullptr) {
+    if (m_pJSEngine) {
         QJSEngine* engine = m_pJSEngine;
         m_pJSEngine = nullptr;
         engine->deleteLater();

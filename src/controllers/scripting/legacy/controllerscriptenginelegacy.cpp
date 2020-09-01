@@ -51,7 +51,7 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
         const QString& codeSnippet, int numberOfArgs) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
-    if (m_pJSEngine == nullptr) {
+    if (!m_pJSEngine) {
         return QJSValue();
     }
 
