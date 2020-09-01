@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEOGGVORBIS_H
-#define MIXXX_SOUNDSOURCEOGGVORBIS_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 #include "util/memory.h"
@@ -7,7 +6,7 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
-class QFile;
+QT_FORWARD_DECLARE_CLASS(QFile);
 
 namespace mixxx {
 
@@ -55,5 +54,3 @@ class SoundSourceProviderOggVorbis : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEOGGVORBIS_H

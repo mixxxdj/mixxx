@@ -70,8 +70,8 @@ Description:
 <Template>
   <!-- Extra wrapper so we can put multiple, independent size
         detectors in here. -->
-  <!-- The height is zero, so this doesnt't even consume GUI space.
-        Set height to 10f in order to enable visual debugging -->
+  <!-- Set height to 0f to hide this.
+       Set height to any other size for visual debugging -->
   <WidgetGroup>
     <Size>0me,0f</Size>
     <Layout>vertical</Layout>
@@ -79,7 +79,7 @@ Description:
     <Children>
 
       <!-- Deck selector.
-            Picks the approriate deck size for display. -->
+          Picks the approriate deck size to display -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Size>300f,10f</Size>
@@ -87,8 +87,7 @@ Description:
         <Children>
 
           <!-- Widgets that define the remaining space,
-                visibility connected to skin controls -->
-
+              visibility connected to skin controls -->
           <WidgetGroup>
             <Connection>
               <ConfigKey>[Master],maximize_library</ConfigKey>
@@ -162,13 +161,12 @@ Description:
 
             </Children>
           </WidgetGroup><!-- !maximize_library -->
-
           <!-- /Widgets that define the remaining space,
-                visibility connected to skin controls -->
+              visibility connected to skin controls -->
 
 
 
-              <!-- Deck size detector -->
+          <!-- Deck size detector -->
           <SizeAwareStack>
             <Children>
               <!-- no decks -->
@@ -206,7 +204,7 @@ Description:
               </WidgetStack>
 
               <!-- Compact deck -->
-              <!-- compact deck selected -->
+              <!-- compact_deck_selected -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>200,10</MinimumSize>

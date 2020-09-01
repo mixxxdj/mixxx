@@ -40,6 +40,17 @@ class ControllerEngineTest : public MixxxTest {
         return !evaluate(code).isError();
     }
 
+    void processEvents() {
+        // QCoreApplication::processEvents() only processes events that were
+        // queued when the method was called. Hence, all subsequent events that
+        // are emitted while processing those queued events will not be
+        // processed and are enqueued for the next event processing cycle.
+        // Calling processEvents() twice ensures that at least all queued and
+        // the next round of emitted events are processed.
+        application()->processEvents();
+        application()->processEvents();
+    }
+
     ControllerScriptEngineLegacy* cEngine;
 };
 
@@ -52,6 +63,14 @@ TEST_F(ControllerEngineTest, setValue) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', 1.0);"));
     EXPECT_DOUBLE_EQ(1.0, co->get());
+}
+
+TEST_F(ControllerEngineTest, getValue_InvalidKey) {
+    ControllerDebug::disable();
+    EXPECT_TRUE(evaluateAndAssert("engine.getValue('', '');"));
+    EXPECT_TRUE(evaluateAndAssert("engine.getValue('', 'invalid');"));
+    EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Invalid]', '');"));
+    ControllerDebug::enable();
 }
 
 TEST_F(ControllerEngineTest, setValue_InvalidControl) {
@@ -69,7 +88,6 @@ TEST_F(ControllerEngineTest, setValue_IgnoresNaN) {
     EXPECT_DOUBLE_EQ(10.0, co->get());
 }
 
-
 TEST_F(ControllerEngineTest, getSetValue) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', engine.getValue('[Test]', 'co') + 1);"));
@@ -78,7 +96,8 @@ TEST_F(ControllerEngineTest, getSetValue) {
 
 TEST_F(ControllerEngineTest, setParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 1.0);"));
     EXPECT_DOUBLE_EQ(10.0, co->get());
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 0.0);"));
@@ -89,7 +108,8 @@ TEST_F(ControllerEngineTest, setParameter) {
 
 TEST_F(ControllerEngineTest, setParameter_OutOfRange) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 1000);"));
     EXPECT_DOUBLE_EQ(10.0, co->get());
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', -1000);"));
@@ -99,14 +119,16 @@ TEST_F(ControllerEngineTest, setParameter_OutOfRange) {
 TEST_F(ControllerEngineTest, setParameter_NaN) {
     // Test that NaNs are ignored.
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', NaN);"));
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
 TEST_F(ControllerEngineTest, getSetParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     EXPECT_TRUE(evaluateAndAssert(
             "engine.setParameter('[Test]', 'co', "
             "  engine.getParameter('[Test]', 'co') + 0.1);"));
@@ -115,7 +137,8 @@ TEST_F(ControllerEngineTest, getSetParameter) {
 
 TEST_F(ControllerEngineTest, softTakeover_setValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     co->setParameter(0.0);
     EXPECT_TRUE(evaluateAndAssert(
             "engine.softTakeover('[Test]', 'co', true);"
@@ -146,7 +169,8 @@ TEST_F(ControllerEngineTest, softTakeover_setValue) {
 
 TEST_F(ControllerEngineTest, softTakeover_setParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     co->setParameter(0.0);
     EXPECT_TRUE(evaluateAndAssert(
             "engine.softTakeover('[Test]', 'co', true);"
@@ -177,7 +201,8 @@ TEST_F(ControllerEngineTest, softTakeover_setParameter) {
 
 TEST_F(ControllerEngineTest, softTakeover_ignoreNextValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     co->setParameter(0.0);
     EXPECT_TRUE(evaluateAndAssert(
             "engine.softTakeover('[Test]', 'co', true);"
@@ -200,7 +225,8 @@ TEST_F(ControllerEngineTest, softTakeover_ignoreNextValue) {
 TEST_F(ControllerEngineTest, reset) {
     // Test that NaNs are ignored.
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
-                                                -10.0, 10.0);
+            -10.0,
+            10.0);
     co->setParameter(1.0);
     EXPECT_TRUE(evaluateAndAssert("engine.reset('[Test]', 'co');"));
     EXPECT_DOUBLE_EQ(0.0, co->get());
@@ -222,7 +248,7 @@ TEST_F(ControllerEngineTest, trigger) {
             "engine.trigger('[Test]', 'co');"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -247,9 +273,9 @@ TEST_F(ControllerEngineTest, connectControl_ByString) {
             "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(evaluateAndAssert("disconnect();"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -272,13 +298,13 @@ TEST_F(ControllerEngineTest, connectControl_ByStringForbidDuplicateConnections) 
             "engine.trigger('[Test]', 'co');"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
 TEST_F(ControllerEngineTest,
-       connectControl_ByStringRedundantConnectionObjectsAreNotIndependent) {
+        connectControl_ByStringRedundantConnectionObjectsAreNotIndependent) {
     // Test that multiple connections are not allowed when passing
     // the callback to engine.connectControl as a function name string.
     // This is weird and inconsistent, but it is how it has been done,
@@ -308,14 +334,14 @@ TEST_F(ControllerEngineTest,
     evaluateAndAssert("changeTestCoValue()");
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(1.0, counter->get());
 
     evaluateAndAssert("disconnectConnection2()");
     // The connection objects should refer to the same connection,
     // so disconnecting one should disconnect both.
     evaluateAndAssert("changeTestCoValue()");
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(1.0, counter->get());
 }
 
@@ -332,7 +358,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
             "connection.trigger();"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -353,7 +379,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections)
             "engine.trigger('[Test]', 'co');"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly twice.
     EXPECT_DOUBLE_EQ(2.0, pass->get());
 }
@@ -378,9 +404,9 @@ TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
             "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(evaluateAndAssert("disconnect()"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly twice.
     EXPECT_DOUBLE_EQ(2.0, pass->get());
 }
@@ -400,9 +426,9 @@ TEST_F(ControllerEngineTest, connectControl_ByLambda) {
             "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(evaluateAndAssert("disconnect()"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -424,9 +450,9 @@ TEST_F(ControllerEngineTest, connectionObject_Disconnect) {
             "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(evaluateAndAssert("disconnect()"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -450,10 +476,9 @@ TEST_F(ControllerEngineTest, connectionObject_reflectDisconnect) {
             "var successful_disconnect = connection.disconnect();"
             "reaction(successful_disconnect);"
             "reaction(!connection.isConnected);"));
-    application()->processEvents();
+    processEvents();
     EXPECT_DOUBLE_EQ(4.0, pass->get());
 }
-
 
 TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectControl) {
     // Test that passing a connection object back to engine.connectControl
@@ -485,13 +510,13 @@ TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectContro
             "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_TRUE(evaluateAndAssert("disconnectConnection1()"));
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented once by connection2.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
     EXPECT_TRUE(evaluateAndAssert("disconnectConnection2()"));
-    application()->processEvents();
+    processEvents();
     // The counter should not have changed.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
@@ -522,7 +547,7 @@ TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
     EXPECT_TRUE(evaluateAndAssert("changeTestCoValue()"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(2.0, counter->get());
 
     EXPECT_TRUE(evaluateAndAssert("disconnectConnection1()"));
@@ -531,7 +556,7 @@ TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
     // changing the CO they were both connected to should
     // increment the counter once.
     EXPECT_TRUE(evaluateAndAssert("changeTestCoValue()"));
-    application()->processEvents();
+    processEvents();
     EXPECT_EQ(3.0, counter->get());
 }
 
@@ -556,7 +581,6 @@ TEST_F(ControllerEngineTest, connectionObject_trigger) {
     EXPECT_DOUBLE_EQ(1.0, counter->get());
 }
 
-
 TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     // Test that callback functions are executed with JavaScript's
     // 'this' keyword referring to the object in which the connection
@@ -577,7 +601,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
             "someObject.connection.trigger();"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
-    application()->processEvents();
+    processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }

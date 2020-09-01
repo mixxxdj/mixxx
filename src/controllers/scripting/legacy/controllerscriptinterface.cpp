@@ -120,7 +120,7 @@ void ControllerScriptInterface::setValue(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::NoAssertIfMissing);
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl &&
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
@@ -151,7 +151,7 @@ void ControllerScriptInterface::setParameter(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControlFlag::NoAssertIfMissing);
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
             coScript->setParameter(newParameter);
         }
@@ -495,7 +495,7 @@ void ControllerScriptInterface::timerEvent(QTimerEvent* event) {
 void ControllerScriptInterface::softTakeover(
         QString group, QString name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }
@@ -509,7 +509,7 @@ void ControllerScriptInterface::softTakeover(
 void ControllerScriptInterface::softTakeoverIgnoreNextValue(
         QString group, const QString name) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }

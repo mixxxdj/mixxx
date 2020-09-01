@@ -2,6 +2,7 @@
 
 #include <mp3guessenc.h>
 
+#include "track/serato/beatsimporter.h"
 #include "track/serato/cueinfoimporter.h"
 #include "track/taglib/trackmetadata_file.h"
 #include "util/color/predefinedcolorpalettes.h"
@@ -197,6 +198,15 @@ double SeratoTags::guessTimingOffsetMillis(
     }
 
     return timingOffset;
+}
+
+BeatsImporterPointer SeratoTags::importBeats() const {
+    if (m_seratoBeatGrid.isEmpty() || !m_seratoBeatGrid.terminalMarker()) {
+        return std::make_shared<SeratoBeatsImporter>();
+    }
+    return std::make_shared<SeratoBeatsImporter>(
+            m_seratoBeatGrid.nonTerminalMarkers(),
+            m_seratoBeatGrid.terminalMarker());
 }
 
 CueInfoImporterPointer SeratoTags::importCueInfos() const {

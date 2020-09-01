@@ -1,23 +1,8 @@
-/***************************************************************************
-                           starrating.cpp
-                              -------------------
-     copyright            : (C) 2010 Tobias Rafreider
-     copyright            : (C) 2009 Nokia Corporation
-
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include "library/starrating.h"
 
 #include <QPainter>
+#include <QRect>
 
-#include "library/starrating.h"
 #include "util/math.h"
 
 // Magic number? Explain what this factor affects and how

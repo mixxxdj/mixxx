@@ -34,13 +34,21 @@
                         <Size>40f,45f</Size>
                         <BackPath>style/style_bg_deck_top_left.png</BackPath>
                         <Children>
-                          <CoverArt>
+                          <TrackWidgetGroup>
                             <Pos>2,7</Pos>
-                            <TooltipId>coverart</TooltipId>
-                            <ObjectName>DeckCoverArt</ObjectName>
                             <Size>35f,35f</Size>
                             <Group><Variable name="group"/></Group>
-                          </CoverArt>
+                            <TrackColorAlpha>200</TrackColorAlpha>
+                            <Children>
+                              <CoverArt>
+                                <Pos>0,0</Pos>
+                                <TooltipId>coverart</TooltipId>
+                                <ObjectName>DeckCoverArt</ObjectName>
+                                <Size>35f,35f</Size>
+                                <Group><Variable name="group"/></Group>
+                              </CoverArt>
+                            </Children>
+                          </TrackWidgetGroup>
                         </Children>
                       </WidgetGroup>
                       <WidgetGroup>
@@ -63,13 +71,19 @@
                             </Style>
                             <Property>titleInfo</Property>
                             <Channel><Variable name="channum"/></Channel>
-                            <Size>0e,20f</Size>
+                            <Size>0e,23f</Size>
                             <Elide>right</Elide>
                           </TrackProperty>
 
+                          <TrackWidgetGroup>
+                            <Size>0e,1f</Size>
+                            <Group><Variable name="group"/></Group>
+                            <TrackColorAlpha>255</TrackColorAlpha>
+                          </TrackWidgetGroup>
+
                           <WidgetGroup>
                             <ObjectName>ArtistAndTimeRow</ObjectName>
-                            <Size>0e,20f</Size>
+                            <Size>0e,19f</Size>
                             <Layout>horizontal</Layout>
                             <Children>
                               <TrackProperty>
@@ -81,7 +95,7 @@
                                   color: #191F24;
                                   text-align: left;
                                   padding-left: 1px;
-                                  padding-top: 4px;
+                                  padding-top: 0px;
                                 }
                                 </Style>
                                 <Property>artist</Property>
@@ -98,7 +112,7 @@
                                   color: #191F24;
                                   text-align: right;
                                   padding-left: 1px;
-                                  padding-top: 4px;
+                                  padding-top: 0px;
                                 }
                                 </Style>
                                 <Group><Variable name="group"/></Group>

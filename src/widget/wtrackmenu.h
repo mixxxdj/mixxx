@@ -67,6 +67,7 @@ class WTrackMenu : public QMenu {
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
+    void slotShowTrackInfo();
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -97,7 +98,6 @@ class WTrackMenu : public QMenu {
     void slotScaleBpm(int);
 
     // Info and metadata
-    void slotShowTrackInfo();
     void slotShowDlgTagFetcher();
     void slotImportMetadataFromFileTags();
     void slotExportMetadataIntoFileTags();
@@ -164,7 +164,11 @@ class WTrackMenu : public QMenu {
     void clearTrackSelection();
 
     bool isAnyTrackBpmLocked() const;
-    std::optional<mixxx::RgbColor> getCommonTrackColor() const;
+
+    /// Get the common track color of all tracks this menu is shown for, or
+    /// return `nullopt` if there is no common color. Tracks may have no color
+    /// assigned to them. In that case the inner optional is set to `nullopt`.
+    std::optional<std::optional<mixxx::RgbColor>> getCommonTrackColor() const;
     CoverInfo getCoverInfoOfLastTrack() const;
 
     TrackModel* m_pTrackModel{};

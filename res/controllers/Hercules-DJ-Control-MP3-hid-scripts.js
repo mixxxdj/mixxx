@@ -54,7 +54,7 @@ HerculesMP3Hid.init = function() {
     c.capture("filterMid", "all", function(g, e, v) { engine.setValue(g, e, v / 128); });
     c.capture("filterLow", "all", function(g, e, v) { engine.setValue(g, e, v / 128); });
 
-    c.capture("jog", "all", function(g, e, v, ctrl) { 
+    c.capture("jog", "all", function(g, e, v, ctrl) {
         // skip initial jog values
         if (HerculesMP3Hid.jog_skip[g]) {
             HerculesMP3Hid.jog_skip[g] = false;
@@ -68,7 +68,7 @@ HerculesMP3Hid.init = function() {
 
         // fine jog mode when playing
         else if (engine.getValue(g, "play")) {
-            engine.setValue(g, e, ctrl.relative); 
+            engine.setValue(g, e, ctrl.relative);
         }
 
         // track browsing when shift held (sync) and not playing
@@ -78,7 +78,7 @@ HerculesMP3Hid.init = function() {
 
         // normal jog mode when not playing
         else {
-            engine.setValue(g, e, ctrl.relative); 
+            engine.setValue(g, e, ctrl.relative);
         }
     });
 
@@ -86,7 +86,7 @@ HerculesMP3Hid.init = function() {
     // double up pitch bend buttons as beatjumps when the track is stopped
     //
 
-    c.capture("pitchbend_down", "all", function(g, e, v) { 
+    c.capture("pitchbend_down", "all", function(g, e, v) {
         if (engine.getValue(g, "play") == 0) {
             engine.setValue(g, "back", v > 0 ? 1 : 0);
         }
@@ -95,7 +95,7 @@ HerculesMP3Hid.init = function() {
         }
     });
 
-    c.capture("pitchbend_up", "all", function(g, e, v) { 
+    c.capture("pitchbend_up", "all", function(g, e, v) {
         if (engine.getValue(g, "play") == 0) {
             engine.setValue(g, "fwd", v > 0 ? 1 : 0);
         }
@@ -115,14 +115,14 @@ HerculesMP3Hid.init = function() {
     c.capture("track_next_b", "press", function(g, e, v) { engine.setValue("[Channel2]", "LoadSelectedTrack", 1); });
 
     //
-    // uncomment this code and the function HerculesMP3Hid.scroll_tracks_joystick() below if you really want the joystick 
+    // uncomment this code and the function HerculesMP3Hid.scroll_tracks_joystick() below if you really want the joystick
     // to be used for track browsing and the left/right joystick buttons for track loading
     //
 
     /*
     c.capture("load", "press", function(g, e, v) { engine.setValue(g, "LoadSelectedTrack", 1); });
 
-    c.capture("joystick_y", "all", function(g, e, v) { 
+    c.capture("joystick_y", "all", function(g, e, v) {
         if (v == 128) {
             HerculesMP3Hid.direction = 0;
             if (HerculesMP3Hid.track_timer) {
@@ -148,10 +148,10 @@ HerculesMP3Hid.init = function() {
     */
 
     //
-    // tempo encoder 
+    // tempo encoder
     //
 
-    c.capture("rate", "all", function(g, e, v, ctrl) { 
+    c.capture("rate", "all", function(g, e, v, ctrl) {
         var rate = engine.getValue(g, "rate") + ctrl.relative / c.tempo_scaling;
         if (rate > 1) rate = 1; else if (rate < -1) rate = -1;
         engine.setValue(g, e, rate);
@@ -161,10 +161,10 @@ HerculesMP3Hid.init = function() {
     // enable/disable scratching with the beatlock buttons (as jogs are non touch sensitive)
     //
 
-    c.capture("beatlock", "press", function(g, e, v) { 
+    c.capture("beatlock", "press", function(g, e, v) {
 
         HerculesMP3Hid.scratch_enabled[g] = !HerculesMP3Hid.scratch_enabled[g];
-        
+
         if (HerculesMP3Hid.scratch_enabled[g]) {
             engine.scratchEnable(parseInt(g.substring(8,9)), 64, 45, 0.125, 0.125/32);
         }
@@ -187,13 +187,13 @@ HerculesMP3Hid.init = function() {
         switch (c.layer[deck-1]) {
             case "fx": c.layer[deck-1] = "hotcue"; break;
             case "hotcue": c.layer[deck-1] = "loop"; break;
-            case "loop": 
-                c.layer[deck-1] = "kill"; 
+            case "loop":
+                c.layer[deck-1] = "kill";
                 c.send(g, "fx", !c.kills[deck-1]['filterHighKill']);
                 c.send(g, "hotcue", !c.kills[deck-1]['filterMidKill']);
                 c.send(g, "loop", !c.kills[deck-1]['filterLowKill']);
                 break;
-            case "kill": 
+            case "kill":
                 c.layer[deck-1] = "fx";
         }
         if (c.layer[deck-1] != "kill") {
@@ -215,22 +215,22 @@ HerculesMP3Hid.init = function() {
             //print("pflstatusa " + pflstatusa);
             if (pflstatusa == 1){
             engine.setValue("[Channel1]", "pfl", 0);}
-            else {engine.setValue("[Channel1]", "pfl", 1); 
+            else {engine.setValue("[Channel1]", "pfl", 1);
             }
         }
     });
 
-    
+
     c.capture("monitor_b", "all", function(g, e, v) {
         if(v==1){
             var pflstatusb = engine.getValue("[Channel2]", "pfl");
             //print("pflstatusb " + pflstatusb);
             if (pflstatusb == 1){
             engine.setValue("[Channel2]", "pfl", 0);}
-            else {engine.setValue("[Channel2]", "pfl", 1); 
+            else {engine.setValue("[Channel2]", "pfl", 1);
             }
         }
-    });    
+    });
 
 
     c.feedback("[Channel1]", "play", function(g, e, v) { c.send(g, e, v); });
@@ -240,7 +240,7 @@ HerculesMP3Hid.init = function() {
     c.feedback("[Channel1]", "beatsync", function(g, e, v) { c.send(g, e, v); });
     c.feedback("[Channel2]", "beatsync", function(g, e, v) { c.send(g, e, v); });
 
-    
+
     c.feedback("[Channel1]", "pfl", function(g, e, v) { c.send(g, e, v); });
     c.feedback("[Channel2]", "pfl", function(g, e, v) { c.send(g, e, v); });
     c.feedback("[Channel1]", "beat_active", function(g, e, v) { c.send(g, e, v); });
@@ -273,7 +273,7 @@ HerculesMP3Hid.init = function() {
 HerculesMP3Hid.shutdown = function() {
 
     var c = HerculesMP3Hid;
-    
+
     // Elvis has left the building...
     for (id in c.leds) {
         c.send(c.leds[id].group, c.leds[id].name, 0);
@@ -362,11 +362,11 @@ HerculesMP3Hid.kill_status = function(g, e, v) {
     //
 
     if (HerculesMP3Hid.layer[deck-1] == "kill") {
-        
+
         switch (e) {
             case 'filterHighKill': HerculesMP3Hid.send(g, "fx", !v); break;
             case 'filterMidKill': HerculesMP3Hid.send(g, "hotcue", !v); break;
-            case 'filterLowKill': HerculesMP3Hid.send(g, "loop", !v); 
+            case 'filterLowKill': HerculesMP3Hid.send(g, "loop", !v);
         }
     }
 }
@@ -444,16 +444,16 @@ HerculesMP3Hid.define_hid_format = function() {
 
     c.add_control(pid, "monitor_a", "[Master]", "button", 3, 0x10);
     c.add_control(pid, "monitor_b", "[Master]", "button", 4, 0x01);
-    //c.add_control(pid, "monitor_both", "[Master]", "button", 5, 0x4); 
+    //c.add_control(pid, "monitor_both", "[Master]", "button", 5, 0x4);
     c.add_control(pid, "monitor_both", "[Master]", "button", 5, 0x8);
 
     // define led feedback
-    
-    pid = 0;    
+
+    pid = 0;
     c.cache_out[pid] = [ 0x0, 0x0, 0x0 ];  // the first byte is not the reportID, that's the raw packet... reportID will be appended later
 
     c.add_control(pid, "play",      "[Channel1]", "led", 2, 0x02); // blinking: 3, 0x2
-    c.add_control(pid, "cue_default","[Channel1]", "led", 1, 0x08); 
+    c.add_control(pid, "cue_default","[Channel1]", "led", 1, 0x08);
     c.add_control(pid, "beat_active","[Channel1]", "led", 1, 0x10);
     c.add_control(pid, "beatlock",      "[Channel1]", "led", 0, 0x01);
     c.add_control(pid, "fx",      "[Channel1]", "led", 0, 0x04);
@@ -466,10 +466,10 @@ HerculesMP3Hid.define_hid_format = function() {
     c.add_control(pid, "beat_active","[Channel2]", "led", 1, 0x20);
     c.add_control(pid, "beatlock",      "[Channel2]", "led", 0, 0x02);
     c.add_control(pid, "fx",      "[Channel2]", "led", 0, 0x08);
-    c.add_control(pid, "hotcue",      "[Channel2]", "led", 0, 0x10);    
+    c.add_control(pid, "hotcue",      "[Channel2]", "led", 0, 0x10);
     c.add_control(pid, "loop",      "[Channel2]", "led", 1, 0x80);
     c.add_control(pid, "pfl",      "[Channel2]", "led", 1, 0x04);
-            
+
 
 }
 
@@ -569,7 +569,7 @@ HerculesMP3Hid.control = function(packetid, name, group, type, offset, mask) {
     this.bitshift = 0;
     this.maxval = 255; // needed for encoder, could guess from the mask
     this.changed = function(value) {
-        value = (value & this.mask) >> this.bitshift; 
+        value = (value & this.mask) >> this.bitshift;
         if (this.value == value) {
             return false;
         }

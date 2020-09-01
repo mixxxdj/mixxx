@@ -1,9 +1,4 @@
-// AutoDJfeature.h
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef AUTODJFEATURE_H
-#define AUTODJFEATURE_H
+#pragma once
 
 #include <QAction>
 #include <QIcon>
@@ -107,6 +102,3 @@ class AutoDJFeature : public LibraryFeature {
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
 };
-
-
-#endif /* AUTODJFEATURE_H */

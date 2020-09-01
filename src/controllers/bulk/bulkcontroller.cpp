@@ -231,10 +231,10 @@ void BulkController::send(QList<int> data, unsigned int length) {
     foreach (int datum, data) {
         temp.append(datum);
     }
-    send(temp);
+    sendBytes(temp);
 }
 
-void BulkController::send(QByteArray data) {
+void BulkController::sendBytes(const QByteArray& data) {
     int ret;
     int transferred;
 

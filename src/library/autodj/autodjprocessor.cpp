@@ -1223,7 +1223,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double introLength = introEnd - introStart;
 
     switch (m_transitionMode) {
-    case TransitionMode::FullIntroOutro:
+    case TransitionMode::FullIntroOutro: {
         // Use the outro or intro length for the transition time, whichever is
         // shorter. Let the full outro and intro play; do not cut off any part
         // of either.
@@ -1245,41 +1245,32 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // If only the outro or intro length is marked but not both, use the one
         // that is marked for the transition time. If neither is marked, fall
         // back to the transition time from the spinbox.
-        if (outroLength > 0 && introLength > 0) {
-            if (outroLength > introLength) {
-                pFromDeck->fadeBeginPos = outroEnd - introLength;
-                pFromDeck->fadeEndPos = outroEnd;
-                pToDeck->startPos = introStart;
-            } else {
-                pFromDeck->fadeBeginPos = outroStart;
-                pFromDeck->fadeEndPos = outroEnd;
-                pToDeck->startPos = introStart;
+        double transitionLength = introLength;
+        if (outroLength > 0) {
+            if (transitionLength <= 0 || transitionLength > outroLength) {
+                // Use outro length when the intro is not defined or longer
+                // than the outro.
+                transitionLength = outroLength;
             }
-        } else if (outroLength > 0 && introLength <= 0) {
-            if (outroLength + introStart < pToDeck->fadeBeginPos) {
-                pFromDeck->fadeBeginPos = outroStart;
-            } else {
-                // This happens if the toDeck track has no intro set and the
-                // outro of the fromDeck track is longer than the whole toDeck
-                // track
-                outroLength = pToDeck->fadeBeginPos - introStart;
-                VERIFY_OR_DEBUG_ASSERT(outroLength > 0) {
+        }
+        if (transitionLength > 0) {
+            const double transitionEnd = introStart + transitionLength;
+            if (transitionEnd > pToDeck->fadeBeginPos) {
+                // End intro before next outro starts
+                transitionLength = pToDeck->fadeBeginPos - introStart;
+                VERIFY_OR_DEBUG_ASSERT(transitionLength > 0) {
                     // We seek to intro start above in this case so this never happens
-                    outroLength = 1;
+                    transitionLength = 1;
                 }
-                pFromDeck->fadeBeginPos = outroEnd - outroLength;
             }
-            pFromDeck->fadeEndPos = outroEnd;
-            pToDeck->startPos = introStart;
-        } else if (introLength > 0 && outroLength <= 0) {
-            pFromDeck->fadeBeginPos = outroEnd - introLength;
+            pFromDeck->fadeBeginPos = outroEnd - transitionLength;
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, outroEnd, introStart);
         }
-        break;
-    case TransitionMode::FadeAtOutroStart:
+    } break;
+    case TransitionMode::FadeAtOutroStart: {
         // Use the outro or intro length for the transition time, whichever is
         // shorter. If the outro is longer than the intro, cut off the end
         // of the outro.
@@ -1301,40 +1292,35 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // If only the outro or intro length is marked but not both, use the one
         // that is marked for the transition time. If neither is marked, fall
         // back to the transition time from the spinbox.
-        if (outroLength > 0 && introLength > 0) {
-            pFromDeck->fadeBeginPos = outroStart;
-            if (outroLength > introLength) {
-                // Cut off end of outro
-                pFromDeck->fadeEndPos = outroStart + introLength;
-            } else {
-                pFromDeck->fadeEndPos = outroEnd;
-            }
-            pToDeck->startPos = introStart;
-        } else if (outroLength > 0 && introLength <= 0) {
-            if (outroLength + introStart < pToDeck->fadeBeginPos) {
-                pFromDeck->fadeBeginPos = outroStart;
-                pFromDeck->fadeEndPos = outroEnd;
-            } else {
-                // This happens if the toDeck track has no intro set and the
-                // outro of the fromDeck track is longer than the whole toDeck
-                // track
-                outroLength = pToDeck->fadeBeginPos - introStart;
-                VERIFY_OR_DEBUG_ASSERT(outroLength > 0) {
-                    // We seek to intro start above in this case so this never happens
-                    outroLength = 1;
+        double transitionLength = outroLength;
+        if (transitionLength > 0) {
+            if (introLength > 0) {
+                if (outroLength > introLength) {
+                    // Cut off end of outro
+                    transitionLength = introLength;
                 }
-                pFromDeck->fadeBeginPos = outroStart;
-                pFromDeck->fadeEndPos = outroStart + outroLength;
             }
+            const double transitionEnd = introStart + transitionLength;
+            if (transitionEnd > pToDeck->fadeBeginPos) {
+                // End intro before next outro starts
+                transitionLength = pToDeck->fadeBeginPos - introStart;
+                VERIFY_OR_DEBUG_ASSERT(transitionLength > 0) {
+                    // We seek to intro start above in this case so this never happens
+                    transitionLength = 1;
+                }
+            }
+            pFromDeck->fadeBeginPos = outroStart;
+            pFromDeck->fadeEndPos = outroStart + transitionLength;
             pToDeck->startPos = introStart;
-        } else if (introLength > 0 && outroLength <= 0) {
-            pFromDeck->fadeBeginPos = outroEnd - introLength;
+        } else if (introLength > 0) {
+            transitionLength = introLength;
+            pFromDeck->fadeBeginPos = outroEnd - transitionLength;
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, outroEnd, introStart);
         }
-        break;
+    } break;
     case TransitionMode::FixedSkipSilence: {
         double startPoint;
         pToDeck->fadeBeginPos = getLastSoundSecond(pToDeck);
