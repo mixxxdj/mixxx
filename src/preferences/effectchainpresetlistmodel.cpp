@@ -3,7 +3,7 @@
 #include <QMimeData>
 
 namespace {
-const QString kMimeTextDelimeter = "\n";
+const QString kMimeTextDelimiter = QStringLiteral("\n");
 } // anonymous namespace
 
 QMimeData* EffectChainPresetListModel::mimeData(const QModelIndexList& indexes) const {
@@ -14,7 +14,7 @@ QMimeData* EffectChainPresetListModel::mimeData(const QModelIndexList& indexes) 
             chainNameList << data(index).toString();
         }
     }
-    mimeData->setText(chainNameList.join(kMimeTextDelimeter));
+    mimeData->setText(chainNameList.join(kMimeTextDelimiter));
     return mimeData;
 }
 
@@ -36,7 +36,7 @@ bool EffectChainPresetListModel::dropMimeData(
             row = stringList().size();
         }
     }
-    const QStringList mimeTextLines = data->text().split(kMimeTextDelimeter);
+    const QStringList mimeTextLines = data->text().split(kMimeTextDelimiter);
     QStringList chainList = stringList();
     for (const auto& line : mimeTextLines) {
         int oldIndex = chainList.indexOf(line);
