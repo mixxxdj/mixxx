@@ -82,6 +82,15 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="topMargin">
+            <number>6</number>
+          </property>
           <property name="text">
            <string>Effect Chain Presets</string>
           </property>
@@ -95,6 +104,15 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="topMargin">
+            <number>6</number>
           </property>
           <property name="text">
            <string>QuickEffect Chain Presets</string>
@@ -229,6 +247,15 @@
 
          <item row="1" column="0">
           <widget class="QLabel" name="visibleEffectsTableLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
            <property name="text">
             <string>Visible Effects</string>
            </property>
@@ -237,6 +264,15 @@
 
          <item row="1" column="1">
           <widget class="QLabel" name="hiddenEffectsTableLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
            <property name="text">
             <string>Hidden Effects</string>
            </property>
