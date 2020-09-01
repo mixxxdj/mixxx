@@ -15,7 +15,6 @@ class TraktorS3Test : public ControllerTest {
   protected:
     void SetUp() override {
         ControllerTest::SetUp();
-        m_pRack = m_pEffectsManager->addStandardEffectRack();
 
         const QString commonScript = "./res/controllers/common-controller-scripts.js";
         const QString hidScript = "./res/controllers/common-hid-packet-parser.js";
@@ -42,7 +41,12 @@ class TraktorS3Test : public ControllerTest {
                 "};"
                 "var getEnablePressed = function() {"
                 " return TestOb.fxc.enablePressed;"
-                "};");
+                "};"
+                // Mock out shift key.
+                "TestOb.shiftPressed = false;"
+                "TraktorS3.anyShiftPressed = function() {"
+                "  return TestOb.shiftPressed;"
+                "}");
     }
 
     enum states {
@@ -50,9 +54,10 @@ class TraktorS3Test : public ControllerTest {
         STATE_EFFECT,
         STATE_FOCUS
     };
-    StandardEffectRackPointer m_pRack;
 };
 
+// Test tapping fx select buttons to toggle states -- Filter for filter state, any fx unit
+// for effect state.
 TEST_F(TraktorS3Test, FXSelectButtonSimple) {
     ASSERT_TRUE(evaluate(
             "var pressFx2 = { "
@@ -132,8 +137,11 @@ TEST_F(TraktorS3Test, FXSelectButtonSimple) {
     EXPECT_EQ(0, evaluate("getActiveFx();").toInt32());
 }
 
+// Hold FX button + tap effect enable focuses that effect.
 TEST_F(TraktorS3Test, FXSelectFocusToggle) {
     ASSERT_TRUE(evaluate(
+            "var pressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 1 };"
+            "var unpressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 0 };"
             "var pressFx2 = { group: '[ChannelX]', name: '!fx2', value: 1 };"
             "var unpressFx2 = { group: '[ChannelX]', name: '!fx2', value: 0 };"
             "var pressFx3 = { group: '[ChannelX]', name: '!fx3', value: 1 };"
@@ -157,9 +165,11 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
 
-    // Press 2 again, focus
+    // Press 2 and tap enable2, focus second effect
     evaluate(
-            "TestOb.fxc.fxSelectHandler(pressFx2); "
+            "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "TestOb.fxc.fxEnableHandler(pressFxEnable2);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable2);"
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
@@ -169,13 +179,6 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
             "TestOb.fxc.fxSelectHandler(pressFx2); "
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
-    EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
-
-    // Press 2 again, focus
-    evaluate(
-            "TestOb.fxc.fxSelectHandler(pressFx2); "
-            "TestOb.fxc.fxSelectHandler(unpressFx2);");
-    EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
 
     // Press 3, effect
@@ -189,15 +192,25 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
     evaluate(
             "TestOb.fxc.fxSelectHandler(pressFx2); "
             "TestOb.fxc.fxSelectHandler(unpressFx2);"
-            "TestOb.fxc.fxSelectHandler(pressFx2); "
-            "TestOb.fxc.fxSelectHandler(unpressFx2);"
             "TestOb.fxc.fxSelectHandler(pressFilter); "
+            "TestOb.fxc.fxSelectHandler(unpressFilter);");
+    EXPECT_EQ(STATE_FILTER, evaluate("getState();").toInt32());
+    EXPECT_EQ(0, evaluate("getActiveFx();").toInt32());
+
+    // Hold filter, press enable, noop
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFilter); "
+            "TestOb.fxc.fxEnableHandler(pressFxEnable2);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable2);"
             "TestOb.fxc.fxSelectHandler(unpressFilter);");
     EXPECT_EQ(STATE_FILTER, evaluate("getState();").toInt32());
     EXPECT_EQ(0, evaluate("getActiveFx();").toInt32());
 }
 
+// Test Enable buttons + FX Select buttons to enable/disable fx units per channel.
+// This is only available during Filter state.
 TEST_F(TraktorS3Test, FXEnablePlusFXSelect) {
+    // IMPORTANT: Channel 1 is the second button (CABD mapping).
     ASSERT_TRUE(evaluate(
             "var pressFxEnable1 = { group: '[Channel1]',  name: '!fxEnabled',  value: 1 };"
             "var unpressFxEnable1 = { group: '[Channel1]', name: '!fxEnabled', value: 0 };"
@@ -237,6 +250,7 @@ TEST_F(TraktorS3Test, FXEnablePlusFXSelect) {
     }
 
     // Press enable 1, fx2, should enable effect unit 2 for channel 1
+    // Keep enable pressed
     evaluate(
             "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
             "TestOb.fxc.fxSelectHandler(pressFx2);"
@@ -273,8 +287,173 @@ TEST_F(TraktorS3Test, FXEnablePlusFXSelect) {
             "TestOb.fxc.fxSelectHandler(pressFx3);"
             "TestOb.fxc.fxSelectHandler(unpressFx3);"
             "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1);"
             "TestOb.fxc.fxSelectHandler(pressFx2);");
     EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2]",
                                                    "group_[Channel1]_enable"))
                          ->get());
+}
+
+// In FX Mode, the FX Enable buttons toggle effect units
+TEST_F(TraktorS3Test, FXModeFXEnable) {
+    // IMPORTANT: Channel 3 is the first button.
+    ASSERT_TRUE(evaluate(
+            "var pressFxEnable1 = { group: '[Channel3]',  name: '!fxEnabled',  value: 1 };"
+            "var unpressFxEnable1 = { group: '[Channel3]', name: '!fxEnabled', value: 0 };"
+            "var pressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 1 };"
+            "var unpressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 0 };"
+            "var pressFx2 = { group: '[ChannelX]', name: '!fx2', value: 1 };"
+            "var unpressFx2 = { group: '[ChannelX]', name: '!fx2', value: 0 };"
+            "var pressFx3 = { group: '[ChannelX]', name: '!fx3', value: 1 };"
+            "var unpressFx3 = { group: '[ChannelX]', name: '!fx3', value: 0 };")
+                        .isValid());
+
+    EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
+                                                   "enabled"))
+                         ->get());
+
+    // Enable effect mode
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
+    EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
+
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1);");
+
+    // Effect Unit 1 is toggled
+    EXPECT_TRUE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
+                                                  "enabled"))
+                        ->get());
+
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1);");
+
+    // Effect Unit 1 is toggled
+    EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
+                                                   "enabled"))
+                         ->get());
+}
+
+// In Focus Mode, the FX Enable buttons toggle effect parameter values
+TEST_F(TraktorS3Test, FocusModeFXEnable) {
+    // IMPORTANT: Channel 3 is the first button.
+    ASSERT_TRUE(evaluate(
+            "var pressFxEnable1 = { group: '[Channel3]',  name: '!fxEnabled',  value: 1 };"
+            "var unpressFxEnable1 = { group: '[Channel3]', name: '!fxEnabled', value: 0 };"
+            "var pressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 1 };"
+            "var unpressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 0 };"
+            "var pressFx2 = { group: '[ChannelX]', name: '!fx2', value: 1 };"
+            "var unpressFx2 = { group: '[ChannelX]', name: '!fx2', value: 0 };"
+            "var pressFx3 = { group: '[ChannelX]', name: '!fx3', value: 1 };"
+            "var unpressFx3 = { group: '[ChannelX]', name: '!fx3', value: 0 };")
+                        .isValid());
+
+    EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
+                                                   "enabled"))
+                         ->get());
+
+    // Enable focus mode for fx2, effect 1.
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1);"
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
+    EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
+
+    // Effect1 in Unit 2 is toggled
+    EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
+                                                   "parameter1"))
+                         ->get());
+
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1);");
+
+    // Effect Unit 1 is toggled
+    EXPECT_TRUE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
+                                                  "parameter1"))
+                        ->get());
+
+    evaluate(
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1);");
+
+    // Effect Unit 1 is toggled
+    EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
+                                                   "parameter1"))
+                         ->get());
+}
+
+// Test knob behavior in different states
+TEST_F(TraktorS3Test, KnobTest) {
+    ASSERT_TRUE(evaluate(
+            "var pressFxEnable1 = { group: '[Channel1]',  name: '!fxEnabled',  value: 1 };"
+            "var unpressFxEnable1 = { group: '[Channel1]', name: '!fxEnabled', value: 0 };"
+            "var pressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 1 };"
+            "var unpressFxEnable2 = { group: '[Channel2]', name: '!fxEnabled', value: 0 };"
+            "var pressFx2 = { group: '[ChannelX]', name: '!fx2', value: 1 };"
+            "var unpressFx2 = { group: '[ChannelX]', name: '!fx2', value: 0 };"
+            "var pressFx3 = { group: '[ChannelX]', name: '!fx3', value: 1 };"
+            "var unpressFx3 = { group: '[ChannelX]', name: '!fx3', value: 0 };"
+            "var pressFilter = { group: '[ChannelX]', name: '!fx0', value: 1 };"
+            "var unpressFilter = { group: '[ChannelX]', name: '!fx0', value: 0 };")
+                        .isValid());
+
+    // STATE_FILTER: knobs control quickeffects
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFilter);"
+            "TestOb.fxc.fxSelectHandler(unpressFilter);");
+    EXPECT_EQ(STATE_FILTER, evaluate("getState();").toInt32());
+
+    evaluate(
+            "TestOb.fxc.fxKnobHandler( { group: '[Channel1]', name: '!fxKnob', "
+            "value: 0.75*4095 } );");
+    EXPECT_FLOAT_EQ(0.75,
+            ControlObject::getControl(
+                    ConfigKey("[QuickEffectRack1_[Channel1]]", "super1"))
+                    ->get());
+
+    // STATE_EFFECT: knobs control effectunit meta knobs
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
+    EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
+
+    // Note, Channel2 is the third knob
+    evaluate(
+            "TestOb.fxc.fxKnobHandler( { group: '[Channel2]', name: '!fxKnob', "
+            "value: 0.62*4095 } );");
+    EXPECT_FLOAT_EQ(0.62,
+            ControlObject::getControl(
+                    ConfigKey("[EffectRack1_EffectUnit2_Effect3]", "meta"))
+                    ->get());
+
+    // Knob 4 is the mix knob
+    evaluate(
+            "TestOb.fxc.fxKnobHandler( { group: '[Channel4]', name: '!fxKnob', "
+            "value: 0.22*4095 } );");
+    EXPECT_FLOAT_EQ(0.22,
+            ControlObject::getControl(
+                    ConfigKey("[EffectRack1_EffectUnit2]", "mix"))
+                    ->get());
+
+    // Set state to Focus -- knobs control effect parameters
+    evaluate(
+            "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
+            "TestOb.fxc.fxEnableHandler(unpressFxEnable1);"
+            "TestOb.fxc.fxSelectHandler(unpressFx2);");
+    EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
+
+    evaluate(
+            "TestOb.fxc.fxKnobHandler( { group: '[Channel3]', name: '!fxKnob', "
+            "value: 0.12*4095 } );");
+    EXPECT_FLOAT_EQ(0.12,
+            ControlObject::getControl(
+                    ConfigKey(
+                            "[EffectRack1_EffectUnit2_Effect2]", "parameter1"))
+                    ->get());
 }

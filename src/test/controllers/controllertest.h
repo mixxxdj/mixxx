@@ -5,6 +5,7 @@
 
 #include "controllers/controllerdebug.h"
 #include "controllers/controllerengine.h"
+#include "effects/effectrack.h"
 #include "test/signalpathtest.h"
 #include "util/time.h"
 
@@ -19,6 +20,16 @@ class ControllerTest : public BaseSignalPathTest {
         m_pCEngine = new ControllerEngine(nullptr, config());
         ControllerDebug::enable();
         m_pCEngine->setPopups(false);
+        m_pRack = m_pEffectsManager->addStandardEffectRack();
+        // EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+        // pChainSlot->registerInputChannel(m_master);
+        m_pQuickRack = m_pEffectsManager->addQuickEffectRack();
+        // Only 3 decks in BaseSignalPathTest
+        m_pQuickRack->setupForGroup("[Channel1]");
+        m_pQuickRack->setupForGroup("[Channel2]");
+        m_pQuickRack->setupForGroup("[Channel3]");
+        // pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+        // pChainSlot->registerInputChannel(m_master);
     }
 
     void TearDown() override {
@@ -45,4 +56,6 @@ class ControllerTest : public BaseSignalPathTest {
     }
 
     ControllerEngine* m_pCEngine;
+    StandardEffectRackPointer m_pRack;
+    QuickEffectRackPointer m_pQuickRack;
 };
