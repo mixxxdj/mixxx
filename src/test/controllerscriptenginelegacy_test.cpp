@@ -1,10 +1,11 @@
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
+
 #include <QThread>
 #include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
@@ -90,7 +91,9 @@ TEST_F(ControllerScriptEngineLegacyTest, setValue_IgnoresNaN) {
 
 TEST_F(ControllerScriptEngineLegacyTest, getSetValue) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
-    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', engine.getValue('[Test]', 'co') + 1);"));
+    EXPECT_TRUE(
+            evaluateAndAssert("engine.setValue('[Test]', 'co', "
+                              "engine.getValue('[Test]', 'co') + 1);"));
     EXPECT_DOUBLE_EQ(1.0, co->get());
 }
 
