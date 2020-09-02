@@ -674,23 +674,35 @@ MC7000.prevRateRange = function(midichan, control, value, status, group) {
         MC7000.rateRanges[MC7000.currentRateRangeIndex[deckNumber - 1]]);
 };
 
-// Key Select
+// Key & Waveform zoom Select
 MC7000.keySelect = function(midichan, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     // While Shift Button is pressed: Waveform Zoom
     if (MC7000.shift[deckNumber - 1]) {
         if (value === 0x7F) {
-            engine.setValue(group, "waveform_zoom_up", 1);
+            script.triggerControl(group, "waveform_zoom_up", 100);
         } else if (value === 0x01) {
-            engine.setValue(group, "waveform_zoom_down", 1);
+            script.triggerControl(group, "waveform_zoom_down", 100);
         }
     // While Shift Button is released: Key Select
     } else {
         if (value === 0x01) {
-            engine.setValue(group, "pitch_up", true);
+            script.triggerControl(group, "pitch_up", 100);
         } else if (value === 0x7F) {
-            engine.setValue(group, "pitch_down", true);
+            script.triggerControl(group, "pitch_down", 100);
         }
+    }
+};
+
+// Key & Waveform zoom Reset
+MC7000.keyReset = function(channel, control, value, status, group) {
+    var deckNumber = script.deckFromGroup(group);
+    // While Shift Button is pressed: Waveform Zoom Reset
+    if (MC7000.shift[deckNumber - 1]) {
+        script.triggerControl(group, "waveform_zoom_set_default", 100);
+    // While Shift Button is released: Key Reset
+    } else {
+        script.triggerControl(group, "reset_key", 100);
     }
 };
 
