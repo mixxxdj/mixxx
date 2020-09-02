@@ -25,8 +25,10 @@ QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // Construct a list of strings based on the command line arguments
     CmdlineArgs args;
-    VERIFY_OR_DEBUG_ASSERT(args.Parse(argc, argv)) {
-    }
+    const bool argsParsed = args.Parse(argc, argv);
+    Q_UNUSED(argsParsed);
+    DEBUG_ASSERT(argsParsed);
+
     mixxx::LogLevel logLevel = args.getLogLevel();
 
     // Log level Debug would produce too many log messages that
@@ -45,8 +47,10 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     DEBUG_ASSERT(s_pApplication.isNull());
     s_pApplication.reset(new MixxxApplication(argc, argv));
 
-    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerSoundSourceProviders()) {
-    }
+    const bool providersRegistered =
+            SoundSourceProxy::registerSoundSourceProviders();
+    Q_UNUSED(providersRegistered);
+    DEBUG_ASSERT(providersRegistered);
 }
 
 MixxxTest::ApplicationScope::~ApplicationScope() {
