@@ -1285,10 +1285,10 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
     var buttonNumber = this.channelToIndex(field.group);
     switch (this.currentState) {
     case this.STATE_FILTER:
-        HIDDebug("filter");
+        // HIDDebug("filter");
         break;
     case this.STATE_EFFECT:
-        HIDDebug("effect mode");
+        // HIDDebug("effect mode");
         if (this.firstPressedSelect()) {
             HIDDebug("change to focus");
             // Choose the first pressed select button only.
@@ -1333,7 +1333,7 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
 
     switch (this.currentState) {
     case this.STATE_FILTER:
-        HIDDebug("filter");
+        // HIDDebug("filter");
         if (field.group === "[Channel4]" && TraktorS3.channel4InputMode) {
             // There is no quickeffect for the microphone, do nothing.
             // this.StatusDebug();
@@ -1343,7 +1343,7 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
         engine.setParameter("[QuickEffectRack1_" + field.group + "]", "super1", value);
         break;
     case this.STATE_EFFECT:
-        HIDDebug("effect");
+        // HIDDebug("effect");
         if (knobIdx === 4) {
             engine.setParameter(fxGroupPrefix + "]", "mix", value);
         } else {
@@ -1405,7 +1405,7 @@ TraktorS3.FXControl.prototype.lightSelect = function(idx) {
     var enabled = false;
     switch (this.currentState) {
     case this.STATE_FILTER:
-        HIDDebug("filter");
+        // HIDDebug("filter");
         if (idx === 0) {
             // filter select button highlighted unless any enable is pressed
             if (!this.anyEnablePressed()) {
@@ -1424,12 +1424,12 @@ TraktorS3.FXControl.prototype.lightSelect = function(idx) {
         }
         break;
     case this.STATE_EFFECT:
-        HIDDebug("effect");
+        // HIDDebug("effect");
         // select button highlighted for active effect
         enabled = (idx === this.activeFX);
         break;
     case this.STATE_FOCUS:
-        HIDDebug("focus");
+        // HIDDebug("focus");
         // select button blinking for active effect
         break;
     }
@@ -1439,25 +1439,47 @@ TraktorS3.FXControl.prototype.lightSelect = function(idx) {
 
 TraktorS3.FXControl.prototype.lightEnabled = function(channel) {
     var enabled = false;
+    var buttonNumber = this.channelToIndex(channel);
     switch (this.currentState) {
     case this.STATE_FILTER:
-        HIDDebug("filter");
+        // HIDDebug("filter");
         // enable buttons have regular deck colors
-        // enable buttons highlighted if pressed or if any fx unit enabled.
+        // enable buttons highlighted if pressed or if any fx unit enabled for channel.
+        if (this.enablePressed[channel]) {
+            enabled = true;
+        }
+        for (var idx = 1; idx <= 4 && !enabled; idx++) {
+            var group = "[EffectRack1_EffectUnit" + idx + "]";
+            var key = "group_" + channel + "_enable";
+            if (engine.getParameter(group, key)) {
+                enabled = true;
+            }
+        }
         // var ledValue = this.getFXSelectLEDValue(idx, enabled)
+        var ledValue = this.getChannelColor(channel, enabled);
         break;
     case this.STATE_EFFECT:
-        HIDDebug("effect");
-        // enable buttons have same color as effect
+        // HIDDebug("effect");
+        // enable buttons have same color as active effect
         // enable buttons highlighted if pressed or effect in unit is enabled
+        if (this.enablePressed[channel]) {
+            enabled = true;
+        }
+        group = "[EffectRack1_EffectUnit" + this.activeFX + "_Effect" + buttonNumber + "]";
+        key = "enabled";
+        HIDDebug("checking " + group + " " + key);
+        if (engine.getParameter(group, key)) {
+            enabled = true;
+        }
+        ledValue = this.getFXSelectLEDValue(this.activeFX, enabled);
         break;
     case this.STATE_FOCUS:
-        HIDDebug("focus");
-        // enable buttons have same color as effect
+        // HIDDebug("focus");
+        // enable buttons have same color as active effect
         // enable buttons highlighted if... button and 1??
+        ledValue = this.getFXSelectLEDValue(this.activeFX, enabled);
         break;
     }
-    var ledValue = this.getChannelColor(channel, enabled);
     this.controller.setOutput(channel, "!fxEnabled", ledValue, false);
 };
 // for (var ch in TraktorS3.Channels) {

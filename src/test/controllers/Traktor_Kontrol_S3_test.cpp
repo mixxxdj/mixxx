@@ -51,7 +51,7 @@ class TraktorS3Test : public ControllerTest {
         // Mock out controller for testing lights
         evaluate(
                 "TraktorS3.FXControl.prototype.getFXSelectLEDValue = function(fxNumber, enabled) {"
-                "  return fxNumber*10 + (enabled ? 1 : 0);"
+                "  return fxNumber*10 + (enabled ? 6 : 5);"
                 "};"
                 "TraktorS3.FXControl.prototype.getChannelColor = function(group, enabled) {"
                 "  return parseInt(group[8])*10 + (enabled ? 1 : 0);"
@@ -72,6 +72,24 @@ class TraktorS3Test : public ControllerTest {
                 "  }"
                 "  return TestOb.fxc.controller.lightMap[group][key];"
                 "};");
+    }
+
+    void CheckSelectLights(const std::vector<int>& expected) {
+        EXPECT_EQ(5, expected.size());
+        for (int i = 0; i < 5; ++i) {
+            EXPECT_EQ(expected[i],
+                    evaluate(QString("getLight('[ChannelX]', '!fxButton%1');").arg(i)).toInt32());
+        }
+    }
+
+    void CheckEnableLights(const std::vector<int>& expected) {
+        EXPECT_EQ(4, expected.size());
+        for (int i = 0; i < 4; ++i) {
+            EXPECT_EQ(expected[i],
+                    evaluate(QString("getLight('[Channel%1]', '!fxEnabled');")
+                                     .arg(i + 1))
+                            .toInt32());
+        }
     }
 
     enum states {
@@ -120,9 +138,11 @@ TEST_F(TraktorS3Test, FXSelectButtonSimple) {
         EXPECT_TRUE(ret.property(i).isValid());
         EXPECT_EQ(expected_array1[i], ret.property(i).toBool());
     }
+    SCOPED_TRACE("");
+    CheckSelectLights({5, 15, 26, 35, 45});
+    CheckEnableLights({25, 25, 25, 25});
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
-    EXPECT_EQ(21, evaluate("getLight('[ChannelX]', '!fxButton2');").toInt32());
 
     // Now unpress select and release
     evaluate("TestOb.fxc.fxSelectHandler(unpressFx2);");
@@ -134,6 +154,9 @@ TEST_F(TraktorS3Test, FXSelectButtonSimple) {
         EXPECT_TRUE(ret.property(i).isValid());
         EXPECT_EQ(expected_array2[i], ret.property(i).toBool());
     }
+    SCOPED_TRACE("");
+    CheckSelectLights({5, 15, 26, 35, 45});
+    CheckEnableLights({25, 25, 25, 25});
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
 
@@ -147,6 +170,9 @@ TEST_F(TraktorS3Test, FXSelectButtonSimple) {
         EXPECT_TRUE(ret.property(i).isValid());
         EXPECT_EQ(expected_array3[i], ret.property(i).toBool());
     }
+    SCOPED_TRACE("");
+    CheckSelectLights({6, 15, 25, 35, 45});
+    CheckEnableLights({25, 25, 25, 25});
     EXPECT_EQ(STATE_FILTER, evaluate("getState();").toInt32());
     EXPECT_EQ(0, evaluate("getActiveFx();").toInt32());
 
@@ -190,15 +216,25 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
     }
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
+    SCOPED_TRACE("");
+    CheckSelectLights({5, 15, 26, 35, 45});
+    CheckEnableLights({25, 25, 25, 25});
 
-    // Press 2 and tap enable2, focus second effect
+    // Press fx2 and enable2, focus third effect (channel 2 button is third button)
     evaluate(
             "TestOb.fxc.fxSelectHandler(pressFx2);"
             "TestOb.fxc.fxEnableHandler(pressFxEnable2);"
             "TestOb.fxc.fxEnableHandler(unpressFxEnable2);"
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
+    EXPECT_EQ(3,
+            ControlObject::getControl(
+                    ConfigKey("[EffectRack1_EffectUnit2]", "focused_effect"))
+                    ->get());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
+    SCOPED_TRACE("");
+    // CheckSelectLights({5, 15, 26, 35, 45});
+    // CheckEnableLights({0, 10, 21, 30});
 
     // Press again, back to effect mode
     evaluate(
@@ -206,6 +242,9 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
+    SCOPED_TRACE("");
+    CheckSelectLights({5, 15, 26, 35, 45});
+    CheckEnableLights({25, 25, 25, 25});
 
     // Press 3, effect
     evaluate(
@@ -213,6 +252,9 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
             "TestOb.fxc.fxSelectHandler(unpressFx3);");
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(3, evaluate("getActiveFx();").toInt32());
+    SCOPED_TRACE("");
+    CheckSelectLights({5, 15, 25, 36, 45});
+    CheckEnableLights({0, 10, 20, 30});
 
     // Press 2, press 2, press filter = filter
     evaluate(
@@ -285,6 +327,9 @@ TEST_F(TraktorS3Test, FXEnablePlusFXSelect) {
     EXPECT_TRUE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2]",
                                                   "group_[Channel1]_enable"))
                         ->get());
+    SCOPED_TRACE("");
+    CheckEnableLights({1, 10, 20, 30});
+    CheckSelectLights({5, 16, 25, 35, 45});
 
     // Press enable fx2 again, should disable effect unit 2 for channel 1
     evaluate(
@@ -343,6 +388,9 @@ TEST_F(TraktorS3Test, FXModeFXEnable) {
             "TestOb.fxc.fxSelectHandler(pressFx2);"
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
+    SCOPED_TRACE("");
+    CheckEnableLights({25, 25, 25, 25});
+    CheckSelectLights({5, 15, 26, 35, 45});
 
     evaluate(
             "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
@@ -352,6 +400,10 @@ TEST_F(TraktorS3Test, FXModeFXEnable) {
     EXPECT_TRUE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
                                                   "enabled"))
                         ->get());
+    SCOPED_TRACE("");
+    // Channel 3 is the first button
+    CheckEnableLights({25, 25, 26, 25});
+    CheckSelectLights({5, 15, 26, 35, 45});
 
     evaluate(
             "TestOb.fxc.fxEnableHandler(pressFxEnable1);"
@@ -361,6 +413,9 @@ TEST_F(TraktorS3Test, FXModeFXEnable) {
     EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
                                                    "enabled"))
                          ->get());
+    SCOPED_TRACE("");
+    CheckEnableLights({25, 25, 25, 25});
+    CheckSelectLights({5, 15, 26, 35, 45});
 }
 
 // In Focus Mode, the FX Enable buttons toggle effect parameter values

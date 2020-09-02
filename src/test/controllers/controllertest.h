@@ -28,6 +28,7 @@ class ControllerTest : public BaseSignalPathTest {
         m_pQuickRack->setupForGroup("[Channel1]");
         m_pQuickRack->setupForGroup("[Channel2]");
         m_pQuickRack->setupForGroup("[Channel3]");
+        m_pQuickRack->setupForGroup("[Channel4]");
         // pChainSlot = pRack->getEffectChainSlot(iChainNumber);
         // pChainSlot->registerInputChannel(m_master);
     }
