@@ -1248,7 +1248,7 @@ add_executable(mixxx-test
   src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
-  src/test/controllerengine_test.cpp
+  src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp

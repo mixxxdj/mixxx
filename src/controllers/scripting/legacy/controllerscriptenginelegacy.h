@@ -61,5 +61,5 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     friend class ControllerScriptInterfaceLegacy;
     friend class ColorJSProxy;
     friend class ColorMapperJSProxy;
-    friend class ControllerEngineTest;
+    friend class ControllerScriptEngineLegacyTest;
 };
