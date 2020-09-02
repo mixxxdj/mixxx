@@ -2647,7 +2647,7 @@ WSearchLineEdit {
   }
   #LibrarySplitter::handle:pressed,
   #LibrarySplitter::handle:hover {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.svg);
+    image: url(skin:/palemoon/style/splitter_handle_vertical_pressed.png);
   }
 /************ splitters ***********************/
 
