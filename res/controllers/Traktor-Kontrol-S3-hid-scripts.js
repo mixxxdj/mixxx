@@ -1096,6 +1096,7 @@ TraktorS3.FXControl = function() {
     // 0 is filter, 1-4 are FX Units 1-4
     this.FILTER_EFFECT = 0;
     this.activeFX = this.FILTER_EFFECT;
+    this.controller = TraktorS3.controller;
 
     this.enablePressed = {
         "[Channel1]": false,
@@ -1104,6 +1105,13 @@ TraktorS3.FXControl = function() {
         "[Channel4]": false
     };
     this.selectPressed = {
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false
+    };
+    this.selectBlinkState = {
         0: false,
         1: false,
         2: false,
@@ -1196,6 +1204,15 @@ TraktorS3.FXControl.prototype.firstPressedSelect = function() {
     return undefined;
 };
 
+TraktorS3.FXControl.prototype.firstPressedEnable = function() {
+    for (var ch in this.enablePressed) {
+        if (this.enablePressed[ch]) {
+            return ch;
+        }
+    }
+    return undefined;
+};
+
 TraktorS3.FXControl.prototype.anyEnablePressed = function() {
     for (var key in this.enablePressed) {
         if (this.enablePressed[key]) {
@@ -1211,6 +1228,7 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
 
     if (!field.value) {
         // do lights?
+        this.lightFX();
         return;
     }
 
@@ -1226,20 +1244,18 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
                     script.toggleControl(fxGroup, fxKey);
                 }
             }
-            //     this.StatusDebug();
-            return;
-        }
-
-        // If we push filter and filter is already pushed, do nothing.
-        if (fxNumber === 0) {
-            this.currentState = this.STATE_FILTER;
         } else {
-            // Select this filter instead.
-            // initiate state change
-            // this.activateState(this.STATE_EFFECT, fxNumber);
-            this.currentState = this.STATE_EFFECT;
+            // If we push filter and filter is already pushed, do nothing.
+            if (fxNumber === 0) {
+                this.currentState = this.STATE_FILTER;
+            } else {
+                // Select this filter instead.
+                // initiate state change
+                // this.activateState(this.STATE_EFFECT, fxNumber);
+                this.currentState = this.STATE_EFFECT;
+            }
+            this.activeFX = fxNumber;
         }
-        this.activeFX = fxNumber;
         break;
     case this.STATE_EFFECT:
         // Fallthrough intended
@@ -1252,7 +1268,7 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
         this.activeFX = fxNumber;
         break;
     }
-    // var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
+    this.lightFX();
 };
 
 TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
@@ -1261,10 +1277,10 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
 
     if (!field.value) {
         // do lights?
+        this.lightFX();
         return;
     }
 
-    HIDDebug("eh?-------------");
     var fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
     var buttonNumber = this.channelToIndex(field.group);
     switch (this.currentState) {
@@ -1298,15 +1314,16 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
         script.toggleControl(group, key);
         break;
     }
+    this.lightFX();
 };
 
-TraktorS3.fxGroupPrefix = function(group) {
-    var channelMatch = group.match(script.channelRegEx);
-    if (channelMatch === undefined) {
-        return undefined;
-    }
-    return "[EffectRack1_EffectUnit" + channelMatch[1];
-};
+// TraktorS3.fxGroupPrefix = function(group) {
+//     var channelMatch = group.match(script.channelRegEx);
+//     if (channelMatch === undefined) {
+//         return undefined;
+//     }
+//     return "[EffectRack1_EffectUnit" + channelMatch[1];
+// };
 
 TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
     HIDDebug("FX KNOB " + field.group + " " + field.name + " " + field.value);
@@ -1346,6 +1363,18 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
     }
 };
 
+TraktorS3.FXControl.prototype.getFXSelectLEDValue = function(fxNumber, enabled) {
+    var ledValue = TraktorS3.fxLEDValue[fxNumber];
+    ledValue += enabled ? TraktorS3LEDBrightValue : TraktorS3LEDDimValue;
+    return ledValue;
+};
+
+TraktorS3.FXControl.prototype.getChannelColor = function(group, enabled) {
+    var ledValue = TraktorS3.controller.LEDColors[TraktorS3ChannelColors[group]];
+    ledValue += enabled ? TraktorS3LEDBrightValue : TraktorS3LEDDimValue;
+    return ledValue;
+};
+
 // FX LIGHTS:
 // if a button is pressed, definitely it should be on
 // if enable is pressed,
@@ -1356,7 +1385,100 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
 // if unfocused, enables are lit depending on which channels have that effect enabled. (for filter,
 //   that's all)
 // if focused, enables are lit depending on which units are active.
+TraktorS3.FXControl.prototype.lightFX = function() {
+    // Idx zero is filter button
+    TraktorS3.batchingOutputs = true;
 
+    // Loop through select buttons
+    for (var idx = 0; idx < 5; idx++) {
+        this.lightSelect(idx);
+    }
+    for (var ch = 1; ch <= 4; ch++) {
+        var channel = "[Channel" + ch + "]";
+        this.lightEnabled(channel);
+    }
+
+    TraktorS3.batchingOutputs = false;
+};
+
+TraktorS3.FXControl.prototype.lightSelect = function(idx) {
+    var enabled = false;
+    switch (this.currentState) {
+    case this.STATE_FILTER:
+        HIDDebug("filter");
+        if (idx === 0) {
+            // filter select button highlighted unless any enable is pressed
+            if (!this.anyEnablePressed()) {
+                enabled = true;
+            }
+        } else {
+            // select buttons highlighted if fx unit enabled for the pressed channel
+            var pressed = this.firstPressedSelect();
+            if (pressed && pressed !== "0") {
+                var fxGroup = "[EffectRack1_EffectUnit" + idx + "]";
+                var fxKey = "group_[Channel" + pressed + "]_enable";
+                if (engine.getParameter(fxGroup, fxKey)) {
+                    enabled = true;
+                }
+            }
+        }
+        break;
+    case this.STATE_EFFECT:
+        HIDDebug("effect");
+        // select button highlighted for active effect
+        enabled = (idx === this.activeFX);
+        break;
+    case this.STATE_FOCUS:
+        HIDDebug("focus");
+        // select button blinking for active effect
+        break;
+    }
+    var ledValue = this.getFXSelectLEDValue(idx, enabled);
+    this.controller.setOutput("[ChannelX]", "!fxButton" + idx, ledValue, false);
+};
+
+TraktorS3.FXControl.prototype.lightEnabled = function(channel) {
+    var enabled = false;
+    switch (this.currentState) {
+    case this.STATE_FILTER:
+        HIDDebug("filter");
+        // enable buttons have regular deck colors
+        // enable buttons highlighted if pressed or if any fx unit enabled.
+        // var ledValue = this.getFXSelectLEDValue(idx, enabled)
+        break;
+    case this.STATE_EFFECT:
+        HIDDebug("effect");
+        // enable buttons have same color as effect
+        // enable buttons highlighted if pressed or effect in unit is enabled
+        break;
+    case this.STATE_FOCUS:
+        HIDDebug("focus");
+        // enable buttons have same color as effect
+        // enable buttons highlighted if... button and 1??
+        break;
+    }
+    var ledValue = this.getChannelColor(channel, enabled);
+    this.controller.setOutput(channel, "!fxEnabled", ledValue, false);
+};
+// for (var ch in TraktorS3.Channels) {
+//     var chanob = TraktorS3.Channels[ch];
+//     if (ch === "[Channel4]" && TraktorS3.channel4InputMode) {
+//         chanob.colorOutput(TraktorS3.inputFxEnabledState, "!fxEnabled");
+//     } else {
+//         chanob.colorOutput(chanob.fxEnabledState, "!fxEnabled");
+//     }
+// }
+// for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
+//     var ledValue = TraktorS3.fxLEDValue[fxNumber];
+//     if (TraktorS3.fxButtonState[fxNumber]) {
+//         ledValue += TraktorS3LEDBrightValue;
+//     } else {
+//         ledValue += TraktorS3LEDDimValue;
+//     }
+//     TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
+// }
+//     HIDDebug("exit");
+// };
 
 
 TraktorS3.registerInputPackets = function() {
@@ -1606,7 +1728,7 @@ TraktorS3.registerOutputPackets = function() {
     outputA.addOutput("[ChannelX]", "!fxButton2", 0x3D, "B");
     outputA.addOutput("[ChannelX]", "!fxButton3", 0x3E, "B");
     outputA.addOutput("[ChannelX]", "!fxButton4", 0x3F, "B");
-    outputA.addOutput("[ChannelX]", "!fxButton5", 0x40, "B");
+    outputA.addOutput("[ChannelX]", "!fxButton0", 0x40, "B");
 
     outputA.addOutput("[Channel3]", "!fxEnabled", 0x34, "B");
     outputA.addOutput("[Channel1]", "!fxEnabled", 0x35, "B");
@@ -1804,25 +1926,25 @@ TraktorS3.lightGroup = function(packet, outputGroupName, coGroupName) {
     }
 };
 
-TraktorS3.lightFX = function() {
-    for (var ch in TraktorS3.Channels) {
-        var chanob = TraktorS3.Channels[ch];
-        if (ch === "[Channel4]" && TraktorS3.channel4InputMode) {
-            chanob.colorOutput(TraktorS3.inputFxEnabledState, "!fxEnabled");
-        } else {
-            chanob.colorOutput(chanob.fxEnabledState, "!fxEnabled");
-        }
-    }
-    for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
-        var ledValue = TraktorS3.fxLEDValue[fxNumber];
-        if (TraktorS3.fxButtonState[fxNumber]) {
-            ledValue += TraktorS3LEDBrightValue;
-        } else {
-            ledValue += TraktorS3LEDDimValue;
-        }
-        TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
-    }
-};
+// TraktorS3.lightFX = function() {
+//     for (var ch in TraktorS3.Channels) {
+//         var chanob = TraktorS3.Channels[ch];
+//         if (ch === "[Channel4]" && TraktorS3.channel4InputMode) {
+//             chanob.colorOutput(TraktorS3.inputFxEnabledState, "!fxEnabled");
+//         } else {
+//             chanob.colorOutput(chanob.fxEnabledState, "!fxEnabled");
+//         }
+//     }
+//     for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
+//         var ledValue = TraktorS3.fxLEDValue[fxNumber];
+//         if (TraktorS3.fxButtonState[fxNumber]) {
+//             ledValue += TraktorS3LEDBrightValue;
+//         } else {
+//             ledValue += TraktorS3LEDDimValue;
+//         }
+//         TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
+//     }
+// };
 
 TraktorS3.lightDeck = function(group, sendPackets) {
     if (sendPackets === undefined) {
@@ -1854,7 +1976,7 @@ TraktorS3.lightDeck = function(group, sendPackets) {
             TraktorS3.basicOutput(0, "[Master]", "!extButton");
         }
     }
-    TraktorS3.lightFX();
+    // TraktorS3.lightFX();
 
     // Selected deck lights
     var ctrlr = TraktorS3.controller;

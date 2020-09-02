@@ -47,6 +47,31 @@ class TraktorS3Test : public ControllerTest {
                 "TraktorS3.anyShiftPressed = function() {"
                 "  return TestOb.shiftPressed;"
                 "}");
+
+        // Mock out controller for testing lights
+        evaluate(
+                "TraktorS3.FXControl.prototype.getFXSelectLEDValue = function(fxNumber, enabled) {"
+                "  return fxNumber*10 + (enabled ? 1 : 0);"
+                "};"
+                "TraktorS3.FXControl.prototype.getChannelColor = function(group, enabled) {"
+                "  return parseInt(group[8])*10 + (enabled ? 1 : 0);"
+                "};"
+                "TestOb.fxc.controller = new function() {"
+                "  this.lightMap = {}; "
+                "  this.setOutput = function(group, key, value, batching) {"
+                "    if (!(group in this.lightMap)) {"
+                "      this.lightMap[group] = {};"
+                "    }"
+                "    HIDDebug('light: ' + group + ' ' + key + ' ' + value);"
+                "    this.lightMap[group][key] = value;"
+                "  };"
+                "};"
+                "var getLight = function(group, key) {"
+                "  if (!(group in TestOb.fxc.controller.lightMap)) {"
+                "    return undefined;"
+                "  }"
+                "  return TestOb.fxc.controller.lightMap[group][key];"
+                "};");
     }
 
     enum states {
@@ -97,6 +122,7 @@ TEST_F(TraktorS3Test, FXSelectButtonSimple) {
     }
     EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
+    EXPECT_EQ(21, evaluate("getLight('[ChannelX]', '!fxButton2');").toInt32());
 
     // Now unpress select and release
     evaluate("TestOb.fxc.fxSelectHandler(unpressFx2);");
