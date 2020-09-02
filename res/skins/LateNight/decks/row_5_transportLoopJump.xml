@@ -248,10 +248,6 @@
                     <MinimumSize>46,26</MinimumSize>
                     <MaximumSize>72,26</MaximumSize>
                     <Value><Variable name="Group"/>,beatloop_size</Value>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
-                      <BindProperty>highlight</BindProperty>
-                    </Connection>
                   </BeatSpinBox>
                 </Children>
               </WidgetGroup>
@@ -314,10 +310,6 @@
                     <MinimumSize>46,26</MinimumSize>
                     <MaximumSize>72,26</MaximumSize>
                     <Value><Variable name="Group"/>,beatjump_size</Value>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
-                      <BindProperty>highlight</BindProperty>
-                    </Connection>
                   </BeatSpinBox>
                 </Children>
               </WidgetGroup>

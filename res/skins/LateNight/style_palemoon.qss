@@ -182,12 +182,9 @@ WSearchLineEdit {
   #OverviewBoxMini[highlight="1"] {
     background-color: #151515;
   }
-  WBeatSpinBox[highlight="0"] {
+  WBeatSpinBox {
     background-color: #171719;
-    }
-    WBeatSpinBox[highlight="1"] {
-      background-color: #121213;
-    }
+  }
   #KeyText,
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
