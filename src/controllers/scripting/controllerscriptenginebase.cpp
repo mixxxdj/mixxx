@@ -16,7 +16,7 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(Controller* controller)
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 
     // Subclasses are responsible for adding paths to watch to m_scriptWatcher
-    // in ther initializeScriptEngine method.
+    // in their initializeScriptEngine method.
     connect(&m_scriptWatcher,
             &QFileSystemWatcher::fileChanged,
             this,
