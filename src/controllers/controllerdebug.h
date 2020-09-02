@@ -25,8 +25,13 @@ class ControllerDebug {
         s_enabled = false;
     }
 
+    static void enableTesting() {
+        s_enabled = true;
+        s_testing = true;
+    }
+
     static ControlFlags shouldAssertForInvalidControlObjects() {
-        if (enabled()) {
+        if (s_enabled && !s_testing) {
             return ControlFlag::None;
         }
 
@@ -37,6 +42,7 @@ class ControllerDebug {
     ControllerDebug() = delete;
 
     static bool s_enabled;
+    static bool s_testing;
 };
 
 // Usage: controllerDebug("hello" << "world");

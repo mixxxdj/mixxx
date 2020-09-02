@@ -20,7 +20,7 @@ class ControllerEngineTest : public MixxxTest {
         QThread::currentThread()->setObjectName("Main");
         cEngine = new ControllerScriptEngineLegacy(nullptr);
         cEngine->initialize();
-        ControllerDebug::enable();
+        ControllerDebug::enableTesting();
     }
 
     void TearDown() override {

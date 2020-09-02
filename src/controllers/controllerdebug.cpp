@@ -5,6 +5,7 @@
 
 //static
 bool ControllerDebug::s_enabled = false;
+bool ControllerDebug::s_testing = false;
 
 //static
 bool ControllerDebug::enabled() {
