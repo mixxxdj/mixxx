@@ -1062,7 +1062,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 break;
             } else if (avcodec_receive_frame_result == AVERROR_EOF) {
                 DEBUG_ASSERT(!pavNextPacket);
-                if (!writableFrameRange.empty()) {
+                if (readFrameIndex != kFrameIndexUnknown && !writableFrameRange.empty()) {
                     DEBUG_ASSERT(readFrameIndex < writableFrameRange.end());
                     DEBUG_ASSERT(m_sampleBuffer.empty());
                     // Due to the lead-in with a start_time > 0 some encoded
