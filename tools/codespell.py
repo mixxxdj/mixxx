@@ -40,10 +40,39 @@ def run_codespell_on_lines(rootdir, filename, lines, codespell_args):
     return result
 
 
+def make_ignore_regex(fp, ignore_regex):
+    parts = []
+
+    for line in fp:
+        content, sep, comment = line.partition("#")
+        content = content.strip()
+        if not content:
+            continue
+        parts.append(content)
+
+    word_regex = r"\W(?:{})\W".format(
+        "|".join("(?:{})".format(part) for part in parts)
+    )
+    if not ignore_regex:
+        return word_regex
+
+    return r"(?:{words}|{pattern})".format(
+        words=word_regex, pattern=ignore_regex
+    )
+
+
 def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--from-ref", help="use changes changes since commit")
     parser.add_argument("--to-ref", help="use changes until commit")
+    parser.add_argument(
+        "--ignore-regex", help="patterns to treat as whitespace"
+    )
+    parser.add_argument(
+        "--ignore-file",
+        type=argparse.FileType("r"),
+        help="ignore word regex (one per line)",
+    )
     parser.add_argument("--files", nargs="*", help="only check these files")
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Be verbose"
@@ -63,6 +92,14 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     if not args.to_ref:
         args.to_ref = os.getenv("PRE_COMMIT_TO_REF") or os.getenv(
             "PRE_COMMIT_ORIGIN"
+        )
+
+    if args.ignore_file:
+        codespell_args.extend(
+            [
+                "--ignore-regex",
+                make_ignore_regex(args.ignore_file, args.ignore_regex),
+            ]
         )
 
     # Filter filenames
