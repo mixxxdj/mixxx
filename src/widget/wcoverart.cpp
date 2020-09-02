@@ -265,7 +265,7 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
             m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
-        } else {
+        } else if (!m_loadedCover.isNull()) {
             m_pDlgFullSize->init(m_loadedTrack);
         }
     } // else it was a long leftclick or a right click that's already been processed
