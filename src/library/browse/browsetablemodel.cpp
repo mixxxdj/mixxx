@@ -41,12 +41,12 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_KEY, tr("Key"));
     header_data.insert(COLUMN_TYPE, tr("Type"));
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
-    header_data.insert(COLUMN_REPLAYGAIN, tr("ReplayGain"));
     header_data.insert(COLUMN_NATIVELOCATION, tr("Location"));
     header_data.insert(COLUMN_ALBUMARTIST, tr("Album Artist"));
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));
     header_data.insert(COLUMN_FILE_MODIFIED_TIME, tr("File Modified"));
     header_data.insert(COLUMN_FILE_CREATION_TIME, tr("File Created"));
+    header_data.insert(COLUMN_REPLAYGAIN, tr("ReplayGain"));
 
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
