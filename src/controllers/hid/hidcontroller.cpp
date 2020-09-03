@@ -6,21 +6,19 @@
   *
   */
 
-#include "controllers/hid/hidcontroller.h"
-
-#include <string.h>
 #include <wchar.h>
+#include <string.h>
 
-#include "controllers/controllerdebug.h"
-#include "controllers/controllermanager.h"
-#include "controllers/defs_controllers.h"
 #include "util/path.h" // for PATH_MAX on Windows
-#include "util/time.h"
+#include "controllers/hid/hidcontroller.h"
+#include "controllers/defs_controllers.h"
 #include "util/trace.h"
+#include "controllers/controllerdebug.h"
+#include "util/time.h"
 
 HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
         : Controller(pConfig),
-          m_pHidDevice(nullptr) {
+          m_pHidDevice(NULL) {
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
@@ -245,22 +243,13 @@ int HidController::close() {
 bool HidController::poll() {
     Trace hidRead("HidController poll");
 
-    int result = 1;
-    auto loopStartTime = mixxx::Time::elapsed();
-    while (result > 0) {
-        // Failsafe in case the script takes too long. This can happen if a controller constitutively spams
-        // HID messages even if there are no changes since the last message, for example the Gemini GMX.
-        if (mixxx::Time::elapsed() - loopStartTime >= ControllerManager::kPollInterval) {
-            return true;
-        }
-        result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
-        if (result == -1) {
-            return false;
-        } else if (result > 0) {
-            Trace process("HidController process packet");
-            auto byteArray = QByteArray::fromRawData(reinterpret_cast<char*>(m_pPollData), result);
-            receive(byteArray, mixxx::Time::elapsed());
-        }
+    int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
+    if (result == -1) {
+        return false;
+    } else if (result > 0) {
+        Trace process("HidController process packet");
+        QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
+        receive(outData, mixxx::Time::elapsed());
     }
 
     return true;
