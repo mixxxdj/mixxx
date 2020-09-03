@@ -100,11 +100,11 @@ var TraktorS3 = new function() {
 
     // FX 5 is the Filter
     this.fxLEDValue = {
+        0: this.controller.LEDColors.PURPLE,
         1: this.controller.LEDColors.RED,
         2: this.controller.LEDColors.GREEN,
         3: this.controller.LEDColors.BLUE,
         4: this.controller.LEDColors.YELLOW,
-        5: this.controller.LEDColors.PURPLE,
     };
 
     this.colorMap = new ColorMapper({
@@ -1125,6 +1125,11 @@ TraktorS3.FXControl = function() {
     this.STATE_FOCUS = 2;
 
     this.currentState = this.STATE_FILTER;
+
+    // Light states
+    this.LIGHT_OFF = 0;
+    this.LIGHT_DIM = 1;
+    this.LIGHT_BRIGHT = 2;
 };
 
 TraktorS3.FXControl.prototype.registerInputs = function(messageShort, messageLong) {
@@ -1150,7 +1155,7 @@ TraktorS3.FXControl.prototype.registerInputs = function(messageShort, messageLon
 TraktorS3.FXControl.prototype.channelToIndex = function(group) {
     var result = group.match(script.channelRegEx);
     if (result === null) {
-        HIDDebug("barf" + group);
+        HIDDebug("barf " + group);
         return undefined;
     }
     // Unmap from channel number to button index.
@@ -1166,34 +1171,6 @@ TraktorS3.FXControl.prototype.channelToIndex = function(group) {
     }
     return undefined;
 };
-
-TraktorS3.FXControl.prototype.StatusDebug = function() {
-    HIDDebug("active: " + this.activeFX +
-        " enablepressed? " + this.enablePressed +
-        " selectpressed? " + this.selectPressed);
-    for (var i = 1; i <= 4; i++) {
-        var focus = engine.getValue("[EffectRack1_EffectUnit" + i + "]", "focused_effect");
-        if (focus) {
-            HIDDebug("FX" + i + " focus");
-        }
-    }
-};
-
-// TraktorS3.FXControl.prototype.toggleFocusEnable = function(fxNum) {
-//     var group = "[EffectRack1_EffectUnit" + fxNum + "]";
-//     var newState = !engine.getValue(group, "focused_effect");
-
-//     if (!newState) {
-//         engine.setValue(group, "focused_effect", 0);
-//         return;
-//     }
-//     // If we are setting a different unit to be enabled, the others become
-//     // disabled.
-//     for (var i = 1; i <= 4; i++) {
-//         group = "[EffectRack1_EffectUnit" + i + "]";
-//         engine.setValue(group, "focused_effect", i === fxNum);
-//     }
-// };
 
 TraktorS3.FXControl.prototype.firstPressedSelect = function() {
     for (var idx in this.selectPressed) {
@@ -1239,8 +1216,8 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
             var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
             for (var key in this.enablePressed) {
                 if (this.enablePressed[key]) {
-                    HIDDebug("key? " + key);
                     var fxKey = "group_" + key + "_enable";
+                    // HIDDebug("key? " + fxGroup + " " + fxKey);
                     script.toggleControl(fxGroup, fxKey);
                 }
             }
@@ -1272,7 +1249,7 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
 };
 
 TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
-    HIDDebug("we are here: " + field.group + " " + field.value);
+    // HIDDebug("we are here: " + field.group + " " + field.value);
     this.enablePressed[field.group] = field.value;
 
     if (!field.value) {
@@ -1285,10 +1262,8 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
     var buttonNumber = this.channelToIndex(field.group);
     switch (this.currentState) {
     case this.STATE_FILTER:
-        // HIDDebug("filter");
         break;
     case this.STATE_EFFECT:
-        // HIDDebug("effect mode");
         if (this.firstPressedSelect()) {
             HIDDebug("change to focus");
             // Choose the first pressed select button only.
@@ -1305,11 +1280,9 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
         }
         break;
     case this.STATE_FOCUS:
-        HIDDebug("focus mode");
         var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
-        fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
         group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
-        key = "parameter" + buttonNumber;
+        key = "button_parameter" + buttonNumber;
         HIDDebug("toggling " + group + " " + key);
         script.toggleControl(group, key);
         break;
@@ -1317,16 +1290,8 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
     this.lightFX();
 };
 
-// TraktorS3.fxGroupPrefix = function(group) {
-//     var channelMatch = group.match(script.channelRegEx);
-//     if (channelMatch === undefined) {
-//         return undefined;
-//     }
-//     return "[EffectRack1_EffectUnit" + channelMatch[1];
-// };
-
 TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
-    HIDDebug("FX KNOB " + field.group + " " + field.name + " " + field.value);
+    // HIDDebug("FX KNOB " + field.group + " " + field.name + " " + field.value);
     var value = field.value / 4095.;
     var fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
     var knobIdx = this.channelToIndex(field.group);
@@ -1336,10 +1301,8 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
         // HIDDebug("filter");
         if (field.group === "[Channel4]" && TraktorS3.channel4InputMode) {
             // There is no quickeffect for the microphone, do nothing.
-            // this.StatusDebug();
             return;
         }
-        HIDDebug("HERE?2 " + "[QuickEffectRack1_" + field.group + "]");
         engine.setParameter("[QuickEffectRack1_" + field.group + "]", "super1", value);
         break;
     case this.STATE_EFFECT:
@@ -1347,49 +1310,48 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
         if (knobIdx === 4) {
             engine.setParameter(fxGroupPrefix + "]", "mix", value);
         } else {
-            HIDDebug("set " + group + " meta");
             var group = fxGroupPrefix + "_Effect" + knobIdx + "]";
             engine.setParameter(group, "meta", value);
         }
         break;
     case this.STATE_FOCUS:
         var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
-        HIDDebug("focus " + focusedEffect);
         group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
         var key = "parameter" + knobIdx;
-        HIDDebug("set " + group + " " + key);
         engine.setParameter(group, key, value);
         break;
     }
 };
 
-TraktorS3.FXControl.prototype.getFXSelectLEDValue = function(fxNumber, enabled) {
+TraktorS3.FXControl.prototype.getFXSelectLEDValue = function(fxNumber, status) {
     var ledValue = TraktorS3.fxLEDValue[fxNumber];
-    ledValue += enabled ? TraktorS3LEDBrightValue : TraktorS3LEDDimValue;
-    return ledValue;
+    switch (status) {
+    case this.LIGHT_OFF:
+        return ledValue;
+    case this.LIGHT_DIM:
+        return ledValue + 0x01;
+    case this.LIGHT_BRIGHT:
+        return ledValue + 0x02;
+    }
 };
 
-TraktorS3.FXControl.prototype.getChannelColor = function(group, enabled) {
+TraktorS3.FXControl.prototype.getChannelColor = function(group, status) {
     var ledValue = TraktorS3.controller.LEDColors[TraktorS3ChannelColors[group]];
-    ledValue += enabled ? TraktorS3LEDBrightValue : TraktorS3LEDDimValue;
-    return ledValue;
+    switch (status) {
+    case this.LIGHT_OFF:
+        return ledValue;
+    case this.LIGHT_DIM:
+        return ledValue + 0x01;
+    case this.LIGHT_BRIGHT:
+        return ledValue + 0x02;
+    }
 };
 
-// FX LIGHTS:
-// if a button is pressed, definitely it should be on
-// if enable is pressed,
-//   light the selects with what that channel has enabled.
-// else if enable is not pressed,
-//   if focused, select blinks for selected effect
-//   if unfocused, selects is solid for selected effect
-// if unfocused, enables are lit depending on which channels have that effect enabled. (for filter,
-//   that's all)
-// if focused, enables are lit depending on which units are active.
 TraktorS3.FXControl.prototype.lightFX = function() {
-    // Idx zero is filter button
     TraktorS3.batchingOutputs = true;
 
     // Loop through select buttons
+    // Idx zero is filter button
     for (var idx = 0; idx < 5; idx++) {
         this.lightSelect(idx);
     }
@@ -1399,109 +1361,126 @@ TraktorS3.FXControl.prototype.lightFX = function() {
     }
 
     TraktorS3.batchingOutputs = false;
+    for (var packetName in this.controller.OutputPackets) {
+        this.controller.OutputPackets[packetName].send();
+    }
 };
 
 TraktorS3.FXControl.prototype.lightSelect = function(idx) {
-    var enabled = false;
+    var status = this.LIGHT_OFF;
+    var ledValue = 0x00;
     switch (this.currentState) {
     case this.STATE_FILTER:
-        // HIDDebug("filter");
-        if (idx === 0) {
-            // filter select button highlighted unless any enable is pressed
-            if (!this.anyEnablePressed()) {
-                enabled = true;
-            }
+        // Always light when pressed
+        if (this.selectPressed[idx]) {
+            status = this.LIGHT_BRIGHT;
         } else {
-            // select buttons highlighted if fx unit enabled for the pressed channel
-            var pressed = this.firstPressedSelect();
-            if (pressed && pressed !== "0") {
-                var fxGroup = "[EffectRack1_EffectUnit" + idx + "]";
-                var fxKey = "group_[Channel" + pressed + "]_enable";
-                if (engine.getParameter(fxGroup, fxKey)) {
-                    enabled = true;
+            if (idx === 0) {
+                // Filter select button highlighted in filter mode unless any enable is pressed
+                if (!this.anyEnablePressed()) {
+                    status = this.LIGHT_BRIGHT;
+                }
+            } else {
+                // select buttons on if fx unit enabled for the pressed channel,
+                // otherwise disabled.
+                status = this.LIGHT_DIM;
+                var pressed = this.firstPressedEnable();
+                if (pressed) {
+                    var fxGroup = "[EffectRack1_EffectUnit" + idx + "]";
+                    var fxKey = "group_" + pressed + "_enable";
+                    if (engine.getParameter(fxGroup, fxKey)) {
+                        HIDDebug("bright! " + fxGroup + " " + fxKey);
+                        status = this.LIGHT_BRIGHT;
+                    } else {
+                        status = this.LIGHT_OFF;
+                    }
                 }
             }
+            ledValue = this.getFXSelectLEDValue(idx, status);
         }
         break;
     case this.STATE_EFFECT:
-        // HIDDebug("effect");
-        // select button highlighted for active effect
-        enabled = (idx === this.activeFX);
+        // Highlight if pressed, disable if active effect.
+        // Otherwise off.
+        if (this.selectPressed[idx]) {
+            status = this.LIGHT_BRIGHT;
+        } else if (idx === this.activeFX) {
+            status = this.LIGHT_BRIGHT;
+        }
         break;
     case this.STATE_FOCUS:
-        // HIDDebug("focus");
-        // select button blinking for active effect
+        // TODO: Blink for focused effect
+        if (this.selectPressed[idx]) {
+            status = this.LIGHT_BRIGHT;
+        } else if (idx === this.activeFX) {
+            status = this.LIGHT_BRIGHT;
+        }
         break;
     }
-    var ledValue = this.getFXSelectLEDValue(idx, enabled);
+    ledValue = this.getFXSelectLEDValue(idx, status);
     this.controller.setOutput("[ChannelX]", "!fxButton" + idx, ledValue, false);
 };
 
 TraktorS3.FXControl.prototype.lightEnabled = function(channel) {
-    var enabled = false;
+    var status = this.LIGHT_OFF;
+    var ledValue = 0x00;
     var buttonNumber = this.channelToIndex(channel);
     switch (this.currentState) {
     case this.STATE_FILTER:
-        // HIDDebug("filter");
-        // enable buttons have regular deck colors
         // enable buttons highlighted if pressed or if any fx unit enabled for channel.
+        // Highlight if pressed.
         if (this.enablePressed[channel]) {
-            enabled = true;
-        }
-        for (var idx = 1; idx <= 4 && !enabled; idx++) {
-            var group = "[EffectRack1_EffectUnit" + idx + "]";
-            var key = "group_" + channel + "_enable";
-            if (engine.getParameter(group, key)) {
-                enabled = true;
+            status = this.LIGHT_BRIGHT;
+        } else {
+            for (var idx = 1; idx <= 4 && status === this.LIGHT_OFF; idx++) {
+                var group = "[EffectRack1_EffectUnit" + idx + "]";
+                var key = "group_" + channel + "_enable";
+                if (engine.getParameter(group, key)) {
+                    status = this.LIGHT_DIM;
+                }
             }
         }
-        // var ledValue = this.getFXSelectLEDValue(idx, enabled)
-        var ledValue = this.getChannelColor(channel, enabled);
+        // Enable buttons have regular deck colors
+        ledValue = this.getChannelColor(channel, status);
         break;
     case this.STATE_EFFECT:
-        // HIDDebug("effect");
-        // enable buttons have same color as active effect
-        // enable buttons highlighted if pressed or effect in unit is enabled
         if (this.enablePressed[channel]) {
-            enabled = true;
+            status = this.LIGHT_BRIGHT;
+        } else {
+            // off if nothing loaded, dim if loaded, bright if enabled.
+            group = "[EffectRack1_EffectUnit" + this.activeFX + "_Effect" + buttonNumber + "]";
+            if (engine.getParameter(group, "loaded")) {
+                status = this.LIGHT_DIM;
+            }
+            if (engine.getParameter(group, "enabled")) {
+                status = this.LIGHT_BRIGHT;
+            }
         }
-        group = "[EffectRack1_EffectUnit" + this.activeFX + "_Effect" + buttonNumber + "]";
-        key = "enabled";
-        HIDDebug("checking " + group + " " + key);
-        if (engine.getParameter(group, key)) {
-            enabled = true;
-        }
-        ledValue = this.getFXSelectLEDValue(this.activeFX, enabled);
+        // Colors match effect colors so it's obvious we're in a different mode
+        ledValue = this.getFXSelectLEDValue(this.activeFX, status);
         break;
     case this.STATE_FOCUS:
-        // HIDDebug("focus");
-        // enable buttons have same color as active effect
-        // enable buttons highlighted if... button and 1??
-        ledValue = this.getFXSelectLEDValue(this.activeFX, enabled);
+        if (this.enablePressed[channel]) {
+            status = this.LIGHT_BRIGHT;
+        } else {
+            var fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
+            var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
+            group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
+            key = "button_parameter" + buttonNumber;
+            // Off if not loaded, dim if loaded, bright if enabled.
+            if (engine.getParameter(group, key + "_loaded")) {
+                status = this.LIGHT_DIM;
+            }
+            if (engine.getParameter(group, key)) {
+                status = this.LIGHT_BRIGHT;
+            }
+        }
+        // Colors match effect colors so it's obvious we're in a different mode
+        ledValue = this.getFXSelectLEDValue(this.activeFX, status);
         break;
     }
     this.controller.setOutput(channel, "!fxEnabled", ledValue, false);
 };
-// for (var ch in TraktorS3.Channels) {
-//     var chanob = TraktorS3.Channels[ch];
-//     if (ch === "[Channel4]" && TraktorS3.channel4InputMode) {
-//         chanob.colorOutput(TraktorS3.inputFxEnabledState, "!fxEnabled");
-//     } else {
-//         chanob.colorOutput(chanob.fxEnabledState, "!fxEnabled");
-//     }
-// }
-// for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
-//     var ledValue = TraktorS3.fxLEDValue[fxNumber];
-//     if (TraktorS3.fxButtonState[fxNumber]) {
-//         ledValue += TraktorS3LEDBrightValue;
-//     } else {
-//         ledValue += TraktorS3LEDDimValue;
-//     }
-//     TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
-// }
-//     HIDDebug("exit");
-// };
-
 
 TraktorS3.registerInputPackets = function() {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
@@ -1672,37 +1651,37 @@ TraktorS3.deckSwitchHandler = function(field) {
     deck.activateChannel(channel);
 };
 
-TraktorS3.toggleFX = function() {
-    // This is an AND operation.  We go through each channel, and if
-    // the filter button is ON and the fx is ON, we turn the effect ON.
-    // We turn OFF if either is false.
+// TraktorS3.toggleFX = function() {
+//     // This is an AND operation.  We go through each channel, and if
+//     // the filter button is ON and the fx is ON, we turn the effect ON.
+//     // We turn OFF if either is false.
 
-    // The only exception is the Filter effect.  If the channel fxenable
-    // is off, the Filter effect is still automatically enabled.
-    // If the fxenable button is on, the Filter effect is only enabled if
-    // the Filter FX button is enabled.
-    for (var ch = 1; ch <= 4; ch++) {
-        var channel = TraktorS3.Channels["[Channel" + ch + "]"];
-        var chEnabled = channel.fxEnabledState;
-        if (ch === 4 && TraktorS3.channel4InputMode) {
-            chEnabled = TraktorS3.inputFxEnabledState;
-        } else {
-            // There is no quickeffect for the microphone
-            var newState = !chEnabled || TraktorS3.fxButtonState[5];
-            engine.setValue("[QuickEffectRack1_[Channel" + ch + "]]", "enabled",
-                newState);
-        }
-        for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
-            var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
-            var fxKey = "group_[Channel" + ch + "]_enable";
-            newState = chEnabled && TraktorS3.fxButtonState[fxNumber];
-            if (ch === 4 && TraktorS3.channel4InputMode) {
-                fxKey = "group_[Microphone]_enable";
-            }
-            engine.setValue(fxGroup, fxKey, newState);
-        }
-    }
-};
+//     // The only exception is the Filter effect.  If the channel fxenable
+//     // is off, the Filter effect is still automatically enabled.
+//     // If the fxenable button is on, the Filter effect is only enabled if
+//     // the Filter FX button is enabled.
+//     for (var ch = 1; ch <= 4; ch++) {
+//         var channel = TraktorS3.Channels["[Channel" + ch + "]"];
+//         var chEnabled = channel.fxEnabledState;
+//         if (ch === 4 && TraktorS3.channel4InputMode) {
+//             chEnabled = TraktorS3.inputFxEnabledState;
+//         } else {
+//             // There is no quickeffect for the microphone
+//             var newState = !chEnabled || TraktorS3.fxButtonState[5];
+//             engine.setValue("[QuickEffectRack1_[Channel" + ch + "]]", "enabled",
+//                 newState);
+//         }
+//         for (var fxNumber = 1; fxNumber <= 4; fxNumber++) {
+//             var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
+//             var fxKey = "group_[Channel" + ch + "]_enable";
+//             newState = chEnabled && TraktorS3.fxButtonState[fxNumber];
+//             if (ch === 4 && TraktorS3.channel4InputMode) {
+//                 fxKey = "group_[Microphone]_enable";
+//             }
+//             engine.setValue(fxGroup, fxKey, newState);
+//         }
+//     }
+// };
 
 TraktorS3.extModeHandler = function(field) {
     if (!field.value) {
@@ -1948,26 +1927,6 @@ TraktorS3.lightGroup = function(packet, outputGroupName, coGroupName) {
     }
 };
 
-// TraktorS3.lightFX = function() {
-//     for (var ch in TraktorS3.Channels) {
-//         var chanob = TraktorS3.Channels[ch];
-//         if (ch === "[Channel4]" && TraktorS3.channel4InputMode) {
-//             chanob.colorOutput(TraktorS3.inputFxEnabledState, "!fxEnabled");
-//         } else {
-//             chanob.colorOutput(chanob.fxEnabledState, "!fxEnabled");
-//         }
-//     }
-//     for (var fxNumber = 1; fxNumber <= 5; fxNumber++) {
-//         var ledValue = TraktorS3.fxLEDValue[fxNumber];
-//         if (TraktorS3.fxButtonState[fxNumber]) {
-//             ledValue += TraktorS3LEDBrightValue;
-//         } else {
-//             ledValue += TraktorS3LEDDimValue;
-//         }
-//         TraktorS3.controller.setOutput("[ChannelX]", "!fxButton" + fxNumber, ledValue, !TraktorS3.batchingOutputs);
-//     }
-// };
-
 TraktorS3.lightDeck = function(group, sendPackets) {
     if (sendPackets === undefined) {
         sendPackets = true;
@@ -2197,6 +2156,7 @@ TraktorS3.init = function(_id) {
         TraktorS3.lightDeck("[Channel4]", false);
         TraktorS3.lightDeck("[Channel1]", false);
         TraktorS3.lightDeck("[Channel2]", true);
+        TraktorS3.fxController.lightFX();
     }
 
     TraktorS3.setInputLineMode(TraktorS3.inputModeLine);
