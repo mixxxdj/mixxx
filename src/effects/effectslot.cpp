@@ -151,8 +151,8 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
 }
 
 void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
-    qDebug() << debugString() << "loadEffect"
-             << (pEffect ? pEffect->getManifest()->name() : "(null)");
+    //qDebug() << debugString() << "loadEffect"
+    //         << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
         m_pEffect = pEffect;
         m_pControlLoaded->forceSet(1.0);
