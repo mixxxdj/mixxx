@@ -11,7 +11,9 @@ import typing
 import githelper
 
 
-def run_codespell_on_lines(rootdir, filename, lines, codespell_args):
+def run_codespell_on_lines(
+    rootdir, filename, lines, codespell_args, ignore_matches
+):
     """
     Run codespell on the requested lines.
 
@@ -30,35 +32,30 @@ def run_codespell_on_lines(rootdir, filename, lines, codespell_args):
 
     result = 0
     for line in output.splitlines():
-        matched_fname_with_line = line.partition(": ")[0]
+        matched_fname_with_line, _, content = line.partition(": ")
         matched_fname, _, linenum = matched_fname_with_line.rpartition(":")
         assert matched_fname == filename
-        if int(linenum) in lines:
-            result = 1
-            print(line)
+        if int(linenum) not in lines:
+            continue
+
+        match, _, suggestions = content.partition("==>")
+        print(match, ignore_matches)
+        if match.strip() in ignore_matches:
+            continue
+
+        result = 1
+        print(line)
 
     return result
 
 
-def make_ignore_regex(fp, ignore_regex):
-    parts = []
-
+def get_ignore_matches(fp):
     for line in fp:
         content, sep, comment = line.partition("#")
         content = content.strip()
         if not content:
             continue
-        parts.append(content)
-
-    word_regex = r"\W(?:{})\W".format(
-        "|".join("(?:{})".format(part) for part in parts)
-    )
-    if not ignore_regex:
-        return word_regex
-
-    return r"(?:{words}|{pattern})".format(
-        words=word_regex, pattern=ignore_regex
-    )
+        yield content
 
 
 def main(argv: typing.Optional[typing.List[str]] = None) -> int:
@@ -66,12 +63,9 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     parser.add_argument("--from-ref", help="use changes changes since commit")
     parser.add_argument("--to-ref", help="use changes until commit")
     parser.add_argument(
-        "--ignore-regex", help="patterns to treat as whitespace"
-    )
-    parser.add_argument(
         "--ignore-file",
         type=argparse.FileType("r"),
-        help="ignore word regex (one per line)",
+        help="ignore matches (one per line)",
     )
     parser.add_argument("--files", nargs="*", help="only check these files")
     parser.add_argument(
@@ -94,14 +88,6 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             "PRE_COMMIT_ORIGIN"
         )
 
-    if args.ignore_file:
-        codespell_args.extend(
-            [
-                "--ignore-regex",
-                make_ignore_regex(args.ignore_file, args.ignore_regex),
-            ]
-        )
-
     # Filter filenames
     rootdir = githelper.get_toplevel_path()
 
@@ -111,6 +97,10 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
         filter_lines=lambda line: line.added,
         include_files=args.files,
     )
+
+    ignore_matches = set()
+    if args.ignore_file:
+        ignore_matches = set(get_ignore_matches(args.ignore_file))
 
     result = 0
     for filename, file_lines in itertools.groupby(
@@ -122,6 +112,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             filename,
             lines,
             [arg for arg in codespell_args if arg != "--"],
+            ignore_matches,
         )
 
     return result
