@@ -299,13 +299,9 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
 
     // Press fx2 and enable2, focus third effect (channel 2 button is third button)
     evaluate(
-            "HIDDebug('1');"
             "TestOb.fxc.fxSelectHandler(pressFx2);"
-            "HIDDebug('2');"
             "TestOb.fxc.fxEnableHandler(pressFxEnable2);"
-            "HIDDebug('3');"
             "TestOb.fxc.fxEnableHandler(unpressFxEnable2);"
-            "HIDDebug('4');"
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
     EXPECT_EQ(3,

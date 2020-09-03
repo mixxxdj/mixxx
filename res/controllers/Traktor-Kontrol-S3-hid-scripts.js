@@ -1161,7 +1161,6 @@ TraktorS3.FXControl.prototype.registerInputs = function(messageShort, messageLon
 TraktorS3.FXControl.prototype.channelToIndex = function(group) {
     var result = group.match(script.channelRegEx);
     if (result === null) {
-        HIDDebug("barf " + group);
         return undefined;
     }
     // Unmap from channel number to button index.
@@ -1230,7 +1229,6 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     if (!field.value) {
         if (fxNumber === this.activeFX) {
             if (this.currentState === this.STATE_EFFECT) {
-                HIDDebug("unpress back to filter!");
                 this.changeState(this.STATE_FILTER);
             } else if (this.currentState === this.STATE_EFFECT_INIT) {
                 this.changeState(this.STATE_EFFECT);
@@ -1288,7 +1286,6 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
 };
 
 TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
-    // HIDDebug("we are here: " + field.group + " " + field.value);
     this.enablePressed[field.group] = field.value;
 
     if (!field.value) {
@@ -1305,17 +1302,12 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
         // Fallthrough intended
     case this.STATE_EFFECT:
         if (this.firstPressedSelect()) {
-            HIDDebug("change to focus");
             // Choose the first pressed select button only.
             this.changeState(this.STATE_FOCUS);
-            HIDDebug("focusing " + fxGroupPrefix + " " + buttonNumber);
-            // var focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
             engine.setValue(fxGroupPrefix + "]", "focused_effect", buttonNumber);
         } else {
-            HIDDebug("effect togg? " + field.group);
             var group = fxGroupPrefix + "_Effect" + buttonNumber + "]";
             var key = "enabled";
-            HIDDebug("toggling " + group + " " + key);
             script.toggleControl(group, key);
         }
         break;
@@ -1323,7 +1315,6 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
         var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
         group = fxGroupPrefix + "_Effect" + focusedEffect + "]";
         key = "button_parameter" + buttonNumber;
-        HIDDebug("toggling " + group + " " + key);
         script.toggleControl(group, key);
         break;
     }
@@ -1331,14 +1322,12 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
 };
 
 TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
-    // HIDDebug("FX KNOB " + field.group + " " + field.name + " " + field.value);
     var value = field.value / 4095.;
     var fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
     var knobIdx = this.channelToIndex(field.group);
 
     switch (this.currentState) {
     case this.STATE_FILTER:
-        // HIDDebug("filter");
         if (field.group === "[Channel4]" && TraktorS3.channel4InputMode) {
             // There is no quickeffect for the microphone, do nothing.
             return;
@@ -1348,7 +1337,6 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
     case this.STATE_EFFECT_INIT:
         // Fallthrough intended
     case this.STATE_EFFECT:
-        // HIDDebug("effect");
         if (knobIdx === 4) {
             engine.setParameter(fxGroupPrefix + "]", "mix", value);
         } else {
@@ -1430,7 +1418,6 @@ TraktorS3.FXControl.prototype.lightSelect = function(idx) {
                     fxKey = "group_" + pressed + "_enable";
                 }
                 if (engine.getParameter(fxGroup, fxKey)) {
-                    HIDDebug("bright! " + fxGroup + " " + fxKey);
                     status = this.LIGHT_BRIGHT;
                 } else {
                     status = this.LIGHT_OFF;
