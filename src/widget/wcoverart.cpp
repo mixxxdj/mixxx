@@ -265,7 +265,11 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
             m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
-        } else {
+        } else if (!m_loadedCover.isNull()) {
+            // Only show the fullsize cover art dialog if the current track
+            // actually has a cover.  The `init` method already shows the
+            // window and then emits a signal to load the cover, so this can't
+            // be handled by the method itself.
             m_pDlgFullSize->init(m_loadedTrack);
         }
     } // else it was a long leftclick or a right click that's already been processed
