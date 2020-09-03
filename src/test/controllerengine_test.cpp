@@ -66,9 +66,11 @@ TEST_F(ControllerEngineTest, setValue) {
 }
 
 TEST_F(ControllerEngineTest, getValue_InvalidKey) {
+    ControllerDebug::disable();
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', '');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', 'invalid');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Invalid]', '');"));
+    ControllerDebug::enable();
 }
 
 TEST_F(ControllerEngineTest, setValue_InvalidControl) {

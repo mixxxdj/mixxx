@@ -20,8 +20,8 @@ namespace {
 
 class DirectoryDAOTest : public LibraryTest {
   protected:
-    void SetUp() override {
-        m_supportedFileExt = "." % SoundSourceProxy::getSupportedFileExtensions().first();
+    DirectoryDAOTest()
+            : m_supportedFileExt("." % SoundSourceProxy::getSupportedFileExtensions().first()) {
     }
 
     void TearDown() override {
@@ -35,7 +35,7 @@ class DirectoryDAOTest : public LibraryTest {
         query.exec();
     }
 
-    QString m_supportedFileExt;
+    const QString m_supportedFileExt;
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {

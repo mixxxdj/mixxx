@@ -206,7 +206,7 @@ bool SeratoBeatGrid::parseID3(
 
     if (numMarkers <= 0) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                          << "Expected at leat one marker, but found"
+                          << "Expected at least one marker, but found"
                           << numMarkers;
         return false;
     }
@@ -395,7 +395,7 @@ QByteArray SeratoBeatGrid::dumpID3() const {
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
     stream << kVersion << numMarkers;
-    for (const SeratoBeatGridNonTerminalMarkerPointer pMarker : m_nonTerminalMarkers) {
+    for (const SeratoBeatGridNonTerminalMarkerPointer& pMarker : m_nonTerminalMarkers) {
         stream.writeRawData(pMarker->dumpID3(), kMarkerSizeID3);
     }
     stream.writeRawData(m_pTerminalMarker->dumpID3(), kMarkerSizeID3);
@@ -419,13 +419,13 @@ QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
 
 QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
     return dbg << "SeratoBeatGridTerminalMarker"
-               << "PositionMillis =" << arg.positionSecs()
+               << "PositionSecs =" << arg.positionSecs()
                << "BPM =" << arg.bpm();
 }
 
 QDebug operator<<(QDebug dbg, const SeratoBeatGridNonTerminalMarker& arg) {
     return dbg << "SeratoBeatGridNonTerminalMarker"
-               << "PositionMillis =" << arg.positionSecs()
+               << "PositionSecs =" << arg.positionSecs()
                << "BeatTillNextMarker = " << arg.beatsTillNextMarker();
 }
 

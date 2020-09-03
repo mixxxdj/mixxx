@@ -38,12 +38,23 @@
           <TextColor>#000000</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
+        <Mark>
+          <Control>cue_point</Control>
+          <Pixmap>image/marker_cue.png</Pixmap>
+          <Text>CUE</Text>
+          <Align>bottom</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!-- Loop -->
         <MarkRange>
           <StartControl>loop_start_position</StartControl>
           <EndControl>loop_end_position</EndControl>
           <EnabledControl>loop_enabled</EnabledControl>
           <Color>#00FF00</Color>
+          <Opacity>0.8</Opacity>
           <DisabledColor>#FFFFFF</DisabledColor>
+          <DisabledOpacity>0.5</DisabledOpacity>
         </MarkRange>
         <Mark>
           <Control>loop_start_position</Control>
@@ -61,63 +72,59 @@
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
+        <!-- Intro -->
         <MarkRange>
           <StartControl>intro_start_position</StartControl>
           <EndControl>intro_end_position</EndControl>
-          <Color>#0000FF</Color>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-        </MarkRange>
-        <MarkRange>
-          <StartControl>outro_start_position</StartControl>
-          <EndControl>outro_end_position</EndControl>
           <Color>#0000FF</Color>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Opacity>0.1</Opacity>
         </MarkRange>
         <Mark>
           <Control>intro_start_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>|&#9698;</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
         </Mark>
         <Mark>
           <Control>intro_end_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>&#9698;|</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
         </Mark>
+        <!-- Outro -->
+        <MarkRange>
+          <StartControl>outro_start_position</StartControl>
+          <EndControl>outro_end_position</EndControl>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Color>#0000FF</Color>
+          <Opacity>0.1</Opacity>
+        </MarkRange>
         <Mark>
           <Control>outro_start_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>|&#9699;</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
         </Mark>
         <Mark>
           <Control>outro_end_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>&#9699;|</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
         </Mark>
         <!--
         The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
         - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
         - if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
         -->
-        <Mark>
-          <Control>cue_point</Control>
-          <Pixmap>image/marker_cue.png</Pixmap>
-          <Text>CUE</Text>
-          <Align>bottom</Align>
-          <Color>#FF001C</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
       </Visual>
 
       <WidgetGroup>
