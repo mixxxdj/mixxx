@@ -75,15 +75,20 @@ class TraktorS3Test : public ControllerTest {
                 "  return TestOb.shiftPressed;"
                 "}");
 
-        // Mock out controller for testing lights
+        // Mock out functions and controller for testing lights
         evaluate(
-                "TraktorS3.FXControl.prototype.getFXSelectLEDValue = "
-                "function(fxNumber, status) {"
+                "TraktorS3.FXControl.prototype.getFXSelectLEDValue = function(fxNumber, status) {"
                 "  return fxNumber*10 + status;"
                 "};"
-                "TraktorS3.FXControl.prototype.getChannelColor = "
-                "function(group, status) {"
+                "TraktorS3.FXControl.prototype.getChannelColor = function(group, status) {"
                 "  return this.channelToIndex(group)*10 + status;"
+                "};"
+                // stub out state changer so we don't do time-based blinking
+                "TraktorS3.FXControl.prototype.changeState = function(newState) {"
+                "  this.currentState = newState;"
+                "};"
+                "var setBlink = function(state) { "
+                "  TestOb.fxc.controller.focusBlinkState = state;"
                 "};"
                 "TestOb.fxc.controller = new function() {"
                 "  this.lightMap = {}; "
@@ -91,7 +96,7 @@ class TraktorS3Test : public ControllerTest {
                 "    if (!(group in this.lightMap)) {"
                 "      this.lightMap[group] = {};"
                 "    }"
-                "    HIDDebug('light: ' + group + ' ' + key + ' ' + value);"
+                // "    HIDDebug('light: ' + group + ' ' + key + ' ' + value);"
                 "    this.lightMap[group][key] = value;"
                 "  };"
                 "};"
@@ -99,8 +104,8 @@ class TraktorS3Test : public ControllerTest {
                 "  if (!(group in TestOb.fxc.controller.lightMap)) {"
                 "    return undefined;"
                 "  }"
-                " HIDDebug('whats the frequency ' + group + ' ' + key + ' ' + "
-                "TestOb.fxc.controller.lightMap[group][key]);"
+                // " HIDDebug('whats the frequency ' + group + ' ' + key + ' ' + "
+                // "TestOb.fxc.controller.lightMap[group][key]);"
                 "  return TestOb.fxc.controller.lightMap[group][key];"
                 "};");
     }
@@ -175,6 +180,7 @@ class TraktorS3Test : public ControllerTest {
 
     enum states {
         STATE_FILTER,
+        STATE_EFFECT_INIT,
         STATE_EFFECT,
         STATE_FOCUS
     };
@@ -221,7 +227,7 @@ TEST_F(TraktorS3Test, FXSelectButtonSimple) {
         CheckSelectLights({0, 10, 22, 30, 40});
         CheckEnableLights({21, 21, 20, 20});
     }
-    EXPECT_EQ(STATE_EFFECT, evaluate("getState();").toInt32());
+    EXPECT_EQ(STATE_EFFECT_INIT, evaluate("getState();").toInt32());
     EXPECT_EQ(2, evaluate("getActiveFx();").toInt32());
 
     // Now unpress select and release
@@ -293,9 +299,13 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
 
     // Press fx2 and enable2, focus third effect (channel 2 button is third button)
     evaluate(
+            "HIDDebug('1');"
             "TestOb.fxc.fxSelectHandler(pressFx2);"
+            "HIDDebug('2');"
             "TestOb.fxc.fxEnableHandler(pressFxEnable2);"
+            "HIDDebug('3');"
             "TestOb.fxc.fxEnableHandler(unpressFxEnable2);"
+            "HIDDebug('4');"
             "TestOb.fxc.fxSelectHandler(unpressFx2);");
     EXPECT_EQ(STATE_FOCUS, evaluate("getState();").toInt32());
     EXPECT_EQ(3,
@@ -307,6 +317,11 @@ TEST_F(TraktorS3Test, FXSelectFocusToggle) {
         SCOPED_TRACE("");
         CheckSelectLights({0, 10, 22, 30, 40});
         CheckEnableLights({20, 20, 20, 20});
+    }
+    evaluate("setBlink(true);");
+    {
+        SCOPED_TRACE("");
+        CheckSelectLights({0, 10, 21, 30, 40});
     }
 
     // Press again, back to effect mode
@@ -558,15 +573,26 @@ TEST_F(TraktorS3Test, FocusModeFXEnable) {
         CheckEnableLights({20, 20, 20, 20});
         CheckSelectLights({0, 10, 22, 30, 40});
     }
+    evaluate("setBlink(true);");
+    {
+        SCOPED_TRACE("");
+        CheckSelectLights({0, 10, 22, 31, 40});
+    }
 
     evaluate(
             "TestOb.fxc.fxEnableHandler(pressFxEnable3);"
             "TestOb.fxc.fxEnableHandler(unpressFxEnable3);");
 
-    // Effect Unit 1 is toggled
+    // Effect 1 button parameter 1 is toggled
     EXPECT_TRUE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
                                                   "button_parameter1"))
                         ->get());
+    {
+        SCOPED_TRACE("");
+        CheckEnableLights({22, 20, 20, 20});
+        CheckSelectLights({0, 10, 22, 31, 40});
+    }
+    evaluate("setBlink(true);");
     {
         SCOPED_TRACE("");
         CheckEnableLights({22, 20, 20, 20});
@@ -577,7 +603,7 @@ TEST_F(TraktorS3Test, FocusModeFXEnable) {
             "TestOb.fxc.fxEnableHandler(pressFxEnable3);"
             "TestOb.fxc.fxEnableHandler(unpressFxEnable3);");
 
-    // Effect Unit 1 is toggled
+    // Effect button parameter toggled back
     EXPECT_FALSE(ControlObject::getControl(ConfigKey("[EffectRack1_EffectUnit2_Effect1]",
                                                    "button_parameter1"))
                          ->get());

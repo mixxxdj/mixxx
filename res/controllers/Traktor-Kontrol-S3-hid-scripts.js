@@ -1121,8 +1121,11 @@ TraktorS3.FXControl = function() {
 
     // States
     this.STATE_FILTER = 0;
-    this.STATE_EFFECT = 1;
-    this.STATE_FOCUS = 2;
+    // State for when an effect select has been pressed, but not released yet.
+    this.STATE_EFFECT_INIT = 1;
+    // State for when an effect select has been pressed and released.
+    this.STATE_EFFECT = 2;
+    this.STATE_FOCUS = 3;
 
     this.currentState = this.STATE_FILTER;
 
@@ -1130,6 +1133,9 @@ TraktorS3.FXControl = function() {
     this.LIGHT_OFF = 0;
     this.LIGHT_DIM = 1;
     this.LIGHT_BRIGHT = 2;
+
+    this.focusBlinkState = false;
+    this.focusBlinkTimer = 0;
 };
 
 TraktorS3.FXControl.prototype.registerInputs = function(messageShort, messageLong) {
@@ -1199,12 +1205,37 @@ TraktorS3.FXControl.prototype.anyEnablePressed = function() {
     return false;
 };
 
+TraktorS3.FXControl.prototype.changeState = function(newState) {
+    if (newState === this.currentState) {
+        return;
+    }
+    var oldState = this.currentState;
+    this.currentState = newState;
+    if (oldState === this.STATE_FOCUS) {
+        engine.stopTimer(this.focusBlinkTimer);
+        this.focusBlinkTimer = 0;
+    }
+    if (newState === this.STATE_FOCUS) {
+        this.focusBlinkTimer = engine.beginTimer(150, function() {
+            this.focusBlinkState = !this.focusBlinkState;
+            this.lightFX();
+        }, false);
+    }
+};
+
 TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     var fxNumber = parseInt(field.name[field.name.length - 1]);
     this.selectPressed[fxNumber] = field.value;
 
     if (!field.value) {
-        // do lights?
+        if (fxNumber === this.activeFX) {
+            if (this.currentState === this.STATE_EFFECT) {
+                HIDDebug("unpress back to filter!");
+                this.changeState(this.STATE_FILTER);
+            } else if (this.currentState === this.STATE_EFFECT_INIT) {
+                this.changeState(this.STATE_EFFECT);
+            }
+        }
         this.lightFX();
         return;
     }
@@ -1213,34 +1244,42 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     case this.STATE_FILTER:
         // If any fxEnable button is pressed, we are toggling fx unit assignment.
         if (this.anyEnablePressed()) {
-            var fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
             for (var key in this.enablePressed) {
                 if (this.enablePressed[key]) {
-                    var fxKey = "group_" + key + "_enable";
-                    // HIDDebug("key? " + fxGroup + " " + fxKey);
+                    if (fxNumber === 0) {
+                        var fxGroup = "[QuickEffectRack1_" + key + "_Effect1]";
+                        var fxKey = "enabled";
+                    } else {
+                        fxGroup = "[EffectRack1_EffectUnit" + fxNumber + "]";
+                        fxKey = "group_" + key + "_enable";
+                    }
                     script.toggleControl(fxGroup, fxKey);
                 }
             }
         } else {
-            // If we push filter and filter is already pushed, do nothing.
             if (fxNumber === 0) {
-                this.currentState = this.STATE_FILTER;
+                this.changeState(this.STATE_FILTER);
             } else {
-                // Select this filter instead.
-                // initiate state change
-                // this.activateState(this.STATE_EFFECT, fxNumber);
-                this.currentState = this.STATE_EFFECT;
+                this.changeState(this.STATE_EFFECT_INIT);
             }
             this.activeFX = fxNumber;
         }
         break;
-    case this.STATE_EFFECT:
+    case this.STATE_EFFECT_INIT:
         // Fallthrough intended
+    case this.STATE_EFFECT:
+        if (fxNumber === 0) {
+            this.changeState(this.STATE_FILTER);
+        } else if (fxNumber !== this.activeFX) {
+            this.changeState(this.STATE_EFFECT_INIT);
+        }
+        this.activeFX = fxNumber;
+        break;
     case this.STATE_FOCUS:
         if (fxNumber === 0) {
-            this.currentState = this.STATE_FILTER;
+            this.changeState(this.STATE_FILTER);
         } else {
-            this.currentState = this.STATE_EFFECT;
+            this.changeState(this.STATE_EFFECT_INIT);
         }
         this.activeFX = fxNumber;
         break;
@@ -1253,7 +1292,6 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
     this.enablePressed[field.group] = field.value;
 
     if (!field.value) {
-        // do lights?
         this.lightFX();
         return;
     }
@@ -1263,11 +1301,13 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
     switch (this.currentState) {
     case this.STATE_FILTER:
         break;
+    case this.STATE_EFFECT_INIT:
+        // Fallthrough intended
     case this.STATE_EFFECT:
         if (this.firstPressedSelect()) {
             HIDDebug("change to focus");
             // Choose the first pressed select button only.
-            this.currentState = this.STATE_FOCUS;
+            this.changeState(this.STATE_FOCUS);
             HIDDebug("focusing " + fxGroupPrefix + " " + buttonNumber);
             // var focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
             engine.setValue(fxGroupPrefix + "]", "focused_effect", buttonNumber);
@@ -1305,6 +1345,8 @@ TraktorS3.FXControl.prototype.fxKnobHandler = function(field) {
         }
         engine.setParameter("[QuickEffectRack1_" + field.group + "]", "super1", value);
         break;
+    case this.STATE_EFFECT_INIT:
+        // Fallthrough intended
     case this.STATE_EFFECT:
         // HIDDebug("effect");
         if (knobIdx === 4) {
@@ -1327,9 +1369,9 @@ TraktorS3.FXControl.prototype.getFXSelectLEDValue = function(fxNumber, status) {
     var ledValue = TraktorS3.fxLEDValue[fxNumber];
     switch (status) {
     case this.LIGHT_OFF:
-        return ledValue;
+        return 0x00;
     case this.LIGHT_DIM:
-        return ledValue + 0x01;
+        return ledValue;
     case this.LIGHT_BRIGHT:
         return ledValue + 0x02;
     }
@@ -1339,9 +1381,9 @@ TraktorS3.FXControl.prototype.getChannelColor = function(group, status) {
     var ledValue = TraktorS3.controller.LEDColors[TraktorS3ChannelColors[group]];
     switch (status) {
     case this.LIGHT_OFF:
-        return ledValue;
+        return 0x00;
     case this.LIGHT_DIM:
-        return ledValue + 0x01;
+        return ledValue;
     case this.LIGHT_BRIGHT:
         return ledValue + 0x02;
     }
@@ -1357,7 +1399,7 @@ TraktorS3.FXControl.prototype.lightFX = function() {
     }
     for (var ch = 1; ch <= 4; ch++) {
         var channel = "[Channel" + ch + "]";
-        this.lightEnabled(channel);
+        this.lightEnable(channel);
     }
 
     TraktorS3.batchingOutputs = false;
@@ -1375,30 +1417,30 @@ TraktorS3.FXControl.prototype.lightSelect = function(idx) {
         if (this.selectPressed[idx]) {
             status = this.LIGHT_BRIGHT;
         } else {
-            if (idx === 0) {
-                // Filter select button highlighted in filter mode unless any enable is pressed
-                if (!this.anyEnablePressed()) {
-                    status = this.LIGHT_BRIGHT;
+            // select buttons on if fx unit enabled for the pressed channel,
+            // otherwise disabled.
+            status = this.LIGHT_DIM;
+            var pressed = this.firstPressedEnable();
+            if (pressed) {
+                if (idx === 0) {
+                    var fxGroup = "[QuickEffectRack1_" + pressed + "_Effect1]";
+                    var fxKey = "enabled";
+                } else {
+                    fxGroup = "[EffectRack1_EffectUnit" + idx + "]";
+                    fxKey = "group_" + pressed + "_enable";
                 }
-            } else {
-                // select buttons on if fx unit enabled for the pressed channel,
-                // otherwise disabled.
-                status = this.LIGHT_DIM;
-                var pressed = this.firstPressedEnable();
-                if (pressed) {
-                    var fxGroup = "[EffectRack1_EffectUnit" + idx + "]";
-                    var fxKey = "group_" + pressed + "_enable";
-                    if (engine.getParameter(fxGroup, fxKey)) {
-                        HIDDebug("bright! " + fxGroup + " " + fxKey);
-                        status = this.LIGHT_BRIGHT;
-                    } else {
-                        status = this.LIGHT_OFF;
-                    }
+                if (engine.getParameter(fxGroup, fxKey)) {
+                    HIDDebug("bright! " + fxGroup + " " + fxKey);
+                    status = this.LIGHT_BRIGHT;
+                } else {
+                    status = this.LIGHT_OFF;
                 }
             }
             ledValue = this.getFXSelectLEDValue(idx, status);
         }
         break;
+    case this.STATE_EFFECT_INIT:
+        // Fallthrough intended
     case this.STATE_EFFECT:
         // Highlight if pressed, disable if active effect.
         // Otherwise off.
@@ -1409,11 +1451,22 @@ TraktorS3.FXControl.prototype.lightSelect = function(idx) {
         }
         break;
     case this.STATE_FOCUS:
-        // TODO: Blink for focused effect
+        // if blink state is false, only like active fx bright
+        // if blink state is true, active fx is bright and selected effect
+        // is dim.  if those are the same, active fx is dim
         if (this.selectPressed[idx]) {
             status = this.LIGHT_BRIGHT;
-        } else if (idx === this.activeFX) {
-            status = this.LIGHT_BRIGHT;
+        } else {
+            if (idx === this.activeFX) {
+                status = this.LIGHT_BRIGHT;
+            }
+            if (this.focusBlinkState) {
+                var fxGroupPrefix = "[EffectRack1_EffectUnit" + this.activeFX;
+                var focusedEffect = engine.getValue(fxGroupPrefix + "]", "focused_effect");
+                if (idx === focusedEffect) {
+                    status = this.LIGHT_DIM;
+                }
+            }
         }
         break;
     }
@@ -1421,7 +1474,7 @@ TraktorS3.FXControl.prototype.lightSelect = function(idx) {
     this.controller.setOutput("[ChannelX]", "!fxButton" + idx, ledValue, false);
 };
 
-TraktorS3.FXControl.prototype.lightEnabled = function(channel) {
+TraktorS3.FXControl.prototype.lightEnable = function(channel) {
     var status = this.LIGHT_OFF;
     var ledValue = 0x00;
     var buttonNumber = this.channelToIndex(channel);
@@ -1429,6 +1482,7 @@ TraktorS3.FXControl.prototype.lightEnabled = function(channel) {
     case this.STATE_FILTER:
         // enable buttons highlighted if pressed or if any fx unit enabled for channel.
         // Highlight if pressed.
+        status = this.LIGHT_DIM;
         if (this.enablePressed[channel]) {
             status = this.LIGHT_BRIGHT;
         } else {
@@ -1443,6 +1497,8 @@ TraktorS3.FXControl.prototype.lightEnabled = function(channel) {
         // Enable buttons have regular deck colors
         ledValue = this.getChannelColor(channel, status);
         break;
+    case this.STATE_EFFECT_INIT:
+        // Fallthrough intended
     case this.STATE_EFFECT:
         if (this.enablePressed[channel]) {
             status = this.LIGHT_BRIGHT;
