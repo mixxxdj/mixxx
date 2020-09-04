@@ -224,18 +224,16 @@ inline uint qHash(const QList<T>& key, uint seed = 0) {
 /// *For legacy code only - Do not use for new code!*
 template <typename T>
 inline void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
-    int initialListSize = pList->size();
-    VERIFY_OR_DEBUG_ASSERT(initialListSize >= index) {
-        while (pList->size() < index) {
-               pList->append(T());
+    VERIFY_OR_DEBUG_ASSERT(index <= pList->size()) {
+        qWarning() << "listAppendOrReplaceAt: Padding list with"
+                   << (index - pList->size()) << "default elements";
+        while (index > pList->size()) {
+            pList->append(T());
         }
-        qWarning() << "listAppendOrReplaceAt: Filled list with"
-                   << (pList->size() - initialListSize) << "default elements";
     }
-    VERIFY_OR_DEBUG_ASSERT(pList->size() == index) {
+    VERIFY_OR_DEBUG_ASSERT(index == pList->size()) {
         pList->replace(index, value);
         return;
     }
     pList->append(value);
-    DEBUG_ASSERT(pList->size() == index + 1);
 }
