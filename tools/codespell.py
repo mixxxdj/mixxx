@@ -39,7 +39,6 @@ def run_codespell_on_lines(
             continue
 
         match, _, suggestions = content.partition("==>")
-        print(match, ignore_matches)
         if match.strip() in ignore_matches:
             continue
 
