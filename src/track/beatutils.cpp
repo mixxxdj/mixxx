@@ -58,9 +58,9 @@ QMap<int, double> BeatUtils::findStableTempoRegions(
     auto sortedTempoList = tempoList;
     std::sort(sortedTempoList.begin(), sortedTempoList.end());
     // We have to make sure we have odd numbers here because we are going
-    // to compute the median value and it must belong to frequencyOfTempos
-    // the median is only used as rough guess of the tempo so its ok that
-    // we accidently change the median by popping the last value.
+    // to compute the median value and it must belong to frequencyOfTempos.
+    // The median is only used as rough guess of the tempo so it's ok that
+    // we accidentally change the median by popping the last value.
     if (sortedTempoList.size() % 2 == 0 && sortedTempoList.size() > 1) {
         sortedTempoList.pop_back();
     }
@@ -313,7 +313,7 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
 QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
         const QVector<double> beats, int windowSize, const int windowStep,
         const int sampleRate, QMap<double, int>* pFrequencyHistogram) {
-    DEBUG_ASSERT(pFrequencyHistogram != NULL);
+    DEBUG_ASSERT(pFrequencyHistogram);
     // avoid out of range access case beats with small
     while (beats.size() - 1 < windowSize * 2) {
         windowSize /= 2;
