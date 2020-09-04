@@ -90,7 +90,7 @@ DlgAutoDJ::DlgAutoDJ(
     setupActionButton(pushButtonFadeNow, &DlgAutoDJ::fadeNowButton, tr("Fade"));
     setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
     setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton, tr("Shuffle"));
-    setupActionButton(pushButtonAddRandom, &DlgAutoDJ::addRandomButton, tr("Random"));
+    setupActionButton(pushButtonAddRandomTrack, &DlgAutoDJ::addRandomTrackButton, tr("Random"));
 
     m_enableBtnTooltip = tr(
             "Enable Auto DJ\n"
@@ -112,7 +112,7 @@ DlgAutoDJ::DlgAutoDJ(
             "Shuffle the content of the Auto DJ queue\n"
             "\n"
             "Shortcut: Shift+F9");
-    QString addRandomBtnTooltip = tr(
+    QString addRandomTrackBtnTooltip = tr(
             "Adds a random track from track sources (crates) to the Auto DJ queue.\n"
             "If no track sources are configured, the track is added from the library instead.");
     QString repeatBtnTooltip = tr(
@@ -149,7 +149,7 @@ DlgAutoDJ::DlgAutoDJ(
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
     pushButtonShuffle->setToolTip(shuffleBtnTooltip);
-    pushButtonAddRandom->setToolTip(addRandomBtnTooltip);
+    pushButtonAddRandomTrack->setToolTip(addRandomTrackBtnTooltip);
     pushButtonRepeatPlaylist->setToolTip(repeatBtnTooltip);
     spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
     labelTransitionAppendix->setToolTip(labelTransitionTooltip);
@@ -320,7 +320,7 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         }
 
         // You can always skip the next track if we are enabled.
-        pushButtonSkipNext->setEnabled(true);
+        pushButtonSkipNext->setEnabled(true);   
     }
 }
 

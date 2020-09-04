@@ -133,6 +133,11 @@ AutoDJProcessor::AutoDJProcessor(
     connect(m_pSkipNext, &ControlObject::valueChanged,
             this, &AutoDJProcessor::controlSkipNext);
 
+    m_pAddRandomTrack = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "add_random_track"));
+    connect(m_pAddRandomTrack, &ControlObject::valueChanged,
+            this, &AutoDJProcessor::controlAddRandomTrack);
+
     m_pFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
     connect(m_pFadeNow, &ControlObject::valueChanged,
@@ -183,6 +188,7 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pCOCrossfaderReverse;
 
     delete m_pSkipNext;
+    delete m_pAddRandomTrack;
     delete m_pShufflePlaylist;
     delete m_pEnabledAutoDJ;
     delete m_pFadeNow;
@@ -575,6 +581,12 @@ void AutoDJProcessor::controlShuffle(double value) {
 void AutoDJProcessor::controlSkipNext(double value) {
     if (value > 0.0) {
         skipNext();
+    }
+}
+
+void AutoDJProcessor::controlAddRandomTrack(double value) {
+    if (value > 0.0) {
+        emit randomTrackRequested(1);
     }
 }
 

@@ -1867,7 +1867,7 @@ QPushButton#pushButtonShuffle:enabled {
   image: url(skin:/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
   }
 
-QPushButton#pushButtonAddRandom:enabled {
+QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skin:/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
   }
 
