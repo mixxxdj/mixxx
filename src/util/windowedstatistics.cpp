@@ -8,10 +8,21 @@ void MovingMode::update(double newValue, double oldValue) {
     // Our update window method returns a nan
     // case the window is not filled yet
     if (!isnan(oldValue)) {
-        m_frequencyOfValues[oldValue] -= 1;
+        countValue(oldValue, -1);
     }
-    m_frequencyOfValues[newValue] += 1;
+    countValue(newValue, +1);
 }
+
+void MovingMode::countValue(double value, int count) {
+    int stepNumber = static_cast<int>(std::round(value / m_stepSize));
+    auto it = m_frequencyOfValues.find(stepNumber);
+    if (it != m_frequencyOfValues.end()) {
+        it.value() += count;
+    } else {
+        m_frequencyOfValues.insert(stepNumber, count);
+    }
+}
+
 // this is an incomplete implementation that do NOT
 // handle cases where the mode is not unique.
 double MovingMode::compute() {

@@ -84,7 +84,7 @@ QMap<int, double> BeatUtils::findStableTempoRegions(const QVector<double>& beats
         numberOfBeatsInFilteringWindow += 1;
     }
     auto tempoMedianFilter = MovingMedian(numberOfBeatsInFilteringWindow);
-    auto mostFrequentTempo = MovingMode(numberOfBeatsInFilteringWindow);
+    auto mostFrequentTempo = MovingMode(numberOfBeatsInFilteringWindow, 1.0);
     int currentBeat = -1;
     int lastBeatChange = 0;
     QMap<int, double> stableBeatLenghtByPosition;

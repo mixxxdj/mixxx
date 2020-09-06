@@ -83,8 +83,9 @@ class MovingMedian : public WindowedStatistics {
 
 class MovingMode : public WindowedStatistics {
   public:
-    MovingMode(int windowSize)
-            : WindowedStatistics(windowSize) {
+    MovingMode(int windowSize, double stepSize)
+            : WindowedStatistics(windowSize),
+              m_stepSize(stepSize) {
         m_frequencyOfValues.reserve(windowSize);
     };
     ~MovingMode() = default;
@@ -93,6 +94,8 @@ class MovingMode : public WindowedStatistics {
 
     void update(double, double) override;
     double compute() override;
+    void countValue(double value, int count);
 
     QHash<int, int> m_frequencyOfValues;
+    double m_stepSize;
 };
