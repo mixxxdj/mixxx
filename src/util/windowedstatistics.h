@@ -94,5 +94,5 @@ class MovingMode : public WindowedStatistics {
     void update(double, double) override;
     double compute() override;
 
-    QHash<double, int> m_frequencyOfValues;
+    QHash<int, int> m_frequencyOfValues;
 };
