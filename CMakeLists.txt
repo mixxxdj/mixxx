@@ -1510,7 +1510,7 @@ if(KEYFINDER)
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     ExternalProject_Add(keyfinder
       GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
-      GIT_TAG 9b4440d66789b06483fe5273e06368a381d22707
+      GIT_TAG faa563f0898b3cbfbd2ed0696deebc8a9b0c9af6
       GIT_SHALLOW TRUE
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
