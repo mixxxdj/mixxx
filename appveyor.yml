@@ -225,6 +225,7 @@ for:
       -DBULK=ON
       -DHID=ON
       -DHSS1394=ON
+      -DKEYFINDER=OFF
       -DLOCALECOMPARE=ON
       -DMAD=ON
       -DMEDIAFOUNDATION=ON
