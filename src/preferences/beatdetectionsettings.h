@@ -38,11 +38,7 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(FixedTempoAssumption, bool,
                               BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION, true);
-
-    DEFINE_PREFERENCE_HELPERS(EnableIroning, bool, BPM_CONFIG_KEY, BPM_ENABLE_IRONING, true);
-
-    DEFINE_PREFERENCE_HELPERS(EnableArrythmicRemoval, bool, BPM_CONFIG_KEY, BPM_ENABLE_ARRYTHMIC_REGIONS_REMOVAL, true);
-
+    
     DEFINE_PREFERENCE_HELPERS(FixedTempoOffsetCorrection, bool,
                               BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION, true);
 
@@ -51,6 +47,11 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(FastAnalysis, bool,
                               BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED, false);
+
+    // TODO(xxx) Remove these preferences before 2.4 release
+    DEFINE_PREFERENCE_HELPERS(EnableIroning, bool, BPM_CONFIG_KEY, BPM_ENABLE_IRONING, true);
+
+    DEFINE_PREFERENCE_HELPERS(EnableArrythmicRemoval, bool, BPM_CONFIG_KEY, BPM_ENABLE_ARRYTHMIC_REGIONS_REMOVAL, true);
 
     QString getBeatPluginId() const {
         return m_pConfig->getValue<QString>(ConfigKey(
