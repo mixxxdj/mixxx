@@ -6,6 +6,7 @@ class HotcueControlTest : public BaseSignalPathTest {
     void SetUp() override {
         BaseSignalPathTest::SetUp();
 
+        m_pLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "loop_toggle");
         m_pHotcue1Activate = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_activate");
         m_pHotcue1ActivateCue = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_activatecue");
         m_pHotcue1ActivateLoop = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_activateloop");
@@ -16,6 +17,7 @@ class HotcueControlTest : public BaseSignalPathTest {
         m_pHotcue1EndPosition = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_endposition");
         m_pHotcue1Enabled = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_enabled");
         m_pHotcue1Clear = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_clear");
+        m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
     }
 
     TrackPointer createTestTrack() const {
@@ -51,6 +53,7 @@ class HotcueControlTest : public BaseSignalPathTest {
         ProcessBuffer();
     }
 
+    std::unique_ptr<ControlProxy> m_pLoopToggle;
     std::unique_ptr<ControlProxy> m_pHotcue1Activate;
     std::unique_ptr<ControlProxy> m_pHotcue1ActivateCue;
     std::unique_ptr<ControlProxy> m_pHotcue1ActivateLoop;
@@ -113,6 +116,119 @@ TEST_F(HotcueControlTest, NoTrackLoaded) {
 
     m_pHotcue1ActivateLoop->slotSet(1);
     m_pHotcue1ActivateLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, SetCueAuto) {
+    createAndLoadFakeTrack();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pQuantizeEnabled->slotSet(0);
+    setCurrentSample(100);
+    ProcessBuffer();
+
+    m_pHotcue1Set->slotSet(1);
+    m_pHotcue1Set->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, SetCueManual) {
+    createAndLoadFakeTrack();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pQuantizeEnabled->slotSet(0);
+    setCurrentSample(100);
+    ProcessBuffer();
+
+    m_pHotcue1SetCue->slotSet(1);
+    m_pHotcue1SetCue->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, SetLoopAuto) {
+    createAndLoadFakeTrack();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pChannel1->getEngineBuffer()->setLoop(100, 200, true);
+    ProcessBuffer();
+
+    m_pHotcue1Set->slotSet(1);
+    m_pHotcue1Set->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, SetLoopManual) {
+    createAndLoadFakeTrack();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pChannel1->getEngineBuffer()->setLoop(100, 200, true);
+    ProcessBuffer();
+
+    m_pHotcue1SetLoop->slotSet(1);
+    m_pHotcue1SetLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, LoopStatus) {
+    createAndLoadFakeTrack();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pChannel1->getEngineBuffer()->setLoop(100, 200, true);
+    ProcessBuffer();
+
+    m_pHotcue1SetLoop->slotSet(1);
+    m_pHotcue1SetLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
+
+    // Disable Loop
+    m_pLoopToggle->slotSet(1);
+    m_pLoopToggle->slotSet(0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
+
+    // Re-Enable Loop
+    m_pLoopToggle->slotSet(1);
+    m_pLoopToggle->slotSet(0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
+
+    m_pHotcue1Clear->slotSet(1);
+    m_pHotcue1Clear->slotSet(0);
+    ProcessBuffer();
+
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
