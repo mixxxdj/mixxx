@@ -324,6 +324,8 @@ class CueControl : public EngineControl {
     QMap<QObject*, int> m_controlMap;
 
     QMutex m_mutex;
+
+    friend class HotcueControlTest;
 };
 
 

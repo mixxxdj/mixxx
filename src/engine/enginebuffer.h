@@ -254,6 +254,7 @@ class EngineBuffer : public EngineObject {
     UserSettingsPointer m_pConfig;
 
     friend class CueControlTest;
+    friend class HotcueControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
