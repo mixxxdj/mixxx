@@ -21,10 +21,10 @@ double DescriptiveStatistics::median(const QList<double>& sortedItems) {
 // this is an incomplete implementation that do NOT
 // handle cases where the mode is not unique.
 // but is good enough for our proporses
-double DescriptiveStatistics::mode(const QHash<double, int>& frequencyOfValues) {
-    QHashIterator<double, int> valuesAndFrequency(frequencyOfValues);
+double DescriptiveStatistics::mode(const QHash<int, int>& frequencyOfValues) {
+    QHashIterator<int, int> valuesAndFrequency(frequencyOfValues);
     int max = 0;
-    double mode = 0;
+    int mode = 0;
     while (valuesAndFrequency.hasNext()) {
         valuesAndFrequency.next();
         if (max < valuesAndFrequency.value()) {

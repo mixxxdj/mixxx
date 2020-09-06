@@ -7,5 +7,5 @@ class DescriptiveStatistics {
     // If sequence is even the mean of both middle values.
     static double median(const QList<double>& sortedItems);
     // The mode is most repeated value in a sequence
-    static double mode(const QHash<double, int>& frequencyOfValues);
+    static double mode(const QHash<int, int>& frequencyOfValues);
 };

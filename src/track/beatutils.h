@@ -81,8 +81,8 @@ class BeatUtils {
         const double filterCenter,
         const double filterTolerance,
         QMap<double, int>* filteredFrequencyTable);
-    static QMap<int, double> findStableTempoRegions(
-            const QMap<double, int>& frequencyOfTempos, const QList<double>& tempoList);
+    static QMap<int, double> findStableTempoRegions(const QVector<double>& beats,
+            const mixxx::audio::SampleRate& sampleRate);
     static void removeSmallArrhythmic(QVector<double>& rawBeats,
             const mixxx::audio::SampleRate& sampleRate, const QMap<int, double>& stableTemposByPosition);
     static QVector<double> calculateIronedGrid(
@@ -90,6 +90,7 @@ class BeatUtils {
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
             const QVector<double> beats, int windowSize,
             const int windowStep, const int sampleRate, QMap<double, int>* pFrequencyHistogram);
+    static QVector<double> computeDurationOfEachBeat(const QVector<double>& beats);
 };
 
 #endif /* BEATUTILS_H_ */

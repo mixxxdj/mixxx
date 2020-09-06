@@ -31,7 +31,7 @@ constexpr double kMaxSecsPhaseError = 0.025;
 // computed. Tweaked from 8 to 12 which improves the BPM accuracy for 'problem songs'.
 constexpr int kBeatsToCountTempo = 12;
 
-constexpr int kMinBeatsForChange = 32;
+constexpr int kMaxBeatsForChange = 32;
 
 static bool sDebug = false;
 
@@ -53,24 +53,33 @@ QVector<double> makeQVector(QVector<double>::iterator begin, QVector<double>::it
 } // namespace
 
 
-QMap<int, double> BeatUtils::findStableTempoRegions(
-        const QMap<double, int>& frequencyOfTempos, const QList<double>& tempoList) {
-    auto sortedTempoList = tempoList;
-    std::sort(sortedTempoList.begin(), sortedTempoList.end());
+QMap<int, double> BeatUtils::findStableTempoRegions(const QVector<double>& beats,
+        const mixxx::audio::SampleRate& sampleRate) {
+    
+    QVector<double> durationOfBeats = computeDurationOfEachBeat(beats);
+    auto sortedDurationOfBeats = durationOfBeats.toList();
+    std::sort(sortedDurationOfBeats.begin(), sortedDurationOfBeats.end());
     // We have to make sure we have odd numbers here because we are going
     // to compute the median value and it must belong to frequencyOfTempos.
     // The median is only used as rough guess of the tempo so it's ok that
     // we accidentally change the median by popping the last value.
-    if (sortedTempoList.size() % 2 == 0 && sortedTempoList.size() > 1) {
-        sortedTempoList.pop_back();
+    bool poped = false;
+    double reserveLast = 0.0;
+    if (sortedDurationOfBeats.size() % 2 == 0 && sortedDurationOfBeats.size() > 1) {
+        reserveLast = sortedDurationOfBeats.last();
+        sortedDurationOfBeats.pop_back();
+        poped = true;
     }
-    const double medianBpm = computeSampleMedian(sortedTempoList);
+    const double medianBeatLenght = computeSampleMedian(sortedDurationOfBeats);
+    if (poped) {
+        sortedDurationOfBeats << reserveLast;
+    }
     // Forming a meter perception takes a few seconds, so we assume sections of consistent
     // metrical structure to be at least around 10s long. So we use a window of the double
     // of that in our filtering since changes in the tempo shorter than that are very likely 
     // to be noise from the analyzer. The median filter is good to discard the outliers values
     // but still may fluctatue because of the jitter so we still look for the most frequent median
-    int numberOfBeatsInFilteringWindow = (10 / (60 / medianBpm)) * 2;
+    int numberOfBeatsInFilteringWindow = (10 / (medianBeatLenght / sampleRate)) * 2;
     if (numberOfBeatsInFilteringWindow % 2 == 0) {
         numberOfBeatsInFilteringWindow += 1;
     }
@@ -78,38 +87,42 @@ QMap<int, double> BeatUtils::findStableTempoRegions(
     auto mostFrequentTempo = MovingMode(numberOfBeatsInFilteringWindow);
     int currentBeat = -1;
     int lastBeatChange = 0;
-    QMap<int, double> stableTemposByPosition;
+    QMap<int, double> stableBeatLenghtByPosition;
     // We start at beat 0 with the median bpm as rough guess of the "correct" tempo
-    stableTemposByPosition[lastBeatChange] = medianBpm;
+    stableBeatLenghtByPosition[lastBeatChange] = medianBeatLenght;
     // Here we are going to track the significant tempo changes over the track to make
     // regions of stable tempos and independently make const tempo or ironed grid for them
-    for (double tempo : tempoList) {
+    for (double beatLenght : durationOfBeats) {
         currentBeat += 1;
-        double filteredTempo = tempoMedianFilter.pushAndEvaluate(tempo);
-        double newStableTempo = mostFrequentTempo.pushAndEvaluate(filteredTempo);
+        double filteredBeatLenght = tempoMedianFilter.pushAndEvaluate(beatLenght);
+        double newStableBeatLenght = mostFrequentTempo.pushAndEvaluate(filteredBeatLenght);
         // The analyzer has some jitter that causes a steady beat to fluctuate around the correct
         // value so we don't consider changes to a neighboring value in the ordered tempo table
-        if (newStableTempo == stableTemposByPosition.last()) {
+        if (newStableBeatLenght == stableBeatLenghtByPosition.last()) {
             continue;
         // Check if the new tempo is the right neighbor of the previous tempo
-        } else if (stableTemposByPosition.last() != frequencyOfTempos.lastKey() &&
-                newStableTempo == (frequencyOfTempos.find(stableTemposByPosition.last()) + 1).key()) {
+        } else if (stableBeatLenghtByPosition.last() != sortedDurationOfBeats.last() &&
+                newStableBeatLenght == *(std::upper_bound(
+                        sortedDurationOfBeats.begin(), 
+                        sortedDurationOfBeats.end(), stableBeatLenghtByPosition.last()) + 1)) {
             continue;
-        // Check if the new tempo is the left neighboor of the previous tempo
-        } else if (stableTemposByPosition.last() != frequencyOfTempos.firstKey() &&
-                newStableTempo == (frequencyOfTempos.find(stableTemposByPosition.last()) - 1).key()) {
+        // Check if the new tempo is the left neighbor of the previous tempo
+        } else if (stableBeatLenghtByPosition.last() != sortedDurationOfBeats.first() &&
+                newStableBeatLenght == *(std::lower_bound(
+                        sortedDurationOfBeats.begin(),
+                        sortedDurationOfBeats.end(), stableBeatLenghtByPosition.last()) - 1)) {
             continue;
         } else {
-            // We need to make sure newStableTempo belongs to frequencyOfTempos
-            // because in the loop we call .find() on it and will dereference it
-            if (frequencyOfTempos.contains(newStableTempo)) {
+            // We need to make sure newStableBeatLenght belongs to sortedDurationOfBeats
+            // because in the loop we call std::lower_bound on it and will dereference
+            if (std::binary_search(sortedDurationOfBeats.begin(), sortedDurationOfBeats.end(), newStableBeatLenght)) {
                 lastBeatChange = currentBeat - tempoMedianFilter.lag() - mostFrequentTempo.lag();
                 // Since we used the median as guess of the first tempo
                 // we change position at 0 if we detect a change in very beginning 
                 if (lastBeatChange > kBeatsToCountTempo) {
-                    stableTemposByPosition[lastBeatChange] = newStableTempo;
+                    stableBeatLenghtByPosition[lastBeatChange] = newStableBeatLenght;
                 } else {
-                    stableTemposByPosition[0] = newStableTempo;
+                    stableBeatLenghtByPosition[0] = newStableBeatLenght;
                 }
             }
         }
@@ -117,13 +130,12 @@ QMap<int, double> BeatUtils::findStableTempoRegions(
     // We also add the median as rough guess as our last tempo
     // This way we always have both sentinels for the whole track
     // as a constant tempo region if no significant tempo changes
-    stableTemposByPosition[tempoList.count() - 1] = medianBpm;
-    //qDebug() << stableTemposByPosition;
-    return stableTemposByPosition;
+    stableBeatLenghtByPosition[durationOfBeats.count()] = medianBeatLenght;
+    return stableBeatLenghtByPosition;
 }
 
 void BeatUtils::removeSmallArrhythmic(
-        QVector<double>& beats, const mixxx::audio::SampleRate& sampleRate, const QMap<int, double>& stableTemposByPosition) {
+        QVector<double>& beats, const mixxx::audio::SampleRate& sampleRate, const QMap<int, double>& stableBeatLenghtByPosition) {
     // A common problem the analyzer has is to detect arrhythmic regions
     // of tacks with a constant tempo as in a different unsteady tempo.
     // This happens frequently on builds and breaks with heavy effects on edm music.
@@ -133,8 +145,8 @@ void BeatUtils::removeSmallArrhythmic(
     // and return to same tempo they start deviating from.
     // TODO(Cristiano) Use a better heuristic for "finding" these regions
     // like for example the avarage energy of the beats
-    auto positionsWithTempoChange = stableTemposByPosition.keys();
-    auto tempoValues = stableTemposByPosition.values();
+    auto positionsWithTempoChange = stableBeatLenghtByPosition.keys();
+    auto beatLenghts = stableBeatLenghtByPosition.values();
     // We are going to make a deep copy since we are very likely to
     // shift our whole beats vector which will results in a copy anyway
     QVector<double> anchoredBeats;
@@ -142,14 +154,14 @@ void BeatUtils::removeSmallArrhythmic(
     anchoredBeats << makeQVector(beats.begin(), beats.begin() + positionsWithTempoChange[1] + 1);
 
     for (int i = 2; i < positionsWithTempoChange.size(); i += 1) {
-        double previousTempoRoughGuess = tempoValues[i - 2];
+        double previousTempoRoughGuess = 60.0 * sampleRate / beatLenghts[i - 2];
         int limitAtLeft = positionsWithTempoChange[i - 1];
         int limitAtRight = positionsWithTempoChange[i];
         int lenghtOfChange = limitAtRight - limitAtLeft;
-        double nextTempoRoughGuess = tempoValues[i];
-        if (lenghtOfChange <= kMinBeatsForChange &&
+        double nextTempoRoughGuess = 60.0 * sampleRate / beatLenghts[i];
+        if (lenghtOfChange <= kMaxBeatsForChange &&
                 fabs(nextTempoRoughGuess - previousTempoRoughGuess) < kMaxDiffSameBpm) {
-            qDebug() << "removing" << limitAtRight - limitAtLeft << "beats from" << limitAtLeft << limitAtRight;
+            //qDebug() << "removing" << limitAtRight - limitAtLeft << "beats from" << limitAtLeft << limitAtRight;
             auto beatsAtLeft = makeQVector(
                     beats.begin() + positionsWithTempoChange[i - 2],
                     beats.begin() + positionsWithTempoChange[i - 1]);
@@ -162,7 +174,7 @@ void BeatUtils::removeSmallArrhythmic(
             double beatOffset = beats[limitAtLeft];
             int beatsAdded = 0;
             while (beatsAdded != beatsToAdd) {
-                anchoredBeats << beatOffset;
+                anchoredBeats << floor(beatOffset + 0.5);
                 beatOffset += preciseBeatLeght;
                 beatsAdded += 1;
             }
@@ -184,23 +196,17 @@ void BeatUtils::removeSmallArrhythmic(
 
 QVector<double> BeatUtils::correctBeatmap(
         QVector<double>& rawBeats, const mixxx::audio::SampleRate& sampleRate, bool removeArrythmic) {
-    QMap<double, int> tempoFrequency;
-    QList<double> tempoList = computeWindowedBpmsAndFrequencyHistogram(
-            rawBeats, 2, 1, sampleRate, &tempoFrequency);
-    QMap<int, double> stableTemposByPosition = findStableTempoRegions(tempoFrequency, tempoList);
-    qDebug() << rawBeats.size() << tempoList.size();
+    QMap<int, double> stableBeatLenghtByPosition = findStableTempoRegions(rawBeats, sampleRate);
     if (removeArrythmic) {
-        removeSmallArrhythmic(rawBeats, sampleRate, stableTemposByPosition);
+        removeSmallArrhythmic(rawBeats, sampleRate, stableBeatLenghtByPosition);
         // Since we changed our beats vector we need to recalculate its tempos
         // TODO(Cristiano) adjust these on the fly on removeSmallArrhythmic
-        tempoList = computeWindowedBpmsAndFrequencyHistogram(
-                rawBeats, 2, 1, sampleRate, &tempoFrequency);
-        stableTemposByPosition = findStableTempoRegions(tempoFrequency, tempoList);
+        stableBeatLenghtByPosition = findStableTempoRegions(rawBeats, sampleRate);
     }
     QVector<double> correctedBeats;
     QVector<double> ironedBeats;
     correctedBeats.reserve(rawBeats.size());
-    auto tempoChanges = stableTemposByPosition.keys();
+    auto tempoChanges = stableBeatLenghtByPosition.keys();
     for (int lastTempoChage = 1;
             lastTempoChage < tempoChanges.size();
             lastTempoChage++) {
@@ -246,7 +252,7 @@ QVector<double> BeatUtils::calculateIronedGrid(
         if (outliersCount <= 1) {
             beatOffset = rawbeats[leftIndex];
             for (int i = leftIndex; i < rightIndex; i += 1) {
-                ironedBeats << beatOffset;
+                ironedBeats << floor(beatOffset + 0.5);
                 beatOffset += meanBeatLength;
             }
             leftIndex = rightIndex;
@@ -308,6 +314,18 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
     // the sorted list.
     int item_position = (sortedItems.size() + 1) / 2;
     return sortedItems.at(item_position - 1);
+}
+
+QVector<double> BeatUtils::computeDurationOfEachBeat(const QVector<double>& beats) {
+    QVector<double> beatDurations;
+    beatDurations.reserve(beats.size() -1);
+    auto previousBeat = beats.begin();
+    for(auto beat = beats.begin() + 1; beat != beats.end(); beat += 1) {
+        double duration = *beat - *previousBeat;
+        beatDurations << duration;
+        previousBeat = beat;
+    }
+    return beatDurations;
 }
 
 QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
