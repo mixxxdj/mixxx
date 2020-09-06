@@ -559,6 +559,40 @@ MC7000.vinylModeToggle = function(channel, control, value, status, group) {
     }
 };
 
+// Use select button to load and eject track from deck
+MC7000.LOADlongpress = false;
+MC7000.LOADtimer = 0;
+
+MC7000.LOADassertlongpress = function() {
+    MC7000.LOADlongpress = true;
+    MC7000.LOADtimer = 0;
+};
+
+MC7000.LOADdown = function() {
+    MC7000.LOADlongpress = false;
+    MC7000.LOADtimer = engine.beginTimer(500, "MC7000.LOADassertlongpress()", true);
+};
+
+MC7000.LOADup = function(group) {
+    if (MC7000.LOADtimer !== 0) {
+        engine.stopTimer(MC7000.LOADtimer);
+        MC7000.LOADtimer = 0;
+    }
+    if (MC7000.LOADlongpress) {
+        script.triggerControl(group, "eject", 100);
+    } else {
+        script.triggerControl(group, "LoadSelectedTrack", 100);
+    }
+};
+MC7000.LoadBtn = function(channel, control, value, status, group) {
+    //LOAD hold <500ms: load track, >500ms: eject
+    if (value === 0x7F) {
+        MC7000.LOADdown();
+    } else {
+        MC7000.LOADup(group);
+    }
+};
+
 // The button that enables/disables scratching
 MC7000.wheelTouch = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
@@ -697,6 +731,7 @@ MC7000.keySelect = function(midichan, control, value, status, group) {
 // Key & Waveform zoom Reset
 MC7000.keyReset = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
+    if (value === 0x00) return;
     // While Shift Button is pressed: Waveform Zoom Reset
     if (MC7000.shift[deckNumber - 1]) {
         script.triggerControl(group, "waveform_zoom_set_default", 100);
@@ -727,7 +762,7 @@ MC7000.stopTime = function(channel, control, value, status, group) {
 };
 
 // Use the CENSOR button as Spinback with STOP TIME adjusted length
-MC7000.censor = function(channel, control, value, status, group) {
+MC7000.reverse = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     if (value > 0) {
         // while the button is pressed spin back
@@ -738,7 +773,8 @@ MC7000.censor = function(channel, control, value, status, group) {
     }
 };
 
-MC7000.reverse = function(channel, control, value, status, group) {
+// Use of Reverse w/ and w/o Slip mode
+MC7000.censor = function(channel, control, value, status, group) {
     if (engine.getValue(group, "slip_enabled")) {
         // This would be the "normal" CENSOR function"
         if (value > 0) {
