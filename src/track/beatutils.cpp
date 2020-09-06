@@ -89,7 +89,7 @@ QMap<int, double> BeatUtils::findStableTempoRegions(const QVector<double>& beats
     int lastBeatChange = 0;
     QMap<int, double> stableBeatLenghtByPosition;
     // We start at beat 0 with the median bpm as rough guess of the "correct" tempo
-    stableBeatLenghtByPosition[lastBeatChange] = medianBeatLenght;
+    stableBeatLenghtByPosition.insert(lastBeatChange, medianBeatLenght);
     // Here we are going to track the significant tempo changes over the track to make
     // regions of stable tempos and independently make const tempo or ironed grid for them
     for (double beatLenght : durationOfBeats) {
@@ -120,9 +120,9 @@ QMap<int, double> BeatUtils::findStableTempoRegions(const QVector<double>& beats
                 // Since we used the median as guess of the first tempo
                 // we change position at 0 if we detect a change in very beginning 
                 if (lastBeatChange > kBeatsToCountTempo) {
-                    stableBeatLenghtByPosition[lastBeatChange] = newStableBeatLenght;
+                    stableBeatLenghtByPosition.insert(lastBeatChange, newStableBeatLenght);
                 } else {
-                    stableBeatLenghtByPosition[0] = newStableBeatLenght;
+                    stableBeatLenghtByPosition.insert(0, newStableBeatLenght);
                 }
             }
         }
@@ -130,7 +130,7 @@ QMap<int, double> BeatUtils::findStableTempoRegions(const QVector<double>& beats
     // We also add the median as rough guess as our last tempo
     // This way we always have both sentinels for the whole track
     // as a constant tempo region if no significant tempo changes
-    stableBeatLenghtByPosition[durationOfBeats.count()] = medianBeatLenght;
+    stableBeatLenghtByPosition.insert(durationOfBeats.count(), medianBeatLenght);
     return stableBeatLenghtByPosition;
 }
 
