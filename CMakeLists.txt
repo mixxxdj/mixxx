@@ -3,6 +3,8 @@ project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
 
+# Used for force control of color output
+set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
 # Support new IN_LIST if() operator
 if(POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
@@ -297,7 +299,7 @@ else()
   if(CCACHE_SUPPORT)
     if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
-      set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
+      set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}")
     endif()
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
     set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
@@ -626,7 +628,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixxx.cpp
   src/mixxxapplication.cpp
   src/musicbrainz/chromaprinter.cpp
-  src/musicbrainz/crc.c
+  src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
   src/musicbrainz/musicbrainz.cpp
   src/musicbrainz/musicbrainzxml.cpp
@@ -947,7 +949,7 @@ if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /W3)
   endif()
 else()
-  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra)
+  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()

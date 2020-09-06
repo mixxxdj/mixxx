@@ -8,9 +8,12 @@
     </Connection>
     <BgColor><Variable name="BgColor"/></BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
-    <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-    <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-    <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+    <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+    <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+    <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
+    <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
+    <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
+    <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
     <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
@@ -29,7 +32,7 @@
     <!-- Cue -->
     <Mark>
       <Control>cue_point</Control>
-      <Text> C </Text>
+      <Text>C</Text>
       <Align>top|right</Align>
       <Color><Variable name="CueColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
@@ -58,6 +61,7 @@
       <Align>bottom|right</Align>
       <Color><Variable name="LoopColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl><Variable name="Group"/>,loop_enabled</VisibilityControl>
     </Mark>
     <!-- Intro -->
     <MarkRange>

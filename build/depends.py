@@ -1011,7 +1011,7 @@ class MixxxCore(Feature):
 
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
-                   "src/musicbrainz/crc.c",
+                   "src/musicbrainz/crc.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
                    "src/musicbrainz/musicbrainz.cpp",
                    "src/musicbrainz/musicbrainzxml.cpp",
@@ -1460,6 +1460,7 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
+            build.env.Append(CCFLAGS='-Woverloaded-virtual')
 
             if build.compiler_is_gcc and build.gcc_major_version >= 9:
                 # Avoid many warnings from GCC 9 about implicitly defined copy assignment

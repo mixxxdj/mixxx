@@ -1,21 +1,18 @@
 #pragma once
 
+#include <QObject>
+#include <QVector>
 #include <vector>
 
-#include <QObject>
-#include <QTime>
-#include <QVector>
-
-#include "util/singleton.h"
 #include "preferences/usersettings.h"
-#include "waveform/widgets/waveformwidgettype.h"
-#include "waveform/waveform.h"
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
+#include "util/singleton.h"
+#include "waveform/waveform.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class QTimer;
 class VSyncThread;
 class GuiTick;
 class VisualsManager;

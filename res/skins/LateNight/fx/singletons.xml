@@ -52,9 +52,20 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
+                  <!-- Indicates if this FxUnit can currently be accessed by controller.
+                       To be used with default midi-components.js mapping -->
+                  <Label>
+                    <ObjectName>FxUnitControllerInputIndicator</ObjectName>
+                    <Size>2f,0min</Size>
+                    <!-- <Text> > </Text> -->
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
                   <WidgetGroup>
                     <SizePolicy>me,min</SizePolicy>
-                    <MinimumSize>1,0</MinimumSize>
+                    <MinimumSize>3,0</MinimumSize>
                   </WidgetGroup>
                   <Label>
                     <ObjectName>FxUnitLabel</ObjectName>
@@ -62,6 +73,10 @@
                     <MinimunSize>30,20</MinimunSize>
                     <MaximumSize>38,</MaximumSize>
                     <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </Label>
                   <WidgetGroup>
                     <SizePolicy>me,min</SizePolicy>
@@ -84,6 +99,7 @@
                   </PushButton>
                 </Children>
               </WidgetGroup><!-- Fx label & icon -->
+
             </Children>
           </WidgetGroup><!-- transparent expand button on top of Fx label & icon -->
         </Children>
@@ -121,7 +137,7 @@
             </Connection>
           </PushButton>
           <Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
             <SetVariable name="ObjectName">PflButton</SetVariable>
             <SetVariable name="Size">26f,26f</SetVariable>
             <SetVariable name="BtnSize">square</SetVariable>

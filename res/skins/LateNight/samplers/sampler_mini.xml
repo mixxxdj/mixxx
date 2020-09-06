@@ -76,6 +76,13 @@
                 <Layout>horizontal</Layout>
                 <Size>43f,18f</Size>
                 <Children>
+                  <Template src="skin:/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">eject</SetVariable>
+                    <SetVariable name="ObjectName">EjectButton12</SetVariable>
+                    <SetVariable name="BtnType"></SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
+                    <SetVariable name="Size">21f,18f</SetVariable>
+                  </Template>
                   <PushButton>
                     <TooltipId>orientation</TooltipId>
                     <Size>21f,18f</Size>
@@ -100,13 +107,6 @@
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>
-                  <Template src="skin:/controls/button_1state.xml">
-                    <SetVariable name="TooltipId">eject</SetVariable>
-                    <SetVariable name="ObjectName">EjectButton12</SetVariable>
-                    <SetVariable name="BtnType"></SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
-                    <SetVariable name="Size">21f,18f</SetVariable>
-                  </Template>
                 </Children>
               </WidgetGroup><!-- SamplerControlsMini -->
 

@@ -25,7 +25,7 @@
         <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
         <ArcBgThickness><Variable name="ArcBgThickness"/></ArcBgThickness>
         <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
-        <KnobCenterYOffset>1.598</KnobCenterYOffset>
+        <KnobCenterYOffset>1.998</KnobCenterYOffset>
         <Connection>
           <ConfigKey><Variable name="Group"/>,<Variable name="Control"/></ConfigKey>
         </Connection>

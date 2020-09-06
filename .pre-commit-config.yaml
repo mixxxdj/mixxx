@@ -55,7 +55,6 @@ repos:
   - id: check-xml
   - id: check-yaml
   - id: end-of-file-fixer
-    exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     stages:
     - commit
     - manual
@@ -66,6 +65,13 @@ repos:
     - commit
     - manual
   - id: no-commit-to-branch
+- repo: https://github.com/codespell-project/codespell
+  rev: f7f304cb40596e4706be27ca44d1401396a97420
+  hooks:
+  - id: codespell
+    # ignore-regex is substituted by ' '
+    entry: tools/codespell.py --ignore-file .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
+    exclude: ^(\.codespellignore|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.2.0
   hooks:
