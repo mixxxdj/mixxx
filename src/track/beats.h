@@ -80,7 +80,7 @@ class BeatsInternal {
     void setAsDownbeat(int beatIndex);
 
   private:
-    void updateBpm();
+    void updateGlobalBpm();
     void scaleDouble();
     void scaleTriple();
     void scaleQuadruple();
@@ -91,6 +91,7 @@ class BeatsInternal {
     void scaleFraction(uint fraction);
     void generateBeatsFromMarkers();
     void clearMarkers();
+    void consolidateMarkers();
     SINT getSampleRate() const;
     double getDurationSeconds() const;
     void setFirstBeatFrame(FramePos framePos);

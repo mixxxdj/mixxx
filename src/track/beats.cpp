@@ -589,25 +589,34 @@ void BeatsInternal::scaleFraction(uint fraction) {
     }
 }
 
-void BeatsInternal::updateBpm() {
+void BeatsInternal::updateGlobalBpm() {
     if (!isValid()) {
         m_bpm = Bpm();
         return;
     }
-    // If we only have one BPM value, there is no need to rely on the
-    // BPM aggregation algorithm. Just use the BPM value in protobuf.
+    // If we only have one BPM value, there is no need to find mode BPM.
+    // Just use the BPM value in protobuf.
     if (m_beatsProto.bpm_markers_size() == 1) {
         m_bpm = Bpm(m_beatsProto.bpm_markers().cbegin()->bpm());
     } else {
-        QVector<double> beatVector;
-        beatVector.reserve(m_beats.size());
-        std::transform(m_beats.constBegin(),
-                m_beats.constEnd(),
-                std::back_inserter(beatVector),
-                [](const Beat& beat) {
-                    return beat.framePosition().getValue();
-                });
-        m_bpm = BeatUtils::calculateBpm(beatVector, getSampleRate(), 0, 9999);
+        QMap<double, double> bpmDuration;
+        for (int i = 0; i < m_beats.size() - 1; i++) {
+            const auto currentBpm = m_beats[i].bpm().getValue();
+            const auto currentFramePosition = m_beats[i].framePosition();
+            const auto nextFramePosition = m_beats[i + 1].framePosition();
+            const auto duration = nextFramePosition - currentFramePosition;
+            if (bpmDuration.contains(currentBpm)) {
+                bpmDuration[currentBpm] += duration;
+            } else {
+                bpmDuration[currentBpm] = duration;
+            }
+        }
+        const double modeBpm = std::max_element(bpmDuration.begin(),
+                bpmDuration.end(),
+                [](const double m1, const double m2) {
+                    return m1 < m2;
+                }).key();
+        m_bpm = Bpm(modeBpm);
     }
 }
 
@@ -819,54 +828,7 @@ void BeatsInternal::generateBeatsFromMarkers() {
                 generatedTimeSignatureMarker);
     }
 
-    // The initial downbeat offset should always be less than the number
-    // of beats in the first measure.
-    if (m_beatsProto.first_downbeat_index() >=
-            m_beatsProto.time_signature_markers()
-                    .Get(0)
-                    .time_signature()
-                    .beats_per_bar()) {
-        // Bring the offset within the limits of number of beats in bar.
-        int currentDownbeatOffset = m_beatsProto.first_downbeat_index();
-        int beatsPerBarAtStart = m_beatsProto.time_signature_markers()
-                                         .Get(0)
-                                         .time_signature()
-                                         .beats_per_bar();
-        int reducedDownbeatOffset = currentDownbeatOffset % beatsPerBarAtStart;
-        m_beatsProto.set_first_downbeat_index(reducedDownbeatOffset);
-    }
-
-    // Clear redundant markers
-    QList<track::io::TimeSignatureMarker> minimalTimeSignatureMarkers;
-    for (const auto& timeSignatureMarker :
-            m_beatsProto.time_signature_markers()) {
-        if (minimalTimeSignatureMarkers.empty() ||
-                TimeSignature(minimalTimeSignatureMarkers.constLast()
-                                      .time_signature()) !=
-                        TimeSignature(timeSignatureMarker.time_signature())) {
-            minimalTimeSignatureMarkers.append(timeSignatureMarker);
-        }
-    }
-    m_beatsProto.clear_time_signature_markers();
-    for (const auto& minimalTimeSignatureMarker : minimalTimeSignatureMarkers) {
-        m_beatsProto.add_time_signature_markers()->CopyFrom(
-                minimalTimeSignatureMarker);
-    }
-
-    QList<track::io::BpmMarker> minimalBpmMarkers;
-    for (const auto& bpmMarker :
-            m_beatsProto.bpm_markers()) {
-        if (minimalBpmMarkers.empty() ||
-                !qFuzzyCompare(minimalBpmMarkers.constLast().bpm(),
-                        bpmMarker.bpm())) {
-            minimalBpmMarkers.append(bpmMarker);
-        }
-    }
-    m_beatsProto.clear_bpm_markers();
-    for (const auto& minimalBpmMarker : minimalBpmMarkers) {
-        m_beatsProto.add_bpm_markers()->CopyFrom(
-                minimalBpmMarker);
-    }
+    consolidateMarkers();
 
     // We keep generating beats until this frame.
     const FramePos trackLastFrame(getSampleRate() * getDurationSeconds());
@@ -881,7 +843,6 @@ void BeatsInternal::generateBeatsFromMarkers() {
                                        m_beatsProto.first_downbeat_index()) %
             beatsPerBar;
     Beat addedBeat = kInvalidBeat;
-    // TODO(hacksdump): Use markers for BPM and enable marker only on user edited markers.
     BeatMarkers markers;
     while (true) {
         markers = BeatMarker::None;
@@ -951,7 +912,74 @@ void BeatsInternal::generateBeatsFromMarkers() {
             break;
         }
     }
-    updateBpm();
+    updateGlobalBpm();
+}
+
+void BeatsInternal::consolidateMarkers() {
+    // The initial downbeat offset should always be less than the number
+    // of beats in the first measure.
+    if (m_beatsProto.first_downbeat_index() >=
+            m_beatsProto.time_signature_markers()
+                    .Get(0)
+                    .time_signature()
+                    .beats_per_bar()) {
+        // Bring the offset within the limits of number of beats in bar.
+        int currentDownbeatOffset = m_beatsProto.first_downbeat_index();
+        int beatsPerBarAtStart = m_beatsProto.time_signature_markers()
+                                         .Get(0)
+                                         .time_signature()
+                                         .beats_per_bar();
+        int reducedDownbeatOffset = currentDownbeatOffset % beatsPerBarAtStart;
+        m_beatsProto.set_first_downbeat_index(reducedDownbeatOffset);
+    }
+
+    // Clear redundant markers
+    QList<track::io::TimeSignatureMarker> minimalTimeSignatureMarkers;
+    for (const auto& timeSignatureMarker :
+            m_beatsProto.time_signature_markers()) {
+        if (minimalTimeSignatureMarkers.empty() ||
+                TimeSignature(minimalTimeSignatureMarkers.constLast()
+                                      .time_signature()) !=
+                        TimeSignature(timeSignatureMarker.time_signature())) {
+            minimalTimeSignatureMarkers.append(timeSignatureMarker);
+        }
+    }
+    m_beatsProto.clear_time_signature_markers();
+    for (const auto& minimalTimeSignatureMarker : minimalTimeSignatureMarkers) {
+        m_beatsProto.add_time_signature_markers()->CopyFrom(
+                minimalTimeSignatureMarker);
+    }
+
+    QList<track::io::BpmMarker> minimalBpmMarkers;
+    for (const auto& bpmMarker :
+            m_beatsProto.bpm_markers()) {
+        if (minimalBpmMarkers.empty() ||
+                !qFuzzyCompare(minimalBpmMarkers.constLast().bpm(),
+                        bpmMarker.bpm())) {
+            minimalBpmMarkers.append(bpmMarker);
+        }
+    }
+    m_beatsProto.clear_bpm_markers();
+    for (const auto& minimalBpmMarker : minimalBpmMarkers) {
+        m_beatsProto.add_bpm_markers()->CopyFrom(
+                minimalBpmMarker);
+    }
+
+    // Very small variations in BPM values due to floating point precision
+    // should be cleared out.
+    QMap<double, bool> visitedBpm;
+    for (int i = 0; i < m_beatsProto.bpm_markers_size(); i++) {
+        const double referenceBpm = m_beatsProto.bpm_markers(i).bpm();
+        if (!visitedBpm[referenceBpm]) {
+            for (int j = i + 1; j < m_beatsProto.bpm_markers_size(); j++) {
+                const double currentBpm = m_beatsProto.bpm_markers(j).bpm();
+                if (qFuzzyCompare(currentBpm, referenceBpm)) {
+                    m_beatsProto.mutable_bpm_markers(j)->set_bpm(referenceBpm);
+                }
+            }
+            visitedBpm[referenceBpm] = true;
+        }
+    }
 }
 
 void BeatsInternal::clearMarkers() {

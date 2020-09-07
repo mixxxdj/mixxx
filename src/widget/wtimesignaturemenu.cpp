@@ -77,7 +77,7 @@ void WTimeSignatureMenu::slotBeatSizeChanged(int index) {
 }
 
 void WTimeSignatureMenu::setTimeSignature(mixxx::TimeSignature timeSignature) {
-    if (m_beat.framePosition() != mixxx::kInvalidFramePos &&
+    if (m_pBeats && m_beat.framePosition() != mixxx::kInvalidFramePos &&
             kMinBeatsPerBar <= timeSignature.getBeatsPerBar() &&
             timeSignature.getBeatsPerBar() <= kMaxBeatsPerBar) {
         m_pBeats->setSignature(timeSignature, m_beat.barIndex());
