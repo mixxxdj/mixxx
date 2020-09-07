@@ -6,6 +6,7 @@ class HotcueControlTest : public BaseSignalPathTest {
     void SetUp() override {
         BaseSignalPathTest::SetUp();
 
+        m_pLoopEnabled = std::make_unique<ControlProxy>(m_sGroup1, "loop_enabled");
         m_pLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "loop_toggle");
         m_pHotcue1Activate = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_activate");
         m_pHotcue1ActivateCue = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_activatecue");
@@ -53,6 +54,7 @@ class HotcueControlTest : public BaseSignalPathTest {
         ProcessBuffer();
     }
 
+    std::unique_ptr<ControlProxy> m_pLoopEnabled;
     std::unique_ptr<ControlProxy> m_pLoopToggle;
     std::unique_ptr<ControlProxy> m_pHotcue1Activate;
     std::unique_ptr<ControlProxy> m_pHotcue1ActivateCue;
@@ -188,7 +190,7 @@ TEST_F(HotcueControlTest, SetLoopManual) {
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 }
 
-TEST_F(HotcueControlTest, LoopStatus) {
+TEST_F(HotcueControlTest, SavedLoopStatus) {
     createAndLoadFakeTrack();
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
@@ -199,6 +201,7 @@ TEST_F(HotcueControlTest, LoopStatus) {
 
     m_pHotcue1SetLoop->slotSet(1);
     m_pHotcue1SetLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
@@ -207,6 +210,7 @@ TEST_F(HotcueControlTest, LoopStatus) {
     m_pLoopToggle->slotSet(1);
     m_pLoopToggle->slotSet(0);
 
+    EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
@@ -215,6 +219,7 @@ TEST_F(HotcueControlTest, LoopStatus) {
     m_pLoopToggle->slotSet(1);
     m_pLoopToggle->slotSet(0);
 
+    EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
@@ -222,6 +227,7 @@ TEST_F(HotcueControlTest, LoopStatus) {
     m_pHotcue1Clear->slotSet(1);
     m_pHotcue1Clear->slotSet(0);
 
+    EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
