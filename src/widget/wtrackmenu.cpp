@@ -26,6 +26,7 @@
 #include "sources/soundsourceproxy.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
+#include "util/qt.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -938,7 +939,9 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         if (!playlistDao.isHidden(it.value())) {
             // No leak because making the menu the parent means they will be
             // auto-deleted
-            auto pAction = new QAction(it.key(), m_pPlaylistMenu);
+            auto pAction = new QAction(
+                    mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
+                    m_pPlaylistMenu);
             bool locked = playlistDao.isPlaylistLocked(it.value());
             pAction->setEnabled(!locked);
             m_pPlaylistMenu->addAction(pAction);
@@ -1018,12 +1021,12 @@ void WTrackMenu::slotPopulateCrateMenu() {
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
-        auto pAction = make_parented<QWidgetAction>(m_pCrateMenu);
-        auto pCheckBox = make_parented<QCheckBox>(m_pCrateMenu);
-
-        pCheckBox->setText(crate.getName());
-        pCheckBox->setProperty("crateId",
-                QVariant::fromValue(crate.getId()));
+        auto pAction = make_parented<QWidgetAction>(
+                m_pCrateMenu);
+        auto pCheckBox = make_parented<QCheckBox>(
+                mixxx::escapeTextPropertyWithoutShortcuts(crate.getName()),
+                m_pCrateMenu);
+        pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
         // Strangely, the normal styling of QActions does not automatically
         // apply to QWidgetActions. The :selected pseudo-state unfortunately

@@ -125,44 +125,52 @@ void DlgCoverArtFullSize::slotCoverFound(
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
-    if (pRequestor == this &&
-            m_pLoadedTrack &&
-            m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
-        m_pixmap = pixmap;
-        // Scale down dialog if the pixmap is larger than the screen.
-        // Use 90% of screen size instead of 100% to prevent an issue with
-        // whitespace appearing on the side when resizing a window whose
-        // borders touch the edges of the screen.
-        QSize dialogSize = m_pixmap.size();
-
-        const QScreen* primaryScreen = getPrimaryScreen();
-        QRect availableScreenGeometry;
-        if (primaryScreen) {
-            availableScreenGeometry = primaryScreen->availableGeometry();
-        } else {
-            qWarning() << "Assuming screen size of 800x600px.";
-            availableScreenGeometry = QRect(0, 0, 800, 600);
-        }
-        const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
-        if (dialogSize.height() > availableScreenSpace.height()) {
-            dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
-                             Qt::KeepAspectRatio);
-        } else if (dialogSize.width() > availableScreenSpace.width()) {
-            dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
-                             Qt::KeepAspectRatio);
-        }
-        QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
-        coverArt->setPixmap(resizedPixmap);
-
-        // center the window
-        setGeometry(QStyle::alignedRect(
-                Qt::LeftToRight,
-                Qt::AlignCenter,
-                dialogSize,
-                availableScreenGeometry));
+    if (pRequestor != this || !m_pLoadedTrack ||
+            m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
+        return;
     }
+
+    m_pixmap = pixmap;
+
+    if (m_pixmap.isNull()) {
+        coverArt->setPixmap(QPixmap());
+        hide();
+        return;
+    }
+
+    // Scale down dialog if the pixmap is larger than the screen.
+    // Use 90% of screen size instead of 100% to prevent an issue with
+    // whitespace appearing on the side when resizing a window whose
+    // borders touch the edges of the screen.
+    QSize dialogSize = m_pixmap.size();
+
+    const QScreen* primaryScreen = getPrimaryScreen();
+    QRect availableScreenGeometry;
+    if (primaryScreen) {
+        availableScreenGeometry = primaryScreen->availableGeometry();
+    } else {
+        qWarning() << "Assuming screen size of 800x600px.";
+        availableScreenGeometry = QRect(0, 0, 800, 600);
+    }
+
+    const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
+    if (dialogSize.height() > availableScreenSpace.height()) {
+        dialogSize.scale(dialogSize.width(), availableScreenSpace.height(), Qt::KeepAspectRatio);
+    } else if (dialogSize.width() > availableScreenSpace.width()) {
+        dialogSize.scale(availableScreenSpace.width(), dialogSize.height(), Qt::KeepAspectRatio);
+    }
+    QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
+    coverArt->setPixmap(resizedPixmap);
+
+    // center the window
+    setGeometry(QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            dialogSize,
+            availableScreenGeometry));
 }
 
 // slots to handle signals from the context menu

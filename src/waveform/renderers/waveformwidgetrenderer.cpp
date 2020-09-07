@@ -1,13 +1,15 @@
-#include <QPainter>
-
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "widget/wwidget.h"
+
+#include <QPainter>
+#include <QPainterPath>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "waveform/visualplayposition.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
+#include "waveform/visualplayposition.h"
+#include "waveform/waveform.h"
+#include "widget/wwidget.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
 const double WaveformWidgetRenderer::s_waveformMaxZoom = 80.0;
@@ -73,7 +75,6 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 }
 
 bool WaveformWidgetRenderer::init() {
-
     //qDebug() << "WaveformWidgetRenderer::init, m_group=" << m_group;
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
@@ -122,7 +123,6 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_audioSamplePerPixel = 0.0;
     }
 
-
     double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
@@ -163,7 +163,6 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 }
 
 void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
-
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_lastSystemFrameTime = m_timer->restart().toIntegerNanos();
 #endif
@@ -196,26 +195,27 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     }
 
     // hud debug display
-    painter->drawText(1,12,
-                      QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
-                      QString::number(frameMax).rightJustified(2,'0') + ")" +
-                      QString::number(m_lastSystemFrameTime) + "(" +
-                      QString::number(systemMax) + ")" +
-                      QString::number(realtimeError));
+    painter->drawText(1,
+            12,
+            QString::number(m_lastFrameTime).rightJustified(2, '0') + "(" +
+                    QString::number(frameMax).rightJustified(2, '0') + ")" +
+                    QString::number(m_lastSystemFrameTime) + "(" +
+                    QString::number(systemMax) + ")" +
+                    QString::number(realtimeError));
 
-    painter->drawText(1,m_height-1,
-                      QString::number(m_playPos) + " [" +
-                      QString::number(m_firstDisplayedPosition) + "-" +
-                      QString::number(m_lastDisplayedPosition) + "]" +
-                      QString::number(m_rate) + " | " +
-                      QString::number(m_gain) + " | " +
-                      QString::number(m_rateDir) + " | " +
-                      QString::number(m_zoomFactor));
+    painter->drawText(1,
+            m_height - 1,
+            QString::number(m_playPos) + " [" +
+                    QString::number(m_firstDisplayedPosition) + "-" +
+                    QString::number(m_lastDisplayedPosition) + "]" +
+                    QString::number(m_rate) + " | " + QString::number(m_gain) +
+                    " | " + QString::number(m_rateDir) + " | " +
+                    QString::number(m_zoomFactor));
 
     m_lastFrameTime = m_timer->restart().toIntegerNanos();
 
     ++currentFrame;
-    currentFrame = currentFrame%100;
+    currentFrame = currentFrame % 100;
     m_lastSystemFramesTime[currentFrame] = m_lastSystemFrameTime;
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
 #endif

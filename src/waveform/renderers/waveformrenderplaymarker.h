@@ -11,5 +11,10 @@ class WaveformRenderPlayMarker : public WaveformRendererAbstract {
     void draw(QPainter* painter, QPaintEvent* event) override;
 
   private:
+    void drawTriangle(QPainter* painter,
+                      QBrush fillColor,
+                      QPointF p1,
+                      QPointF p2,
+                      QPointF p3);
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderPlayMarker);
 };
