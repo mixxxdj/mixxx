@@ -82,6 +82,7 @@ CueControl::CueControl(QString group,
     m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position", this);
     m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled", this);
     m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate", this);
+    m_pBeatLoopSize = make_parented<ControlProxy>(group, "beatloop_size", this);
 
     m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));
     m_pCuePoint->set(Cue::kNoPosition);
@@ -724,22 +725,35 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     double cueEndPosition = Cue::kNoPosition;
     mixxx::CueType cueType = mixxx::CueType::Invalid;
 
+    bool loopEnabled = m_pLoopEnabled->get();
     if (mode == HotcueMode::Auto) {
-        mode = m_pLoopEnabled->get() ? HotcueMode::Loop : HotcueMode::Cue;
+        mode = loopEnabled ? HotcueMode::Loop : HotcueMode::Cue;
     }
 
     switch (mode) {
     case HotcueMode::Cue: {
         // If no loop is enabled, just store regular jump cue
         cueStartPosition = getQuantizedCurrentPosition();
-        cueEndPosition = Cue::kNoPosition;
         cueType = mixxx::CueType::HotCue;
         break;
     }
     case HotcueMode::Loop: {
-        // If no loop is enabled, just store regular jump cue
-        cueStartPosition = m_pLoopStartPosition->get();
-        cueEndPosition = m_pLoopEndPosition->get();
+        if (loopEnabled) {
+            // If a loop is enabled, save the current loop
+            cueStartPosition = m_pLoopStartPosition->get();
+            cueEndPosition = m_pLoopEndPosition->get();
+        } else {
+            // If no loop is enabled, save a loop starting from the current
+            // position and with the current beatloop size
+            cueStartPosition = getQuantizedCurrentPosition();
+            double beatloopSize = m_pBeatLoopSize->get();
+            if (beatloopSize > 0) {
+                mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+                if (pBeats) {
+                    cueEndPosition = pBeats->findNBeatsFromSample(cueStartPosition, beatloopSize);
+                }
+            }
+        }
         cueType = mixxx::CueType::Loop;
         break;
     }
@@ -752,7 +766,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     }
 
     // Abort if no position has been found. This can happen if a loop cue is
-    // requested while no loop is set, so we can't debug assert here.
+    // requested while no loop is set and the track has no beatgrid, so we
+    // can't debug assert here.
     if (cueStartPosition == Cue::kNoPosition ||
             (cueType == mixxx::CueType::Loop &&
                     cueEndPosition == Cue::kNoPosition)) {

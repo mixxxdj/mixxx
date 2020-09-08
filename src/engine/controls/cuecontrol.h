@@ -264,6 +264,7 @@ class CueControl : public EngineControl {
     parented_ptr<ControlProxy> m_pLoopEnabled;
     parented_ptr<ControlProxy> m_pLoopToggle;
     parented_ptr<ControlProxy> m_pBeatLoopActivate;
+    parented_ptr<ControlProxy> m_pBeatLoopSize;
     bool m_bypassCueSetByPlay;
     ControlValueAtomic<double> m_usedSeekOnLoadPosition;
 
