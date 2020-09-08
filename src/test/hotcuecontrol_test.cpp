@@ -16,6 +16,8 @@ class HotcueControlTest : public BaseSignalPathTest {
         m_pPlay = std::make_unique<ControlProxy>(m_sGroup1, "play");
         m_pBeatloopActivate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_activate");
         m_pBeatloopSize = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_size");
+        m_pLoopStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "loop_start_position");
+        m_pLoopEndPosition = std::make_unique<ControlProxy>(m_sGroup1, "loop_end_position");
         m_pLoopEnabled = std::make_unique<ControlProxy>(m_sGroup1, "loop_enabled");
         m_pLoopDouble = std::make_unique<ControlProxy>(m_sGroup1, "loop_double");
         m_pLoopHalve = std::make_unique<ControlProxy>(m_sGroup1, "loop_halve");
@@ -27,6 +29,9 @@ class HotcueControlTest : public BaseSignalPathTest {
         m_pHotcue1Set = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_set");
         m_pHotcue1SetCue = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_setcue");
         m_pHotcue1SetLoop = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_setloop");
+        m_pHotcue1Goto = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_goto");
+        m_pHotcue1GotoAndPlay = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_gotoandplay");
+        m_pHotcue1GotoAndLoop = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_gotoandloop");
         m_pHotcue1LoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_loop_toggle");
         m_pHotcue1Position = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_position");
         m_pHotcue1EndPosition = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_endposition");
@@ -71,6 +76,8 @@ class HotcueControlTest : public BaseSignalPathTest {
     std::unique_ptr<ControlProxy> m_pPlay;
     std::unique_ptr<ControlProxy> m_pBeatloopActivate;
     std::unique_ptr<ControlProxy> m_pBeatloopSize;
+    std::unique_ptr<ControlProxy> m_pLoopStartPosition;
+    std::unique_ptr<ControlProxy> m_pLoopEndPosition;
     std::unique_ptr<ControlProxy> m_pLoopEnabled;
     std::unique_ptr<ControlProxy> m_pLoopDouble;
     std::unique_ptr<ControlProxy> m_pLoopHalve;
@@ -82,6 +89,9 @@ class HotcueControlTest : public BaseSignalPathTest {
     std::unique_ptr<ControlProxy> m_pHotcue1Set;
     std::unique_ptr<ControlProxy> m_pHotcue1SetCue;
     std::unique_ptr<ControlProxy> m_pHotcue1SetLoop;
+    std::unique_ptr<ControlProxy> m_pHotcue1Goto;
+    std::unique_ptr<ControlProxy> m_pHotcue1GotoAndPlay;
+    std::unique_ptr<ControlProxy> m_pHotcue1GotoAndLoop;
     std::unique_ptr<ControlProxy> m_pHotcue1LoopToggle;
     std::unique_ptr<ControlProxy> m_pHotcue1Position;
     std::unique_ptr<ControlProxy> m_pHotcue1EndPosition;
@@ -209,6 +219,135 @@ TEST_F(HotcueControlTest, SetLoopManual) {
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, CueGoto) {
+    // Setup fake track with 120 bpm can calculate loop size
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setBpm(120.0);
+
+    loadTrack(pTrack);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    const double cuePosition = 8 * getBeatLengthFrames(pTrack);
+
+    // Seek to cue Position (8th beat)
+    setCurrentSample(cuePosition);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(cuePosition, getCurrentSample());
+
+    m_pHotcue1SetCue->slotSet(1);
+    m_pHotcue1SetCue->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    // Seek to start of track
+    setCurrentSample(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0, getCurrentSample());
+
+    m_pHotcue1Goto->slotSet(1);
+    m_pHotcue1Goto->slotSet(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(cuePosition, getCurrentSample());
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+    EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
+}
+
+TEST_F(HotcueControlTest, CueGotoAndPlay) {
+    // Setup fake track with 120 bpm can calculate loop size
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setBpm(120.0);
+
+    loadTrack(pTrack);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    const double cuePosition = 8 * getBeatLengthFrames(pTrack);
+
+    // Seek to cue Position (8th beat)
+    setCurrentSample(cuePosition);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(cuePosition, getCurrentSample());
+
+    m_pHotcue1SetCue->slotSet(1);
+    m_pHotcue1SetCue->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    // Seek to start of track
+    setCurrentSample(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0, getCurrentSample());
+
+    m_pHotcue1GotoAndPlay->slotSet(1);
+    m_pHotcue1GotoAndPlay->slotSet(0);
+    ProcessBuffer();
+    EXPECT_LE(cuePosition, getCurrentSample());
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+    EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
+}
+
+TEST_F(HotcueControlTest, CueGotoAndLoop) {
+    // Setup fake track with 120 bpm can calculate loop size
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setBpm(120.0);
+
+    loadTrack(pTrack);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    const double beatLength = getBeatLengthFrames(pTrack);
+    const double cuePosition = 8 * beatLength;
+    m_pBeatloopSize->slotSet(4);
+    const double beatloopLength = m_pBeatloopSize->get() * getBeatLengthFrames(pTrack);
+
+    // Seek to cue Position (8th beat)
+    setCurrentSample(cuePosition);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(cuePosition, getCurrentSample());
+
+    m_pHotcue1SetCue->slotSet(1);
+    m_pHotcue1SetCue->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    // Seek to start of track
+    setCurrentSample(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0, getCurrentSample());
+
+    m_pHotcue1GotoAndLoop->slotSet(1);
+    m_pHotcue1GotoAndLoop->slotSet(0);
+    ProcessBuffer();
+    EXPECT_LE(cuePosition, getCurrentSample());
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
+    EXPECT_DOUBLE_EQ(cuePosition, m_pLoopStartPosition->get());
+    EXPECT_DOUBLE_EQ(cuePosition + beatloopLength, m_pLoopEndPosition->get());
 }
 
 TEST_F(HotcueControlTest, SavedLoopStatus) {
