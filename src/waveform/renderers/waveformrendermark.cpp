@@ -82,7 +82,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                     double currentMarkEndPoint =
                             m_waveformRenderer->transformSamplePositionInRendererWorld(
                                     sampleEndPosition);
-                    if (currentMarkEndPoint < m_waveformRenderer->getWidth()) {
+                    if (visible || currentMarkEndPoint > 0) {
                         QColor color = pMark->fillColor();
                         color.setAlphaF(0.4);
 
