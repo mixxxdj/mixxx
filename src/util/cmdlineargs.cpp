@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include <QFile>
 #include <QStandardPaths>
 
 #include "util/cmdlineargs.h"
@@ -15,6 +16,7 @@ CmdlineArgs::CmdlineArgs()
       m_safeMode(false),
       m_debugAssertBreak(false),
       m_settingsPathSet(false),
+      m_analyzerDebug(false),
       m_logLevel(mixxx::kLogLevelDefault),
       m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
@@ -103,6 +105,8 @@ when a critical error occurs unless this is set properly.\n", stdout);
             m_safeMode = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
+        } else if (QString::fromLocal8Bit(argv[i]).contains("--analyzerDebug", Qt::CaseInsensitive)) {
+            m_analyzerDebug = true;
         } else {
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
@@ -112,6 +116,17 @@ when a critical error occurs unless this is set properly.\n", stdout);
     // logLevel to debug.
     if (m_developer && !logLevelSet) {
         m_logLevel = mixxx::LogLevel::Debug;
+    }
+
+    if (m_analyzerDebug) {
+        // truncate file
+        QString debugFilename = QDir(m_settingsPath).filePath("beatAnalyzerOutput.csv");
+        QFile debugFile(debugFilename);
+        if (!debugFile.open(QIODevice::WriteOnly)) {
+            qWarning() << "ERROR: Could not open debug file:" << debugFilename;
+        } else {
+            debugFile.close();
+        }
     }
 
     return true;
@@ -167,6 +182,8 @@ void CmdlineArgs::printUsage() {
 --logFlushLevel LEVEL   Sets the the logging level at which the log buffer\n\
                         is flushed to mixxx.log. LEVEL is one of the values\n\
                         defined at --logLevel above.\n\
+\n\
+--analyzerDebug         Enable output the beat analyses results to a csv file.\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
 "\

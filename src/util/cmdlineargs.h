@@ -30,6 +30,7 @@ class CmdlineArgs final {
     bool getSafeMode() const { return m_safeMode; }
     bool getDebugAssertBreak() const { return m_debugAssertBreak; }
     bool getSettingsPathSet() const { return m_settingsPathSet; }
+    bool getAnalyzerDebug() const { return m_analyzerDebug; }
     mixxx::LogLevel getLogLevel() const { return m_logLevel; }
     mixxx::LogLevel getLogFlushLevel() const { return m_logFlushLevel; }
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
@@ -50,6 +51,7 @@ class CmdlineArgs final {
     bool m_safeMode;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
+    bool m_analyzerDebug;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;

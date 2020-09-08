@@ -45,6 +45,8 @@ class AnalyzerBeats : public Analyzer {
     bool m_bPreferencesFixedTempo;
     bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;
+    bool m_bPreferencesEnableIroning;
+    bool m_bPreferencesEnableArrhythmicRemoval;
 
     int m_iSampleRate;
     int m_iTotalSamples;

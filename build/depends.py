@@ -1343,7 +1343,9 @@ class MixxxCore(Feature):
                    "src/util/widgethelper.cpp",
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
-                   "src/util/workerthreadscheduler.cpp"
+                   "src/util/workerthreadscheduler.cpp",
+                   "src/util/descriptivestatistics.cpp",
+                   "src/util/windowedstatistics.cpp"
                    ]
         proto_args = {
             'PROTOCPROTOPATH': ['src'],

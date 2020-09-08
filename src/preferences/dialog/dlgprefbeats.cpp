@@ -43,6 +43,9 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
 
     connect(bReanalyse,SIGNAL(stateChanged(int)),
             this, SLOT(slotReanalyzeChanged(int)));
+
+    connect(bIron, SIGNAL(stateChanged(int)), this, SLOT(ironingEnabled(int)));
+    connect(bRemoveArrythmic, SIGNAL(stateChanged(int)), this, SLOT(removeArrythmicEnabled(int)));
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
@@ -59,11 +62,11 @@ void DlgPrefBeats::loadSettings() {
     m_boffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bReanalyze =  m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_FastAnalysisEnabled = m_bpmSettings.getFastAnalysis();
-
     // TODO(rryan): Above range enabled is not exposed?
     m_minBpm = m_bpmSettings.getBpmRangeStart();
     m_maxBpm = m_bpmSettings.getBpmRangeEnd();
-
+    m_bEnableIroning = m_bpmSettings.getEnableIroning();
+    m_bEnableArrythmicRemoval = m_bpmSettings.getEnableArrythmicRemoval();
     slotUpdate();
 }
 
@@ -79,6 +82,8 @@ void DlgPrefBeats::slotResetToDefaults() {
     // TODO(rryan): Above range enabled is not exposed?
     m_minBpm = m_bpmSettings.getBpmRangeStartDefault();
     m_maxBpm = m_bpmSettings.getBpmRangeEndDefault();
+    m_bEnableIroning = m_bpmSettings.getEnableIroningDefault();
+    m_bEnableArrythmicRemoval = m_bpmSettings.getEnableArrythmicRemovalDefault();
     slotUpdate();
 }
 
@@ -115,6 +120,16 @@ void DlgPrefBeats::maxBpmRangeChanged(int value) {
     slotUpdate();
 }
 
+void DlgPrefBeats::removeArrythmicEnabled(int value) {
+    m_bEnableArrythmicRemoval = static_cast<bool>(value);
+    slotUpdate();
+}
+
+void DlgPrefBeats::ironingEnabled(int value) {
+    m_bEnableIroning = static_cast<bool>(value);
+    slotUpdate();
+}
+
 void DlgPrefBeats::slotUpdate() {
     bfixedtempo->setEnabled(m_banalyzerEnabled);
     boffset->setEnabled((m_banalyzerEnabled && m_bfixedtempoEnabled));
@@ -125,6 +140,9 @@ void DlgPrefBeats::slotUpdate() {
     txtMaxBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
     txtMinBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
     bReanalyse->setEnabled(m_banalyzerEnabled);
+    // Only apply corrections on non-constant tempo beatgrids
+    bIron->setEnabled(m_banalyzerEnabled && !m_bfixedtempoEnabled);
+    bRemoveArrythmic->setEnabled(m_banalyzerEnabled && !m_bfixedtempoEnabled);
 
     if (!m_banalyzerEnabled) {
         return;
@@ -158,6 +176,9 @@ void DlgPrefBeats::slotUpdate() {
     txtMaxBpm->setValue(m_maxBpm);
     txtMinBpm->setValue(m_minBpm);
     bReanalyse->setChecked(m_bReanalyze);
+
+    bIron->setChecked(m_bEnableIroning);
+    bRemoveArrythmic->setChecked(m_bEnableArrythmicRemoval);
 }
 
 void DlgPrefBeats::slotReanalyzeChanged(int value) {
@@ -179,4 +200,6 @@ void DlgPrefBeats::slotApply() {
     m_bpmSettings.setFastAnalysis(m_FastAnalysisEnabled);
     m_bpmSettings.setBpmRangeStart(m_minBpm);
     m_bpmSettings.setBpmRangeEnd(m_maxBpm);
+    m_bpmSettings.setEnableIroning(m_bEnableIroning);
+    m_bpmSettings.setEnableArrythmicRemoval(m_bEnableArrythmicRemoval);
 }

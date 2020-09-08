@@ -804,6 +804,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
+  src/util/descriptivestatistics.cpp
+  src/util/windowedstatistics.cpp
   src/waveform/guitick.cpp
   src/waveform/renderers/glslwaveformrenderersignal.cpp
   src/waveform/renderers/glvsynctestrenderer.cpp

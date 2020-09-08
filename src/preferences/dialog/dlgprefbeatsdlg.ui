@@ -149,6 +149,26 @@ by analyzing the beats to discard outliers.</string>
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="bIron">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The detected beats outputed by the Queen Mary algorithm fluctuates around a center tempo value. Attempts to remove unintended tempo variations by making the longest possible sequence of equidistant beats that fall within a +-25ms phase error of a const tempo, which should sound unnoticeable.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Enable ironing detected beats (Recommended)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="bRemoveArrythmic">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sometimes - especially on percussion free, such as ambient music, or effects heavy regions, such as builds and breaks of EDM - the detector fails to keep track of the steady pulse and will deviate from the metronome tempo. Attempts to remove the beats on these outliers tempo values by making them conform to the previous and next stable detected tempo if they are the same and regions is small.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Enable removal of arrythmic regions (Recommended)</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

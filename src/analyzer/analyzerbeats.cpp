@@ -35,6 +35,8 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesFixedTempo(true),
           m_bPreferencesOffsetCorrection(false),
           m_bPreferencesFastAnalysis(false),
+          m_bPreferencesEnableIroning(false),
+          m_bPreferencesEnableArrhythmicRemoval(false),
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_iMaxSamplesToProcess(0),
@@ -68,6 +70,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
+    m_bPreferencesEnableArrhythmicRemoval = m_bpmSettings.getEnableArrythmicRemoval();
+    m_bPreferencesEnableIroning = m_bpmSettings.getEnableIroning();
 
     if (availablePlugins().size() > 0) {
         m_pluginId = defaultPlugin().id;
@@ -177,6 +181,8 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
     QString newSubVersion = BeatFactory::getPreferredSubVersion(
             m_bPreferencesFixedTempo,
             m_bPreferencesOffsetCorrection,
+            m_bPreferencesEnableIroning,
+            m_bPreferencesEnableArrhythmicRemoval,
             iMinBpm,
             iMaxBpm,
             extraVersionInfo);
@@ -234,6 +240,8 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
                 m_bPreferencesOffsetCorrection,
+                m_bPreferencesEnableIroning,
+                m_bPreferencesEnableArrhythmicRemoval,
                 m_iSampleRate,
                 m_iTotalSamples,
                 m_iMinBpm,
