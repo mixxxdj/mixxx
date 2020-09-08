@@ -205,7 +205,7 @@ TEST_F(HotcueControlTest, SetLoopAuto) {
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 }
 
-TEST_F(HotcueControlTest, SetLoopManual) {
+TEST_F(HotcueControlTest, SetLoopManualWithLoop) {
     createAndLoadFakeTrack();
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
@@ -219,6 +219,46 @@ TEST_F(HotcueControlTest, SetLoopManual) {
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, SetLoopManualWithoutLoop) {
+    // Setup fake track with 120 bpm can calculate loop size
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setBpm(120.0);
+
+    loadTrack(pTrack);
+    ProcessBuffer();
+
+    const double beatLengthSamples = getBeatLengthSamples(pTrack);
+    m_pBeatloopSize->slotSet(4);
+    const double beatloopLengthSamples = m_pBeatloopSize->get() * getBeatLengthSamples(pTrack);
+
+    setCurrentSamplePosition(8 * beatLengthSamples);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pHotcue1SetLoop->slotSet(1);
+    m_pHotcue1SetLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(currentSamplePosition(), m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(currentSamplePosition() + beatloopLengthSamples, m_pHotcue1EndPosition->get());
+}
+
+TEST_F(HotcueControlTest, SetLoopManualWithoutLoopOrBeats) {
+    createAndLoadFakeTrack();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pHotcue1SetLoop->slotSet(1);
+    m_pHotcue1SetLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 }
 
 TEST_F(HotcueControlTest, CueGoto) {
