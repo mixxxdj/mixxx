@@ -1008,7 +1008,7 @@ void CueControl::hotcueActivate(
                         hotcueGoto(pControl, v);
                         break;
                     case mixxx::CueType::Loop:
-                        hotcueLoopToggle(pControl, v);
+                        hotcueGotoAndLoop(pControl, v);
                         break;
                     default:
                         DEBUG_ASSERT(!"Invalid CueType!");
