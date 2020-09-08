@@ -141,10 +141,11 @@ void BeatMap::createFromBeatVector(const QVector<double>& beats) {
     foreach (double beatpos, beats) {
         // beatpos is in frames. Do not accept fractional frames.
         beatpos = floor(beatpos);
-        if (beatpos <= previous_beatpos || beatpos < 0) {
+        if (beatpos <= previous_beatpos) {
             qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
             qDebug() << "discarding beat " << beatpos;
         } else {
+            //qDebug() << "beat at" << beatpos;
             beat.set_frame_position(beatpos);
             m_beats.append(beat);
             previous_beatpos = beatpos;

@@ -253,4 +253,41 @@ std::vector<float> AutocorrelationProcessor::processPhase2(float * input, int in
     return autocorrelation;
 }
 
+int AutocorrelationProcessor::findBeat(float * input, int inputLength, const std::vector<int>& periods, int initalOffset) const
+{
+    int readBlockPointerIndex = initalOffset;
+    AutoCorrelation autocorrelation;
+
+    float max_sum = 0;
+    int max_lag = 0;
+    // periods[0] is most likely 1/8 expect a maximum at least at 1/4
+    int shift = periods[0];
+    if (shift < 20) {
+        // Look at least into a 680 ms Window (88 BPM)
+        shift = 20;
+    }
+    for (int lag = 0; lag < shift; ++lag) {
+        int readPointer = readBlockPointerIndex + lag;
+        float sum = 0;
+        if (readPointer >= 0) {
+            sum = input[readPointer] * 4;
+        }
+        for (int i = 0; i < periods.size(); ++i) {
+            int period = periods[i];
+            int periodReadPinter = readPointer + period;
+            if (periodReadPinter < inputLength && periodReadPinter >= 0) {
+                sum += input[readPointer + period];
+            }
+            periodReadPinter = readPointer - period;
+            if (periodReadPinter < inputLength && periodReadPinter >= 0) {
+                sum += input[readPointer + period];
+            }
+        }
+        if (sum > max_sum) {
+            max_sum = sum;
+            max_lag = lag;
+        }
+    }
+    return max_lag;
+}
 

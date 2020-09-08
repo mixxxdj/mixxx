@@ -643,6 +643,59 @@ void AnalyzerRhythm::computeTempogramByACF() {
         snapGrid.push_back(m_detectionResults[i].results[2]);
     }
 
+    for (size_t block = 0; block < m_tempogramACF.size(); block++) {
+        qDebug() << "measurelength" << block << m_tempogramACF[block].keys();
+    }
+
+    // Insert missing onsets
+    std::set<int> metronome_sorted;
+    int lastNote = 0;
+    int lastBlock = -1;
+    int minPeriod = 10;
+    std::vector<int> periods;
+    for (int note : m_notes) {
+        int block = note / m_tempogramHopSize;
+        if (block != lastBlock) {
+            QList<double> keys = m_tempogramACF[block].keys();
+            minPeriod = 10;
+            for (double period : keys) {
+                if (period > minPeriod) {
+                    minPeriod = period;
+                    break;
+                }
+            }
+            periods.clear();
+            for (double period : keys) {
+                periods.push_back(period);
+            }
+            lastBlock = block;
+        }
+        int delta = note - lastNote;
+        // qDebug() << "delta" << delta << minPeriod;
+        if (delta > minPeriod * 5 / 2 || delta > 45) {
+            while (lastNote < note) {
+                int offset = autocorrelationProcessor.findBeat(
+                        &snapGrid[0], snapGrid.size(), periods, lastNote + 10);
+
+                int noteToAdd = lastNote + 10 + offset;
+
+                qDebug() << "delta to big" << note << lastNote << minPeriod << offset << noteToAdd;
+
+                if (noteToAdd + 5 > note) {
+                    break;
+                }
+
+                metronome_sorted.insert(noteToAdd);
+                lastNote = noteToAdd;
+            }
+        }
+
+        metronome_sorted.insert(note);
+        lastNote = note;
+    }
+
+    /*
+
     // Find offset
     std::vector<int> offsets;
     for (size_t block = 0; block < m_tempogramACF.size(); block++) {

@@ -33,9 +33,7 @@ public:
     std::vector<std::pair<int, float> > processPhase(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
     std::vector<std::pair<int, float> > processBeatDiff(float * input, int inputLength,int hop, int beatsize, int measuresize, int offset) const;
     std::vector<float> processPhase2(float * input, int inputLength, std::set<int> measuresizes, int offset) const;
-
-
-
+    int findBeat(float * input, int inputLength, const std::vector<int>& periods, int initalOffset) const;
 
 private:
     int m_windowLength;
