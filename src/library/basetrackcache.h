@@ -38,6 +38,10 @@ class SortColumn {
 class BaseTrackCache : public QObject {
     Q_OBJECT
   public:
+    /// Construct a BaseTrackCache object.
+    ///
+    /// The order of the `columns` list parameter defines the initial/default
+    /// order of columns in the library view.
     BaseTrackCache(TrackCollection* pTrackCollection,
                    const QString& tableName,
                    const QString& idColumn,
