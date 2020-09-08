@@ -577,7 +577,6 @@ void CueControl::loadCuesFromTrack() {
                 pControl->setEndPosition(pCue->getEndPosition());
                 pControl->setColor(pCue->getColor());
                 pControl->setType(pCue->getType());
-                pControl->setStatus(hotcueControlStatusFromCue(pCue));
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -2133,17 +2132,28 @@ void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
         return;
     }
 
+    if (m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Active) {
+        slotLoopReset();
+        return;
+    }
+
     CuePointer pCue(m_pCurrentSavedLoopControl->getCue());
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
+    VERIFY_OR_DEBUG_ASSERT(pCue->getType() == mixxx::CueType::Loop) {
+        return;
+    }
+
     DEBUG_ASSERT(startPosition != Cue::kNoPosition);
     DEBUG_ASSERT(endPosition != Cue::kNoPosition);
     DEBUG_ASSERT(startPosition < endPosition);
 
+    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() == HotcueControl::Status::Active);
     pCue->setStartPosition(startPosition);
     pCue->setEndPosition(endPosition);
+    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() == HotcueControl::Status::Active);
 }
 
 ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
