@@ -956,7 +956,8 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    if (!pCue) {
+    if (!pCue || pCue->getPosition() == Cue::kNoPosition) {
+        hotcueSet(pControl, v, HotcueMode::Loop);
         return;
     }
 
