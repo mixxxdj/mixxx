@@ -1583,37 +1583,33 @@ DJ505.SavedLoopMode = function(deck, offset) {
         group: deck.currentDeck,
         outConnect: false,
         on: this.color,
+        longPressTimeout: 500,
         colorMapper: DJ505.PadColorMap,
         blinkTimer: 0,
         blinkTimeout: 250,
         blinkStateOn: false,
         unshift: function() {
             this.inKey = "hotcue_" + this.number + "_activateloop";
-            this. input = function(channel, control, value, status, _group) {
-                this.pressed = this.isPress(channel, control, value, status);
-                this.inSetValue(this.pressed);
+            this.input = components.Button.prototype.input;
+        },
 
-                if (this.pressed) {
+        shift: function() {
+            this.inKey = "hotcue_" + this.number + "_loop_toggle";
+            this.input = function(_channel, _control, value, _status, _group) {
+                this.inSetValue(value);
+
+                if (value) {
                     this.longPressTimer = engine.beginTimer(
-                        this.longPressTimeout,
-                        function() {
-                            if (this.pressed) {
-                                engine.setValue(this.group, "hotcue_" + this.number + "_clear", 1);
-                            }
-                        },
-                        true
-                    );
+                        this.longPressTimeout, function() {
+                            engine.setValue(this.group, "hotcue_" + this.number + "_clear", 1);
+                        }.bind(this));
                 } else {
                     if (this.longPressTimer !== 0) {
                         engine.stopTimer(this.longPressTimer);
                         this.longPressTimer = 0;
                     }
                 }
-            };
-        },
-        shift: function() {
-            this.inKey = "hotcue_" + this.number + "_gotoandloop";
-            this.input = components.Button.prototype.input;
+            }.bind(this);
         },
         stopBlinking: function() {
             if (this.blinkTimer !== 0) {
