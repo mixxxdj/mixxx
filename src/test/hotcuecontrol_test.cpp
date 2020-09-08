@@ -1022,3 +1022,147 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, currentSamplePosition());
 }
+
+TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestore) {
+    // Setup fake track with 120 bpm can calculate loop size
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setBpm(120.0);
+
+    constexpr double savedLoopSize = 8;
+    m_pBeatloopSize->slotSet(savedLoopSize);
+    const double beatLengthSamples = getBeatLengthSamples(pTrack);
+    const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
+
+    loadTrack(pTrack);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    // Set a beatloop
+    m_pBeatloopActivate->slotSet(1);
+    m_pBeatloopActivate->slotSet(0);
+
+    // Save currently active loop to hotcue slot 1
+    m_pHotcue1ActivateLoop->slotSet(1);
+    m_pHotcue1ActivateLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Disable loop
+    m_pLoopToggle->slotSet(1);
+    m_pLoopToggle->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Set new beatloop size
+    m_pBeatloopSize->slotSet(savedLoopSize / 2);
+
+    // Re-enabled saved loop
+    m_pHotcue1ActivateLoop->slotSet(1);
+    m_pHotcue1ActivateLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Check that saved loop's beatloop size has been restored
+    EXPECT_DOUBLE_EQ(savedLoopSize, m_pBeatloopSize->get());
+}
+
+TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
+    // Setup fake track with 120 bpm can calculate loop size
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setBpm(120.0);
+
+    constexpr double savedLoopSize = 4;
+    m_pBeatloopSize->slotSet(savedLoopSize);
+    const double beatLengthSamples = getBeatLengthSamples(pTrack);
+    const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
+    const double cuePositionSamples = 8 * beatLengthSamples;
+    const double beforeLoopPositionSamples = 0;
+    const double afterLoopPositionSamples = beatLengthSamples;
+
+    loadTrack(pTrack);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    // Seek to cue Position (8th beat)
+    setCurrentSamplePosition(cuePositionSamples);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
+
+    // Set a beatloop
+    m_pBeatloopActivate->slotSet(1);
+    m_pBeatloopActivate->slotSet(0);
+
+    // Save currently active loop to hotcue slot 1
+    m_pHotcue1SetLoop->slotSet(1);
+    m_pHotcue1SetLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Check 1: Play position before saved loop
+
+    // Disable loop
+    m_pLoopToggle->slotSet(1);
+    m_pLoopToggle->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Seek to position before saved loop
+    setCurrentSamplePosition(beforeLoopPositionSamples);
+
+    // Set new beatloop size
+    m_pBeatloopSize->slotSet(m_pBeatloopSize->get() / 2);
+    ProcessBuffer();
+
+    // Re-enable saved loop
+    m_pHotcue1LoopToggle->slotSet(1);
+    m_pHotcue1LoopToggle->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Check that saved loop's beatloop size has been restored
+    EXPECT_DOUBLE_EQ(savedLoopSize, m_pBeatloopSize->get());
+
+    // Check that enabling the loop didn't cause a jump
+    EXPECT_DOUBLE_EQ(beforeLoopPositionSamples, currentSamplePosition());
+
+    // Check 2: Play position after saved loop
+
+    // Disable loop
+    m_pLoopToggle->slotSet(1);
+    m_pLoopToggle->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Seek to position after saved loop
+    setCurrentSamplePosition(afterLoopPositionSamples);
+
+    // Set new beatloop size
+    m_pBeatloopSize->slotSet(m_pBeatloopSize->get() / 2);
+    ProcessBuffer();
+
+    // Re-enable saved loop
+    m_pHotcue1LoopToggle->slotSet(1);
+    m_pHotcue1LoopToggle->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
+
+    // Check that saved loop's beatloop size has been restored
+    EXPECT_DOUBLE_EQ(savedLoopSize, m_pBeatloopSize->get());
+
+    // Check that enabling the loop didn't cause a jump
+    EXPECT_DOUBLE_EQ(afterLoopPositionSamples, currentSamplePosition());
+}

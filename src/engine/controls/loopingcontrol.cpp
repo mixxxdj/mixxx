@@ -562,6 +562,7 @@ void LoopingControl::setLoop(double startPosition, double endPosition, bool enab
         m_pCOLoopEndPosition->set(loopSamples.end);
     }
     setLoopingEnabled(enabled);
+    m_pCOBeatLoopSize->setAndConfirm(findBeatloopSizeForLoop(startPosition, endPosition));
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {
