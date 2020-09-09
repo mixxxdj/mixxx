@@ -20,6 +20,14 @@ constexpr uint64_t kavChannelLayoutUndefined = 0;
 
 constexpr int64_t kavStreamDefaultStartTime = 0;
 
+// "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
+// https://developer.apple.com/library/ios/technotes/tn2258/_index.html
+// "It must also be assumed that without an explicit value, the playback
+// system will trim 2112 samples from the AAC decoder output when starting
+// playback from any point in the bitsream."
+// See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
+constexpr int64_t kavStreamDecoderDelayAAC = 2112;
+
 // Use 0-based sample frame indexing
 constexpr SINT kMinFrameIndex = 0;
 
@@ -88,6 +96,20 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
 #endif
         start_time = kavStreamDefaultStartTime;
     }
+    switch (avStream.codecpar->codec_id) {
+    case AV_CODEC_ID_AAC:
+    case AV_CODEC_ID_AAC_LATM: {
+        // Increase the start time according to account for
+        // the decoder delay. Not all M4A files encode the
+        // start_time correctly.
+        if (start_time < kavStreamDecoderDelayAAC) {
+            start_time = kavStreamDecoderDelayAAC;
+        }
+        break;
+    }
+    default:
+        break;
+    }
     return start_time;
 }
 
@@ -152,13 +174,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     }
     case AV_CODEC_ID_AAC:
     case AV_CODEC_ID_AAC_LATM: {
-        // "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
-        // https://developer.apple.com/library/ios/technotes/tn2258/_index.html
-        // "It must also be assumed that without an explicit value, the playback
-        // system will trim 2112 samples from the AAC decoder output when starting
-        // playback from any point in the bitsream."
-        // See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
-        const SINT aacSeekPrerollFrameCount = 2112;
+        const SINT aacSeekPrerollFrameCount = kavStreamDecoderDelayAAC;
         return math_max(aacSeekPrerollFrameCount, defaultSeekPrerollFrameCount);
     }
     default:
