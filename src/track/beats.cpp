@@ -6,10 +6,10 @@
 
 namespace mixxx {
 
-const QString BeatsInternal::BEAT_MAP_VERSION = "BeatMap-1.0";
-const QString BeatsInternal::BEAT_GRID_1_VERSION = "BeatGrid-1.0";
-const QString BeatsInternal::BEAT_GRID_2_VERSION = "BeatGrid-2.0";
-const QString BeatsInternal::BEATS_VERSION = "Beats-1.0";
+const QString BeatsInternal::kBeatMapVersion = "BeatMap-1.0";
+const QString BeatsInternal::kBeatGridVersion1 = "BeatGrid-1.0";
+const QString BeatsInternal::kBeatGridVersion2 = "BeatGrid-2.0";
+const QString BeatsInternal::kBeatsVersion = "Beats-1.0";
 
 namespace {
 inline bool TimeSignatureMarkerEarlier(
@@ -494,7 +494,7 @@ void BeatsInternal::setSubVersion(const QString& subVersion) {
 }
 
 QString BeatsInternal::getVersion() const {
-    return BEATS_VERSION;
+    return kBeatsVersion;
 }
 
 QString BeatsInternal::getSubVersion() const {

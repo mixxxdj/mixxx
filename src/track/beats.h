@@ -47,10 +47,10 @@ class BeatsInternal {
                     timeSignatureMarkers =
                             QVector<track::io::TimeSignatureMarker>());
 
-    static const QString BEAT_MAP_VERSION;
-    static const QString BEAT_GRID_1_VERSION;
-    static const QString BEAT_GRID_2_VERSION;
-    static const QString BEATS_VERSION;
+    static const QString kBeatMapVersion;
+    static const QString kBeatGridVersion1;
+    static const QString kBeatGridVersion2;
+    static const QString kBeatsVersion;
     Beat findNthBeat(FramePos frame, int offset) const;
     Beat findNextBeat(FramePos frame) const;
     Beat findPrevBeat(FramePos frame) const;

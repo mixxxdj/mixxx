@@ -15,8 +15,8 @@ mixxx::BeatsInternal BeatFactory::loadBeatsFromByteArray(const TrackPointer& tra
     deserializedBeats.setSubVersion(beatsSubVersion);
     // Now that the serialized representation is the same for BeatGrids and BeatMaps,
     // they can be deserialized in a common function.
-    if (beatsVersion == mixxx::BeatsInternal::BEAT_GRID_1_VERSION ||
-            beatsVersion == mixxx::BeatsInternal::BEAT_GRID_2_VERSION) {
+    if (beatsVersion == mixxx::BeatsInternal::kBeatGridVersion1 ||
+            beatsVersion == mixxx::BeatsInternal::kBeatGridVersion2) {
         mixxx::track::io::LegacyBeatGrid legacyBeatGridProto;
         if (!legacyBeatGridProto.ParseFromArray(
                     beatsSerialized.constData(), beatsSerialized.size())) {
@@ -30,7 +30,7 @@ mixxx::BeatsInternal BeatFactory::loadBeatsFromByteArray(const TrackPointer& tra
                         legacyBeatGridProto.first_beat().frame_position()));
         qDebug() << "Successfully deserialized Beats from legacy data in format" << beatsVersion;
         return deserializedBeats;
-    } else if (beatsVersion == mixxx::BeatsInternal::BEAT_MAP_VERSION) {
+    } else if (beatsVersion == mixxx::BeatsInternal::kBeatMapVersion) {
         mixxx::track::io::LegacyBeatMap legacyBeatMapProto;
         if (!legacyBeatMapProto.ParseFromArray(
                     beatsSerialized.constData(), beatsSerialized.size())) {
@@ -47,7 +47,7 @@ mixxx::BeatsInternal BeatFactory::loadBeatsFromByteArray(const TrackPointer& tra
         deserializedBeats.initWithAnalyzer(beatVector);
         qDebug() << "Successfully deserialized Beats from legacy data in format" << beatsVersion;
         return deserializedBeats;
-    } else if (beatsVersion == mixxx::BeatsInternal::BEATS_VERSION) {
+    } else if (beatsVersion == mixxx::BeatsInternal::kBeatsVersion) {
         deserializedBeats.initWithProtobuf(beatsSerialized);
         qDebug() << "Successfully deserialized Beats";
         return deserializedBeats;
@@ -60,9 +60,9 @@ mixxx::BeatsInternal BeatFactory::loadBeatsFromByteArray(const TrackPointer& tra
 QString BeatFactory::getPreferredVersion(
         const bool bEnableFixedTempoCorrection) {
     if (bEnableFixedTempoCorrection) {
-        return mixxx::BeatsInternal::BEAT_GRID_2_VERSION;
+        return mixxx::BeatsInternal::kBeatGridVersion2;
     }
-    return mixxx::BeatsInternal::BEAT_MAP_VERSION;
+    return mixxx::BeatsInternal::kBeatMapVersion;
 }
 
 QString BeatFactory::getPreferredSubVersion(
@@ -134,7 +134,7 @@ mixxx::BeatsInternal BeatFactory::makePreferredBeats(const TrackPointer& track,
     beatsInternal.setSubVersion(subVersion);
 
     BeatUtils::printBeatStatistics(beats, iSampleRate);
-    if (version == mixxx::BeatsInternal::BEAT_GRID_2_VERSION) {
+    if (version == mixxx::BeatsInternal::kBeatGridVersion2) {
         mixxx::Bpm globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
         mixxx::FramePos firstBeat(BeatUtils::calculateFixedTempoFirstBeat(
                 bEnableOffsetCorrection,
@@ -151,7 +151,7 @@ mixxx::BeatsInternal BeatFactory::makePreferredBeats(const TrackPointer& track,
         }
         beatsInternal.initWithAnalyzer(generatedBeats);
         return beatsInternal;
-    } else if (version == mixxx::BeatsInternal::BEAT_MAP_VERSION) {
+    } else if (version == mixxx::BeatsInternal::kBeatMapVersion) {
         QVector<mixxx::FramePos> intermediateBeatFrameVector;
         intermediateBeatFrameVector.reserve(beats.size());
         std::transform(beats.begin(),
