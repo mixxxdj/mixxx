@@ -1,44 +1,20 @@
 // Created on: 30/nov/2011
 // Author: vittorio
 
-#ifndef BEATUTILS_H_
-#define BEATUTILS_H_
-
-// to tell the msvs compiler about `isnan`
-#include "util/math.h"
+#pragma once
 
 #include <QVector>
 
 // Included to get mixxx::kEngineChannelCount
 #include "engine/engine.h"
 #include "track/bpm.h"
+// to tell the msvs compiler about `isnan`
+#include "util/math.h"
 
 class BeatUtils {
   public:
     static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
-
-    static double constrainBpm(double bpm, int min_bpm, int max_bpm, bool aboveRange) {
-        if (bpm <= 0.0 || min_bpm < 0 || max_bpm < 0 ||
-            min_bpm >= max_bpm ||
-            (bpm >= min_bpm && bpm <= max_bpm)) {
-            return bpm;
-        }
-
-        if (isnan(bpm) || isinf(bpm)) {
-            return 0.0;
-        }
-
-        if (!aboveRange) {
-            while (bpm > max_bpm) {
-                bpm /= 2.0;
-            }
-        }
-        while (bpm < min_bpm) {
-            bpm *= 2.0;
-        }
-
-        return bpm;
-    }
+    static double constrainBpm(double bpm, int minBpm, int maxBpm, bool aboveRange);
 
     /*
      * This method detects the BPM given a set of beat positions.
@@ -97,5 +73,3 @@ class BeatUtils {
             int sampleRate,
             QMap<double, int>* frequencyHistogram);
 };
-
-#endif /* BEATUTILS_H_ */
