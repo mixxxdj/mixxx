@@ -5,7 +5,7 @@
 class WaveformRenderPlayMarker : public WaveformRendererAbstract {
   public:
     explicit WaveformRenderPlayMarker(WaveformWidgetRenderer* waveformWidgetRenderer);
-    virtual ~WaveformRenderPlayMarker();
+    ~WaveformRenderPlayMarker() override = default;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void draw(QPainter* painter, QPaintEvent* event) override;

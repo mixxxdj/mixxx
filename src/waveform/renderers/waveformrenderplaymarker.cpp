@@ -5,9 +5,6 @@ WaveformRenderPlayMarker::WaveformRenderPlayMarker(
         : WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-WaveformRenderPlayMarker::~WaveformRenderPlayMarker() {
-}
-
 void WaveformRenderPlayMarker::setup(
         const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
