@@ -13,16 +13,13 @@
 #include "track/beat.h"
 #include "track/bpm.h"
 #include "track/frame.h"
+#include "track/timesignature.h"
 #include "util/types.h"
 
 namespace mixxx {
-
 class Beats;
-class BeatIterator;
-using BeatsPointer = std::shared_ptr<Beats>;
+typedef std::shared_ptr<Beats> BeatsPointer;
 } // namespace mixxx
-
-#include "track/timesignature.h"
 
 class Track;
 
