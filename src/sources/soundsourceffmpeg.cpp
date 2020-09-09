@@ -116,7 +116,10 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
 inline int64_t getStreamEndTime(const AVStream& avStream) {
     // The "duration" contains actually the end time of the
     // stream.
-    DEBUG_ASSERT(getStreamStartTime(avStream) <= avStream.duration);
+    VERIFY_OR_DEBUG_ASSERT(getStreamStartTime(avStream) <= avStream.duration) {
+        // assume that the stream is empty
+        return getStreamStartTime(avStream);
+    }
     return avStream.duration;
 }
 
