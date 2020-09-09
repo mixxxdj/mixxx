@@ -66,7 +66,7 @@ class TrackInfo final {
 
     // Returns true if modified
     bool parseArtistTitleFromFileName(
-            QString fileName,
+            const QString& fileName,
             bool splitArtistTitle);
 
     // Adjusts floating-point properties to match their string representation

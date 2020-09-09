@@ -1,41 +1,48 @@
 #include "track/trackinfo.h"
 
-
-namespace mixxx {
+#include <QFileInfo>
 
 namespace {
 
+const QString kDefaultArtistTitleSeparator = QStringLiteral("_-_");
 const QString kArtistTitleSeparatorWithSpaces = QStringLiteral(" - ");
-const QString kArtistTitleSeparator = QStringLiteral("_-_");
-
-const QChar kFileExtensionSeparator = '.';
+const QChar kFallbackArtistTitleSeparator = QChar('-');
 
 } // anonymous namespace
 
+namespace mixxx {
+
 bool TrackInfo::parseArtistTitleFromFileName(
-        QString fileName,
+        const QString& fileName,
         bool splitArtistTitle) {
     bool modified = false;
-    fileName = fileName.trimmed();
-    auto titleWithFileType = fileName;
+    auto title = QFileInfo(fileName).completeBaseName().trimmed();
     if (splitArtistTitle) {
-        fileName.replace(kArtistTitleSeparatorWithSpaces, kArtistTitleSeparator);
-        if (fileName.count(kArtistTitleSeparator) == 1) {
-            auto artist = fileName.section(kArtistTitleSeparator, 0, 0).trimmed();
-            if (!artist.isEmpty()) {
-                setArtist(artist);
-                modified = true;
-            }
-            titleWithFileType = fileName.section(kArtistTitleSeparator, 1).trimmed();
+        QString artist;
+        // Preprocessing for disambiguation
+        auto splitArtist = title;
+        splitArtist.replace(kArtistTitleSeparatorWithSpaces, kDefaultArtistTitleSeparator);
+        // Splitting
+        QString artistTitleSeparator;
+        if (splitArtist.count(kDefaultArtistTitleSeparator) == 1) {
+            artistTitleSeparator = kDefaultArtistTitleSeparator;
+        } else if (splitArtist.count(kFallbackArtistTitleSeparator) == 1) {
+            artistTitleSeparator = kFallbackArtistTitleSeparator;
+        }
+        if (!artistTitleSeparator.isEmpty()) {
+            const int splitPos = splitArtist.indexOf(artistTitleSeparator);
+            DEBUG_ASSERT(splitPos >= 0);
+            DEBUG_ASSERT(splitPos == splitArtist.lastIndexOf(artistTitleSeparator));
+            artist = splitArtist.left(splitPos).trimmed();
+            const auto rightLen = splitArtist.size() - (splitPos + artistTitleSeparator.size());
+            title = splitArtist.right(rightLen).trimmed();
+        }
+        if (!artist.isEmpty() && artist != getArtist()) {
+            setArtist(artist);
+            modified = true;
         }
     }
-    auto title = titleWithFileType;
-    if (titleWithFileType.contains(kFileExtensionSeparator)) {
-        // Strip file extension starting at the right-most '.'
-        title = titleWithFileType.section(kFileExtensionSeparator, 0, -2);
-    }
-    title = title.trimmed();
-    if (!title.isEmpty()) {
+    if (!title.isEmpty() && title != getTitle()) {
         setTitle(title);
         modified = true;
     }

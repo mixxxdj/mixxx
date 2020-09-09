@@ -14,19 +14,19 @@ TEST_F(TrackMetadataTest, parseArtistTitleFromFileName) {
     }
     {
         mixxx::TrackInfo trackInfo;
-        trackInfo.parseArtistTitleFromFileName(" only-title ", true);
-        EXPECT_EQ(QString(), trackInfo.getArtist());
-        EXPECT_EQ("only-title", trackInfo.getTitle());
+        trackInfo.parseArtistTitleFromFileName(" artist-title ", true);
+        EXPECT_EQ("artist", trackInfo.getArtist());
+        EXPECT_EQ("title", trackInfo.getTitle());
     }
     {
         mixxx::TrackInfo trackInfo;
-        trackInfo.parseArtistTitleFromFileName(" only -_title ", true);
-        EXPECT_EQ(QString(), trackInfo.getArtist());
-        EXPECT_EQ("only -_title", trackInfo.getTitle());
+        trackInfo.parseArtistTitleFromFileName(" artist -_title ", true);
+        EXPECT_EQ("artist", trackInfo.getArtist());
+        EXPECT_EQ("_title", trackInfo.getTitle());
     }
     {
         mixxx::TrackInfo trackInfo;
-        trackInfo.parseArtistTitleFromFileName(" only  -  title ", false);
+        trackInfo.parseArtistTitleFromFileName(" only  -  title.mp3", false);
         EXPECT_EQ(QString(), trackInfo.getArtist());
         EXPECT_EQ("only  -  title", trackInfo.getTitle());
     }
@@ -38,9 +38,39 @@ TEST_F(TrackMetadataTest, parseArtistTitleFromFileName) {
     }
     {
         mixxx::TrackInfo trackInfo;
-        trackInfo.parseArtistTitleFromFileName(" only -\ttitle\t", true);
+        trackInfo.parseArtistTitleFromFileName(" ar.tist -\tti.tle\t.mp3", true);
+        EXPECT_EQ("ar.tist", trackInfo.getArtist());
+        EXPECT_EQ("ti.tle", trackInfo.getTitle());
+    }
+    {
+        mixxx::TrackInfo trackInfo;
+        trackInfo.parseArtistTitleFromFileName(" -artist - -title-.mp3", true);
+        EXPECT_EQ("-artist", trackInfo.getArtist());
+        EXPECT_EQ("-title-", trackInfo.getTitle());
+    }
+    {
+        mixxx::TrackInfo trackInfo;
+        trackInfo.parseArtistTitleFromFileName(" -artist ti-tle- ", true);
         EXPECT_EQ(QString(), trackInfo.getArtist());
-        EXPECT_EQ("only -\ttitle", trackInfo.getTitle());
+        EXPECT_EQ("-artist ti-tle-", trackInfo.getTitle());
+    }
+    {
+        mixxx::TrackInfo trackInfo;
+        trackInfo.parseArtistTitleFromFileName(" artist- title ", true);
+        EXPECT_EQ("artist", trackInfo.getArtist());
+        EXPECT_EQ("title", trackInfo.getTitle());
+    }
+    {
+        mixxx::TrackInfo trackInfo;
+        trackInfo.parseArtistTitleFromFileName(" artist- ", true);
+        EXPECT_EQ("artist", trackInfo.getArtist());
+        EXPECT_EQ(QString(), trackInfo.getTitle());
+    }
+    {
+        mixxx::TrackInfo trackInfo;
+        trackInfo.parseArtistTitleFromFileName(" -title ", true);
+        EXPECT_EQ(QString(), trackInfo.getArtist());
+        EXPECT_EQ("title", trackInfo.getTitle());
     }
     {
         mixxx::TrackInfo trackInfo;
