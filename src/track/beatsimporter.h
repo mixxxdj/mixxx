@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "audio/streaminfo.h"
-#include "frame.h"
+#include "track/frame.h"
 
 namespace mixxx {
 
