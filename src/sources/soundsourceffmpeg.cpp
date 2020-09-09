@@ -99,9 +99,10 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
     switch (avStream.codecpar->codec_id) {
     case AV_CODEC_ID_AAC:
     case AV_CODEC_ID_AAC_LATM: {
-        // Increase the start time according to account for
-        // the decoder delay. Not all M4A files encode the
-        // start_time correctly.
+        // Increase the start time to account for the decoder delay.
+        // Not all M4A files encode the start_time correctly, e.g.
+        // the test file cover-test-itunes-12.7.0-aac.m4a has a
+        // start_time of 0.
         if (start_time < kavStreamDecoderDelayAAC) {
             start_time = kavStreamDecoderDelayAAC;
         }
