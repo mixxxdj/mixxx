@@ -1528,20 +1528,18 @@ mixxx::audio::StreamInfo Track::streamInfo() const {
     return streamInfo;
 }
 
-QDebug operator<<(QDebug dbg, const TrackPointer& arg) {
-    dbg << "Track Debug Info";
-    dbg << "m_bDirty:" << arg->m_bDirty;
-    dbg << "m_bMarkedForMetadataExport:" << arg->m_bMarkedForMetadataExport;
-    dbg << "duration:" << arg->getDuration();
-    dbg << "Sample Rate:" << arg->getSampleRate();
-    dbg << "m_cuePoints:";
-    for (auto cuePoint : arg->m_cuePoints) {
-        dbg << "\tDirty:" << cuePoint->isDirty();
-        //qDebug() << "\tPosition:" << cuePoint->getPosition();
-        dbg << "\tType:" << int(cuePoint->getType());
-        dbg << "\tLabel:" << cuePoint->getLabel();
+QDebug operator<<(QDebug dbg, const Track& arg) {
+    dbg << "Duration:" << arg.getDuration();
+    dbg << "Sample Rate:" << arg.getSampleRate();
+    if (!arg.getCuePoints().empty()) {
+        dbg << "Cue Points:";
+        for (auto cuePoint : arg.getCuePoints()) {
+            dbg << cuePoint->getPosition();
+        }
     }
-    dbg << "m_pBeats:";
-    dbg << arg->m_pBeats;
+    if (arg.getBeats()) {
+        dbg << "Beats:";
+        dbg << arg.getBeats();
+    }
     return dbg;
 }
