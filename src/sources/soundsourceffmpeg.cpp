@@ -1292,6 +1292,11 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 // and excessiveFrameRange
                 DEBUG_ASSERT(readFrameIndex <= excessiveFrameRange.end());
                 readFrameIndex = excessiveFrameRange.end();
+                if (decodedFrameRange.empty()) {
+                    // Skip the remaining loop body
+                    m_curFrameIndex = readFrameIndex;
+                    continue;
+                }
             }
 
 #if VERBOSE_DEBUG_LOG
