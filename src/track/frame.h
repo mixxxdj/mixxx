@@ -7,14 +7,17 @@ namespace mixxx {
 /// FrameDiff_t can be used to store the difference in position between
 /// two frames and to store the length of a segment of track in terms of frames.
 typedef double FrameDiff_t;
-typedef double value_t;
 
 /// FramePos defines the position of a frame in a track
 /// with respect to a fixed origin, i.e. start of the track.
 class FramePos final {
   public:
+    typedef double value_t;
+    static constexpr value_t kStartValue = 0;
+    static constexpr value_t kInvalidValue = std::numeric_limits<FramePos::value_t>::quiet_NaN();
+
     constexpr FramePos()
-            : m_dFramePos(0) {
+            : m_dFramePos(kStartValue) {
     }
 
     constexpr explicit FramePos(value_t dFramePos)
@@ -53,7 +56,7 @@ class FramePos final {
     value_t m_dFramePos;
 };
 
-// FramePos can be added to and subracted from a FrameDiff_t
+// FramePos can be added to and subtracted from a FrameDiff_t
 inline FramePos operator+(FramePos framePos, FrameDiff_t frameDiff) {
     return FramePos(framePos.getValue() + frameDiff);
 }
@@ -107,8 +110,8 @@ inline QDebug operator<<(QDebug dbg, FramePos arg) {
     return dbg;
 }
 
-constexpr FramePos kInvalidFramePos = FramePos(std::numeric_limits<value_t>::quiet_NaN());
-constexpr FramePos kStartFramePos = FramePos(0);
+constexpr FramePos kInvalidFramePos = FramePos(FramePos::kInvalidValue);
+constexpr FramePos kStartFramePos = FramePos(FramePos::kStartValue);
 } // namespace mixxx
 
 Q_DECLARE_TYPEINFO(mixxx::FramePos, Q_MOVABLE_TYPE);
