@@ -1,6 +1,3 @@
-// signature.h
-// Created on: 06/11/2019 by Javier Vilarroig
-
 #pragma once
 
 #include "proto/beats.pb.h"
