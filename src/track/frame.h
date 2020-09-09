@@ -110,3 +110,6 @@ inline QDebug operator<<(QDebug dbg, FramePos arg) {
 constexpr FramePos kInvalidFramePos = FramePos(std::numeric_limits<value_t>::quiet_NaN());
 constexpr FramePos kStartFramePos = FramePos(0);
 } // namespace mixxx
+
+Q_DECLARE_TYPEINFO(mixxx::FramePos, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(mixxx::FramePos);
