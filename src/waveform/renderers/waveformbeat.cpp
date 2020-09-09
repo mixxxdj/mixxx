@@ -71,7 +71,3 @@ bool WaveformBeat::contains(QPoint point, Qt::Orientation orientation) const {
                 point.y() < paddedPositionPixelsAfterLine;
     }
 }
-
-bool operator<(const WaveformBeat& beat1, const WaveformBeat& beat2) {
-    return beat1.getBeat() < beat2.getBeat();
-}

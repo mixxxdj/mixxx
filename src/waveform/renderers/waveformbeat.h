@@ -46,5 +46,3 @@ class WaveformBeat final : WaveformElementRightClickable {
     BeatGridMode m_beatGridMode;
     bool m_bVisible;
 };
-
-bool operator<(const WaveformBeat& beat1, const WaveformBeat& beat2);
