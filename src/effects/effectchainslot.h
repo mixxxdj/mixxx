@@ -111,6 +111,8 @@ class EffectChainSlot : public QObject {
   protected:
     EffectSlotPointer addEffectSlot(const QString& group);
 
+    virtual int numPresets() const;
+
     // Activates EffectChain processing for the provided channel.
     void enableForInputChannel(const ChannelHandleAndGroup& handleGroup);
     void disableForInputChannel(const ChannelHandleAndGroup& handleGroup);
@@ -126,7 +128,11 @@ class EffectChainSlot : public QObject {
     EffectsMessengerPointer m_pMessenger;
     std::unique_ptr<ControlObject> m_pControlChainMix;
     std::unique_ptr<ControlObject> m_pControlChainSuperParameter;
+    std::unique_ptr<ControlObject> m_pControlNumPresetsAvailable;
     QList<EffectSlotPointer> m_effectSlots;
+
+  protected slots:
+    void slotPresetListUpdated();
 
   private slots:
     void slotControlLoadChainPreset(double value);
