@@ -20,6 +20,14 @@ constexpr uint64_t kavChannelLayoutUndefined = 0;
 
 constexpr int64_t kavStreamDefaultStartTime = 0;
 
+// "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
+// https://developer.apple.com/library/ios/technotes/tn2258/_index.html
+// "It must also be assumed that without an explicit value, the playback
+// system will trim 2112 samples from the AAC decoder output when starting
+// playback from any point in the bitsream."
+// See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
+constexpr int64_t kavStreamDecoderDelayAAC = 2112;
+
 // Use 0-based sample frame indexing
 constexpr SINT kMinFrameIndex = 0;
 
@@ -81,20 +89,38 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
+        switch (avStream.codecpar->codec_id) {
+        case AV_CODEC_ID_AAC:
+        case AV_CODEC_ID_AAC_LATM: {
+            // Account for the expected decoder delay instead of simply
+            // using the default start time.
+            // Not all M4A files encode the start_time correctly, e.g.
+            // the test file cover-test-itunes-12.7.0-aac.m4a has a valid
+            // start_time of 0. Unfortunately, this special case is cannot
+            // detected and compensated.
+            start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderDelayAAC);
+            break;
+        }
+        default:
+            start_time = kavStreamDefaultStartTime;
+        }
 #if VERBOSE_DEBUG_LOG
         kLogger.debug()
                 << "Unknown start time -> using default value"
-                << kavStreamDefaultStartTime;
+                << start_time;
 #endif
-        start_time = kavStreamDefaultStartTime;
     }
+    DEBUG_ASSERT(start_time != AV_NOPTS_VALUE);
     return start_time;
 }
 
 inline int64_t getStreamEndTime(const AVStream& avStream) {
     // The "duration" contains actually the end time of the
     // stream.
-    DEBUG_ASSERT(getStreamStartTime(avStream) <= avStream.duration);
+    VERIFY_OR_DEBUG_ASSERT(getStreamStartTime(avStream) <= avStream.duration) {
+        // assume that the stream is empty
+        return getStreamStartTime(avStream);
+    }
     return avStream.duration;
 }
 
@@ -154,13 +180,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     }
     case AV_CODEC_ID_AAC:
     case AV_CODEC_ID_AAC_LATM: {
-        // "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
-        // https://developer.apple.com/library/ios/technotes/tn2258/_index.html
-        // "It must also be assumed that without an explicit value, the playback
-        // system will trim 2112 samples from the AAC decoder output when starting
-        // playback from any point in the bitsream."
-        // See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
-        const SINT aacSeekPrerollFrameCount = 2112;
+        const SINT aacSeekPrerollFrameCount = kavStreamDecoderDelayAAC;
         return math_max(aacSeekPrerollFrameCount, defaultSeekPrerollFrameCount);
     }
     default:
@@ -1459,9 +1479,10 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                                 m_curFrameIndex,
                                 getSignalInfo().samples2frames(m_sampleBuffer.readableLength()));
                 if (frameIndexRange().end() < bufferedFrameRange.end()) {
-                    // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR) FFmpeg may
-                    // decode a few more samples than expected! Simply discard those
-                    // trailing samples.
+                    // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR, Lavf AAC)
+                    // FFmpeg may decode a few more samples than expected! Simply discard
+                    // those trailing samples, because we are not prepared to adjust the
+                    // duration of the stream later.
                     const auto overflowFrameCount =
                             bufferedFrameRange.end() - frameIndexRange().end();
                     kLogger.info()
