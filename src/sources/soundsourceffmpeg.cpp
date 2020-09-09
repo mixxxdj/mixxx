@@ -1189,7 +1189,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 
             // -= 1st step =-
             // Advance writableFrameRange.start() towards readFrameIndex
-            // if behind
+            // if behind and fill with silence
             if (writableFrameRange.start() < readFrameIndex) {
                 const auto missingFrameRange =
                         IndexRange::between(
@@ -1216,7 +1216,11 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     writableFrameRange.start() >= readFrameIndex);
 
             // -= 2nd step =-
-            // Check for skipped sample data and log
+            // Check for skipped sample data and log a message.
+            // Nothing to do here, because the skipped samples will be discarded
+            // during the following two steps. How to actually handle these range
+            // of unavailable samples depends on the relative position of
+            // writableFrameRange.
             DEBUG_ASSERT(readFrameIndex <= decodedFrameRange.start());
             const auto skippedFrameRange =
                     IndexRange::between(
@@ -1259,6 +1263,13 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             // Discard both skipped and decoded frames that do not overlap
             // with writableFrameRange, i.e. that precede writableFrameRange.
             if (writableFrameRange.start() > readFrameIndex) {
+                //                 readFrameIndex
+                //                       |
+                //                       v
+                //      | missing frames | skipped frames |<- decodedFrameRange ->|
+                //                                   ^               ^                 ^
+                //                                   |...            |...              |....
+                //                         writableFrameRange.start()
                 const auto excessiveFrameRange =
                         IndexRange::between(
                                 decodedFrameRange.start(),
@@ -1294,7 +1305,8 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 
             // -= 4th step =-
             // Consume all sample data from both skipped and decoded
-            // ranges that overlap with writableFrameRange.
+            // ranges that overlap with writableFrameRange, i.e. that
+            // are supposed to be consumed.
             DEBUG_ASSERT(readFrameIndex <= decodedFrameRange.start());
             DEBUG_ASSERT(decodedFrameRange.empty() ||
                     writableFrameRange.start() <= readFrameIndex);
