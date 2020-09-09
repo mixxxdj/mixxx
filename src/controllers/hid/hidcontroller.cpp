@@ -20,6 +20,10 @@ ControllerJSProxy* HidController::jsProxy() {
     return new HidControllerJSProxy(this);
 }
 
+namespace {
+constexpr int kReportIdSize = 1; // Size of an USB HID Report ID is always one byte
+}
+
 HidController::HidController(const hid_device_info& deviceInfo)
         : Controller(),
           m_pHidDevice(NULL) {
@@ -298,14 +302,10 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
     }
 }
 
-namespace {
-constexpr unsigned int sizeOfReportID = 1; // Size of an USB HID Report ID is always one byte
-}
-
 void HidController::sendFeatureReport(
         const QList<int>& dataList, unsigned int reportID) {
     QByteArray dataArray;
-    dataArray.reserve(sizeOfReportID + dataList.size());
+    dataArray.reserve(kReportIdSize + dataList.size());
 
     // Append the Report ID to the beginning of dataArray[] per the API..
     dataArray.append(reportID);
