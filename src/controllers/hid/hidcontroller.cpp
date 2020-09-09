@@ -299,9 +299,8 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
 }
 
 
-namespace
-{
-    constexpr unsigned int sizeOfReportID = 1;  // Size of an USB HID Report ID is always one byte
+namespace {
+constexpr unsigned int sizeOfReportID = 1;  // Size of an USB HID Report ID is always one byte
 }
 
 void HidController::sendFeatureReport(
