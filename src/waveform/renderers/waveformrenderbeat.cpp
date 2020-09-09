@@ -18,7 +18,7 @@ const QList<double> kWaveformZoomToTakeOutDownbeats({35, 70});
 inline int opacityPercentageToAlpha(int opacityPercentageOnHundredScale) {
     return opacityPercentageOnHundredScale * 255.0 / 100;
 }
-}
+} // namespace
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -46,7 +46,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int alpha = m_waveformRenderer->beatGridAlpha();
     if (alpha == 0)
         return;
-    m_beatColor.setAlphaF(alpha/100.0);
+    m_beatColor.setAlphaF(alpha / 100.0);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
@@ -60,12 +60,27 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     const auto leftLimit = samplePosToFramePos(firstDisplayedPosition * trackSamples);
     const auto rightLimit = samplePosToFramePos(lastDisplayedPosition * trackSamples);
-    const int displayBeatsStartIdxInclusive = trackBeats->findNextBeat(leftLimit).beatIndex();
-    const int displayBeatsEndIdxInclusive = trackBeats->findPrevBeat(rightLimit).beatIndex();
+    int displayBeatsStartIdxInclusive = trackBeats->findNextBeat(leftLimit).beatIndex();
+    int displayBeatsEndIdxInclusive = trackBeats->findPrevBeat(rightLimit).beatIndex();
+
+    // We perform explicit limit check due to fuzzy beat boundaries used by Beats class.
+    // So it returns those beats which are slightly outside screen boundaries and we
+    // will remove them.
+    const auto leftMostBeatPosition =
+            trackBeats->getBeatAtIndex(displayBeatsStartIdxInclusive)
+                    .framePosition();
+    if (leftMostBeatPosition < leftLimit) {
+        displayBeatsStartIdxInclusive++;
+    }
+    const auto rightMostBeatPosition =
+            trackBeats->getBeatAtIndex(displayBeatsEndIdxInclusive)
+                    .framePosition();
+    if (rightMostBeatPosition > rightLimit) {
+        displayBeatsEndIdxInclusive--;
+    }
 
     // if no beat do not waste time saving/restoring painter
-    // TODO(hacksdump): Implement no beats on screen check
-    if (false) {
+    if (displayBeatsStartIdxInclusive > displayBeatsEndIdxInclusive) {
         return;
     }
 
