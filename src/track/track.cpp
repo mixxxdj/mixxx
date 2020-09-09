@@ -312,11 +312,13 @@ QString Track::getBpmText() const {
 
 void Track::setBeats(const mixxx::BeatsInternal& beats) {
     QMutexLocker lock(&m_qMutex);
+    auto beatsCopy = beats;
+    beatsCopy.updateStreamInfo(streamInfo());
     if (!m_pBeats) {
-        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(beats));
+        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(beatsCopy));
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
     } else {
-        m_pBeats->initWithProtobuf(beats.toProtobuf());
+        m_pBeats->initWithProtobuf(beatsCopy.toProtobuf());
     }
 }
 

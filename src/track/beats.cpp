@@ -381,8 +381,10 @@ bool BeatsInternal::isValid() const {
 }
 
 void BeatsInternal::updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo) {
-    m_streamInfo = streamInfo;
-    generateBeatsFromMarkers();
+    if (m_streamInfo != streamInfo) {
+        m_streamInfo = streamInfo;
+        generateBeatsFromMarkers();
+    }
 }
 
 BeatsInternal::BeatsInternal(const audio::StreamInfo& streamInfo) {
