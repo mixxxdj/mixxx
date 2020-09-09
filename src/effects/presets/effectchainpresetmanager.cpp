@@ -480,6 +480,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
             m_quickEffectChainPresetsSorted.append(pChainPreset);
             savePresetXml(pChainPreset);
         }
+        emit quickEffectChainPresetListUpdated();
     }
 
     // Reload presets that were loaded into QuickEffects on last shutdown

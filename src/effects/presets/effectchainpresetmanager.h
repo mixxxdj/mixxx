@@ -35,6 +35,14 @@ class EffectChainPresetManager : public QObject {
         return m_quickEffectChainPresetsSorted;
     }
 
+    int numPresets() const {
+        return m_effectChainPresetsSorted.size();
+    }
+
+    int numQuickEffectPresets() const {
+        return m_quickEffectChainPresetsSorted.size();
+    }
+
     int presetIndex(const QString& presetName) const;
     int presetIndex(EffectChainPresetPointer pChainPreset) const;
     EffectChainPresetPointer presetAtIndex(int index) const;
