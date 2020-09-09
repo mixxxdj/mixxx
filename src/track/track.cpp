@@ -284,7 +284,8 @@ double Track::setBpm(double bpmValue) {
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         mixxx::FramePos cue = samplePosToFramePos(getCuePoint().getPosition());
-        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(streamInfo()));
+        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats());
+        pBeats->updateStreamInfo(streamInfo());
         pBeats->setGrid(mixxx::Bpm(bpmValue), cue);
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
         return bpmValue;
@@ -312,7 +313,7 @@ QString Track::getBpmText() const {
 void Track::setBeats(const mixxx::BeatsInternal& beats) {
     QMutexLocker lock(&m_qMutex);
     if (!m_pBeats) {
-        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(streamInfo(), beats));
+        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(beats));
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
     } else {
         m_pBeats->initWithProtobuf(beats.toProtobuf());
@@ -961,7 +962,7 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_streamInfo->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getSampleRate());
-    auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(streamInfo(), mixxx::BeatsInternal()));
+    auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(mixxx::BeatsInternal()));
     pBeats->initWithAnalyzer(
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
                     getLocation(), *m_streamInfo));

@@ -40,7 +40,7 @@ enum class BPMScale {
 /// plain copyable, movable object.
 class BeatsInternal {
   public:
-    BeatsInternal(const audio::StreamInfo& streamInfo = audio::StreamInfo());
+    explicit BeatsInternal(const audio::StreamInfo& streamInfo = audio::StreamInfo());
     void initWithProtobuf(const QByteArray& byteArray);
     void initWithAnalyzer(const QVector<FramePos>& beats,
             const QVector<track::io::TimeSignatureMarker>&
@@ -111,8 +111,7 @@ class BeatsInternal {
 class Beats final : public QObject {
     Q_OBJECT
   private:
-    explicit Beats(const audio::StreamInfo& streamInfo = audio::StreamInfo(),
-            const BeatsInternal& internal = BeatsInternal());
+    explicit Beats(const BeatsInternal& internal = BeatsInternal());
 
   public:
     ~Beats() override = default;

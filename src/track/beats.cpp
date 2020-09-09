@@ -46,9 +46,8 @@ void Beats::initWithProtobuf(const QByteArray& byteArray) {
     emit updated();
 }
 
-Beats::Beats(const audio::StreamInfo& streamInfo, const BeatsInternal& internal)
+Beats::Beats(const BeatsInternal& internal)
         : m_mutex(QMutex::Recursive), m_beatsInternal(internal) {
-    updateStreamInfo(streamInfo);
 }
 
 int Beats::numBeatsInRange(FramePos startFrame, FramePos endFrame) const {
@@ -378,7 +377,7 @@ Bpm BeatsInternal::getGlobalBpm() const {
 }
 
 bool BeatsInternal::isValid() const {
-    return getSampleRate() > 0 && !m_beats.empty();
+    return getSampleRate() > 0 && getDurationSeconds() > 0 && m_beatsProto.bpm_markers_size() > 0;
 }
 
 void BeatsInternal::updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo) {
