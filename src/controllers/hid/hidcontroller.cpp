@@ -21,9 +21,9 @@ ControllerJSProxy* HidController::jsProxy() {
 }
 
 namespace {
-constexpr int kReportIdSize = 1; // Size of an USB HID Report ID is always one byte
+constexpr int kReportIdSize = 1;             // Size of an USB HID Report ID is always one byte
 constexpr int kMaxHidErrorMessageSize = 512; // Maximum size of an HID error message string
-}
+} // namespace
 
 HidController::HidController(const hid_device_info& deviceInfo)
         : Controller(),
