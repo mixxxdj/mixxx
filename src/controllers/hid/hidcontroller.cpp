@@ -22,6 +22,7 @@ ControllerJSProxy* HidController::jsProxy() {
 
 namespace {
 constexpr int kReportIdSize = 1; // Size of an USB HID Report ID is always one byte
+constexpr int kMaxHidErrorMessageSize = 512; // Maximum size of an HID error message string
 }
 
 HidController::HidController(const hid_device_info& deviceInfo)
@@ -290,10 +291,10 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
         if (ControllerDebug::enabled()) {
             qWarning() << "Unable to send data to" << getName()
                        << "serial #" << hid_serial << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+                       << safeDecodeWideString(hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         } else {
             qWarning() << "Unable to send data to" << getName() << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+                       << safeDecodeWideString(hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         }
     } else {
         controllerDebug(result << "bytes sent to" << getName()
@@ -320,7 +321,7 @@ void HidController::sendFeatureReport(
     if (result == -1) {
         qWarning() << "sendFeatureReport is unable to send data to" << getName()
                    << "serial #" << hid_serial << ":"
-                   << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+                   << safeDecodeWideString(hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
     } else {
         controllerDebug(result << "bytes sent by sendFeatureReport to" << getName()
                                << "serial #" << hid_serial
