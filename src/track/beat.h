@@ -96,8 +96,16 @@ inline bool operator<(Beat beat1, Beat beat2) {
     return beat1.framePosition() < beat2.framePosition();
 }
 
+inline bool operator<=(Beat beat1, Beat beat2) {
+    return beat1.framePosition() <= beat2.framePosition();
+}
+
 inline bool operator>(Beat beat1, Beat beat2) {
     return beat1.framePosition() > beat2.framePosition();
+}
+
+inline bool operator>=(Beat beat1, Beat beat2) {
+    return beat1.framePosition() >= beat2.framePosition();
 }
 
 inline bool operator==(Beat beat1, Beat beat2) {
@@ -116,13 +124,14 @@ inline bool operator!=(Beat beat1, Beat beat2) {
     return !(beat1 == beat2);
 }
 
-inline QDebug operator<<(QDebug dbg, Beat beat) {
+QDebug operator<<(QDebug dbg, Beat beat) {
     dbg << "[ Position:" << beat.framePosition()
-        << " | Signature:" << beat.timeSignature() << " | Type:"
+        << " | Signature:" << beat.timeSignature()
+        << " | Type:"
         << (beat.type() == BeatType::Beat
                            ? "Beat"
-                           : (beat.type() == BeatType::Downbeat) ? "Downbeat"
-                                                                 : "None")
+                   : (beat.type() == BeatType::Downbeat) ? "Downbeat"
+                                                         : "None")
         << " | BarIndex:" << beat.barIndex()
         << " | BeatIndex:" << beat.beatIndex()
         << " | BeatInBarIndex:" << beat.beatInBarIndex()
