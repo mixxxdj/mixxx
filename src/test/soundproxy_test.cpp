@@ -49,6 +49,7 @@ class SoundSourceProxyTest: public MixxxTest {
                 // that fixed this bug is unknown.
                 << "-itunes-12.3.0-aac.m4a"
                 << "-itunes-12.7.0-aac.m4a"
+                << "-ffmpeg-aac.m4a"
 #if defined(__FFMPEG__) || defined(__COREAUDIO__)
                 << "-itunes-12.7.0-alac.m4a"
 #endif
