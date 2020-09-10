@@ -29,10 +29,6 @@ constexpr double kBpmAdjustStep = 0.01;
 constexpr double kBpmTapMin = 30.0;
 const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
 constexpr int kBpmTapFilterLength = 5;
-
-// The local_bpm is calculated forward and backward this number of beats, so
-// the actual number of beats is this x2.
-constexpr int kLocalBpmSpan = 4;
 constexpr double kSmallBeatsTranslateFactor = 0.01;
 }
 
@@ -555,23 +551,22 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
         return false;
     }
 
-    mixxx::FramePos pPrevBeatInner, pNextBeatInner;
-    if (!pBeats->findPrevNextBeats(
-                position, &pPrevBeatInner, &pNextBeatInner)) {
+    const auto prevNextBeats = pBeats->findPrevNextBeats(position);
+    if (!prevNextBeats.first || !prevNextBeats.second) {
         return false;
     }
 
     if (pPrevBeat != nullptr) {
-        *pPrevBeat = pPrevBeatInner;
+        *pPrevBeat = prevNextBeats.first->framePosition();
     }
 
     if (pNextBeat != nullptr) {
-        *pNextBeat = pNextBeatInner;
+        *pNextBeat = prevNextBeats.second->framePosition();
     }
 
     return getBeatContextNoLookup(position,
-            pPrevBeatInner,
-            pNextBeatInner,
+            prevNextBeats.first->framePosition(),
+            prevNextBeats.second->framePosition(),
             dpBeatLength,
             dpBeatPercentage);
 }

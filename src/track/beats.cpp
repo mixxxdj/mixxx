@@ -96,12 +96,9 @@ std::optional<Beat> Beats::findPrevBeat(FramePos frame) const {
     return m_beatsInternal.findPrevBeat(frame);
 }
 
-bool Beats::findPrevNextBeats(FramePos frame,
-        FramePos* pPrevBeatFrame,
-        FramePos* pNextBeatFrame) const {
+QPair<std::optional<Beat>, std::optional<Beat>> Beats::findPrevNextBeats(FramePos frame) const {
     QMutexLocker locker(&m_mutex);
-    return m_beatsInternal.findPrevNextBeats(
-            frame, pPrevBeatFrame, pNextBeatFrame);
+    return m_beatsInternal.findPrevNextBeats(frame);
 }
 
 FramePos Beats::findClosestBeat(FramePos frame) const {
@@ -623,12 +620,14 @@ void BeatsInternal::updateGlobalBpm() {
 FramePos BeatsInternal::findNBeatsFromFrame(
         FramePos fromFrame, double beats) const {
     FramePos nthBeat;
-    FramePos prevBeat;
-    FramePos nextBeat;
 
-    if (!findPrevNextBeats(fromFrame, &prevBeat, &nextBeat)) {
+    const auto prevNextBeats = findPrevNextBeats(fromFrame);
+    if (!prevNextBeats.first || !prevNextBeats.second) {
         return fromFrame;
     }
+
+    auto prevBeat = prevNextBeats.first->framePosition();
+    auto nextBeat = prevNextBeats.second->framePosition();
     double fromFractionBeats = (fromFrame - prevBeat) / (nextBeat - prevBeat);
     double beatsFromPrevBeat = fromFractionBeats + beats;
 
@@ -657,22 +656,16 @@ FramePos BeatsInternal::findNBeatsFromFrame(
     return nthBeat;
 }
 
-bool BeatsInternal::findPrevNextBeats(FramePos frame,
-        FramePos* pPrevBeatFrame,
-        FramePos* pNextBeatFrame) const {
-    if (pPrevBeatFrame == nullptr || pNextBeatFrame == nullptr) {
-        return false;
-    }
-
+QPair<std::optional<Beat>, std::optional<Beat>>
+BeatsInternal::findPrevNextBeats(FramePos frame) const {
     if (!isValid()) {
-        *pPrevBeatFrame = kInvalidFramePos;
-        *pNextBeatFrame = kInvalidFramePos;
-        return false;
+        return qMakePair(std::nullopt, std::nullopt);
     }
     const auto& prevBeat = findPrevBeat(frame);
-    *pPrevBeatFrame = prevBeat->framePosition();
-    *pNextBeatFrame = getBeatAtIndex(prevBeat->beatIndex() + 1)->framePosition();
-    return true;
+    QPair<std::optional<Beat>, std::optional<Beat>> prevNextBeats;
+    prevNextBeats.first = prevBeat;
+    prevNextBeats.second = getBeatAtIndex(prevBeat->beatIndex() + 1);
+    return prevNextBeats;
 }
 
 void BeatsInternal::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
@@ -688,16 +681,17 @@ FramePos BeatsInternal::findClosestBeat(FramePos frame) const {
     if (!isValid()) {
         return kInvalidFramePos;
     }
-    FramePos prevBeat;
-    FramePos nextBeat;
-    findPrevNextBeats(frame, &prevBeat, &nextBeat);
-    if (prevBeat == kInvalidFramePos) {
+    const auto prevNextBeats = findPrevNextBeats(frame);
+    if (!prevNextBeats.first) {
         // If both values are invalid, we correctly return kInvalidFramePos.
-        return nextBeat;
-    } else if (nextBeat == kInvalidFramePos) {
-        return prevBeat;
+        return prevNextBeats.second->framePosition();
+    } else if (!prevNextBeats.second) {
+        return prevNextBeats.first->framePosition();
     }
-    return (nextBeat - frame > frame - prevBeat) ? prevBeat : nextBeat;
+    return (prevNextBeats.second->framePosition() - frame >
+                   frame - prevNextBeats.first->framePosition())
+            ? prevNextBeats.first->framePosition()
+            : prevNextBeats.second->framePosition();
 }
 
 std::optional<Beat> BeatsInternal::findNextBeat(FramePos frame) const {

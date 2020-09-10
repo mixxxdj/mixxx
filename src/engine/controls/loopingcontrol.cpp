@@ -1070,10 +1070,9 @@ void LoopingControl::slotBeatLoop(
     } else {
         // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
         // The closest beat might be ahead of play position and will cause a catching loop.
-        mixxx::FramePos prevBeat;
-        mixxx::FramePos nextBeat;
-        pBeats->findPrevNextBeats(
-                currentFramePos, &prevBeat, &nextBeat);
+        const auto prevNextBeats = pBeats->findPrevNextBeats(currentFramePos);
+        const auto prevBeat = prevNextBeats.first->framePosition();
+        const auto nextBeat = prevNextBeats.second->framePosition();
 
         if (m_pQuantizeEnabled->toBool() && prevBeat.getValue() != -1) {
             mixxx::FrameDiff_t beatLengthFrames = nextBeat - prevBeat;

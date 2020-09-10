@@ -142,15 +142,15 @@ TEST_F(BeatsTest, NthBeat) {
 
 TEST_F(BeatsTest, PrevNextBeats) {
     const auto pBeats = m_pTrack1->getBeats();
-    FramePos prevBeat, nextBeat;
-
-    pBeats->findPrevNextBeats(
-            pBeats->getLastBeatPosition(), &prevBeat, &nextBeat);
+    auto prevNextBeats = pBeats->findPrevNextBeats(pBeats->getLastBeatPosition());
+    auto prevBeat = prevNextBeats.first->framePosition();
+    auto nextBeat = prevNextBeats.second->framePosition();
     EXPECT_DOUBLE_EQ(
             pBeats->getLastBeatPosition().getValue(), prevBeat.getValue());
 
-    pBeats->findPrevNextBeats(
-            pBeats->getFirstBeatPosition(), &prevBeat, &nextBeat);
+    prevNextBeats = pBeats->findPrevNextBeats(pBeats->getFirstBeatPosition());
+    prevBeat = prevNextBeats.first->framePosition();
+    nextBeat = prevNextBeats.second->framePosition();
     EXPECT_DOUBLE_EQ(
             pBeats->getFirstBeatPosition().getValue(), prevBeat.getValue());
     EXPECT_DOUBLE_EQ(
@@ -182,8 +182,9 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat) {
     }
 
     // Also test prev/next beat calculation.
-    FramePos prevBeat, nextBeat;
-    pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    const auto prevNextBeats = pBeats->findPrevNextBeats(position);
+    const auto prevBeat = prevNextBeats.first->framePosition();
+    const auto nextBeat = prevNextBeats.second->framePosition();
     EXPECT_EQ(position, prevBeat);
     EXPECT_EQ(position + beatLength, nextBeat);
 
@@ -214,8 +215,9 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_BeforeEpsilon) {
     }
 
     // Also test prev/next beat calculation
-    FramePos prevBeat, nextBeat;
-    pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    const auto prevNextBeats = pBeats->findPrevNextBeats(position);
+    const auto prevBeat = prevNextBeats.first->framePosition();
+    const auto nextBeat = prevNextBeats.second->framePosition();
     EXPECT_EQ(kClosestBeat, prevBeat);
     EXPECT_EQ(kClosestBeat + beatLength, nextBeat);
 
@@ -251,8 +253,9 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
     }
 
     // Also test prev/next beat calculation.
-    FramePos prevBeat, nextBeat;
-    pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    const auto prevNextBeats = pBeats->findPrevNextBeats(position);
+    const auto prevBeat = prevNextBeats.first->framePosition();
+    const auto nextBeat = prevNextBeats.second->framePosition();
     EXPECT_EQ(kClosestBeat, prevBeat);
     EXPECT_EQ(kClosestBeat + beatLength, nextBeat);
 
@@ -289,8 +292,9 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
     }
 
     // Also test prev/next beat calculation
-    FramePos foundPrevBeat, foundNextBeat;
-    pBeats->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat);
+    const auto prevNextBeats = pBeats->findPrevNextBeats(position);
+    const auto foundPrevBeat = prevNextBeats.first->framePosition();
+    const auto foundNextBeat = prevNextBeats.second->framePosition();
     EXPECT_EQ(previousBeat, foundPrevBeat);
     EXPECT_EQ(nextBeat, foundNextBeat);
 }

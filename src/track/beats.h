@@ -61,9 +61,7 @@ class BeatsInternal {
     void setSubVersion(const QString& subVersion);
     void scale(BPMScale scale);
     FramePos findNBeatsFromFrame(FramePos fromFrame, double beats) const;
-    bool findPrevNextBeats(FramePos frame,
-            FramePos* pPrevBeatFrame,
-            FramePos* pNextBeatFrame) const;
+    QPair<std::optional<Beat>, std::optional<Beat>> findPrevNextBeats(FramePos frame) const;
     void setGrid(Bpm dBpm, FramePos firstBeatFrame = kStartFramePos);
     FramePos findClosestBeat(FramePos frame) const;
     Bpm getBpmAtPosition(FramePos curFrame) const;
@@ -152,14 +150,10 @@ class Beats final : public QObject {
     /// location of beat, the same beat is returned.
     std::optional<Beat> findPrevBeat(FramePos frame) const;
 
-    /// Starting from frame, fill the frame numbers of the previous beat
-    /// and next beat. If frame refers
-    /// to the location of the beat, the first value is frame, and the second
-    /// value is the next frame. Returns false if *at least one* frame is kInvalidFramePos.
-    /// (Can return false with one beat successfully filled)
-    bool findPrevNextBeats(FramePos frame,
-            FramePos* pPrevBeatFrame,
-            FramePos* pNextBeatFrame) const;
+    /// Starting from frame, fill the prev and next beats.
+    /// If frame refers to the location of the beat, the first
+    /// value is beat, and the second value is the next beat.
+    QPair<std::optional<Beat>, std::optional<Beat>> findPrevNextBeats(FramePos frame) const;
 
     /// Starting from frame, return the frame number of the closest beat
     /// in the track, or kInvalidFramePos if none exists.
