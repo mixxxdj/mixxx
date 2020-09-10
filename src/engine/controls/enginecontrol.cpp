@@ -15,7 +15,7 @@ EngineControl::EngineControl(QString group,
           m_pConfig(pConfig),
           m_pEngineMaster(nullptr),
           m_pEngineBuffer(nullptr) {
-    setCurrentSample(0.0, 0.0, 0.0);
+    setCurrentSample(0.0, 0.0, mixxx::audio::SampleRate(0.0));
 }
 
 EngineControl::~EngineControl() {
@@ -49,11 +49,11 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
 }
 
 void EngineControl::setCurrentSample(
-        const double dCurrentSample, const double dTotalSamples, const double dTrackSampleRate) {
+        double dCurrentSample, double dTotalSamples, mixxx::audio::SampleRate trackSampleRate) {
     SampleOfTrack sot;
     sot.current = dCurrentSample;
     sot.total = dTotalSamples;
-    sot.rate = dTrackSampleRate;
+    sot.rate = trackSampleRate;
     m_sampleOfTrack.setValue(sot);
 }
 

@@ -317,7 +317,7 @@ class EngineBuffer : public EngineObject {
     int m_trackSamplesOld;
 
     // Copy of file sample rate
-    double m_trackSampleRateOld;
+    mixxx::audio::SampleRate m_trackSampleRateOld;
 
     // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track
@@ -403,7 +403,7 @@ class EngineBuffer : public EngineObject {
     bool m_bPlayAfterLoading;
     // Records the sample rate so we can detect when it changes. Initialized to
     // 0 to guarantee we see a change on the first callback.
-    int m_iSampleRate;
+    mixxx::audio::SampleRate m_iSampleRate;
 
     TrackPointer m_pCurrentTrack;
 #ifdef __SCALER_DEBUG__

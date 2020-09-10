@@ -56,10 +56,10 @@ void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     updateClosestBeat(current);
 }
 
-void QuantizeControl::setCurrentSample(const double dCurrentSample,
-                                       const double dTotalSamples,
-                                       const double dTrackSampleRate) {
-    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, dTrackSampleRate);
+void QuantizeControl::setCurrentSample(double dCurrentSample,
+        double dTotalSamples,
+        mixxx::audio::SampleRate trackSampleRate) {
+    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, trackSampleRate);
     playPosChanged(dCurrentSample);
 }
 

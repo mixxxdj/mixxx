@@ -751,7 +751,7 @@ void EngineBuffer::processTrackLocked(
         CSAMPLE* pOutput, const int iBufferSize, int sample_rate) {
     ScopedTimer t("EngineBuffer::process_pauselock");
 
-    m_trackSampleRateOld = m_pTrackSampleRate->get();
+    m_trackSampleRateOld = mixxx::audio::SampleRate(m_pTrackSampleRate->get());
     m_trackSamplesOld = m_pTrackSamples->get();
 
     double baserate = 0.0;
@@ -1071,7 +1071,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
-    m_iSampleRate = static_cast<int>(m_pSampleRate->get());
+    m_iSampleRate = static_cast<mixxx::audio::SampleRate>(m_pSampleRate->get());
 
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.

@@ -56,8 +56,9 @@ class EngineControl : public QObject {
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
-    virtual void setCurrentSample(const double dCurrentSample,
-            const double dTotalSamples, const double dTrackSampleRate);
+    virtual void setCurrentSample(double dCurrentSample,
+            double dTotalSamples,
+            mixxx::audio::SampleRate trackSampleRate);
     QString getGroup() const;
 
     // Called to collect player features for effects processing.
@@ -74,12 +75,12 @@ class EngineControl : public QObject {
     struct SampleOfTrack {
         double current;
         double total;
-        double rate;
+        mixxx::audio::SampleRate rate;
     };
     struct FrameOfTrack {
         mixxx::FramePos currentFrame;
         mixxx::FramePos totalFrames;
-        double sampleRate;
+        mixxx::audio::SampleRate sampleRate;
     };
 
     SampleOfTrack getSampleOfTrack() const {
