@@ -89,28 +89,28 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
+        switch (avStream.codecpar->codec_id) {
+        case AV_CODEC_ID_AAC:
+        case AV_CODEC_ID_AAC_LATM: {
+            // Account for the expected decoder delay instead of simply
+            // using the default start time.
+            // Not all M4A files encode the start_time correctly, e.g.
+            // the test file cover-test-itunes-12.7.0-aac.m4a has a valid
+            // start_time of 0. Unfortunately, this special case is cannot
+            // detected and compensated.
+            start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderDelayAAC);
+            break;
+        }
+        default:
+            start_time = kavStreamDefaultStartTime;
+        }
 #if ENABLE_TRACING
         kLogger.trace()
                 << "Unknown start time -> using default value"
-                << kavStreamDefaultStartTime;
+                << start_time;
 #endif
-        start_time = kavStreamDefaultStartTime;
     }
-    switch (avStream.codecpar->codec_id) {
-    case AV_CODEC_ID_AAC:
-    case AV_CODEC_ID_AAC_LATM: {
-        // Increase the start time to account for the decoder delay.
-        // Not all M4A files encode the start_time correctly, e.g.
-        // the test file cover-test-itunes-12.7.0-aac.m4a has a
-        // start_time of 0.
-        if (start_time < kavStreamDecoderDelayAAC) {
-            start_time = kavStreamDecoderDelayAAC;
-        }
-        break;
-    }
-    default:
-        break;
-    }
+    DEBUG_ASSERT(start_time != AV_NOPTS_VALUE);
     return start_time;
 }
 
@@ -1377,9 +1377,10 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                             m_curFrameIndex,
                             getSignalInfo().samples2frames(m_sampleBuffer.readableLength()));
             if (frameIndexRange().end() < bufferedRange.end()) {
-                // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR) FFmpeg may
-                // decode a few more samples than expected! Simply discard those
-                // trailing samples.
+                // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR, Lavf AAC)
+                // FFmpeg may decode a few more samples than expected! Simply discard
+                // those trailing samples, because we are not prepared to adjust the
+                // duration of the stream later.
                 const auto overflowFrameCount =
                         bufferedRange.end() - frameIndexRange().end();
                 kLogger.info()
