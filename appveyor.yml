@@ -256,7 +256,7 @@ for:
         echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
     # Generate WIX installer
-    - cpack -G "WIX"
+    - cmake --build . --target wix-multilanguage-package
     - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
       If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
         signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi

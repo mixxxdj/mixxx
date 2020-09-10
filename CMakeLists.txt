@@ -1197,7 +1197,33 @@ set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
 set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
 
+set(WIX_MULTILANGUAGE_INSTALLER_FILENAME "${CPACK_PACKAGE_FILE_NAME}")
 include(CPack)
+
+if(WIN32)
+  set(WIX_MULTILANGUAGE_INSTALLER_LOCALELCIDS
+    "ca-ES:1027"
+    "cs-CZ:1029"
+    "de-DE:1031"
+    "en-us:1033"
+    "es-ES:1034"
+    "et-EE:1061"
+    "fr-FR:1036"
+    "it-IT:1040"
+    "nl-NL:1043"
+    "pl-PL:1045"
+    "pt-BR:1046"
+    "pt-PT:2070"
+    "ro-RO:1048"
+    "ru-RU:1049"
+    "sv-SE:1053"
+    "tr-TR:1055"
+    "zh-CN:2052"
+    "zh-TW:1028"
+  )
+  set(WIX_MULTILANGUAGE_INSTALLER_MAINLOCALE "en-us")
+  include(WixMultiLanguagePackage)
+endif()
 
 #
 # Tests
