@@ -234,6 +234,7 @@ BeatsInternal Beats::getInternal() const {
 }
 
 QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
+    QMutexLocker locker(&arg->m_mutex);
     dbg << arg->m_beatsInternal;
     return dbg;
 }
@@ -244,7 +245,7 @@ QDebug operator<<(QDebug dbg, const BeatsInternal& arg) {
         beatFramePositions.append(beat.framePosition());
     }
     dbg << "["
-        << "Aggregate BPM:" << arg.m_bpm << "|"
+        << "Global BPM:" << arg.m_bpm << "|"
         << "Number of beats:" << arg.m_beats.size() << "|"
         << "Beats:" << beatFramePositions << "]";
     return dbg;
