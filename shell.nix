@@ -7,7 +7,8 @@ let inherit (nixroot) stdenv pkgs lib
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
     rubberband sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
-    libGLU x11 lame lv2 makeWrapper
+    libGLU x11 lame lv2 makeWrapper pcre utillinux libselinux libsepol
+    libsForQt5
     clang-tools
     cmake
     fetchurl
@@ -57,6 +58,8 @@ let inherit (nixroot) stdenv pkgs lib
     fi
     cd cbuild
     cmake --build . --parallel $NIX_BUILD_CORES "$@"
+    source ${pkgs.makeWrapper}/nix-support/setup-hook
+    wrapProgram mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
@@ -74,7 +77,7 @@ let inherit (nixroot) stdenv pkgs lib
       exit 1
     fi
     cd cbuild
-    gdb --args ./mixxx --resourcePath res/ "$@"
+    LV2_PATH=${lib.makeSearchPath "lib/lv2" allLv2Plugins} gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then [
@@ -118,12 +121,17 @@ in stdenv.mkDerivation rec {
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
     rubberband sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
-    git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase
+    git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase pcre utillinux libselinux
+    libsepol libsForQt5.qtkeychain
     ffmpeg
     libmodplug
     mp4v2
     wavpack
   ] ++ allLv2Plugins;
+
+  postBuild = ''
+    wrapProgram mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
+  '';
 
   meta = with nixroot.stdenv.lib; {
     homepage = https://mixxx.org;
