@@ -13,12 +13,12 @@
 class WTempoMenu : public QWidget {
     Q_OBJECT
   public:
-    WTempoMenu(QWidget* parent = nullptr);
+    explicit WTempoMenu(QWidget* parent = nullptr);
     ~WTempoMenu() override;
     void setBeatsPointer(mixxx::BeatsPointer pBeats) {
         m_pBeats = pBeats;
     }
-    void setBeat(mixxx::Beat beat);
+    void setBeat(std::optional<mixxx::Beat> beat);
     void popup(const QPoint& p);
 
   private slots:
@@ -38,5 +38,5 @@ class WTempoMenu : public QWidget {
     parented_ptr<QPushButton> m_pBpmBigDecreaseButton;
     parented_ptr<QPushButton> m_pBpmBigIncreaseButton;
     mixxx::BeatsPointer m_pBeats;
-    mixxx::Beat m_beat;
+    std::optional<mixxx::Beat> m_beat;
 };

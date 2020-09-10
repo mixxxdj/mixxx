@@ -92,6 +92,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             if (m_hoveredBeat) {
                 m_pBeatMenu->setBeat(m_hoveredBeat->getBeat());
                 hasBeat = true;
+            } else {
+                m_pBeatMenu->setBeat(std::nullopt);
             }
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {

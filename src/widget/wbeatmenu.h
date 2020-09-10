@@ -24,7 +24,7 @@ class WBeatMenu : public QMenu {
 
     void setBeatsPointer(mixxx::BeatsPointer pBeats);
 
-    void setBeat(mixxx::Beat beat);
+    void setBeat(std::optional<mixxx::Beat> beat);
 
     void setOptions(Options selectedOptions) {
         m_eSelectedOptions = selectedOptions;
@@ -53,7 +53,7 @@ class WBeatMenu : public QMenu {
     parented_ptr<WTimeSignatureMenu> m_pTimeSignatureMenu;
     parented_ptr<WTempoMenu> m_pTempoMenu;
     mixxx::BeatsPointer m_pBeats;
-    mixxx::Beat m_beat;
+    std::optional<mixxx::Beat> m_beat;
     Options m_eSelectedOptions;
 };
 

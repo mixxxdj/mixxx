@@ -1231,6 +1231,7 @@ class MixxxCore(Feature):
 
                    "src/track/beatfactory.cpp",
                    "src/track/beatutils.cpp",
+                   "src/track/beat.cpp",
                    "src/track/beats.cpp",
                    "src/track/bpm.cpp",
                    "src/track/cue.cpp",

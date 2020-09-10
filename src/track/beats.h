@@ -48,9 +48,9 @@ class BeatsInternal {
     static const QString kBeatGridVersion1;
     static const QString kBeatGridVersion2;
     static const QString kBeatsVersion;
-    Beat findNthBeat(FramePos frame, int offset) const;
-    Beat findNextBeat(FramePos frame) const;
-    Beat findPrevBeat(FramePos frame) const;
+    std::optional<Beat> findNthBeat(FramePos frame, int offset) const;
+    std::optional<Beat> findNextBeat(FramePos frame) const;
+    std::optional<Beat> findPrevBeat(FramePos frame) const;
     Bpm getGlobalBpm() const;
     bool isValid() const;
     void updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo);
@@ -73,7 +73,7 @@ class BeatsInternal {
     int size() const;
     FramePos getFirstBeatPosition() const;
     FramePos getLastBeatPosition() const;
-    Beat getBeatAtIndex(int index) const;
+    std::optional<Beat> getBeatAtIndex(int index) const;
     void setAsDownbeat(int beatIndex);
 
   private:
@@ -145,12 +145,12 @@ class Beats final : public QObject {
     /// Starting from frame, return the next beat
     /// in the track, or invalid beat if none exists. If frame refers to the location
     /// of a beat, the same beat is returned.
-    Beat findNextBeat(FramePos frame) const;
+    std::optional<Beat> findNextBeat(FramePos frame) const;
 
     /// Starting from frame, return the previous beat
     /// in the track, or invalid beat if none exists. If frame refers to the
     /// location of beat, the same beat is returned.
-    Beat findPrevBeat(FramePos frame) const;
+    std::optional<Beat> findPrevBeat(FramePos frame) const;
 
     /// Starting from frame, fill the frame numbers of the previous beat
     /// and next beat. If frame refers
@@ -167,8 +167,8 @@ class Beats final : public QObject {
 
     /// Find the Nth beat from frame. Works with both positive and
     /// negative values of n. If frame refers to the location of a beat,
-    /// then the same beat is returned. If no beat can be found, returns kInvalidBeat.
-    Beat findNthBeat(FramePos frame, int offset) const;
+    /// then the same beat is returned. If no beat can be found, returns std::nullopt.
+    std::optional<Beat> findNthBeat(FramePos frame, int offset) const;
 
     int numBeatsInRange(FramePos startFrame, FramePos endFrame) const;
 
@@ -177,7 +177,7 @@ class Beats final : public QObject {
     FramePos findNBeatsFromFrame(FramePos fromFrame, double beats) const;
 
     /// Return Beat at (0 based) index
-    Beat getBeatAtIndex(int index) const;
+    std::optional<Beat> getBeatAtIndex(int index) const;
 
     /// Return the average BPM over the entire track if the BPM is
     /// valid, otherwise returns Bpm().

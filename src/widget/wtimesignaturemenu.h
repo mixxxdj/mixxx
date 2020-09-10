@@ -21,7 +21,7 @@ class WTimeSignatureMenu : public QWidget {
     void setBeatsPointer(mixxx::BeatsPointer pBeats) {
         m_pBeats = pBeats;
     }
-    void setBeat(mixxx::Beat beat);
+    void setBeat(std::optional<mixxx::Beat> beat);
     void popup(const QPoint& p);
 
   private slots:
@@ -41,5 +41,5 @@ class WTimeSignatureMenu : public QWidget {
     parented_ptr<QPushButton> m_pHalfButton;
     parented_ptr<QPushButton> m_pDoubleButton;
     mixxx::BeatsPointer m_pBeats;
-    mixxx::Beat m_beat;
+    std::optional<mixxx::Beat> m_beat;
 };

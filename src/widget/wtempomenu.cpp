@@ -19,8 +19,7 @@ WTempoMenu::WTempoMenu(QWidget* parent)
           m_pBpmSlightDecreaseButton(make_parented<QPushButton>(this)),
           m_pBpmSlightIncreaseButton(make_parented<QPushButton>(this)),
           m_pBpmBigDecreaseButton(make_parented<QPushButton>(this)),
-          m_pBpmBigIncreaseButton(make_parented<QPushButton>(this)),
-          m_beat(mixxx::kInvalidBeat) {
+          m_pBpmBigIncreaseButton(make_parented<QPushButton>(this)) {
     hide();
     setWindowFlags(Qt::Popup);
     setAttribute(Qt::WA_StyledBackground);
@@ -72,20 +71,22 @@ WTempoMenu::WTempoMenu(QWidget* parent)
 WTempoMenu::~WTempoMenu() {
 }
 
-void WTempoMenu::setBeat(mixxx::Beat beat) {
+void WTempoMenu::setBeat(std::optional<mixxx::Beat> beat) {
     m_beat = beat;
-    m_pBpmEditBox->setText(QString::number(beat.bpm().getValue()));
+    if (m_beat) {
+        m_pBpmEditBox->setText(QString::number(beat->bpm().getValue()));
+    }
 }
 
 void WTempoMenu::popup(const QPoint& p) {
-    auto parentWidget = static_cast<QWidget*>(parent());
+    auto parentWidget = dynamic_cast<QWidget*>(parent());
     QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
     move(topLeft);
     show();
 }
 
 void WTempoMenu::setBpm(mixxx::Bpm bpm) {
-    m_pBeats->setBpm(bpm, m_beat.beatIndex());
+    m_pBeats->setBpm(bpm, m_beat->beatIndex());
 }
 
 void WTempoMenu::slotTextInput(const QString& bpmString) {
@@ -94,17 +95,17 @@ void WTempoMenu::slotTextInput(const QString& bpmString) {
 }
 
 void WTempoMenu::slotSlightDecrease() {
-    setBpm(mixxx::Bpm(m_beat.bpm().getValue() - kSlightChangeValue));
+    setBpm(mixxx::Bpm(m_beat->bpm().getValue() - kSlightChangeValue));
 }
 
 void WTempoMenu::slotSlightIncrease() {
-    setBpm(mixxx::Bpm(m_beat.bpm().getValue() + kSlightChangeValue));
+    setBpm(mixxx::Bpm(m_beat->bpm().getValue() + kSlightChangeValue));
 }
 
 void WTempoMenu::slotBigDecrease() {
-    setBpm(mixxx::Bpm(m_beat.bpm().getValue() - kBigChangeValue));
+    setBpm(mixxx::Bpm(m_beat->bpm().getValue() - kBigChangeValue));
 }
 
 void WTempoMenu::slotBigIncrease() {
-    setBpm(mixxx::Bpm(m_beat.bpm().getValue() + kBigChangeValue));
+    setBpm(mixxx::Bpm(m_beat->bpm().getValue() + kBigChangeValue));
 }

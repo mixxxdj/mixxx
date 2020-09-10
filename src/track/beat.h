@@ -8,9 +8,6 @@
 #include "track/frame.h"
 #include "track/timesignature.h"
 
-namespace {
-constexpr int kNegativeInfinity = std::numeric_limits<int>::lowest();
-}
 namespace mixxx {
 enum class BeatType {
     Beat,
@@ -33,16 +30,7 @@ class Beat {
             int beatIndex = 0,
             int barIndex = 0,
             uint beatInBarIndex = 0,
-            BeatMarkers markers = BeatMarker::None)
-            : m_framePos(framePos),
-              m_eType(type),
-              m_iBeatIndex(beatIndex),
-              m_iBarIndex(barIndex),
-              m_iBeatInBarIndex(beatInBarIndex),
-              m_timeSignature(timeSignature),
-              m_bpm(bpm),
-              m_eMarkers(markers) {
-    }
+            BeatMarkers markers = BeatMarker::None);
 
     int beatIndex() const {
         return m_iBeatIndex;
@@ -108,44 +96,12 @@ inline bool operator>=(Beat beat1, Beat beat2) {
     return beat1.framePosition() >= beat2.framePosition();
 }
 
-inline bool operator==(Beat beat1, Beat beat2) {
-    return beat1.framePosition() == beat2.framePosition() &&
-            beat1.beatIndex() == beat2.beatIndex() &&
-            beat1.markers() == beat2.markers() &&
-            beat1.barIndex() == beat2.barIndex() &&
-            beat1.beatInBarIndex() ==
-            beat2.beatInBarIndex() &&
-            beat1.type() == beat2.type() &&
-            beat1.timeSignature() == beat2.timeSignature() &&
-            beat1.bpm() == beat2.bpm();
-}
+bool operator==(Beat beat1, Beat beat2);
 
 inline bool operator!=(Beat beat1, Beat beat2) {
     return !(beat1 == beat2);
 }
 
-QDebug operator<<(QDebug dbg, Beat beat) {
-    dbg << "[ Position:" << beat.framePosition()
-        << " | Signature:" << beat.timeSignature()
-        << " | Type:"
-        << (beat.type() == BeatType::Beat
-                           ? "Beat"
-                   : (beat.type() == BeatType::Downbeat) ? "Downbeat"
-                                                         : "None")
-        << " | BarIndex:" << beat.barIndex()
-        << " | BeatIndex:" << beat.beatIndex()
-        << " | BeatInBarIndex:" << beat.beatInBarIndex()
-        << " | BPM:" << beat.bpm() << " | Markers:" << beat.markers() << "]";
-    return dbg;
-}
-
-const Beat kInvalidBeat = Beat(kInvalidFramePos,
-        BeatType::Beat,
-        TimeSignature(),
-        Bpm(),
-        kNegativeInfinity,
-        kNegativeInfinity,
-        kNegativeInfinity);
-
+QDebug operator<<(QDebug dbg, Beat beat);
 constexpr int kFirstBeatIndex = 0;
 }; // namespace mixxx

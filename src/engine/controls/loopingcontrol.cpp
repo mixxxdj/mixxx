@@ -551,7 +551,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
         if (quantizedBeat != -1 && pBeats) {
             dPosSample =
                     pBeats->findNthBeat(samplePosToFramePos(quantizedBeat), -2)
-                            .framePosition()
+                            ->framePosition()
                             .getValue();
             if (dPosSample == -1 ||
                     (loopSamples.end - dPosSample) <
@@ -653,7 +653,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
         if (quantizedBeat != -1 && pBeats) {
             pos = static_cast<int>(floor(framePosToSamplePos(
                     pBeats->findNthBeat(samplePosToFramePos(quantizedBeat), 1)
-                            .framePosition())));
+                            ->framePosition())));
             if (pos == -1 ||
                     (pos - loopSamples.start) < MINIMUM_AUDIBLE_LOOP_SIZE) {
                 pos = loopSamples.start + MINIMUM_AUDIBLE_LOOP_SIZE;

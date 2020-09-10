@@ -60,21 +60,21 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     const auto leftLimit = samplePosToFramePos(firstDisplayedPosition * trackSamples);
     const auto rightLimit = samplePosToFramePos(lastDisplayedPosition * trackSamples);
-    int displayBeatsStartIdxInclusive = trackBeats->findNextBeat(leftLimit).beatIndex();
-    int displayBeatsEndIdxInclusive = trackBeats->findPrevBeat(rightLimit).beatIndex();
+    int displayBeatsStartIdxInclusive = trackBeats->findNextBeat(leftLimit)->beatIndex();
+    int displayBeatsEndIdxInclusive = trackBeats->findPrevBeat(rightLimit)->beatIndex();
 
     // We perform explicit limit check due to fuzzy beat boundaries used by Beats class.
     // So it returns those beats which are slightly outside screen boundaries and we
     // will remove them.
     const auto leftMostBeatPosition =
             trackBeats->getBeatAtIndex(displayBeatsStartIdxInclusive)
-                    .framePosition();
+                    ->framePosition();
     if (leftMostBeatPosition < leftLimit) {
         displayBeatsStartIdxInclusive++;
     }
     const auto rightMostBeatPosition =
             trackBeats->getBeatAtIndex(displayBeatsEndIdxInclusive)
-                    .framePosition();
+                    ->framePosition();
     if (rightMostBeatPosition > rightLimit) {
         displayBeatsEndIdxInclusive--;
     }
@@ -101,7 +101,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     QList<WaveformBeat> beatsOnScreen;
 
     for (int i = displayBeatsStartIdxInclusive; i <= displayBeatsEndIdxInclusive; i++) {
-        auto beat = trackBeats->getBeatAtIndex(i);
+        auto beat = trackBeats->getBeatAtIndex(i).value();
         double beatSamplePosition = framePosToSamplePos(beat.framePosition());
         int beatPixelPositionInWidgetSpace = qRound(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(
