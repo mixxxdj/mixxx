@@ -264,20 +264,20 @@ bool HidController::isPolling() const {
     return isOpen();
 }
 
-void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {
+void HidController::sendReport(QList<int> data, unsigned int length, unsigned int reportID) {
     Q_UNUSED(length);
     QByteArray temp;
     foreach (int datum, data) {
         temp.append(datum);
     }
-    send(temp, reportID);
+    sendBytesReport(temp, reportID);
 }
 
-void HidController::send(QByteArray data) {
-    send(data, 0);
+void HidController::sendBytes(const QByteArray& data) {
+    sendBytesReport(data, 0);
 }
 
-void HidController::send(QByteArray data, unsigned int reportID) {
+void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
     // Append the Report ID to the beginning of data[] per the API..
     data.prepend(reportID);
 

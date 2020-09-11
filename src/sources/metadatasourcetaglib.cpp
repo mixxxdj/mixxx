@@ -816,7 +816,7 @@ MetadataSourceTagLib::exportTrackMetadata(
         break;
     }
     default:
-        kLogger.warning()
+        kLogger.debug()
                 << "Cannot export track metadata"
                 << "into file" << m_fileName
                 << "with unknown or unsupported type"

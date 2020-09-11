@@ -116,13 +116,15 @@ class EngineBuffer : public EngineObject {
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
+    QString getGroup() const;
     // Return the current rate (not thread-safe)
-    double getSpeed();
-    bool getScratching();
+    double getSpeed() const;
+    bool getScratching() const;
+    bool isReverse() const;
     // Returns current bpm value (not thread-safe)
-    double getBpm();
+    double getBpm() const;
     // Returns the BPM of the loaded track around the current position (not thread-safe)
-    double getLocalBpm();
+    double getLocalBpm() const;
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -138,29 +140,25 @@ class EngineBuffer : public EngineObject {
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
-    QString getGroup();
-    bool isTrackLoaded();
-    // return true if a seek is currently cueued but not yet processed, false otherwise
-    // if no seek was queued, the seek position is set to -1
-    bool getQueuedSeekPosition(double* pSeekPosition);
+    /// Return true iff a seek is currently queued but not yet processed
+    /// If no seek was queued, the seek position is set to -1
+    bool getQueuedSeekPosition(double* pSeekPosition) const;
+
+    bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
 
-    bool isReverse();
-
-    double getExactPlayPos();
-    double getVisualPlayPos();
-    double getTrackSamples();
-
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+    double getExactPlayPos() const;
+    double getVisualPlayPos() const;
+    double getTrackSamples() const;
 
     double getRateRatio() const;
 
-    // For dependency injection of readers.
-    //void setReader(CachingReader* pReader);
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScaleVinyl,
-                          EngineBufferScale* pScaleKeylock);
+    void setScalerForTest(
+            EngineBufferScale* pScaleVinyl,
+            EngineBufferScale* pScaleKeylock);
 
     // For injection of fake tracks.
     void loadFakeTrack(TrackPointer pTrack, bool bPlay);

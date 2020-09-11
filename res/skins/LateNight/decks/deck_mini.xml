@@ -142,6 +142,10 @@
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
                         <Channel><Variable name="ChanNum"/></Channel>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
                       </TrackProperty>
 
                       <NumberPos>
@@ -174,6 +178,10 @@
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
                         <Channel><Variable name="ChanNum"/></Channel>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
                       </TrackProperty>
 
                       <Key>

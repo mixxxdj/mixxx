@@ -39,7 +39,7 @@ namespace {
 const int kLeastPreferredPercent = 15;
 
 // These consts are only used for DEBUG_ASSERTs
-#ifdef MIXXX_BUILD_DEBUG
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 const int kLeastPreferredPercentMin = 0;
 const int kLeastPreferredPercentMax = 50;
 #endif

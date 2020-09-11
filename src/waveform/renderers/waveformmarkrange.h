@@ -8,7 +8,8 @@
 #include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
-class QDomNode;
+QT_FORWARD_DECLARE_CLASS(QDomNode);
+
 class SkinContext;
 class WaveformSignalColors;
 
@@ -60,6 +61,8 @@ class WaveformMarkRange {
 
     QColor m_activeColor;
     QColor m_disabledColor;
+    double m_enabledOpacity;
+    double m_disabledOpacity;
     QColor m_durationTextColor;
 
     QImage m_activeImage;

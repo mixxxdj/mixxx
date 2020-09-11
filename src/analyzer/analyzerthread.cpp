@@ -78,7 +78,9 @@ AnalyzerThread::AnalyzerThread(
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         UserSettingsPointer pConfig,
         AnalyzerModeFlags modeFlags)
-        : WorkerThread(QString("AnalyzerThread %1").arg(id)),
+        : WorkerThread(
+            QString("AnalyzerThread %1").arg(id),
+            (modeFlags & AnalyzerModeFlags::LowPriority ? QThread::LowPriority : QThread::InheritPriority)),
           m_id(id),
           m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(pConfig),

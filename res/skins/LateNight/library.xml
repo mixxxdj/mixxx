@@ -15,7 +15,7 @@
         <Children>
 
           <Splitter>
-            <ObjectName>VerticalSplitter</ObjectName>
+            <ObjectName>LibrarySplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
@@ -72,7 +72,7 @@
                   <Template src="skin:/decks/preview_deck.xml"/>
 
                   <Splitter>
-                    <ObjectName>HorizontalSplitter</ObjectName>
+                    <ObjectName>SidebarCoverSplitter</ObjectName>
                     <Size>me,me</Size>
                     <SplitSizes>1,1</SplitSizes>
                     <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>

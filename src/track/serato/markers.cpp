@@ -9,15 +9,18 @@ namespace {
 
 mixxx::Logger kLogger("SeratoMarkers");
 
-const int kNumEntries = 14;
-const int kLoopEntryStartIndex = 5;
-const int kEntrySizeID3 = 22;
-const int kEntrySizeMP4 = 19;
-const quint16 kVersion = 0x0205;
+constexpr int kNumEntries = 14;
+constexpr int kLoopEntryStartIndex = 5;
+constexpr int kEntrySizeID3 = 22;
+constexpr int kEntrySizeMP4 = 19;
+constexpr quint32 kNoPosition = 0x7F7F7F7F;
+constexpr quint16 kVersion = 0x0205;
 
-const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray(
-        "application/octet-stream\x00\x00Serato Markers_\x00",
-        24 + 2 + 15 + 1);
+constexpr char kSeratoMarkersBase64EncodedPrefixStr[] =
+        "application/octet-stream\0\0Serato Markers_";
+const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray::fromRawData(
+        kSeratoMarkersBase64EncodedPrefixStr,
+        sizeof(kSeratoMarkersBase64EncodedPrefixStr));
 
 // These functions convert between a custom 4-byte format (that we'll call
 // "serato32" for brevity) and 3-byte plaintext (both quint32).
@@ -83,11 +86,11 @@ QByteArray SeratoMarkersEntry::dumpID3() const {
     stream << static_cast<quint8>((m_hasStartPosition ? 0x00 : 0x7F))
            << static_cast<quint32>(
                       (m_hasStartPosition ? serato32fromUint24(m_startPosition)
-                                          : 0x7F7F7F7F))
+                                          : kNoPosition))
            << static_cast<quint8>((m_hasEndPosition ? 0x00 : 0x7F))
            << static_cast<quint32>(
                       (m_hasEndPosition ? serato32fromUint24(m_endPosition)
-                                        : 0x7F7F7F7F));
+                                        : kNoPosition));
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
     stream << serato32fromUint24(static_cast<quint32>(m_color))
            << static_cast<quint8>(m_type) << static_cast<quint8>(m_isLocked);
@@ -144,12 +147,15 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     // Parse Start Position
     bool hasStartPosition = (startPositionStatus != 0x7F);
-    quint32 startPosition = 0x7F7F7F7F;
+    quint32 startPosition = kNoPosition;
     if (!hasStartPosition) {
         // Start position not set
-        if (startPositionSerato32 != 0x7F7F7F7F) {
+        if (startPositionSerato32 != kNoPosition) {
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                              << "startPosition != 0x7F7F7F7F";
+                              << "startPosition"
+                              << startPosition
+                              << "!="
+                              << QString::number(kNoPosition, 16);
 
             return nullptr;
         }
@@ -159,12 +165,15 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     // Parse End Position
     bool hasEndPosition = (endPositionStatus != 0x7F);
-    quint32 endPosition = 0x7F7F7F7F;
+    quint32 endPosition = kNoPosition;
     if (!hasEndPosition) {
         // End position not set
-        if (endPositionSerato32 != 0x7F7F7F7F) {
+        if (endPositionSerato32 != kNoPosition) {
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                              << "endPosition != 0x7F7F7F7F";
+                              << "endPosition"
+                              << endPositionSerato32
+                              << "!="
+                              << QString::number(kNoPosition, 16);
 
             return nullptr;
         }
@@ -175,7 +184,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\x7F\x7F\x7F\x7F\x7F", sizeof(buffer)) != 0) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected value at offset 10";
+                          << "Unexpected value at offset 10"
+                          << QByteArray::fromRawData(buffer, sizeof(buffer));
         return nullptr;
     }
 
@@ -187,7 +197,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -235,7 +246,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\xFF\xFF\xFF\xFF\x00", sizeof(buffer)) != 0) {
         kLogger.warning() << "Parsing SeratoMarkersEntry (MP4) failed:"
-                          << "Unexpected value at offset 8";
+                          << "Unexpected value at offset 8"
+                          << QByteArray::fromRawData(buffer, sizeof(buffer));
         return nullptr;
     }
 
@@ -247,7 +259,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -354,7 +367,8 @@ bool SeratoMarkers::parseID3(
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkers_ failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return false;
     }
     seratoMarkers->setEntries(std::move(entries));
@@ -370,7 +384,10 @@ bool SeratoMarkers::parseMP4(
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
     if (!decodedData.startsWith(kSeratoMarkersBase64EncodedPrefix)) {
         kLogger.warning() << "Decoding SeratoMarkers_ from base64 failed:"
-                          << "Unexpected prefix";
+                          << "Unexpected prefix"
+                          << decodedData.left(kSeratoMarkersBase64EncodedPrefix.size())
+                          << "!="
+                          << kSeratoMarkersBase64EncodedPrefix;
         return false;
     }
 
@@ -453,7 +470,8 @@ bool SeratoMarkers::parseMP4(
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkers_ failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return false;
     }
     seratoMarkers->setEntries(std::move(entries));

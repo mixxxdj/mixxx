@@ -1,6 +1,7 @@
 { nixroot  ? (import <nixpkgs> {})
 , defaultLv2Plugins ? false
 , lv2Plugins ? []
+, releaseMode ? false
 }:
 let inherit (nixroot) stdenv pkgs lib
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv
@@ -97,17 +98,21 @@ in stdenv.mkDerivation rec {
     echo " debug - runs Mixxx inside gdb"
       '';
 
-  src = nix-gitignore.gitignoreSource ''
+  src = if releaseMode then (nix-gitignore.gitignoreSource ''
     /cbuild
-  '' ./.;
+    /.envrc
+    /result
+    /shell.nix
+  '' ./.) else null;
 
   nativeBuildInputs = [
-    ccache # If you want to build Mixxx as a derivation, then you have to remove ccache here.
     cmake
+  ] ++ (if !releaseMode then [
+    ccache
     gdb
     git-clang-format
     shell-configure shell-build shell-run shell-debug
-  ];
+  ] else []);
 
   buildInputs = [
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile

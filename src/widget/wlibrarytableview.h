@@ -58,6 +58,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
   private:
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
+    bool event(QEvent* e);
 
     const UserSettingsPointer m_pConfig;
     const ConfigKey m_vScrollBarPosKey;

@@ -51,8 +51,9 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
   protected:
     void paintEvent(QPaintEvent* /*unused*/) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
-    void mousePressEvent(QMouseEvent* /*unused*/) override;
-    void mouseReleaseEvent(QMouseEvent* /*unused*/) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
