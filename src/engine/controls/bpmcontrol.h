@@ -23,7 +23,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(QString group, UserSettingsPointer pConfig);
+    BpmControl(const QString& group, UserSettingsPointer pConfig);
     ~BpmControl() override = default;
 
     double getBpm() const;
@@ -60,8 +60,8 @@ class BpmControl : public EngineControl {
     // next beat, the current beat length, and the beat ratio (how far dPosition
     // lies within the current beat). Returns false if a previous or next beat
     // does not exist. NULL arguments are safe and ignored.
-    static bool getBeatContext(const mixxx::BeatsPointer& pBeats,
-            const mixxx::FramePos position,
+    static bool getBeatContext(mixxx::BeatsPointer pBeats,
+            mixxx::FramePos position,
             mixxx::FramePos* pPrevBeat,
             mixxx::FramePos* pNextBeat,
             mixxx::FrameDiff_t* dpBeatLength,
@@ -70,7 +70,7 @@ class BpmControl : public EngineControl {
     // Alternative version that works if the next and previous beat positions
     // are already known.
     static bool getBeatContextNoLookup(
-            const mixxx::FramePos position,
+            mixxx::FramePos position,
             mixxx::FramePos pPrevBeat,
             mixxx::FramePos pNextBeat,
             mixxx::FrameDiff_t* dpBeatLength,
@@ -79,8 +79,8 @@ class BpmControl : public EngineControl {
     // Returns the shortest change in percentage needed to achieve
     // target_percentage.
     // Example: shortestPercentageChange(0.99, 0.01) == 0.02
-    static double shortestPercentageChange(const double& current_percentage,
-                                           const double& target_percentage);
+    static double shortestPercentageChange(double current_percentage,
+            double target_percentage);
     double getRateRatio() const;
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
@@ -169,8 +169,9 @@ class BpmControl : public EngineControl {
     double m_dLastSyncAdjustment;
     bool m_dUserTweakingSync;
 
-    // m_pTrack is written from an engine worker thread
-    TrackPointer m_pTrack;
+    // m_pBeats is written from an engine worker thread
+    mixxx::BeatsPointer m_pBeats;
+    mixxx::audio::SampleRate m_sampleRate;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
