@@ -1207,6 +1207,7 @@ set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
 set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
+set(CPACK_WIX_CULTURES "en-US,ca-ES,fr-FR,pl-PL,ro-RO,tr-TR,cs-CZ,es-ES,it-IT,pt-BR,ru-RU,zh-CN,de-DE,et-EE,nl-NL,pt-PT,sv-SE,zh-TW")
 
 include(CPack)
 
