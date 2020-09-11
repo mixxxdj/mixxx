@@ -2116,8 +2116,6 @@ void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
     }
 
     m_pCurrentSavedLoopControl = pControl;
-    qDebug() << "CueControl::setLoop" << pCue->getPosition()
-             << pCue->getEndPosition();
     setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
     pControl->setStatus(HotcueControl::Status::Active);
 }

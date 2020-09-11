@@ -548,7 +548,6 @@ void LoopingControl::setLoop(double startPosition, double endPosition, bool enab
             endPosition != Cue::kNoPosition && startPosition < endPosition) {
         return;
     }
-    qDebug() << "LoopingControl::setLoop" << startPosition << endPosition << enabled;
 
     LoopSamples loopSamples = m_loopSamples.getValue();
     if (loopSamples.start != startPosition || loopSamples.end != endPosition) {
