@@ -73,6 +73,7 @@ const QString kFormatTDAT = QStringLiteral("ddMM");
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 // Serato frames
+const QString kFrameDescriptionSeratoBeatGrid = QStringLiteral("Serato BeatGrid");
 const QString kFrameDescriptionSeratoMarkers = QStringLiteral("Serato Markers_");
 const QString kFrameDescriptionSeratoMarkers2 = QStringLiteral("Serato Markers2");
 
@@ -989,6 +990,13 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     // Serato tags
+    const QByteArray seratoBeatGrid =
+            readFirstGeneralEncapsulatedObjectFrame(
+                    tag,
+                    kFrameDescriptionSeratoBeatGrid);
+    if (!seratoBeatGrid.isEmpty()) {
+        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MP3);
+    }
     const QByteArray seratoMarkers =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
@@ -1276,6 +1284,10 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     // does not modify them.
 #if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
+    writeGeneralEncapsulatedObjectFrame(
+            pTag,
+            kFrameDescriptionSeratoBeatGrid,
+            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
     writeGeneralEncapsulatedObjectFrame(
             pTag,
             kFrameDescriptionSeratoMarkers,

@@ -40,7 +40,7 @@ AnalyzerModeFlags getAnalyzerModeFlags(
     // NOTE(uklotzde, 2018-12-26): The previous comment just states the status-quo
     // of the existing code. We should rethink the configuration of analyzers when
     // refactoring/redesigning the analyzer framework.
-    int modeFlags = AnalyzerModeFlags::WithBeats;
+    int modeFlags = AnalyzerModeFlags::WithBeats | AnalyzerModeFlags::LowPriority;
     if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
         modeFlags |= AnalyzerModeFlags::WithWaveform;
     }

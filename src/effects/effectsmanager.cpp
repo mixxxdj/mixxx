@@ -106,16 +106,16 @@ void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
-void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerInputChannel(handle_group);
+void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
+    m_pEffectChainManager->registerInputChannel(handleGroup);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectsManager::registeredInputChannels() const {
     return m_pEffectChainManager->registeredInputChannels();
 }
 
-void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerOutputChannel(handle_group);
+void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handleGroup) {
+    m_pEffectChainManager->registerOutputChannel(handleGroup);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectsManager::registeredOutputChannels() const {

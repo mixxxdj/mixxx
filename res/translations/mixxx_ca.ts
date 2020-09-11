@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="56"/>
         <source>Analyze</source>
-        <translation>Analitzador</translation>
+        <translation>Analitza</translation>
     </message>
 </context>
 <context>
@@ -2722,22 +2722,22 @@
         <location filename="../../src/controllers/controllerengine.cpp" line="572"/>
         <location filename="../../src/controllers/controllerengine.cpp" line="1055"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
-        <translation type="unfinished"/>
+        <translation>Es deshabilitaran les funcions de les assignacions de controlador fins que el problema s&apos;hagi resolt.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="576"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
-        <translation type="unfinished"/>
+        <translation>Podeu ignorar l&apos;error per aquesta sessió, però podríeu experimentar comportaments erràtics.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="583"/>
         <source>Controller Preset Error</source>
-        <translation type="unfinished"/>
+        <translation>Error de configuració predefinida</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="584"/>
         <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
-        <translation type="unfinished"/>
+        <translation>La configuració predefinida pel vostre controlador «%1» no funciona correctament.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="588"/>
@@ -2747,12 +2747,12 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1053"/>
         <source>Controller Mapping File Problem</source>
-        <translation type="unfinished"/>
+        <translation>Problema amb el fitxer d&apos;assignacions del controlador</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1054"/>
         <source>The mapping for controller &quot;%1&quot; cannot be opened.</source>
-        <translation type="unfinished"/>
+        <translation>No es podeb obrir les assignacions del controlador «%1».</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1061"/>
@@ -3274,7 +3274,28 @@ Skip Silence:
 Play the whole track except for silence at the beginning and end.
 Begin crossfading from the selected number of seconds before the
 last sound.</source>
-        <translation type="unfinished"/>
+        <translation>Modes d&apos;esvaïment de DJ automàtic
+
+Introducció completa + final:
+Reprodueix la introducció completa i el final. Utilitzeu la longitud 
+de la introducció o final com a crossfade, el que sigui més curt. Si 
+no es marca cap introducció ni final, utilitza el temps de crossfade 
+seleccionat.
+
+Esvaeix a l&apos;inici del final:
+Comença a esvaïr en començar el final. Si el final és més llarg que 
+la introducció, talla&apos;l. Fes servir la longitud de la introducció o el final 
+com el temps de crossfade, el que sigui més curt. Si no hi ha cap 
+introducció ni final marcats, utilitza el temps de crossfade seleccionat.
+
+Pista completa:
+Reprodueix tota la pista. Comença el crossfade quan falti el número 
+seleccionat de segons del final de la pista. Un temps negatiu de 
+crossfade afegirà silenci entre les pistes.
+
+Salta els silencis:
+Reprodueix tota la pista, tret del silenci de l&apos;inici i el final. Comença el 
+crossfade el nombre de segons seleccionat abans del darrer so.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="183"/>
@@ -4255,7 +4276,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="255"/>
         <source>No Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Cap script</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="267"/>
@@ -4270,7 +4291,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="456"/>
         <source>Preset has been edited</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;ha editat la configuració predefinida</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="457"/>
@@ -4348,7 +4369,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
         <source>Script Files:</source>
-        <translation type="unfinished"/>
+        <translation>Fitxers d&apos;script:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>

@@ -110,6 +110,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
     void drawWaveformPixmap(QPainter* pPainter);
+    void drawPlayedOverlay(QPainter* pPainter);
+    void drawPlayPosition(QPainter* pPainter);
     void drawEndOfTrackFrame(QPainter* pPainter);
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
@@ -165,12 +167,16 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
-    QColor m_qColorBackground;
+    QColor m_backgroundColor;
     int m_iLabelFontSize;
     QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
+    QColor m_axesColor;
+    QColor m_playPosColor;
     QColor m_endOfTrackColor;
     QColor m_passthroughOverlayColor;
+    QColor m_playedOverlayColor;
+    QColor m_lowColor;
     QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks

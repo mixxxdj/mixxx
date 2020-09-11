@@ -26,6 +26,7 @@ class WCoverArtLabel : public QLabel {
 
   protected:
     void mousePressEvent(QMouseEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private slots:
       void slotCoverMenu(const QPoint& pos);

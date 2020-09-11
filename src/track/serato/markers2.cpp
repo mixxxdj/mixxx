@@ -12,9 +12,11 @@ constexpr quint32 kLoopUnknownField2ExpectedValue = 0xFFFFFFFF;
 constexpr quint8 kLoopUnknownField3ExpectedValue = 0x00;
 constexpr quint8 kLoopUnknownField4ExpectedValue = 0x00;
 
-const QByteArray kSeratoMarkers2Base64EncodedPrefix = QByteArray(
-        "application/octet-stream\x00\x00Serato Markers2\x00",
-        24 + 2 + 15 + 1);
+constexpr char kSeratoMarkers2Base64EncodedPrefixStr[] =
+        "application/octet-stream\0\0Serato Markers2";
+const QByteArray kSeratoMarkers2Base64EncodedPrefix = QByteArray::fromRawData(
+        kSeratoMarkers2Base64EncodedPrefixStr,
+        sizeof(kSeratoMarkers2Base64EncodedPrefixStr));
 
 QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
     DEBUG_ASSERT(stream);
@@ -63,20 +65,20 @@ QByteArray base64encode(const QByteArray& data, bool chopPadding) {
 
 namespace mixxx {
 
-SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray& data) {
+SeratoMarkers2EntryPointer SeratoMarkers2BpmLockEntry::parse(const QByteArray& data) {
     if (data.length() != 1) {
-        kLogger.warning() << "Parsing SeratoMarkers2BpmlockEntry failed:"
+        kLogger.warning() << "Parsing SeratoMarkers2BpmLockEntry failed:"
                           << "Length" << data.length() << "!= 1";
         return nullptr;
     }
 
     const bool locked = data.at(0);
-    SeratoMarkers2BpmlockEntry* pEntry = new SeratoMarkers2BpmlockEntry(locked);
-    kLogger.trace() << "SeratoMarkers2BpmlockEntry" << *pEntry;
+    SeratoMarkers2BpmLockEntry* pEntry = new SeratoMarkers2BpmLockEntry(locked);
+    kLogger.trace() << "SeratoMarkers2BpmLockEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
-QByteArray SeratoMarkers2BpmlockEntry::dump() const {
+QByteArray SeratoMarkers2BpmLockEntry::dump() const {
     QByteArray data;
     data.resize(length());
 
@@ -87,7 +89,7 @@ QByteArray SeratoMarkers2BpmlockEntry::dump() const {
     return data;
 }
 
-quint32 SeratoMarkers2BpmlockEntry::length() const {
+quint32 SeratoMarkers2BpmLockEntry::length() const {
     return 1;
 }
 
@@ -195,7 +197,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -304,7 +307,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -357,8 +361,9 @@ bool SeratoMarkers2::parse(
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers2, data);
     case taglib::FileType::MP4:
-    case taglib::FileType::FLAC:
         return parseBase64Encoded(seratoMarkers2, data);
+    case taglib::FileType::FLAC:
+        return parseFLAC(seratoMarkers2, data);
     case taglib::FileType::OGG:
         return parseCommon(seratoMarkers2, data);
     default:
@@ -428,7 +433,7 @@ bool SeratoMarkers2::parseCommon(
         // Entry Content
         SeratoMarkers2EntryPointer pEntry;
         if (entryType.compare("BPMLOCK") == 0) {
-            pEntry = SeratoMarkers2BpmlockEntry::parse(entryData);
+            pEntry = SeratoMarkers2BpmLockEntry::parse(entryData);
         } else if (entryType.compare("COLOR") == 0) {
             pEntry = SeratoMarkers2ColorEntry::parse(entryData);
         } else if (entryType.compare("CUE") == 0) {
@@ -460,7 +465,10 @@ bool SeratoMarkers2::parseBase64Encoded(
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
     if (!decodedData.startsWith(kSeratoMarkers2Base64EncodedPrefix)) {
         kLogger.warning() << "Decoding SeratoMarkers2 from base64 failed:"
-                          << "Unexpected prefix";
+                          << "Unexpected prefix"
+                          << decodedData.left(kSeratoMarkers2Base64EncodedPrefix.size())
+                          << "!="
+                          << kSeratoMarkers2Base64EncodedPrefix;
         return false;
     }
     DEBUG_ASSERT(decodedData.size() >= kSeratoMarkers2Base64EncodedPrefix.size());
@@ -475,14 +483,27 @@ bool SeratoMarkers2::parseBase64Encoded(
     return true;
 }
 
+//static
+bool SeratoMarkers2::parseFLAC(
+        SeratoMarkers2* seratoMarkers2,
+        const QByteArray& base64EncodedData) {
+    if (!base64EncodedData.isEmpty() && parseBase64Encoded(seratoMarkers2, base64EncodedData)) {
+        seratoMarkers2->setLastBase64ByteFLAC(base64EncodedData.at(base64EncodedData.size() - 1));
+        return true;
+    };
+
+    return false;
+}
+
 QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
     switch (fileType) {
     case taglib::FileType::MP3:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
-    case taglib::FileType::FLAC:
         return dumpBase64Encoded();
+    case taglib::FileType::FLAC:
+        return dumpFLAC();
     case taglib::FileType::OGG:
         return dumpCommon();
     default:
@@ -633,6 +654,16 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
     return base64encode(outerData.leftJustified(size, '\0'), false);
 }
 
+QByteArray SeratoMarkers2::dumpFLAC() const {
+    QByteArray data = dumpBase64Encoded();
+
+    if (!data.isEmpty()) {
+        data[data.size() - 1] = lastBase64ByteFLAC();
+    }
+
+    return data;
+}
+
 RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
     kLogger.info() << "Reading track color from 'Serato Markers2' tag data...";
 
@@ -653,11 +684,12 @@ bool SeratoMarkers2::isBpmLocked() const {
 
     for (auto& pEntry : m_entries) {
         DEBUG_ASSERT(pEntry);
-        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Bpmlock) {
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::BpmLock) {
             continue;
         }
-        const SeratoMarkers2BpmlockEntry* pBpmlockEntry = static_cast<SeratoMarkers2BpmlockEntry*>(pEntry.get());
-        return pBpmlockEntry->isLocked();
+        const SeratoMarkers2BpmLockEntry* pBpmLockEntry =
+                static_cast<SeratoMarkers2BpmLockEntry*>(pEntry.get());
+        return pBpmLockEntry->isLocked();
     }
 
     return false;

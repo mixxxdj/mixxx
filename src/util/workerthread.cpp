@@ -19,8 +19,10 @@ std::atomic<int> s_threadCounter(0);
 } // anonymous namespace
 
 WorkerThread::WorkerThread(
-        const QString& name)
+        const QString& name,
+        QThread::Priority priority)
         : m_name(name),
+          m_priority(priority),
           m_logger(m_name.isEmpty() ? "WorkerThread" : m_name.toLatin1().constData()),
           m_suspend(false),
           m_stop(false) {
@@ -57,7 +59,12 @@ void WorkerThread::run() {
     const int threadNumber = s_threadCounter.fetch_add(1) + 1;
     const QString threadName =
             m_name.isEmpty() ? QString::number(threadNumber) : QString("%1 #%2").arg(m_name, QString::number(threadNumber));
-    QThread::currentThread()->setObjectName(threadName);
+    setObjectName(threadName);
+
+    if (m_priority != QThread::InheritPriority) {
+        m_logger.debug() << "Set priority to: " << m_priority;
+        setPriority(m_priority);
+    }
 
     m_logger.debug() << "Running";
 

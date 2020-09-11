@@ -1,20 +1,20 @@
 //
-// Mapping for Vestax VCI-100 controller, modified to use JS for all 
+// Mapping for Vestax VCI-100 controller, modified to use JS for all
 // controls.
 // Copyright (C) 2012, Ilkka Tuohela
 // For Mixxx version 1.11.x
-// 
+//
 
 function HileVci100() {};
 
 HileVci100.debugging = true;
 
-// Virtual buttons we don't want to set LED for automatically, 
-// or button inputs which don't have a LED 
+// Virtual buttons we don't want to set LED for automatically,
+// or button inputs which don't have a LED
 IGNORE_LED_UPDATES = [
     "jog_touch", "cuestop", "loop_in", "loop_out", "reloop_exit",
-    "active_loops_1", "active_loops_2", 
-    "beatloop_1_enabled", "beatloop_2_enabled", 
+    "active_loops_1", "active_loops_2",
+    "beatloop_1_enabled", "beatloop_2_enabled",
     "beatloop_4_enabled", "beatloop_8_enabled",
     "rate_temp_up", "rate_temp_down"
 ]
@@ -112,12 +112,12 @@ HileVci100.init = function(id) {
 
     HileVci100.buttonStates = {released:0x00, pressed:0x7F};
     HileVci100.beatloopSizes = { 1: 1, 2: 2, 3: 4, 4: 8 };
- 
+
     HileVci100.scratchintervalsPerRev = 256;
     HileVci100.scratchRPM = 33+1/3;
     HileVci100.scratchAlpha = 1.0/8;
     HileVci100.scratchBeta = (1.0/8) / 32;
-    HileVci100.rampedScratchEnable = false; 
+    HileVci100.rampedScratchEnable = false;
     HileVci100.rampedScratchDisable = true;
 
     HileVci100.isScratchEnabled = new Object();
@@ -136,7 +136,7 @@ HileVci100.init = function(id) {
         var name = HileVci100.NOTE_ON_CONTROLS[control];
         if (name in HileVci100.buttonMap) {
             var button = HileVci100.buttonMap[name];
-            if (IGNORE_LED_UPDATES.indexOf(button.control)!=-1) 
+            if (IGNORE_LED_UPDATES.indexOf(button.control)!=-1)
                 continue;
             value = engine.getValue(button.group,button.control);
             engine.connectControl(
@@ -163,7 +163,7 @@ HileVci100.init = function(id) {
 HileVci100.shutdown = function(id) {
     for (var button_name in HileVci100.buttonMap) {
         var button = HileVci100.buttonMap[name];
-        if (IGNORE_LED_UPDATES.indexOf(button.control)!=-1) 
+        if (IGNORE_LED_UPDATES.indexOf(button.control)!=-1)
             continue;
         engine.connectControl(
             button.group,button.control,HileVci100.LEDCallback,true
@@ -174,22 +174,22 @@ HileVci100.shutdown = function(id) {
 HileVci100.registerScalers = function() {
     HileVci100.scalers = new Object();
     HileVci100.scalers.eq = function(value) {
-        return script.absoluteNonLin(value,0,1,5,0,127);       
-    } 
+        return script.absoluteNonLin(value,0,1,5,0,127);
+    }
     HileVci100.scalers.pregain = function(value) {
         return script.absoluteNonLin(value,0,1,4,0,127);
     }
     HileVci100.scalers.master = function(value) {
-        return script.absoluteLin(value,0,5,0,127);       
+        return script.absoluteLin(value,0,5,0,127);
     }
     HileVci100.scalers.volume = function(value) {
-        return script.absoluteLin(value,0,1,0,127);       
+        return script.absoluteLin(value,0,1,0,127);
     }
     HileVci100.scalers.crossfader = function(value) {
-        return script.absoluteLin(value,-1,1,0,127);       
+        return script.absoluteLin(value,-1,1,0,127);
     }
     HileVci100.scalers.rate = function(value) {
-        return HileVci100.pitchDirection * script.absoluteLin(value,-1,1,0,127); 
+        return HileVci100.pitchDirection * script.absoluteLin(value,-1,1,0,127);
     }
     HileVci100.scalers.jogticks = function(value) { return value-0x40; }
 }
@@ -287,10 +287,10 @@ HileVci100.linkButton = function(name,group,control,toggle,callback) {
     HileVci100.buttonMap[name] = button;
 }
 
-HileVci100.LEDCallback = function(value,group,control) { 
+HileVci100.LEDCallback = function(value,group,control) {
     for (var button_name in HileVci100.buttonMap) {
         var button = HileVci100.buttonMap[button_name];
-        if (button.group!=group || button.control!=control) 
+        if (button.group!=group || button.control!=control)
             continue;
         var status = (value) ? 0x7f : 0x0;
         midi.sendShortMsg(0x90,button.midino,status);
@@ -308,7 +308,7 @@ HileVci100.linkFader = function(name,group,control,scaler,callback) {
         scaler = control;
     if (!(scaler in HileVci100.scalers)) {
         HileVci100.debug("Unknown scaler: " + name);
-        return; 
+        return;
     }
     var fader = new Object();
     fader.name = name;
@@ -382,7 +382,7 @@ HileVci100.buttons = function (channel,control,value,status,group) {
         } else {
             value = (engine.getValue(button.group,button.control)) ? false : true;
         }
-    } else { 
+    } else {
         value = (value==HileVci100.buttonStates.pressed) ? true : false;
     }
 
@@ -470,7 +470,7 @@ HileVci100.active = function(button,value) {
     }
     HileVci100.updateLooperLEDs();
 }
- 
+
 HileVci100.looper = function(button,value) {
     if (!value) {
         if (button.control!="reloop_exit") {
@@ -519,7 +519,7 @@ HileVci100.scratchEnable = function(button,value) {
             HileVci100.rampedScratchEnable
         );
     } else {
-        if (!HileVci100.isScratchEnabled[button.group]) 
+        if (!HileVci100.isScratchEnabled[button.group])
             return;
         HileVci100.isScratchEnabled[button.group] = false;
         engine.scratchDisable(deck,HileVci100.rampedScratchDisable);

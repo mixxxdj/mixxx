@@ -22,6 +22,8 @@ env:
     - CTEST_OUTPUT_ON_FAILURE=1
     # Render analyzer waveform tests to an offscreen buffer
     - QT_QPA_PLATFORM=offscreen
+    # DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD for deploys.
+    - secure: aS40s8gx1mM01oRj2pskFqR+rBID1nnTY7hwSqkT1bgJT+JF0tMZt/SkMjR08bp+3soNbBtqJgZKAhQ6Tts2DtkWQGbUiXgU5QpowUcecTxge/jqxZeWdJWThpB+qWs70Fm0QhzZXIyBPM8EGljWbLum5ncR7AUBEasRboNZ0P8=
 
 jobs:
   include:
@@ -69,7 +71,7 @@ jobs:
         # NOTE(sblaisot): 2018-01-02 removing gdb wrapper on linux due to a bug in
         # return code in order to avoid having a successful build when a test fail.
         # https://bugs.launchpad.net/mixxx/+bug/1699689
-        - ./mixxx-test
+        - ./mixxx-test --logLevel info
 
     - name: Ubuntu/gcc/CMake build
       compiler: gcc
@@ -92,7 +94,7 @@ jobs:
         - cpack -G DEB
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
 
     - name: OSX/clang/SCons build
@@ -144,7 +146,7 @@ jobs:
       script:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
-        - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)"
+        - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)" -- --logLevel info
       before_cache:
         # Avoid indefinite cache growth
         - brew cleanup
@@ -198,7 +200,7 @@ jobs:
         - cpack -G DragNDrop
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
       before_cache:
         # Avoid indefinite cache growth
@@ -256,3 +258,12 @@ addons:
 notifications:
   webhooks:
     - https://mixxx.zulipchat.com/api/v1/external/travis?stream=travis&topic=build-status&api_key=$ZULIP_API_KEY
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  # Deploy is executed from cmake_build.
+  script: ../build/travis/deploy.sh
+  on:
+    all_branches: true
+    condition: "\"${TRAVIS_JOB_NAME}\" =~ CMake"

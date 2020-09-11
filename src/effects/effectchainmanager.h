@@ -24,12 +24,12 @@ class EffectChainManager : public QObject {
                        EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
 
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handleGroup);
     const QSet<ChannelHandleAndGroup>& registeredInputChannels() const {
         return m_registeredInputChannels;
     }
 
-    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
+    void registerOutputChannel(const ChannelHandleAndGroup& handleGroup);
     const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const {
         return m_registeredOutputChannels;
     }
