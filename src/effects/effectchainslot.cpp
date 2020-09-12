@@ -331,7 +331,7 @@ void EffectChainSlot::slotControlChainNextPreset(double value) {
 
 void EffectChainSlot::slotControlChainPrevPreset(double value) {
     if (value > 0) {
-        loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex() - 1));
+        loadChainPreset(presetAtIndex(presetIndex() - 1));
     }
 }
 
