@@ -559,11 +559,19 @@ WSearchLineEdit {
   }
 
   #RateControls {
-    margin: 0px 2px;
+    margin: 0px 1px 0px 2px;
+    /*background-color: #000;*/
     }
-    #RateButtons {
-      margin-right: 2px;
+    WRateRange {
+      /*background-color: green;*/
     }
+    #RateDisplayTop {
+    }
+    #RateDisplayBottom {
+    }
+  #RateSlider {
+    /*background-color: rgba(255,0,0,80);*/
+  }
 
 
 /********************** Loop Controls / AutoDJ spinbox ************************/
