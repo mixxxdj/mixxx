@@ -163,7 +163,7 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} ..
         - cmake --build .
-        - cpack -G DragNDrop
+        - cpack -G Bundle
       script:
         # Run tests and benchmarks
         - ctest --timeout 45
