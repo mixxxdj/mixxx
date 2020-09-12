@@ -41,6 +41,5 @@ void WNumberRate::setValue(double dValue) {
         sign = '-';
     }
 
-    setText(QString(m_skinText).append(sign)
-            .append("%1").arg(fabs(percentage), 'f', m_iNoDigits);
+    setText(m_skinText + sign + QString::number(fabs(percentage), 'f', m_iNoDigits));
 }
