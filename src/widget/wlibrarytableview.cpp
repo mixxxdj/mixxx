@@ -163,11 +163,11 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
                 DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());
                 if (!currentIndex().isValid() ||
                         !selectionModel()->isSelected(currentIndex())) {
-                    // Refocus the first selected index
-                    setCurrentIndex(selectionModel()->selectedIndexes().first());
+                    // Reselect the first selected index
+                    selectRow(selectionModel()->selectedIndexes().first().row());
                 }
             } else {
-                if (currentIndex().isValid()) {
+                if (!currentIndex().isValid()) {
                     // Select the first row if no row is focused
                     selectRow(0);
                     DEBUG_ASSERT(currentIndex().row() == 0);
