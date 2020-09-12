@@ -847,8 +847,8 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
     parented_ptr<QMenu> resetControlMenu = nullptr;
     QString resetControl = QString("%1_set_default").arg(control);
     if (addReset) {
-        QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        resetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
+        QString resetMenuTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+        resetControlMenu = make_parented<QMenu>(resetMenuTitle, pMenu);
         pMenu->addMenu(resetControlMenu);
     }
 
@@ -863,7 +863,7 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
             addSingleControl(group, resetControl, resetTitle, resetDescription,
-                             controlMenu, prefix, prefix);
+                    resetControlMenu, prefix, prefix);
         }
     }
 
@@ -878,7 +878,7 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
             addSingleControl(group, resetControl, resetTitle, resetDescription,
-                             controlMenu, prefix, prefix);
+                    resetControlMenu, prefix, prefix);
         }
     }
 
@@ -893,7 +893,7 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
             addSingleControl(group, resetControl, resetTitle, resetDescription,
-                             controlMenu, prefix, prefix);
+                    resetControlMenu, prefix, prefix);
         }
     }
 }
@@ -928,7 +928,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
                 addSingleControl(group, resetControl, resetTitle, resetDescription,
-                                 controlMenu, prefix, prefix);
+                        resetControlMenu, prefix, prefix);
             }
         }
     }
@@ -945,7 +945,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
                 addSingleControl(group, resetControl, resetTitle, resetDescription,
-                                 controlMenu, prefix, prefix);
+                        resetControlMenu, prefix, prefix);
             }
         }
     }
