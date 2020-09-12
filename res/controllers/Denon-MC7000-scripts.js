@@ -69,7 +69,7 @@ MC7000.scratchParams = {
 // Sensitivity of the jog wheel (also depends on audio latency)
 MC7000.jogParams = {
     // Sensitivity factor (0.5 for half, 2 for double sensitivity)
-    jogSensitivity: 1, // default: 1
+    jogSensitivity: 0.8, // default: 1
     // this will limit the parameter of "jog" (keep between 0.5 and 3)
     maxJogValue: 3      // default: 3
 };
@@ -90,7 +90,7 @@ MC7000.jogWheelTicksPerRevolution = 894;
 MC7000.needleSearchTouched = [true, true, true, true];
 
 // initial value for VINYL mode per Deck (see above for user input)
-MC7000.isVinylMode = [0, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
+MC7000.isVinylMode = [MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
 
 // used to keep track of which the rateRange of each slider.
 // value used as an index to MC7000.rateRanges
@@ -553,9 +553,9 @@ MC7000.vinylModeToggle = function(channel, control, value, status, group) {
 
     if (value === 0x7F) {
         var deckNumber = script.deckFromGroup(group);
-        MC7000.isVinylMode[deckNumber] = !MC7000.isVinylMode[deckNumber];
-        midi.sendShortMsg(0x90 + channel, 0x07,
-            MC7000.isVinylMode[deckNumber] ? 0x7F : 0x01);
+        MC7000.isVinylMode[deckNumber - 1] = !MC7000.isVinylMode[deckNumber - 1];
+        midi.sendShortMsg(0x90 + deckNumber - 1, 0x07,
+            MC7000.isVinylMode[deckNumber - 1] ? 0x7F : 0x01);
     }
 };
 
@@ -570,7 +570,7 @@ MC7000.LOADassertlongpress = function() {
 
 MC7000.LOADdown = function() {
     MC7000.LOADlongpress = false;
-    MC7000.LOADtimer = engine.beginTimer(500, "MC7000.LOADassertlongpress()", true);
+    MC7000.LOADtimer = engine.beginTimer(500, MC7000.LOADassertlongpress, true);
 };
 
 MC7000.LOADup = function(group) {
@@ -596,7 +596,7 @@ MC7000.LoadBtn = function(channel, control, value, status, group) {
 // The button that enables/disables scratching
 MC7000.wheelTouch = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (MC7000.isVinylMode[deckNumber]) {
+    if (MC7000.isVinylMode[deckNumber - 1]) {
         if (value === 0x7F) {
             engine.scratchEnable(deckNumber, MC7000.jogWheelTicksPerRevolution,
                 MC7000.scratchParams.recordSpeed,
@@ -831,23 +831,22 @@ MC7000.sortLibrary = function(channel, control, value) {
 MC7000.VuMeter = function(value, group) {
     var VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : value*value*value*value*MC7000.VuMeterLEDPeakValue -1,
         deckNumber = script.deckFromGroup(group);
-
     midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, VULevelOutValue);
 };
 
 /* LEDs around Jog wheel */
 MC7000.JogLed = function(value, group) {
-    var deckNumber = script.deckFromGroup(group);
     // do nothing before track starts
     if (value < 0) return;
 
-    var trackDuration = engine.getValue(group, "duration"),
+    var deckNumber = script.deckFromGroup(group),
+        trackDuration = engine.getValue(group, "duration"),
         position = value * trackDuration / 60 * MC7000.scratchParams.recordSpeed,
         // LED ring contains 48 segments with each LED activated by the next even number
         LEDmidiSignal = 48 * 2,
-        activeLED = MC7000.isVinylMode[deckNumber] ? Math.round(position * LEDmidiSignal) % LEDmidiSignal : value * LEDmidiSignal;
+        activeLED = MC7000.isVinylMode[deckNumber - 1] ? Math.round(position * LEDmidiSignal) % LEDmidiSignal : value * LEDmidiSignal;
 
-    midi.sendShortMsg(0x90 + deckNumber -1, 0x06, activeLED);
+    midi.sendShortMsg(0x90 + deckNumber - 1, 0x06, activeLED);
 };
 
 // initial HotCue LED when loading a track with already existing hotcues

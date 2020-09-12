@@ -2119,7 +2119,7 @@
                 <key>MoveFocusForward</key>
                 <description>change active panel</description>
                 <status>0x9F</status>
-                <midino>0x06</midino>
+                <midino>0x07</midino>
                 <options>
                     <normal/>
                 </options>
@@ -2129,7 +2129,7 @@
                 <key>MoveFocusBackward</key>
                 <description>change active panel</description>
                 <status>0x9F</status>
-                <midino>0x07</midino>
+                <midino>0x06</midino>
                 <options>
                     <normal/>
                 </options>
