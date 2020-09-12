@@ -273,6 +273,10 @@ if(GIT_WORKTREE_DIRTY EQUAL "1")
   set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
 endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
+
+# Get current year
+string(TIMESTAMP MIXXX_YEAR "%Y")
+
 if(MSVC)
   # clcache support
   find_program(CLCACHE_EXECUTABLE "clcache")
@@ -1197,6 +1201,15 @@ set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
 set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
 
+set(CPACK_BUNDLE_NAME "Mixxx")
+set(CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/res/osx/VolumeIcon.icns")
+set(CPACK_BUNDLE_APPLE_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/build/osx/entitlements.plist")
+set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
+set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
+set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in" "${CMAKE_CURRENT_BINARY_DIR}/macos_bundle.plist" @ONLY)
+set(CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_BINARY_DIR}/macos_bundle.plist")
+
 include(CPack)
 
 #
@@ -1401,8 +1414,6 @@ add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
 # Windows-only resource file
 if(WIN32)
-  string(TIMESTAMP MIXXX_YEAR "%Y")
-
   file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
   string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
 
