@@ -88,7 +88,7 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
     m_columnIndexBySortColumnId
             [TrackModel::SortColumnId::SORTCOLUMN_LASTPLAYEDDATETIME] =
-                    fieldIndex(ColumnCache::COLUMN_LASTPLAYED_DATETIMEPLAYED);
+                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEPLAYED);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);

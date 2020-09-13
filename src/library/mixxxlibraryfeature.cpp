@@ -61,7 +61,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_REPLAYGAIN
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_DATETIMEADDED
-            << LASTPLAYEDTABLE_NAME + "." + LASTPLAYED_DATETIMEPLAYED
+            << LASTPLAYEDTABLE_NAME + "." + LIBRARYTABLE_DATETIMEPLAYED
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT

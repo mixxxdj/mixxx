@@ -29,6 +29,7 @@ const QString LIBRARYTABLE_CHANNELS = QStringLiteral("channels");
 const QString LIBRARYTABLE_MIXXXDELETED = QStringLiteral("mixxx_deleted");
 const QString LIBRARYTABLE_DATETIMEADDED = QStringLiteral("datetime_added");
 const QString LIBRARYTABLE_HEADERPARSED = QStringLiteral("header_parsed");
+const QString LIBRARYTABLE_DATETIMEPLAYED = QStringLiteral("datetime_last_played");
 const QString LIBRARYTABLE_TIMESPLAYED = QStringLiteral("timesplayed");
 const QString LIBRARYTABLE_PLAYED = QStringLiteral("played");
 const QString LIBRARYTABLE_RATING = QStringLiteral("rating");

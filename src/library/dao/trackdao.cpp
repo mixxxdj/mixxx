@@ -80,10 +80,8 @@ TrackDAO::~TrackDAO() {
     addTracksFinish(true);
 }
 
-void TrackDAO::initialize(
-        const QSqlDatabase& database) {
-    DEBUG_ASSERT(!m_database.isOpen());
-    m_database = database;
+void TrackDAO::initialize(const QSqlDatabase& database) {
+    DAO::initialize(database);
     m_pLastPlayedFetcher.reset(new LastPlayedFetcher(m_database));
 }
 

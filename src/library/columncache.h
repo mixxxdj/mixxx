@@ -69,7 +69,7 @@ class ColumnCache : public QObject {
 
         COLUMN_REKORDBOX_ANALYZE_PATH,
 
-        COLUMN_LASTPLAYED_DATETIMEPLAYED,
+        COLUMN_LIBRARYTABLE_DATETIMEPLAYED,
         // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
     };

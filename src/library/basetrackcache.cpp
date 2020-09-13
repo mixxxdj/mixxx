@@ -369,7 +369,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getYear());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) == column) {
         trackValue.setValue(pTrack->getDateAdded());
-    } else if (fieldIndex(ColumnCache::COLUMN_LASTPLAYED_DATETIMEPLAYED) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEPLAYED) == column) {
         trackValue.setValue(pTrack->getLastPlayedDate());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
         trackValue.setValue(pTrack->getGenre());

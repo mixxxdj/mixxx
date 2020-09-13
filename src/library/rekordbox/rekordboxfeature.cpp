@@ -1204,7 +1204,7 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
     m_columnIndexBySortColumnId
             [TrackModel::SortColumnId::SORTCOLUMN_LASTPLAYEDDATETIME] =
-                    fieldIndex(ColumnCache::COLUMN_LASTPLAYED_DATETIMEPLAYED);
+                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEPLAYED);
     m_columnIndexBySortColumnId
             [TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] =
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
