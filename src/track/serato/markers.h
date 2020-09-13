@@ -17,10 +17,10 @@ typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {
   public:
-    enum class TypeId {
-        Unknown,
-        Cue,
-        Loop,
+    enum class TypeId : int {
+        Unknown = 0,
+        Cue = 1,
+        Loop = 3,
     };
 
     SeratoMarkersEntry(
@@ -53,12 +53,13 @@ class SeratoMarkersEntry {
 
     SeratoMarkersEntry::TypeId typeId() const {
         SeratoMarkersEntry::TypeId typeId = SeratoMarkersEntry::TypeId::Unknown;
-        switch (type()) {
-        case 0: // This seems to be an unset Hotcue (i.e. without a position)
-        case 1: // Hotcue
+        switch (static_cast<SeratoMarkersEntry::TypeId>(type())) {
+        case SeratoMarkersEntry::TypeId::Unknown:
+            // This seems to be an unset Hotcue (i.e. without a position)
+        case SeratoMarkersEntry::TypeId::Cue:
             typeId = SeratoMarkersEntry::TypeId::Cue;
             break;
-        case 3: // Saved Loop
+        case SeratoMarkersEntry::TypeId::Loop:
             typeId = SeratoMarkersEntry::TypeId::Loop;
             break;
         }
@@ -164,6 +165,7 @@ class SeratoMarkers final {
     }
 
     QList<CueInfo> getCues() const;
+    void setCues(const QList<CueInfo>& cueInfos);
 
   private:
     static bool parseID3(
