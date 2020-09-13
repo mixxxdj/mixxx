@@ -35,8 +35,6 @@ WCoverArtLabel::~WCoverArtLabel() {
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
                                  QPixmap px) {
-    qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
-
     m_pCoverMenu->setCoverArt(coverInfo);
     if (px.isNull()) {
         m_loadedCover = px;

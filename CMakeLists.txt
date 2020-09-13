@@ -1040,6 +1040,7 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
+include(InstallRequiredSystemLibraries)
 set(MIXXX_INSTALL_BINDIR ".")
 set(MIXXX_INSTALL_DATADIR ".")
 set(MIXXX_INSTALL_DOCDIR "./doc")
@@ -1057,6 +1058,16 @@ install(
     mixxx
   RUNTIME DESTINATION
     "${MIXXX_INSTALL_BINDIR}"
+)
+
+# System Runtime libraries
+install(
+  FILES
+    ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+  DESTINATION
+    "${MIXXX_INSTALL_BINDIR}"
+  COMPONENT
+    Libraries
 )
 
 # Skins

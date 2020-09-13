@@ -34,8 +34,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns;
+    // Do not reorder the following columns!! Otherwise all
+    // user customizations for the visible columns are mixed
+    // up.
+    // See also: https://mixxx.zulipchat.com/#narrow/stream/109695-_support/topic/Library.20brocken.20after.20update
     columns << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_COLOR
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
             //has to be up here otherwise Played and TimesPlayed are not show
@@ -63,6 +66,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "library." + LIBRARYTABLE_COLOR
             << "library." + LIBRARYTABLE_COVERART_SOURCE
             << "library." + LIBRARYTABLE_COVERART_TYPE
             << "library." + LIBRARYTABLE_COVERART_LOCATION
