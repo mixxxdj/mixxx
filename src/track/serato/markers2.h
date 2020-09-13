@@ -428,8 +428,12 @@ class SeratoMarkers2 final {
     }
 
     QList<CueInfo> getCues() const;
+
     RgbColor::optional_t getTrackColor() const;
+    void setTrackColor(RgbColor color);
+
     bool isBpmLocked() const;
+    void setBpmLocked(bool bpmLocked);
 
   private:
     static bool parseCommon(

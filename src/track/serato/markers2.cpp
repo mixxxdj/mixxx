@@ -679,6 +679,22 @@ RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
     return std::nullopt;
 }
 
+void SeratoMarkers2::setTrackColor(RgbColor color) {
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Color) {
+            continue;
+        }
+        SeratoMarkers2ColorEntry* pColorEntry =
+                static_cast<SeratoMarkers2ColorEntry*>(pEntry.get());
+        pColorEntry->setColor(color);
+        return;
+    }
+
+    SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
+    m_entries.append(SeratoMarkers2EntryPointer(pEntry));
+}
+
 bool SeratoMarkers2::isBpmLocked() const {
     kLogger.info() << "Reading bpmlock state from 'Serato Markers2' tag data...";
 
@@ -693,6 +709,22 @@ bool SeratoMarkers2::isBpmLocked() const {
     }
 
     return false;
+}
+
+void SeratoMarkers2::setBpmLocked(bool bpmLocked) {
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::BpmLock) {
+            continue;
+        }
+        SeratoMarkers2BpmLockEntry* pBpmLockEntry =
+                static_cast<SeratoMarkers2BpmLockEntry*>(pEntry.get());
+        pBpmLockEntry->setLocked(bpmLocked);
+        return;
+    }
+
+    SeratoMarkers2BpmLockEntry* pEntry = new SeratoMarkers2BpmLockEntry(bpmLocked);
+    m_entries.append(SeratoMarkers2EntryPointer(pEntry));
 }
 
 } // namespace mixxx
