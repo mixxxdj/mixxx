@@ -2,8 +2,6 @@
 
 #include "track/serato/tags.h"
 
-namespace {
-
 class SeratoTagsTest : public testing::Test {
   protected:
     void trackColorRoundtrip(mixxx::RgbColor::optional_t displayedColor) {
@@ -105,5 +103,3 @@ TEST_F(SeratoTagsTest, SetBpmLocked) {
     seratoTags.setBpmLocked(false);
     EXPECT_EQ(seratoTags.isBpmLocked(), false);
 }
-
-} // namespace
