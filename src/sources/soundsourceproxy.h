@@ -15,7 +15,7 @@ class SoundSourceProxy {
     ///
     /// Returns true if providers for one or more file extensions have been
     /// registered.
-    static bool registerSoundSourceProviders();
+    static bool registerProviders();
 
     static QStringList getSupportedFileExtensions() {
         return s_soundSourceProviders.getRegisteredFileExtensions();
@@ -32,6 +32,13 @@ class SoundSourceProxy {
     static bool isFileSupported(const QFileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
+
+    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForUrl(
+            const QUrl& url);
+    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForFileExtension(
+            const QString& fileExtension) {
+        return s_soundSourceProviders.getRegistrationsForFileExtension(fileExtension);
+    }
     static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileExtension(
             const QString& fileExtension);
 
@@ -45,13 +52,12 @@ class SoundSourceProxy {
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
 
     explicit SoundSourceProxy(
-            TrackPointer pTrack);
+            TrackPointer pTrack,
+            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
 
     const TrackPointer& getTrack() const {
         return m_pTrack;
     }
-
-    mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
 
     const QUrl& getUrl() const {
         return m_url;
@@ -120,7 +126,8 @@ class SoundSourceProxy {
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
     explicit SoundSourceProxy(
-            const QUrl& url);
+            const QUrl& url,
+            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
 
     // Parse only the cover image from the file without modifying
     // the referenced track.
@@ -130,14 +137,19 @@ class SoundSourceProxy {
 
     const QUrl m_url;
 
-    static QList<mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
+    const QList<mixxx::SoundSourceProviderRegistration> m_providerRegistrations;
+    int m_providerRegistrationIndex;
 
-    const QList<mixxx::SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
-    int m_soundSourceProviderRegistrationIndex;
+    void initSoundSource(
+            const mixxx::SoundSourceProviderPointer& pProvider);
 
-    void nextSoundSourceProvider();
+    mixxx::SoundSourceProviderPointer primaryProvider(
+            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+    mixxx::SoundSourceProviderPointer nextProvider();
+    std::pair<mixxx::SoundSourceProviderPointer, mixxx::SoundSource::OpenMode>
+            nextProviderWithOpenMode(mixxx::SoundSource::OpenMode);
 
-    void initSoundSource();
+    mixxx::SoundSourceProviderPointer m_pProvider;
 
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!

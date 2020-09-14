@@ -48,7 +48,7 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     s_pApplication.reset(new MixxxApplication(argc, argv));
 
     const bool providersRegistered =
-            SoundSourceProxy::registerSoundSourceProviders();
+            SoundSourceProxy::registerProviders();
     Q_UNUSED(providersRegistered);
     DEBUG_ASSERT(providersRegistered);
 }

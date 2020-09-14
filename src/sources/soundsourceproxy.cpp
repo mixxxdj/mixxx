@@ -166,7 +166,7 @@ void registerReferenceSoundSourceProviders(
 } // anonymous namespace
 
 // static
-bool SoundSourceProxy::registerSoundSourceProviders() {
+bool SoundSourceProxy::registerProviders() {
     // Initialize built-in file types.
     // Fallback providers should be registered before specialized
     // providers to ensure that they are only after the specialized
@@ -281,26 +281,29 @@ mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileExt
 
 // static
 QList<mixxx::SoundSourceProviderRegistration>
-SoundSourceProxy::findSoundSourceProviderRegistrations(
+SoundSourceProxy::allProviderRegistrationsForUrl(
         const QUrl& url) {
     if (url.isEmpty()) {
         // silently ignore empty URLs
-        return QList<mixxx::SoundSourceProviderRegistration>();
+        return {};
     }
-    QString fileExtension(mixxx::SoundSource::getFileExtensionFromUrl(url));
+    const QString fileExtension =
+            mixxx::SoundSource::getFileExtensionFromUrl(url);
     if (fileExtension.isEmpty()) {
-        kLogger.warning() << "Unknown file type:" << url.toString();
-        return QList<mixxx::SoundSourceProviderRegistration>();
+        kLogger.warning()
+                << "Unknown file type:"
+                << url.toString();
+        return {};
     }
-
-    QList<mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
-            s_soundSourceProviders.getRegistrationsForFileExtension(
-                    fileExtension));
-    if (registrationsForFileExtension.isEmpty()) {
-        kLogger.warning() << "Unsupported file type:" << url.toString();
+    const auto providerRegistrations =
+            allProviderRegistrationsForFileExtension(
+                    fileExtension);
+    if (providerRegistrations.isEmpty()) {
+        kLogger.warning()
+                << "Unsupported file type:"
+                << url.toString();
     }
-
-    return registrationsForFileExtension;
+    return providerRegistrations;
 }
 
 //static
@@ -357,73 +360,123 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
 }
 
 SoundSourceProxy::SoundSourceProxy(
-        TrackPointer pTrack)
+        TrackPointer pTrack,
+        const mixxx::SoundSourceProviderPointer& pProvider)
         : m_pTrack(std::move(pTrack)),
           m_url(m_pTrack ? m_pTrack->getFileInfo().toUrl() : QUrl()),
-          m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
-          m_soundSourceProviderRegistrationIndex(0) {
-    initSoundSource();
+          m_providerRegistrations(allProviderRegistrationsForUrl(m_url)),
+          m_providerRegistrationIndex(pProvider ? -1 : 0) {
+    initSoundSource(pProvider);
 }
 
 SoundSourceProxy::SoundSourceProxy(
-        const QUrl& url)
+        const QUrl& url,
+        const mixxx::SoundSourceProviderPointer& pProvider)
         : m_url(url),
-          m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
-          m_soundSourceProviderRegistrationIndex(0) {
-    initSoundSource();
+          m_providerRegistrations(allProviderRegistrationsForUrl(m_url)),
+          m_providerRegistrationIndex(pProvider ? -1 : 0) {
+    initSoundSource(pProvider);
 }
 
-mixxx::SoundSourceProviderPointer SoundSourceProxy::getSoundSourceProvider() const {
-    DEBUG_ASSERT(0 <= m_soundSourceProviderRegistrationIndex);
-    if (m_soundSourceProviderRegistrations.size() > m_soundSourceProviderRegistrationIndex) {
-        return m_soundSourceProviderRegistrations[m_soundSourceProviderRegistrationIndex].getProvider();
+mixxx::SoundSourceProviderPointer SoundSourceProxy::primaryProvider(
+        const mixxx::SoundSourceProviderPointer& pProvider) {
+    if (pProvider) {
+        m_providerRegistrationIndex = -1;
+        return pProvider;
+    }
+    m_providerRegistrationIndex = 0;
+    if (m_providerRegistrationIndex < m_providerRegistrations.size()) {
+        return m_providerRegistrations[m_providerRegistrationIndex].getProvider();
+    }
+    return nullptr;
+}
+
+mixxx::SoundSourceProviderPointer SoundSourceProxy::nextProvider() {
+    VERIFY_OR_DEBUG_ASSERT(m_providerRegistrationIndex >= 0) {
+        return nullptr;
+    }
+    if (m_providerRegistrationIndex >= m_providerRegistrations.size()) {
+        return nullptr;
+    }
+    ++m_providerRegistrationIndex;
+    if (m_providerRegistrationIndex < m_providerRegistrations.size()) {
+        return m_providerRegistrations[m_providerRegistrationIndex].getProvider();
+    }
+    return nullptr;
+}
+
+std::pair<mixxx::SoundSourceProviderPointer, mixxx::SoundSource::OpenMode>
+SoundSourceProxy::nextProviderWithOpenMode(
+        mixxx::SoundSource::OpenMode openMode) {
+    if (m_providerRegistrationIndex < 0) {
+        if (openMode == mixxx::SoundSource::OpenMode::Strict) {
+            // try again using m_pProvider, but only once
+            openMode = mixxx::SoundSource::OpenMode::Permissive;
+        } else {
+            // abort
+            DEBUG_ASSERT(openMode == mixxx::SoundSource::OpenMode::Permissive);
+            m_pProvider.reset();
+        }
+        return std::make_pair(m_pProvider, openMode);
     } else {
-        return mixxx::SoundSourceProviderPointer();
+        m_pProvider.reset();
+        auto pNextProvider = nextProvider();
+        if (!pNextProvider) {
+            if (openMode == mixxx::SoundSource::OpenMode::Strict) {
+                // try again, i.e. start next round
+                openMode = mixxx::SoundSource::OpenMode::Permissive;
+                pNextProvider = primaryProvider();
+            } else {
+                // abort
+                DEBUG_ASSERT(openMode == mixxx::SoundSource::OpenMode::Permissive);
+            }
+        }
+        return std::make_pair(pNextProvider, openMode);
     }
 }
 
-void SoundSourceProxy::nextSoundSourceProvider() {
-    if (m_soundSourceProviderRegistrations.size() > m_soundSourceProviderRegistrationIndex) {
-        ++m_soundSourceProviderRegistrationIndex;
-        // Discard SoundSource and AudioSource from previous provider
-        closeAudioSource();
-        m_pSoundSource = mixxx::SoundSourcePointer();
-    }
-}
-
-void SoundSourceProxy::initSoundSource() {
+void SoundSourceProxy::initSoundSource(
+        const mixxx::SoundSourceProviderPointer& pProvider) {
+    DEBUG_ASSERT(!m_pProvider);
     DEBUG_ASSERT(!m_pSoundSource);
     DEBUG_ASSERT(!m_pAudioSource);
-    while (!m_pSoundSource) {
-        mixxx::SoundSourceProviderPointer pProvider(getSoundSourceProvider());
-        if (!pProvider) {
-            if (!getUrl().isEmpty()) {
-                kLogger.warning() << "No SoundSourceProvider for file"
-                                  << getUrl().toString();
-            }
-            // Failure
-            return;
-        }
-        m_pSoundSource = pProvider->newSoundSource(m_url);
-        if (!m_pSoundSource) {
-            kLogger.warning() << "SoundSourceProvider"
-                              << pProvider->getDisplayName()
-                              << "failed to create a SoundSource for file"
-                              << getUrl().toString();
-            // Switch to next provider...
-            nextSoundSourceProvider();
-            // ...and continue loop
-            DEBUG_ASSERT(!m_pSoundSource);
-        } else {
+    auto pNextProvider = primaryProvider(pProvider);
+    while (!m_pSoundSource && pNextProvider) {
+        m_pSoundSource = pNextProvider->newSoundSource(m_url);
+        if (m_pSoundSource) {
+            m_pProvider = std::move(pNextProvider);
             if (kLogger.debugEnabled()) {
                 kLogger.debug() << "SoundSourceProvider"
-                                << pProvider->getDisplayName()
+                                << m_pProvider->getDisplayName()
                                 << "created a SoundSource for file"
                                 << getUrl().toString()
                                 << "of type"
                                 << m_pSoundSource->getType();
             }
+            // Done
+            return;
         }
+        kLogger.warning() << "SoundSourceProvider"
+                          << pNextProvider->getDisplayName()
+                          << "failed to create a SoundSource for file"
+                          << getUrl().toString();
+        if (pProvider) {
+            // Only a single attempt for the given provider
+            return;
+        }
+        // Switch to next available provider
+        pNextProvider = nextProvider();
+        if (pNextProvider) {
+            continue;
+        }
+        if (!getUrl().isEmpty()) {
+            kLogger.warning()
+                    << "No SoundSourceProvider for file"
+
+                    << getUrl().toString();
+        }
+        // Abort after failure
+        return;
     }
 }
 
@@ -613,11 +666,12 @@ QImage SoundSourceProxy::importCoverImage() const {
     return QImage();
 }
 
-mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSource::OpenParams& params) {
+mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
+        const mixxx::AudioSource::OpenParams& params) {
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     int attemptCount = 0;
-    while (m_pSoundSource && !m_pAudioSource) {
+    while (m_pProvider && m_pSoundSource && !m_pAudioSource) {
         ++attemptCount;
         const mixxx::SoundSource::OpenResult openResult =
                 m_pSoundSource->open(openMode, params);
@@ -636,14 +690,14 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                     << "Failed to read file"
                     << getUrl().toString()
                     << "with provider"
-                    << getSoundSourceProvider()->getDisplayName();
+                    << m_pProvider->getDisplayName();
             m_pSoundSource->close(); // cleanup
         } else {
             kLogger.warning()
                     << "Failed to open file"
                     << getUrl().toString()
                     << "with provider"
-                    << getSoundSourceProvider()->getDisplayName()
+                    << m_pProvider->getDisplayName()
                     << "using mode"
                     << openMode;
             if (openMode == mixxx::SoundSource::OpenMode::Permissive) {
@@ -664,17 +718,16 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                 DEBUG_ASSERT(openMode == mixxx::SoundSource::OpenMode::Strict);
             }
         }
-        // Continue with the next SoundSource provider
-        nextSoundSourceProvider();
-        if (!getSoundSourceProvider() &&
-                (openMode == mixxx::SoundSource::OpenMode::Strict)) {
-            // No provider was able to open the source in Strict mode.
-            // Retry to open the file in Permissive mode starting with
-            // the first provider...
-            m_soundSourceProviderRegistrationIndex = 0;
-            openMode = mixxx::SoundSource::OpenMode::Permissive;
+        // Continue with the next available SoundSource provider
+        auto nextProviderWithOpenModePair = nextProviderWithOpenMode(openMode);
+        auto pNextProvider = std::move(nextProviderWithOpenModePair.first);
+        if (!pNextProvider) {
+            break;
         }
-        initSoundSource();
+        openMode = nextProviderWithOpenModePair.second;
+        m_pProvider.reset();
+        m_pSoundSource.reset();
+        initSoundSource(std::move(std::move(pNextProvider)));
         // try again
     }
     // All available providers have returned OpenResult::Aborted when

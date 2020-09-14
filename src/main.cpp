@@ -108,7 +108,7 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerSoundSourceProviders()) {
+    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
         return kFatalErrorOnStartupExitCode;
     }
