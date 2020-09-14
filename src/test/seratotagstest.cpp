@@ -82,4 +82,28 @@ TEST_F(SeratoTagsTest, TrackColorConversionRoundtrip) {
     trackColorRoundtrip(mixxx::RgbColor::optional(0x000000));
 }
 
+TEST_F(SeratoTagsTest, SetTrackColor) {
+    mixxx::SeratoTags seratoTags;
+    EXPECT_EQ(seratoTags.getTrackColor(), std::nullopt);
+
+    constexpr mixxx::RgbColor color1(0xFF8800);
+    seratoTags.setTrackColor(color1);
+    EXPECT_EQ(seratoTags.getTrackColor(), color1);
+
+    constexpr mixxx::RgbColor color2(0x123456);
+    seratoTags.setTrackColor(color2);
+    EXPECT_EQ(seratoTags.getTrackColor(), color2);
+}
+
+TEST_F(SeratoTagsTest, SetBpmLocked) {
+    mixxx::SeratoTags seratoTags;
+    EXPECT_EQ(seratoTags.isBpmLocked(), false);
+
+    seratoTags.setBpmLocked(true);
+    EXPECT_EQ(seratoTags.isBpmLocked(), true);
+
+    seratoTags.setBpmLocked(false);
+    EXPECT_EQ(seratoTags.isBpmLocked(), false);
+}
+
 } // namespace
