@@ -679,8 +679,7 @@ RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
             continue;
         }
 
-        const std::shared_ptr<SeratoMarkers2ColorEntry> pColorEntry =
-                std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
+        const auto pColorEntry = std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
         return RgbColor::optional(pColorEntry->getColor());
     }
 
@@ -697,8 +696,7 @@ void SeratoMarkers2::setTrackColor(RgbColor color) {
             continue;
         }
 
-        std::shared_ptr<SeratoMarkers2ColorEntry> pColorEntry =
-                std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
+        auto pColorEntry = std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
         pColorEntry->setColor(color);
         DEBUG_ASSERT(countEntriesByType(SeratoMarkers2Entry::TypeId::Color) == 1);
         return;
@@ -720,8 +718,7 @@ bool SeratoMarkers2::isBpmLocked() const {
             continue;
         }
 
-        const std::shared_ptr<SeratoMarkers2BpmLockEntry> pBpmLockEntry =
-                std::static_pointer_cast<SeratoMarkers2BpmLockEntry>(pEntry);
+        const auto pBpmLockEntry = std::static_pointer_cast<SeratoMarkers2BpmLockEntry>(pEntry);
         return pBpmLockEntry->isLocked();
     }
 
@@ -738,8 +735,7 @@ void SeratoMarkers2::setBpmLocked(bool bpmLocked) {
             continue;
         }
 
-        std::shared_ptr<SeratoMarkers2BpmLockEntry> pBpmLockEntry =
-                std::static_pointer_cast<SeratoMarkers2BpmLockEntry>(pEntry);
+        auto pBpmLockEntry = std::static_pointer_cast<SeratoMarkers2BpmLockEntry>(pEntry);
         pBpmLockEntry->setLocked(bpmLocked);
         DEBUG_ASSERT(countEntriesByType(SeratoMarkers2Entry::TypeId::BpmLock) == 1);
         return;
