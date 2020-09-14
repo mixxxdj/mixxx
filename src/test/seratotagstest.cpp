@@ -25,7 +25,7 @@ class SeratoTagsTest : public testing::Test {
     }
 };
 
-TEST_F(SeratoTagsTest, TrackColorRoundtripWithKnownStoredColor) {
+TEST_F(SeratoTagsTest, TrackColorConversionRoundtripWithKnownStoredColor) {
     trackColorRoundtripWithKnownStoredColor(
             mixxx::RgbColor::optional(0x993399), mixxx::RgbColor(0xFF99FF));
     trackColorRoundtripWithKnownStoredColor(
@@ -71,7 +71,7 @@ TEST_F(SeratoTagsTest, TrackColorRoundtripWithKnownStoredColor) {
     trackColorRoundtripWithKnownStoredColor(std::nullopt, mixxx::RgbColor(0xFFFFFF));
 }
 
-TEST_F(SeratoTagsTest, TrackColorRoundtrip) {
+TEST_F(SeratoTagsTest, TrackColorConversionRoundtrip) {
     trackColorRoundtrip(mixxx::RgbColor::optional(0xFF0000));
     trackColorRoundtrip(mixxx::RgbColor::optional(0x00FF00));
     trackColorRoundtrip(mixxx::RgbColor::optional(0x0000FF));
