@@ -568,8 +568,11 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
     qDebug() << "Reading cues from 'Serato Markers2' tag data...";
 
     QList<CueInfo> cueInfos;
-    for (auto& pEntry : m_entries) {
-        DEBUG_ASSERT(pEntry);
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
         switch (pEntry->typeId()) {
         case SeratoMarkers2Entry::TypeId::Cue: {
             const SeratoMarkers2CueEntry* pCueEntry = static_cast<SeratoMarkers2CueEntry*>(pEntry.get());
@@ -667,32 +670,93 @@ QByteArray SeratoMarkers2::dumpFLAC() const {
 RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
     kLogger.info() << "Reading track color from 'Serato Markers2' tag data...";
 
-    for (auto& pEntry : m_entries) {
-        DEBUG_ASSERT(pEntry);
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
         if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Color) {
             continue;
         }
-        const SeratoMarkers2ColorEntry* pColorEntry = static_cast<SeratoMarkers2ColorEntry*>(pEntry.get());
+
+        const auto pColorEntry = std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
         return RgbColor::optional(pColorEntry->getColor());
     }
 
     return std::nullopt;
 }
 
+void SeratoMarkers2::setTrackColor(RgbColor color) {
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Color) {
+            continue;
+        }
+
+        auto pColorEntry = std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
+        pColorEntry->setColor(color);
+        DEBUG_ASSERT(countEntriesByType(SeratoMarkers2Entry::TypeId::Color) == 1);
+        return;
+    }
+
+    SeratoMarkers2EntryPointer pEntry = std::make_shared<SeratoMarkers2ColorEntry>(color);
+    m_entries.append(pEntry);
+}
+
 bool SeratoMarkers2::isBpmLocked() const {
     kLogger.info() << "Reading bpmlock state from 'Serato Markers2' tag data...";
 
-    for (auto& pEntry : m_entries) {
-        DEBUG_ASSERT(pEntry);
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
         if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::BpmLock) {
             continue;
         }
-        const SeratoMarkers2BpmLockEntry* pBpmLockEntry =
-                static_cast<SeratoMarkers2BpmLockEntry*>(pEntry.get());
+
+        const auto pBpmLockEntry = std::static_pointer_cast<SeratoMarkers2BpmLockEntry>(pEntry);
         return pBpmLockEntry->isLocked();
     }
 
     return false;
+}
+
+void SeratoMarkers2::setBpmLocked(bool bpmLocked) {
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::BpmLock) {
+            continue;
+        }
+
+        auto pBpmLockEntry = std::static_pointer_cast<SeratoMarkers2BpmLockEntry>(pEntry);
+        pBpmLockEntry->setLocked(bpmLocked);
+        DEBUG_ASSERT(countEntriesByType(SeratoMarkers2Entry::TypeId::BpmLock) == 1);
+        return;
+    }
+
+    SeratoMarkers2EntryPointer pEntry = std::make_shared<SeratoMarkers2BpmLockEntry>(bpmLocked);
+    m_entries.append(SeratoMarkers2EntryPointer(pEntry));
+}
+
+int SeratoMarkers2::countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const {
+    int numEntries = 0;
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
+        if (pEntry->typeId() == typeId) {
+            numEntries++;
+        }
+    }
+    return numEntries;
 }
 
 } // namespace mixxx
