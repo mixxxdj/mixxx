@@ -359,7 +359,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     }
 
     m_seratoMarkers.setCues(cueInfoList);
-    // TODO: Add support for setting cues in SeratoMarkers2
+    m_seratoMarkers2.setCues(cueInfoList);
 }
 
 RgbColor::optional_t SeratoTags::getTrackColor() const {

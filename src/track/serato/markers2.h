@@ -428,6 +428,7 @@ class SeratoMarkers2 final {
     }
 
     QList<CueInfo> getCues() const;
+    void setCues(const QList<CueInfo>& cueInfos);
 
     RgbColor::optional_t getTrackColor() const;
     void setTrackColor(RgbColor color);

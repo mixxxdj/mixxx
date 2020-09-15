@@ -647,6 +647,95 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
     return cueInfos;
 }
 
+void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
+    QMap<int, CueInfo> cueMap;
+    QMap<int, CueInfo> loopMap;
+
+    for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
+        // All of these check can be debug assertions, as the list should be
+        // pre-filtered by the seratoTags class.
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+            continue;
+        }
+        int hotcueNumber = *cueInfo.getHotCueNumber();
+
+        VERIFY_OR_DEBUG_ASSERT(hotcueNumber >= 0) {
+            continue;
+        }
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
+            continue;
+        }
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getStartPositionMillis()) {
+            continue;
+        }
+
+        switch (cueInfo.getType()) {
+        case CueType::HotCue:
+            cueMap.insert(hotcueNumber, cueInfo);
+            break;
+        case CueType::Loop:
+            VERIFY_OR_DEBUG_ASSERT(cueInfo.getEndPositionMillis()) {
+                continue;
+            }
+            loopMap.insert(hotcueNumber, cueInfo);
+            break;
+        default:
+            DEBUG_ASSERT(!"Invalid cue type");
+            continue;
+        }
+    }
+
+    QList<SeratoMarkers2EntryPointer> newEntries;
+
+    // Append COLOR entry
+    const SeratoMarkers2EntryPointer pColorEntry =
+            findEntryByType(SeratoMarkers2Entry::TypeId::Color);
+    if (pColorEntry) {
+        newEntries.append(pColorEntry);
+    }
+
+    // Append CUE entries
+    for (const auto& cueInfo : cueMap.values()) {
+        auto pEntry = std::make_shared<SeratoMarkers2CueEntry>(
+                *cueInfo.getHotCueNumber(),
+                *cueInfo.getStartPositionMillis(),
+                *cueInfo.getColor(),
+                cueInfo.getLabel());
+        newEntries.append(pEntry);
+    }
+
+    // Append LOOP entries
+    for (const auto& cueInfo : loopMap.values()) {
+        auto pEntry = std::make_shared<SeratoMarkers2LoopEntry>(
+                *cueInfo.getHotCueNumber(),
+                *cueInfo.getStartPositionMillis(),
+                *cueInfo.getEndPositionMillis(),
+                *cueInfo.getColor(),
+                false,
+                cueInfo.getLabel());
+        newEntries.append(pEntry);
+    }
+
+    // Append BPMLOCK entry
+    const SeratoMarkers2EntryPointer pBpmLockEntry =
+            findEntryByType(SeratoMarkers2Entry::TypeId::BpmLock);
+    if (pBpmLockEntry) {
+        newEntries.append(pBpmLockEntry);
+    }
+
+    // Append all existing entries of unknown type. This assumes that new entry
+    // types are appended when Serato decides to add a new type. For FLIP
+    // entries, this holds true.
+    //
+    // Since all entry types are named, it's still possible to parse everything
+    // properly even if the assumption above (and hence the order of entries) is
+    // wrong, so let's hope that the Serato developers implemented their parser in
+    // a robust way.
+    newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Unknown));
+
+    setEntries(newEntries);
+}
+
 QByteArray SeratoMarkers2::dumpBase64Encoded() const {
     QByteArray innerData;
 
