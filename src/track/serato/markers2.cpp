@@ -564,47 +564,85 @@ QByteArray SeratoMarkers2::dumpID3() const {
     return outerData.leftJustified(size, '\0');
 }
 
-QList<CueInfo> SeratoMarkers2::getCues() const {
-    qDebug() << "Reading cues from 'Serato Markers2' tag data...";
-
-    QList<CueInfo> cueInfos;
+QList<SeratoMarkers2EntryPointer> SeratoMarkers2::findEntriesByType(
+        SeratoMarkers2Entry::TypeId typeId) const {
+    QList<SeratoMarkers2EntryPointer> entriesFound;
     for (const auto& pEntry : qAsConst(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
 
-        switch (pEntry->typeId()) {
-        case SeratoMarkers2Entry::TypeId::Cue: {
-            const SeratoMarkers2CueEntry* pCueEntry = static_cast<SeratoMarkers2CueEntry*>(pEntry.get());
-            CueInfo cueInfo(
-                    CueType::HotCue,
-                    pCueEntry->getPosition(),
-                    std::nullopt,
-                    pCueEntry->getIndex(),
-                    pCueEntry->getLabel(),
-                    pCueEntry->getColor());
-            cueInfos.append(cueInfo);
-            break;
-        }
-        case SeratoMarkers2Entry::TypeId::Loop: {
-            const SeratoMarkers2LoopEntry* pLoopEntry =
-                    static_cast<SeratoMarkers2LoopEntry*>(pEntry.get());
-            CueInfo loopInfo = CueInfo(
-                    CueType::Loop,
-                    pLoopEntry->getStartPosition(),
-                    pLoopEntry->getEndPosition(),
-                    pLoopEntry->getIndex(),
-                    pLoopEntry->getLabel(),
-                    std::nullopt); // Serato's Loops don't have a color
-            // TODO: Add support for "locked" loops
-            cueInfos.append(loopInfo);
-            break;
-        }
-        // TODO: Add support for FLIP
-        default:
-            break;
+        if (pEntry->typeId() == typeId) {
+            entriesFound.append(pEntry);
         }
     }
+    return entriesFound;
+}
+
+SeratoMarkers2EntryPointer SeratoMarkers2::findEntryByType(
+        SeratoMarkers2Entry::TypeId typeId) const {
+    QList<SeratoMarkers2EntryPointer> entriesFound = findEntriesByType(typeId);
+
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(pEntry->typeId() == typeId) {
+            return pEntry;
+        }
+    }
+
+    return nullptr;
+}
+
+QList<CueInfo> SeratoMarkers2::getCues() const {
+    qDebug() << "Reading cues from 'Serato Markers2' tag data...";
+
+    QList<CueInfo> cueInfos;
+
+    for (const auto& pEntry : findEntriesByType(SeratoMarkers2Entry::TypeId::Cue)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(pEntry->typeId() == SeratoMarkers2Entry::TypeId::Cue) {
+            continue;
+        }
+
+        const auto pCueEntry = std::static_pointer_cast<SeratoMarkers2CueEntry>(pEntry);
+        CueInfo cueInfo(
+                CueType::HotCue,
+                pCueEntry->getPosition(),
+                std::nullopt,
+                pCueEntry->getIndex(),
+                pCueEntry->getLabel(),
+                pCueEntry->getColor());
+        cueInfos.append(cueInfo);
+    }
+
+    for (const auto& pEntry : findEntriesByType(SeratoMarkers2Entry::TypeId::Loop)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(pEntry->typeId() == SeratoMarkers2Entry::TypeId::Loop) {
+            continue;
+        }
+
+        const auto pLoopEntry = std::static_pointer_cast<SeratoMarkers2LoopEntry>(pEntry);
+        CueInfo loopInfo = CueInfo(
+                CueType::Loop,
+                pLoopEntry->getStartPosition(),
+                pLoopEntry->getEndPosition(),
+                pLoopEntry->getIndex(),
+                pLoopEntry->getLabel(),
+                std::nullopt); // Serato's Loops don't have a color
+        // TODO: Add support for "locked" loops
+        cueInfos.append(loopInfo);
+    }
+
+    // TODO: Add support for FLIP entries
 
     return cueInfos;
 }

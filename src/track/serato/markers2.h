@@ -467,6 +467,8 @@ class SeratoMarkers2 final {
     QByteArray dumpFLAC() const;
 
     int countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const;
+    QList<SeratoMarkers2EntryPointer> findEntriesByType(SeratoMarkers2Entry::TypeId typeId) const;
+    SeratoMarkers2EntryPointer findEntryByType(SeratoMarkers2Entry::TypeId typeId) const;
 
     int m_allocatedSize;
     char m_lastBase64ByteFLAC;
