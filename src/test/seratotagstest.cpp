@@ -129,7 +129,19 @@ TEST_F(SeratoTagsTest, SetCueInfos) {
                     1337,
                     std::nullopt,
                     2,
-                    QString(),
+                    QStringLiteral("Hello World!"),
+                    mixxx::RgbColor(0x123456)),
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    2500,
+                    std::nullopt,
+                    3,
+                    QStringLiteral("Foo"),
+                    mixxx::RgbColor(0x123456)),
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    100,
+                    std::nullopt,
+                    7,
+                    QStringLiteral("Bar"),
                     mixxx::RgbColor(0x123456)),
             mixxx::CueInfo(mixxx::CueType::Loop,
                     1000,
@@ -137,8 +149,15 @@ TEST_F(SeratoTagsTest, SetCueInfos) {
                     8,
                     QString(),
                     std::nullopt),
+            mixxx::CueInfo(mixxx::CueType::Loop,
+                    4000,
+                    2000,
+                    11,
+                    QStringLiteral("Some Loop"),
+                    std::nullopt),
     };
 
     seratoTags.setCueInfos(cueInfos);
+    EXPECT_EQ(seratoTags.getCueInfos().size(), cueInfos.size());
     EXPECT_EQ(seratoTags.getCueInfos(), cueInfos);
 }
