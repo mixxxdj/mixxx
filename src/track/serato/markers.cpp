@@ -571,8 +571,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
     int loopIndex = 0;
-    for (const auto& pEntry : m_entries) {
-        DEBUG_ASSERT(pEntry);
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
         switch (pEntry->typeId()) {
         case SeratoMarkersEntry::TypeId::Cue: {
             if (pEntry->hasStartPosition()) {
@@ -581,7 +583,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         pEntry->getStartPosition(),
                         std::nullopt,
                         cueIndex,
-                        "",
+                        QString(),
                         pEntry->getColor());
                 cueInfos.append(cueInfo);
             }
@@ -590,12 +592,16 @@ QList<CueInfo> SeratoMarkers::getCues() const {
         }
         case SeratoMarkersEntry::TypeId::Loop: {
             if (pEntry->hasStartPosition()) {
+                if (!pEntry->hasEndPosition()) {
+                    qWarning() << "SeratoMarkers: Loop" << loopIndex << "has no end position!";
+                    continue;
+                }
                 CueInfo loopInfo = CueInfo(
                         CueType::Loop,
                         pEntry->getStartPosition(),
                         pEntry->getEndPosition(),
                         loopIndex,
-                        "",
+                        QString(),
                         std::nullopt);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute
