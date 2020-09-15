@@ -125,10 +125,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
                              tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
+    addDeckAndSamplerControl("pitch_up", tr("Increase Pitch"),
+                            tr("Increases the pitch by one semitone"), speedMenu);
+    addDeckAndSamplerControl("pitch_up_small", tr("Increase Pitch (Fine)"),
+                            tr("Increases the pitch by 10 cents"), speedMenu);
+    addDeckAndSamplerControl("pitch_down", tr("Decrease Pitch"),
+                            tr("Decreases the pitch by one semitone"), speedMenu);
+    addDeckAndSamplerControl("pitch_down_small", tr("Decrease Pitch (Fine)"),
+                            tr("Decreases the pitch by 10 cents"), speedMenu);
     addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
                              tr("Adjust pitch from speed slider pitch"), speedMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu, true);
-    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu, true);
+    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu);
+    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
                              tr("Adjust speed faster (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
