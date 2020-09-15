@@ -52,13 +52,14 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void setSelectedClick(bool enable);
 
   protected:
+    void focusInEvent(QFocusEvent* event) override;
+
     void saveNoSearchVScrollBarPos();
     void restoreNoSearchVScrollBarPos();
 
   private:
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
-    bool event(QEvent* e);
 
     const UserSettingsPointer m_pConfig;
     const ConfigKey m_vScrollBarPosKey;
