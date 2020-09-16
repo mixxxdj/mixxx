@@ -168,7 +168,7 @@ class Beats : public QObject {
     // have the capability BEATSCAP_SET.
     virtual void setBpm(double dBpm) = 0;
 
-    // Try to round the BPM value to a constant value
+    /// Try to round the BPM value to a integer value or segments of those
     virtual void round() = 0;
 
     virtual SINT getSampleRate() const = 0;
