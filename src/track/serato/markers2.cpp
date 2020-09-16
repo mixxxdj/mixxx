@@ -812,23 +812,34 @@ RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
 }
 
 void SeratoMarkers2::setTrackColor(RgbColor color) {
-    for (const auto& pEntry : qAsConst(m_entries)) {
-        VERIFY_OR_DEBUG_ASSERT(pEntry) {
-            continue;
-        }
+    QList<SeratoMarkers2EntryPointer> newEntries;
 
-        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Color) {
-            continue;
-        }
+    // Append COLOR entry
+    SeratoMarkers2EntryPointer pEntry = std::make_shared<SeratoMarkers2ColorEntry>(color);
+    newEntries.append(pEntry);
 
-        auto pColorEntry = std::static_pointer_cast<SeratoMarkers2ColorEntry>(pEntry);
-        pColorEntry->setColor(color);
-        DEBUG_ASSERT(countEntriesByType(SeratoMarkers2Entry::TypeId::Color) == 1);
-        return;
+    // Append CUE/LOOP entries
+    newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Cue));
+    newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Loop));
+
+    // Append BPMLOCK entry
+    const SeratoMarkers2EntryPointer pBpmLockEntry =
+            findEntryByType(SeratoMarkers2Entry::TypeId::BpmLock);
+    if (pBpmLockEntry) {
+        newEntries.append(pBpmLockEntry);
     }
 
-    SeratoMarkers2EntryPointer pEntry = std::make_shared<SeratoMarkers2ColorEntry>(color);
-    m_entries.append(pEntry);
+    // Append all existing entries of unknown type. This assumes that new entry
+    // types are appended when Serato decides to add a new type. For FLIP
+    // entries, this holds true.
+    //
+    // Since all entry types are named, it's still possible to parse everything
+    // properly even if the assumption above (and hence the order of entries) is
+    // wrong, so let's hope that the Serato developers implemented their parser in
+    // a robust way.
+    newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Unknown));
+
+    setEntries(newEntries);
 }
 
 bool SeratoMarkers2::isBpmLocked() const {
@@ -851,23 +862,34 @@ bool SeratoMarkers2::isBpmLocked() const {
 }
 
 void SeratoMarkers2::setBpmLocked(bool bpmLocked) {
-    for (const auto& pEntry : qAsConst(m_entries)) {
-        VERIFY_OR_DEBUG_ASSERT(pEntry) {
-            continue;
-        }
+    QList<SeratoMarkers2EntryPointer> newEntries;
 
-        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::BpmLock) {
-            continue;
-        }
-
-        auto pBpmLockEntry = std::static_pointer_cast<SeratoMarkers2BpmLockEntry>(pEntry);
-        pBpmLockEntry->setLocked(bpmLocked);
-        DEBUG_ASSERT(countEntriesByType(SeratoMarkers2Entry::TypeId::BpmLock) == 1);
-        return;
+    // Append COLOR entry
+    const SeratoMarkers2EntryPointer pColorEntry =
+            findEntryByType(SeratoMarkers2Entry::TypeId::Color);
+    if (pColorEntry) {
+        newEntries.append(pColorEntry);
     }
 
+    // Append CUE/LOOP entries
+    newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Cue));
+    newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Loop));
+
+    // Append BPMLOCK entry
     SeratoMarkers2EntryPointer pEntry = std::make_shared<SeratoMarkers2BpmLockEntry>(bpmLocked);
-    m_entries.append(SeratoMarkers2EntryPointer(pEntry));
+    newEntries.append(pEntry);
+
+    // Append all existing entries of unknown type. This assumes that new entry
+    // types are appended when Serato decides to add a new type. For FLIP
+    // entries, this holds true.
+    //
+    // Since all entry types are named, it's still possible to parse everything
+    // properly even if the assumption above (and hence the order of entries) is
+    // wrong, so let's hope that the Serato developers implemented their parser in
+    // a robust way.
+    newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Unknown));
+
+    setEntries(newEntries);
 }
 
 int SeratoMarkers2::countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const {
