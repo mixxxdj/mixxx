@@ -214,7 +214,6 @@ endif()
 include(CMakeDependentOption)
 include(CheckSymbolExists)
 include(ExternalProject)
-include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
@@ -1036,12 +1035,19 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
+include(GNUInstallDirs)
 set(MIXXX_INSTALL_BINDIR ".")
 set(MIXXX_INSTALL_DATADIR ".")
 set(MIXXX_INSTALL_DOCDIR "./doc")
 set(MIXXX_INSTALL_LICENSEDIR "./doc")
-if (UNIX)
-  include(GNUInstallDirs)
+if(APPLE)
+  set(MACOS_BUNDLE_APPNAME "mixxx.app")
+  set(MACOS_BUNDLE_PREFIX "${MACOS_BUNDLE_APPNAME}/Contents")
+  set(MIXXX_INSTALL_BINDIR "${MACOS_BUNDLE_PREFIX}/MacOS")
+  set(MIXXX_INSTALL_DATADIR "${MACOS_BUNDLE_PREFIX}/Resources")
+  set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
+  set(MIXXX_INSTALL_LICENSEDIR "${MIXXX_INSTALL_DATADIR}")
+elseif(UNIX)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
   set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
   set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
@@ -1209,6 +1215,23 @@ set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
 set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in" "${CMAKE_CURRENT_BINARY_DIR}/macos_bundle.plist" @ONLY)
 set(CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_BINARY_DIR}/macos_bundle.plist")
+set(MACOS_BUNDLE_APPS "\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${MACOS_BUNDLE_APPNAME}")
+
+# Directories to look for in dependencies
+set(MACOS_BUNDLE_DIRS "${CMAKE_BINARY_DIR}")
+if(CMAKE_PREFIX_PATH)
+    foreach(DIR ${CMAKE_PREFIX_PATH})
+        list(APPEND MACOS_BUNDLE_DIRS "${DIR}/${CMAKE_INSTALL_BINDIR}" "${DIR}/${CMAKE_INSTALL_LIBDIR}")
+    endforeach()
+endif()
+list(APPEND MACOS_BUNDLE_DIRS "${Qt5Widgets_DIR}/../..")
+
+# Update RPATHs
+install(CODE "
+  include(BundleUtilities)
+  fixup_bundle(\"${MACOS_BUNDLE_APPS}\" \"\${QT_PLUGINS}\" \"${MACOS_BUNDLE_DIRS}\")
+  "
+)
 
 include(CPack)
 
