@@ -57,6 +57,19 @@ public:
     static int valueToInteger(double value) {
         return static_cast<int>(std::round(value));
     }
+    static QString roundBpm(double value) {
+        /***
+        * Returns a rounded string depending with decimale places,
+        * depending on the roundnes of the value
+        * @param {value} bpm value
+        **/
+        if (fabs(round(value * 10) / 10 - value) < 0.001) {
+            return QString("%1").arg(value, 0, 'f', 1);
+        } else {
+            return QString("%1").arg(value, 0, 'f', 2);
+        }
+    }
+
 
     enum class Comparison {
         Default, // full precision

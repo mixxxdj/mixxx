@@ -20,6 +20,7 @@
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
+#include "track/bpm.h"
 
 namespace {
 
@@ -545,11 +546,7 @@ QVariant BaseTrackTableModel::roleValue(
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
             if (ok && bpmValue > 0.0) {
-                if (fabs(round(bpmValue * 10) / 10 - bpmValue) < 0.001) {
-                    return QString("%1").arg(bpmValue, 0, 'f', 1);
-                } else {
-                    return QString("%1").arg(bpmValue, 0, 'f', 2);
-                }
+                return mixxx::Bpm::roundBpm(bpmValue);
             } else {
                 return QChar('-');
             }
