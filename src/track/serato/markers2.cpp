@@ -581,14 +581,12 @@ QList<SeratoMarkers2EntryPointer> SeratoMarkers2::findEntriesByType(
 
 SeratoMarkers2EntryPointer SeratoMarkers2::findEntryByType(
         SeratoMarkers2Entry::TypeId typeId) const {
-    QList<SeratoMarkers2EntryPointer> entriesFound = findEntriesByType(typeId);
-
     for (const auto& pEntry : qAsConst(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
 
-        VERIFY_OR_DEBUG_ASSERT(pEntry->typeId() == typeId) {
+        if (pEntry->typeId() == typeId) {
             return pEntry;
         }
     }
