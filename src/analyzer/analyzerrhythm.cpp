@@ -586,6 +586,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
     AutocorrelationProcessor autocorrelationProcessor(m_tempogramWindowLength, m_tempogramHopSize);
 
     std::vector<float> complexSdCurve;
+    complexSdCurve.reserve(m_detectionResults.size());
     for (size_t i = 0; i < m_detectionResults.size(); i++) {
         complexSdCurve.push_back(m_detectionResults[i].results[3]);
     }
@@ -638,15 +639,59 @@ void AnalyzerRhythm::computeTempogramByACF() {
         //        qDebug() << "measurelength" << block << acf.keys();
     }
 
-    std::vector<float> snapGrid;
-    for (int i = 0; i < m_detectionResults.size(); i++) {
-        snapGrid.push_back(m_detectionResults[i].results[2]);
-    }
-
     for (size_t block = 0; block < m_tempogramACF.size(); block++) {
         qDebug() << "measurelength" << block << m_tempogramACF[block].keys();
     }
 
+    std::vector<float> complexSdMinDiff;
+    complexSdMinDiff.reserve(m_detectionResults.size());
+
+    // Calculate the change from the minimum of three previous SDs
+    // This ensures we find the beat start and not the noisiest place within the beat.
+    complexSdMinDiff.push_back(complexSdCurve[0]);
+    for (int i = 1; i < static_cast<int>(complexSdCurve.size()); ++i) {
+        double result = complexSdCurve[i];
+        double min = result;
+        for (int j = i - 3; j < i + 2; ++j) {
+            if (j >= 0 && j < static_cast<int>(complexSdCurve.size())) {
+                double value = complexSdCurve[j];
+                if (value < min) {
+                    min = value;
+                }
+            }
+        }
+        complexSdMinDiff.push_back(result - min * kFloorFactor);
+    }
+
+    // Insert find onsets
+    int lastNote = -m_tempogramWindowLength / 2;
+    for (int block = 0; block < m_tempogramACF.size(); block++) {
+        std::vector<int> periods;
+        QList<double> keys = m_tempogramACF[block].keys();
+        int minPeriod = 10; // ~530 BPM max 1/16 @ 132 BPM
+        for (double period : keys) {
+            if (period > minPeriod) {
+                minPeriod = period;
+                break;
+            }
+        }
+        for (double period : keys) {
+            periods.push_back(period);
+        }
+
+        while (lastNote < (128 * block - m_tempogramWindowLength / 2)) {
+            int offset = autocorrelationProcessor.findBeat(
+                    &complexSdMinDiff[0], complexSdMinDiff.size(), periods, lastNote + 10);
+
+            int noteToAdd = lastNote + 10 + offset;
+
+            qDebug() << "note found" << noteToAdd;
+            m_notes.push_back(noteToAdd);
+            lastNote = noteToAdd;
+        }
+    }
+
+    /*
     // Insert missing onsets
     std::set<int> metronome_sorted;
     int lastNote = 0;
@@ -693,6 +738,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
         metronome_sorted.insert(note);
         lastNote = note;
     }
+*/
 
     /*
 
@@ -717,7 +763,6 @@ void AnalyzerRhythm::computeTempogramByACF() {
         //m_resultBeats.push_back(result);
     }
 
-    /*
     std::set<int> possible_downbeats_sorted;
     std::set<int> possible_downbeats_auto;
     int lastPos = 0;
@@ -756,7 +801,6 @@ void AnalyzerRhythm::computeTempogramByACF() {
             }
         }
 
-        /*
         Spectrogram tempogramPhase = autocorrelationProcessor.processPhase(
                 &complexSdCurve[0], complexSdCurve.size(), block, minK, maxK, offsets[block]);
         std::vector<int> possible_downbeats;
@@ -885,6 +929,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
         }
     }
 
+    std::vector<std::vector<float>> tempogramPhase3D;
     for (int note : m_notes) {
         std::vector<float> tempogramPhase = autocorrelationProcessor.processPhase2(
                 &complexSdCurve[0], complexSdCurve.size(), measures_sorted, note);
@@ -892,17 +937,55 @@ void AnalyzerRhythm::computeTempogramByACF() {
         for (float phase : tempogramPhase) {
             deb2 << phase;
         }
+        tempogramPhase3D.push_back(tempogramPhase);
     }
 
-    /*
-    //for (const auto& beat : possible_downbeats_auto) {
-    for (const auto& beat : possible_downbeats_sorted) {
+    std::vector<int> measures_vector;
+    for (auto const& measure : measures_sorted) {
+        measures_vector.push_back(measure);
+    }
+
+    std::vector<int> possible_downbeats;
+    std::vector<float> downbeat_score;
+    for (int note = 0; note < static_cast<int>(tempogramPhase3D.size()); ++note) {
+        float max = 0.0f;
+        int max_tempo = 0;
+        for (int tempo = tempogramPhase3D[note].size() - 1; tempo >= 0; --tempo) {
+            if (measures_vector[tempo] < 40) {
+                // too short
+                break;
+            }
+            float previous = 0.0;
+            if ((note - 1) >= 0) {
+                previous = tempogramPhase3D[note - 1][tempo];
+            }
+            float next = 0.0;
+            if ((note + 1) < static_cast<int>(tempogramPhase3D.size())) {
+                next = tempogramPhase3D[note + 1][tempo];
+            }
+
+            if (tempogramPhase3D[note][tempo] > max &&
+                    tempogramPhase3D[note][tempo] * 1.01 > previous &&
+                    tempogramPhase3D[note][tempo] * 1.01 > next) {
+                // Peak or Flat top found
+                max = tempogramPhase3D[note][tempo];
+                max_tempo = measures_vector[tempo];
+            }
+        }
+        qDebug() << "down" << m_notes[note] << max_tempo << max;
+        downbeat_score.push_back(max);
+        if (max > 0.8f) {
+            possible_downbeats.push_back(m_notes[note] + max_tempo * 2);
+        }
+    }
+
+    //for (const auto& beat : possible_downbeats) {
+
+    for (const auto& beat : m_notes) {
         // Output possible downbeat positions
-        // TODO: Snap them to the SnapGrid and pick the most likely measure length from the overlapping AC from on of the eight ACF Runs.
         double result = beat * stepSize();
         m_resultBeats.push_back(result);
     }
-    */
 }
 
 void AnalyzerRhythm::computeMetergram() {
@@ -936,7 +1019,7 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_downbeatsProcessor.finalize();
     m_noveltyCurveProcessor.finalize();
 
-    m_notes = computeSnapGrid();
+    // m_notes = computeSnapGrid();
 
     /*
     // Visualizes Snap Grid as Beats

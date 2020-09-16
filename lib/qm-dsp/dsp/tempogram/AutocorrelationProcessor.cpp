@@ -13,8 +13,9 @@
 */
 
 #include "AutocorrelationProcessor.h"
-using namespace std;
+
 #include <iostream>
+
 
 AutocorrelationProcessor::AutocorrelationProcessor(int windowLength, int hopSize) :
     m_windowLength(windowLength),
@@ -35,7 +36,7 @@ AutoCorrelation AutocorrelationProcessor::process(float * input, int inputLength
     
     while(readBlockPointerIndex <= inputLength) {
         
-        vector<float> autocorrelationBlock;
+        std::vector<float> autocorrelationBlock;
         
         for (int lag = 0; lag < m_windowLength; lag++){
             float sum = 0;
@@ -116,7 +117,7 @@ AutoCorrelation AutocorrelationProcessor::processChanges(float * input, int inpu
     AutoCorrelation autocorrelation;
 
     for (int lag = measuresize; lag < m_windowLength; lag += measuresize) {
-        vector<float> autocorrelationBlock;
+        std::vector<float> autocorrelationBlock;
         int readPointer = readBlockPointerIndex - m_windowLength / 2;
         for (int b = 0; b < m_windowLength / beatsize; ++b) {
             float sum = 0;
@@ -227,7 +228,7 @@ std::vector<float> AutocorrelationProcessor::processPhase2(float * input, int in
         int readPointer = readBlockPointerIndex;
         float sum = 0;
         int refPointer = readPointer + measuresize;
-        for (int n = 0; n < measuresize + 1; n++) {
+        for (int n = 0; n < measuresize - 3; n++) {
             if (refPointer >= inputLength) {
                 break;
             } else if (readPointer >= 0) {
@@ -248,7 +249,7 @@ std::vector<float> AutocorrelationProcessor::processPhase2(float * input, int in
             refPointer++;
         }
         // store
-        autocorrelation.push_back(sum / (measuresize + 1));
+        autocorrelation.push_back(sum / (measuresize - 3));
     }
     return autocorrelation;
 }
@@ -263,10 +264,11 @@ int AutocorrelationProcessor::findBeat(float * input, int inputLength, const std
     // periods[0] is most likely 1/8 expect a maximum at least at 1/4
     int shift = periods[0];
     if (shift < 20) {
-        // Look at least into a 680 ms Window (88 BPM)
+        // Look at least into a 227 ms Window
         shift = 20;
     }
-    for (int lag = 0; lag < shift; ++lag) {
+    std::cout << "AutocorrelationProcessor::findBeat " << initalOffset << std::endl;
+    for (int lag = 0; lag < 500; ++lag) {
         int readPointer = readBlockPointerIndex + lag;
         float sum = 0;
         if (readPointer >= 0) {
@@ -286,6 +288,9 @@ int AutocorrelationProcessor::findBeat(float * input, int inputLength, const std
         if (sum > max_sum) {
             max_sum = sum;
             max_lag = lag;
+        }
+        if (readPointer >= 0) {
+            std::cout << input[readPointer] << " " << sum << std::endl;
         }
     }
     return max_lag;
