@@ -54,11 +54,14 @@ void addTrack(
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(QWidget* parent, const TrackModel* trackModel)
-        : QDialog(parent),
-          m_tagFetcher(parent),
-          m_networkResult(NetworkResult::Ok),
-          m_pTrackModel(trackModel) {
+DlgTagFetcher::DlgTagFetcher(
+        const TrackModel* pTrackModel)
+        // No parent because otherwise it inherits the style parent's
+        // style which can make it unreadable. Bug #673411
+        : QDialog(nullptr),
+          m_pTrackModel(pTrackModel),
+          m_tagFetcher(this),
+          m_networkResult(NetworkResult::Ok) {
     init();
 }
 

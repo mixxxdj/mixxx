@@ -301,8 +301,18 @@ RgbColor::optional_t SeratoTags::getTrackColor() const {
     return color;
 }
 
+void SeratoTags::setTrackColor(RgbColor::optional_t color) {
+    mixxx::RgbColor rgbColor = SeratoTags::displayedToStoredTrackColor(color);
+    m_seratoMarkers.setTrackColor(rgbColor);
+    m_seratoMarkers2.setTrackColor(rgbColor);
+}
+
 bool SeratoTags::isBpmLocked() const {
     return m_seratoMarkers2.isBpmLocked();
+}
+
+void SeratoTags::setBpmLocked(bool bpmLocked) {
+    m_seratoMarkers2.setBpmLocked(bpmLocked);
 }
 
 } // namespace mixxx
