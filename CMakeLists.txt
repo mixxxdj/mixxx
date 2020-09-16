@@ -1191,6 +1191,32 @@ if(UNIX AND NOT APPLE)
   )
 endif()
 
+# Additional macOS-only files
+if(APPLE)
+  macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
+      get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
+      if(EXISTS "${_qt_plugin_path}")
+          get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
+          get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
+          get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
+          set(_qt_plugin_dest "${_prefix}/PlugIns/${_qt_plugin_type}")
+          install(FILES "${_qt_plugin_path}"
+              DESTINATION "${_qt_plugin_dest}")
+          set(${_qt_plugins_var}
+              "${${_qt_plugins_var}};\$ENV{DEST_DIR}\${CMAKE_INSTALL_PREFIX}/${_qt_plugin_dest}/${_qt_plugin_file}")
+      else()
+          message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
+      endif()
+  endmacro()
+
+  # Qt5::QCocoaIntegrationPlugin a plugin in Qt5Gui module, which is found as
+  # dependency for Qt5Widgets by find_package(Qt5 COMPONENTS Widgets REQUIRED).
+  install_qt5_plugin(Qt5::QCocoaIntegrationPlugin QT_PLUGINS "${MACOS_BUNDLE_PREFIX}")
+
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/qt.conf" "[Paths]\nPlugins = ${_qt_plugin_dir}\n")
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/qt.conf" DESTINATION "${MIXXX_INSTALL_DATADIR}")
+endif()
+
 # Packaging
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
 set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
