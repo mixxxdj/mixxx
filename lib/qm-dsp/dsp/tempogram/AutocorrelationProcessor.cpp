@@ -40,26 +40,24 @@ AutoCorrelation AutocorrelationProcessor::process(float * input, int inputLength
         
         for (int lag = 0; lag < m_windowLength; lag++){
             float sum = 0;
-            int readPointer = readBlockPointerIndex - m_windowLength/2;
-            
-            for (int n = 0; n < (int)m_windowLength; n++){
-                int refPointer = readPointer + lag;
-                if (refPointer >= inputLength) {
+            int firstPointer = readBlockPointerIndex - lag / 2;
+            int lastPointer = readBlockPointerIndex + (lag + 1) / 2;
+            for (int n = 0; n < m_windowLength; n++){
+                if (lastPointer >= inputLength) {
                     break;
-                } else if (readPointer >= 0) {
-                    float diff = input[readPointer]*input[refPointer];
-                    float ref1 = input[readPointer]*input[readPointer];
-                    float ref2 = input[refPointer]*input[refPointer];
+                } else if (firstPointer >= 0) {
+                    float diff = input[firstPointer] *  input[lastPointer];
+                    float ref1 = input[firstPointer] * input[firstPointer];
+                    float ref2 = input[lastPointer] * input[lastPointer];
                     float ref = ((ref1 + ref2)/2);
                     if (ref > 0) {
-                        sum += diff/((ref1 + ref2)/2);
+                        sum += diff / ref;
                     } else {
                         sum += 1;
                     }
-                } else if (refPointer < 0) {
-                    sum += 1;
                 }
-                readPointer++;
+                firstPointer++;
+                lastPointer++;
             }
             autocorrelationBlock.push_back(sum / m_windowLength);
         }
@@ -295,4 +293,52 @@ int AutocorrelationProcessor::findBeat(float * input, int inputLength, const std
     }
     return max_lag;
 }
+
+
+std::vector<float> AutocorrelationProcessor::sharpPeriodicals(float * input, int inputLength, const std::vector<std::vector<int>>& tempogramACF) const {
+    std::vector<float> onsets;
+    onsets.reserve(inputLength);
+
+    float max_sum = 0;
+    int max_lag = 0;
+    int readPointer = 0;
+
+    for (int block = 1; block < static_cast<int>(tempogramACF.size()); block++) {
+        while (readPointer < 128 * block) {
+            float sum1 = 0;
+            for (int period : tempogramACF[block - 1]) {
+                 int periodReadPionter = readPointer + period;
+                 if (periodReadPionter < inputLength) {
+                     sum1 += input[periodReadPionter];
+                 }
+                 periodReadPionter = readPointer - period;
+                 if (periodReadPionter >= 0) {
+                     sum1 += input[periodReadPionter];
+                 }
+            }
+            float sum2 = 0;
+            for (int period : tempogramACF[block]) {
+                 int periodReadPionter = readPointer + period;
+                 if (periodReadPionter < inputLength) {
+                     sum2 += input[periodReadPionter];
+                 }
+                 periodReadPionter = readPointer - period;
+                 if (periodReadPionter >= 0) {
+                     sum2 += input[periodReadPionter];
+                 }
+            }
+
+            int adv = readPointer - (128 * (block - 1));
+            float sum = input[readPointer] * 4;
+            sum += (sum1 * (128 - adv) + sum2 * adv) / 128;
+            onsets.push_back(sum);
+
+            readPointer++;
+        }
+    }
+    return onsets;
+}
+
+
+
 

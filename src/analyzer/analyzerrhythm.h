@@ -117,7 +117,7 @@ class AnalyzerRhythm : public Analyzer {
     int m_tempogramMaxBPM;
     float m_tempogramInputSampleRate;
     std::vector<QMap<double, double>> m_tempogramDFT;
-    std::vector<QMap<double, double>> m_tempogramACF;
+    std::vector<std::vector<int>> m_tempogramACF;
     std::vector<QMap<double, double>> m_metergram;
     std::vector<int> m_notes;
 };

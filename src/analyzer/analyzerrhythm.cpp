@@ -36,8 +36,8 @@ constexpr int kTempogramLog2FftLength = 10;
 constexpr int kNoveltyCurveHop = 512;
 constexpr int kNoveltyCurveWindow = 1024;
 
-constexpr double kThressholDecay = 0.04;
-constexpr double kThressholRecover = 0.5;
+constexpr double kThressholDecay = 0.06;
+constexpr double kThressholRecover = 0.6;
 constexpr double kFloorFactor = 0.5;
 
 constexpr double kCloseToIntTolerance = 0.05;
@@ -593,7 +593,6 @@ void AnalyzerRhythm::computeTempogramByACF() {
     Spectrogram tempogramACF = autocorrelationProcessor.process(
             &complexSdCurve[0], complexSdCurve.size());
 
-    int firstFullAC = m_tempogramWindowLength / 2 / m_tempogramHopSize;
     for (size_t i = 0; i < tempogramACF[0].size(); i++) {
         qDebug() << i
                  << tempogramACF[27][i]
@@ -603,12 +602,6 @@ void AnalyzerRhythm::computeTempogramByACF() {
                  << tempogramACF[31][i]
                  << tempogramACF[32][i]
                  << tempogramACF[33][i];
-
-        //                 << tempogramACF[firstFullAC * 4 + 8][i]
-        //                 << tempogramACF[firstFullAC * 4 + 9][i]
-        //                 << tempogramACF[firstFullAC * 4 + 10][i]
-        //                 << tempogramACF[firstFullAC * 4 + 11][i]
-        //                 << tempogramACF[firstFullAC * 4 + 12][i];
     }
 
     int tempogramMinLag = std::max(static_cast<int>(ceil((60/ static_cast<double>((kNoveltyCurveHop) * m_tempogramMaxBPM))
@@ -618,7 +611,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
     qDebug() << tempogramMinLag << tempogramMaxLag;
 
     for (size_t block = 0; block < tempogramACF.size(); block++) {
-        QMap<double, double> acf;
+        std::vector<int> maxLags;
         double max = 0;
         int max_lag = 0;
         int lag = 0;
@@ -632,15 +625,15 @@ void AnalyzerRhythm::computeTempogramByACF() {
                 }
             }
             if (max_lag == lag) {
-                acf[lag] = max;
+                maxLags.push_back(lag);
             }
         }
-        m_tempogramACF.push_back(acf);
+        m_tempogramACF.push_back(maxLags);
         //        qDebug() << "measurelength" << block << acf.keys();
     }
 
     for (size_t block = 0; block < m_tempogramACF.size(); block++) {
-        qDebug() << "measurelength" << block << m_tempogramACF[block].keys();
+        qDebug() << "measurelength" << block << m_tempogramACF[block];
     }
 
     std::vector<float> complexSdMinDiff;
@@ -663,23 +656,69 @@ void AnalyzerRhythm::computeTempogramByACF() {
         complexSdMinDiff.push_back(result - min * kFloorFactor);
     }
 
+    std::vector<float> complexSdSharp = autocorrelationProcessor.sharpPeriodicals(
+            &complexSdMinDiff[0], complexSdMinDiff.size(), m_tempogramACF);
+
+    for (int i = 0; i < static_cast<int>(complexSdSharp.size()); i++) {
+        qDebug() << "complexSdSharp" << i << complexSdMinDiff[i] << complexSdSharp[i];
+    }
+
+    int size = complexSdSharp.size();
+
+    std::vector<int> allBeats;
+    allBeats.reserve(size / 10);
+
+    // This is a dynamic threshold that defines which SD is considered as a beat.
+    double threshold = 0.000001;
+
+    // Find peak beats within a window of 9 SDs (100 ms)
+    // This limits the detection result to 600 BPM
+    for (int i = 0; i < size; ++i) {
+        double beat = 0;
+        double result = complexSdSharp[i];
+        m_detectionResults[i].results[1] = complexSdSharp[i];
+        m_detectionResults[i].results[2] = complexSdSharp[i] / threshold;
+        if (result > threshold) {
+            double max = result;
+            for (int j = i - 4; j < i + 4; ++j) {
+                if (j >= 0 && j < size) {
+                    double value = complexSdSharp[j];
+                    if (value > max) {
+                        max = value;
+                    }
+                }
+            }
+            if (max == result) {
+                // Beat found
+                beat = threshold;
+                threshold = threshold * (1 - kThressholRecover) +
+                        result * kThressholRecover;
+                allBeats.push_back(i);
+            }
+        }
+        threshold =
+                threshold * (1 - kThressholDecay) + result * kThressholDecay;
+        /*
+        qDebug() << i
+                 << m_detectionResults[i].results[3]
+                 << complexSdMinDiff[i]
+                 << threshold << beat;
+        */
+    }
+
+    /*
     // Insert find onsets
-    int lastNote = -m_tempogramWindowLength / 2;
-    for (int block = 0; block < m_tempogramACF.size(); block++) {
-        std::vector<int> periods;
-        QList<double> keys = m_tempogramACF[block].keys();
+    int lastNote = 0;
+    for (int block = 0; block < static_cast<int>(m_tempogramACF.size()); block++) {
+        std::vector<int> periods = m_tempogramACF[block];
         int minPeriod = 10; // ~530 BPM max 1/16 @ 132 BPM
-        for (double period : keys) {
+        for (double period : periods) {
             if (period > minPeriod) {
                 minPeriod = period;
                 break;
             }
         }
-        for (double period : keys) {
-            periods.push_back(period);
-        }
-
-        while (lastNote < (128 * block - m_tempogramWindowLength / 2)) {
+        while (lastNote < 128 * block) {
             int offset = autocorrelationProcessor.findBeat(
                     &complexSdMinDiff[0], complexSdMinDiff.size(), periods, lastNote + 10);
 
@@ -690,6 +729,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
             lastNote = noteToAdd;
         }
     }
+    */
 
     /*
     // Insert missing onsets
@@ -916,8 +956,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
 
     std::set<int> measures_sorted;
     for (size_t block = 0; block < m_tempogramACF.size(); block++) {
-        QList<double> keys = m_tempogramACF[block].keys();
-        for (double measures : keys) {
+        for (double measures : m_tempogramACF[block]) {
             measures_sorted.insert(measures);
         }
     }
@@ -981,7 +1020,7 @@ void AnalyzerRhythm::computeTempogramByACF() {
 
     //for (const auto& beat : possible_downbeats) {
 
-    for (const auto& beat : m_notes) {
+    for (const auto& beat : allBeats) {
         // Output possible downbeat positions
         double result = beat * stepSize();
         m_resultBeats.push_back(result);
@@ -996,6 +1035,7 @@ void AnalyzerRhythm::computeMetergram() {
     // the meter pulses, the subharmonics and also spororious peak, by multiplying
     // them we should enchance the meter pulses only..
 
+    /*
     for (size_t i = 0; i < m_tempogramACF.size() && i < m_tempogramDFT.size(); i += 1) {
         QMap<double, double> metergramBlock;
         for (auto act = m_tempogramACF[i].begin(); act != m_tempogramACF[i].end(); act +=1) {
@@ -1012,6 +1052,7 @@ void AnalyzerRhythm::computeMetergram() {
         }
         m_metergram.push_back(metergramBlock);
     }
+    */
 }
 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
