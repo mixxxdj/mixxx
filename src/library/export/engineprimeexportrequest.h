@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDir>
+#include <djinterop/djinterop.hpp>
 
 #include "library/export/exportrequest.h"
 
@@ -13,6 +14,9 @@ struct EnginePrimeExportRequest : public ExportRequest {
 
     /// Directory in which to write the exported music files.
     QDir musicFilesDir;
+
+    /// Version of Engine Prime database to use when exporting.
+    djinterop::semantic_version exportVersion;
 };
 
 } // namespace mixxx

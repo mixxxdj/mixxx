@@ -8,12 +8,12 @@
 #include <cstdint>
 #include <djinterop/djinterop.hpp>
 #include <memory>
-#include <optional>
 #include <stdexcept>
 
 #include "library/trackcollection.h"
 #include "library/trackset/crate/crate.h"
 #include "track/track.h"
+#include "util/optional.h"
 #include "waveform/waveformfactory.h"
 
 namespace el = djinterop::enginelibrary;
@@ -452,7 +452,7 @@ void EnginePrimeExportJob::run() {
     bool created;
     djinterop::database db = el::create_or_load_database(
             m_request.engineLibraryDbDir.path().toStdString(),
-            el::version_latest,
+            m_request.exportVersion,
             created);
     ++currProgress;
     emit jobProgress(currProgress);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QComboBox>
 #include <QDialog>
 #include <QLineEdit>
 #include <QListWidget>
@@ -57,6 +58,7 @@ class DlgLibraryExport : public QDialog {
     parented_ptr<QRadioButton> m_pCratesRadio;
     parented_ptr<QListWidget> m_pCratesList;
     parented_ptr<QLineEdit> m_pBaseDirectoryTextField;
+    parented_ptr<QComboBox> m_pVersionCombo;
     parented_ptr<QLineEdit> m_pDatabaseDirectoryTextField;
     parented_ptr<QLineEdit> m_pMusicDirectoryTextField;
 };

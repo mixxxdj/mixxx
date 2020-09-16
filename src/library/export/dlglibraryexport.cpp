@@ -7,7 +7,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QStandardPaths>
-#include <djinterop/enginelibrary.hpp>
+#include <djinterop/djinterop.hpp>
+#include <string>
 
 #include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
@@ -56,6 +57,21 @@ DlgLibraryExport::DlgLibraryExport(
     m_pMusicDirectoryTextField = make_parented<QLineEdit>();
     m_pMusicDirectoryTextField->setReadOnly(true);
 
+    // Drop-down for choosing exported database version.
+    m_pVersionCombo = make_parented<QComboBox>();
+    int versionIndex = 0;
+    for (const djinterop::semantic_version& version : el::all_versions) {
+        std::string label = el::version_name(version);
+        m_pVersionCombo->insertItem(
+                0, QString::fromStdString(label), QVariant{versionIndex});
+        if (version == el::version_latest_firmware) {
+            // Latest firmware version is the default selection.
+            m_pVersionCombo->setCurrentIndex(0);
+        }
+
+        ++versionIndex;
+    }
+
     // Radio buttons to allow choice between exporting the whole music library
     // or just tracks in a selection of crates.
     m_pWholeLibraryRadio = make_parented<QRadioButton>(tr("Entire music library"));
@@ -83,6 +99,7 @@ DlgLibraryExport::DlgLibraryExport(
 
     auto pFormLayout = make_parented<QFormLayout>();
     pFormLayout->addRow(tr("Base export directory"), pExportDirLayout);
+    pFormLayout->addRow(tr("Database version"), m_pVersionCombo);
     pFormLayout->addRow(tr("Engine Prime database export directory"),
             m_pDatabaseDirectoryTextField);
     pFormLayout->addRow(tr("Copy music files to"), m_pMusicDirectoryTextField);
@@ -188,12 +205,17 @@ void DlgLibraryExport::exportRequested() {
         }
     }
 
+    // Work out what version was requested.
+    int versionIndex = m_pVersionCombo->currentData().toInt();
+    djinterop::semantic_version exportVersion = el::all_versions[versionIndex];
+
     // Construct a request to export the library/crates.
     // Assumed to always be an Engine Prime export in this iteration of the
     // dialog.
     EnginePrimeExportRequest request;
     request.engineLibraryDbDir = QDir{m_pDatabaseDirectoryTextField->text()};
     request.musicFilesDir = QDir{m_pMusicDirectoryTextField->text()};
+    request.exportVersion = exportVersion;
     request.exportSelectedCrates = m_pCratesList->isEnabled();
     if (request.exportSelectedCrates) {
         for (auto* pItem : m_pCratesList->selectedItems()) {
