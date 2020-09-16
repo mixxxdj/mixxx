@@ -1354,6 +1354,16 @@ WOverview #PassthroughLabel {
   border-width: 2px 2px 2px 1px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
   }
+  /* Active */
+  #VinylCueButton[displayValue="1"],
+  #VinylCueButton[displayValue="2"],
+  #PassthroughButton[displayValue="1"],
+  #FxAssignButtons WPushButton[displayValue="1"] {
+    outline: none;
+    border-width: 2px 2px 2px 1px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  }
+
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
@@ -1373,42 +1383,6 @@ WEffectSelector,
   outline: none;
   border-width: 2px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
-  }
-  #LibraryContainer QHeaderView {
-    border-bottom-right-radius: 1px solid #000; /*
-    outline: none;
-    border-width: 1px 0px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 1 1 1;  */
-  }
-  #LibraryContainer QHeaderView::section {
-    outline: none;
-    border-width: 1px 2px 1px 1px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
-  }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
-    outline: none;
-    border-width: 1px 2px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1;
-  }
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
-    outline: none;
-    border-width: 2px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
-  }
-
-/* Active */
-#VinylCueButton[displayValue="1"],
-#VinylCueButton[displayValue="2"],
-#PassthroughButton[displayValue="1"],
-#FxAssignButtons WPushButton[displayValue="1"] {
-  outline: none;
-  border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
   /*
   WPushButton#BpmTap[displayValue="1"], */
@@ -1438,6 +1412,35 @@ WEffectSelector,
     border-width: 2px;
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
+
+  #LibraryContainer QHeaderView {
+    border-bottom-right-radius: 1px solid #000; /*
+    outline: none;
+    border-width: 1px 0px 1px 0px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 1 1 1;  */
+  }
+  #LibraryContainer QHeaderView::section {
+    outline: none;
+    border-width: 1px 2px 1px 1px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
+  }
+  #LibraryContainer QHeaderView::up-arrow,
+  #LibraryContainer QHeaderView::down-arrow {
+    outline: none;
+    border-width: 1px 2px 1px 0px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1;
+  }
+
+  #DlgMissing > QPushButton:!enabled,
+  #DlgHidden > QPushButton:!enabled,
+  #DlgAutoDJ > QPushButton:!enabled,
+  #DlgRecording > QPushButton:!enabled,
+  #DlgAnalysis > QPushButton:!enabled {
+    outline: none;
+    border-width: 2px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
+  }
+
   WEffectSelector,
   WEffectSelector:on {
     margin-top: 1px;
@@ -1494,6 +1497,8 @@ WPushButton#CrossfaderButton,
   margin: 0px;
   border-radius: 0px;
 }
+
+
 
 /************** button background colors **************************************/
 
@@ -1744,7 +1749,7 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #555;
 }
 
-/* Special flat buttons */
+/* Special flat/invisible buttons */
 #BeatgridControlsToggle,
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
@@ -1761,6 +1766,8 @@ WPushButton#RecButton[displayValue="1"],
 #RecDot {
   background-color: transparent;
 }
+
+
 
 /************** Button icons **************************************************/
 #PlayDeck[displayValue="0"] {
@@ -2359,7 +2366,6 @@ WColorPicker QPushButton[checked="true"] {
   * set to 18px it's 2px too small
   qproperty-iconSize: 20px;*/
 }
-
 
 /************** Button icons **************************************************/
 /************** Button styles *************************************************/

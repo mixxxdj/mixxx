@@ -1177,6 +1177,15 @@ WOverview #PassthroughLabel {
   border-width: 2px 2px 2px 1px;
   border-image: url(skin:/classic/buttons/btn_embedded_grid.svg) 2 2 2 1;
   }
+  /* Active */
+  #VinylCueButton[displayValue="1"],
+  #VinylCueButton[displayValue="2"],
+  #PassthroughButton[displayValue="1"],
+  #FxAssignButtons WPushButton[displayValue="1"] {
+    outline: none;
+    border-width: 2px 2px 2px 1px;
+    border-image: url(skin:/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  }
 WPushButton#FxAssignButton1[displayValue="0"],
 #VinylButton[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
@@ -1193,15 +1202,6 @@ WEffectSelector,
 WEffectSelector:on {
   border-width: 2px;
   border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  }
-/* Active */
-#VinylCueButton[displayValue="1"],
-#VinylCueButton[displayValue="2"],
-#PassthroughButton[displayValue="1"],
-#FxAssignButtons WPushButton[displayValue="1"] {
-  outline: none;
-  border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 WPushButton#VinylButton[displayValue="1"],
 WPushButton#FxAssignButton1[displayValue="1"],
@@ -1773,10 +1773,10 @@ WPushButton#SamplerExpand[displayValue="0"],
       image: url(skin:/classic/buttons/btn__beats_faster.svg) no-repeat center center;
     }
     #HotcuesEarlier {
-      image: url(skin:/classic/buttons/btn__hotcues_earlier.svg) no-repeat center center;
+      image: url(skin:/classic/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
     }
     #HotcuesLater {
-      image: url(skin:/classic/buttons/btn__hotcues_later.svg) no-repeat center center;
+      image: url(skin:/classic/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
     }
 
 #MicTalk {

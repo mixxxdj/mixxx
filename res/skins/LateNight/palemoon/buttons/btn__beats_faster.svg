@@ -23,47 +23,28 @@
   </metadata>
   <defs
      id="defs16" />
-  <g
-     style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-     id="g849">
-    <path
-       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-       id="path2-3"
-       d="m 20,10 h -2 v 3 L 11,9 18,5 v 3 h 2 z" />
-    <g
-       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-       id="g834-6">
-      <path
-         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-         id="path4-7"
-         d="M 5,21 H 3 V 3 h 2 z" />
-      <path
-         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-         id="path6-5"
-         d="m 19,21 h 2 V 11 h -2 z" />
-      <path
-         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-         id="path8-3"
-         d="m 19,7 h 2 V 3 h -2 z" />
-    </g>
-  </g>
   <path
-     d="m20 10h-2v3l-7-4 7-4v3h2z"
+     style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path4-7-3"
+     d="M 16,21 H 14 V 3 h 2 z" />
+  <path
+     d="M 16,21 H 14 V 3 h 2 z"
+     id="path4-6"
+     style="fill:#3f3d3d" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path4-7"
+     d="M 5,21 H 3 V 3 h 2 z" />
+  <path
+     d="M 5,21 H 3 V 3 h 2 z"
+     id="path4"
+     style="fill:#3f3d3d" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path2-3"
+     d="M 21,13 14,9 21,5 Z" />
+  <path
+     d="M 21,13 14,9 21,5 Z"
      fill="#928476"
      id="path2" />
-  <g
-     id="g834">
-    <path
-       d="M 5,21 H 3 V 3 h 2 z"
-       id="path4"
-       style="fill:#3f3d3d" />
-    <path
-       d="m 19,21 h 2 V 11 h -2 z"
-       id="path6"
-       style="fill:#3f3d3d" />
-    <path
-       d="m 19,7 h 2 V 3 h -2 z"
-       id="path8"
-       style="fill:#3f3d3d" />
-  </g>
 </svg>
