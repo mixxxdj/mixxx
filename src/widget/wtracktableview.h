@@ -45,6 +45,7 @@ class WTrackTableView : public WLibraryTableView {
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();
     void restoreCurrentVScrollBarPos();
+	void currentChanged(const QModelIndex &current, const QModelIndex &previous);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -62,6 +63,7 @@ class WTrackTableView : public WLibraryTableView {
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
+    void slotCurrentColumnChanged();
     void applySortingIfVisible();
     void applySorting();
 
@@ -107,6 +109,7 @@ class WTrackTableView : public WLibraryTableView {
 
     ControlProxy* m_pCOTGuiTick;
     ControlProxy* m_pKeyNotation;
+    ControlProxy* m_pCurrentColumn;
     ControlProxy* m_pSortColumn;
     ControlProxy* m_pSortOrder;
 };
