@@ -66,6 +66,7 @@ class LibraryControl : public QObject {
     void slotMoveLeft(double);
     void slotMoveRight(double);
     void slotMoveHorizontal(double);
+    void slotCurrentColumn(double);
     void slotMoveFocusForward(double);
     void slotMoveFocusBackward(double);
     void slotMoveFocus(double);
@@ -121,6 +122,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveLeft;
     std::unique_ptr<ControlPushButton> m_pMoveRight;
     std::unique_ptr<ControlEncoder> m_pMoveHorizontal;
+    std::unique_ptr<ControlEncoder> m_pCurrentColumn;
 
     // Controls to navigate between widgets (tab/shit+tab button)
     std::unique_ptr<ControlPushButton> m_pMoveFocusForward;

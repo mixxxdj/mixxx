@@ -106,6 +106,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
     m_pMoveHorizontal = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveHorizontal"), false);
+	m_pCurrentColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "current_column"));
     connect(m_pMoveLeft.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -118,6 +119,10 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlEncoder::valueChanged,
             this,
             &LibraryControl::slotMoveHorizontal);
+    connect(m_pCurrentColumn.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotCurrentColumn);
 
     // Control to navigate between widgets (tab/shit+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
@@ -507,6 +512,11 @@ void LibraryControl::slotMoveHorizontal(double v) {
     const auto key = (v < 0) ? Qt::Key_Left: Qt::Key_Right;
     const auto times = static_cast<unsigned short>(std::abs(v));
     emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
+}
+
+void LibraryControl::slotCurrentColumn(double v) {
+qDebug() << "UUUUUUUUUUUUUUUUUUUUUUUUUUUUU" << "LibraryControl::slotCurrentColumn" << "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU";
+	
 }
 
 void LibraryControl::slotMoveFocusForward(double v) {
