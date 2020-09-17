@@ -906,7 +906,7 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     return true;
 }
 
-bool SoundSourceFFmpeg::consumeNextPacket(
+bool SoundSourceFFmpeg::consumeNextAVPacket(
         AVPacket* pavPacket, AVPacket** ppavNextPacket) {
     DEBUG_ASSERT(pavPacket);
     DEBUG_ASSERT(ppavNextPacket);
@@ -963,7 +963,7 @@ bool SoundSourceFFmpeg::consumeNextPacket(
     return true;
 }
 
-const CSAMPLE* SoundSourceFFmpeg::resampleDecodedFrame() {
+const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame() {
     if (m_pSwrContext) {
         // Decoded frame must be resampled before reading
         m_pavResampledFrame->channel_layout = m_avResampledChannelLayout;
@@ -1041,7 +1041,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     auto readFrameIndex = m_curFrameIndex;
     while ((m_curFrameIndex != kFrameIndexInvalid) &&
             (pavNextPacket || !writableFrameRange.empty()) &&
-            consumeNextPacket(&avPacket, &pavNextPacket)) {
+            consumeNextAVPacket(&avPacket, &pavNextPacket)) {
         int avcodec_receive_frame_result;
         do {
 #if VERBOSE_DEBUG_LOG
@@ -1198,7 +1198,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     << "writableFrameRange" << writableFrameRange;
 #endif
 
-            const CSAMPLE* pDecodedSampleData = resampleDecodedFrame();
+            const CSAMPLE* pDecodedSampleData = resampleDecodedAVFrame();
             if (!pDecodedSampleData) {
                 // Invalidate current position and abort reading after unrecoverable error
                 m_curFrameIndex = kFrameIndexInvalid;

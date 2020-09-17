@@ -33,7 +33,7 @@ class SoundSourceFFmpeg : public SoundSource {
     bool initResampling(
             audio::ChannelCount* pResampledChannelCount,
             audio::SampleRate* pResampledSampleRate);
-    const CSAMPLE* resampleDecodedFrame();
+    const CSAMPLE* resampleDecodedAVFrame();
 
     // Consume as many buffered sample frames as possible and return
     // the remaining range that could not be filled from the  buffer.
@@ -45,7 +45,7 @@ class SoundSourceFFmpeg : public SoundSource {
     bool adjustCurrentPosition(
             SINT startIndex);
 
-    bool consumeNextPacket(
+    bool consumeNextAVPacket(
             AVPacket* pavPacket,
             AVPacket** ppavNextPacket);
 
