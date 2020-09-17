@@ -500,7 +500,7 @@ void EnginePrimeExportJob::run() {
     // underneath this crate.
     auto optionalExtRootCrate = db.root_crate_by_name(kMixxxRootCrateName);
     auto extRootCrate = optionalExtRootCrate
-            ? optionalExtRootCrate.value()
+            ? *optionalExtRootCrate
             : db.create_root_crate(kMixxxRootCrateName);
     for (const TrackRef& trackRef : m_trackRefs) {
         // Add each track to the root crate, even if it also belongs to others.

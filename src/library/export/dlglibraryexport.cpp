@@ -146,7 +146,7 @@ void DlgLibraryExport::setSelectedCrate(std::optional<CrateId> crateId) {
     for (auto i = 0; i < m_pCratesList->count(); ++i) {
         auto* pItem = m_pCratesList->item(i);
         auto currCrateId = pItem->data(Qt::UserRole).toInt();
-        if (currCrateId == crateId.value().value()) {
+        if (currCrateId == crateId->value()) {
             m_pCratesList->setCurrentItem(pItem);
             return;
         }
