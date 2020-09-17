@@ -1021,7 +1021,9 @@ int ControlPickerMenu::addAvailableControl(ConfigKey key,
     m_controlsAvailable.append(key);
     m_descriptionsByKey.insert(key, description);
     m_titlesByKey.insert(key, title);
-    return m_controlsAvailable.size();
+    // return the index of the control which will be connected to the index
+    // of the respective action in the menu
+    return m_controlsAvailable.size() - 1;
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {
