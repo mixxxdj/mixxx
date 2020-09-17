@@ -1085,8 +1085,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 break;
             } else if (avcodec_receive_frame_result == AVERROR_EOF) {
                 DEBUG_ASSERT(!pavNextPacket);
-                if (readFrameIndex != kFrameIndexUnknown && !writableFrameRange.empty()) {
-                    DEBUG_ASSERT(readFrameIndex < writableFrameRange.end());
+                if (readFrameIndex != kFrameIndexUnknown) {
                     DEBUG_ASSERT(m_sampleBuffer.empty());
                     // Due to the lead-in with a start_time > 0 some encoded
                     // files are shorter then actually reported. This may vary
@@ -1102,15 +1101,18 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                             << "instead of"
                             << frameIndexRange().end()
                             << "-> padding with silence";
-                    const auto clearSampleCount =
-                            getSignalInfo().frames2samples(
-                                    writableFrameRange.length());
-                    if (pOutputSampleBuffer) {
-                        SampleUtil::clear(
-                                pOutputSampleBuffer, clearSampleCount);
-                        pOutputSampleBuffer += clearSampleCount;
+                    if (!writableFrameRange.empty()) {
+                        DEBUG_ASSERT(readFrameIndex < writableFrameRange.end());
+                        const auto clearSampleCount =
+                                getSignalInfo().frames2samples(
+                                        writableFrameRange.length());
+                        if (pOutputSampleBuffer) {
+                            SampleUtil::clear(
+                                    pOutputSampleBuffer, clearSampleCount);
+                            pOutputSampleBuffer += clearSampleCount;
+                        }
+                        writableFrameRange.shrinkFront(writableFrameRange.length());
                     }
-                    writableFrameRange.shrinkFront(writableFrameRange.length());
                 }
                 // Invalidate current position and abort reading
                 m_curFrameIndex = kFrameIndexInvalid;
