@@ -1,5 +1,8 @@
 #include "test/mixxxtest.h"
 
+#include <QTemporaryFile>
+
+#include "control/control.h"
 #include "library/coverartutils.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
@@ -64,4 +67,11 @@ MixxxTest::~MixxxTest() {
     for (auto pControl : ControlDoublePrivate::takeAllInstances()) {
         pControl->deleteCreatorCO();
     }
+}
+
+void MixxxTest::saveAndReloadConfig() {
+    m_pConfig->save();
+    m_pConfig = UserSettingsPointer(
+            new UserSettings(getTestDataDir().filePath("test.cfg")));
+    ControlDoublePrivate::setUserConfig(m_pConfig);
 }

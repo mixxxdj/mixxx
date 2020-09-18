@@ -4,20 +4,14 @@
 #include <gtest/gtest.h>
 
 #include <QDir>
-#include <QTemporaryFile>
-#include <QTemporaryDir>
 #include <QScopedPointer>
+#include <QTemporaryDir>
 
 #include "mixxxapplication.h"
-
 #include "preferences/usersettings.h"
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
 
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
-
-typedef QScopedPointer<QTemporaryFile> ScopedTemporaryFile;
 
 class MixxxTest : public testing::Test {
   public:
@@ -45,21 +39,7 @@ class MixxxTest : public testing::Test {
     }
 
     // Simulate restarting Mixxx by saving and reloading the UserSettings.
-    void saveAndReloadConfig() {
-        m_pConfig->save();
-        m_pConfig = UserSettingsPointer(
-            new UserSettings(getTestDataDir().filePath("test.cfg")));
-        ControlDoublePrivate::setUserConfig(m_pConfig);
-    }
-
-    QTemporaryFile* makeTemporaryFile(const QString& contents) const {
-        QByteArray contentsBa = contents.toLocal8Bit();
-        QTemporaryFile* file = new QTemporaryFile();
-        file->open();
-        file->write(contentsBa);
-        file->close();
-        return file;
-    }
+    void saveAndReloadConfig();
 
     QDir getTestDataDir() const {
         return m_testDataDir.path();
