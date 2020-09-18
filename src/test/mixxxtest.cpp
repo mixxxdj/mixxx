@@ -75,3 +75,72 @@ void MixxxTest::saveAndReloadConfig() {
             new UserSettings(getTestDataDir().filePath("test.cfg")));
     ControlDoublePrivate::setUserConfig(m_pConfig);
 }
+
+namespace test {
+
+FileRemover::~FileRemover() {
+    VERIFY_OR_DEBUG_ASSERT(
+            m_fileName.isEmpty() ||
+            QFile::remove(m_fileName) ||
+            !QFile::exists(m_fileName)) {
+        // unexpected
+    }
+}
+
+QString generateTemporaryFileName(const QString& fileNameTemplate) {
+    auto tmpFile = QTemporaryFile(fileNameTemplate);
+    // The file must be opened to create it and to obtain
+    // its file name!
+    tmpFile.open();
+    const auto tmpFileName = tmpFile.fileName();
+    DEBUG_ASSERT(!tmpFileName.isEmpty());
+    // The empty temporary file will be removed upon returning
+    // from this function
+    return tmpFileName;
+}
+
+QString createEmptyTemporaryFile(const QString& fileNameTemplate) {
+    const auto fileName = generateTemporaryFileName(fileNameTemplate);
+    FileRemover fileRemover(fileName);
+
+    QFile emptyFile(fileName);
+    VERIFY_OR_DEBUG_ASSERT(emptyFile.open(QIODevice::WriteOnly)) {
+        return QString();
+    }
+    VERIFY_OR_DEBUG_ASSERT(emptyFile.exists()) {
+        return QString();
+    }
+    emptyFile.close();
+    VERIFY_OR_DEBUG_ASSERT(emptyFile.size() == 0) {
+        return QString();
+    }
+
+    fileRemover.keepFile();
+    return fileName;
+}
+
+bool copyFile(const QString& srcFileName, const QString& dstFileName) {
+    auto srcFile = QFile(srcFileName);
+    DEBUG_ASSERT(srcFile.exists());
+    VERIFY_OR_DEBUG_ASSERT(srcFile.copy(dstFileName)) {
+        qWarning()
+                << srcFile.errorString()
+                << "- Failed to copy file"
+                << srcFile.fileName()
+                << "->"
+                << dstFileName;
+        return false;
+    }
+    auto dstFileRemover = FileRemover(dstFileName);
+    auto dstFile = QFile(dstFileName);
+    VERIFY_OR_DEBUG_ASSERT(dstFile.exists()) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(srcFile.size() == dstFile.size()) {
+        return false;
+    }
+    dstFileRemover.keepFile();
+    return true;
+}
+
+} // namespace test
