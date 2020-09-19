@@ -53,7 +53,7 @@ class MixxxTest : public testing::Test {
     UserSettingsPointer m_pConfig;
 };
 
-namespace test {
+namespace mixxxtest {
 
 /// Returns the full, non-empty file path on success.
 ///
@@ -82,4 +82,4 @@ class FileRemover final {
     QString m_fileName;
 };
 
-} // namespace test
+} // namespace mixxxtest

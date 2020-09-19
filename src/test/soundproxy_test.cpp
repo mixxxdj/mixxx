@@ -178,8 +178,8 @@ TEST_F(SoundSourceProxyTest, open) {
 TEST_F(SoundSourceProxyTest, openEmptyFile) {
     for (const auto& fileNameSuffix: getFileNameSuffixes()) {
         const auto tmpFileName =
-                test::createEmptyTemporaryFile("emptyXXXXXX" + fileNameSuffix);
-        const test::FileRemover tmpFileRemover(tmpFileName);
+                mixxxtest::createEmptyTemporaryFile("emptyXXXXXX" + fileNameSuffix);
+        const mixxxtest::FileRemover tmpFileRemover(tmpFileName);
 
         ASSERT_TRUE(QFile::exists(tmpFileName));
         ASSERT_TRUE(!tmpFileName.isEmpty());

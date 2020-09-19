@@ -76,7 +76,7 @@ void MixxxTest::saveAndReloadConfig() {
     ControlDoublePrivate::setUserConfig(m_pConfig);
 }
 
-namespace test {
+namespace mixxxtest {
 
 FileRemover::~FileRemover() {
     VERIFY_OR_DEBUG_ASSERT(
@@ -146,4 +146,4 @@ bool copyFile(const QString& srcFileName, const QString& dstFileName) {
     return true;
 }
 
-} // namespace test
+} // namespace mixxxtest
