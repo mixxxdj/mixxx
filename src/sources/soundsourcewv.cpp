@@ -11,6 +11,12 @@ namespace {
 
 const Logger kLogger("SoundSourceWV");
 
+const QString kDisplayName = QStringLiteral("WavPack");
+
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("wv"),
+};
+
 static WavpackStreamReader s_streamReader = {
         SoundSourceWV::ReadBytesCallback,
         SoundSourceWV::GetPosCallback,
@@ -24,7 +30,7 @@ static WavpackStreamReader s_streamReader = {
 } // anonymous namespace
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
-        : SoundSource(url, "wv"),
+        : SoundSource(url),
           m_wpc(nullptr),
           m_sampleScaleFactor(CSAMPLE_ZERO),
           m_pWVFile(nullptr),
@@ -156,10 +162,6 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
                     getSignalInfo().frames2samples(unpackCount)));
 }
 
-QString SoundSourceProviderWV::getName() const {
-    return "WavPack";
-}
-
 //static
 int32_t SoundSourceWV::ReadBytesCallback(void* id, void* data, int bcount) {
     QFile* pFile = static_cast<QFile*>(id);
@@ -243,10 +245,12 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount) 
     return (int32_t)pFile->write((char*)data, bcount);
 }
 
+QString SoundSourceProviderWV::getName() const {
+    return kDisplayName;
+}
+
 QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("wv");
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderWV::getPriorityHint(

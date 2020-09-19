@@ -11,8 +11,19 @@ namespace {
 
 const Logger kLogger("SoundSourceCoreAudio");
 
+const QString kDisplayName = QStringLiteral("Apple Core Audio");
+
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+        QStringLiteral("mp3"),
+        QStringLiteral("mp2"),
+        // Can add mp3, mp2, ac3, and others here if you want:
+        // http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
+};
+
 // The maximum number of samples per MP3 frame
-const SINT kMp3MaxFrameSize = 1152;
+constexpr SINT kMp3MaxFrameSize = 1152;
 
 // NOTE(rryan): For every MP3 seek we jump back kMp3MaxSeekPrefetchFrames frames from
 // the seek position and read forward to allow the decoder to stabilize. The
@@ -21,7 +32,7 @@ const SINT kMp3MaxFrameSize = 1152;
 // appropriate amount to pre-fetch from the ExtAudioFile API. Oddly, the "prime"
 // information -- which AIUI is supposed to tell us this information -- is zero
 // for this file. We use the same frame pre-fetch count from SoundSourceMp3.
-const SINT kMp3MaxSeekPrefetchFrames =
+constexpr SINT kMp3MaxSeekPrefetchFrames =
         kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
 
 } // namespace
@@ -267,18 +278,11 @@ SINT SoundSourceCoreAudio::readSampleFrames(
 }
 
 QString SoundSourceProviderCoreAudio::getName() const {
-    return "Apple Core Audio";
+    return kDisplayName;
 }
 
 QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("m4a");
-    supportedFileExtensions.append("mp4");
-    supportedFileExtensions.append("mp3");
-    supportedFileExtensions.append("mp2");
-    // Can add mp3, mp2, ac3, and others here if you want:
-    // http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(

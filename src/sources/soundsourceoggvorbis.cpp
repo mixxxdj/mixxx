@@ -10,13 +10,19 @@ namespace {
 
 const Logger kLogger("SoundSourceOggVorbis");
 
+const QString kDisplayName = QStringLiteral("Xiph.org OggVorbis");
+
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("ogg"),
+};
+
 // Parameter for ov_info()
 // See also: https://xiph.org/vorbis/doc/vorbisfile/ov_info.html
-const int kCurrentBitstreamLink = -1; // retrieve ... for the current bitstream
+constexpr int kCurrentBitstreamLink = -1; // retrieve ... for the current bitstream
 
 // Parameter for ov_pcm_total()
 // See also: https://xiph.org/vorbis/doc/vorbisfile/ov_pcm_total.html
-const int kEntireBitstreamLink = -1; // retrieve ... for the entire physical bitstream
+constexpr int kEntireBitstreamLink = -1; // retrieve ... for the entire physical bitstream
 
 } // anonymous namespace
 
@@ -28,7 +34,7 @@ ov_callbacks SoundSourceOggVorbis::s_callbacks = {
         SoundSourceOggVorbis::TellCallback};
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(const QUrl& url)
-        : SoundSource(url, "ogg"),
+        : SoundSource(url),
           m_curFrameIndex(0) {
     memset(&m_vf, 0, sizeof(m_vf));
 }
@@ -247,17 +253,16 @@ long SoundSourceOggVorbis::TellCallback(void* datasource) {
 }
 
 QString SoundSourceProviderOggVorbis::getName() const {
-    return "Xiph.org OggVorbis";
+    return kDisplayName;
 }
 
 QStringList SoundSourceProviderOggVorbis::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("ogg");
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::HIGHER;

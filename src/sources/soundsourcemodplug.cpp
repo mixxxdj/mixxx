@@ -17,8 +17,22 @@ namespace {
 
 const Logger kLogger("SoundSourceModPlug");
 
+const QString kDisplayName = QStringLiteral("MODPlug");
+
+const QStringList kSupportedFileExtensions = {
+        // ModPlug supports more formats but file name
+        // extensions are not always present with modules.
+        QStringLiteral("mod"),
+        QStringLiteral("med"),
+        QStringLiteral("okt"),
+        QStringLiteral("s3m"),
+        QStringLiteral("stm"),
+        QStringLiteral("xm"),
+        QStringLiteral("it"),
+};
+
 /* read files in 512k chunks */
-const SINT kChunkSizeInBytes = SINT(1) << 19;
+constexpr SINT kChunkSizeInBytes = SINT(1) << 19;
 
 QString getModPlugTypeFromUrl(QUrl url) {
     const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
@@ -198,21 +212,11 @@ ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
 }
 
 QString SoundSourceProviderModPlug::getName() const {
-    return "MODPlug";
+    return kDisplayName;
 }
 
 QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    // ModPlug supports more formats but file name
-    // extensions are not always present with modules.
-    supportedFileExtensions.append("mod");
-    supportedFileExtensions.append("med");
-    supportedFileExtensions.append("okt");
-    supportedFileExtensions.append("s3m");
-    supportedFileExtensions.append("stm");
-    supportedFileExtensions.append("xm");
-    supportedFileExtensions.append("it");
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 } // namespace mixxx

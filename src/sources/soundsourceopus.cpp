@@ -9,6 +9,12 @@ namespace {
 
 const Logger kLogger("SoundSourceOpus");
 
+const QString kDisplayName = QStringLiteral("Xiph.org libopusfile");
+
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("opus"),
+};
+
 // Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
 constexpr audio::SampleRate kSampleRate = audio::SampleRate(48000);
 
@@ -66,7 +72,7 @@ class OggOpusFileOwner {
 } // anonymous namespace
 
 SoundSourceOpus::SoundSourceOpus(const QUrl& url)
-        : SoundSource(url, "opus"),
+        : SoundSource(url),
           m_pOggOpusFile(nullptr),
           m_curFrameIndex(0) {
 }
@@ -381,13 +387,11 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
 }
 
 QString SoundSourceProviderOpus::getName() const {
-    return "Xiph.org libopusfile";
+    return kDisplayName;
 }
 
 QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("opus");
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderOpus::getPriorityHint(

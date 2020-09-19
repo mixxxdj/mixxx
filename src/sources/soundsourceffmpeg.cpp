@@ -13,6 +13,8 @@ namespace mixxx {
 
 namespace {
 
+const QString kDisplayName = QStringLiteral("FFmpeg");
+
 // FFmpeg constants
 
 constexpr AVSampleFormat kavSampleFormat = AV_SAMPLE_FMT_FLT;
@@ -1204,7 +1206,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 }
 
 QString SoundSourceProviderFFmpeg::getName() const {
-    return "FFmpeg";
+    return kDisplayName;
 }
 
 SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(

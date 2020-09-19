@@ -10,10 +10,16 @@ namespace {
 
 const Logger kLogger("SoundSourceFLAC");
 
+const QString kDisplayName = QStringLiteral("Xiph.org libFLAC");
+
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("flac"),
+};
+
 // The maximum number of retries to fix seek errors. On a seek error
 // the next seek will start one (or more) sample blocks before the
 // position of the preceding seek operation that has failed.
-const int kSeekErrorMaxRetryCount = 3;
+constexpr int kSeekErrorMaxRetryCount = 3;
 
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
 
@@ -72,7 +78,7 @@ const unsigned kBitsPerSampleDefault = 0;
 } // namespace
 
 SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
-        : SoundSource(url, "flac"),
+        : SoundSource(url),
           m_file(getLocalFileName()),
           m_decoder(nullptr),
           m_maxBlocksize(0),
@@ -552,13 +558,11 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
 }
 
 QString SoundSourceProviderFLAC::getName() const {
-    return "Xiph.org libFLAC";
+    return kDisplayName;
 }
 
 QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("flac");
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(

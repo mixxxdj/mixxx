@@ -10,6 +10,20 @@ namespace {
 
 const Logger kLogger("SoundSourceSndFile");
 
+const QString kDisplayName = QStringLiteral("libsndfile");
+
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("aif"),
+        QStringLiteral("aiff"),
+        // ALAC/CAF has been added in version 1.0.26
+        // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
+        // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
+        QStringLiteral("caf"),
+        QStringLiteral("flac"),
+        QStringLiteral("ogg"),
+        QStringLiteral("wav"),
+};
+
 } // anonymous namespace
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
@@ -128,27 +142,17 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
 }
 
 QString SoundSourceProviderSndFile::getName() const {
-    return "libsndfile";
+    return kDisplayName;
 }
 
 QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("aif");
-    supportedFileExtensions.append("aiff");
-    // ALAC/CAF has been added in version 1.0.26
-    // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
-    // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
-    supportedFileExtensions.append("caf");
-    supportedFileExtensions.append("flac");
-    supportedFileExtensions.append("ogg");
-    supportedFileExtensions.append("wav");
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
         const QString& supportedFileExtension) const {
-    if (supportedFileExtension.startsWith("aif") ||
-            supportedFileExtension == "wav") {
+    if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
+            supportedFileExtension == QStringLiteral("wav")) {
         // Default decoder for AIFF and WAV
         return SoundSourceProviderPriority::DEFAULT;
     } else {

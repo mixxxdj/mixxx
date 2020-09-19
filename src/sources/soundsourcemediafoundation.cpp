@@ -11,6 +11,13 @@ namespace {
 
 const mixxx::Logger kLogger("SoundSourceMediaFoundation");
 
+const QString kDisplayName = QStringLiteral("Microsoft Media Foundation");
+
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+};
+
 constexpr SINT kUnknownFrameIndex = -1;
 
 constexpr SINT kBytesPerSample = sizeof(CSAMPLE);
@@ -45,7 +52,7 @@ static void safeRelease(T** ppT) {
 namespace mixxx {
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
-        : SoundSource(url, "m4a"),
+        : SoundSource(url),
           m_hrCoInitialize(E_FAIL),
           m_hrMFStartup(E_FAIL),
           m_pSourceReader(nullptr),
@@ -783,14 +790,11 @@ bool SoundSourceMediaFoundation::readProperties() {
 }
 
 QString SoundSourceProviderMediaFoundation::getName() const {
-    return "Microsoft Media Foundation";
+    return kDisplayName;
 }
 
 QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("m4a");
-    supportedFileExtensions.append("mp4");
-    return supportedFileExtensions;
+    return kSupportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
