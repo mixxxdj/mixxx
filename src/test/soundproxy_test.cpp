@@ -181,6 +181,7 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
                 test::createEmptyTemporaryFile("emptyXXXXXX" + fileNameSuffix);
         const test::FileRemover tmpFileRemover(tmpFileName);
 
+        ASSERT_TRUE(QFile::exists(tmpFileName));
         ASSERT_TRUE(!tmpFileName.isEmpty());
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(tmpFileName));
         auto pTrack = Track::newTemporary(tmpFileName);

@@ -91,7 +91,9 @@ QString generateTemporaryFileName(const QString& fileNameTemplate) {
     auto tmpFile = QTemporaryFile(fileNameTemplate);
     // The file must be opened to create it and to obtain
     // its file name!
-    tmpFile.open();
+    VERIFY_OR_DEBUG_ASSERT(tmpFile.open()) {
+        return QString();
+    }
     const auto tmpFileName = tmpFile.fileName();
     DEBUG_ASSERT(!tmpFileName.isEmpty());
     // The empty temporary file will be removed upon returning
@@ -100,22 +102,23 @@ QString generateTemporaryFileName(const QString& fileNameTemplate) {
 }
 
 QString createEmptyTemporaryFile(const QString& fileNameTemplate) {
-    const auto fileName = generateTemporaryFileName(fileNameTemplate);
-    FileRemover fileRemover(fileName);
-
-    QFile emptyFile(fileName);
-    VERIFY_OR_DEBUG_ASSERT(emptyFile.open(QIODevice::WriteOnly)) {
+    auto emptyFile = QTemporaryFile(fileNameTemplate);
+    VERIFY_OR_DEBUG_ASSERT(emptyFile.open()) {
         return QString();
     }
+
+    // Retrieving the file's name after opening it is required to actually
+    // create a named file on Linux.
+    const auto fileName = emptyFile.fileName();
+    DEBUG_ASSERT(!fileName.isEmpty());
     VERIFY_OR_DEBUG_ASSERT(emptyFile.exists()) {
         return QString();
     }
-    emptyFile.close();
     VERIFY_OR_DEBUG_ASSERT(emptyFile.size() == 0) {
         return QString();
     }
 
-    fileRemover.keepFile();
+    emptyFile.setAutoRemove(false);
     return fileName;
 }
 
