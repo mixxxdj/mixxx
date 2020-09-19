@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEMP3_H
-#define MIXXX_SOUNDSOURCEMP3_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 
@@ -77,7 +76,11 @@ class SoundSourceMp3 final : public SoundSource {
 
 class SoundSourceProviderMp3 : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 
@@ -87,5 +90,3 @@ class SoundSourceProviderMp3 : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEMP3_H

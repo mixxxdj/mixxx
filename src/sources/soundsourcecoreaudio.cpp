@@ -11,8 +11,6 @@ namespace {
 
 const Logger kLogger("SoundSourceCoreAudio");
 
-const QString kDisplayName = QStringLiteral("Apple Core Audio");
-
 const QStringList kSupportedFileExtensions = {
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
@@ -36,6 +34,21 @@ constexpr SINT kMp3MaxSeekPrefetchFrames =
         kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
 
 } // namespace
+
+//static
+const QString SoundSourceProviderCoreAudio::kDisplayName = QStringLiteral("Apple Core Audio");
+
+QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
+    return kSupportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // On macOS SoundSourceCoreAudio is the preferred decoder for all
+    // supported audio formats.
+    return SoundSourceProviderPriority::Higher;
+}
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
@@ -275,22 +288,6 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         numFramesRead += numFramesToReadInOut;
     }
     return numFramesRead;
-}
-
-QString SoundSourceProviderCoreAudio::getName() const {
-    return kDisplayName;
-}
-
-QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
-    // On macOS SoundSourceCoreAudio is the preferred decoder for all
-    // supported audio formats.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

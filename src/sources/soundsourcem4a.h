@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEM4A_H
-#define MIXXX_SOUNDSOURCEM4A_H
+#pragma once
 
 #include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
@@ -80,7 +79,11 @@ class SoundSourceM4A : public SoundSource {
 
 class SoundSourceProviderM4A : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 
@@ -88,5 +91,3 @@ class SoundSourceProviderM4A : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEM4A_H

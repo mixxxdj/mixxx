@@ -23,7 +23,10 @@
 
 namespace mixxx {
 
-class SoundSourceCoreAudio : public SoundSource, public virtual /*implements*/ LegacyAudioSource, public LegacyAudioSourceAdapter {
+class SoundSourceCoreAudio
+        : public SoundSource,
+          public virtual /*implements*/ LegacyAudioSource,
+          public LegacyAudioSourceAdapter {
   public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio() override;
@@ -51,7 +54,11 @@ class SoundSourceCoreAudio : public SoundSource, public virtual /*implements*/ L
 
 class SoundSourceProviderCoreAudio : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 

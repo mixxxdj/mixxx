@@ -41,7 +41,11 @@ class SoundSourceOggVorbis final : public SoundSource {
 
 class SoundSourceProviderOggVorbis : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 

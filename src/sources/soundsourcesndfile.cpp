@@ -10,8 +10,6 @@ namespace {
 
 const Logger kLogger("SoundSourceSndFile");
 
-const QString kDisplayName = QStringLiteral("libsndfile");
-
 const QStringList kSupportedFileExtensions = {
         QStringLiteral("aif"),
         QStringLiteral("aiff"),
@@ -25,6 +23,25 @@ const QStringList kSupportedFileExtensions = {
 };
 
 } // anonymous namespace
+
+//static
+const QString SoundSourceProviderSndFile::kDisplayName = QStringLiteral("libsndfile");
+
+QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
+    return kSupportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
+            supportedFileExtension == QStringLiteral("wav")) {
+        // Default decoder for AIFF and WAV
+        return SoundSourceProviderPriority::Default;
+    } else {
+        // Otherwise only used as fallback
+        return SoundSourceProviderPriority::Lower;
+    }
+}
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
@@ -138,26 +155,6 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
                 IndexRange::between(
                         m_curFrameIndex,
                         m_curFrameIndex));
-    }
-}
-
-QString SoundSourceProviderSndFile::getName() const {
-    return kDisplayName;
-}
-
-QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
-            supportedFileExtension == QStringLiteral("wav")) {
-        // Default decoder for AIFF and WAV
-        return SoundSourceProviderPriority::DEFAULT;
-    } else {
-        // Otherwise only used as fallback
-        return SoundSourceProviderPriority::LOWER;
     }
 }
 

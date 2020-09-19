@@ -12,8 +12,6 @@ namespace {
 
 const Logger kLogger("SoundSourceMP3");
 
-const QString kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
-
 const QStringList kSupportedFileExtensions = {
         QStringLiteral("mp3"),
 };
@@ -164,6 +162,13 @@ bool decodeFrameHeader(
 }
 
 } // anonymous namespace
+
+//static
+const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
+
+QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
+    return kSupportedFileExtensions;
+}
 
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url),
@@ -776,14 +781,6 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
-}
-
-QString SoundSourceProviderMp3::getName() const {
-    return kDisplayName;
-}
-
-QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
 }
 
 } // namespace mixxx

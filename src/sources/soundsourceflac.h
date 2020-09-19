@@ -1,13 +1,11 @@
-#ifndef MIXXX_SOUNDSOURCEFLAC_H
-#define MIXXX_SOUNDSOURCEFLAC_H
-
-#include "sources/soundsourceprovider.h"
-
-#include "util/readaheadsamplebuffer.h"
+#pragma once
 
 #include <FLAC/stream_decoder.h>
 
 #include <QFile>
+
+#include "sources/soundsourceprovider.h"
+#include "util/readaheadsamplebuffer.h"
 
 namespace mixxx {
 
@@ -60,7 +58,11 @@ class SoundSourceFLAC final : public SoundSource {
 
 class SoundSourceProviderFLAC : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 
@@ -73,5 +75,3 @@ class SoundSourceProviderFLAC : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEFLAC_H

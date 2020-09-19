@@ -113,7 +113,7 @@ void SoundSourceProxy::registerSoundSourceProviders() {
                             supportedFileExtension));
             for (const auto& registration : registrationsForFileExtension) {
                 kLogger.info() << " " << static_cast<int>(registration.getProviderPriority())
-                               << ":" << registration.getProvider()->getName();
+                               << ":" << registration.getProvider()->getDisplayName();
             }
         }
     }
@@ -284,7 +284,7 @@ void SoundSourceProxy::initSoundSource() {
         m_pSoundSource = pProvider->newSoundSource(m_url);
         if (!m_pSoundSource) {
             kLogger.warning() << "SoundSourceProvider"
-                              << pProvider->getName()
+                              << pProvider->getDisplayName()
                               << "failed to create a SoundSource for file"
                               << getUrl().toString();
             // Switch to next provider...
@@ -294,7 +294,7 @@ void SoundSourceProxy::initSoundSource() {
         } else {
             if (kLogger.debugEnabled()) {
                 kLogger.debug() << "SoundSourceProvider"
-                                << pProvider->getName()
+                                << pProvider->getDisplayName()
                                 << "created a SoundSource for file"
                                 << getUrl().toString()
                                 << "of type"
@@ -513,14 +513,14 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                     << "Failed to read file"
                     << getUrl().toString()
                     << "with provider"
-                    << getSoundSourceProvider()->getName();
+                    << getSoundSourceProvider()->getDisplayName();
             m_pSoundSource->close(); // cleanup
         } else {
             kLogger.warning()
                     << "Failed to open file"
                     << getUrl().toString()
                     << "with provider"
-                    << getSoundSourceProvider()->getName()
+                    << getSoundSourceProvider()->getDisplayName()
                     << "using mode"
                     << openMode;
             if (openMode == mixxx::SoundSource::OpenMode::Permissive) {

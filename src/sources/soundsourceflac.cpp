@@ -10,8 +10,6 @@ namespace {
 
 const Logger kLogger("SoundSourceFLAC");
 
-const QString kDisplayName = QStringLiteral("Xiph.org libFLAC");
-
 const QStringList kSupportedFileExtensions = {
         QStringLiteral("flac"),
 };
@@ -76,6 +74,20 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 const unsigned kBitsPerSampleDefault = 0;
 
 } // namespace
+
+//static
+const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
+
+QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
+    return kSupportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
 
 SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
         : SoundSource(url),
@@ -555,21 +567,6 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
     // will bail. libFLAC docs say to not close the decoder here -- bkgood
-}
-
-QString SoundSourceProviderFLAC::getName() const {
-    return kDisplayName;
-}
-
-QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

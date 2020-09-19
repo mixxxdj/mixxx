@@ -16,7 +16,7 @@ void SoundSourceProviderRegistry::registerProvider(
             pProvider->getSupportedFileExtensions());
     if (supportedFileExtensions.isEmpty()) {
         kLogger.warning() << "SoundSource provider"
-                          << pProvider->getName()
+                          << pProvider->getDisplayName()
                           << "does not support any file extensions";
         return; // abort registration
     }

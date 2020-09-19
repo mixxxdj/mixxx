@@ -6,22 +6,20 @@
 
 namespace mixxx {
 
-namespace {
-
 class TestSoundSourceProvider: public SoundSourceProvider {
 public:
-    TestSoundSourceProvider(
-            QString name,
-            QStringList supportedFileExtensions,
-            SoundSourceProviderPriority priorityHint)
-            : m_name(name),
-              m_supportedFileExtensions(supportedFileExtensions),
-              m_priorityHint(priorityHint) {
-    }
+  TestSoundSourceProvider(
+          QString displayName,
+          QStringList supportedFileExtensions,
+          SoundSourceProviderPriority priorityHint)
+          : m_displayName(displayName),
+            m_supportedFileExtensions(supportedFileExtensions),
+            m_priorityHint(priorityHint) {
+  }
 
-    QString getName() const override {
-        return m_name;
-    }
+  QString getDisplayName() const override {
+      return m_displayName;
+  }
 
     // A list of supported file extensions in any order.
     QStringList getSupportedFileExtensions() const override {
@@ -39,9 +37,9 @@ public:
     }
 
 private:
-    const QString m_name;
-    const QStringList m_supportedFileExtensions;
-    const SoundSourceProviderPriority m_priorityHint;
+  const QString m_displayName;
+  const QStringList m_supportedFileExtensions;
+  const SoundSourceProviderPriority m_priorityHint;
 };
 
 class SoundSourceProviderRegistryTest : public testing::Test {
@@ -60,7 +58,7 @@ class SoundSourceProviderRegistryTest : public testing::Test {
     SoundSourceProviderPointer createProvider(
             QString name,
             QStringList supportedFileExtensions,
-            SoundSourceProviderPriority priorityHint = SoundSourceProviderPriority::DEFAULT) {
+            SoundSourceProviderPriority priorityHint = SoundSourceProviderPriority::Default) {
         return SoundSourceProviderPointer(
                 new TestSoundSourceProvider(
                         name, supportedFileExtensions, priorityHint));
@@ -68,21 +66,22 @@ class SoundSourceProviderRegistryTest : public testing::Test {
 
     SoundSourceProviderPointer createProvider(
             QString name,
-            SoundSourceProviderPriority priorityHint = SoundSourceProviderPriority::DEFAULT) {
+            SoundSourceProviderPriority priorityHint = SoundSourceProviderPriority::Default) {
         return SoundSourceProviderPointer(
                 new TestSoundSourceProvider(
                         name, m_supportedFileExtensions, priorityHint));
     }
 
-    static QStringList getAllRegisteredProviderNamesForFileExtension(
+    static QStringList getAllRegisteredProviderDisplayNamesForFileExtension(
             const SoundSourceProviderRegistry& cut, QString fileExt) {
-        QStringList providerNames;
+        QStringList displayNames;
         const QList<SoundSourceProviderRegistration> registrations(
                 cut.getRegistrationsForFileExtension(fileExt));
+        displayNames.reserve(registrations.size());
         for (auto const& registration: registrations) {
-            providerNames.append(registration.getProvider()->getName());
+            displayNames.append(registration.getProvider()->getDisplayName());
         }
-        return providerNames;
+        return displayNames;
     }
 
     static bool expectSortedStringList(const QStringList& sortedStrings) {
@@ -106,35 +105,45 @@ TEST_F(SoundSourceProviderRegistryTest, registerProviders) {
     SoundSourceProviderRegistry cut;
 
     // 1st round - registration using priority hint
-    cut.registerProvider(createProvider("Test04", SoundSourceProviderPriority::DEFAULT));
-    cut.registerProvider(createProvider("Test02", SoundSourceProviderPriority::LOWER));
-    cut.registerProvider(createProvider("Test00", SoundSourceProviderPriority::LOWEST));
-    cut.registerProvider(createProvider("Test01", SoundSourceProviderPriority::LOWEST));
-    cut.registerProvider(createProvider("Test10", SoundSourceProviderPriority::HIGHEST));
+    cut.registerProvider(createProvider("Test04", SoundSourceProviderPriority::Default));
+    cut.registerProvider(createProvider("Test02", SoundSourceProviderPriority::Lower));
+    cut.registerProvider(createProvider("Test00", SoundSourceProviderPriority::Lowest));
+    cut.registerProvider(createProvider("Test01", SoundSourceProviderPriority::Lowest));
+    cut.registerProvider(createProvider("Test10", SoundSourceProviderPriority::Highest));
     // 1st round - registration with explicit priority for FILE_EXT1
-    cut.registerProviderForFileExtension(FILE_EXT1, createProvider("Test05"), SoundSourceProviderPriority::DEFAULT);
-    cut.registerProviderForFileExtension(FILE_EXT1, createProvider("Test11"), SoundSourceProviderPriority::HIGHEST);
-    cut.registerProviderForFileExtension(FILE_EXT1, createProvider("Test03"), SoundSourceProviderPriority::LOWER);
-    cut.registerProviderForFileExtension(FILE_EXT1, createProvider("Test08"), SoundSourceProviderPriority::HIGHER);
-    cut.registerProviderForFileExtension(FILE_EXT1, createProvider("Test09"), SoundSourceProviderPriority::HIGHER);
+    cut.registerProviderForFileExtension(FILE_EXT1,
+            createProvider("Test05"),
+            SoundSourceProviderPriority::Default);
+    cut.registerProviderForFileExtension(FILE_EXT1,
+            createProvider("Test11"),
+            SoundSourceProviderPriority::Highest);
+    cut.registerProviderForFileExtension(FILE_EXT1,
+            createProvider("Test03"),
+            SoundSourceProviderPriority::Lower);
+    cut.registerProviderForFileExtension(FILE_EXT1,
+            createProvider("Test08"),
+            SoundSourceProviderPriority::Higher);
+    cut.registerProviderForFileExtension(FILE_EXT1,
+            createProvider("Test09"),
+            SoundSourceProviderPriority::Higher);
 
     // 1st round - validation
     EXPECT_EQ(m_supportedFileExtensions, cut.getRegisteredFileExtensions());
-    const QStringList providerNames1Round1(
-            getAllRegisteredProviderNamesForFileExtension(cut, FILE_EXT1));
-    EXPECT_EQ(10, providerNames1Round1.size());
-    EXPECT_TRUE(expectSortedStringList(providerNames1Round1));
-    const QStringList providerNames2Round1(
-        getAllRegisteredProviderNamesForFileExtension(cut, FILE_EXT2));
-    EXPECT_EQ(5, providerNames2Round1.size());
-    EXPECT_TRUE(expectSortedStringList(providerNames2Round1));
+    const QStringList displayNames1Round1(
+            getAllRegisteredProviderDisplayNamesForFileExtension(cut, FILE_EXT1));
+    EXPECT_EQ(10, displayNames1Round1.size());
+    EXPECT_TRUE(expectSortedStringList(displayNames1Round1));
+    const QStringList displayNames2Round1(
+            getAllRegisteredProviderDisplayNamesForFileExtension(cut, FILE_EXT2));
+    EXPECT_EQ(5, displayNames2Round1.size());
+    EXPECT_TRUE(expectSortedStringList(displayNames2Round1));
 
     // 2nd round - registration using priority hint for FILE_EXT2
     cut.registerProvider(
             createProvider(
                     "Test06",
                     QStringList(FILE_EXT2),
-                    SoundSourceProviderPriority::DEFAULT));
+                    SoundSourceProviderPriority::Default));
     // 2nd round - registration with explicit priority for FILE_EXT2
     cut.registerProviderForFileExtension(
             FILE_EXT2,
@@ -142,20 +151,18 @@ TEST_F(SoundSourceProviderRegistryTest, registerProviders) {
                     "Test07",
                     QStringList(FILE_EXT2),
                     // priority hint should be overridden by registration
-                    SoundSourceProviderPriority::HIGHEST),
-            SoundSourceProviderPriority::DEFAULT);
+                    SoundSourceProviderPriority::Highest),
+            SoundSourceProviderPriority::Default);
 
     // 2nd round - validation
     EXPECT_EQ(cut.getRegisteredFileExtensions(), m_supportedFileExtensions);
-    const QStringList providerNames1Round2(
-                getAllRegisteredProviderNamesForFileExtension(cut, FILE_EXT1));
-    EXPECT_EQ(providerNames1Round1, providerNames1Round2);
-    const QStringList providerNames2Round2(
-            getAllRegisteredProviderNamesForFileExtension(cut, FILE_EXT2));
-    EXPECT_EQ(providerNames2Round1.size() + 2, providerNames2Round2.size());
-    EXPECT_TRUE(expectSortedStringList(providerNames2Round2));
+    const QStringList displayNames1Round2(
+            getAllRegisteredProviderDisplayNamesForFileExtension(cut, FILE_EXT1));
+    EXPECT_EQ(displayNames1Round1, displayNames1Round2);
+    const QStringList displayNames2Round2(
+            getAllRegisteredProviderDisplayNamesForFileExtension(cut, FILE_EXT2));
+    EXPECT_EQ(displayNames2Round1.size() + 2, displayNames2Round2.size());
+    EXPECT_TRUE(expectSortedStringList(displayNames2Round2));
 }
-
-}  // anonymous namespace
 
 }  // namespace mixxx

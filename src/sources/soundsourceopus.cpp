@@ -9,8 +9,6 @@ namespace {
 
 const Logger kLogger("SoundSourceOpus");
 
-const QString kDisplayName = QStringLiteral("Xiph.org libopusfile");
-
 const QStringList kSupportedFileExtensions = {
         QStringLiteral("opus"),
 };
@@ -70,6 +68,20 @@ class OggOpusFileOwner {
 };
 
 } // anonymous namespace
+
+//static
+const QString SoundSourceProviderOpus::kDisplayName = QStringLiteral("Xiph.org libopusfile");
+
+QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
+    return kSupportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderOpus::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
 
 SoundSourceOpus::SoundSourceOpus(const QUrl& url)
         : SoundSource(url),
@@ -384,21 +396,6 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
-}
-
-QString SoundSourceProviderOpus::getName() const {
-    return kDisplayName;
-}
-
-QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderOpus::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

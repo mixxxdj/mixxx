@@ -21,8 +21,6 @@ namespace {
 
 const Logger kLogger("SoundSourceM4A");
 
-const QString kDisplayName = QStringLiteral("Nero FAAD2");
-
 const QStringList kSupportedFileExtensions = {
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
@@ -191,6 +189,21 @@ inline bool startsWithADTSHeader(
 }
 
 } // anonymous namespace
+
+//static
+const QString SoundSourceProviderM4A::kDisplayName = QStringLiteral("Nero FAAD2");
+
+QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
+    if (faad2::LibLoader::Instance()->isLoaded()) {
+        return kSupportedFileExtensions;
+    } else {
+        return QStringList(); // none available
+    }
+}
+
+SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceM4A>(url);
+}
 
 SoundSourceM4A::SoundSourceM4A(const QUrl& url)
         : SoundSource(url),
@@ -823,22 +836,6 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     } while (retryAfterReopeningDecoder);
     DEBUG_ASSERT(!"unreachable");
     return {};
-}
-
-QString SoundSourceProviderM4A::getName() const {
-    return kDisplayName;
-}
-
-QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
-    if (faad2::LibLoader::Instance()->isLoaded()) {
-        return kSupportedFileExtensions;
-    } else {
-        return QStringList(); // none available
-    }
-}
-
-SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceM4A>(url);
 }
 
 } // namespace mixxx

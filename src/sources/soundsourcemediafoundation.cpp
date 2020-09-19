@@ -11,8 +11,6 @@ namespace {
 
 const mixxx::Logger kLogger("SoundSourceMediaFoundation");
 
-const QString kDisplayName = QStringLiteral("Microsoft Media Foundation");
-
 const QStringList kSupportedFileExtensions = {
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
@@ -50,6 +48,26 @@ static void safeRelease(T** ppT) {
 } // anonymous namespace
 
 namespace mixxx {
+
+//static
+const QString SoundSourceProviderMediaFoundation::kDisplayName =
+        QStringLiteral("Microsoft Media Foundation");
+
+QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() const {
+    return kSupportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // On Windows SoundSourceMediaFoundation is the preferred decoder for all
+    // supported audio formats.
+    return SoundSourceProviderPriority::Higher;
+}
+
+SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceMediaFoundation>(url);
+}
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSource(url),
@@ -787,26 +805,6 @@ bool SoundSourceMediaFoundation::readProperties() {
     PropVariantClear(&prop);
 
     return true;
-}
-
-QString SoundSourceProviderMediaFoundation::getName() const {
-    return kDisplayName;
-}
-
-QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
-    // On Windows SoundSourceMediaFoundation is the preferred decoder for all
-    // supported audio formats.
-    return SoundSourceProviderPriority::HIGHER;
-}
-
-SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceMediaFoundation>(url);
 }
 
 } // namespace mixxx
