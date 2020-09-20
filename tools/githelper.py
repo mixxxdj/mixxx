@@ -77,13 +77,15 @@ def get_changed_lines(
             # Current line contains an added/removed line
             hunk_lines_left -= 1
 
-            assert line[0] in ("+", "-")
+            assert line[0] in ("+", "-", "\\")
             if line.startswith("+"):
                 lineno_added += 1
                 current_lineno = lineno_added
-            else:
+            elif line.startswith("-"):
                 lineno_removed += 1
                 current_lineno = lineno_removed
+            else:
+                continue
 
             lineobj = Line(
                 sourcefile=current_file,
