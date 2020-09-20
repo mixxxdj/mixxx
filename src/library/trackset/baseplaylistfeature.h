@@ -4,6 +4,7 @@
 #include <QList>
 #include <QModelIndex>
 #include <QObject>
+#include <QPointer>
 #include <QPair>
 #include <QSet>
 #include <QString>
@@ -18,6 +19,7 @@ class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollectionManager;
 class TreeItem;
+class WLibrarySidebar;
 
 class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT
@@ -33,6 +35,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
   public slots:
     void activateChild(const QModelIndex& index) override;
@@ -79,6 +82,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     PlaylistDAO& m_playlistDao;
     QModelIndex m_lastRightClickedIndex;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 
     QAction* m_pCreatePlaylistAction;
     QAction* m_pDeletePlaylistAction;
@@ -104,6 +108,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
   private:
     void initActions();
     virtual QString getRootViewHtml() const = 0;
+    void markTreeItem(TreeItem* pTreeItem);
 
     TrackPointer m_pSelectedTrack;
 };

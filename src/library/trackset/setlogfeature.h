@@ -20,7 +20,6 @@ class SetlogFeature : public BasePlaylistFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void activatePlaylist(int playlistId) override;
 
   public slots:
@@ -50,6 +49,5 @@ class SetlogFeature : public BasePlaylistFeature {
     QAction* m_pGetNewPlaylist;
     int m_playlistId;
     WLibrary* m_libraryWidget;
-    QPointer<WLibrarySidebar> m_pSidebarWidget;
     const QIcon m_icon;
 };

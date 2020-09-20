@@ -37,6 +37,7 @@ class TreeItemModel : public QAbstractItemModel {
     TreeItem* getRootItem() const {
         return m_pRootItem.get();
     }
+    QModelIndex getRootIndex();
 
     // Return the underlying TreeItem.
     // If the index is invalid, the root item is returned.

@@ -57,11 +57,6 @@ QIcon PlaylistFeature::getIcon() {
     return m_icon;
 }
 
-void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // store the sidebar widget pointer for later use in onRightClickChild
-    m_pSidebarWidget = pSidebarWidget;
-}
-
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);

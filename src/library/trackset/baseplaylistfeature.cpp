@@ -16,9 +16,11 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 BasePlaylistFeature::BasePlaylistFeature(
@@ -162,9 +164,10 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
-    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (playlistId != -1 && index.isValid()) {
+        m_lastRightClickedIndex = index;
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);
@@ -326,6 +329,8 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    QModelIndex next = m_lastRightClickedIndex.siblingAtRow(m_lastRightClickedIndex.row() + 1);
+    int nextId = playlistIdFromIndex(next);
     if (playlistId == -1) {
         return;
     }
@@ -343,6 +348,15 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
         m_playlistDao.deletePlaylist(playlistId);
         activate();
+        if (nextId != -1) {
+            activatePlaylist(nextId);
+            if (m_pSidebarWidget) {
+                // FIXME: this index is for the current model of the feature, while
+                // the sidebar uses the sidebarmodel. Using the scrollTo on this index
+                // crashes the widget
+                // m_pSidebarWidget->scrollTo(next);
+            }
+        }
     }
 }
 
@@ -599,6 +613,11 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(m_rootViewName, edit);
 }
 
+void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "create") {
         slotCreatePlaylist();
@@ -633,14 +652,15 @@ void BasePlaylistFeature::clearChildModel() {
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     QVariant variantId = QVariant(playlistId);
-    for (int row = 0; row < m_childModel.rowCount(); ++row) {
-        QModelIndex index = m_childModel.index(row, 0);
-        TreeItem* pTreeItem = m_childModel.getItem(index);
-        DEBUG_ASSERT(pTreeItem != nullptr);
-        if (!pTreeItem->hasChildren() && // leaf node
-                pTreeItem->getData() == variantId) {
-            return index;
-        }
+    auto results = m_childModel.match(
+                        m_childModel.getRootIndex(),
+                        TreeItemModel::kDataRole,
+                        variantId,
+                        1,
+                        Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
+    qDebug() << "indexFromPlaylistId: len:" << results.length();
+    if (results.length()) {
+        return results.front();
     }
     return QModelIndex();
 }
@@ -653,24 +673,37 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     }
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
 
-    // Set all playlists the track is in bold (or if there is no track selected,
-    // clear all the bolding).
     for (int row = 0; row < m_childModel.rowCount(); ++row) {
         QModelIndex index = m_childModel.index(row, 0);
         TreeItem* pTreeItem = m_childModel.getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
-        if (!pTreeItem->hasChildren()) { // leaf node
-            bool ok;
-            int playlistId = pTreeItem->getData().toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok) {
-                continue;
-            }
-            bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
-            pTreeItem->setBold(shouldBold);
-        }
+        markTreeItem(pTreeItem);
     }
 
     m_childModel.triggerRepaint();
+}
+
+void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
+    bool ok;
+    int playlistId = pTreeItem->getData().toInt(&ok);
+    if(ok) {
+        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
+        pTreeItem->setBold(shouldBold);
+        if (shouldBold && pTreeItem->hasParent()) {
+            TreeItem* item = pTreeItem;
+            while ((item = item->parent())) {
+                item->setBold(true);
+            }
+        }
+    }
+    if (pTreeItem->hasChildren()) {
+        auto children = pTreeItem->children();
+        QList<TreeItem*>::const_iterator i;
+
+        for (i = children.constBegin(); i != children.constEnd(); ++i) {
+            markTreeItem(*i);
+        }
+    }
 }
 
 void BasePlaylistFeature::slotResetSelectedTrack() {
