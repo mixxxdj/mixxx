@@ -463,6 +463,8 @@ void BasePlaylistFeature::slotExportPlaylist() {
         return;
     }
     QString playlistName = m_playlistDao.getPlaylistName(playlistId);
+    // replace separator character with something generic
+    playlistName = playlistName.replace(QDir::separator(), "-");
     qDebug() << "Export playlist" << playlistName;
 
     QString lastPlaylistDirectory = m_pConfig->getValue(
