@@ -18,8 +18,8 @@
 
 HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
         : Controller(pConfig),
-          m_lastIncomingData(),
-          m_pHidDevice(nullptr) {
+          m_pHidDevice(nullptr),
+          m_iPollingBufferIndex(0) {
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
@@ -245,23 +245,31 @@ bool HidController::poll() {
     Trace hidRead("HidController poll");
 
     int result = 1;
+    int bufferSize = sizeof(m_pPollData[0]) / sizeof(m_pPollData[0][0]);
     while (result > 0) {
-        result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
+        // Rotate between two buffers so the memcmp below does not require deep copying to another buffer.
+        unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
+        if (m_iPollingBufferIndex == 0) {
+            m_iPollingBufferIndex = 1;
+        } else {
+            m_iPollingBufferIndex = 0;
+        }
+        unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
+
+        result = hid_read(m_pHidDevice, pCurrentBuffer, bufferSize);
         if (result == -1) {
             return false;
         } else if (result > 0) {
             Trace process("HidController process packet");
-            auto byteArray = QByteArray::fromRawData(reinterpret_cast<char*>(m_pPollData), result);
+            auto byteArray = QByteArray::fromRawData(
+                    reinterpret_cast<char*>(pCurrentBuffer), result);
             // Some controllers such as the Gemini GMX continuously send input packets even if it
             // is identical to the previous packet. If this loop processed all those redundant
             // packets, it would be a big performance problem.
             // TODO: Test if this hack can be done with adequate performance in JS so a deep copy
             // of each incoming packet isn't needed for most HID devices.
-            if (byteArray == m_lastIncomingData) {
+            if (memcmp(pCurrentBuffer, pPreviousBuffer, bufferSize) == 0) {
                 continue;
-            } else {
-                // force a copy
-                m_lastIncomingData = QByteArray(byteArray.data());
             }
             receive(byteArray, mixxx::Time::elapsed());
         }
