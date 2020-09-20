@@ -11,96 +11,93 @@ typedef SINT FrameIndex;
 typedef SINT FrameCount;
 
 /// Keeps track of the current frame position (index) while decoding
-/// an audio stream. Buffers samples ahead of this position that
-/// have been decoded but not yet consumed.
+/// an audio stream. Buffers samples (FIFO) ahead of this position
+/// that have been decoded but not yet consumed.
 class ReadAheadFrameBuffer final {
-    // 1 sec @ 96 kHz / 2 sec @ 48 kHz / 2.18 sec @ 44.1 kHz
-    static constexpr FrameCount kMinFrameCapacity = 96000;
-
   public:
     static constexpr FrameIndex kInvalidFrameIndex = std::numeric_limits<FrameIndex>::min();
     static constexpr FrameIndex kUnknownFrameIndex = std::numeric_limits<FrameIndex>::max();
 
+    static constexpr FrameCount kEmptyCapacity = 0;
+
     ReadAheadFrameBuffer();
     explicit ReadAheadFrameBuffer(
             const audio::SignalInfo& signalInfo,
-            FrameCount initialFrameCapacity = kMinFrameCapacity);
-    ReadAheadFrameBuffer(ReadAheadFrameBuffer&&) = delete;
+            FrameCount initialCapacity = kEmptyCapacity);
+    ReadAheadFrameBuffer(ReadAheadFrameBuffer&&) = default;
     ReadAheadFrameBuffer(const ReadAheadFrameBuffer&) = delete;
-
-    void reinit(
-            const audio::SignalInfo& signalInfo,
-            FrameCount minFrameCapacity = kMinFrameCapacity);
+    ReadAheadFrameBuffer& operator=(ReadAheadFrameBuffer&&) = default;
+    ReadAheadFrameBuffer& operator=(const ReadAheadFrameBuffer&) = delete;
 
     const audio::SignalInfo& signalInfo() const {
         return m_signalInfo;
     }
 
-    bool isValid() const {
-        return m_firstFrameIndex != kInvalidFrameIndex;
+    FrameCount capacity() const {
+        return m_signalInfo.samples2frames(
+                m_sampleBuffer.capacity());
     }
 
-    /// Check that the first frame is a valid position
+    void ensureMinCapacity(
+            FrameCount minCapacity);
+
+    /// Invalidate the whole buffer and its position, e.g. to
+    /// indicate decoding errors.
+    void invalidate() {
+        m_readIndex = kInvalidFrameIndex;
+    }
+
+    bool isValid() const {
+        return m_readIndex != kInvalidFrameIndex;
+    }
+
+    /// Check that the first readable frame is at a valid position.
     bool isReady() const {
         return isValid() &&
-                m_firstFrameIndex != kUnknownFrameIndex;
-    }
-
-    /// Return the current position
-    FrameIndex firstFrame() const {
-        DEBUG_ASSERT(isValid());
-        return m_firstFrameIndex;
+                m_readIndex != kUnknownFrameIndex;
     }
 
     bool isEmpty() const {
         return m_sampleBuffer.empty();
     }
 
-    FrameCount frameCapacity() const {
-        return m_signalInfo.samples2frames(
-                m_sampleBuffer.capacity());
-    }
-
-    void ensureMinFrameCapacity(FrameCount minFrameCapacity);
-
-    FrameCount bufferedFrameLength() const {
+    FrameCount bufferedLength() const {
         DEBUG_ASSERT(isReady() || isEmpty());
         return m_signalInfo.samples2frames(
                 m_sampleBuffer.readableLength());
     }
 
-    IndexRange bufferedFrameRange() const {
+    IndexRange bufferedRange() const {
         return IndexRange::forward(
-                firstFrame(),
-                bufferedFrameLength());
+                readIndex(),
+                bufferedLength());
     }
 
-    void invalidate() {
-        m_firstFrameIndex = kInvalidFrameIndex;
+    /// Return the current position from where data
+    /// could be read.
+    FrameIndex readIndex() const {
+        DEBUG_ASSERT(isValid());
+        return m_readIndex;
     }
+
+    /// Try to reposition the buffer to a new read position
+    /// within the buffered range, keeping all remaining data
+    /// ahead of the read position.
+    bool tryContinueReadingFrom(
+            FrameIndex readIndex);
 
     void reset(
-            FrameIndex firstFrameIndex = kUnknownFrameIndex) {
-        m_firstFrameIndex = firstFrameIndex;
-        m_sampleBuffer.clear();
-    }
+            FrameIndex currentIndex = kUnknownFrameIndex);
 
-    /// Try to reposition the buffer to a new start position
-    /// within the buffered frame range.
-    bool trySeekToFirstFrame(FrameIndex firstFrameIndex);
+    /// Advance the read position thereby discarding samples
+    /// from the front of the FIFO buffer.
+    FrameCount discardFirstBufferedFrames(
+            FrameCount frameCount);
 
-    void discardAllBufferedFrames() {
-        DEBUG_ASSERT(isReady());
-        m_firstFrameIndex +=
-                m_signalInfo.samples2frames(m_sampleBuffer.readableLength());
-        m_sampleBuffer.clear();
-    }
-
-    /// Fast forward
-    FrameCount discardFirstBufferedFrames(FrameCount frameCount);
-
-    /// Rewind
-    FrameCount discardLastBufferedFrames(FrameCount frameCount);
+    /// Rewind the write position thereby discarding samples
+    /// from the back of the FIFO buffer.
+    FrameCount discardLastBufferedFrames(
+            FrameCount frameCount);
 
     enum class BufferingMode {
         SkipGap,
@@ -114,21 +111,25 @@ class ReadAheadFrameBuffer final {
     ///
     /// Returns the unread portion of the readable sample frames,
     /// which should typically be empty.
-    ReadableSampleFrames bufferFrames(
+    ReadableSampleFrames bufferSampleData(
             BufferingMode bufferingMode,
-            ReadableSampleFrames readableSampleFrames);
+            ReadableSampleFrames inputSampleFrames);
 
     /// Consume as many buffered sample frames as possible
     ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
-    WritableSampleFrames consumeBufferedFrames(
-            WritableSampleFrames writableSampleFrames);
+    WritableSampleFrames consumeBufferedSampleData(
+            WritableSampleFrames outputSampleFrames);
+
+    void discardAllBufferedSampleData() {
+        discardFirstBufferedFrames(bufferedLength());
+    }
 
   private:
     audio::SignalInfo m_signalInfo;
     ReadAheadSampleBuffer m_sampleBuffer;
-    FrameIndex m_firstFrameIndex;
+    FrameIndex m_readIndex;
 };
 
 } // namespace mixxx

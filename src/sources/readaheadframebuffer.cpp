@@ -3,122 +3,146 @@
 #include "util/logger.h"
 #include "util/sample.h"
 
+#if !defined(VERBOSE_DEBUG_LOG)
+#define VERBOSE_DEBUG_LOG false
+#endif
+
 namespace mixxx {
 
 namespace {
 
 const Logger kLogger("ReadAheadFrameBuffer");
 
+inline FrameCount validateCapacity(
+        FrameCount capacity) {
+    VERIFY_OR_DEBUG_ASSERT(capacity >= ReadAheadFrameBuffer::kEmptyCapacity) {
+        return ReadAheadFrameBuffer::kEmptyCapacity;
+    }
+    return capacity;
+}
+
 } // anonymous namespace
 
 ReadAheadFrameBuffer::ReadAheadFrameBuffer()
-        : ReadAheadFrameBuffer(audio::SignalInfo(), 0) {
+        : ReadAheadFrameBuffer(audio::SignalInfo(), kEmptyCapacity) {
 }
 
 ReadAheadFrameBuffer::ReadAheadFrameBuffer(
         const audio::SignalInfo& signalInfo,
-        FrameCount initialFrameCapacity)
+        FrameCount initialCapacity)
         : m_signalInfo(signalInfo),
           m_sampleBuffer(
                   signalInfo.isValid()
                           ? m_signalInfo.frames2samples(
-                                    math_max(initialFrameCapacity, kMinFrameCapacity))
-                          : 0),
-          m_firstFrameIndex(kUnknownFrameIndex) {
+                                    validateCapacity(initialCapacity))
+                          : kEmptyCapacity),
+          m_readIndex(kUnknownFrameIndex) {
 }
 
-void ReadAheadFrameBuffer::reinit(
-        const audio::SignalInfo& signalInfo,
-        FrameCount minFrameCapacity) {
-    DEBUG_ASSERT(signalInfo.isValid());
-    m_signalInfo = signalInfo;
-    reset();
-    ensureMinFrameCapacity(minFrameCapacity);
-}
-
-void ReadAheadFrameBuffer::ensureMinFrameCapacity(FrameCount minFrameCapacity) {
-    DEBUG_ASSERT(minFrameCapacity >= 0);
-    minFrameCapacity = math_max(minFrameCapacity, kMinFrameCapacity);
-    if (frameCapacity() < minFrameCapacity) {
+void ReadAheadFrameBuffer::ensureMinCapacity(
+        FrameCount minCapacity) {
+    minCapacity = validateCapacity(minCapacity);
+    if (capacity() < minCapacity) {
         m_sampleBuffer.adjustCapacity(
-                m_signalInfo.frames2samples(minFrameCapacity));
+                m_signalInfo.frames2samples(minCapacity));
     }
 }
 
-bool ReadAheadFrameBuffer::trySeekToFirstFrame(FrameIndex firstFrameIndex) {
-    DEBUG_ASSERT(isReady());
-    const auto clampedFrameIndex = bufferedFrameRange().clampIndex(firstFrameIndex);
-    if (clampedFrameIndex != firstFrameIndex) {
+bool ReadAheadFrameBuffer::tryContinueReadingFrom(
+        FrameIndex readIndex) {
+    DEBUG_ASSERT(isValid());
+    if (!isReady()) {
         return false;
     }
-    DEBUG_ASSERT(clampedFrameIndex >= m_firstFrameIndex);
-    discardFirstBufferedFrames(clampedFrameIndex - m_firstFrameIndex);
+    const auto clampedReadIndex = bufferedRange().clampIndex(readIndex);
+    if (clampedReadIndex != readIndex) {
+        return false;
+    }
+    DEBUG_ASSERT(clampedReadIndex >= m_readIndex);
+    discardFirstBufferedFrames(clampedReadIndex - m_readIndex);
     return true;
 }
 
-FrameCount ReadAheadFrameBuffer::discardFirstBufferedFrames(FrameCount frameCount) {
+void ReadAheadFrameBuffer::reset(
+        FrameIndex currentIndex) {
+    m_readIndex = currentIndex;
+    m_sampleBuffer.clear();
+    DEBUG_ASSERT(isValid());
+}
+
+FrameCount ReadAheadFrameBuffer::discardFirstBufferedFrames(
+        FrameCount frameCount) {
     DEBUG_ASSERT(isReady());
     DEBUG_ASSERT(frameCount >= 0);
+    DEBUG_ASSERT(frameCount <= bufferedLength());
     const auto shrinkCount = m_signalInfo.samples2frames(
             m_sampleBuffer.shrinkForReading(
                                   m_signalInfo.frames2samples(frameCount))
                     .length());
-    m_firstFrameIndex += shrinkCount;
+    m_readIndex += shrinkCount;
     return shrinkCount;
 }
 
-FrameCount ReadAheadFrameBuffer::discardLastBufferedFrames(FrameCount frameCount) {
+FrameCount ReadAheadFrameBuffer::discardLastBufferedFrames(
+        FrameCount frameCount) {
     DEBUG_ASSERT(isReady());
     DEBUG_ASSERT(frameCount >= 0);
+    DEBUG_ASSERT(frameCount <= bufferedLength());
     return m_sampleBuffer.shrinkAfterWriting(
             m_signalInfo.frames2samples(frameCount));
 }
 
-ReadableSampleFrames ReadAheadFrameBuffer::bufferFrames(
+ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
         BufferingMode bufferingMode,
-        ReadableSampleFrames readableSampleFrames) {
+        ReadableSampleFrames inputSampleFrames) {
     DEBUG_ASSERT(isValid());
-    auto sampleFrameRange = readableSampleFrames.frameIndexRange();
-    VERIFY_OR_DEBUG_ASSERT(sampleFrameRange.orientation() != IndexRange::Orientation::Backward) {
-        return readableSampleFrames;
+    auto inputRange = inputSampleFrames.frameIndexRange();
+    VERIFY_OR_DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward) {
+        return inputSampleFrames;
     }
-    FrameIndex nextFrameIndex;
+    const CSAMPLE* pInputSamples = inputSampleFrames.readableData();
+    VERIFY_OR_DEBUG_ASSERT(pInputSamples) {
+        return inputSampleFrames;
+    }
+    FrameIndex writeIndex;
     if (isReady()) {
-        nextFrameIndex = bufferedFrameRange().end();
-        VERIFY_OR_DEBUG_ASSERT(nextFrameIndex >= bufferedFrameRange().end()) {
+        writeIndex = bufferedRange().end();
+        VERIFY_OR_DEBUG_ASSERT(writeIndex >= bufferedRange().end()) {
             kLogger.warning()
                     << "Cannot buffer sample data from"
-                    << sampleFrameRange
+                    << inputRange
                     << "starting before"
-                    << bufferedFrameRange().end();
-            return readableSampleFrames;
+                    << bufferedRange().end();
+            return inputSampleFrames;
         }
     } else {
         DEBUG_ASSERT(isEmpty());
-        nextFrameIndex = sampleFrameRange.start();
-        m_firstFrameIndex = nextFrameIndex;
+        writeIndex = inputRange.start();
+        m_readIndex = writeIndex;
     }
     DEBUG_ASSERT(isReady());
-    DEBUG_ASSERT(nextFrameIndex <= sampleFrameRange.start());
-    const auto writableSampleLength =
-            m_signalInfo.frames2samples(sampleFrameRange.end() - nextFrameIndex);
-    if (writableSampleLength > m_sampleBuffer.writableLength()) {
-        // Increasing the pre-allocated capacity of the sample buffer should
-        // never happen. The required capacity should always be known and
-        // allocated in advance.
-        const auto sampleBufferCapacity =
-                m_sampleBuffer.readableLength() +
-                writableSampleLength;
-        kLogger.warning()
-                << "Increasing capacity of internal sample buffer by reallocation:"
-                << m_sampleBuffer.capacity()
-                << "->"
-                << sampleBufferCapacity;
-        m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+    DEBUG_ASSERT(writeIndex <= inputRange.start());
+    {
+        const auto writableSampleLength =
+                m_signalInfo.frames2samples(inputRange.end() - writeIndex);
+        if (writableSampleLength > m_sampleBuffer.writableLength()) {
+            // Increasing the pre-allocated capacity of the sample buffer should
+            // never happen. The required capacity should always be known and
+            // allocated in advance.
+            const auto sampleBufferCapacity =
+                    m_sampleBuffer.readableLength() +
+                    writableSampleLength;
+            kLogger.warning()
+                    << "Increasing capacity of internal sample buffer by reallocation:"
+                    << m_sampleBuffer.capacity()
+                    << "->"
+                    << sampleBufferCapacity;
+            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+        }
+        DEBUG_ASSERT(m_sampleBuffer.writableLength() >= writableSampleLength);
     }
-    DEBUG_ASSERT(m_sampleBuffer.writableLength() >= writableSampleLength);
-    if (nextFrameIndex < sampleFrameRange.start()) {
-        // Gap between current position and the first frame with readable samples
+    if (writeIndex < inputRange.start()) {
+        // Gap between current write position and the readable sample data
         switch (bufferingMode) {
         case BufferingMode::SkipGap:
             break;
@@ -126,104 +150,117 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferFrames(
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
                     << "Filling gap with silence"
-                    << IndexRange::between(nextFrameIndex, sampleFrameRange.start());
+                    << IndexRange::between(writeIndex, inputRange.start());
 #endif
             const auto clearFrameCount =
-                    sampleFrameRange.start() - nextFrameIndex;
+                    inputRange.start() - writeIndex;
             const auto clearSampleCount =
                     m_signalInfo.frames2samples(clearFrameCount);
-            const SampleBuffer::WritableSlice writableSlice(
+            const SampleBuffer::WritableSlice writableSamples(
                     m_sampleBuffer.growForWriting(clearSampleCount));
-            DEBUG_ASSERT(writableSlice.length() == clearSampleCount);
+            DEBUG_ASSERT(writableSamples.length() == clearSampleCount);
             SampleUtil::clear(
-                    writableSlice.data(),
+                    writableSamples.data(),
                     clearSampleCount);
         } break;
         default:
             DEBUG_ASSERT(!"unexpected BufferNextFramesMode");
         }
-        nextFrameIndex = sampleFrameRange.start();
+        writeIndex = inputRange.start();
     }
-    if (sampleFrameRange.empty()) {
-        return readableSampleFrames;
+    if (inputRange.empty()) {
+        return inputSampleFrames;
     }
     // Consume the readable sample data by copying it into the internal buffer
 #if VERBOSE_DEBUG_LOG
     kLogger.debug()
             << "Buffering sample frames"
-            << sampleFrameRange;
+            << inputRange;
 #endif
     const auto copySampleCount =
-            m_signalInfo.frames2samples(sampleFrameRange.length());
-    const SampleBuffer::WritableSlice writableSlice(
+            m_signalInfo.frames2samples(inputRange.length());
+    const SampleBuffer::WritableSlice writableSamples(
             m_sampleBuffer.growForWriting(copySampleCount));
-    DEBUG_ASSERT(writableSlice.length() == copySampleCount);
+    DEBUG_ASSERT(writableSamples.length() == copySampleCount);
     SampleUtil::copy(
-            writableSlice.data(),
-            readableSampleFrames.readableData(),
+            writableSamples.data(),
+            inputSampleFrames.readableData(),
             copySampleCount);
-    sampleFrameRange.shrinkFront(sampleFrameRange.length());
-    return ReadableSampleFrames(sampleFrameRange);
+    pInputSamples += copySampleCount;
+    inputRange.shrinkFront(inputRange.length());
+    DEBUG_ASSERT(inputRange.empty());
+    return ReadableSampleFrames(
+            inputRange,
+            SampleBuffer::ReadableSlice(
+                    pInputSamples,
+                    m_signalInfo.frames2samples(inputRange.length())));
 }
 
-WritableSampleFrames ReadAheadFrameBuffer::consumeBufferedFrames(
-        WritableSampleFrames writableSampleFrames) {
-    if (isEmpty() || writableSampleFrames.writableSlice().empty()) {
-        return writableSampleFrames;
+WritableSampleFrames ReadAheadFrameBuffer::consumeBufferedSampleData(
+        WritableSampleFrames outputSampleFrames) {
+    DEBUG_ASSERT(isValid());
+    if (isEmpty() || outputSampleFrames.writableSlice().empty()) {
+        return outputSampleFrames;
     }
     DEBUG_ASSERT(isReady());
-    auto writableFrameRange = writableSampleFrames.frameIndexRange();
-    const auto consumableFrameRange = intersect(bufferedFrameRange(), writableFrameRange);
-    DEBUG_ASSERT(consumableFrameRange <= writableFrameRange);
-    if (consumableFrameRange.empty() ||
-            (consumableFrameRange.start() != writableFrameRange.start())) {
-        return writableSampleFrames;
+    auto outputRange = outputSampleFrames.frameIndexRange();
+    if (outputRange.start() < m_readIndex) {
+        // Buffered data starts beyond the requested range
+        return outputSampleFrames;
     }
+    const auto consumableRange = intersect(bufferedRange(), outputRange);
+    DEBUG_ASSERT(consumableRange <= outputRange);
+    if (consumableRange.empty()) {
+        // No overlap between buffer and requested data
+        return outputSampleFrames;
+    }
+    DEBUG_ASSERT(consumableRange.start() == outputRange.start());
 
-    // Drop and skip any buffered samples precedubg the requested range
-    DEBUG_ASSERT(consumableFrameRange.start() >= m_firstFrameIndex);
+    // Drop and skip any buffered samples preceding the requested range
 #if VERBOSE_DEBUG_LOG
-    if (m_firstFrameIndex < consumableFrameRange.start()) {
+    if (m_readIndex < consumableRange.start()) {
         kLogger.debug()
                 << "Discarding buffered frames"
-                << IndexRange::between(m_firstFrameIndex, consumableFrameRange.start());
+                << IndexRange::between(m_readIndex, consumableRange.start());
     }
 #endif
-    discardFirstBufferedFrames(consumableFrameRange.start() - m_firstFrameIndex);
+    discardFirstBufferedFrames(consumableRange.start() - m_readIndex);
 
     // Consume buffered samples
 #if VERBOSE_DEBUG_LOG
     kLogger.debug()
-            << "Consuming buffered samples" << consumableFrameRange
-            << "writableFrameRange" << writableFrameRange
-            << "firstFrame()" << firstFrame()
-            << "bufferedFrameRange()" << bufferedFrameRange();
+            << "Consuming buffered samples" << consumableRange
+            << "outputRange" << outputRange
+            << "readIndex()" << readIndex()
+            << "bufferedRange()" << bufferedRange();
 #endif
-    DEBUG_ASSERT(m_firstFrameIndex == consumableFrameRange.start());
-    const SampleBuffer::ReadableSlice consumableSlice =
+    DEBUG_ASSERT(m_readIndex == consumableRange.start());
+    const SampleBuffer::ReadableSlice consumableSamples =
             m_sampleBuffer.shrinkForReading(
-                    m_signalInfo.frames2samples(consumableFrameRange.length()));
-    DEBUG_ASSERT(consumableSlice.length() ==
-            m_signalInfo.frames2samples(consumableFrameRange.length()));
-    CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
-    if (pOutputSampleBuffer) {
-        SampleUtil::copy(pOutputSampleBuffer,
-                consumableSlice.data(),
-                consumableSlice.length());
-        pOutputSampleBuffer += consumableSlice.length();
+                    m_signalInfo.frames2samples(consumableRange.length()));
+    DEBUG_ASSERT(consumableSamples.length() ==
+            m_signalInfo.frames2samples(consumableRange.length()));
+    CSAMPLE* pOutputSamples = outputSampleFrames.writableData();
+    if (pOutputSamples) {
+        SampleUtil::copy(
+                pOutputSamples,
+                consumableSamples.data(),
+                consumableSamples.length());
+        pOutputSamples += consumableSamples.length();
     }
-    writableFrameRange.shrinkFront(consumableFrameRange.length());
-    m_firstFrameIndex += consumableFrameRange.length();
-    // Either the resulting output buffer or the sample buffer is
-    // empty after returning from this function! Remaining data in
-    // the sample buffer is kept until the next read operation.
-    DEBUG_ASSERT(writableFrameRange.empty() || m_sampleBuffer.empty());
+    outputRange.shrinkFront(consumableRange.length());
+    m_readIndex += consumableRange.length();
+
+    // Either the resulting output buffer or the internal sample buffer
+    // is empty after returning from this function!
+    DEBUG_ASSERT(outputRange.empty() || isEmpty());
 
     // Return the remaining output buffer
     return WritableSampleFrames(
-            writableFrameRange,
+            outputRange,
             SampleBuffer::WritableSlice(
-                    pOutputSampleBuffer, writableFrameRange.length()));
+                    pOutputSamples,
+                    m_signalInfo.frames2samples(outputRange.length())));
 }
 
 } // namespace mixxx
