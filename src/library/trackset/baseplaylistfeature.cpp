@@ -351,10 +351,9 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         if (nextId != -1) {
             activatePlaylist(nextId);
             if (m_pSidebarWidget) {
-                // FIXME: this index is for the current model of the feature, while
-                // the sidebar uses the sidebarmodel. Using the scrollTo on this index
-                // crashes the widget
-                // m_pSidebarWidget->scrollTo(next);
+                // FIXME: this does not scroll to the correct position for some reason
+                next = indexFromPlaylistId(nextId);
+                m_pSidebarWidget->scrollTo(next);
             }
         }
     }
