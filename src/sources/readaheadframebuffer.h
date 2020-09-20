@@ -77,6 +77,12 @@ class ReadAheadFrameBuffer final {
         return m_readIndex;
     }
 
+    /// Return the current position from where data
+    /// will be written.
+    FrameIndex writeIndex() const {
+        return readIndex() + bufferedLength();
+    }
+
     /// Try to reposition the buffer to a new read position
     /// within the buffered range, keeping all remaining data
     /// ahead of the read position.
