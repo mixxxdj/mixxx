@@ -266,8 +266,6 @@ bool HidController::poll() {
             // Some controllers such as the Gemini GMX continuously send input packets even if it
             // is identical to the previous packet. If this loop processed all those redundant
             // packets, it would be a big performance problem.
-            // TODO: Test if this hack can be done with adequate performance in JS so a deep copy
-            // of each incoming packet isn't needed for most HID devices.
             if (memcmp(pCurrentBuffer, pPreviousBuffer, bufferSize) == 0) {
                 continue;
             }
