@@ -39,6 +39,7 @@ enum class EffectChainMixMode {
     NumMixModes // The number of mix modes. Also used to represent "unknown".
 };
 
+constexpr int kNumStandardEffectUnits = 4;
 constexpr int kNumEffectsPerUnit = 4;
 
 // NOTE: Setting this to true will enable string manipulation and calls to
