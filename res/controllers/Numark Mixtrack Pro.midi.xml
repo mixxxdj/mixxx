@@ -7,6 +7,7 @@ Modify by Darío José Freije 06/27/2012-->
       <description>version v1.2 w/brake, backspin, blink beat Leds.</description>
       <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=3828</forums>
       <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro</wiki>
+      <manual>/hardware/controllers/numark_mixtrack_pro.html</manual>
     </info>
     <controller id="Numark Mix Track Pro MIDI 1">
         <scriptfiles>

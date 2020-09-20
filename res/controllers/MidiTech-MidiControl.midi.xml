@@ -4,6 +4,7 @@
     <name>MidiTech MidiControl</name>
     <author></author>
     <description>MIDI Mapping for MidiTech MidiControl</description>
+    <manual>/hardware/controllers/miditech_midicontrol.html</manual>
   </info>
   <controller id="MidiTech-MidiControl" port="Port">
     <controls>

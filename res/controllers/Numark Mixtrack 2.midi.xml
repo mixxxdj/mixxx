@@ -5,6 +5,7 @@
         <author>SNOWY, Armen Rizal, ninomp, special thanks to Thomas Preston and Ricecows (rj@ricecows.net)</author>
         <description>Version v2.0</description>
         <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_ii</wiki>
+        <manual>/hardware/controllers/numark_mixtrack_pro_ii.html</manual>
     </info>
     <controller id="MixTrack">
         <scriptfiles>

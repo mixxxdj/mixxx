@@ -6,6 +6,7 @@
     <description>MIDI mapping for the American Audio VMS2 controller.</description>
     <wiki>https://www.mixxx.org/wiki/doku.php/american_audio_vms2</wiki>
     <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3202</forums>
+    <manual>/hardware/controllers/american_audio_vms2.html</manual>
   </info>
   <controller id="American Audio VMS2">
     <scriptfiles>

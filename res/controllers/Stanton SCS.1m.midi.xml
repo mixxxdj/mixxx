@@ -5,6 +5,7 @@
         <author>Sean M. Pappalardo</author>
         <description>This is a complete mapping for a single Stanton SCS.1m mixer controller. Requires scripting.</description>
         <wiki>http://mixxx.org/wiki/doku.php/stanton_scs.1m</wiki>
+        <manual>/hardware/controllers/stanton_scs1m.html</manual>
     </info>
     <controller id="Stanton SCS.1m" port="">
         <scriptfiles>

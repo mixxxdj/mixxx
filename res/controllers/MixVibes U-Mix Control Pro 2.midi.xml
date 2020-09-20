@@ -6,6 +6,7 @@
 	<description>V1.0.0 -> Please visit Forum and Wiki for more details.</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=4892</forums>
         <wiki>http://www.mixxx.org/wiki/doku.php/umix_control_pro_2</wiki>
+        <manual>/hardware/controllers/mixvibes_u_mix_control_2.html</manual>
     </info>
     <controller id="MixVibes">
     <scriptfiles>

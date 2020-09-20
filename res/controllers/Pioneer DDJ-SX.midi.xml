@@ -6,6 +6,7 @@
         <description>Pioneer DDJ-SX controller mapping</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8310</forums>
         <wiki>http://mixxx.org/wiki/doku.php/pioneer_ddj-sx</wiki>
+        <manual>/hardware/controllers/pioneer_ddj_sx.html</manual>
     </info>
     <controller id="DDJ-SX">
         <scriptfiles>

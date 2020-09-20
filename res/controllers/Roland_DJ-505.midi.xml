@@ -6,6 +6,7 @@
         <description>4-deck mapping for Roland DJ-505 controller</description>
         <wiki>https://mixxx.org/wiki/doku.php/roland_dj-505</wiki>
         <forums>https://mixxx.org/forums/viewtopic.php?f=7&amp;t=12688</forums>
+        <manual>/hardware/controllers/roland_dj_505.html</manual>
     </info>
     <controller id="DJ-505">
         <scriptfiles>

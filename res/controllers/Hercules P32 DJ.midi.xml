@@ -6,6 +6,7 @@
         <description>4-deck mapping for Hercules P32 controller</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8132</forums>
         <wiki>http://mixxx.org/wiki/doku.php/hercules_p32_dj</wiki>
+        <manual>/hardware/controllers/hercules_p32_dj.html</manual>
     </info>
     <controller id="Hercules">
         <scriptfiles>

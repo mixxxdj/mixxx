@@ -6,6 +6,7 @@
         <description>v1.0.3 Mapping for 2.0.x</description>
         <wiki>https://www.mixxx.org/wiki/doku.php/reloop_jockey_3_me</wiki>
         <forums>https://mixxx.org/forums/viewtopic.php?f=7&amp;t=5418</forums>
+        <manual>/hardware/controllers/reloop_jockey_3_master_edition.html</manual>
     </info>
     <controller id="Reloop">
         <scriptfiles>

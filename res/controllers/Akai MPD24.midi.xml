@@ -5,6 +5,7 @@
     <author>klico</author>
     <description>MIDI mapping for Akai MPD24</description>
     <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=39</forums>
+    <manual>/hardware/controllers/akai_mpd24.html</manual>
   </info>
 <controller id="Akai MPD24 MIDI 1">
   <controls>

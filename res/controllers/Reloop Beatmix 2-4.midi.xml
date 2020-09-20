@@ -6,6 +6,7 @@
         <description>Controller mapping for the Reloop Beatmix 2/4.</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8428</forums>
         <wiki>http://www.mixxx.org/wiki/doku.php/reloop_beatmix_4</wiki>
+        <manual>/hardware/controllers/reloop_beatmix_2.html</manual>
     </info>
     <controller id="Reloop Beatmix 2/4">
         <scriptfiles>

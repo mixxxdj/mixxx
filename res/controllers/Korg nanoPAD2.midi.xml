@@ -5,6 +5,7 @@
         <author>Rob K</author>
         <description>This is a mapping for a Korg nanoPAD2. It provides 16 hotcue controls for deck 1, 14 for deck 2, with the ability to clear each hotcue. Also provides loop controls, kill frequency switches, mute button, reverse play, etc.</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=4477</forums>
+        <manual>/hardware/controllers/korg_nanopad2.html</manual>
     </info>
     <controller id="NANOPAD2">
         <scriptfiles>

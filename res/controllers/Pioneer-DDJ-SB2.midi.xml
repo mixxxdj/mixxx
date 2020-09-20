@@ -6,6 +6,7 @@
         <description>Pioneer DDJ-SB2</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7509</forums>
         <wiki>http://mixxx.org/wiki/doku.php/pioneer_ddj-sb2</wiki>
+        <manual>/hardware/controllers/pioneer_ddj_sb2.html</manual>
     </info>
     <controller id="DDJ-SB2">
         <scriptfiles>

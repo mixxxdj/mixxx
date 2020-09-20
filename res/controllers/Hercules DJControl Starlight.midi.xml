@@ -6,6 +6,7 @@
         <description>MIDI Preset for Hercules DJControl Starlight</description>
         <wiki>https://mixxx.org/wiki/doku.php/hercules_dj_control_starlight</wiki>
         <forums>https://mixxx.org/forums/viewtopic.php?f=7&amp;t=12570</forums>
+        <manual>/hardware/controllers/hercules_djcontrol_starlight.html</manual>
     </info>
     <controller id="DJControl Starlight">
         <scriptfiles>
