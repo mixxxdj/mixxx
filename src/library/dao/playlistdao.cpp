@@ -227,6 +227,27 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
+void PlaylistDAO::deleteEmptyPlaylists(const PlaylistDAO::HiddenType type) {
+    //qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
+    ScopedTransaction transaction(m_database);
+
+    // Get the playlist id for this
+    QSqlQuery query(m_database);
+
+    // Delete the row in the Playlists table.
+    query.prepare(QStringLiteral(
+            "DELETE FROM Playlists  "
+            "WHERE NOT EXISTS (SELECT playlist_id FROM PlaylistTracks WHERE Playlists.ID = PlaylistTracks.playlist_id) AND "
+            "Playlists.hidden = :hidden"));
+    query.bindValue(":hidden", static_cast<int>(type));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    transaction.commit();
+}
+
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
