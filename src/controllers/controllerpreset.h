@@ -123,12 +123,12 @@ class ControllerPreset {
         return m_forumlink;
     }
 
-    inline void setManualPath(const QString& manualPath) {
+    void setManualPath(const QString& manualPath) {
         m_manualPath = manualPath;
         setDirty(true);
     }
 
-    inline QString manualPath() const {
+    QString manualPath() const {
         return m_manualPath;
     }
 
