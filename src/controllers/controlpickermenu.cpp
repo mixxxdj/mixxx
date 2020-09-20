@@ -4,6 +4,7 @@
 #include "mixer/playermanager.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
+#include "effects/defs.h"
 #include "effects/effectslot.h"
 #include "effects/effectknobparameterslot.h"
 #include "effects/specialeffectchainslots.h"
@@ -465,10 +466,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Clear Effect Rack"), tr("Clear effect rack"),
                    rackMenu, false, descriptionPrefix);
 
-        const int numEffectUnits = ControlObject::get(
-            ConfigKey(rackGroup, "num_effectunits"));
-        for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
-             ++iEffectUnitNumber) {
+        for (int iEffectUnitNumber = 1; iEffectUnitNumber <= kNumStandardEffectUnits;
+                ++iEffectUnitNumber) {
             const QString effectUnitGroup =
                     StandardEffectChainSlot::formatEffectChainSlotGroup(
                         iEffectUnitNumber - 1);

@@ -20,7 +20,6 @@ const QString kEqualizerEffectRackGroup = QStringLiteral("[EqualizerRack1]");
 const QString kEffectGroupSeparator = QStringLiteral("_");
 const QString kGroupClose = QStringLiteral("]");
 const unsigned int kEffectMessagePipeFifoSize = 2048;
-const int kNumStandardEffectChains = 4;
 const QString kEffectsXmlFile = QStringLiteral("effects.xml");
 } // anonymous namespace
 
@@ -100,7 +99,7 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
 }
 
 void EffectsManager::addStandardEffectChainSlots() {
-    for (int i = 0; i < kNumStandardEffectChains; ++i) {
+    for (int i = 0; i < kNumStandardEffectUnits; ++i) {
         VERIFY_OR_DEBUG_ASSERT(!m_effectChainSlotsByGroup.contains(
                 StandardEffectChainSlot::formatEffectChainSlotGroup(i))) {
             continue;
