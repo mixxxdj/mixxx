@@ -124,3 +124,12 @@ repos:
     stages:
     - commit
     - manual
+  - id: xmlformat
+    name: xmlformat
+    description: Reformat XML files.
+    entry: tools/xmlformat.py
+    language: python
+    types: [text]
+    files: ^.*\.xml$
+    stages:
+    - manual
