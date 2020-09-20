@@ -123,6 +123,15 @@ class ControllerPreset {
         return m_forumlink;
     }
 
+    inline void setManualPath(const QString manualPath) {
+        m_manualPath = manualPath;
+        setDirty(true);
+    }
+
+    inline QString manualPath() const {
+        return m_manualPath;
+    }
+
     inline void setWikiLink(const QString wikilink) {
         m_wikilink = wikilink;
         setDirty(true);
@@ -174,6 +183,7 @@ class ControllerPreset {
     QString m_author;
     QString m_description;
     QString m_forumlink;
+    QString m_manualPath;
     QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;

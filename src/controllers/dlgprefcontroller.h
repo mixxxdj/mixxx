@@ -72,6 +72,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetAuthor(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
+    QString presetManualLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
     QString presetScriptFileLinks(const ControllerPresetPointer pPreset) const;
     void applyPresetChanges();
