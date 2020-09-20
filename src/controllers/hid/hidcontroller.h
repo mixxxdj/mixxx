@@ -89,7 +89,8 @@ class HidController final : public Controller {
     hid_device* m_pHidDevice;
     HidControllerPreset m_preset;
 
-    unsigned char m_pPollData[2][255];
+    static constexpr int m_iBufferSize = 255;
+    unsigned char m_pPollData[2][m_iBufferSize];
     int m_iPollingBufferIndex;
 };
 

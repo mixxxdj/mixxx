@@ -245,7 +245,6 @@ bool HidController::poll() {
     Trace hidRead("HidController poll");
 
     int result = 1;
-    int bufferSize = sizeof(m_pPollData[0]) / sizeof(m_pPollData[0][0]);
     while (result > 0) {
         // Rotate between two buffers so the memcmp below does not require deep copying to another buffer.
         unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
@@ -256,7 +255,7 @@ bool HidController::poll() {
         }
         unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
 
-        result = hid_read(m_pHidDevice, pCurrentBuffer, bufferSize);
+        result = hid_read(m_pHidDevice, pCurrentBuffer, m_iBufferSize);
         if (result == -1) {
             return false;
         } else if (result > 0) {
@@ -266,7 +265,7 @@ bool HidController::poll() {
             // Some controllers such as the Gemini GMX continuously send input packets even if it
             // is identical to the previous packet. If this loop processed all those redundant
             // packets, it would be a big performance problem.
-            if (memcmp(pCurrentBuffer, pPreviousBuffer, bufferSize) == 0) {
+            if (memcmp(pCurrentBuffer, pPreviousBuffer, m_iBufferSize) == 0) {
                 continue;
             }
             receive(byteArray, mixxx::Time::elapsed());
