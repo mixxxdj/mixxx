@@ -39,12 +39,23 @@ ReadAheadFrameBuffer::ReadAheadFrameBuffer(
           m_readIndex(kUnknownFrameIndex) {
 }
 
-void ReadAheadFrameBuffer::ensureMinCapacity(
-        FrameCount minCapacity) {
-    minCapacity = validateCapacity(minCapacity);
-    if (capacity() < minCapacity) {
+void ReadAheadFrameBuffer::beforeBuffering(
+        FrameCount frameCount) {
+    DEBUG_ASSERT(frameCount >= 0);
+    const auto requiredCapacity = bufferedLength() + frameCount;
+    if (capacity() < requiredCapacity) {
+        // Increasing the pre-allocated capacity of the sample buffer should
+        // never happen. The required capacity should always be known and
+        // allocated in advance.
+        kLogger.warning()
+                << "Increasing capacity by reallocation:"
+                << capacity()
+                << "->"
+                << requiredCapacity;
         m_sampleBuffer.adjustCapacity(
-                m_signalInfo.frames2samples(minCapacity));
+                m_signalInfo.frames2samples(requiredCapacity));
+        DEBUG_ASSERT(
+                m_signalInfo.frames2samples(frameCount) <= m_sampleBuffer.writableLength());
     }
 }
 
@@ -104,10 +115,8 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
     VERIFY_OR_DEBUG_ASSERT(pInputSamples) {
         return inputSampleFrames;
     }
-    FrameIndex writeIndex;
     if (isReady()) {
-        writeIndex = bufferedRange().end();
-        VERIFY_OR_DEBUG_ASSERT(writeIndex >= bufferedRange().end()) {
+        VERIFY_OR_DEBUG_ASSERT(bufferedRange().end() <= inputRange.start()) {
             kLogger.warning()
                     << "Cannot buffer sample data from"
                     << inputRange
@@ -117,34 +126,15 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
         }
     } else {
         DEBUG_ASSERT(isEmpty());
-        writeIndex = inputRange.start();
-        m_readIndex = writeIndex;
+        reset(inputRange.start());
     }
     DEBUG_ASSERT(isReady());
-    DEBUG_ASSERT(writeIndex <= inputRange.start());
-    {
-        const auto writableSampleLength =
-                m_signalInfo.frames2samples(inputRange.end() - writeIndex);
-        if (writableSampleLength > m_sampleBuffer.writableLength()) {
-            // Increasing the pre-allocated capacity of the sample buffer should
-            // never happen. The required capacity should always be known and
-            // allocated in advance.
-            const auto sampleBufferCapacity =
-                    m_sampleBuffer.readableLength() +
-                    writableSampleLength;
-            kLogger.warning()
-                    << "Increasing capacity of internal sample buffer by reallocation:"
-                    << m_sampleBuffer.capacity()
-                    << "->"
-                    << sampleBufferCapacity;
-            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
-        }
-        DEBUG_ASSERT(m_sampleBuffer.writableLength() >= writableSampleLength);
-    }
-    if (writeIndex < inputRange.start()) {
-        // Gap between current write position and the readable sample data
+    if (inputRange.start() > bufferedRange().end()) {
+        // Gap between current write position and the start of
+        // the input sample data
         switch (bufferingMode) {
-        case BufferingMode::SkipGap:
+        case BufferingMode::SkipGapAndReset:
+            reset(inputRange.start());
             break;
         case BufferingMode::FillGapWithSilence: {
 #if VERBOSE_DEBUG_LOG
@@ -153,7 +143,8 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
                     << IndexRange::between(writeIndex, inputRange.start());
 #endif
             const auto clearFrameCount =
-                    inputRange.start() - writeIndex;
+                    inputRange.start() - bufferedRange().end();
+            beforeBuffering(clearFrameCount);
             const auto clearSampleCount =
                     m_signalInfo.frames2samples(clearFrameCount);
             const SampleBuffer::WritableSlice writableSamples(
@@ -164,10 +155,10 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
                     clearSampleCount);
         } break;
         default:
-            DEBUG_ASSERT(!"unexpected BufferNextFramesMode");
+            DEBUG_ASSERT(!"unexpected BufferingMode");
         }
-        writeIndex = inputRange.start();
     }
+    DEBUG_ASSERT(bufferedRange().end() == inputRange.start());
     if (inputRange.empty()) {
         return inputSampleFrames;
     }
@@ -177,6 +168,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
             << "Buffering sample frames"
             << inputRange;
 #endif
+    beforeBuffering(inputRange.length());
     const auto copySampleCount =
             m_signalInfo.frames2samples(inputRange.length());
     const SampleBuffer::WritableSlice writableSamples(

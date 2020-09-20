@@ -38,9 +38,6 @@ class ReadAheadFrameBuffer final {
                 m_sampleBuffer.capacity());
     }
 
-    void ensureMinCapacity(
-            FrameCount minCapacity);
-
     /// Invalidate the whole buffer and its position, e.g. to
     /// indicate decoding errors.
     void invalidate() {
@@ -100,14 +97,15 @@ class ReadAheadFrameBuffer final {
             FrameCount frameCount);
 
     enum class BufferingMode {
-        SkipGap,
+        SkipGapAndReset,
         FillGapWithSilence,
     };
 
-    /// Buffer the given readable samples frames
+    /// Buffer the given readable samples frames.
     ///
-    /// The given sample data must start after the last buffered
-    /// frame.
+    /// The given sample data must start at after the last buffered
+    /// frame. The buffering mode controls how a gap between the
+    /// last buffered frame and the next input frame is handled.
     ///
     /// Returns the unread portion of the readable sample frames,
     /// which should typically be empty.
@@ -115,7 +113,13 @@ class ReadAheadFrameBuffer final {
             BufferingMode bufferingMode,
             ReadableSampleFrames inputSampleFrames);
 
-    /// Consume as many buffered sample frames as possible
+    /// Consume as many buffered sample frames as possible.
+    ///
+    /// Sample data can only be consumed from the current read index
+    /// or beyond.
+    ///
+    /// The output sample buffer may be null. In this case the consumed
+    /// samples are dropped instead of copied.
     ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
@@ -127,6 +131,9 @@ class ReadAheadFrameBuffer final {
     }
 
   private:
+    void beforeBuffering(
+            FrameCount frameCount);
+
     audio::SignalInfo m_signalInfo;
     ReadAheadSampleBuffer m_sampleBuffer;
     FrameIndex m_readIndex;
