@@ -105,7 +105,7 @@ constexpr int kBooleanTrue = 1;
 // Please do not try to unwrap the code! It is already declared "inline" ;)
 //
 // Recommended reading: "Refactoring" by Martin Fowler
-inline bool toBoolean(const QVariant& variant) {
+inline bool boolFromQVariantInt(const QVariant& variant) {
     bool ok = false;
     int value = variant.toInt(&ok);
     VERIFY_OR_DEBUG_ASSERT(ok) {
@@ -128,5 +128,5 @@ inline bool toBoolean(const QVariant& variant) {
 } // anonymous namespace
 
 bool FwdSqlQuery::fieldValueBoolean(DbFieldIndex fieldIndex) const {
-    return toBoolean(fieldValue(fieldIndex));
+    return boolFromQVariantInt(fieldValue(fieldIndex));
 }
