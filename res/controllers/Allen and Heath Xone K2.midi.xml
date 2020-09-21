@@ -3,7 +3,6 @@
     <info>
         <name>Allen&amp;Heath Xone K2/K1</name>
         <author>Be</author>
-        <wiki>https://mixxx.org/wiki/doku.php/allen_heath_xone_k2</wiki>
         <manual>/hardware/controllers/allen_heath_xone_k2_k1.html</manual>
         <description>This mapping can used with one or multiple Xone K2s/K1s. Multiple Xone K2s/K1s can be connected to each other via X-Link with one of them connected to the computer via USB. Alternatively, when using 2 K2s/K1s, they can both be connected with their own USB cable and this same mapping can be loaded for each.
 

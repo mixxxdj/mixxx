@@ -5,7 +5,6 @@
         <author>Maximilian Beiersdorfer, DJMaxergy</author>
         <description>Pioneer DDJ-SX controller mapping</description>
         <forums>https://mixxx.discourse.group/t/pioneer-ddj-sx-controller-mapping/15954</forums>
-        <wiki>http://mixxx.org/wiki/doku.php/pioneer_ddj-sx</wiki>
         <manual>/hardware/controllers/pioneer_ddj_sx.html</manual>
     </info>
     <controller id="DDJ-SX">

@@ -4,7 +4,6 @@
   <author>Shaun (DJPandemonium@gmail.com)</author>
   <description>Implements cuepoints, looping, loop rolls, basic effects, and navigation.</description>
   <forums>https://mixxx.discourse.group/t/novation-dicer-mapping/12329</forums>
-  <wiki>http://mixxx.org/wiki/doku.php/novation_dicer</wiki>
   <manual>/hardware/controllers/novation_dicer.html</manual>
 </info>
     <controller id="Dicer Novation Dicer">

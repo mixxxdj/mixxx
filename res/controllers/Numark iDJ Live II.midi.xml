@@ -4,7 +4,6 @@
     <name>Numark iDJ Live II</name>
     <author>Nathan Korth</author>
     <description>Complete mapping for iDJ Live II</description>
-    <wiki>https://mixxx.org/wiki/doku.php/numark_idj_live_ii</wiki>
     <manual>/hardware/controllers/numark_idj_live_ii.html</manual>
   </info>
   <controller id="Numark">
