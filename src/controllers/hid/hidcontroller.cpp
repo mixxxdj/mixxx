@@ -260,15 +260,15 @@ bool HidController::poll() {
             return false;
         } else if (result > 0) {
             Trace process("HidController process packet");
-            auto byteArray = QByteArray::fromRawData(
-                    reinterpret_cast<char*>(pCurrentBuffer), result);
             // Some controllers such as the Gemini GMX continuously send input packets even if it
             // is identical to the previous packet. If this loop processed all those redundant
             // packets, it would be a big performance problem.
             if (memcmp(pCurrentBuffer, pPreviousBuffer, m_iBufferSize) == 0) {
                 continue;
             }
-            receive(byteArray, mixxx::Time::elapsed());
+            auto incomingData = QByteArray::fromRawData(
+                    reinterpret_cast<char*>(pCurrentBuffer), result);
+            receive(incomingData, mixxx::Time::elapsed());
         }
     }
 
