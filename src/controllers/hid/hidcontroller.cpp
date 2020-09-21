@@ -248,11 +248,7 @@ bool HidController::poll() {
     while (result > 0) {
         // Rotate between two buffers so the memcmp below does not require deep copying to another buffer.
         unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
-        if (m_iPollingBufferIndex == 0) {
-            m_iPollingBufferIndex = 1;
-        } else {
-            m_iPollingBufferIndex = 0;
-        }
+        m_iPollingBufferIndex = (m_iPollingBufferIndex + 1) % 2;
         unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
 
         result = hid_read(m_pHidDevice, pCurrentBuffer, m_iBufferSize);
