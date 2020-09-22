@@ -253,10 +253,9 @@ QString DlgPrefController::presetManualLink(
         const ControllerPresetPointer pPreset) const {
     QString url;
     if (pPreset) {
-        QString manualPath = pPreset->manualPath();
-        if (manualPath.length() > 0) {
-            url = "<a href=\"" MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX +
-                manualPath + MIXXX_MANUAL_CONTROLLERMANUAL_SUFFIX "\">Manual</a>";
+        QString link = pPreset->manualLink();
+        if (!link.isEmpty()) {
+            url = "<a href=\"" + link + "\">Manual</a>";
         }
     }
     return url;
