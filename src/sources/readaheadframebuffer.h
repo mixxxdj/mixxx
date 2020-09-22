@@ -83,24 +83,14 @@ class ReadAheadFrameBuffer final {
         return readIndex() + bufferedLength();
     }
 
+    void reset(
+            FrameIndex currentIndex = kUnknownFrameIndex);
+
     /// Try to reposition the buffer to a new read position
     /// within the buffered range, keeping all remaining data
     /// ahead of the read position.
     bool tryContinueReadingFrom(
             FrameIndex readIndex);
-
-    void reset(
-            FrameIndex currentIndex = kUnknownFrameIndex);
-
-    /// Advance the read position thereby discarding samples
-    /// from the front of the FIFO buffer.
-    FrameCount discardFirstBufferedFrames(
-            FrameCount frameCount);
-
-    /// Rewind the write position thereby discarding samples
-    /// from the back of the FIFO buffer.
-    FrameCount discardLastBufferedFrames(
-            FrameCount frameCount);
 
     enum class BufferingMode {
         SkipGapAndReset,
@@ -116,10 +106,11 @@ class ReadAheadFrameBuffer final {
     /// Returns the unread portion of the readable sample frames,
     /// which should typically be empty.
     ReadableSampleFrames bufferSampleData(
-            BufferingMode bufferingMode,
-            ReadableSampleFrames inputSampleFrames);
+            ReadableSampleFrames inputBuffer,
+            BufferingMode bufferingMode = BufferingMode::FillGapWithSilence);
 
-    /// Consume as many buffered sample frames as possible.
+    /// Drain as many buffered sample frames as possible and copy them
+    /// into the output buffer.
     ///
     /// Sample data can only be consumed from the current read index
     /// or beyond.
@@ -129,15 +120,42 @@ class ReadAheadFrameBuffer final {
     ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
-    WritableSampleFrames consumeBufferedSampleData(
-            WritableSampleFrames outputSampleFrames);
+    WritableSampleFrames drain(
+            WritableSampleFrames outputBuffer);
 
-    void discardAllBufferedSampleData() {
-        discardFirstBufferedFrames(bufferedLength());
-    }
+    /// Fills first the output buffer and then the internal buffer with
+    /// the data from the input buffer. The whole input buffer is consumed.
+    ///
+    /// If the inputBuffer starts before the current position write
+    /// position then the position is rewind back as far as possible.
+    /// The parameter firstOutputIndex indicates how far back the
+    /// output buffer could be rewind, i.e. indicates the very first
+    /// position before the current start position that would still
+    /// be valid.
+    ///
+    /// The output sample buffer may be null. In this case the consumed
+    /// samples are dropped instead of copied.
+    ///
+    /// Returns the remaining portion that could not be filled from
+    /// the buffer.
+    WritableSampleFrames recharge(
+            ReadableSampleFrames inputBuffer,
+            WritableSampleFrames outputBuffer,
+            FrameIndex minOutputIndex,
+            BufferingMode bufferingMode = BufferingMode::FillGapWithSilence);
 
   private:
     void beforeBuffering(
+            FrameCount frameCount);
+
+    /// Advance the read position thereby discarding samples
+    /// from the front of the FIFO buffer.
+    FrameCount discardFirstBufferedFrames(
+            FrameCount frameCount);
+
+    /// Rewind the write position thereby discarding samples
+    /// from the back of the FIFO buffer.
+    FrameCount discardLastBufferedFrames(
             FrameCount frameCount);
 
     audio::SignalInfo m_signalInfo;

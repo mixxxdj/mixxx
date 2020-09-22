@@ -104,8 +104,8 @@ FrameCount ReadAheadFrameBuffer::discardLastBufferedFrames(
 }
 
 ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
-        BufferingMode bufferingMode,
-        ReadableSampleFrames inputSampleFrames) {
+        ReadableSampleFrames inputSampleFrames,
+        BufferingMode bufferingMode) {
     DEBUG_ASSERT(isValid());
     auto inputRange = inputSampleFrames.frameIndexRange();
     VERIFY_OR_DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward) {
@@ -116,12 +116,12 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
         return inputSampleFrames;
     }
     if (isReady()) {
-        VERIFY_OR_DEBUG_ASSERT(bufferedRange().end() <= inputRange.start()) {
+        VERIFY_OR_DEBUG_ASSERT(writeIndex() <= inputRange.start()) {
             kLogger.warning()
                     << "Cannot buffer sample data from"
                     << inputRange
                     << "starting before"
-                    << bufferedRange().end();
+                    << writeIndex();
             return inputSampleFrames;
         }
     } else {
@@ -129,7 +129,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
         reset(inputRange.start());
     }
     DEBUG_ASSERT(isReady());
-    if (inputRange.start() > bufferedRange().end()) {
+    if (inputRange.start() > writeIndex()) {
         // Gap between current write position and the start of
         // the input sample data
         switch (bufferingMode) {
@@ -140,10 +140,10 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
                     << "Filling gap with silence"
-                    << IndexRange::between(writeIndex, inputRange.start());
+                    << IndexRange::between(writeIndex(), inputRange.start());
 #endif
             const auto clearFrameCount =
-                    inputRange.start() - bufferedRange().end();
+                    inputRange.start() - writeIndex();
             beforeBuffering(clearFrameCount);
             const auto clearSampleCount =
                     m_signalInfo.frames2samples(clearFrameCount);
@@ -158,7 +158,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
             DEBUG_ASSERT(!"unexpected BufferingMode");
         }
     }
-    DEBUG_ASSERT(bufferedRange().end() == inputRange.start());
+    DEBUG_ASSERT(writeIndex() == inputRange.start());
     if (inputRange.empty()) {
         return inputSampleFrames;
     }
@@ -188,7 +188,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
                     m_signalInfo.frames2samples(inputRange.length())));
 }
 
-WritableSampleFrames ReadAheadFrameBuffer::consumeBufferedSampleData(
+WritableSampleFrames ReadAheadFrameBuffer::drain(
         WritableSampleFrames outputSampleFrames) {
     DEBUG_ASSERT(isValid());
     if (isEmpty() || outputSampleFrames.writableSlice().empty()) {
@@ -252,6 +252,183 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeBufferedSampleData(
             outputRange,
             SampleBuffer::WritableSlice(
                     pOutputSamples,
+                    m_signalInfo.frames2samples(outputRange.length())));
+}
+
+WritableSampleFrames ReadAheadFrameBuffer::recharge(
+        ReadableSampleFrames inputSampleFrames,
+        WritableSampleFrames outputSampleFrames,
+        FrameCount minOutputIndex,
+        BufferingMode bufferingMode) {
+    auto inputRange = inputSampleFrames.frameIndexRange();
+    auto outputRange = outputSampleFrames.frameIndexRange();
+#if VERBOSE_DEBUG_LOG
+    kLogger.debug()
+            << "Recharging:"
+            << "bufferedRange()"
+            << bufferedRange()
+            << "inputRange"
+            << inputRange
+            << "outputRange"
+            << outputRange
+            << "minOutputIndex"
+            << minOutputIndex;
+#endif
+
+    const auto* pInputSampleData = inputSampleFrames.readableData();
+    // input sample data is mandatory
+    DEBUG_ASSERT(pInputSampleData);
+    DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward);
+    DEBUG_ASSERT(isEmpty() || writeIndex() == inputRange.start());
+
+    // output sample data is optional, i.e. input samples will be dropped
+    // and not copied if no output buffer is provided
+    auto* pOutputSampleData = outputSampleFrames.writableData();
+    DEBUG_ASSERT(outputRange.orientation() != IndexRange::Orientation::Backward);
+    DEBUG_ASSERT(isEmpty() || outputRange.empty());
+    DEBUG_ASSERT(minOutputIndex <= outputRange.start());
+
+    // Rewind if input and output ranges overlap
+    if (inputRange.start() < outputRange.start()) {
+        const auto rewindRange = IndexRange::between(
+                math_max(inputRange.start(), minOutputIndex),
+                outputRange.start());
+        VERIFY_OR_DEBUG_ASSERT(
+                rewindRange.orientation() ==
+                IndexRange::Orientation::Empty) {
+            kLogger.warning()
+                    << "Discarding"
+                    << rewindRange
+                    << "overlapping with input buffer"
+                    << inputRange
+                    << "from output buffer"
+                    << outputRange;
+            if (pOutputSampleData) {
+                pOutputSampleData -=
+                        m_signalInfo.frames2samples(rewindRange.length());
+            }
+            outputRange.growFront(rewindRange.length());
+        }
+    }
+    if (!isEmpty() && inputRange.start() < writeIndex()) {
+        const auto rewindRange = IndexRange::between(
+                math_max(inputRange.start(), readIndex()),
+                writeIndex());
+        VERIFY_OR_DEBUG_ASSERT(
+                rewindRange.orientation() ==
+                IndexRange::Orientation::Empty) {
+            kLogger.warning()
+                    << "Discarding"
+                    << rewindRange
+                    << "overlapping with input buffer"
+                    << inputRange
+                    << "from internal buffer"
+                    << bufferedRange();
+            discardLastBufferedFrames(
+                    rewindRange.length());
+        }
+    }
+
+    // Discard input data that precedes outputRange
+    if (inputRange.start() < outputRange.start()) {
+        const auto precedingRange =
+                IndexRange::between(
+                        inputRange.start(),
+                        math_min(outputRange.start(), inputRange.end()));
+#if VERBOSE_DEBUG_LOG
+        kLogger.debug()
+                << "Discarding input data"
+                << precedingRange
+                << "that precedes"
+                << outputRange;
+#endif
+        DEBUG_ASSERT(precedingRange.orientation() == IndexRange::Orientation::Forward);
+        const auto precedingFrameCount = precedingRange.length();
+        pInputSampleData += m_signalInfo.frames2samples(precedingFrameCount);
+        inputRange.shrinkFront(precedingFrameCount);
+    }
+
+    // Fill output buffer
+    if (!inputRange.empty() && !outputRange.empty()) {
+        DEBUG_ASSERT(outputRange.start() <= inputRange.start());
+
+        // Substitute missing input data with silence
+        if (outputRange.start() < inputRange.start()) {
+            const auto missingFrameRange =
+                    IndexRange::between(
+                            outputRange.start(),
+                            math_min(inputRange.start(), outputRange.end()));
+#if VERBOSE_DEBUG_LOG
+            kLogger.debug()
+                    << "Substituting missing input data"
+                    << missingFrameRange
+                    << "with silence in output buffer";
+#endif
+            DEBUG_ASSERT(missingFrameRange.orientation() == IndexRange::Orientation::Forward);
+            const auto clearFrameCount = missingFrameRange.length();
+            const auto clearSampleCount = m_signalInfo.frames2samples(clearFrameCount);
+            if (pOutputSampleData) {
+                SampleUtil::clear(
+                        pOutputSampleData,
+                        clearSampleCount);
+                pOutputSampleData += clearSampleCount;
+            }
+            outputRange.shrinkFront(clearFrameCount);
+        }
+
+        // Copy available input data
+        const auto copyableFrameRange =
+                IndexRange::between(
+                        outputRange.start(),
+                        math_min(inputRange.end(), outputRange.end()));
+        if (copyableFrameRange.orientation() == IndexRange::Orientation::Forward) {
+#if VERBOSE_DEBUG_LOG
+            kLogger.debug()
+                    << "Copying available input data"
+                    << copyableFrameRange
+                    << "into output buffer";
+#endif
+            DEBUG_ASSERT(outputRange.start() == inputRange.start());
+            const auto copyFrameCount = copyableFrameRange.length();
+            const auto copySampleCount = m_signalInfo.frames2samples(copyFrameCount);
+            if (pOutputSampleData) {
+                SampleUtil::copy(
+                        pOutputSampleData,
+                        pInputSampleData,
+                        copySampleCount);
+                pOutputSampleData += copySampleCount;
+            }
+            pInputSampleData += copySampleCount;
+            inputRange.shrinkFront(copyFrameCount);
+            outputRange.shrinkFront(copyFrameCount);
+        }
+    }
+
+    // Reset internal write position according to the input data
+    if (isEmpty()) {
+        reset(inputRange.start());
+    }
+    DEBUG_ASSERT(isReady());
+    DEBUG_ASSERT(writeIndex() == inputRange.start());
+
+    // Fill internal buffer
+    if (!inputRange.empty()) {
+        inputSampleFrames = bufferSampleData(
+                ReadableSampleFrames(
+                        inputRange,
+                        SampleBuffer::ReadableSlice(
+                                pInputSampleData,
+                                m_signalInfo.frames2samples(inputRange.length()))),
+                bufferingMode);
+        Q_UNUSED(inputSampleFrames)
+        DEBUG_ASSERT(inputSampleFrames.frameIndexRange().empty());
+    }
+
+    // Return remaining output buffer
+    return WritableSampleFrames(
+            outputRange,
+            SampleBuffer::WritableSlice(
+                    pOutputSampleData,
                     m_signalInfo.frames2samples(outputRange.length())));
 }
 

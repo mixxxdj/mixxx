@@ -957,7 +957,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 #endif
 
     // Consume all buffered sample data before decoding any new data
-    writableSampleFrames = m_frameBuffer.consumeBufferedSampleData(writableSampleFrames);
+    writableSampleFrames = m_frameBuffer.drain(writableSampleFrames);
 
 #if VERBOSE_DEBUG_LOG
     kLogger.debug()
@@ -1089,51 +1089,6 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     << "decodedFrameRange" << decodedFrameRange;
 #endif
 
-            // 1st step: Discard overlapping, decoded sample data
-            // Check if the next decoded frame starts BEFORE the current write position
-            // and rewind already written and/or buffered sample frames
-            if (decodedFrameRange.start() < writableFrameRange.start()) {
-                const auto rewindFrameRange = IndexRange::between(
-                        math_max(decodedFrameRange.start(),
-                                writableSampleFrames.frameIndexRange().start()),
-                        writableFrameRange.start());
-                VERIFY_OR_DEBUG_ASSERT(rewindFrameRange.orientation() !=
-                        IndexRange::Orientation::Forward) {
-                    kLogger.warning()
-                            << "Discarding overlapping sample frames"
-                            << rewindFrameRange
-                            << "in output buffer";
-                    if (pOutputSampleBuffer) {
-                        pOutputSampleBuffer -=
-                                getSignalInfo().frames2samples(rewindFrameRange.length());
-                    }
-                    writableFrameRange.growFront(rewindFrameRange.length());
-                }
-            }
-            if (!m_frameBuffer.isEmpty() &&
-                    decodedFrameRange.start() < m_frameBuffer.writeIndex()) {
-                const auto rewindFrameRange = IndexRange::between(
-                        math_max(decodedFrameRange.start(), m_frameBuffer.readIndex()),
-                        m_frameBuffer.writeIndex());
-                VERIFY_OR_DEBUG_ASSERT(rewindFrameRange.orientation() !=
-                        IndexRange::Orientation::Forward) {
-                    kLogger.warning()
-                            << "Discarding overlapping sample frames"
-                            << rewindFrameRange
-                            << "in read-ahead buffer";
-                    m_frameBuffer.discardLastBufferedFrames(
-                            rewindFrameRange.length());
-                }
-            }
-
-#if VERBOSE_DEBUG_LOG
-            kLogger.debug()
-                    << "Before resampling:"
-                    << "m_frameBuffer.bufferedRange()" << m_frameBuffer.bufferedRange()
-                    << "decodedFrameRange" << decodedFrameRange
-                    << "writableFrameRange" << writableFrameRange;
-#endif
-
             const CSAMPLE* pDecodedSampleData = resampleDecodedAVFrame();
             if (!pDecodedSampleData) {
                 // Invalidate current position and abort reading after unrecoverable error
@@ -1141,155 +1096,28 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 break;
             }
 
-            // 2nd step: Fill output buffer
-            if (!writableFrameRange.empty()) {
-                DEBUG_ASSERT(m_frameBuffer.isEmpty());
-                // Discard both skipped and decoded frames that do not overlap
-                // with writableFrameRange, i.e. that precede writableFrameRange.
-#if VERBOSE_DEBUG_LOG
-                kLogger.debug()
-                        << "Before discarding excessive sample data:"
-                        << "writableFrameRange" << writableFrameRange
-                        << "decodedFrameRange" << decodedFrameRange;
-#endif
-                const auto excessiveFrameRange =
-                        IndexRange::between(
-                                decodedFrameRange.start(),
-                                math_min(
-                                        writableFrameRange.start(),
-                                        decodedFrameRange.end()));
-                if (excessiveFrameRange.orientation() == IndexRange::Orientation::Forward) {
-#if VERBOSE_DEBUG_LOG
-                    kLogger.debug()
-                            << "Discarding excessive decoded sample data:"
-                            << excessiveFrameRange;
-#endif
-                    const auto excessiveFrameCount = excessiveFrameRange.length();
-                    pDecodedSampleData += getSignalInfo().frames2samples(
-                            excessiveFrameCount);
-                    decodedFrameRange.shrinkFront(
-                            excessiveFrameCount);
-                    if (decodedFrameRange.empty()) {
-                        // Skip the remaining loop body
-                        continue;
-                    }
-                }
-
-#if VERBOSE_DEBUG_LOG
-                kLogger.debug()
-                        << "Before consuming skipped and decoded sample data:"
-                        << "writableFrameRange" << writableFrameRange
-                        << "decodedFrameRange" << decodedFrameRange;
-#endif
-
-                // Consume skipped sample data within writableFrameRange
-                DEBUG_ASSERT(writableFrameRange.start() <= decodedFrameRange.start());
-                const auto skippableFrameRange =
-                        IndexRange::between(
-                                writableFrameRange.start(),
-                                math_min(decodedFrameRange.start(), writableFrameRange.end()));
-                if (skippableFrameRange.orientation() == IndexRange::Orientation::Forward) {
-                    // Fill the gap of skipped frames until the first available
-                    // decoded frame with silence
-#if VERBOSE_DEBUG_LOG
-                    kLogger.debug()
-                            << "Consuming skipped sample data by generating silence:"
-                            << skippableFrameRange;
-#endif
-                    const auto clearFrameCount =
-                            skippableFrameRange.length();
-                    const auto clearSampleCount =
-                            getSignalInfo().frames2samples(clearFrameCount);
-                    if (pOutputSampleBuffer) {
-                        SampleUtil::clear(
-                                pOutputSampleBuffer,
-                                clearSampleCount);
-                        pOutputSampleBuffer += clearSampleCount;
-                    }
-                    writableFrameRange.shrinkFront(clearFrameCount);
-                }
-
-                // Consume decoded sample data that overlaps with writableFrameRange
-                DEBUG_ASSERT(writableFrameRange.start() <= decodedFrameRange.start());
-                const auto copyableFrameRange =
-                        IndexRange::between(
-                                writableFrameRange.start(),
-                                math_min(decodedFrameRange.end(), writableFrameRange.end()));
-                if (copyableFrameRange.orientation() == IndexRange::Orientation::Forward) {
-                    // Copy the decoded samples into the output buffer
-                    DEBUG_ASSERT(writableFrameRange.start() == decodedFrameRange.start());
-#if VERBOSE_DEBUG_LOG
-                    kLogger.debug()
-                            << "Consuming decoded sample data:"
-                            << copyableFrameRange;
-#endif
-                    const auto copyFrameCount =
-                            copyableFrameRange.length();
-                    const auto copySampleCount =
-                            getSignalInfo().frames2samples(copyFrameCount);
-                    if (pOutputSampleBuffer) {
-                        SampleUtil::copy(
-                                pOutputSampleBuffer,
-                                pDecodedSampleData,
-                                copySampleCount);
-                        pOutputSampleBuffer += copySampleCount;
-                    }
-                    pDecodedSampleData += copySampleCount;
-                    decodedFrameRange.shrinkFront(copyFrameCount);
-                    writableFrameRange.shrinkFront(copyFrameCount);
-                }
-            }
-
-            // The internal buffer is used for keeping track of the decoder's
-            // current position.
-            if (!m_frameBuffer.isReady()) {
-                m_frameBuffer.reset(decodedFrameRange.start());
-            }
+            const auto decodedSampleFrames = ReadableSampleFrames(
+                    decodedFrameRange,
+                    SampleBuffer::ReadableSlice(
+                            pDecodedSampleData,
+                            getSignalInfo().frames2samples(decodedFrameRange.length())));
+            auto outputSampleFrames = WritableSampleFrames(
+                    writableFrameRange,
+                    SampleBuffer::WritableSlice(
+                            pOutputSampleBuffer,
+                            getSignalInfo().frames2samples(writableFrameRange.length())));
+            outputSampleFrames = m_frameBuffer.recharge(
+                    decodedSampleFrames,
+                    outputSampleFrames,
+                    writableSampleFrames.frameIndexRange().start());
+            pOutputSampleBuffer = outputSampleFrames.writableData();
+            writableFrameRange = outputSampleFrames.frameIndexRange();
 
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
-                    << "Before buffering unused decoded sample data:"
+                    << "After consuming decoded sample data:"
                     << "m_frameBuffer.bufferedRange()" << m_frameBuffer.bufferedRange()
-                    << "writableFrameRange" << writableFrameRange
-                    << "decodedFrameRange" << decodedFrameRange;
-#endif
-
-            // 3rd step: Buffer remaining, unread sample data
-            if (!decodedFrameRange.empty()) {
-                DEBUG_ASSERT(m_frameBuffer.isReady());
-                const auto unbufferedSampleFrames =
-                        m_frameBuffer.bufferSampleData(
-                                ReadAheadFrameBuffer::BufferingMode::
-                                        FillGapWithSilence,
-                                ReadableSampleFrames(decodedFrameRange,
-                                        SampleBuffer::ReadableSlice(
-                                                pDecodedSampleData,
-                                                getSignalInfo().frames2samples(
-                                                        decodedFrameRange
-                                                                .length()))));
-                Q_UNUSED(unbufferedSampleFrames) // only used for assertion
-                DEBUG_ASSERT(unbufferedSampleFrames.frameLength() == 0);
-                if (m_frameBuffer.writeIndex() > frameIndexRange().end()) {
-                    // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR, Lavf AAC)
-                    // FFmpeg may decode a few more samples than expected! Simply discard
-                    // those trailing samples, because we are not prepared to adjust the
-                    // duration of the stream later.
-                    const auto overflowFrameCount =
-                            m_frameBuffer.writeIndex() - frameIndexRange().end();
-                    kLogger.info()
-                            << "Discarding"
-                            << overflowFrameCount
-                            << "sample frames at the end of the audio stream";
-                    m_frameBuffer.discardLastBufferedFrames(overflowFrameCount);
-                }
-            }
-
-#if VERBOSE_DEBUG_LOG
-            kLogger.debug()
-                    << "Before reading and consuming next packet:"
-                    << "m_frameBuffer.bufferedRange()" << m_frameBuffer.bufferedRange()
-                    << "writableFrameRange" << writableFrameRange
-                    << "decodedFrameRange" << decodedFrameRange;
+                    << "writableFrameRange" << writableFrameRange;
 #endif
 
             // Housekeeping before next decoding iteration
