@@ -55,7 +55,7 @@ inline FrameCount frameBufferCapacityForStream(
 // system will trim 2112 samples from the AAC decoder output when starting
 // playback from any point in the bitsream."
 // See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
-constexpr int64_t kavStreamDecoderDelayAAC = 2112;
+constexpr int64_t kavStreamDecoderFrameDelayAAC = 2112;
 
 // Use 0-based sample frame indexing
 constexpr SINT kMinFrameIndex = 0;
@@ -108,7 +108,7 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
             // the test file cover-test-itunes-12.7.0-aac.m4a has a valid
             // start_time of 0. Unfortunately, this special case is cannot
             // detected and compensated.
-            start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderDelayAAC);
+            start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderFrameDelayAAC);
             break;
         }
         default:
@@ -190,7 +190,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     }
     case AV_CODEC_ID_AAC:
     case AV_CODEC_ID_AAC_LATM: {
-        const SINT aacSeekPrerollFrameCount = kavStreamDecoderDelayAAC;
+        const SINT aacSeekPrerollFrameCount = kavStreamDecoderFrameDelayAAC;
         return math_max(aacSeekPrerollFrameCount, defaultSeekPrerollFrameCount);
     }
     default:
