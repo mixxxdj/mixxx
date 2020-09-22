@@ -3,7 +3,7 @@
     <info>
         <name>Behringer CMD Micro</name>
         <author>tecywiz121</author>
-        <manual>/hardware/controllers/behringer_cmd_micro.html</manual>
+        <manual>behringer_cmd_micro</manual>
     </info>
     <controller id="CMD">
         <scriptfiles>

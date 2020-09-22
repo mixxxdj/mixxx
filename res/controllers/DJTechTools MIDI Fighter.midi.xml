@@ -4,7 +4,7 @@
     <name>DJ TechTools MIDI Fighter</name>
     <author>RJ Ryan</author>
     <description>Mapping for DJ TechTools MIDI Fighter Classic Controller</description>
-    <manual>/hardware/controllers/dj_techtools_midi_figher_classic.html</manual>
+    <manual>dj_techtools_midi_figher_classic</manual>
   </info>
   <controller id="DJTechTools MIDIFighter" port="">
     <scriptfiles>

@@ -5,7 +5,7 @@
         <author>tomtom (thomas-8)</author>
 	<description>V1.0.0 -> Please visit Forum and Wiki for more details.</description>
         <forums>https://mixxx.discourse.group/t/v1-0-mixvibes-u-mix-control-pro-2-mapping/13322</forums>
-        <manual>/hardware/controllers/mixvibes_u_mix_control_2.html</manual>
+        <manual>mixvibes_u_mix_control_2</manual>
     </info>
     <controller id="MixVibes">
     <scriptfiles>

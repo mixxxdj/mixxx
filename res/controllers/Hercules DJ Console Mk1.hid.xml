@@ -5,7 +5,7 @@
         <author>zestoi changes for mk1 by ewanuno</author>
         <description>Native high-resolution HID script for the Hercules DJ Console MK1 controller.</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4081</forums>
-        <manual>/hardware/controllers/hercules_dj_console_mk1.html</manual>
+        <manual>hercules_dj_console_mk1</manual>
     </info>
     <controller id="Hercules DJ Console Mk1 HID">
         <scriptfiles>

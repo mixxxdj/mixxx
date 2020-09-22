@@ -4,7 +4,7 @@
     <name>Numark iDJ Live II</name>
     <author>Nathan Korth</author>
     <description>Complete mapping for iDJ Live II</description>
-    <manual>/hardware/controllers/numark_idj_live_ii.html</manual>
+    <manual>numark_idj_live_ii</manual>
   </info>
   <controller id="Numark">
     <scriptfiles>

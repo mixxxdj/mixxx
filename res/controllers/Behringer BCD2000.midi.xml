@@ -4,7 +4,7 @@
       <author>Golzo</author>
       <description>MIDI mapping for Behringer BCD2000 mixer</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3563</forums>
-      <manual>/hardware/controllers/behringer_b_control_deejay_bcd2000.html</manual>
+      <manual>behringer_b_control_deejay_bcd2000</manual>
     </info>
     <controller id="BCD2000 MIDI 1">
         <scriptfiles>

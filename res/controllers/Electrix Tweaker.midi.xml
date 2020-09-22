@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <author>Be</author>
         <description>4-deck mapping for Electrix Tweaker with EQ and loop modes</description>
         <forums>https://mixxx.discourse.group/t/electrix-tweaker-mapping/15071</forums>
-        <manual>/hardware/controllers/electrix_tweaker.html</manual>
+        <manual>electrix_tweaker</manual>
     </info>
     <controller id="Tweaker">
         <scriptfiles>

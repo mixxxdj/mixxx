@@ -5,7 +5,7 @@
       <author>Anders Gunnarsson &amp; Sean M. Pappalardo</author>
       <description>2-deck control/4-deck mixer preset for Mixxx 2.1. 
 Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
-      <manual>/hardware/controllers/american_audio_vms4.html</manual>
+      <manual>american_audio_vms4</manual>
    </info>
    <controller id="American Audio VMS4">
       <scriptfiles>

@@ -5,7 +5,7 @@
         <author>Chris2000SP</author>
         <description>v1.0.3 Mapping for 2.0.x</description>
         <forums>https://mixxx.discourse.group/t/create-a-mapping-for-reloop-jockey-3-me/13703</forums>
-        <manual>/hardware/controllers/reloop_jockey_3_master_edition.html</manual>
+        <manual>reloop_jockey_3_master_edition</manual>
     </info>
     <controller id="Reloop">
         <scriptfiles>

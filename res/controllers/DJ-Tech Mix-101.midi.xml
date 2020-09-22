@@ -4,7 +4,7 @@
       <author>rasda</author>
       <description>MIDI mapping for DJ-Tech MIX-101</description>
       <forums>https://mixxx.discourse.group/t/dj-tech-mix-101-mapping/12679</forums>
-      <manual>/hardware/controllers/dj_tech_mix_101.html</manual>
+      <manual>dj_tech_mix_101</manual>
     </info>
     <controller id="Mix-101 MIDI 1">
     <scriptfiles/>

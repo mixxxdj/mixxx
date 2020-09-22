@@ -5,7 +5,7 @@
         <author>Rob K</author>
         <description>Mapping for the DJ Tech Kontrol One modular scratch controller.  Provides controls for Channel1 through Channel4.  March 2013.</description>
         <forums>https://mixxx.discourse.group/t/dj-tech-kontrol-one-mapping-hotcue-loops-saves-loops-etc/13299</forums>
-        <manual>/hardware/controllers/dj_tech_kontrol_one.html</manual>
+        <manual>dj_tech_kontrol_one</manual>
     </info>
     <controller id="KONTROL1">
         <scriptfiles>

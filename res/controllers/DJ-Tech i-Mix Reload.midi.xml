@@ -4,7 +4,7 @@
     <author>vininim</author>
     <description>MIDI mapping for DJ-Tech i-Mix Reload</description>
     <forums>https://mixxx.discourse.group/t/dj-tech-i-mix-reload-mapping-for-trunk-as-of-date-of-post/10776</forums>
-    <manual>/hardware/controllers/dj_tech_imix_reload.html</manual>
+    <manual>dj_tech_imix_reload</manual>
   </info>
   <controller id="DJ-Tech i-Mix Reload">
     <scriptfiles>
