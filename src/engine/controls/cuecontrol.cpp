@@ -747,18 +747,18 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
             // position and with the current beatloop size
             cueStartPosition = getQuantizedCurrentPosition();
             double beatloopSize = m_pBeatLoopSize->get();
-            if (beatloopSize > 0) {
-                mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
-                if (pBeats) {
-                    cueEndPosition = pBeats->findNBeatsFromSample(cueStartPosition, beatloopSize);
-                }
+            const mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+            if (beatloopSize <= 0 || !pBeats) {
+                return;
             }
+            cueEndPosition = pBeats->findNBeatsFromSample(cueStartPosition, beatloopSize);
         }
         cueType = mixxx::CueType::Loop;
         break;
     }
     default:
         DEBUG_ASSERT(!"Invalid HotcueMode");
+        return;
     }
 
     VERIFY_OR_DEBUG_ASSERT(cueType != mixxx::CueType::Invalid) {
@@ -768,9 +768,9 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     // Abort if no position has been found. This can happen if a loop cue is
     // requested while no loop is set and the track has no beatgrid, so we
     // can't debug assert here.
-    if (cueStartPosition == Cue::kNoPosition ||
-            (cueType == mixxx::CueType::Loop &&
-                    cueEndPosition == Cue::kNoPosition)) {
+    VERIFY_OR_DEBUG_ASSERT(cueStartPosition != Cue::kNoPosition &&
+            (cueType != mixxx::CueType::Loop ||
+                    cueEndPosition != Cue::kNoPosition)) {
         return;
     }
 
@@ -966,16 +966,15 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         if (m_pCurrentSavedLoopControl != pControl) {
             setCurrentSavedLoopControl(pControl);
         } else {
-            bool loopActive = !(pControl->getStatus() == HotcueControl::Status::Active);
-            setLoop(pCue->getPosition(), pCue->getEndPosition(), loopActive);
+            bool loopActive = pControl->getStatus() == HotcueControl::Status::Active;
+            setLoop(pCue->getPosition(), pCue->getEndPosition(), !loopActive);
         }
     } break;
     case mixxx::CueType::HotCue: {
         setCurrentSavedLoopControl(nullptr);
         double startPosition = pCue->getPosition();
-        bool enabled = startPosition != m_pLoopStartPosition->get() ||
-                !m_pLoopEnabled->get();
-        setBeatLoop(startPosition, enabled);
+        bool loopActive = m_pLoopEnabled->get() && (startPosition == m_pLoopStartPosition->get());
+        setBeatLoop(startPosition, !loopActive);
         break;
     }
     default:
@@ -2090,11 +2089,11 @@ void CueControl::hotcueFocusColorNext(double v) {
 void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
     if (m_pCurrentSavedLoopControl && m_pCurrentSavedLoopControl != pControl) {
         // Disable previous saved loop
+        DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Invalid);
         m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Valid);
         m_pCurrentSavedLoopControl = nullptr;
     }
 
-    // Set new control as active
     if (!pControl) {
         return;
     }
@@ -2115,6 +2114,7 @@ void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
         return;
     }
 
+    // Set new control as active
     m_pCurrentSavedLoopControl = pControl;
     setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
     pControl->setStatus(HotcueControl::Status::Active);
@@ -2128,6 +2128,16 @@ void CueControl::slotLoopToggled(bool enabled) {
     if (!m_pCurrentSavedLoopControl) {
         return;
     }
+
+    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Invalid);
+    DEBUG_ASSERT(
+            m_pCurrentSavedLoopControl->getCue() &&
+            m_pCurrentSavedLoopControl->getCue()->getPosition() ==
+                    m_pLoopStartPosition->get());
+    DEBUG_ASSERT(
+            m_pCurrentSavedLoopControl->getCue() &&
+            m_pCurrentSavedLoopControl->getCue()->getEndPosition() ==
+                    m_pLoopEndPosition->get());
 
     if (enabled) {
         m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Active);
