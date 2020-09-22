@@ -323,6 +323,17 @@ class CueControl : public EngineControl {
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
 
+    // TODO(daschuer): It looks like the whole m_mutex is broken. Originally it
+    // ensured that the main cue really belongs to the loaded track. Now that
+    // we have hot cues that are altered outsite this guard this guarantee has
+    // become void.
+    //
+    // We have multiple cases where it locks m_pLoadedTrack and
+    // pControl->getCue(). This guards the hotcueClear() that could detach the
+    // cue call, but doesn't protect from cue changes via loadCuesFromTrack()
+    // which is called outside the mutex lock.
+    //
+    // We need to repair this.
     QMutex m_mutex;
 
     friend class HotcueControlTest;
