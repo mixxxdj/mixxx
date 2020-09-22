@@ -103,6 +103,9 @@ class SoundSourceProxyTest : public MixxxTest {
                         kMaxReadFrameCount);
             }
             EXPECT_EQ(pAudioSource->getSignalInfo().getChannelCount(), channelCount);
+            qInfo()
+                    << "Opened file" << filePath
+                    << "using provider" << proxy.getProvider()->getDisplayName();
         }
         return pAudioSource;
     }
