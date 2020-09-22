@@ -76,6 +76,10 @@ HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPoin
     // All HID devices are full-duplex
     setInputDevice(true);
     setOutputDevice(true);
+
+    for (int i = 0; i < m_iNumBuffers; i++) {
+        memset(m_pPollData[i], 0, m_iBufferSize);
+    }
 }
 
 HidController::~HidController() {
