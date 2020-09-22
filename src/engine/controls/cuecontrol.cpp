@@ -2167,6 +2167,7 @@ void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
     lock.unlock();
 
     VERIFY_OR_DEBUG_ASSERT(pCue->getType() == mixxx::CueType::Loop) {
+        setCurrentSavedLoopControl(nullptr);
         return;
     }
 
