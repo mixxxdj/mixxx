@@ -1056,6 +1056,8 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             pControl->setPreviewingPosition(position);
             if (pCue->getType() == mixxx::CueType::Loop) {
                 setCurrentSavedLoopControl(pControl);
+            } else if (pControl->getStatus() == HotcueControl::Status::Valid) {
+                pControl->setStatus(HotcueControl::Status::Active);
             }
 
             // Need to unlock before emitting any signals to prevent deadlock.
@@ -1080,6 +1082,8 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                 lock.unlock();
                 if (cueType == mixxx::CueType::Loop) {
                     m_pLoopEnabled->set(0);
+                } else if (pControl->getStatus() == HotcueControl::Status::Active) {
+                    pControl->setStatus(HotcueControl::Status::Valid);
                 }
                 seekExact(position);
             }
