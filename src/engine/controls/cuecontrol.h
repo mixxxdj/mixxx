@@ -183,7 +183,7 @@ class CueControl : public EngineControl {
 
   public slots:
     void slotLoopReset();
-    void slotLoopToggled(bool enabled);
+    void slotLoopEnabledChanged(bool enabled);
     void slotLoopUpdated(double startPosition, double endPosition);
 
   private slots:

@@ -2124,7 +2124,7 @@ void CueControl::slotLoopReset() {
     setCurrentSavedLoopControl(nullptr);
 }
 
-void CueControl::slotLoopToggled(bool enabled) {
+void CueControl::slotLoopEnabledChanged(bool enabled) {
     if (!m_pCurrentSavedLoopControl) {
         return;
     }

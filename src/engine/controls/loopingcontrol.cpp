@@ -945,7 +945,7 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
         }
     }
 
-    emit loopToggled(enabled);
+    emit loopEnabledChanged(enabled);
 }
 
 bool LoopingControl::isLoopingEnabled() {

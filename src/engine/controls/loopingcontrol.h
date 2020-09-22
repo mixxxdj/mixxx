@@ -62,7 +62,7 @@ class LoopingControl : public EngineControl {
 
   signals:
     void loopReset();
-    void loopToggled(bool enabled);
+    void loopEnabledChanged(bool enabled);
     void loopUpdated(double startPosition, double endPosition);
 
   public slots:
