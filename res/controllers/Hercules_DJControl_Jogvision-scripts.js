@@ -218,7 +218,7 @@ var DJCJV = {
     },
     // Finalization
     "shutdown": function() {
-        print(id+": finishing...");
+        print("Finishing...");
         if (DJCJV.other.beatHelpTimer !== 0) {
             engine.stopTimer(DJCJV.other.beatHelpTimer);
             DJCJV.other.beatHelpTimer = 0;
@@ -452,7 +452,7 @@ var DJCJV = {
             if (DJCJV.Channel[group].shiftPressed) {
                 engine.setValue(group, "reverseroll", DJCJV.other.on);
                 // spinBack ------------------------------------------------------------------------------------------------> brake_strength, initial_speed
-                engine.spinback(parseInt(group.substring(8,9)), DJCJV.other.on, engine.getValue(group, "bpm") / CFG.fine.spinBackBrakeFactor, -1 * CFG.fine.spinBackInitialSpeed);
+                engine.spinback(parseInt(group.substring(8, 9)), DJCJV.other.on, engine.getValue(group, "bpm") / CFG.fine.spinBackBrakeFactor, -1 * CFG.fine.spinBackInitialSpeed);
             // Start scratch
             } else {
                 // ... with slip mode on
@@ -464,7 +464,7 @@ var DJCJV = {
         // End scratch/backSpin
         } else {
             if (DJCJV.Channel[group].shiftPressed) {
-                engine.spinback(parseInt(group.substring(8,9)), DJCJV.other.off);
+                engine.spinback(parseInt(group.substring(8, 9)), DJCJV.other.off);
             }
             engine.setValue(group, "reverseroll", DJCJV.other.off);
             engine.setValue(group, "slip_enabled", DJCJV.other.off);
@@ -474,9 +474,9 @@ var DJCJV = {
     // Using the top of wheel for scratching (Vinyl button On) and bending (Vinyl button Off)
     "scratchWheel": function(channel, control, value, status, group) {
         // If NOT playing, and MODE button is pressed, move 'playposition'
-        if ((DJCJV.Channel[group].modePressed) && ( engine.getValue(group, "play") !== 1 )) {
+        if ((DJCJV.Channel[group].modePressed) && (engine.getValue(group, "play") !== 1)) {
             // new_playposition moves -------------------------------------------------> ( backward : forward ) times CFG.fine.quickMoveFactor
-            var newpos = engine.getValue(group, "playposition") + ((value === DJCJV.other.left ? -1 : 1 ) * CFG.fine.quickMoveFactor);
+            var newpos = engine.getValue(group, "playposition") + ((value === DJCJV.other.left ? -1 : 1) * CFG.fine.quickMoveFactor);
             // Set playposition to ------------------------> start :       end        : new_playposition
             engine.setValue(group, "playposition", newpos <= 0 ? 0 : (newpos >= 1 ? 1 : newpos));
         } else if (engine.isScratching(DJCJV.Channel[group].n)) {
