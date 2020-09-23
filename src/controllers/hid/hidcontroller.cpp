@@ -76,10 +76,6 @@ HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPoin
     // All HID devices are full-duplex
     setInputDevice(true);
     setOutputDevice(true);
-
-    for (int i = 0; i < m_iNumBuffers; i++) {
-        memset(m_pPollData[i], 0, m_iBufferSize);
-    }
 }
 
 HidController::~HidController() {
@@ -218,6 +214,10 @@ int HidController::open() {
     if (hid_set_nonblocking(m_pHidDevice, 1) != 0) {
         qWarning() << "Unable to set HID device " << getName() << " to non-blocking";
         return -1;
+    }
+
+    for (int i = 0; i < m_iNumBuffers; i++) {
+        memset(m_pPollData[i], 0, m_iBufferSize);
     }
 
     setOpen(true);
