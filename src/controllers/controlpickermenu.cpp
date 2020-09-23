@@ -809,9 +809,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Samplers]", "show_samplers",
                tr("Samplers Show/Hide"),
                tr("Show/hide the sampler section"), guiMenu);
-    addControl("[Microphone]", "show_microphone",
-               tr("Microphone Show/Hide"),
-               tr("Show/hide the microphone section"), guiMenu);
+    addControl("[Skin]",
+            "expand_samplers",
+            tr("Samplers Expand/Collapse"),
+            tr("Expand/collapse the sampler section"),
+            guiMenu);
+    addControl("[Microphone]",
+            "show_microphone",
+            tr("Microphone & Auxiliary Show/Hide"),
+            tr("Show/hide the microphone & auxiliary section"),
+            guiMenu);
     addControl(VINYL_PREF_KEY, "show_vinylcontrol",
                tr("Vinyl Control Show/Hide"),
                tr("Show/hide the vinyl control section"), guiMenu);
@@ -821,9 +828,36 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[EffectRack1]", "show",
                tr("Effect Rack Show/Hide"),
                tr("Show/hide the effect rack"), guiMenu);
-    addControl("[Library]", "show_coverart",
-               tr("Cover Art Show/Hide"),
-               tr("Show/hide cover art"), guiMenu);
+    addControl("[Skin]",
+            "show_4effectunits",
+            tr("4 Effect Units Show/Hide"),
+            tr("Switches between showing 2 and 4 effect units"),
+            guiMenu);
+    addControl("[Master]",
+            "show_mixer",
+            tr("Mixer Show/Hide"),
+            tr("Show or hide the mixer."),
+            guiMenu);
+    addControl("[Skin]",
+            "show_4decks",
+            tr("Toggle 4 Decks"),
+            tr("Switches between showing 2 decks and 4 decks."),
+            guiMenu);
+    addControl("[Skin]",
+            "show_waveforms",
+            tr("Toggle Waveforms"),
+            tr("Show/hide the scrolling waveforms."),
+            guiMenu);
+    addControl("[Library]",
+            "show_coverart",
+            tr("Cover Art Show/Hide (Library)"),
+            tr("Show/hide cover art in the library"),
+            guiMenu);
+    addControl("[Skin]",
+            "show_coverart",
+            tr("Cover Art Show/Hide (Decks)"),
+            tr("Show/hide cover art in the main decks"),
+            guiMenu);
     addControl("[Master]", "maximize_library",
                tr("Library Maximize/Restore"),
                tr("Maximize the track library to take up all the available screen space."), guiMenu);
