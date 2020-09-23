@@ -633,6 +633,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            tr("Switch to either next or previous effect"),
                            effectSlotMenu, false, slotDescriptionPrefix);
 
+                // Effect parameter knobs
                 const int numParameterSlots = ControlObject::get(
                         ConfigKey(effectSlotGroup, "num_parameterslots"));
                 for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
@@ -670,6 +671,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                parameterSlotMenu, false,
                                parameterDescriptionPrefix);
 
+                }
+
+                // Effect parameter buttons
+                const int numButtonParameterSlots = ControlObject::get(
+                        ConfigKey(effectSlotGroup, "num_button_parameterslots"));
+                for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numButtonParameterSlots;
+                        ++iParameterSlotNumber) {
+                    // The parameter slot group is the same as the effect slot
+                    // group on a standard effect rack.
+                    const QString parameterSlotGroup =
+                            StandardEffectRack::formatEffectSlotGroupString(
+                                    iRackNumber - 1, iEffectUnitNumber - 1, iEffectSlotNumber - 1);
+                    const QString parameterSlotItemPrefix =
+                            EffectButtonParameterSlot::formatItemPrefix(
+                                    iParameterSlotNumber - 1);
+                    QMenu* parameterSlotMenu = addSubmenu(
+                            m_parameterStr.arg(iParameterSlotNumber),
+                            effectSlotMenu);
+
+                    QString parameterDescriptionPrefix =
+                            QString("%1, %2").arg(slotDescriptionPrefix,
+                                    m_parameterStr.arg(iParameterSlotNumber));
+
+                    // Likely to change soon.
+                    addControl(parameterSlotGroup,
+                            parameterSlotItemPrefix,
+                            tr("Button Parameter Value"),
+                            tr("Button Parameter Value"),
+                            parameterSlotMenu,
+                            true,
+                            parameterDescriptionPrefix);
                 }
             }
         }
