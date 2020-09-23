@@ -236,6 +236,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
     QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
     QString hotcuePreviewDescription = tr("Preview from hotcue %1");
+    addDeckControl("shift_cues_earlier",
+            tr("Shift cue points earlier"),
+            tr("Shift cue points 10 milliseconds earlier"),
+            hotcueMenu);
+    addDeckControl("shift_cues_earlier_small",
+            tr("Shift cue points earlier (fine)"),
+            tr("Shift cue points 1 millisecond earlier"),
+            hotcueMenu);
+    addDeckControl("shift_cues_later",
+            tr("Shift cue points later"),
+            tr("Shift cue points 10 milliseconds later"),
+            hotcueMenu);
+    addDeckControl("shift_cues_later_small",
+            tr("Shift cue points later (fine)"),
+            tr("Shift cue points 1 millisecond later"),
+            hotcueMenu);
     for (int i = 1; i <= NUM_HOT_CUES; ++i) {
         QMenu* hotcueSubMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)), hotcueMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_activate").arg(i),
