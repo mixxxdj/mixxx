@@ -91,6 +91,7 @@ class WaveformWidgetRenderer {
     int getBreadth() const { return m_orientation == Qt::Horizontal ? m_height : m_width;}
     Qt::Orientation getOrientation() const { return m_orientation;}
     const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
+    int getDimBrightThreshold() { return m_dimBrightThreshold; }
 
     template< class T_Renderer>
     inline T_Renderer* addRenderer() {
@@ -120,6 +121,7 @@ class WaveformWidgetRenderer {
     TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
     Qt::Orientation m_orientation;
+    int m_dimBrightThreshold;
     int m_height;
     int m_width;
     float m_devicePixelRatio;
