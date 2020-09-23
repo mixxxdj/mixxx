@@ -29,6 +29,7 @@
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
             <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+            <DimBrightThreshold><Variable name="DimBrightThresholdWaveform"/></DimBrightThreshold>
             <!--
             The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
               - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
