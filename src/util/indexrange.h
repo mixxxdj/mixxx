@@ -1,14 +1,12 @@
 #pragma once
 
-
 #include <QtDebug>
-
 #include <iosfwd>
 #include <utility>
 
 #include "util/assert.h"
+#include "util/optional.h"
 #include "util/types.h"
-
 
 namespace mixxx {
 
@@ -155,7 +153,22 @@ class IndexRange final: private std::pair<SINT, SINT> {
 
 IndexRange reverse(IndexRange arg);
 
-IndexRange intersect(IndexRange lhs, IndexRange rhs);
+/// Intersect two ranges with compatible orientations.
+///
+/// Returns std::nullopt of the ranges are disconnected without
+/// any junction point or on orientation mismatch.
+///
+/// TODO: Rename as intersect() after removing the original function
+/// with the non-optional return type
+std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs);
+
+/// Deprecated, only needed for backward compatibility
+///
+/// TODO: Replace with intersect2()
+inline IndexRange intersect(IndexRange lhs, IndexRange rhs) {
+    auto res = intersect2(lhs, rhs);
+    return res ? *res : IndexRange();
+}
 
 IndexRange span(IndexRange lhs, IndexRange rhs);
 
@@ -166,7 +179,7 @@ bool operator!=(IndexRange lhs, IndexRange rhs) {
 
 inline
 bool operator<=(IndexRange lhs, IndexRange rhs) {
-    return intersect(lhs, rhs) == lhs;
+    return intersect2(lhs, rhs) == std::make_optional(lhs);
 }
 
 inline

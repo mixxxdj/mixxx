@@ -212,23 +212,39 @@ TEST_F(IndexRangeTest, reverse) {
     EXPECT_EQ(IndexRange::between(-9, -3), reverse(IndexRange::between(-4, -10)));
 }
 
-TEST_F(IndexRangeTest, intersect) {
-    EXPECT_EQ(IndexRange::between(0, 0), intersect(IndexRange::between(-1, 0), IndexRange::between(0, 1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), intersect(IndexRange::between(-1, 1), IndexRange::between(-1, 1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), intersect(IndexRange::between(-2, 1), IndexRange::between(-1, 2)));
-    EXPECT_TRUE(intersect(IndexRange::between(-2, -1), IndexRange::between(1, 2)).empty());
-    EXPECT_EQ(IndexRange::between(0, 0), intersect(IndexRange::between(0, -1), IndexRange::between(1, 0)));
-    EXPECT_EQ(IndexRange::between(1, -1), intersect(IndexRange::between(1, -1), IndexRange::between(1, -1)));
-    EXPECT_EQ(IndexRange::between(1, -1), intersect(IndexRange::between(2, -1), IndexRange::between(1, -2)));
-    EXPECT_TRUE(intersect(IndexRange::between(-1, -2), IndexRange::between(2, 1)).empty());
-    EXPECT_EQ(IndexRange(), intersect(IndexRange::between(1, 2), IndexRange::between(3, 4)));
-    EXPECT_EQ(IndexRange(), intersect(IndexRange::between(-1, -2), IndexRange::between(-3, -4)));
-    EXPECT_EQ(IndexRange(), intersect(IndexRange(), IndexRange::between(1, 2)));
-    EXPECT_EQ(IndexRange(), intersect(IndexRange(), IndexRange::between(-1, -2)));
-    EXPECT_EQ(IndexRange::between(1, 1), intersect(IndexRange::between(1, 1), IndexRange::between(1, 1)));
-    EXPECT_EQ(IndexRange::between(-1, -1), intersect(IndexRange::between(-1, -1), IndexRange::between(-1, -1)));
-    EXPECT_EQ(IndexRange::between(1, 1), intersect(IndexRange::between(0, 1), IndexRange::between(1, 1)));
-    EXPECT_EQ(IndexRange::between(-1, -1), intersect(IndexRange::between(0, -1), IndexRange::between(-1, -1)));
+TEST_F(IndexRangeTest, intersect2) {
+    EXPECT_EQ(IndexRange::between(0, 0),
+            *intersect2(IndexRange::between(-1, 0), IndexRange::between(0, 1)));
+    EXPECT_EQ(IndexRange::between(-1, 1),
+            *intersect2(
+                    IndexRange::between(-1, 1), IndexRange::between(-1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, 1),
+            *intersect2(
+                    IndexRange::between(-2, 1), IndexRange::between(-1, 2)));
+    EXPECT_EQ(std::nullopt, intersect2(IndexRange::between(-2, -1), IndexRange::between(1, 2)));
+    EXPECT_EQ(IndexRange::between(0, 0),
+            *intersect2(IndexRange::between(0, -1), IndexRange::between(1, 0)));
+    EXPECT_EQ(IndexRange::between(1, -1),
+            *intersect2(
+                    IndexRange::between(1, -1), IndexRange::between(1, -1)));
+    EXPECT_EQ(IndexRange::between(1, -1),
+            *intersect2(
+                    IndexRange::between(2, -1), IndexRange::between(1, -2)));
+    EXPECT_EQ(std::nullopt, intersect2(IndexRange::between(-1, -2), IndexRange::between(2, 1)));
+    EXPECT_EQ(std::nullopt, intersect2(IndexRange::between(1, 2), IndexRange::between(3, 4)));
+    EXPECT_EQ(std::nullopt, intersect2(IndexRange::between(-1, -2), IndexRange::between(-3, -4)));
+    EXPECT_EQ(std::nullopt, intersect2(IndexRange(), IndexRange::between(1, 2)));
+    EXPECT_EQ(std::nullopt, intersect2(IndexRange(), IndexRange::between(-1, -2)));
+    EXPECT_EQ(IndexRange::between(1, 1),
+            *intersect2(IndexRange::between(1, 1), IndexRange::between(1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, -1),
+            *intersect2(
+                    IndexRange::between(-1, -1), IndexRange::between(-1, -1)));
+    EXPECT_EQ(IndexRange::between(1, 1),
+            *intersect2(IndexRange::between(0, 1), IndexRange::between(1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, -1),
+            *intersect2(
+                    IndexRange::between(0, -1), IndexRange::between(-1, -1)));
 }
 
 TEST_F(IndexRangeTest, span) {
