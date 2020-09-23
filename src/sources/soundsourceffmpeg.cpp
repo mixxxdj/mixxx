@@ -468,6 +468,18 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         }
         m_pavInputFormatContext.take(&pavInputFormatContext);
     }
+#if VERBOSE_DEBUG_LOG
+    kLogger.debug()
+            << "AVFormatContext"
+            << "{ nb_streams" << m_pavInputFormatContext->nb_streams
+            << "| start_time" << m_pavInputFormatContext->start_time
+            << "| duration" << m_pavInputFormatContext->duration
+            << "| bit_rate" << m_pavInputFormatContext->bit_rate
+            << "| packet_size" << m_pavInputFormatContext->packet_size
+            << "| audio_codec_id" << m_pavInputFormatContext->audio_codec_id
+            << "| output_ts_offset" << m_pavInputFormatContext->output_ts_offset
+            << '}';
+#endif
 
     // Retrieve stream information
     const int avformat_find_stream_info_result =
@@ -557,9 +569,13 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     if (kLogger.debugEnabled()) {
         kLogger.debug()
-                << "Opened stream for decoding"
+                << "AVStream"
                 << "{ index" << m_pavStream->index
                 << "| id" << m_pavStream->id
+                << "| time_base" << m_pavStream->time_base.num << '/' << m_pavStream->time_base.den
+                << "| start_time" << m_pavStream->start_time
+                << "| duration" << m_pavStream->duration
+                << "| nb_frames" << m_pavStream->nb_frames
                 << "| codec_type" << m_pavStream->codecpar->codec_type
                 << "| codec_id" << m_pavStream->codecpar->codec_id
                 << "| channels" << m_pavStream->codecpar->channels
@@ -569,13 +585,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << "| sample_rate" << m_pavStream->codecpar->sample_rate
                 << "| bit_rate" << m_pavStream->codecpar->bit_rate
                 << "| frame_size" << m_pavStream->codecpar->frame_size
+                << "| seek_preroll" << m_pavStream->codecpar->seek_preroll
                 << "| initial_padding" << m_pavStream->codecpar->initial_padding
                 << "| trailing_padding" << m_pavStream->codecpar->trailing_padding
-                << "| seek_preroll" << m_pavStream->codecpar->seek_preroll
-                << "| start_time" << m_pavStream->start_time
-                << "| duration" << m_pavStream->duration
-                << "| nb_frames" << m_pavStream->nb_frames
-                << "| time_base" << m_pavStream->time_base.num << '/' << m_pavStream->time_base.den
                 << '}';
     }
 
@@ -759,8 +771,10 @@ SINT readNextPacket(
         if (av_read_frame_result < 0) {
             if (av_read_frame_result == AVERROR_EOF) {
                 // Enter drain mode: Flush the decoder with a final empty packet
+#if VERBOSE_DEBUG_LOG
                 kLogger.debug()
                         << "EOF: Entering drain mode";
+#endif
                 pavPacket->stream_index = pavStream->index;
                 pavPacket->data = nullptr;
                 pavPacket->size = 0;
@@ -952,18 +966,19 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 
 #if VERBOSE_DEBUG_LOG
     kLogger.debug()
-            << "After consuming buffered sample data:"
+            << "readSampleFramesClamped:"
             << "writableSampleFrames.frameIndexRange()" << writableSampleFrames.frameIndexRange();
 #endif
 
     // Consume all buffered sample data before decoding any new data
-    writableSampleFrames = m_frameBuffer.drain(writableSampleFrames);
-
+    if (m_frameBuffer.isReady()) {
+        writableSampleFrames = m_frameBuffer.drainBuffer(writableSampleFrames);
 #if VERBOSE_DEBUG_LOG
-    kLogger.debug()
-            << "After consuming buffered sample data:"
-            << "writableSampleFrames.frameIndexRange()" << writableSampleFrames.frameIndexRange();
+        kLogger.debug() << "After consuming buffered sample data:"
+                        << "writableSampleFrames.frameIndexRange()"
+                        << writableSampleFrames.frameIndexRange();
 #endif
+    }
 
     // Skip decoding if all data has been read
     auto writableFrameRange = writableSampleFrames.frameIndexRange();
@@ -1020,7 +1035,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 DEBUG_ASSERT(m_pavDecodedFrame->pts != AV_NOPTS_VALUE);
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
                 DEBUG_ASSERT(decodedFrameCount > 0);
-                const auto streamFrameIndex =
+                auto streamFrameIndex =
                         convertStreamTimeToFrameIndex(
                                 *m_pavStream, m_pavDecodedFrame->pts);
                 decodedFrameRange = IndexRange::forward(
@@ -1047,7 +1062,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     // Current position is known
                     DEBUG_ASSERT(m_frameBuffer.isEmpty());
                     DEBUG_ASSERT(m_frameBuffer.writeIndex() < frameIndexRange().end());
-                    kLogger.debug()
+                    kLogger.info()
                             << "Stream ends at sample frame"
                             << m_frameBuffer.writeIndex()
                             << "instead of"
@@ -1067,6 +1082,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     }
                     writableFrameRange.shrinkFront(writableFrameRange.length());
                 }
+                DEBUG_ASSERT(writableFrameRange.empty());
                 DEBUG_ASSERT(!pavNextPacket);
                 break;
             } else {
@@ -1093,8 +1109,55 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             if (!pDecodedSampleData) {
                 // Invalidate current position and abort reading after unrecoverable error
                 m_frameBuffer.invalidate();
+                // Housekeeping before aborting to avoid memory leaks
+                av_frame_unref(m_pavDecodedFrame);
                 break;
             }
+
+            // The decoder may provide some lead-in and lead-out frames
+            // before the start position and after the end of the stream.
+            // Those frames need to be cut-off before consumption.
+            if (decodedFrameRange.start() < frameIndexRange().start()) {
+                const auto leadinRange = IndexRange::between(
+                        decodedFrameRange.start(),
+                        math_min(frameIndexRange().start(), decodedFrameRange.end()));
+                DEBUG_ASSERT(leadinRange.orientation() != IndexRange::Orientation::Backward);
+                if (leadinRange.orientation() == IndexRange::Orientation::Forward) {
+#if VERBOSE_DEBUG_LOG
+                    kLogger.debug()
+                            << "Cutting off lead-in"
+                            << leadinRange
+                            << "before"
+                            << frameIndexRange();
+#endif
+                    pDecodedSampleData += getSignalInfo().frames2samples(leadinRange.length());
+                    decodedFrameRange.shrinkFront(leadinRange.length());
+                }
+            }
+            if (decodedFrameRange.end() > frameIndexRange().end()) {
+                const auto leadoutRange = IndexRange::between(
+                        math_min(frameIndexRange().end(), decodedFrameRange.start()),
+                        decodedFrameRange.end());
+                DEBUG_ASSERT(leadoutRange.orientation() != IndexRange::Orientation::Backward);
+                if (leadoutRange.orientation() == IndexRange::Orientation::Forward) {
+#if VERBOSE_DEBUG_LOG
+                    kLogger.debug()
+                            << "Cutting off lead-out"
+                            << leadoutRange
+                            << "beyond"
+                            << frameIndexRange();
+#endif
+                    decodedFrameRange.shrinkBack(leadoutRange.length());
+                }
+            }
+
+#if VERBOSE_DEBUG_LOG
+            kLogger.debug()
+                    << "Before consuming decoded sample data:"
+                    << "m_frameBuffer.bufferedRange()" << m_frameBuffer.bufferedRange()
+                    << "writableFrameRange" << writableFrameRange
+                    << "decodedFrameRange" << decodedFrameRange;
+#endif
 
             const auto decodedSampleFrames = ReadableSampleFrames(
                     decodedFrameRange,
@@ -1106,7 +1169,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     SampleBuffer::WritableSlice(
                             pOutputSampleBuffer,
                             getSignalInfo().frames2samples(writableFrameRange.length())));
-            outputSampleFrames = m_frameBuffer.recharge(
+            outputSampleFrames = m_frameBuffer.consumeAndFillBuffer(
                     decodedSampleFrames,
                     outputSampleFrames,
                     writableSampleFrames.frameIndexRange().start());

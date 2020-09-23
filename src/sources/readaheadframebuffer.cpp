@@ -103,47 +103,44 @@ FrameCount ReadAheadFrameBuffer::discardLastBufferedFrames(
             m_signalInfo.frames2samples(frameCount));
 }
 
-ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
-        ReadableSampleFrames inputSampleFrames,
-        BufferingMode bufferingMode) {
+ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
+        ReadableSampleFrames inputBuffer,
+        DiscontinuityGapMode discontinuityGapMode) {
     DEBUG_ASSERT(isValid());
-    auto inputRange = inputSampleFrames.frameIndexRange();
+    auto inputRange = inputBuffer.frameIndexRange();
     VERIFY_OR_DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward) {
-        return inputSampleFrames;
+        return inputBuffer;
     }
-    const CSAMPLE* pInputSamples = inputSampleFrames.readableData();
+    const CSAMPLE* pInputSamples = inputBuffer.readableData();
     VERIFY_OR_DEBUG_ASSERT(pInputSamples) {
-        return inputSampleFrames;
+        return inputBuffer;
     }
-    if (isReady()) {
-        VERIFY_OR_DEBUG_ASSERT(writeIndex() <= inputRange.start()) {
-            kLogger.warning()
-                    << "Cannot buffer sample data from"
-                    << inputRange
-                    << "starting before"
-                    << writeIndex();
-            return inputSampleFrames;
-        }
-    } else {
+
+    // Overlapping input data has already been handled
+    DEBUG_ASSERT(!isReady() || writeIndex() <= inputRange.start());
+    if (!isReady()) {
         DEBUG_ASSERT(isEmpty());
         reset(inputRange.start());
     }
     DEBUG_ASSERT(isReady());
-    if (inputRange.start() > writeIndex()) {
-        // Gap between current write position and the start of
-        // the input sample data
-        switch (bufferingMode) {
-        case BufferingMode::SkipGapAndReset:
+
+    // Detect and handle discontinuities: Gap
+    if (writeIndex() < inputRange.start()) {
+        const auto gapRange = IndexRange::between(writeIndex(), inputRange.start());
+        DEBUG_ASSERT(gapRange.orientation() == IndexRange::Orientation::Forward);
+        kLogger.warning()
+                << "Missing range"
+                << gapRange
+                << "between internal buffer"
+                << bufferedRange()
+                << "and input buffer"
+                << inputRange;
+        switch (discontinuityGapMode) {
+        case DiscontinuityGapMode::Skip:
             reset(inputRange.start());
             break;
-        case BufferingMode::FillGapWithSilence: {
-#if VERBOSE_DEBUG_LOG
-            kLogger.debug()
-                    << "Filling gap with silence"
-                    << IndexRange::between(writeIndex(), inputRange.start());
-#endif
-            const auto clearFrameCount =
-                    inputRange.start() - writeIndex();
+        case DiscontinuityGapMode::FillWithSilence: {
+            const auto clearFrameCount = gapRange.length();
             beforeBuffering(clearFrameCount);
             const auto clearSampleCount =
                     m_signalInfo.frames2samples(clearFrameCount);
@@ -155,12 +152,13 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
                     clearSampleCount);
         } break;
         default:
-            DEBUG_ASSERT(!"unexpected BufferingMode");
+            DEBUG_ASSERT(!"Unknown DiscontinuityGapMode");
         }
     }
+
     DEBUG_ASSERT(writeIndex() == inputRange.start());
     if (inputRange.empty()) {
-        return inputSampleFrames;
+        return inputBuffer;
     }
     // Consume the readable sample data by copying it into the internal buffer
 #if VERBOSE_DEBUG_LOG
@@ -176,7 +174,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
     DEBUG_ASSERT(writableSamples.length() == copySampleCount);
     SampleUtil::copy(
             writableSamples.data(),
-            inputSampleFrames.readableData(),
+            inputBuffer.readableData(),
             copySampleCount);
     pInputSamples += copySampleCount;
     inputRange.shrinkFront(inputRange.length());
@@ -188,51 +186,59 @@ ReadableSampleFrames ReadAheadFrameBuffer::bufferSampleData(
                     m_signalInfo.frames2samples(inputRange.length())));
 }
 
-WritableSampleFrames ReadAheadFrameBuffer::drain(
-        WritableSampleFrames outputSampleFrames) {
+WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
+        WritableSampleFrames outputBuffer) {
     DEBUG_ASSERT(isValid());
-    if (isEmpty() || outputSampleFrames.writableSlice().empty()) {
-        return outputSampleFrames;
+    auto outputRange = outputBuffer.frameIndexRange();
+#if VERBOSE_DEBUG_LOG
+    kLogger.debug()
+            << "drainBuffer:"
+            << "bufferedRange()"
+            << bufferedRange()
+            << "outputRange"
+            << outputRange;
+#endif
+    if (isEmpty() || outputBuffer.writableSlice().empty()) {
+        return outputBuffer;
     }
     DEBUG_ASSERT(isReady());
-    auto outputRange = outputSampleFrames.frameIndexRange();
     if (outputRange.start() < m_readIndex) {
         // Buffered data starts beyond the requested range
-        return outputSampleFrames;
+        return outputBuffer;
     }
-    const auto consumableRange = intersect(bufferedRange(), outputRange);
-    DEBUG_ASSERT(consumableRange <= outputRange);
-    if (consumableRange.empty()) {
+    const auto consumableRange = intersect2(bufferedRange(), outputRange);
+    DEBUG_ASSERT(!consumableRange || *consumableRange <= outputRange);
+    if (!consumableRange || consumableRange->empty()) {
         // No overlap between buffer and requested data
-        return outputSampleFrames;
+        return outputBuffer;
     }
-    DEBUG_ASSERT(consumableRange.start() == outputRange.start());
+    DEBUG_ASSERT(consumableRange->start() == outputRange.start());
 
     // Drop and skip any buffered samples preceding the requested range
 #if VERBOSE_DEBUG_LOG
     if (m_readIndex < consumableRange.start()) {
         kLogger.debug()
                 << "Discarding buffered frames"
-                << IndexRange::between(m_readIndex, consumableRange.start());
+                << IndexRange::between(m_readIndex, consumableRange->start());
     }
 #endif
-    discardFirstBufferedFrames(consumableRange.start() - m_readIndex);
+    discardFirstBufferedFrames(consumableRange->start() - m_readIndex);
 
     // Consume buffered samples
 #if VERBOSE_DEBUG_LOG
     kLogger.debug()
-            << "Consuming buffered samples" << consumableRange
+            << "Consuming buffered samples" << *consumableRange
             << "outputRange" << outputRange
             << "readIndex()" << readIndex()
             << "bufferedRange()" << bufferedRange();
 #endif
-    DEBUG_ASSERT(m_readIndex == consumableRange.start());
+    DEBUG_ASSERT(m_readIndex == consumableRange->start());
     const SampleBuffer::ReadableSlice consumableSamples =
             m_sampleBuffer.shrinkForReading(
-                    m_signalInfo.frames2samples(consumableRange.length()));
+                    m_signalInfo.frames2samples(consumableRange->length()));
     DEBUG_ASSERT(consumableSamples.length() ==
-            m_signalInfo.frames2samples(consumableRange.length()));
-    CSAMPLE* pOutputSamples = outputSampleFrames.writableData();
+            m_signalInfo.frames2samples(consumableRange->length()));
+    CSAMPLE* pOutputSamples = outputBuffer.writableData();
     if (pOutputSamples) {
         SampleUtil::copy(
                 pOutputSamples,
@@ -240,8 +246,8 @@ WritableSampleFrames ReadAheadFrameBuffer::drain(
                 consumableSamples.length());
         pOutputSamples += consumableSamples.length();
     }
-    outputRange.shrinkFront(consumableRange.length());
-    m_readIndex += consumableRange.length();
+    outputRange.shrinkFront(consumableRange->length());
+    m_readIndex += consumableRange->length();
 
     // Either the resulting output buffer or the internal sample buffer
     // is empty after returning from this function!
@@ -255,16 +261,16 @@ WritableSampleFrames ReadAheadFrameBuffer::drain(
                     m_signalInfo.frames2samples(outputRange.length())));
 }
 
-WritableSampleFrames ReadAheadFrameBuffer::recharge(
-        ReadableSampleFrames inputSampleFrames,
-        WritableSampleFrames outputSampleFrames,
+WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
+        ReadableSampleFrames inputBuffer,
+        WritableSampleFrames outputBuffer,
         FrameCount minOutputIndex,
-        BufferingMode bufferingMode) {
-    auto inputRange = inputSampleFrames.frameIndexRange();
-    auto outputRange = outputSampleFrames.frameIndexRange();
+        std::pair<DiscontinuityOverlapMode, DiscontinuityGapMode> discontinuityModes) {
+    auto inputRange = inputBuffer.frameIndexRange();
+    auto outputRange = outputBuffer.frameIndexRange();
 #if VERBOSE_DEBUG_LOG
     kLogger.debug()
-            << "Recharging:"
+            << "consumeAndFillBuffer:"
             << "bufferedRange()"
             << bufferedRange()
             << "inputRange"
@@ -275,7 +281,7 @@ WritableSampleFrames ReadAheadFrameBuffer::recharge(
             << minOutputIndex;
 #endif
 
-    const auto* pInputSampleData = inputSampleFrames.readableData();
+    const auto* pInputSampleData = inputBuffer.readableData();
     // input sample data is mandatory
     DEBUG_ASSERT(pInputSampleData);
     DEBUG_ASSERT(inputRange.orientation() != IndexRange::Orientation::Backward);
@@ -283,49 +289,73 @@ WritableSampleFrames ReadAheadFrameBuffer::recharge(
 
     // output sample data is optional, i.e. input samples will be dropped
     // and not copied if no output buffer is provided
-    auto* pOutputSampleData = outputSampleFrames.writableData();
+    auto* pOutputSampleData = outputBuffer.writableData();
     DEBUG_ASSERT(outputRange.orientation() != IndexRange::Orientation::Backward);
     DEBUG_ASSERT(isEmpty() || outputRange.empty());
     DEBUG_ASSERT(minOutputIndex <= outputRange.start());
 
-    // Rewind if input and output ranges overlap
+    const auto [discontinuityOverlapMode, discontinuityGapMode] = discontinuityModes;
+
+    // Detect and handle unexpected discontinuities: Overlap
     if (inputRange.start() < outputRange.start()) {
-        const auto rewindRange = IndexRange::between(
+        const auto overlapRange = IndexRange::between(
                 math_max(inputRange.start(), minOutputIndex),
                 outputRange.start());
+        DEBUG_ASSERT(
+                overlapRange.orientation() !=
+                IndexRange::Orientation::Backward);
+        // Overlaps should never occur, but we cannot be sure
         VERIFY_OR_DEBUG_ASSERT(
-                rewindRange.orientation() ==
+                overlapRange.orientation() ==
                 IndexRange::Orientation::Empty) {
             kLogger.warning()
-                    << "Discarding"
-                    << rewindRange
-                    << "overlapping with input buffer"
-                    << inputRange
-                    << "from output buffer"
-                    << outputRange;
-            if (pOutputSampleData) {
-                pOutputSampleData -=
-                        m_signalInfo.frames2samples(rewindRange.length());
+                    << "Overlapping range"
+                    << overlapRange
+                    << "in output buffer"
+                    << outputRange
+                    << "with input buffer"
+                    << inputRange;
+            switch (discontinuityOverlapMode) {
+            case DiscontinuityOverlapMode::Ignore:
+                break;
+            case DiscontinuityOverlapMode::Rewind:
+                if (pOutputSampleData) {
+                    pOutputSampleData -= m_signalInfo.frames2samples(overlapRange.length());
+                }
+                outputRange.growFront(overlapRange.length());
+                break;
+            default:
+                DEBUG_ASSERT(!"Unknown DiscontinuityOverlapMode");
             }
-            outputRange.growFront(rewindRange.length());
         }
     }
     if (!isEmpty() && inputRange.start() < writeIndex()) {
-        const auto rewindRange = IndexRange::between(
+        const auto overlapRange = IndexRange::between(
                 math_max(inputRange.start(), readIndex()),
                 writeIndex());
+        DEBUG_ASSERT(
+                overlapRange.orientation() !=
+                IndexRange::Orientation::Backward);
+        // Overlaps should never occur, but we cannot be sure
         VERIFY_OR_DEBUG_ASSERT(
-                rewindRange.orientation() ==
+                overlapRange.orientation() ==
                 IndexRange::Orientation::Empty) {
             kLogger.warning()
-                    << "Discarding"
-                    << rewindRange
-                    << "overlapping with input buffer"
-                    << inputRange
-                    << "from internal buffer"
-                    << bufferedRange();
-            discardLastBufferedFrames(
-                    rewindRange.length());
+                    << "Overlapping range"
+                    << overlapRange
+                    << "in internal buffer"
+                    << bufferedRange()
+                    << "with input buffer"
+                    << inputRange;
+            switch (discontinuityOverlapMode) {
+            case DiscontinuityOverlapMode::Ignore:
+                break;
+            case DiscontinuityOverlapMode::Rewind:
+                discardLastBufferedFrames(overlapRange.length());
+                break;
+            default:
+                DEBUG_ASSERT(!"Unknown DiscontinuityOverlapMode");
+            }
         }
     }
 
@@ -342,7 +372,7 @@ WritableSampleFrames ReadAheadFrameBuffer::recharge(
                 << "that precedes"
                 << outputRange;
 #endif
-        DEBUG_ASSERT(precedingRange.orientation() == IndexRange::Orientation::Forward);
+        DEBUG_ASSERT(precedingRange.orientation() != IndexRange::Orientation::Backward);
         const auto precedingFrameCount = precedingRange.length();
         pInputSampleData += m_signalInfo.frames2samples(precedingFrameCount);
         inputRange.shrinkFront(precedingFrameCount);
@@ -352,28 +382,41 @@ WritableSampleFrames ReadAheadFrameBuffer::recharge(
     if (!inputRange.empty() && !outputRange.empty()) {
         DEBUG_ASSERT(outputRange.start() <= inputRange.start());
 
-        // Substitute missing input data with silence
+        // Detect and handle discontinuities: Gap
         if (outputRange.start() < inputRange.start()) {
-            const auto missingFrameRange =
+            const auto gapRange =
                     IndexRange::between(
                             outputRange.start(),
                             math_min(inputRange.start(), outputRange.end()));
-#if VERBOSE_DEBUG_LOG
-            kLogger.debug()
-                    << "Substituting missing input data"
-                    << missingFrameRange
-                    << "with silence in output buffer";
-#endif
-            DEBUG_ASSERT(missingFrameRange.orientation() == IndexRange::Orientation::Forward);
-            const auto clearFrameCount = missingFrameRange.length();
-            const auto clearSampleCount = m_signalInfo.frames2samples(clearFrameCount);
-            if (pOutputSampleData) {
-                SampleUtil::clear(
-                        pOutputSampleData,
-                        clearSampleCount);
-                pOutputSampleData += clearSampleCount;
+            DEBUG_ASSERT(
+                    gapRange.orientation() !=
+                    IndexRange::Orientation::Backward);
+            if (gapRange.orientation() == IndexRange::Orientation::Forward) {
+                kLogger.warning()
+                        << "Missing range"
+                        << gapRange
+                        << "between output buffer"
+                        << outputRange
+                        << "and input buffer"
+                        << inputRange;
+                switch (discontinuityGapMode) {
+                case DiscontinuityGapMode::Skip:
+                    break;
+                case DiscontinuityGapMode::FillWithSilence: {
+                    const auto clearFrameCount = gapRange.length();
+                    const auto clearSampleCount = m_signalInfo.frames2samples(clearFrameCount);
+                    if (pOutputSampleData) {
+                        SampleUtil::clear(
+                                pOutputSampleData,
+                                clearSampleCount);
+                        pOutputSampleData += clearSampleCount;
+                    }
+                } break;
+                default:
+                    DEBUG_ASSERT(!"Unknown DiscontinuityGapMode");
+                }
+                outputRange.shrinkFront(gapRange.length());
             }
-            outputRange.shrinkFront(clearFrameCount);
         }
 
         // Copy available input data
@@ -381,6 +424,7 @@ WritableSampleFrames ReadAheadFrameBuffer::recharge(
                 IndexRange::between(
                         outputRange.start(),
                         math_min(inputRange.end(), outputRange.end()));
+        DEBUG_ASSERT(copyableFrameRange.orientation() != IndexRange::Orientation::Backward);
         if (copyableFrameRange.orientation() == IndexRange::Orientation::Forward) {
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
@@ -413,15 +457,15 @@ WritableSampleFrames ReadAheadFrameBuffer::recharge(
 
     // Fill internal buffer
     if (!inputRange.empty()) {
-        inputSampleFrames = bufferSampleData(
+        inputBuffer = fillBuffer(
                 ReadableSampleFrames(
                         inputRange,
                         SampleBuffer::ReadableSlice(
                                 pInputSampleData,
                                 m_signalInfo.frames2samples(inputRange.length()))),
-                bufferingMode);
-        Q_UNUSED(inputSampleFrames)
-        DEBUG_ASSERT(inputSampleFrames.frameIndexRange().empty());
+                discontinuityGapMode);
+        Q_UNUSED(inputBuffer)
+        DEBUG_ASSERT(inputBuffer.frameIndexRange().empty());
     }
 
     // Return remaining output buffer

@@ -92,22 +92,16 @@ class ReadAheadFrameBuffer final {
     bool tryContinueReadingFrom(
             FrameIndex readIndex);
 
-    enum class BufferingMode {
-        SkipGapAndReset,
-        FillGapWithSilence,
+    enum class DiscontinuityOverlapMode {
+        Ignore,
+        Rewind,
+        Default = Rewind, // recommended default
     };
-
-    /// Buffer the given readable samples frames.
-    ///
-    /// The given sample data must start at after the last buffered
-    /// frame. The buffering mode controls how a gap between the
-    /// last buffered frame and the next input frame is handled.
-    ///
-    /// Returns the unread portion of the readable sample frames,
-    /// which should typically be empty.
-    ReadableSampleFrames bufferSampleData(
-            ReadableSampleFrames inputBuffer,
-            BufferingMode bufferingMode = BufferingMode::FillGapWithSilence);
+    enum class DiscontinuityGapMode {
+        Skip,
+        FillWithSilence,
+        Default = FillWithSilence, // recommended default
+    };
 
     /// Drain as many buffered sample frames as possible and copy them
     /// into the output buffer.
@@ -120,7 +114,7 @@ class ReadAheadFrameBuffer final {
     ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
-    WritableSampleFrames drain(
+    WritableSampleFrames drainBuffer(
             WritableSampleFrames outputBuffer);
 
     /// Fills first the output buffer and then the internal buffer with
@@ -128,25 +122,42 @@ class ReadAheadFrameBuffer final {
     ///
     /// If the inputBuffer starts before the current position write
     /// position then the position is rewind back as far as possible.
-    /// The parameter firstOutputIndex indicates how far back the
+    /// The parameter minOutputIndex indicates how far back the
     /// output buffer could be rewind, i.e. indicates the very first
     /// position before the current start position that would still
     /// be valid.
+    ///
+    /// All discontinuities in the output stream, i.e. both gaps and overlapping
+    /// regions are unexpected and will trigger a debug assertion.
     ///
     /// The output sample buffer may be null. In this case the consumed
     /// samples are dropped instead of copied.
     ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
-    WritableSampleFrames recharge(
-            ReadableSampleFrames inputBuffer,
+    WritableSampleFrames consumeAndFillBuffer(ReadableSampleFrames inputBuffer,
             WritableSampleFrames outputBuffer,
             FrameIndex minOutputIndex,
-            BufferingMode bufferingMode = BufferingMode::FillGapWithSilence);
+            std::pair<DiscontinuityOverlapMode, DiscontinuityGapMode>
+                    discontinuityModes = std::make_pair(
+                            DiscontinuityOverlapMode::Default,
+                            DiscontinuityGapMode::Default));
 
   private:
     void beforeBuffering(
             FrameCount frameCount);
+
+    /// Buffer the given readable samples frames.
+    ///
+    /// The given sample data must start at after the last buffered
+    /// frame. The buffering mode controls how a gap between the
+    /// last buffered frame and the next input frame is handled.
+    ///
+    /// Returns the unread portion of the readable sample frames,
+    /// which should typically be empty.
+    ReadableSampleFrames fillBuffer(
+            ReadableSampleFrames inputBuffer,
+            DiscontinuityGapMode discontinuityGapMode);
 
     /// Advance the read position thereby discarding samples
     /// from the front of the FIFO buffer.
