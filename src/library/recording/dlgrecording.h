@@ -1,19 +1,17 @@
-#ifndef DLGRECORDING_H
-#define DLGRECORDING_H
+#pragma once
 
-#include "preferences/usersettings.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/browse/browsetablemodel.h"
+#include "library/library.h"
 #include "library/libraryview.h"
 #include "library/proxytrackmodel.h"
-#include "library/library.h"
+#include "library/recording/ui_dlgrecording.h"
 #include "library/trackcollection.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "preferences/usersettings.h"
 #include "recording/recordingmanager.h"
 #include "track/track.h"
-#include "library/recording/ui_dlgrecording.h"
 
 class PlaylistTableModel;
-class QSqlTableModel;
 class WLibrary;
 class WTrackTableView;
 
@@ -62,5 +60,3 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
     RecordingManager* m_pRecordingManager;
 };
-
-#endif //DLGRECORDING_H

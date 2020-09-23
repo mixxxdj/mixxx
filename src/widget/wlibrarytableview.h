@@ -52,6 +52,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void setSelectedClick(bool enable);
 
   protected:
+    void focusInEvent(QFocusEvent* event) override;
+
     void saveNoSearchVScrollBarPos();
     void restoreNoSearchVScrollBarPos();
 

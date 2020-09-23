@@ -1,10 +1,10 @@
+#include "waveformmarkrange.h"
+
 #include <QPainter>
 #include <QtDebug>
 
-#include "waveformmarkrange.h"
-
-#include "waveformsignalcolors.h"
 #include "skin/skincontext.h"
+#include "waveformsignalcolors.h"
 #include "widget/wskincolor.h"
 
 WaveformMarkRange::WaveformMarkRange(

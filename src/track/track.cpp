@@ -1335,6 +1335,15 @@ ExportTrackMetadataResult Track::exportMetadata(
         // abort
         return ExportTrackMetadataResult::Skipped;
     }
+
+#if defined(__EXPORT_SERATO_MARKERS__)
+    {
+        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
+        seratoTags->setTrackColor(getColor());
+        seratoTags->setBpmLocked(isBpmLocked());
+    }
+#endif
+
     // Normalize metadata before exporting to adjust the precision of
     // floating values, ... Otherwise the following comparisons may
     // repeatedly indicate that values have changed only due to

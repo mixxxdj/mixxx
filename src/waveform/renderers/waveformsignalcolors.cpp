@@ -141,8 +141,8 @@ void WaveformSignalColors::fallBackFromSignalColor() {
 }
 
 void WaveformSignalColors::fallBackDefaultColor() {
-    qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
-                  "skin do not provide valid signal colors ! Default colors is use ...";
+    qWarning() << "WaveformSignalColors::fallBackDefaultColor - "
+                  "Skin does not provide valid signal colors, using default color...";
 
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();

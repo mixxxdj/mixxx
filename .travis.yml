@@ -76,7 +76,7 @@ jobs:
       cache: ccache
       # Ubuntu Bionic build prerequisites
       # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
-      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
+      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -221,6 +221,7 @@ addons:
       - libchromaprint-dev
       - libebur128-dev
       - libfaad-dev
+      - libfftw3-dev
       - libflac-dev
       - libid3tag0-dev
       - liblilv-dev
