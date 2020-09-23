@@ -73,18 +73,10 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pVisualsManager, EngineChannel::CENTER, m_sGroup2);
         m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 m_pVisualsManager, EngineChannel::CENTER, m_sGroup3);
-        m_pMixerDeck4 = new Deck(NULL,
-                m_pConfig,
-                m_pEngineMaster,
-                m_pEffectsManager,
-                m_pVisualsManager,
-                EngineChannel::CENTER,
-                m_sGroup4);
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
-        m_pChannel4 = m_pMixerDeck4->getEngineDeck();
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 m_pVisualsManager, EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
@@ -99,7 +91,6 @@ class BaseSignalPathTest : public MixxxTest {
         addDeck(m_pChannel1);
         addDeck(m_pChannel2);
         addDeck(m_pChannel3);
-        addDeck(m_pChannel4);
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
         ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
@@ -111,11 +102,9 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pMixerDeck1;
         delete m_pMixerDeck2;
         delete m_pMixerDeck3;
-        delete m_pMixerDeck4;
         m_pChannel1 = NULL;
         m_pChannel2 = NULL;
         m_pChannel3 = NULL;
-        m_pChannel4 = NULL;
         m_pEngineSync = NULL;
         delete m_pPreview1;
 
@@ -220,14 +209,13 @@ class BaseSignalPathTest : public MixxxTest {
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
-    Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3, *m_pMixerDeck4;
-    EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3, *m_pChannel4;
+    Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
+    EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
     static const QString m_sGroup1;
     static const QString m_sGroup2;
     static const QString m_sGroup3;
-    static const QString m_sGroup4;
     static const QString m_sMasterGroup;
     static const QString m_sInternalClockGroup;
     static const QString m_sPreviewGroup;

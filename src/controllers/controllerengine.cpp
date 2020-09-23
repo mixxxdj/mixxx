@@ -417,7 +417,7 @@ Input:   'this' object if applicable, Code string
 Output:  false if an exception
 -------- ------------------------------------------------------ */
 bool ControllerEngine::internalExecute(
-        QScriptValue thisObject, const QString& scriptCode, QScriptValue* outValue) {
+        QScriptValue thisObject, const QString& scriptCode) {
     // A special version of safeExecute since we're evaluating strings, not actual functions
     //  (execute() would print an error that it's not a function every time a timer fires.)
     if (m_pEngine == nullptr) {
@@ -440,7 +440,7 @@ bool ControllerEngine::internalExecute(
         return false;
     }
 
-    return internalExecute(thisObject, scriptFunction, QScriptValueList(), outValue);
+    return internalExecute(thisObject, scriptFunction, QScriptValueList());
 }
 
 /* -------- ------------------------------------------------------
@@ -450,8 +450,7 @@ Output:  false if an exception
 -------- ------------------------------------------------------ */
 bool ControllerEngine::internalExecute(QScriptValue thisObject,
         QScriptValue functionObject,
-        QScriptValueList args,
-        QScriptValue* outValue) {
+        QScriptValueList args) {
     if (m_pEngine == nullptr) {
         qDebug() << "ControllerEngine::execute: No script engine exists!";
         return false;
@@ -476,9 +475,6 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
 
     // If it does happen to be a function, call it.
     QScriptValue rc = functionObject.call(thisObject, args);
-    if (outValue != nullptr) {
-        *outValue = rc;
-    }
     if (!rc.isValid()) {
         qWarning() << "QScriptValue is not a function or ...";
         // Throw a debug assertion if controllerDebug is enabled
@@ -506,7 +502,7 @@ bool ControllerEngine::execute(QScriptValue functionObject,
     args << QScriptValue(value);
     args << QScriptValue(status);
     args << QScriptValue(group);
-    return internalExecute(m_pEngine->globalObject(), functionObject, args, nullptr);
+    return internalExecute(m_pEngine->globalObject(), functionObject, args);
 }
 
 bool ControllerEngine::execute(QScriptValue function,
@@ -519,7 +515,7 @@ bool ControllerEngine::execute(QScriptValue function,
     QScriptValueList args;
     args << m_pBaClass->newInstance(data);
     args << QScriptValue(data.size());
-    return internalExecute(m_pEngine->globalObject(), function, args, nullptr);
+    return internalExecute(m_pEngine->globalObject(), function, args);
 }
 
 /* -------- ------------------------------------------------------
@@ -1061,17 +1057,6 @@ void ControllerEngine::trigger(QString group, QString name) {
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
 bool ControllerEngine::evaluate(const QFileInfo& scriptFile) {
-    return evaluateScriptWithReturn(scriptFile, nullptr);
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Evaluate a script file
-   Input:   Script filename
-   Output:  false if the script file has errors or doesn't exist, and the result
-            of the script if outValue is not nullptr.
-   -------- ------------------------------------------------------ */
-bool ControllerEngine::evaluateScriptWithReturn(
-        const QFileInfo& scriptFile, QScriptValue* outValue) {
     if (m_pEngine == nullptr) {
         return false;
     }
@@ -1117,33 +1102,13 @@ bool ControllerEngine::evaluateScriptWithReturn(
     scriptCode.append('\n');
     input.close();
 
-    return evaluateWithReturn(scriptCode, filename, outValue);
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Evaluate javascript
-   Input:   Script code, can contain newlines.  Filename can be empty if not
-            applicable
-   Output:  false if the script file has errors or doesn't exist, and the result
-            of the script if outValue is not nullptr.
-   -------- ------------------------------------------------------ */
-bool ControllerEngine::evaluateWithReturn(const QString& scriptCode,
-        const QString& filename,
-        QScriptValue* outValue) {
-    if (m_pEngine == nullptr) {
-        return false;
-    }
-
     // Check syntax
     if (!syntaxIsValid(scriptCode, filename)) {
         return false;
     }
 
     // Evaluate the code
-    QScriptValue scriptResult = m_pEngine->evaluate(scriptCode, filename);
-    if (outValue != nullptr) {
-        *outValue = scriptResult;
-    }
+    QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
 
     // Record errors
     if (checkException(true)) {
@@ -1246,9 +1211,9 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
     }
 
     if (timerTarget.callback.isString()) {
-        internalExecute(timerTarget.context, timerTarget.callback.toString(), nullptr);
+        internalExecute(timerTarget.context, timerTarget.callback.toString());
     } else if (timerTarget.callback.isFunction()) {
-        internalExecute(timerTarget.context, timerTarget.callback, QScriptValueList(), nullptr);
+        internalExecute(timerTarget.context, timerTarget.callback, QScriptValueList());
     }
 }
 
