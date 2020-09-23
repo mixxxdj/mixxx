@@ -216,8 +216,8 @@ int HidController::open() {
         return -1;
     }
 
-    for (int i = 0; i < m_iNumBuffers; i++) {
-        memset(m_pPollData[i], 0, m_iBufferSize);
+    for (int i = 0; i < kNumBuffers; i++) {
+        memset(m_pPollData[i], 0, kBufferSize);
     }
 
     setOpen(true);
@@ -252,10 +252,10 @@ bool HidController::poll() {
     while (result > 0) {
         // Rotate between two buffers so the memcmp below does not require deep copying to another buffer.
         unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
-        m_iPollingBufferIndex = (m_iPollingBufferIndex + 1) % m_iNumBuffers;
+        m_iPollingBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
         unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
 
-        result = hid_read(m_pHidDevice, pCurrentBuffer, m_iBufferSize);
+        result = hid_read(m_pHidDevice, pCurrentBuffer, kBufferSize);
         if (result == -1) {
             return false;
         } else if (result > 0) {
@@ -263,7 +263,7 @@ bool HidController::poll() {
             // Some controllers such as the Gemini GMX continuously send input packets even if it
             // is identical to the previous packet. If this loop processed all those redundant
             // packets, it would be a big performance problem.
-            if (memcmp(pCurrentBuffer, pPreviousBuffer, m_iBufferSize) == 0) {
+            if (memcmp(pCurrentBuffer, pPreviousBuffer, kBufferSize) == 0) {
                 continue;
             }
             auto incomingData = QByteArray::fromRawData(
