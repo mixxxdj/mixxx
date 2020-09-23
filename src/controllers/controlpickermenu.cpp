@@ -1,13 +1,14 @@
 #include "controllers/controlpickermenu.h"
 
-#include "vinylcontrol/defs_vinylcontrol.h"
-#include "mixer/playermanager.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectparameterslot.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
-#include "effects/effectrack.h"
-#include "effects/effectchainslot.h"
-#include "effects/effectslot.h"
-#include "effects/effectparameterslot.h"
+#include "mixer/playermanager.h"
+#include "recording/defs_recording.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
@@ -829,6 +830,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         tr("Increase the track rating by one star"), guiMenu);
     addDeckAndPreviewDeckControl("stars_down", tr("Star Rating Down"),
         tr("Decrease the track rating by one star"), guiMenu);
+
+    // Misc. controls
+    addControl("[Shoutcast]",
+            "enabled",
+            tr("Start/Stop Live Broadcasting"),
+            tr("Stream your mix over the Internet."),
+            guiMenu);
+    addControl(RECORDING_PREF_KEY,
+            "toggle_recording",
+            tr("Record Mix"),
+            tr("Start/stop recording your mix."),
+            guiMenu);
 }
 
 ControlPickerMenu::~ControlPickerMenu() {
