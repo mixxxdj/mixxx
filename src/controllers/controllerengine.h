@@ -170,9 +170,8 @@ class ControllerEngine : public QObject {
     bool syntaxIsValid(const QString& scriptCode, const QString& filename = QString());
     bool evaluate(const QFileInfo& scriptFile);
     bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
-    bool internalExecute(QScriptValue thisObject,
-            QScriptValue functionObject,
-            QScriptValueList arguments);
+    bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
+                         QScriptValueList arguments);
     void initializeScriptEngine();
     void uninitializeScriptEngine();
 
@@ -183,7 +182,7 @@ class ControllerEngine : public QObject {
 
     void callFunctionOnObjects(QList<QString>, const QString&, QScriptValueList args = QScriptValueList());
     bool checkException(bool bFatal = false);
-    QScriptEngine* m_pEngine;
+    QScriptEngine *m_pEngine;
 
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 

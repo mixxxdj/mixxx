@@ -1213,7 +1213,8 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
     if (timerTarget.callback.isString()) {
         internalExecute(timerTarget.context, timerTarget.callback.toString());
     } else if (timerTarget.callback.isFunction()) {
-        internalExecute(timerTarget.context, timerTarget.callback, QScriptValueList());
+        internalExecute(timerTarget.context, timerTarget.callback,
+                        QScriptValueList());
     }
 }
 
