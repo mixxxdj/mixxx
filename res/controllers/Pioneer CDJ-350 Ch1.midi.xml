@@ -4,6 +4,7 @@
         <author>Kazuaki and DJ Tiger</author>
         <description>This is an incomplete mapping for a single Pioneer CDJ 350.</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=1917</forums>
+        <manual>pioneer_cdj_350</manual>
     </info>
     <controller id="USB Audio Device">
         <scriptfiles>

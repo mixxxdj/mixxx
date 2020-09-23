@@ -4,6 +4,7 @@
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
     <description>MIDI mapping for Native Instruments Traktor Kontrol X1.</description>
     <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3809</forums>
+    <manual>native_instruments_traktor_kontrol_x1</manual>
   </info>
   <controller id="KontrolX1" port="">
     <scriptfiles>
