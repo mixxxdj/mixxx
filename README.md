@@ -70,7 +70,7 @@ development and community news:
 - Follow us on [Twitter], [Facebook], and [G+].
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
-- Post on the [Mixxx discourse channel][discourse].
+- Post on the [Mixxx forums][discourse].
 - Archive of the [Mixxx forums][forums].
 
 ## License
