@@ -70,7 +70,7 @@ development and community news:
 - Follow us on [Twitter], [Facebook], and [G+].
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
-- Post on the [Mixxx forums][forums].
+- Post on the [Mixxx forums][discourse].
 
 ## License
 
@@ -89,7 +89,6 @@ license.
 [manual]: http://www.mixxx.org/manual/latest/
 [wiki]: http://www.mixxx.org/wiki/
 [faq]: http://mixxx.org/wiki/doku.php/faq
-[forums]: http://www.mixxx.org/forums/
 [compiling on linux]: http://mixxx.org/wiki/doku.php/compiling_on_linux
 [compiling on os x]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
 [compiling on windows]: http://mixxx.org/wiki/doku.php/compiling_on_windows
@@ -106,3 +105,4 @@ license.
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: http://mixxx.org/wiki/doku.php/hardware_compatibility
 [zulip]: https://mixxx.zulipchat.com/
+[discourse]: https://mixxx.discourse.group/
