@@ -35,6 +35,7 @@ class WHotcueButton : public WPushButton {
     bool m_hoverCueColor;
     parented_ptr<ControlProxy> m_pCoColor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    int m_cueColorDimThreshold;
     bool m_bCueColorDimmed;
     bool m_bCueColorIsLight;
     bool m_bCueColorIsDark;
