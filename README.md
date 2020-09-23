@@ -71,7 +71,6 @@ development and community news:
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
 - Post on the [Mixxx forums][discourse].
-- Archive of the [Mixxx forums][forums].
 
 ## License
 
@@ -90,7 +89,6 @@ license.
 [manual]: http://www.mixxx.org/manual/latest/
 [wiki]: http://www.mixxx.org/wiki/
 [faq]: http://mixxx.org/wiki/doku.php/faq
-[forums]: http://www.mixxx.org/forums/
 [compiling on linux]: http://mixxx.org/wiki/doku.php/compiling_on_linux
 [compiling on os x]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
 [compiling on windows]: http://mixxx.org/wiki/doku.php/compiling_on_windows
