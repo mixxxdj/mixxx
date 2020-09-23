@@ -129,6 +129,9 @@ repos:
     description: Reformat XML files.
     entry: tools/xmlformat.py
     language: python
+    additional_dependencies:
+    - six==1.15.0
+    - css-beautify==1.10.3
     types: [text]
     files: ^.*\.xml$
     stages:
