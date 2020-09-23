@@ -70,7 +70,8 @@ development and community news:
 - Follow us on [Twitter], [Facebook], and [G+].
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
-- Post on the [Mixxx forums][forums].
+- Post on the [Mixxx discord channel][discord].
+- Archive of the [Mixxx forums][forums].
 
 ## License
 
@@ -106,3 +107,4 @@ license.
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: http://mixxx.org/wiki/doku.php/hardware_compatibility
 [zulip]: https://mixxx.zulipchat.com/
+[discord]: https://mixxx.discourse.group/
