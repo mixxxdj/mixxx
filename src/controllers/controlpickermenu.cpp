@@ -862,13 +862,21 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Library Maximize/Restore"),
                tr("Maximize the track library to take up all the available screen space."), guiMenu);
 
-    QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
+    QString spinnyTitle = tr("Vinyl Spinners Show/Hide");
+    parented_ptr<QMenu> spinnyMenu = make_parented<QMenu>(spinnyTitle, guiMenu);
+    guiMenu->addMenu(spinnyMenu);
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");
+    addControl("[Skin]",
+            "show_spinnies",
+            tr("Vinyl Spinners Show/Hide (All Decks)"),
+            tr("Show/Hide all spinnies"),
+            spinnyMenu);
     for (int i = 1; i <= iNumDecks; ++i) {
-        addControl(QString("[Spinny%1]").arg(i), "show_spinny",
-                   QString("%1: %2").arg(m_deckStr.arg(i), spinnyTitle),
-                   QString("%1: %2").arg(m_deckStr.arg(i), spinnyDescription), guiMenu);
-
+        addControl(QString("[Spinny%1]").arg(i),
+                "show_spinny",
+                QString("%1: %2").arg(m_deckStr.arg(i), spinnyTitle),
+                QString("%1: %2").arg(m_deckStr.arg(i), spinnyDescription),
+                spinnyMenu);
     }
 
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
