@@ -708,7 +708,7 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100));
     }
 }
 
@@ -741,7 +741,7 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100));
     }
 }
 
