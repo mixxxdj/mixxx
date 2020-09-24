@@ -58,7 +58,10 @@ class SeratoTags final {
     BeatsImporterPointer importBeats() const;
 
     RgbColor::optional_t getTrackColor() const;
+    void setTrackColor(RgbColor::optional_t color);
+
     bool isBpmLocked() const;
+    void setBpmLocked(bool bpmLocked);
 
   private:
     SeratoBeatGrid m_seratoBeatGrid;

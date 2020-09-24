@@ -5,7 +5,7 @@
     	<author>OsZ</author>
     	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI page.</description>
     	<forums>https://www.mixxx.org/forums/</forums>
-    	<wiki>https://www.mixxx.org/wiki/doku.php/denon_mc7000</wiki>
+        <manual>denon_mc7000</manual>
     </info>
     <controller id="DENON">
         <scriptfiles>

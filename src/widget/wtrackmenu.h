@@ -67,7 +67,7 @@ class WTrackMenu : public QMenu {
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
-    void slotShowTrackInfo();
+    void slotShowDlgTrackInfo();
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -253,8 +253,8 @@ class WTrackMenu : public QMenu {
     const UserSettingsPointer m_pConfig;
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-    QScopedPointer<DlgTrackInfo> m_pTrackInfo;
-    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
+    std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
+    std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> externalTrackCollection;
