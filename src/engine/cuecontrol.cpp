@@ -372,7 +372,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != -1) {
             seekAbs(position);
         }
@@ -393,7 +393,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != -1) {
             m_pPlay->set(0.0);
             seekExact(position);
@@ -416,7 +416,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != -1) {
             seekAbs(position);
             if (!isPlayingByPlayButton()) {
