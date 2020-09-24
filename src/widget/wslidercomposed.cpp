@@ -256,7 +256,7 @@ void WSliderComposed::drawBar(QPainter* pPainter) {
     // Draw bar background
     if (m_dBarBgWidth > 0.0) {
         QPen barBgPen = QPen(m_barBgColor);
-        barBgPen.setWidth(m_dBarBgWidth);
+        barBgPen.setWidthF(m_dBarBgWidth);
         barBgPen.setCapStyle(m_barPenCap);
         pPainter->setPen(barBgPen);
         QLineF barBg;
@@ -271,7 +271,7 @@ void WSliderComposed::drawBar(QPainter* pPainter) {
     }
 
     QPen barPen = QPen(m_barColor);
-    barPen.setWidth(m_dBarWidth);
+    barPen.setWidthF(m_dBarWidth);
     barPen.setCapStyle(m_barPenCap);
     pPainter->setPen(barPen);
 
