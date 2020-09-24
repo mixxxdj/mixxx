@@ -475,8 +475,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Clear Effect Rack"), tr("Clear effect rack"),
                    rackMenu, false, descriptionPrefix);
 
-        const int numEffectUnits = ControlObject::get(
-            ConfigKey(rackGroup, "num_effectunits"));
+        const int numEffectUnits = static_cast<int>(ControlObject::get(
+                ConfigKey(rackGroup, "num_effectunits")));
         for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
              ++iEffectUnitNumber) {
             const QString effectUnitGroup =
@@ -631,8 +631,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            tr("Switch to either next or previous effect"),
                            effectSlotMenu, false, slotDescriptionPrefix);
 
-                const int numParameterSlots = ControlObject::get(
-                        ConfigKey(effectSlotGroup, "num_parameterslots"));
+                const int numParameterSlots = static_cast<int>(ControlObject::get(
+                        ConfigKey(effectSlotGroup, "num_parameterslots")));
                 for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
                      ++iParameterSlotNumber) {
                     // The parameter slot group is the same as the effect slot
@@ -925,7 +925,8 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     }
 
     if (microphoneControls) {
-        const int kNumMicrophones = ControlObject::get(ConfigKey("[Master]", "num_microphones"));
+        const int kNumMicrophones = static_cast<int>(
+                ControlObject::get(ConfigKey("[Master]", "num_microphones")));
         for (int i = 1; i <= kNumMicrophones; ++i) {
             QString prefix = m_microphoneStr.arg(i);
             QString group = PlayerManager::groupForMicrophone(i - 1);
@@ -941,7 +942,8 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
         }
     }
 
-    const int kNumAuxiliaries = ControlObject::get(ConfigKey("[Master]", "num_auxiliaries"));
+    const int kNumAuxiliaries = static_cast<int>(
+            ControlObject::get(ConfigKey("[Master]", "num_auxiliaries")));
     if (auxControls) {
         for (int i = 1; i <= kNumAuxiliaries; ++i) {
             QString prefix = m_auxStr.arg(i);
