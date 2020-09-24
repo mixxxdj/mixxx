@@ -27,8 +27,8 @@ namespace {
 // defines the strange of the non linearity
 // 1.2 = drives the transistor in full range, giving a maximum Waveshaper effect
 // big values disables the non linearity
-const float kVt = 1.2;
-const float kPi = 3.14159265358979323846;
+constexpr float kVt = 1.2f;
+constexpr float kPi = 3.14159265358979323846f;
 
 } // anonymous namespace
 
