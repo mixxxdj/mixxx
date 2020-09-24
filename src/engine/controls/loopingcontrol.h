@@ -71,7 +71,6 @@ class LoopingControl : public EngineControl {
     void slotLoopOut(double pressed);
     void slotLoopOutGoto(double);
     void slotLoopExit(double);
-    void slotLoopToggle(double);
     void slotReloopToggle(double);
     void slotReloopAndStop(double);
     void slotLoopStartPos(double);
@@ -99,6 +98,9 @@ class LoopingControl : public EngineControl {
     void slotLoopScale(double scaleFactor);
     void slotLoopDouble(double pressed);
     void slotLoopHalve(double pressed);
+
+  private slots:
+    void slotLoopEnabledValueChangeRequest(double enabled);
 
   private:
     enum class LoopSeekMode {

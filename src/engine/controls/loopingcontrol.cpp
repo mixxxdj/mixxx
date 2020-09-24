@@ -82,12 +82,6 @@ LoopingControl::LoopingControl(QString group,
             Qt::DirectConnection);
     m_pLoopExitButton->set(0);
 
-    m_pLoopToggleButton = new ControlPushButton(ConfigKey(group, "loop_toggle"));
-    connect(m_pLoopToggleButton, &ControlObject::valueChanged,
-            this, &LoopingControl::slotLoopToggle,
-            Qt::DirectConnection);
-    m_pLoopToggleButton->set(0);
-
     m_pReloopToggleButton = new ControlPushButton(ConfigKey(group, "reloop_toggle"));
     connect(m_pReloopToggleButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotReloopToggle,
@@ -104,6 +98,9 @@ LoopingControl::LoopingControl(QString group,
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(group, "loop_enabled"));
     m_pCOLoopEnabled->set(0.0);
+    m_pCOLoopEnabled->connectValueChangeRequest(this,
+            &LoopingControl::slotLoopEnabledValueChangeRequest,
+            Qt::DirectConnection);
 
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(group, "loop_start_position"));
@@ -217,7 +214,6 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopInButton;
     delete m_pLoopInGotoButton;
     delete m_pLoopExitButton;
-    delete m_pLoopToggleButton;
     delete m_pReloopToggleButton;
     delete m_pReloopAndStopButton;
     delete m_pCOLoopEnabled;
@@ -788,30 +784,42 @@ void LoopingControl::slotLoopExit(double val) {
     }
 }
 
-void LoopingControl::slotLoopToggle(double val) {
-    if (!m_pTrack || val <= 0.0) {
+void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
+    if (!m_pTrack) {
         return;
     }
 
-    // If we're looping, stop looping
-    if (m_bLoopingEnabled) {
-        // If loop roll was active, also disable slip.
-        if (m_bLoopRollActive) {
-            m_pSlipEnabled->set(0);
-            m_bLoopRollActive = false;
-            m_activeLoopRolls.clear();
+    if (value) {
+        // Requested to set loop_enabled to 1
+        if (m_bLoopingEnabled) {
+            DEBUG_ASSERT(m_pCOLoopEnabled->get());
+            m_pCOLoopEnabled->setAndConfirm(1.0);
+        } else {
+            // Looping is currently disabled, try to enable the loop. In
+            // contrast to the reloop_toggle CO, we do not jump in any case.
+            LoopSamples loopSamples = m_loopSamples.getValue();
+            if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
+                    loopSamples.start <= loopSamples.end) {
+                // setAndConfirm is called by setLoopingEnabled
+                setLoopingEnabled(true);
+            }
         }
-        setLoopingEnabled(false);
-        //qDebug() << "loop_toggle looping off";
     } else {
-        // If we're not looping, enable the loop.
-        // In contrast to the reloop_toggle CO, we do not jump in any case.
-        LoopSamples loopSamples = m_loopSamples.getValue();
-        if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
-                loopSamples.start <= loopSamples.end) {
-            setLoopingEnabled(true);
+        // Requested to set loop_enabled to 0
+        if (m_bLoopingEnabled) {
+            // Looping is currently enabled, disable the loop. If loop roll
+            // was active, also disable slip.
+            if (m_bLoopRollActive) {
+                m_pSlipEnabled->set(0);
+                m_bLoopRollActive = false;
+                m_activeLoopRolls.clear();
+            }
+            // setAndConfirm is called by setLoopingEnabled
+            setLoopingEnabled(false);
+        } else {
+            DEBUG_ASSERT(!m_pCOLoopEnabled->get());
+            m_pCOLoopEnabled->setAndConfirm(0.0);
         }
-        //qDebug() << "loop_toggle looping on";
     }
 }
 
@@ -935,7 +943,7 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bLoopingEnabled = enabled;
-    m_pCOLoopEnabled->set(enabled);
+    m_pCOLoopEnabled->setAndConfirm(enabled ? 1.0 : 0.0);
     BeatLoopingControl* pActiveBeatLoop = atomicLoadRelaxed(m_pActiveBeatLoop);
     if (pActiveBeatLoop != nullptr) {
         if (enabled) {
