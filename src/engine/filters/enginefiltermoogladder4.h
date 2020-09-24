@@ -169,12 +169,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 double new2 = processSample(pIn[i+1], &m_buf[1]);
 
                 if (i < iBufferSize / 2) {
-                    pOutput[i] = old1;
-                    pOutput[i + 1] = old2;
+                    pOutput[i] = static_cast<CSAMPLE>(old1);
+                    pOutput[i + 1] = static_cast<CSAMPLE>(old2);
                 } else {
-                    pOutput[i] = new1 * cross_mix + old1 * (1.0 - cross_mix);
-                    pOutput[i + 1] = new2 * cross_mix
-                            + old2 * (1.0 - cross_mix);
+                    pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
+                    pOutput[i + 1] = static_cast<CSAMPLE>(
+                            new2 * cross_mix + old2 * (1.0 - cross_mix));
                     cross_mix += cross_inc;
                 }
             }

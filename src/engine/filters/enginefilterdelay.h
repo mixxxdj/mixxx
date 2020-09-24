@@ -52,7 +52,7 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 m_delayPos = (m_delayPos + 1) % SIZE;
 
                 // Take delayed sample from delay buffer and copy it to dest buffer:
-                pOutput[i] = m_buf[delaySourcePos];
+                pOutput[i] = static_cast<CSAMPLE>(m_buf[delaySourcePos]);
                 delaySourcePos = (delaySourcePos + 1) % SIZE;
             }
         } else {
@@ -88,10 +88,10 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 if (i < iBufferSize / 2) {
                     // only ramp the second half of the buffer, because we do
                     // the same in the IIR filter to wait for settling
-                    pOutput[i] = m_buf[oldDelaySourcePos];
+                    pOutput[i] = static_cast<CSAMPLE>(m_buf[oldDelaySourcePos]);
                 } else {
-                    pOutput[i] = m_buf[oldDelaySourcePos] * (1.0 - cross_mix);
-                    pOutput[i] += m_buf[delaySourcePos] * cross_mix;
+                    pOutput[i] = static_cast<CSAMPLE>(m_buf[oldDelaySourcePos] * (1.0 - cross_mix));
+                    pOutput[i] += static_cast<CSAMPLE>(m_buf[delaySourcePos] * cross_mix);
                     delaySourcePos = (delaySourcePos + 1) % SIZE;
                     cross_mix += cross_inc;
                 }
