@@ -271,7 +271,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
         spinBpm->setValue(pBeats->getGlobalBpm().getValue());
         m_beatsClone = pBeats->getInternal();
     } else {
-        m_beatsClone = mixxx::BeatsInternal();
+        m_beatsClone = mixxx::BeatsInternal(track.streamInfo());
         spinBpm->setValue(0.0);
     }
 
@@ -502,7 +502,7 @@ void DlgTrackInfo::slotBpmThreeHalves() {
 
 void DlgTrackInfo::slotBpmClear() {
     spinBpm->setValue(0);
-    m_beatsClone = mixxx::BeatsInternal();
+    m_beatsClone.clear();
 
     bpmConst->setChecked(true);
     bpmConst->setEnabled(!m_bpmIsConst);
@@ -513,7 +513,7 @@ void DlgTrackInfo::slotBpmClear() {
 void DlgTrackInfo::slotBpmConstChanged(int state) {
     if (state != Qt::Unchecked) {
         // const beatgrid requested
-        m_beatsClone = mixxx::BeatsInternal();
+        m_beatsClone.clear();
         if (spinBpm->value() > 0) {
             // Since the user is not satisfied with the beat map,
             // it is hard to predict a fitting beat. We know that we
@@ -522,7 +522,6 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
             CuePosition cue = m_pLoadedTrack->getCuePoint();
-            m_beatsClone = mixxx::BeatsInternal();
             m_beatsClone.setGrid(mixxx::Bpm(spinBpm->value()),
                     samplePosToFramePos(cue.getPosition()));
         }
@@ -549,13 +548,14 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     if (value <= 0) {
-        m_beatsClone = mixxx::BeatsInternal();
+        m_beatsClone.clear();
         return;
     }
 
     if (m_beatsClone.getGlobalBpm().getValue() == mixxx::Bpm::kValueUndefined) {
         CuePosition cue = m_pLoadedTrack->getCuePoint();
-        m_beatsClone = mixxx::BeatsInternal();
+        m_beatsClone.clear();
+        m_beatsClone.updateStreamInfo(m_pLoadedTrack->streamInfo());
         m_beatsClone.setGrid(mixxx::Bpm(spinBpm->value()),
                 samplePosToFramePos(cue.getPosition()));
     }

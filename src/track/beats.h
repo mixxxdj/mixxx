@@ -73,6 +73,7 @@ class BeatsInternal {
     FramePos getLastBeatPosition() const;
     std::optional<Beat> getBeatAtIndex(int index) const;
     void setAsDownbeat(int beatIndex);
+    void clear();
 
   private:
     void updateGlobalBpm();
@@ -85,7 +86,6 @@ class BeatsInternal {
     void scaleMultiple(uint multiple);
     void scaleFraction(uint fraction);
     void generateBeatsFromMarkers();
-    void clearMarkers();
     void consolidateMarkers();
     SINT getSampleRate() const;
     double getDurationSeconds() const;
@@ -214,6 +214,9 @@ class Beats final : public QObject {
 
     /// Get the internal copyable Beats object.
     BeatsInternal getInternal() const;
+
+    /// Clear Beats without clearing stored StreamInfo
+    void clear();
 
     friend class ::Track;
 

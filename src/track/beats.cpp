@@ -401,7 +401,7 @@ void BeatsInternal::initWithProtobuf(const QByteArray& byteArray) {
 void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
         const QVector<track::io::TimeSignatureMarker>& timeSignatureMarkers) {
     DEBUG_ASSERT(getSampleRate() > 0 && getDurationSeconds() > 0);
-    clearMarkers();
+    clear();
 
     if (beats.empty()) {
         return;
@@ -464,6 +464,12 @@ void BeatsInternal::initWithAnalyzer(const QVector<FramePos>& beats,
 void Beats::updateStreamInfo(const mixxx::audio::StreamInfo& streamInfo) {
     QMutexLocker locker(&m_mutex);
     m_beatsInternal.updateStreamInfo(streamInfo);
+    emit updated();
+}
+
+void Beats::clear() {
+    QMutexLocker locker(&m_mutex);
+    m_beatsInternal.clear();
     emit updated();
 }
 
@@ -976,7 +982,7 @@ void BeatsInternal::consolidateMarkers() {
     }
 }
 
-void BeatsInternal::clearMarkers() {
+void BeatsInternal::clear() {
     m_beatsProto.clear_first_beat_time_seconds();
     m_beatsProto.clear_first_downbeat_index();
     m_beatsProto.clear_bpm_markers();
