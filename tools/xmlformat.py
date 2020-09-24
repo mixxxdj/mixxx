@@ -17,6 +17,7 @@ def get_node_indent(node):
     ):
         text = node.previousSibling.data
         return text.rpartition("\n")[2]
+    return ""
 
 
 def format_css(text):
