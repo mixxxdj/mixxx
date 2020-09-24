@@ -305,9 +305,8 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                 overlapRange.orientation() !=
                 IndexRange::Orientation::Backward);
         // Overlaps should never occur, but we cannot be sure
-        VERIFY_OR_DEBUG_ASSERT(
-                overlapRange.orientation() ==
-                IndexRange::Orientation::Empty) {
+        if (overlapRange.orientation() ==
+                IndexRange::Orientation::Forward) {
             kLogger.warning()
                     << "Overlapping range"
                     << overlapRange
@@ -337,9 +336,8 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                 overlapRange.orientation() !=
                 IndexRange::Orientation::Backward);
         // Overlaps should never occur, but we cannot be sure
-        VERIFY_OR_DEBUG_ASSERT(
-                overlapRange.orientation() ==
-                IndexRange::Orientation::Empty) {
+        if (overlapRange.orientation() ==
+                IndexRange::Orientation::Forward) {
             kLogger.warning()
                     << "Overlapping range"
                     << overlapRange
