@@ -216,7 +216,7 @@ WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
 
     // Drop and skip any buffered samples preceding the requested range
 #if VERBOSE_DEBUG_LOG
-    if (m_readIndex < consumableRange.start()) {
+    if (m_readIndex < consumableRange->start()) {
         kLogger.debug()
                 << "Discarding buffered frames"
                 << IndexRange::between(m_readIndex, consumableRange->start());
