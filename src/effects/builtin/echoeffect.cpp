@@ -222,17 +222,19 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.ping_pong < delay_samples / 2) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] = (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
-                         (1 + pingpong_frac);
+            pOutput[i] = static_cast<CSAMPLE>(
+                    (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
+                    (1 + pingpong_frac));
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] = bufferedSampleRight * (1 - pingpong_frac);
+            pOutput[i + 1] = static_cast<CSAMPLE>(bufferedSampleRight * (1 - pingpong_frac));
         } else {
             // Left sample reduced by (1 - fraction)
-            pOutput[i] = bufferedSampleLeft * (1 - pingpong_frac);
+            pOutput[i] = static_cast<CSAMPLE>(bufferedSampleLeft * (1 - pingpong_frac));
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
-                             (1 + pingpong_frac);
+            pOutput[i + 1] = static_cast<CSAMPLE>(
+                    (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
+                    (1 + pingpong_frac));
         }
 
         incrementRing(&gs.write_position, bufferParameters.channelCount(),
