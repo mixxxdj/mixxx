@@ -85,11 +85,11 @@ def main(argv=None):
                         + "\n"
                         + indent
                     )
-                elif node.tagName in ("ConfigKey", "Group"):
-                    # Remove superfluous spaces from ConfigKey/Group elements
-                    for child in node.childNodes:
-                        if child.nodeType == xml.dom.Node.TEXT_NODE:
-                            child.data = child.data.strip()
+                elif node.tagName == "Variable":
+                    # Remove superfluous whitespace around Variable elements
+                    for sibling in node.parentNode.childNodes:
+                        if sibling.nodeType == xml.dom.Node.TEXT_NODE:
+                            sibling.data = sibling.data.strip()
             elif node.nodeType == xml.dom.Node.COMMENT_NODE:
                 # Fix indentation for comments
                 indent = get_node_indent(node)
