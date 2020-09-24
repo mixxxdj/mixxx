@@ -156,8 +156,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    const int kNumEqRacks = 1;
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
+    constexpr int kNumEqRacks = 1;
+    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
     for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
@@ -543,8 +543,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        m_effectHeadphoneOutputStr,
                        effectUnitGroups, false, groupDescriptionPrefix);
 
-            const int iNumDecks = ControlObject::get(
-                    ConfigKey("[Master]", "num_decks"));
             for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
@@ -556,8 +554,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            effectUnitGroups, false, groupDescriptionPrefix);
             }
 
-            const int iNumSamplers = ControlObject::get(
-                    ConfigKey("[Master]", "num_samplers"));
+            const int iNumSamplers = static_cast<int>(ControlObject::get(
+                    ConfigKey("[Master]", "num_samplers")));
             for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                  ++iSamplerNumber) {
                 // PlayerManager::groupForSampler is 0-indexed.
@@ -571,8 +569,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
             }
 
-            const int iNumMicrophones = ControlObject::get(
-                ConfigKey("[Master]", "num_microphones"));
+            const int iNumMicrophones = static_cast<int>(ControlObject::get(
+                    ConfigKey("[Master]", "num_microphones")));
             for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
                  ++iMicrophoneNumber) {
                 QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
@@ -584,8 +582,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            effectUnitGroups, false, groupDescriptionPrefix);
             }
 
-            const int iNumAuxiliaries = ControlObject::get(
-                    ConfigKey("[Master]", "num_auxiliaries"));
+            const int iNumAuxiliaries = static_cast<int>(ControlObject::get(
+                    ConfigKey("[Master]", "num_auxiliaries")));
             for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                  ++iAuxiliaryNumber) {
                 QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
@@ -597,8 +595,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            effectUnitGroups, false, groupDescriptionPrefix);
             }
 
-            const int numEffectSlots = ControlObject::get(
-                    ConfigKey(effectUnitGroup, "num_effectslots"));
+            const int numEffectSlots = static_cast<int>(ControlObject::get(
+                    ConfigKey(effectUnitGroup, "num_effectslots")));
             for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
                      ++iEffectSlotNumber) {
                 const QString effectSlotGroup =
@@ -845,9 +843,11 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
                                          bool deckControls, bool samplerControls,
                                          bool previewdeckControls,
                                          bool addReset) {
-    const int iNumSamplers = ControlObject::get(ConfigKey("[Master]", "num_samplers"));
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
-    const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
+    const int iNumSamplers = static_cast<int>(
+            ControlObject::get(ConfigKey("[Master]", "num_samplers")));
+    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
+    const int iNumPreviewDecks = static_cast<int>(
+            ControlObject::get(ConfigKey("[Master]", "num_preview_decks")));
 
     parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
