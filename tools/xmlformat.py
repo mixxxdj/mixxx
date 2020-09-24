@@ -38,7 +38,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "files",
-        type=argparse.FileType("r+"),
+        type=argparse.FileType("rb+"),
         nargs="+",
         help="files to reformat",
     )
@@ -46,9 +46,8 @@ def main(argv=None):
 
     exitcode = 0
     for f in args.files:
-        content = f.read()
         try:
-            dom = xml.dom.minidom.parseString(content)
+            dom = xml.dom.minidom.parse(f)
         except xml.parsers.expat.ExpatError as e:
             print(
                 "{filename}:{lineno}:{offset}: {message}".format(
@@ -105,14 +104,16 @@ def main(argv=None):
                         "\n" + textwrap.indent(text, indent) + "\n" + indent
                     )
 
+        output = dom.toxml(encoding="utf-8")
+
         # Replace escaped quotes (e.g. in Style elements) with raw char and
         # insert newline between XML declaration and root element
-        output = dom.toxml().replace("&quot;", '"').replace("?><", "?>\n<", 1)
+        output = output.replace(b"&quot;", b'"').replace(b"?><", b"?>\n<", 1)
 
         f.seek(0)
         f.truncate()
         f.write(output)
-        f.write("\n")
+        f.write(b"\n")
 
     return exitcode
 
