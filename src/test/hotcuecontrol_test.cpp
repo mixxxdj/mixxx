@@ -1006,6 +1006,8 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
     m_pBeatloopActivate->slotSet(1);
     m_pBeatloopActivate->slotSet(0);
 
+    m_pPlay->set(1);
+
     // Save currently active loop to hotcue slot 1
     m_pHotcue1Activate->slotSet(1);
     m_pHotcue1Activate->slotSet(0);
@@ -1015,8 +1017,7 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
 
     // Seek to start of track
     setCurrentSamplePosition(beforeLoopPositionSamples);
-    ProcessBuffer();
-    EXPECT_DOUBLE_EQ(beforeLoopPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(beforeLoopPositionSamples, currentSamplePosition(), 2000);
 
     // Check that the previous seek disabled the loop
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Valid), m_pHotcue1Enabled->get());
@@ -1030,9 +1031,8 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(loopStartPositionSamples, currentSamplePosition(), 2000);
 
-    // Disable loop
     // Seek to position after saved loop
     setCurrentSamplePosition(afterLoopPositionSamples);
     ProcessBuffer();
@@ -1049,7 +1049,7 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(loopStartPositionSamples, currentSamplePosition(), 2000);
 }
 
 TEST_F(HotcueControlTest, SavedLoopActivateWhilePlayingDoesNotDisableLoop) {
@@ -1145,6 +1145,8 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestore) {
     m_pBeatloopActivate->slotSet(1);
     m_pBeatloopActivate->slotSet(0);
 
+    m_pPlay->set(1);
+
     // Save currently active loop to hotcue slot 1
     m_pHotcue1ActivateLoop->slotSet(1);
     m_pHotcue1ActivateLoop->slotSet(0);
@@ -1205,6 +1207,8 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
+    m_pPlay->set(1);
+
     // Check 1: Play position before saved loop
 
     // Disable loop
@@ -1214,12 +1218,11 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
-    // Seek to position before saved loop
-    setCurrentSamplePosition(beforeLoopPositionSamples);
-
     // Set new beatloop size
     m_pBeatloopSize->slotSet(m_pBeatloopSize->get() / 2);
-    ProcessBuffer();
+
+    // Seek to position before saved loop
+    setCurrentSamplePosition(beforeLoopPositionSamples);
 
     // Re-enable saved loop
     m_pHotcue1LoopToggle->slotSet(1);
@@ -1232,7 +1235,7 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     EXPECT_DOUBLE_EQ(savedLoopSize, m_pBeatloopSize->get());
 
     // Check that enabling the loop didn't cause a jump
-    EXPECT_DOUBLE_EQ(beforeLoopPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(beforeLoopPositionSamples, currentSamplePosition(), 2000);
 
     // Check 2: Play position after saved loop
 
@@ -1243,12 +1246,11 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
-    // Seek to position after saved loop
-    setCurrentSamplePosition(afterLoopPositionSamples);
-
     // Set new beatloop size
     m_pBeatloopSize->slotSet(m_pBeatloopSize->get() / 2);
-    ProcessBuffer();
+
+    // Seek to position after saved loop
+    setCurrentSamplePosition(afterLoopPositionSamples);
 
     // Re-enable saved loop
     m_pHotcue1LoopToggle->slotSet(1);
@@ -1261,5 +1263,5 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     EXPECT_DOUBLE_EQ(savedLoopSize, m_pBeatloopSize->get());
 
     // Check that enabling the loop didn't cause a jump
-    EXPECT_DOUBLE_EQ(afterLoopPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(afterLoopPositionSamples, currentSamplePosition(), 2000);
 }
