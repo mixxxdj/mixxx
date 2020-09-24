@@ -303,7 +303,7 @@ void WSliderComposed::drawBar(QPainter* pPainter) {
         }
         y2 = m_dBarStart + value * (height() - m_dBarStart - m_dBarEnd);
     }
-    pPainter->drawLine(x1, y1, x2, y2);
+    pPainter->drawLine(QLineF(x1, y1, x2, y2));
 }
 
 void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
