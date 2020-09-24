@@ -563,7 +563,7 @@ void EngineMaster::process(const int iBufferSize) {
             // Copy master mix to booth output with booth gain before mixing
             // talkover with master mix
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -576,7 +576,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -605,7 +605,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Copy master mix (with talkover mixed in) to booth output with booth gain
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -613,7 +613,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -630,7 +630,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Copy master mix to booth output with booth gain
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -648,7 +648,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -783,7 +783,7 @@ void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
     }
 
     // Apply headphone gain
-    CSAMPLE headphoneGain = m_pHeadGain->get();
+    CSAMPLE_GAIN headphoneGain = static_cast<CSAMPLE_GAIN>(m_pHeadGain->get());
     SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
                                  headphoneGain, m_iBufferSize);
     m_headphoneGainOld = headphoneGain;
