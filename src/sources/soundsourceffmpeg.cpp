@@ -312,6 +312,7 @@ SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
 
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
+    QStringList disabledInputFormats;
 
     // Collect all supported formats (whitelist)
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
@@ -404,10 +405,14 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
             */
             }
         }
-        kLogger.info()
-                << "Disabling untested input format:"
-                << pavInputFormat->name;
+        disabledInputFormats.append(pavInputFormat->name);
         continue;
+    }
+
+    if (!disabledInputFormats.isEmpty()) {
+        kLogger.info().noquote()
+                << "Disabling untested input formats:"
+                << disabledInputFormats.join(QStringLiteral(", "));
     }
 
     return list;

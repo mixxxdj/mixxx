@@ -4,7 +4,7 @@
         <name>Hercules DJ Control MP3</name>
         <author>Vittorio Colao</author>
         <description>Complete mapping for Hercules DJ Control MP3.</description>
-
+        <manual>hercules_djcontrol_mp3</manual>
     </info>
     <controller id="Hercules DJ Control MP3 MIDI">
         <scriptfiles>
