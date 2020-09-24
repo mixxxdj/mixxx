@@ -503,8 +503,10 @@ void EngineMaster::process(const int iBufferSize) {
     // m_masterGain takes care of applying the attenuation from
     // channel volume faders, crossfader, and talkover ducking.
     // Talkover is mixed in later according to the configured MicMonitorMode
-    m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
-                            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
+    m_masterGain.setGains(static_cast<CSAMPLE_GAIN>(crossfaderLeftGain),
+            1.0f,
+            static_cast<CSAMPLE_GAIN>(crossfaderRightGain),
+            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(
@@ -764,7 +766,7 @@ void EngineMaster::applyMasterEffects() {
     }
 }
 
-void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
+void EngineMaster::processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphones) {
     // Add master mix to headphones
     SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
                                    m_headphoneMasterGainOld,
