@@ -53,23 +53,23 @@ class EngineFilterPanSingle {
         m_delayFrame = (m_delayFrame + 1) % SIZE;
 
         // prepare coefficients for linear interpolation using a linear stretching
-        double timeBetweenFullSamplesLeft = fmod(delayLeftSourceFrame, 1);
-        double timeBetweenFullSamplesRight = fmod(delayRightSourceFrame, 1);
+        CSAMPLE_GAIN timeBetweenFullSamplesLeft = fmod(delayLeftSourceFrame, 1);
+        CSAMPLE_GAIN timeBetweenFullSamplesRight = fmod(delayRightSourceFrame, 1);
 
         // applying the delay on left channel with linear interpolation between each sample
-        pOutput[0] = static_cast<CSAMPLE>(
+        pOutput[0] =
                 m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) * 2] *
-                (1 - timeBetweenFullSamplesLeft));
-        pOutput[0] += static_cast<CSAMPLE>(
+                (1 - timeBetweenFullSamplesLeft);
+        pOutput[0] +=
                 m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) * 2] *
-                timeBetweenFullSamplesLeft);
+                timeBetweenFullSamplesLeft;
         // then on right channel
-        pOutput[1] = static_cast<CSAMPLE>(
+        pOutput[1] =
                 m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 + 1] *
-                (1 - timeBetweenFullSamplesRight));
-        pOutput[1] += static_cast<CSAMPLE>(
+                (1 - timeBetweenFullSamplesRight);
+        pOutput[1] +=
                 m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) * 2 + 1] *
-                timeBetweenFullSamplesRight);
+                timeBetweenFullSamplesRight;
 
         m_doStart = false;
     }
