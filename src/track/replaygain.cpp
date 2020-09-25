@@ -120,7 +120,7 @@ CSAMPLE ReplayGain::peakFromString(QString strPeak, bool* pValid) {
         return kPeakUndefined;
     }
     isValid = false;
-    const CSAMPLE peak = normalizedPeak.toDouble(&isValid);
+    const auto peak = static_cast<CSAMPLE>(normalizedPeak.toDouble(&isValid));
     if (isValid) {
         if (isValidPeak(peak)) {
             if (pValid) {
