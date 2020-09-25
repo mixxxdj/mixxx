@@ -36,7 +36,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     double numberOfSamples = m_waveformRenderer->getLength() * samplesPerPixel;
 
-    int currentPosition = m_waveformRenderer->getPlayPosVSample();
+    double currentPosition = m_waveformRenderer->getPlayPosVSample();
     //qDebug() << "currentPosition" << currentPosition
     //         << "samplesPerPixel" << samplesPerPixel
     //         << "numberOfSamples" << numberOfSamples
@@ -49,8 +49,8 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         int index = static_cast<int>(numberOfSamples * playMarkerPosition - currentPosition);
         const int polyLength = static_cast<int>(40.0 / samplesPerPixel);
 
-        const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0;
-        const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0;
+        const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0f;
+        const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0f;
 
         PainterScope PainterScope(painter);
 
@@ -72,16 +72,16 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
         // Draw at most one not or halve visible polygon at the widget borders
         if (index > (numberOfSamples + ((polyLength + 1) * samplesPerPixel))) {
-            int rest = index - numberOfSamples;
-            rest %= (int)((polyLength + 1) * samplesPerPixel);
-            index = numberOfSamples + rest;
+            int rest = index - static_cast<int>(numberOfSamples);
+            rest %= (polyLength + 1) * static_cast<int>(samplesPerPixel);
+            index = static_cast<int>(numberOfSamples) + rest;
         }
 
         polygon.translate(((qreal)index) / samplesPerPixel, 0);
         while (index > 0) {
             painter->drawPolygon(polygon);
             polygon.translate(-(polyLength + 1), 0);
-            index -= (polyLength + 1) * samplesPerPixel;
+            index -= (polyLength + 1) * static_cast<int>(samplesPerPixel);
         }
     }
 }
