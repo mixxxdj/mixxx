@@ -1,6 +1,6 @@
-#include <QDir>
-
 #include "sources/soundsourcesndfile.h"
+
+#include <QDir>
 
 #include "util/logger.h"
 
@@ -22,13 +22,37 @@ const QStringList kSupportedFileExtensions = {
         QStringLiteral("wav"),
 };
 
+// SoundSourceProxyTest fails for version 1.0.30 and OGG files
+#if defined(__APPLE__)
+const QLatin1String kVersionStringWithBrokenOggDecoding = QLatin1String("libsndfile-1.0.30");
+#endif
+
+QStringList getSupportedFileExtensionsFiltered() {
+    auto supportedFileExtensions = kSupportedFileExtensions;
+    // Until now this issue was only confirmed for macOS and libsndfile
+    // installed from Homebrew during the SCons build on Travis CI.
+#if defined(__APPLE__)
+    if (sf_version_string() == kVersionStringWithBrokenOggDecoding) {
+        kLogger.info()
+                << "Disabling OGG decoding for"
+                << kVersionStringWithBrokenOggDecoding;
+        supportedFileExtensions.removeAll(QStringLiteral("ogg"));
+    }
+#endif
+    return supportedFileExtensions;
+};
+
 } // anonymous namespace
 
 //static
 const QString SoundSourceProviderSndFile::kDisplayName = QStringLiteral("libsndfile");
 
+SoundSourceProviderSndFile::SoundSourceProviderSndFile()
+        : m_supportedFileExtensions(getSupportedFileExtensionsFiltered()) {
+}
+
 QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
+    return m_supportedFileExtensions;
 }
 
 SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(

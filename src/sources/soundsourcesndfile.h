@@ -37,6 +37,8 @@ class SoundSourceProviderSndFile : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
 
+    SoundSourceProviderSndFile();
+
     QString getDisplayName() const override {
         return kDisplayName;
     }
@@ -49,6 +51,9 @@ class SoundSourceProviderSndFile : public SoundSourceProvider {
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceSndFile>(url);
     }
+
+  private:
+    const QStringList m_supportedFileExtensions;
 };
 
 } // namespace mixxx
