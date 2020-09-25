@@ -179,7 +179,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
-        const int translate_dist = getSampleOfTrack().rate * -.01;
+        const double translate_dist = getSampleOfTrack().rate * -.01;
         pBeats->translate(translate_dist);
     }
 }
@@ -189,7 +189,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const int translate_dist = getSampleOfTrack().rate * .01;
+        const double translate_dist = getSampleOfTrack().rate * .01;
         pBeats->translate(translate_dist);
     }
 }
@@ -309,7 +309,7 @@ bool BpmControl::syncTempo() {
         // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
 
-        float fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
+        double fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
         if (fabs(fThisLocalBpm * 2.0 - fOtherLocalBpm) < fFileBpmDelta) {
             desiredRate /= 2.0;
         } else if (fabs(fThisLocalBpm - 2.0 * fOtherLocalBpm) < fFileBpmDelta) {
