@@ -839,7 +839,7 @@ float VinylControlXwax::getAngle() {
         return -1.0;
     }
 
-    float rps = timecoder_revs_per_sec(&timecoder);
+    const auto rps = static_cast<float>(timecoder_revs_per_sec(&timecoder));
     // Invert angle to make vinyl spin direction correct.
     return 360 - (static_cast<int>(pos / 1000.0f * 360.0f * rps) % 360);
 }
