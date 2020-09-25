@@ -914,7 +914,7 @@ bool ShoutConnection::waitForRetry() {
 
     if (delay > 0) {
         m_enabledMutex.lock();
-        m_waitEnabled.wait(&m_enabledMutex, delay * 1000);
+        m_waitEnabled.wait(&m_enabledMutex, static_cast<unsigned long>(delay * 1000));
         m_enabledMutex.unlock();
         if (!m_pProfile->getEnabled()) {
             return false;
