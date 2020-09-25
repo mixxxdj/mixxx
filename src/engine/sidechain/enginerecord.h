@@ -11,10 +11,11 @@
 #include <QDataStream>
 #include <QFile>
 
-#include "preferences/usersettings.h"
-#include "encoder/encodercallback.h"
+#include "audio/types.h"
 #include "encoder/encoder.h"
+#include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 
 class ConfigKey;
@@ -82,7 +83,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     ControlProxy* m_pRecReady;
     ControlProxy* m_pSamplerate;
     quint64 m_frames;
-    quint64 m_sampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     quint64 m_recordedDuration;
     QString getRecordedDurationStr();
 
