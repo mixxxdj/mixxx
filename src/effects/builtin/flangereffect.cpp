@@ -209,8 +209,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
             pState->lfoFrames = 0;
         }
 
-        auto periodFraction = static_cast<float>(
-                static_cast<float>(pState->lfoFrames) / lfoPeriodFrames);
+        auto periodFraction = pState->lfoFrames / static_cast<float>(lfoPeriodFrames);
         double delayMs = manual_ramped + width_ramped / 2 * sin(M_PI * 2.0f * periodFraction);
         double delayFrames = delayMs * bufferParameters.sampleRate() / 1000;
 
