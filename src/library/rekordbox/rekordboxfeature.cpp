@@ -851,8 +851,15 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
             QHash<QString, QString> extraVersionInfo;
 
-            mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-                    *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
+            mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(*track,
+                    beats,
+                    extraVersionInfo,
+                    false,
+                    false,
+                    static_cast<int>(sampleRate),
+                    0,
+                    0,
+                    0);
 
             track->setBeats(pBeats);
         } break;
