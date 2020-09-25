@@ -89,7 +89,7 @@ void MetronomeEffect::processChannel(
 
     unsigned int maxFrames;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
-        maxFrames = static_cast<unsigned int>(
+        maxFrames = static_cast<decltype(maxFrames)>(
                 bufferParameters.sampleRate() * groupFeatures.beat_length_sec);
         if (groupFeatures.has_beat_fraction) {
             const auto currentFrame = static_cast<unsigned int>(
@@ -103,7 +103,7 @@ void MetronomeEffect::processChannel(
             }
         }
     } else {
-        maxFrames = static_cast<unsigned int>(
+        maxFrames = static_cast<decltype(maxFrames)>(
                 bufferParameters.sampleRate() * 60 / m_pBpmParameter->value());
     }
 
