@@ -5,9 +5,9 @@
 
 namespace {
 
-constexpr float kSilenceThreshold = 0.001;
+constexpr CSAMPLE kSilenceThreshold = 0.001f;
 // TODO: Change the above line to:
-//constexpr float kSilenceThreshold = db2ratio(-60.0f);
+//constexpr CSAMPLE kSilenceThreshold = db2ratio(-60.0f);
 
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);

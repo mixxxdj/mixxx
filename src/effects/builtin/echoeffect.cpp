@@ -147,7 +147,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     double period = m_pDelayParameter->value();
     double send_current = m_pSendParameter->value();
     double feedback_current = m_pFeedbackParameter->value();
-    double pingpong_frac = m_pPingPongParameter->value();
+    CSAMPLE_GAIN pingpong_frac = static_cast<CSAMPLE_GAIN>(m_pPingPongParameter->value());
 
     int delay_frames;
     if (groupFeatures.has_beat_length_sec) {
@@ -222,8 +222,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.ping_pong < delay_samples / 2) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] = (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
-                         (1 + pingpong_frac);
+            pOutput[i] =
+                    (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
+                    (1 + pingpong_frac);
             // Right sample reduced by (1 - fraction)
             pOutput[i + 1] = bufferedSampleRight * (1 - pingpong_frac);
         } else {
@@ -231,8 +232,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             pOutput[i] = bufferedSampleLeft * (1 - pingpong_frac);
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
-                             (1 + pingpong_frac);
+            pOutput[i + 1] =
+                    (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
+                    (1 + pingpong_frac);
         }
 
         incrementRing(&gs.write_position, bufferParameters.channelCount(),
