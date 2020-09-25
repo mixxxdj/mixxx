@@ -96,8 +96,8 @@ bool WaveformWidgetRenderer::init() {
 
 void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     // For a valid track to render we need
-    m_trackSamples = m_pTrackSamplesControlObject->get();
-    if (m_trackSamples <= 0.0) {
+    m_trackSamples = static_cast<int>(m_pTrackSamplesControlObject->get());
+    if (m_trackSamples <= 0) {
         return;
     }
 
@@ -133,7 +133,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount;
-        m_playPosVSample = m_playPos * m_trackPixelCount * m_visualSamplePerPixel;
+        m_playPosVSample = static_cast<int>(m_playPos * m_trackPixelCount * m_visualSamplePerPixel);
 
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;
@@ -226,8 +226,8 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
-    const int lineX = m_width * m_playMarkerPosition;
-    const int lineY = m_height * m_playMarkerPosition;
+    const int lineX = static_cast<int>(m_width * m_playMarkerPosition);
+    const int lineY = static_cast<int>(m_height * m_playMarkerPosition);
 
     // draw dim outlines to increase playpos/waveform contrast
     painter->setOpacity(0.5);
