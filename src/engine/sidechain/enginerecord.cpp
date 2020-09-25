@@ -108,8 +108,7 @@ bool EngineRecord::metaDataHasChanged()
 }
 
 void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-
-    float recordingStatus = m_pRecReady->get();
+    const auto recordingStatus = static_cast<int>(m_pRecReady->get());
     static const QString tag("EngineRecord recording");
 
     if (recordingStatus == RECORD_OFF) {
