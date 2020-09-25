@@ -709,7 +709,7 @@ double BpmControl::getNearestPositionInPhase(
 
             // Syncing to after the loop end.
             if (end_delta > 0 && loop_length > 0.0) {
-                int i = end_delta / loop_length;
+                double i = end_delta / loop_length;
                 dNewPlaypos = loop_start_position + end_delta - i * loop_length;
 
                 // Move new position after loop jump into phase as well.
@@ -885,7 +885,7 @@ double BpmControl::getBeatMatchPosition(
 
             // Syncing to after the loop end.
             if (end_delta > 0 && loop_length > 0.0) {
-                int i = end_delta / loop_length;
+                double i = end_delta / loop_length;
                 dNewPlaypos = loop_start_position + end_delta - i * loop_length;
 
                 // Move new position after loop jump into phase as well.
