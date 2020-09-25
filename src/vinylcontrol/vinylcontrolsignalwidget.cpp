@@ -59,7 +59,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
         return;
     }
 
-    m_iAngle = report.angle;
+    m_iAngle = static_cast<int>(report.angle);
     m_fSignalQuality = report.timecode_quality;
 
     int r,g,b;
