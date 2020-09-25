@@ -163,14 +163,14 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 // of the new filter but it turns out that this produces
                 // a gain drop due to the filter delay which is more
                 // conspicuous than the settling noise.
-                double old1 = pIn[i];
-                double old2 = pIn[i + 1];
+                CSAMPLE old1 = pIn[i];
+                CSAMPLE old2 = pIn[i + 1];
                 double new1 = processSample(pIn[i], &m_buf[0]);
                 double new2 = processSample(pIn[i+1], &m_buf[1]);
 
                 if (i < iBufferSize / 2) {
-                    pOutput[i] = static_cast<CSAMPLE>(old1);
-                    pOutput[i + 1] = static_cast<CSAMPLE>(old2);
+                    pOutput[i] = old1;
+                    pOutput[i + 1] = old2;
                 } else {
                     pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
                     pOutput[i + 1] = static_cast<CSAMPLE>(
