@@ -261,12 +261,10 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     QPoint oldPointUnderCursor = event->pos();
 #endif
 
-    int newPointX =
-            static_cast<int>(static_cast<double>(oldPointUnderCursor.x()) /
-                    oldWidth * newSize.width());
-    int newPointY =
-            static_cast<int>(static_cast<double>(oldPointUnderCursor.y()) /
-                    oldHeight * newSize.height());
+    const auto newPointX = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.x()) / oldWidth * newSize.width());
+    const auto newPointY = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.y()) / oldHeight * newSize.height());
     QPoint newOrigin = QPoint(
         oldOrigin.x() + (oldPointUnderCursor.x() - newPointX),
         oldOrigin.y() + (oldPointUnderCursor.y() - newPointY));
