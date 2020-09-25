@@ -320,9 +320,8 @@ void SoundManager::queryDevicesPortaudio() {
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
-            m_jackSampleRate = mixxx::audio::SampleRate(
-                    static_cast<mixxx::audio::SampleRate::value_t>(
-                            deviceInfo->defaultSampleRate));
+            m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
+                    deviceInfo->defaultSampleRate);
         }
     }
 }
