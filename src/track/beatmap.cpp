@@ -145,7 +145,7 @@ void BeatMap::createFromBeatVector(const QVector<double>& beats) {
             qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
             qDebug() << "discarding beat " << beatpos;
         } else {
-            beat.set_frame_position(beatpos);
+            beat.set_frame_position(static_cast<google::protobuf::int32>(beatpos));
             m_beats.append(beat);
             previous_beatpos = beatpos;
         }
@@ -205,7 +205,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 
     Beat beat;
     // Reduce sample offset to a frame offset.
-    beat.set_frame_position(samplesToFrames(dSamples));
+    beat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(dSamples)));
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -296,7 +296,7 @@ bool BeatMap::findPrevNextBeats(double dSamples,
 
     Beat beat;
     // Reduce sample offset to a frame offset.
-    beat.set_frame_position(samplesToFrames(dSamples));
+    beat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(dSamples)));
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -379,8 +379,9 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stop
     }
 
     Beat startBeat, stopBeat;
-    startBeat.set_frame_position(samplesToFrames(startSample));
-    stopBeat.set_frame_position(samplesToFrames(stopSample));
+    startBeat.set_frame_position(
+            static_cast<google::protobuf::int32>(samplesToFrames(startSample)));
+    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(stopSample)));
 
     BeatList::const_iterator curBeat =
             std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
@@ -420,8 +421,9 @@ double BeatMap::getBpmRange(double startSample, double stopSample) const {
     if (!isValid())
         return -1;
     Beat startBeat, stopBeat;
-    startBeat.set_frame_position(samplesToFrames(startSample));
-    stopBeat.set_frame_position(samplesToFrames(stopSample));
+    startBeat.set_frame_position(
+            static_cast<google::protobuf::int32>(samplesToFrames(startSample)));
+    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(stopSample)));
     return calculateBpm(startBeat, stopBeat);
 }
 
@@ -451,15 +453,16 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     }
 
     Beat startBeat, stopBeat;
-    startBeat.set_frame_position(samplesToFrames(lower_bound));
-    stopBeat.set_frame_position(samplesToFrames(upper_bound));
+    startBeat.set_frame_position(
+            static_cast<google::protobuf::int32>(samplesToFrames(lower_bound)));
+    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(upper_bound)));
     return calculateBpm(startBeat, stopBeat);
 }
 
 void BeatMap::addBeat(double dBeatSample) {
     QMutexLocker locker(&m_mutex);
     Beat beat;
-    beat.set_frame_position(samplesToFrames(dBeatSample));
+    beat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(dBeatSample)));
     BeatList::iterator it = std::lower_bound(
         m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
@@ -478,7 +481,7 @@ void BeatMap::addBeat(double dBeatSample) {
 void BeatMap::removeBeat(double dBeatSample) {
     QMutexLocker locker(&m_mutex);
     Beat beat;
-    beat.set_frame_position(samplesToFrames(dBeatSample));
+    beat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(dBeatSample)));
     BeatList::iterator it = std::lower_bound(
         m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
@@ -505,7 +508,7 @@ void BeatMap::translate(double dNumSamples) {
          it != m_beats.end(); ) {
         double newpos = it->frame_position() + dNumFrames;
         if (newpos >= 0) {
-            it->set_frame_position(newpos);
+            it->set_frame_position(static_cast<google::protobuf::int32>(newpos));
             ++it;
         } else {
             it = m_beats.erase(it);
