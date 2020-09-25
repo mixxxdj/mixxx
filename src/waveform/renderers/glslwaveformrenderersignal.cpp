@@ -326,6 +326,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("lowGain", lowGain);
         m_frameShaderProgram->setUniformValue("midGain", midGain);
         m_frameShaderProgram->setUniformValue("highGain", highGain);
+        m_frameShaderProgram->setUniformValue("alpha", (float)m_pAlphaControlObject->get());
+        m_frameShaderProgram->setUniformValue("alphaUnscaled", (float)m_pAlphaPrefilterControlObject->get());
 
         m_frameShaderProgram->setUniformValue("axesColor", QVector4D(m_axesColor_r, m_axesColor_g,
                                                                      m_axesColor_b, m_axesColor_a));

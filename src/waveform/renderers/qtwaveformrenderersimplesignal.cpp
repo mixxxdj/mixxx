@@ -26,10 +26,6 @@ void QtWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
     borderColor.setAlphaF(0.5);
     m_borderPen.setColor(borderColor);
     m_borderPen.setWidthF(1.25);
-
-    QColor signalColor = m_pColors->getSignalColor();
-    signalColor.setAlphaF(0.8);
-    m_brush = QBrush(signalColor);
 }
 
 inline void setPoint(QPointF& point, qreal x, qreal y) {
@@ -69,7 +65,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         painter->setTransform(QTransform(0, 1, -1, 0, m_waveformRenderer->getWidth(), 0));
     }
 
-    float allGain(1.0);
+    float allGain(1.0), alpha(1.0);
     getGains(&allGain, NULL, NULL, NULL);
 
     double heightGain = allGain * (double)m_waveformRenderer->getBreadth()/255.0;
@@ -206,15 +202,34 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         }
     }
 
+
     //If channel are not displayed separately we need to close the loop properly
     if (channelSeparation == 1) {
         m_polygon.append(QPointF(m_waveformRenderer->getLength(), 0.0));
     }
 
-    painter->setPen(m_borderPen);
-    painter->setBrush(m_brush);
+    // draw filtered and then unfiltered polygon
+    for (int i = 0; i < 2; i++) {
+        if (i == 0) {
+            // first pass in the unfiltered value, only master gain is added
+            alpha = m_pAlphaPrefilterControlObject->get();
+        } else {
+            // now the filtered value is overdrawn
+            alpha = m_pAlphaControlObject->get();
+        }
+        if (alpha <= 0.0) {
+            continue;
+        }
 
-    painter->drawPolygon(&m_polygon[0], m_polygon.size());
+        painter->setPen(m_borderPen);
+
+        QColor signalColor = m_pColors->getSignalColor();
+        signalColor.setAlphaF(alpha);
+        QBrush brush = QBrush(signalColor);
+        painter->setBrush(brush);
+
+        painter->drawPolygon(&m_polygon[0], m_polygon.size());
+    }
 }
 
 void QtWaveformRendererSimpleSignal::onResize() {

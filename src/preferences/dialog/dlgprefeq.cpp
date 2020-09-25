@@ -103,6 +103,9 @@ DlgPrefEQ::~DlgPrefEQ() {
 
     qDeleteAll(m_filterWaveformEnableCOs);
     m_filterWaveformEnableCOs.clear();
+
+    qDeleteAll(m_filterWaveformPrefilterAlphaCOs);
+    m_filterWaveformPrefilterAlphaCOs.clear();
 }
 
 void DlgPrefEQ::slotNumDecksChanged(double numDecks) {

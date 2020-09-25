@@ -19,6 +19,8 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
       m_pLowKillControlObject(NULL),
       m_pMidKillControlObject(NULL),
       m_pHighKillControlObject(NULL),
+      m_pAlphaControlObject(NULL),
+      m_pAlphaPrefilterControlObject(NULL),
       m_alignment(Qt::AlignCenter),
       m_orientation(Qt::Horizontal),
       m_pColors(NULL),
@@ -68,6 +70,10 @@ void WaveformRendererSignalBase::deleteControls() {
         delete m_pMidKillControlObject;
     if (m_pHighKillControlObject)
         delete m_pHighKillControlObject;
+    if (m_pAlphaControlObject)
+        delete m_pAlphaControlObject;
+    if (m_pAlphaPrefilterControlObject)
+        delete m_pAlphaPrefilterControlObject;
 }
 
 bool WaveformRendererSignalBase::init() {
@@ -88,6 +94,10 @@ bool WaveformRendererSignalBase::init() {
             m_waveformRenderer->getGroup(), "filterMidKill");
     m_pHighKillControlObject = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterHighKill");
+    m_pAlphaControlObject = new ControlProxy(
+            "[Controls]", "waveform_alpha");
+    m_pAlphaPrefilterControlObject = new ControlProxy(
+            "[Controls]", "waveform_alpha_prefilter");
 
     return onInit();
 }

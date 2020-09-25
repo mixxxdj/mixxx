@@ -19,6 +19,7 @@ class QtWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   protected:
     virtual void onResize();
     int buildPolygon();
+    void configure();
 
   protected:
     QBrush m_lowBrush;

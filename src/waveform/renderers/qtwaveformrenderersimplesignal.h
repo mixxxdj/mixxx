@@ -22,7 +22,6 @@ protected:
     virtual void onResize();
 
 private:
-    QBrush m_brush;
     QPen m_borderPen;
     QVector<QPointF> m_polygon;
 };

@@ -33,6 +33,8 @@ public:
     ControlProxy* m_pLowKillControlObject;
     ControlProxy* m_pMidKillControlObject;
     ControlProxy* m_pHighKillControlObject;
+    ControlProxy* m_pAlphaControlObject;
+    ControlProxy* m_pAlphaPrefilterControlObject;
 
     Qt::Alignment m_alignment;
     Qt::Orientation m_orientation;

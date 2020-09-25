@@ -16,6 +16,9 @@ uniform float midGain;
 uniform float highGain;
 uniform float firstVisualIndex;
 uniform float lastVisualIndex;
+uniform float alpha;
+uniform float alphaUnscaled;
+
 
 uniform sampler2D waveformDataTexture;
 
@@ -116,13 +119,11 @@ void main(void) {
     }
 
     if (showingUnscaled) {
-      float alpha = 0.4;
-      outputColor.xyz = mix(outputColor.xyz, showingUnscaledColor.xyz, alpha);
+      outputColor.xyz = mix(outputColor.xyz, showingUnscaledColor.xyz, alphaUnscaled);
       outputColor.w = 1.0;
     }
 
     if (showing) {
-      float alpha = 0.8;
       outputColor.xyz = mix(outputColor.xyz, showingColor.xyz, alpha);
       outputColor.w = 1.0;
     }

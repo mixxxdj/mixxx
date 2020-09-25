@@ -49,6 +49,18 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             frameRateSpinBox, SLOT(setValue(int)));
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
             frameRateSlider, SLOT(setValue(int)));
+    connect(waveformAlphaSlider, SIGNAL(valueChanged(int)),
+            waveformAlphaSpinBox, SLOT(setValue(int)));
+    connect(waveformAlphaSpinBox, SIGNAL(valueChanged(int)),
+            waveformAlphaSlider, SLOT(setValue(int)));
+    connect(waveformAlphaSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetWaveformAlpha(int)));
+    connect(waveformAlphaPrefilterSlider, SIGNAL(valueChanged(int)),
+            waveformAlphaPrefilterSpinBox, SLOT(setValue(int)));
+    connect(waveformAlphaPrefilterSpinBox, SIGNAL(valueChanged(int)),
+            waveformAlphaPrefilterSlider, SLOT(setValue(int)));
+    connect(waveformAlphaPrefilterSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetWaveformPrefilterAlpha(int)));
     connect(endOfTrackWarningTimeSlider, SIGNAL(valueChanged(int)),
             endOfTrackWarningTimeSpinBox, SLOT(setValue(int)));
     connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
@@ -82,6 +94,28 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotClearCachedWaveforms()));
     connect(playMarkerPositionSlider, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetPlayMarkerPosition(int)));
+
+    // Waveform control objects
+    m_pCOWaveformAlpha = new ControlObject(
+            ConfigKey("[Controls]", "waveform_alpha"));
+    connect(m_pCOWaveformAlpha,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotCOWaveformAlpha(double)));
+    m_pCOWaveformAlphaPrefilter = new ControlObject(
+            ConfigKey("[Controls]", "waveform_alpha_prefilter"));
+    connect(m_pCOWaveformAlphaPrefilter,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotCOWaveformPrefilterAlpha(double)));
+
+    double waveformAlpha = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformAlpha"), 80)/100.0;
+    m_pCOWaveformAlpha->forceSet(waveformAlpha);
+    slotCOWaveformAlpha(waveformAlpha);
+
+    double waveformPrefilterAlpha = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformPrefilterAlpha"), 20)/100.0;
+    m_pCOWaveformAlphaPrefilter->forceSet(waveformPrefilterAlpha);
+    slotCOWaveformPrefilterAlpha(waveformPrefilterAlpha);
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -263,6 +297,38 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // QSlider works with integer values, so divide the percentage given by the
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
+}
+
+void DlgPrefWaveform::slotSetWaveformAlpha(int percent) {
+    m_pConfig->setValue(ConfigKey("[Waveform]","WaveformAlpha"), percent);
+    m_pCOWaveformAlpha->set((double)percent/100.0);
+}
+
+void DlgPrefWaveform::slotSetWaveformPrefilterAlpha(int percent) {
+    m_pConfig->setValue(ConfigKey("[Waveform]","WaveformPrefilterAlpha"), percent);
+    m_pCOWaveformAlphaPrefilter->set((double)percent/100.0);
+}
+
+void DlgPrefWaveform::slotCOWaveformAlpha(double alpha) {
+    if (alpha < 0.0) {
+        alpha = 0;
+    } else if (alpha > 1.0) {
+        alpha = 1.0;
+    }
+    int percent = (int)(alpha*100.0);
+    m_pConfig->setValue(ConfigKey("[Waveform]","WaveformAlpha"), percent);
+    waveformAlphaSpinBox->setValue(percent);
+}
+
+void DlgPrefWaveform::slotCOWaveformPrefilterAlpha(double alpha) {
+    if (alpha < 0.0) {
+        alpha = 0;
+    } else if (alpha > 1.0) {
+        alpha = 1.0;
+    }
+    int percent = (int)(alpha*100.0);
+    m_pConfig->setValue(ConfigKey("[Waveform]","WaveformPrefilterAlpha"), percent);
+    waveformAlphaPrefilterSpinBox->setValue(percent);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

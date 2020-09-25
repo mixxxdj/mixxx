@@ -6,6 +6,7 @@
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "control/controlobject.h"
 
 class MixxxMainWindow;
 class Library;
@@ -38,6 +39,10 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
+    void slotSetWaveformAlpha(int alpha);
+    void slotSetWaveformPrefilterAlpha(int alpha);
+    void slotCOWaveformAlpha(double alpha);
+    void slotCOWaveformPrefilterAlpha(double alpha);
 
   private:
     void initWaveformControl();
@@ -46,6 +51,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     MixxxMainWindow* m_pMixxx;
+    ControlObject* m_pCOWaveformAlpha;
+    ControlObject* m_pCOWaveformAlphaPrefilter;
 };
 
 

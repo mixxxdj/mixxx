@@ -20,6 +20,9 @@ QtWaveformRendererFilteredSignal::~QtWaveformRendererFilteredSignal() {
 }
 
 void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
+}
+
+void QtWaveformRendererFilteredSignal::configure() {
     QColor low = m_pColors->getLowColor();
     QColor mid = m_pColors->getMidColor();
     QColor high = m_pColors->getHighColor();
@@ -27,14 +30,15 @@ void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
     QColor lowCenter = low;
     QColor midCenter = mid;
     QColor highCenter = high;
+    double alpha = m_pAlphaControlObject->get();
 
-    low.setAlphaF(0.9);
-    mid.setAlphaF(0.9);
-    high.setAlphaF(0.9);
+    low.setAlphaF(alpha);
+    mid.setAlphaF(alpha);
+    high.setAlphaF(alpha);
 
-    lowCenter.setAlphaF(0.5);
-    midCenter.setAlphaF(0.5);
-    highCenter.setAlphaF(0.5);
+    lowCenter.setAlphaF(qMax(alpha-0.4, 0.0));
+    midCenter.setAlphaF(qMax(alpha-0.4, 0.0));
+    highCenter.setAlphaF(qMax(alpha-0.4, 0.0));
 
     QLinearGradient gradientLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
     gradientLow.setColorAt(0.0, low);
@@ -60,9 +64,10 @@ void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
     gradientHigh.setColorAt(1.0, high);
     m_highBrush = QBrush(gradientHigh);
 
-    low.setAlphaF(0.3);
-    mid.setAlphaF(0.3);
-    high.setAlphaF(0.3);
+    alpha = m_pAlphaPrefilterControlObject->get();
+    low.setAlphaF(alpha);
+    mid.setAlphaF(alpha);
+    high.setAlphaF(alpha);
 
     QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
     gradientKilledLow.setColorAt(0.0,low.darker(80));
@@ -138,6 +143,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
             (double)m_waveformRenderer->getLength();
+
 
     float lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(NULL, &lowGain, &midGain, &highGain);
@@ -275,6 +281,8 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack)
         return;
+
+    configure();
 
     PainterScope PainterScope(painter);
 

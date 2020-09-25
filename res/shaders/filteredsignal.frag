@@ -16,6 +16,8 @@ uniform float midGain;
 uniform float highGain;
 uniform float firstVisualIndex;
 uniform float lastVisualIndex;
+uniform float alpha;
+uniform float alphaUnscaled;
 
 uniform sampler2D waveformDataTexture;
 
@@ -90,35 +92,35 @@ void main(void) {
     }
 
     if (lowShowingUnscaled) {
-      float lowAlpha = 0.2;
+      float lowAlpha = alphaUnscaled;
       outputColor.xyz = mix(outputColor.xyz, lowColor.xyz, lowAlpha);
       outputColor.w = 1.0;
     }
     if (midShowingUnscaled) {
-      float midAlpha = 0.2;
+      float midAlpha = alphaUnscaled;
       outputColor.xyz = mix(outputColor.xyz, midColor.xyz, midAlpha);
       outputColor.w = 1.0;
     }
     if (highShowingUnscaled) {
-      float highAlpha = 0.2;
+      float highAlpha = alphaUnscaled;
       outputColor.xyz = mix(outputColor.xyz, highColor.xyz, highAlpha);
       outputColor.w = 1.0;
     }
 
     if (lowShowing) {
-      float lowAlpha = 0.8;
+      float lowAlpha = alpha;
       outputColor.xyz = mix(outputColor.xyz, lowColor.xyz, lowAlpha);
       outputColor.w = 1.0;
     }
 
     if (midShowing) {
-      float midAlpha = 0.85;
+      float midAlpha = min(alpha+0.05, 1.0);
       outputColor.xyz = mix(outputColor.xyz, midColor.xyz, midAlpha);
       outputColor.w = 1.0;
     }
 
     if (highShowing) {
-      float highAlpha = 0.9;
+      float highAlpha = min(alpha+0.1, 1.0);
       outputColor.xyz = mix(outputColor.xyz, highColor.xyz, highAlpha);
       outputColor.w = 1.0;
     }

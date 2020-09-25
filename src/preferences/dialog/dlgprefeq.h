@@ -96,6 +96,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QList<QComboBox*> m_deckQuickEffectSelectors;
     QList<bool> m_filterWaveformEffectLoaded;
     QList<ControlObject*> m_filterWaveformEnableCOs;
+    QList<ControlObject*> m_filterWaveformPrefilterAlphaCOs;
     ControlProxy* m_pNumDecks;
 
     bool m_inSlotPopulateDeckEffectSelectors;
