@@ -64,8 +64,8 @@ void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
-    const auto fReplayGain = static_cast<float>(m_pCOReplayGain->get());
-    float fReplayGainCorrection;
+    const auto fReplayGain = static_cast<CSAMPLE_GAIN>(m_pCOReplayGain->get());
+    CSAMPLE_GAIN fReplayGainCorrection;
     if (!s_pEnableReplayGain->toBool() || m_pPassthroughEnabled->toBool()) {
         // Override replaygain value if passing through
         // TODO(XXX): consider a good default.
