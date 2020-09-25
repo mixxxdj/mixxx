@@ -200,7 +200,7 @@ int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
     double samplingPeriodMs = ( 1.0 / ((double)m_samplerate) ) * 1000.0;
     double samplesPerChannel = kOpusFrameMs / samplingPeriodMs;
 
-    m_readRequired = samplesPerChannel * m_channels;
+    m_readRequired = static_cast<int>(samplesPerChannel * m_channels);
     m_pFifoChunkBuffer = std::make_unique<mixxx::SampleBuffer>(m_readRequired);
     initStream();
 
@@ -244,7 +244,7 @@ void EncoderOpus::pushHeaderPacket() {
     frame.append(0x01);
 
     // Channel count (1 byte)
-    frame.append((unsigned char)m_channels);
+    frame.append(static_cast<unsigned char>(m_channels));
 
     // Pre-skip (2 bytes, little-endian)
     int preskip = 0;
