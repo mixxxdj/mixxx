@@ -198,7 +198,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
-            const auto frac = static_cast<CSAMPLE>(static_cast<double>(i) /
+            const auto frac = static_cast<CSAMPLE_GAIN>(static_cast<double>(i) /
                     bufferParameters.samplesPerBuffer());
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
