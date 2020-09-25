@@ -170,7 +170,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     }
     // freqSkip is used to calculate the phase independently for each channel,
     // so do not multiply periodSamples by the number of channels.
-    const auto freqSkip = static_cast<CSAMPLE>(1.0 / periodSamples * 2.0 * M_PI);
+    const auto freqSkip = static_cast<CSAMPLE>(1.0f / periodSamples * kDoublePi);
 
     const auto feedback = static_cast<CSAMPLE>(m_pFeedbackParameter->value());
     const auto range = static_cast<CSAMPLE>(m_pRangeParameter->value());
