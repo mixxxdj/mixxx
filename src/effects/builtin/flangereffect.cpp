@@ -7,7 +7,7 @@
 namespace{
 
 // Gain correction was verified with replay gain and default parameters
-constexpr CSAMPLE kGainCorrection = 1.4125375446227544f; // 3 dB
+constexpr CSAMPLE kGainCorrection = 1.41253754f; // 3 dB
 
 inline CSAMPLE tanh_approx(CSAMPLE input) {
     // return tanhf(input); // 142ns for process;
