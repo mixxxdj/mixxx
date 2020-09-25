@@ -492,7 +492,7 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
-    double crossfaderLeftGain, crossfaderRightGain;
+    CSAMPLE_GAIN crossfaderLeftGain, crossfaderRightGain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get(),
@@ -503,9 +503,9 @@ void EngineMaster::process(const int iBufferSize) {
     // m_masterGain takes care of applying the attenuation from
     // channel volume faders, crossfader, and talkover ducking.
     // Talkover is mixed in later according to the configured MicMonitorMode
-    m_masterGain.setGains(static_cast<CSAMPLE_GAIN>(crossfaderLeftGain),
+    m_masterGain.setGains(crossfaderLeftGain,
             1.0f,
-            static_cast<CSAMPLE_GAIN>(crossfaderRightGain),
+            crossfaderRightGain,
             m_pTalkoverDucking->getGain(m_iBufferSize / 2));
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
