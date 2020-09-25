@@ -108,7 +108,7 @@ class EngineFilterDelay : public EngineObjectConstIn {
     // it is an alternative for using pauseFillter() calls
     void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
                        const int iBufferSize) {
-        double oldDelay = m_delaySamples;
+        int oldDelay = m_delaySamples;
         m_delaySamples = 0;
         process(pIn, pOutput, iBufferSize);
         m_delaySamples = oldDelay;
