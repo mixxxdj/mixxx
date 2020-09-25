@@ -119,7 +119,7 @@ void BaseCoverArtDelegate::paintItem(
         QPixmap pixmap = m_pCache->tryLoadCover(
                 this,
                 coverInfo,
-                option.rect.width() * scaleFactor,
+                static_cast<int>(option.rect.width() * scaleFactor),
                 m_inhibitLazyLoading ? CoverArtCache::Loading::CachedOnly : CoverArtCache::Loading::Default);
         if (pixmap.isNull()) {
             // Cache miss
