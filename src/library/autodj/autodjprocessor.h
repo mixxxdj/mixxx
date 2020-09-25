@@ -78,8 +78,10 @@ class DeckAttributes : public QObject {
         return m_outroEndPos.get();
     }
 
-    int sampleRate() const {
-        return m_sampleRate.get();
+    mixxx::audio::SampleRate sampleRate() const {
+        return mixxx::audio::SampleRate(
+                static_cast<mixxx::audio::SampleRate::value_t>(
+                        m_sampleRate.get()));
     }
 
     double trackSamples() const {
