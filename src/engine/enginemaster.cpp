@@ -412,7 +412,7 @@ void EngineMaster::process(const int iBufferSize) {
     CSAMPLE pflMixGainInHeadphones = 1;
     CSAMPLE masterMixGainInHeadphones = 0;
     if (masterEnabled) {
-        const auto cf_val = static_cast<CSAMPLE>(m_pHeadMix->get());
+        const auto cf_val = static_cast<CSAMPLE_GAIN>(m_pHeadMix->get());
         pflMixGainInHeadphones = 0.5f * (-cf_val + 1.0f);
         masterMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
         // qDebug() << "head val " << cf_val << ", head " << chead_gain
@@ -710,7 +710,7 @@ void EngineMaster::process(const int iBufferSize) {
         // Balance values
         CSAMPLE balright = 1.;
         CSAMPLE balleft = 1.;
-        const auto bal = static_cast<CSAMPLE>(m_pBalance->get());
+        const auto bal = static_cast<CSAMPLE_GAIN>(m_pBalance->get());
         if (bal > 0.) {
             balleft -= bal;
         } else if (bal < 0.) {
