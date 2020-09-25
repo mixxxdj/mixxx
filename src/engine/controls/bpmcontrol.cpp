@@ -956,7 +956,7 @@ void BpmControl::slotBeatsTranslate(double v) {
     if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         double currentSample = getSampleOfTrack().current;
         double closestBeat = pBeats->findClosestBeat(currentSample);
-        int delta = currentSample - closestBeat;
+        int delta = static_cast<int>(currentSample - closestBeat);
         if (delta % 2 != 0) {
             delta--;
         }
