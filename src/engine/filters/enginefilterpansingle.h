@@ -58,23 +58,17 @@ class EngineFilterPanSingle {
 
         // applying the delay on left channel with linear interpolation between each sample
         pOutput[0] = static_cast<CSAMPLE>(
-                m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) *
-                        2] *
+                m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) * 2] *
                 (1 - timeBetweenFullSamplesLeft));
         pOutput[0] += static_cast<CSAMPLE>(
-                m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) *
-                        2] *
+                m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) * 2] *
                 timeBetweenFullSamplesLeft);
         // then on right channel
         pOutput[1] = static_cast<CSAMPLE>(
-                m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) *
-                                2 +
-                        1] *
+                m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 + 1] *
                 (1 - timeBetweenFullSamplesRight));
         pOutput[1] += static_cast<CSAMPLE>(
-                m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) *
-                                2 +
-                        1] *
+                m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) * 2 + 1] *
                 timeBetweenFullSamplesRight);
 
         m_doStart = false;
