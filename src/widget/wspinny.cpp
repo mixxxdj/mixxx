@@ -362,12 +362,12 @@ void WSpinny::render(VSyncThread* vSyncThread) {
     }
 
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos) {
-        m_fAngle = calculateAngle(m_dAngleCurrentPlaypos);
+        m_fAngle = static_cast<float>(calculateAngle(m_dAngleCurrentPlaypos));
         m_dAngleLastPlaypos = m_dAngleCurrentPlaypos;
     }
 
     if (m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos) {
-        m_fGhostAngle = calculateAngle(m_dGhostAngleCurrentPlaypos);
+        m_fGhostAngle = static_cast<float>(calculateAngle(m_dGhostAngleCurrentPlaypos));
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
@@ -453,11 +453,11 @@ double WSpinny::calculateAngle(double playpos) {
     const double originalAngle = angle;
     if (angle > 0)
     {
-        int x = (angle+180)/360;
+        int x = static_cast<int>((angle + 180) / 360);
         angle = angle - (360*x);
     } else
     {
-        int x = (angle-180)/360;
+        int x = static_cast<int>((angle - 180) / 360);
         angle = angle - (360*x);
     }
 
