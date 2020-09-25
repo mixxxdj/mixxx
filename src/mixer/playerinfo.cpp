@@ -148,7 +148,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, MIXXX_XFADER_ADDITIVE, false,
                                     &xfl, &xfr);
 
-        int orient = pDc->m_orientation.get();
+        const int orient = static_cast<int>(pDc->m_orientation.get());
         double xfvol;
         if (orient == EngineChannel::LEFT) {
             xfvol = xfl;
