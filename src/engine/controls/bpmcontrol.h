@@ -171,7 +171,6 @@ class BpmControl : public EngineControl {
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
-    mixxx::audio::SampleRate m_sampleRate;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);

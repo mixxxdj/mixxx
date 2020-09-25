@@ -57,6 +57,10 @@ class BeatsTest : public testing::Test {
         return beats;
     }
 
+    Duration framesToDuration(audio::SampleRate sampleRate, FrameDiff_t frames) {
+        return mixxx::Duration::fromSeconds(frames / sampleRate);
+    }
+
     TrackPointer m_pTrack1;
     TrackPointer m_pTrack2;
     const int m_iChannelCount;
@@ -428,7 +432,7 @@ TEST_F(BeatsTest, Translate) {
     FrameDiff_t delta = 500;
 
     // Move the grid delta frames
-    pBeats1->translate(delta);
+    pBeats1->translate(framesToDuration(m_pTrack1->getSampleRate(), delta));
 
     // All beats must have been displaced by delta frames
 

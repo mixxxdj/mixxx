@@ -107,7 +107,7 @@ class Track : public QObject {
     int getChannels() const;
 
     // Get sample rate
-    int getSampleRate() const;
+    mixxx::audio::SampleRate getSampleRate() const;
 
     // Sets the bitrate
     void setBitrate(int);

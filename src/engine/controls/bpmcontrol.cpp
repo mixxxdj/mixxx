@@ -187,18 +187,22 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && m_pBeats) {
-        const mixxx::FrameDiff_t translateDistFrames = samplesToFrames(
-                getSampleOfTrack().rate * -kSmallBeatsTranslateFactor);
-        m_pBeats->translate(translateDistFrames);
+        const mixxx::FrameDiff_t translateDistFrames =
+                getFrameOfTrack().sampleRate * -kSmallBeatsTranslateFactor;
+        const auto translateDuration = mixxx::Duration::fromSeconds(
+                translateDistFrames / getFrameOfTrack().sampleRate);
+        m_pBeats->translate(translateDuration);
     }
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && m_pBeats) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const mixxx::FrameDiff_t translateDistFrames = samplesToFrames(
-                getSampleOfTrack().rate * kSmallBeatsTranslateFactor);
-        m_pBeats->translate(translateDistFrames);
+        const mixxx::FrameDiff_t translateDistFrames =
+                getFrameOfTrack().sampleRate * kSmallBeatsTranslateFactor;
+        const auto translateDuration = mixxx::Duration::fromSeconds(
+                translateDistFrames / getFrameOfTrack().sampleRate);
+        m_pBeats->translate(translateDuration);
     }
 }
 
@@ -861,7 +865,7 @@ mixxx::FramePos BpmControl::getBeatMatchPosition(
     // This is the only thing we can do if the track has different BPM,
     // playing the next beat together.
     double thisDivSec =
-            (thisNextBeat - thisPosition) / m_sampleRate / dThisRateRatio;
+            (thisNextBeat - thisPosition) / getFrameOfTrack().sampleRate / dThisRateRatio;
 
     if (dOtherBeatFraction < 1.0 / 8) {
         // the user has probably pressed play too late, sync the previous beat
@@ -874,7 +878,7 @@ mixxx::FramePos BpmControl::getBeatMatchPosition(
 
     // This matches the next beat in of both tracks.
     double seekMatch =
-            (thisDivSec - otherDivSec) * m_sampleRate * dThisRateRatio;
+            (thisDivSec - otherDivSec) * getFrameOfTrack().sampleRate * dThisRateRatio;
 
     if (dThisBeatLengthFrames > 0) {
         if (dThisBeatLengthFrames / 2 < seekMatch) {
@@ -968,7 +972,6 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
-        m_sampleRate = static_cast<mixxx::audio::SampleRate>(pNewTrack->getSampleRate());
     }
     trackBeatsUpdated(pBeats);
 }
@@ -988,7 +991,7 @@ void BpmControl::slotBeatsTranslate(double v) {
         mixxx::FramePos currentFrame = getFrameOfTrack().currentFrame;
         mixxx::FramePos closestBeat = m_pBeats->findClosestBeat(currentFrame);
         mixxx::FrameDiff_t delta = currentFrame - closestBeat;
-        m_pBeats->translate(delta);
+        m_pBeats->translate(mixxx::Duration::fromSeconds(delta / getFrameOfTrack().sampleRate));
     }
 }
 
@@ -999,7 +1002,8 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         m_dUserOffset.setValue(0.0);
 
         mixxx::FrameDiff_t offsetFrames = getPhaseOffset(getFrameOfTrack().currentFrame);
-        m_pBeats->translate(-offsetFrames);
+        m_pBeats->translate(mixxx::Duration::fromSeconds(
+                -offsetFrames / getFrameOfTrack().sampleRate));
     }
 }
 

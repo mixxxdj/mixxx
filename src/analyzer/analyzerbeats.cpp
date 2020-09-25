@@ -277,7 +277,9 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
             pCurrentBeats->getBeatAtIndex(mixxx::kFirstBeatIndex)->framePosition();
     mixxx::FramePos newFirstBeat = newBeats.getBeatAtIndex(mixxx::kFirstBeatIndex)->framePosition();
     if (currentFirstBeat == mixxx::kStartFramePos && newFirstBeat > mixxx::kStartFramePos) {
-        pCurrentBeats->translate(newFirstBeat - currentFirstBeat);
+        const auto translateDuration = mixxx::Duration::fromSeconds(
+                (newFirstBeat - currentFirstBeat) / pTrack->getSampleRate());
+        pCurrentBeats->translate(translateDuration);
     }
 }
 

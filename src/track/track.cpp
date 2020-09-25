@@ -660,7 +660,7 @@ void Track::setType(const QString& sType) {
     }
 }
 
-int Track::getSampleRate() const {
+mixxx::audio::SampleRate Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getSampleRate();
 }
