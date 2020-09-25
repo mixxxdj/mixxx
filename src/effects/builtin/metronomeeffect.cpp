@@ -92,7 +92,7 @@ void MetronomeEffect::processChannel(
         maxFrames = static_cast<unsigned int>(
                 bufferParameters.sampleRate() * groupFeatures.beat_length_sec);
         if (groupFeatures.has_beat_fraction) {
-            unsigned int currentFrame = static_cast<unsigned int>(
+            const auto currentFrame = static_cast<unsigned int>(
                     maxFrames * groupFeatures.beat_fraction);
             if (maxFrames > clickSize &&
                     currentFrame > clickSize &&

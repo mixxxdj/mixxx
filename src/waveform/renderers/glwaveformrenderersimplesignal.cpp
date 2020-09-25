@@ -45,18 +45,17 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         return;
     }
 
-    GLfloat firstVisualIndex = static_cast<GLfloat>(
+    auto firstVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getFirstDisplayedPosition() * dataSize);
-    GLfloat lastVisualIndex = static_cast<GLfloat>(
+    auto lastVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getLastDisplayedPosition() * dataSize);
-    GLfloat lineWidth = static_cast<GLfloat>(1.0 /
-                                m_waveformRenderer->getVisualSamplePerPixel()) +
-            1;
+    const auto lineWidth = static_cast<GLfloat>(
+            1.0 / m_waveformRenderer->getVisualSamplePerPixel() + 1);
 
-    const int firstIndex = static_cast<int>(firstVisualIndex + 0.5);
+    const auto firstIndex = static_cast<int>(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex%2;
 
-    const int lastIndex = static_cast<int>(lastVisualIndex + 0.5);
+    const auto lastIndex = static_cast<int>(lastVisualIndex + 0.5);
     lastVisualIndex = lastIndex + lastIndex%2;
 
     // Reset device for native painting

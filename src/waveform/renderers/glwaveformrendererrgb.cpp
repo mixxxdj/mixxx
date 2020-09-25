@@ -41,17 +41,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    GLfloat firstVisualIndex = static_cast<GLfloat>(
+    auto firstVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getFirstDisplayedPosition() * dataSize);
-    GLfloat lastVisualIndex = static_cast<GLfloat>(
+    auto lastVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getLastDisplayedPosition() * dataSize);
-    const GLfloat lineWidth = static_cast<GLfloat>(
+    const auto lineWidth = static_cast<GLfloat>(
             (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.5);
 
-    const int firstIndex = int(firstVisualIndex + 0.5);
+    const auto firstIndex = static_cast<int>(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex % 2;
 
-    const int lastIndex = int(lastVisualIndex + 0.5);
+    const auto lastIndex = static_cast<int>(lastVisualIndex + 0.5);
     lastVisualIndex = lastIndex + lastIndex % 2;
 
     // Reset device for native painting
@@ -107,10 +107,14 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
-                float left_low = lowGain * static_cast<float>(data[visualIndex].filtered.low);
-                float left_mid = midGain * static_cast<float>(data[visualIndex].filtered.mid);
-                float left_high = highGain * static_cast<float>(data[visualIndex].filtered.high);
-                float left_all    = sqrtf(left_low * left_low + left_mid * left_mid + left_high * left_high) * kHeightScaleFactor;
+                const float left_low = lowGain * static_cast<float>(data[visualIndex].filtered.low);
+                const float left_mid = midGain * static_cast<float>(data[visualIndex].filtered.mid);
+                const float left_high = highGain *
+                        static_cast<float>(data[visualIndex].filtered.high);
+                const float left_all =
+                        sqrtf(left_low * left_low + left_mid * left_mid +
+                                left_high * left_high) *
+                        kHeightScaleFactor;
                 float left_red =
                         left_low * static_cast<float>(m_rgbLowColor_r) +
                         left_mid * static_cast<float>(m_rgbMidColor_r) +

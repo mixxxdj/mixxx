@@ -101,7 +101,7 @@ void AutoPanEffect::processChannel(
     AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
-    float smoothing = static_cast<float>(0.5 - m_pSmoothingParameter->value());
+    const auto smoothing = static_cast<float>(0.5 - m_pSmoothingParameter->value());
 
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
@@ -148,7 +148,7 @@ void AutoPanEffect::processChannel(
 
     // NOTE: Assuming engine is working in stereo.
     for (unsigned int i = 0; i + 1 < bufferParameters.samplesPerBuffer(); i += 2) {
-        CSAMPLE periodFraction = static_cast<CSAMPLE>(static_cast<double>(gs.time) / period);
+        const auto periodFraction = static_cast<CSAMPLE>(gs.time) / static_cast<CSAMPLE>(period);
 
         // current quarter in the trigonometric circle
         float quarter = floorf(periodFraction * 4.0f);

@@ -453,11 +453,11 @@ double WSpinny::calculateAngle(double playpos) {
     const double originalAngle = angle;
     if (angle > 0)
     {
-        int x = static_cast<int>((angle + 180) / 360);
+        const auto x = static_cast<int>((angle + 180) / 360);
         angle = angle - (360*x);
     } else
     {
-        int x = static_cast<int>((angle - 180) / 360);
+        const auto x = static_cast<int>((angle - 180) / 360);
         angle = angle - (360*x);
     }
 

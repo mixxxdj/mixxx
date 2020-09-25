@@ -173,10 +173,10 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     // We create a frame buffer that is 4x the size of the renderer itself to
     // "oversample" the texture relative to the surface we're drawing on.
-    const int oversamplingFactor = 4;
-    const int bufferWidth = oversamplingFactor *
+    constexpr int oversamplingFactor = 4;
+    const auto bufferWidth = oversamplingFactor *
             static_cast<int>(m_waveformRenderer->getWidth() * devicePixelRatio);
-    const int bufferHeight = oversamplingFactor *
+    const auto bufferHeight = oversamplingFactor *
             static_cast<int>(
                     m_waveformRenderer->getHeight() * devicePixelRatio);
 
@@ -285,9 +285,9 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    GLfloat firstVisualIndex = static_cast<GLfloat>(
+    const auto firstVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getFirstDisplayedPosition() * dataSize / 2.0);
-    GLfloat lastVisualIndex = static_cast<GLfloat>(
+    const auto lastVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getLastDisplayedPosition() * dataSize / 2.0);
 
     // const int firstIndex = int(firstVisualIndex+0.5);
