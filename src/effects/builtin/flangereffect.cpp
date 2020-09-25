@@ -223,7 +223,8 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         CSAMPLE prevRight = delayRight[framePrev];
         CSAMPLE nextRight = delayRight[frameNext];
 
-        auto frac = static_cast<CSAMPLE>(delayFrames - floorf(static_cast<CSAMPLE>(delayFrames)));
+        const CSAMPLE_GAIN frac = static_cast<CSAMPLE_GAIN>(
+                delayFrames - floorf(static_cast<float>(delayFrames)));
         CSAMPLE delayedSampleLeft = prevLeft + frac * (nextLeft - prevLeft);
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
