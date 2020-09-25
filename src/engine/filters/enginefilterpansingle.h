@@ -53,9 +53,9 @@ class EngineFilterPanSingle {
         m_delayFrame = (m_delayFrame + 1) % SIZE;
 
         // prepare coefficients for linear interpolation using a linear stretching
-        CSAMPLE_GAIN timeBetweenFullSamplesLeft =
+        const auto timeBetweenFullSamplesLeft =
                 static_cast<CSAMPLE_GAIN>(fmod(delayLeftSourceFrame, 1));
-        CSAMPLE_GAIN timeBetweenFullSamplesRight =
+        const auto timeBetweenFullSamplesRight =
                 static_cast<CSAMPLE_GAIN>(fmod(delayRightSourceFrame, 1));
 
         // applying the delay on left channel with linear interpolation between each sample
