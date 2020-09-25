@@ -64,7 +64,7 @@ void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
-    const float fReplayGain = m_pCOReplayGain->get();
+    const auto fReplayGain = static_cast<float>(m_pCOReplayGain->get());
     float fReplayGainCorrection;
     if (!s_pEnableReplayGain->toBool() || m_pPassthroughEnabled->toBool()) {
         // Override replaygain value if passing through
@@ -99,8 +99,9 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
             if (seconds < kFadeSeconds) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;
-                fReplayGainCorrection = m_fPrevGain * (1.0 - fadeFrac) +
-                        fadeFrac * fullReplayGainBoost;
+                fReplayGainCorrection =
+                        static_cast<float>(m_fPrevGain * (1.0 - fadeFrac) +
+                                fadeFrac * fullReplayGainBoost);
             } else {
                 m_bSmoothFade = false;
                 fReplayGainCorrection = fullReplayGainBoost;
@@ -140,7 +141,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     } else {
         speedGain = math_min(kMaxTotalGainBySpeed / totalGain, speedGain);
     }
-    totalGain *= speedGain;
+    totalGain *= static_cast<CSAMPLE_GAIN>(speedGain);
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
@@ -160,4 +161,3 @@ void EnginePregain::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     pGroupFeatures->gain = m_pPotmeterPregain->get();
     pGroupFeatures->has_gain = true;
 }
-
