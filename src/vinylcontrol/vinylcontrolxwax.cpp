@@ -38,6 +38,10 @@
 
  ********************/
 
+namespace {
+constexpr int kChannels = 2;
+}
+
 // Sample threshold below which we consider there to be no signal.
 const double kMinSignal = 75.0 / SAMPLE_MAX;
 
@@ -212,7 +216,6 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     ScopedTimer t("VinylControlXwax::analyzeSamples");
     auto gain = static_cast<CSAMPLE_GAIN>(m_pVinylControlInputGain->get());
-    const int kChannels = 2;
 
     // We only support amplifying with the VC pre-amp.
     if (gain < 1.0f) {

@@ -8,6 +8,10 @@
 #include "widget/wskincolor.h"
 #include "util/math.h"
 
+namespace {
+constexpr float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
+}
+
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
@@ -63,8 +67,6 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
-
-    const float kHeightScaleFactor = static_cast<float>(255.0 / sqrtf(255 * 255 * 3));
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
