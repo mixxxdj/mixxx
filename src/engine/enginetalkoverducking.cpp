@@ -1,7 +1,11 @@
 #include "control/controlproxy.h"
 #include "engine/enginetalkoverducking.h"
 
-#define DUCK_THRESHOLD 0.1
+namespace {
+
+constexpr CSAMPLE kDuckThreshold = 0.1f;
+
+}
 
 EngineTalkoverDucking::EngineTalkoverDucking(
         UserSettingsPointer pConfig, const QString& group)
@@ -23,10 +27,10 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     // candidate for customization is the threshold, which may be too low for
     // noisy club situations.
     setParameters(
-            DUCK_THRESHOLD,
-            m_pDuckStrength->get(),
-            m_pMasterSampleRate->get() / 2 * .1,
-            m_pMasterSampleRate->get() / 2);
+            kDuckThreshold,
+            static_cast<CSAMPLE>(m_pDuckStrength->get()),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2 * .1),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2));
 
     m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
     m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
@@ -49,14 +53,17 @@ EngineTalkoverDucking::~EngineTalkoverDucking() {
 
 void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
     setParameters(
-            DUCK_THRESHOLD, m_pDuckStrength->get(),
-            samplerate / 2 * .1, samplerate / 2);
+            kDuckThreshold,
+            static_cast<CSAMPLE>(m_pDuckStrength->get()),
+            static_cast<unsigned int>(samplerate / 2 * .1),
+            static_cast<unsigned int>(samplerate / 2));
 }
 
 void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
-    setParameters(
-            DUCK_THRESHOLD, strength,
-            m_pMasterSampleRate->get() / 2 * .1, m_pMasterSampleRate->get() / 2);
+    setParameters(kDuckThreshold,
+            static_cast<CSAMPLE>(strength),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2 * .1),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2));
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
 }
 
@@ -68,12 +75,12 @@ CSAMPLE EngineTalkoverDucking::getGain(int numFrames) {
     // Apply microphone ducking.
     switch (getMode()) {
     case EngineTalkoverDucking::OFF:
-        return 1.0;
+        return 1.0f;
     case EngineTalkoverDucking::AUTO:
     case EngineTalkoverDucking::MANUAL:
-        return calculateCompressedGain(numFrames);
+        return static_cast<CSAMPLE>(calculateCompressedGain(numFrames));
     default:
         DEBUG_ASSERT("!Unknown Ducking mode");
-        return 1.0;
+        return 1.0f;
     }
 }
