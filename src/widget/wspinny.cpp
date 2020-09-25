@@ -333,9 +333,9 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         // Some covers aren't square, so center them.
-        int x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
-        int y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
-        p.drawPixmap(x, y, m_loadedCoverScaled);
+        double x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
+        double y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
+        p.drawPixmap(QPointF(x, y), m_loadedCoverScaled);
     }
 
     if (m_pMaskImage) {
