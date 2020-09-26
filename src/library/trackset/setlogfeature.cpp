@@ -269,7 +269,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     QString set_log_name;
 
     set_log_name = QDate::currentDate().toString(Qt::ISODate);
-    set_log_name_format = set_log_name + " / %1";
+    set_log_name_format = set_log_name + " #%1";
     int i = 1;
 
     // calculate name of the todays setlog
