@@ -145,23 +145,19 @@ void TaskMonitor::updateProgress() {
         m_pProgressDlg.reset();
         return;
     }
-    const auto currentProgress =
-            std::round(sumEstimatedPercentageOfCompletion());
+    const int currentProgress = static_cast<int>(std::round(sumEstimatedPercentageOfCompletion()));
     if (m_pProgressDlg) {
         m_pProgressDlg->setMaximum(
-                kPercentageOfCompletionMax * m_taskInfos.size());
-        m_pProgressDlg->setValue(
-                currentProgress);
+                static_cast<int>(kPercentageOfCompletionMax * m_taskInfos.size()));
+        m_pProgressDlg->setValue(currentProgress);
     } else {
         m_pProgressDlg = std::make_unique<QProgressDialog>(
                 m_labelText,
                 tr("Abort"),
                 currentProgress,
-                kPercentageOfCompletionMax * m_taskInfos.size());
-        m_pProgressDlg->setWindowModality(
-                Qt::ApplicationModal);
-        m_pProgressDlg->setMinimumDuration(
-                m_minimumProgressDuration.toIntegerMillis());
+                static_cast<int>(kPercentageOfCompletionMax * m_taskInfos.size()));
+        m_pProgressDlg->setWindowModality(Qt::ApplicationModal);
+        m_pProgressDlg->setMinimumDuration(m_minimumProgressDuration.toIntegerMillis());
     }
     // TODO: Display the title and optional progress message of each
     // task. Maybe also the individual progress and an option to abort

@@ -314,7 +314,7 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    int m_trackSamplesOld;
+    double m_trackSamplesOld;
 
     // Copy of file sample rate
     mixxx::audio::SampleRate m_trackSampleRateOld;

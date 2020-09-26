@@ -67,7 +67,7 @@ inline int roundUpToPowerOf2(int v) {
 }
 
 inline double roundToFraction(double value, int denominator) {
-    int wholePart = value;
+    int wholePart = static_cast<int>(value);
     double fractionPart = value - wholePart;
     double numerator = std::round(fractionPart * denominator);
     return wholePart + numerator / denominator;
@@ -88,7 +88,7 @@ inline const T db2ratio(const T a) {
                   std::is_same<double, T>::value ||
                   std::is_same<long double, T>::value,
                   "db2ratio works only for floating point types");
-    return pow(10, a / 20);
+    return static_cast<T>(pow(10, a / 20));
 }
 
 inline uint clockModulo(int dividend, uint divisor) {
