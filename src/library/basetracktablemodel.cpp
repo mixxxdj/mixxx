@@ -3,6 +3,7 @@
 #include "library/basecoverartdelegate.h"
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
+#include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
 #include "library/previewbuttondelegate.h"
@@ -24,6 +25,8 @@ namespace {
 const mixxx::Logger kLogger("BaseTrackTableModel");
 
 const QString kEmptyString = QStringLiteral("");
+
+constexpr int kHeightOfCoverartTooltip = 150; // Height of the image for the tooltip in pixel
 
 const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_ALBUM,
@@ -473,6 +476,29 @@ QVariant BaseTrackTableModel::roleValue(
     case Qt::ToolTipRole:
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
+            TrackPointer pTrack = getTrack(index);
+            if (!pTrack) {
+                return kEmptyString;
+            }
+            CoverArtCache* pCache = CoverArtCache::instance();
+            QPixmap pixmap = QPixmap(kHeightOfCoverartTooltip,
+                    kHeightOfCoverartTooltip); // Height also used as default for the width, in assumption that covers are squares
+            pixmap = pCache->tryLoadCover(this,
+                    pTrack->getCoverInfoWithLocation(),
+                    kHeightOfCoverartTooltip,
+                    CoverArtCache::Loading::NoSignal);
+            if (pixmap.isNull()) {
+                // Cache miss -> Don't show a tooltip
+                return kEmptyString;
+            }
+            QByteArray data;
+            QBuffer buffer(&data);
+            pixmap.save(&buffer, "PPM"); // Most simple format, without compression effort
+            QString html = QString(
+                    "<img src='data:image/x-portable-pixmap;base64, %0'>")
+                                   .arg(QString(data.toBase64()));
+            return html;
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
             return kEmptyString;
         }
