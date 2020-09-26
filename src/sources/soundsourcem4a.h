@@ -8,11 +8,11 @@
 
 #include "util/readaheadsamplebuffer.h"
 
-#ifdef __MP4V2__
-#include <mp4v2/mp4v2.h>
-#else
-#include <mp4.h>
-#endif
+extern "C" {
+
+#include <libavformat/avformat.h>
+
+} // extern "C"
 
 #include <vector>
 
@@ -48,19 +48,21 @@ class SoundSourceM4A : public SoundSource {
             faad2::DecoderHandle hNewDecoder);
     void closeDecoder();
 
-    bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
+    bool isValidSampleBlockId(int sampleBlockId) const;
 
-    void restartDecoding(MP4SampleId sampleBlockId);
+    void restartDecoding(int sampleBlockId);
+
+    int seekAndReadSampleBlock(
+            int sampleBlockId,
+            uint8_t** ppBytes,
+            uint32_t* pNumBytes);
 
     faad2::LibLoader* const m_pFaad;
 
-    MP4FileHandle m_hFile;
-    MP4TrackId m_trackId;
-    MP4Duration m_framesPerSampleBlock;
-    MP4SampleId m_maxSampleBlockId;
+    int m_frameSize;
+    int m_maxSampleBlockId;
 
-    u_int8_t* m_pMP4ESConfigBuffer{};
-    u_int32_t m_sizeofMP4ESConfigBuffer;
+    AVStream* m_pAvStream;
 
     typedef std::vector<u_int8_t> InputBuffer;
     InputBuffer m_inputBuffer;
@@ -71,11 +73,55 @@ class SoundSourceM4A : public SoundSource {
 
     faad2::DecoderHandle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;
-    MP4SampleId m_curSampleBlockId;
+    int m_curSampleBlockId;
 
     ReadAheadSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
+
+    // Takes ownership of an input format context and ensures that
+    // the corresponding AVFormatContext is closed, either explicitly
+    // or implicitly by the destructor. The wrapper can only be
+    // moved, copying is disabled.
+    class InputAVFormatContextPtr final {
+      public:
+        explicit InputAVFormatContextPtr(AVFormatContext* pAvInputFormatContext = nullptr)
+                : m_pAvInputFormatContext(pAvInputFormatContext) {
+        }
+        InputAVFormatContextPtr(const InputAVFormatContextPtr&) = delete;
+        InputAVFormatContextPtr(InputAVFormatContextPtr&& that)
+                : m_pAvInputFormatContext(that.m_pAvInputFormatContext) {
+            that.m_pAvInputFormatContext = nullptr;
+        }
+        ~InputAVFormatContextPtr() {
+            close();
+        }
+
+        void take(AVFormatContext** ppavInputFormatContext);
+
+        void close();
+
+        friend void swap(InputAVFormatContextPtr& lhs, InputAVFormatContextPtr& rhs) {
+            std::swap(lhs.m_pAvInputFormatContext, rhs.m_pAvInputFormatContext);
+        }
+
+        InputAVFormatContextPtr& operator=(const InputAVFormatContextPtr&) = delete;
+        InputAVFormatContextPtr& operator=(InputAVFormatContextPtr&& that) {
+            swap(*this, that);
+            return *this;
+        }
+
+        AVFormatContext* operator->() {
+            return m_pAvInputFormatContext;
+        }
+        operator AVFormatContext*() {
+            return m_pAvInputFormatContext;
+        }
+
+      private:
+        AVFormatContext* m_pAvInputFormatContext;
+    };
+    InputAVFormatContextPtr m_pAvInputFormatContext;
 };
 
 class SoundSourceProviderM4A : public SoundSourceProvider {

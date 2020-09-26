@@ -2028,31 +2028,35 @@ if(COREAUDIO)
 endif()
 
 # FAAD AAC audio file decoder plugin
-find_package(MP4)
-find_package(MP4v2)
+find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL)
 # It is enabled by default on Linux only, because other targets have other solutions.
 # Used FAAD_DEFAULT because the complex expression is not supported by cmake_dependent_option()
-if(UNIX AND NOT APPLE AND (MP4_FOUND OR MP4v2_FOUND))
+if(UNIX AND NOT APPLE AND AVCODEC_FOUND AND AVFORMAT_FOUND AND AVUTIL_FOUND)
   set(FAAD_DEFAULT TRUE)
 else()
   set(FAAD_DEFAULT FALSE)
 endif()
 cmake_dependent_option(FAAD "FAAD AAC audio file decoder support" ON "FAAD_DEFAULT" OFF)
 if(FAAD)
-  if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
-    message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
+  if(NOT AVCODEC_FOUND)
+    message(FATAL_ERROR "FAAD AAC audio support requires libavcodec and its development headers.")
+  endif()
+  if(NOT AVFORMAT_FOUND)
+    message(FATAL_ERROR "FAAD AAC audio support requires libavformat and its development headers.")
+  endif()
+  if(NOT AVUTIL_FOUND)
+    message(FATAL_ERROR "FAAD AAC audio support requires libavutil and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcem4a.cpp
     src/sources/libfaadloader.cpp
   )
   target_compile_definitions(mixxx-lib PRIVATE __FAAD__)
-  if(MP4v2_FOUND)
-    target_compile_definitions(mixxx-lib PRIVATE __MP4V2__)
-    target_link_libraries(mixxx-lib PUBLIC MP4v2::MP4v2)
-  else()
-    target_link_libraries(mixxx-lib PUBLIC MP4::MP4)
-  endif()
+  target_link_libraries(mixxx-lib PUBLIC
+    FFmpeg::avcodec
+    FFmpeg::avformat
+    FFmpeg::avutil
+  )
 endif()
 
 # FFmpeg 4.x support
