@@ -313,7 +313,8 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         CueInfo newCueInfo(cueInfo);
         RgbColor color = kDefaultCueColor;
         if (cueInfo.getColor()) {
-            color = *cueInfo.getColor();
+            // TODO: Make this conversion configurable
+            color = displayedToStoredSeratoDJProCueColor(*cueInfo.getColor());
         }
         newCueInfo.setColor(color);
 
