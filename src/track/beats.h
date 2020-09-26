@@ -66,7 +66,7 @@ class BeatsInternal {
     FramePos findClosestBeat(FramePos frame) const;
     Bpm getBpmAtPosition(FramePos curFrame) const;
     void setSignature(TimeSignature sig, int downbeatIndex);
-    void translate(Duration duration);
+    void translateBySeconds(double seconds);
     void setBpm(Bpm bpm, int beatIndex = kFirstBeatIndex);
     int size() const;
     FramePos getFirstBeatPosition() const;
@@ -183,10 +183,10 @@ class Beats final : public QObject {
     /// Sets the track signature starting at specified bar
     void setSignature(TimeSignature sig, int downbeatIndex);
 
-    /// Translate all beats in the song by a time duration. Beats that lie
-    /// before the start of the track or after the end of the track are not
-    /// removed.
-    void translate(Duration duration);
+    /// Translate all beats in the song by a time duration (can be negative).
+    /// Beats that lie before the start of the track or after the end of the
+    /// track are not removed.
+    void translateBySeconds(double seconds);
 
     /// Scale the position of every beat in the track by a fraction.
     void scale(BPMScale scale);

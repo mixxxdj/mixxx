@@ -32,8 +32,8 @@ inline FrameDiff_t getBeatLengthFrames(Bpm bpm,
             (4.0 / timeSignature.getNoteValue()) / bpm.getValue();
 }
 
-inline FrameDiff_t durationToFrames(audio::SampleRate sampleRate, Duration duration) {
-    return sampleRate * duration.toDoubleSeconds();
+inline FrameDiff_t durationToFrames(audio::SampleRate sampleRate, double seconds) {
+    return sampleRate * seconds;
 }
 } // namespace
 
@@ -137,9 +137,9 @@ void Beats::setSignature(TimeSignature sig, int beatIndex) {
     emit updated();
 }
 
-void Beats::translate(Duration duration) {
+void Beats::translateBySeconds(double seconds) {
     QMutexLocker locker(&m_mutex);
-    m_beatsInternal.translate(duration);
+    m_beatsInternal.translateBySeconds(seconds);
     locker.unlock();
     emit updated();
 }
@@ -758,14 +758,14 @@ void BeatsInternal::setSignature(TimeSignature sig, int downbeatIndex) {
     generateBeatsFromMarkers();
 }
 
-void BeatsInternal::translate(Duration duration) {
+void BeatsInternal::translateBySeconds(double seconds) {
     if (!isValid()) {
         return;
     }
 
     setFirstBeatFrame(getFirstBeatFrame() +
             durationToFrames(
-                    m_streamInfo.getSignalInfo().getSampleRate(), duration));
+                    m_streamInfo.getSignalInfo().getSampleRate(), seconds));
     generateBeatsFromMarkers();
 }
 

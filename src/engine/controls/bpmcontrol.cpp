@@ -189,9 +189,8 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && m_pBeats) {
         const mixxx::FrameDiff_t translateDistFrames =
                 getFrameOfTrack().sampleRate * -kSmallBeatsTranslateFactor;
-        const auto translateDuration = mixxx::Duration::fromSeconds(
-                translateDistFrames / getFrameOfTrack().sampleRate);
-        m_pBeats->translate(translateDuration);
+        const auto translateDuration = translateDistFrames / getFrameOfTrack().sampleRate;
+        m_pBeats->translateBySeconds(translateDuration);
     }
 }
 
@@ -200,9 +199,8 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const mixxx::FrameDiff_t translateDistFrames =
                 getFrameOfTrack().sampleRate * kSmallBeatsTranslateFactor;
-        const auto translateDuration = mixxx::Duration::fromSeconds(
-                translateDistFrames / getFrameOfTrack().sampleRate);
-        m_pBeats->translate(translateDuration);
+        const auto translateDuration = translateDistFrames / getFrameOfTrack().sampleRate;
+        m_pBeats->translateBySeconds(translateDuration);
     }
 }
 
@@ -991,7 +989,7 @@ void BpmControl::slotBeatsTranslate(double v) {
         mixxx::FramePos currentFrame = getFrameOfTrack().currentFrame;
         mixxx::FramePos closestBeat = m_pBeats->findClosestBeat(currentFrame);
         mixxx::FrameDiff_t delta = currentFrame - closestBeat;
-        m_pBeats->translate(mixxx::Duration::fromSeconds(delta / getFrameOfTrack().sampleRate));
+        m_pBeats->translateBySeconds(delta / getFrameOfTrack().sampleRate);
     }
 }
 
@@ -1002,8 +1000,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         m_dUserOffset.setValue(0.0);
 
         mixxx::FrameDiff_t offsetFrames = getPhaseOffset(getFrameOfTrack().currentFrame);
-        m_pBeats->translate(mixxx::Duration::fromSeconds(
-                -offsetFrames / getFrameOfTrack().sampleRate));
+        m_pBeats->translateBySeconds(-offsetFrames / getFrameOfTrack().sampleRate);
     }
 }
 
