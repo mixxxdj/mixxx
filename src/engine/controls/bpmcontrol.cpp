@@ -239,8 +239,9 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     if (isSynchronized()) {
         m_dUserOffset.setValue(0.0);
@@ -249,14 +250,16 @@ void BpmControl::slotControlBeatSyncPhase(double v) {
 }
 
 void BpmControl::slotControlBeatSyncTempo(double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
     syncTempo();
 }
 
 void BpmControl::slotControlBeatSync(double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
     if (!syncTempo()) {
         // syncTempo failed, nothing else to do
         return;
