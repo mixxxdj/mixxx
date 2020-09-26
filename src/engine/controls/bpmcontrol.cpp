@@ -189,7 +189,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && m_pBeats) {
         const mixxx::FrameDiff_t translateDistFrames =
                 getFrameOfTrack().sampleRate * -kSmallBeatsTranslateFactor;
-        const auto translateDuration = translateDistFrames / getFrameOfTrack().sampleRate;
+        const double translateDuration = translateDistFrames / getFrameOfTrack().sampleRate;
         m_pBeats->translateBySeconds(translateDuration);
     }
 }
@@ -199,7 +199,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const mixxx::FrameDiff_t translateDistFrames =
                 getFrameOfTrack().sampleRate * kSmallBeatsTranslateFactor;
-        const auto translateDuration = translateDistFrames / getFrameOfTrack().sampleRate;
+        const double translateDuration = translateDistFrames / getFrameOfTrack().sampleRate;
         m_pBeats->translateBySeconds(translateDuration);
     }
 }
