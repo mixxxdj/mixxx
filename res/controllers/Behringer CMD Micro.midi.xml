@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
     <info>
-        <name>Behringer CMD Micro (tecywiz121)</name>
+        <name>Behringer CMD Micro</name>
         <author>tecywiz121</author>
+        <manual>behringer_cmd_micro</manual>
     </info>
     <controller id="CMD">
         <scriptfiles>

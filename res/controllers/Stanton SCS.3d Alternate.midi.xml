@@ -4,6 +4,7 @@
     <name>Stanton SCS.3d (alternate)</name>
     <author>sbalmer</author>
     <description>Alternate mapping for the Stanton SCS.3d controller with somewhat different controls and additional lights.</description>
+    <manual>stanton_scs3d</manual>
   </info>
   <controller id="SCS.3d">
     <scriptfiles>

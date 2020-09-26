@@ -174,7 +174,7 @@ class SkinContext {
         QDomNode child = selectNode(node, nodeName);
         if (!child.isNull()) {
             bool ok = false;
-            double result = nodeToString(child).toInt(&ok);
+            int result = nodeToString(child).toInt(&ok);
             if (ok) {
                 *value = result;
                 return true;

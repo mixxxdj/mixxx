@@ -550,7 +550,7 @@ void WTrackMenu::updateMenus() {
     const bool singleTrackSelected = getTrackCount() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        int iNumDecks = m_pNumDecks->get();
+        int iNumDecks = static_cast<int>(m_pNumDecks->get());
         m_pDeckMenu->clear();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
@@ -568,7 +568,7 @@ void WTrackMenu::updateMenus() {
             }
         }
 
-        int iNumSamplers = m_pNumSamplers->get();
+        int iNumSamplers = static_cast<int>(m_pNumSamplers->get());
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
