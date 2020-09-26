@@ -129,7 +129,7 @@ in stdenv.mkDerivation rec {
     homepage = https://mixxx.org;
     description = "Digital DJ mixing software";
     license = licenses.gpl2Plus;
-    maintainers = [ maintainers.aszlig maintainers.goibhniu ];
+    maintainers = nixroot.pkgs.mixxx.meta.maintainers;
     platforms = platforms.linux;
   };
 }
