@@ -1238,7 +1238,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     const QString trackLocation(queryRecord.value(0).toString());
 
     GlobalTrackCacheResolver cacheResolver(QFileInfo(trackLocation), trackId);
-    pTrack = cacheResolver.getTrack();
+    TrackPointer pTrack = cacheResolver.getTrack();
     if (cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::Hit) {
         // Due to race conditions the track might have been reloaded
         // from the database in the meantime. In this case we abort
