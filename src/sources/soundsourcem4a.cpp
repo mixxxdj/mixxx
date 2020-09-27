@@ -40,8 +40,8 @@ void initFFmpegLib() {
 }
 #endif
 
-constexpr int kSampleBlockIdMin = 0;
-constexpr int kSampleBlockIdInvalid = -1;
+constexpr int kSampleBlockIdMin = 1;
+constexpr int kSampleBlockIdInvalid = 0;
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position after seeking randomly in the
@@ -59,6 +59,16 @@ constexpr SINT kNumberOfPrefetchFrames = 2112;
 // is used for radio broadcasting, and 480 or 512 sample versions are used for the low-delay
 // codecs AAC-LD and AAC-ELD."
 constexpr int kDefaultFrameSize = 1024;
+
+// According to various references DecoderConfigDescriptor.bufferSizeDB
+// is a 24-bit unsigned integer value.
+// MP4 atom:
+//   trak.mdia.minf.stbl.stsd.*.esds.decConfigDescr.bufferSizeDB
+// References:
+//   https://github.com/sannies/mp4parser/blob/master/isoparser/src/main/java/org/mp4parser/boxes/iso14496/part1/objectdescriptors/DecoderConfigDescriptor.java
+//   http://mutagen-specs.readthedocs.io/en/latest/mp4/
+//   http://perso.telecom-paristech.fr/~dufourd/mpeg-4/tools.html
+constexpr u_int32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
 
 inline bool isValidMediaDataName(const char* mediaDataName) {
     return (nullptr != mediaDataName) &&
@@ -196,6 +206,7 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
           m_hDecoder(nullptr),
           m_numberOfPrefetchSampleBlocks(0),
           m_curSampleBlockId(kSampleBlockIdInvalid),
+          m_nextSampleBlockId(kSampleBlockIdInvalid),
           m_curFrameIndex(0) {
 }
 
@@ -269,7 +280,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
         kLogger.warning() << "Failed to read number of frames from file:" << getUrlString();
         return OpenResult::Failed;
     }
-    m_maxSampleBlockId = numberOfFrames - 1;
+    m_maxSampleBlockId = numberOfFrames - 1 + kSampleBlockIdMin;
 
     if (par->extradata_size <= 0 || !par->extradata) {
         kLogger.info() << "Failed to read the MP4 elementary stream "
@@ -299,7 +310,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
                 << '}';
     }
 
-    m_inputBuffer.resize(m_frameSize, 0);
+    m_inputBuffer.resize(kMaxSampleBlockInputSizeLimit, 0);
 
     m_openParams = params;
 
@@ -512,19 +523,23 @@ int SoundSourceM4A::seekAndReadSampleBlock(
         int sampleBlockId,
         uint8_t** ppBytes,
         uint32_t* pNumBytes) {
-    DEBUG_ASSERT(sampleBlockId >= 0 && sampleBlockId < m_pAvStream->nb_index_entries);
+    DEBUG_ASSERT(sampleBlockId > 0 && sampleBlockId <= m_pAvStream->nb_index_entries);
 
     int error = 0;
     char error_string[AV_ERROR_MAX_STRING_SIZE];
 
-    error = avio_seek(m_pAvInputFormatContext->pb,
-            m_pAvStream->index_entries[sampleBlockId].pos,
-            SEEK_SET);
+    if (m_nextSampleBlockId != sampleBlockId) {
+        error = av_seek_frame(
+                m_pAvInputFormatContext,
+                m_pAvStream->index,
+                m_pAvStream->index_entries[sampleBlockId - 1].timestamp,
+                SEEK_SET);
 
-    if (error < 0) {
-        av_make_error_string(error_string, AV_ERROR_MAX_STRING_SIZE, error);
-        qWarning() << "Could not seek frame:" << error_string;
-        return error;
+        if (error < 0) {
+            av_make_error_string(error_string, AV_ERROR_MAX_STRING_SIZE, error);
+            qWarning() << "Could not seek frame:" << error_string;
+            return error;
+        }
     }
 
     // create an empty package
@@ -533,16 +548,25 @@ int SoundSourceM4A::seekAndReadSampleBlock(
     packet.data = nullptr;
     packet.size = 0;
 
+    m_nextSampleBlockId = kSampleBlockIdInvalid;
+
     error = av_read_frame(m_pAvInputFormatContext, &packet);
     if (error < 0) {
         av_make_error_string(error_string, AV_ERROR_MAX_STRING_SIZE, error);
         qWarning() << "Could not read frame:" << error_string;
     } else if (packet.size <= static_cast<int>(*pNumBytes)) {
         memcpy(*ppBytes, packet.data, packet.size);
+        m_nextSampleBlockId = sampleBlockId + 1;
+        DEBUG_ASSERT(packet.pos == m_pAvStream->index_entries[sampleBlockId - 1].pos);
     } else {
         error = AVERROR(ENOMEM);
     }
-    *pNumBytes = packet.size;
+    if (sampleBlockId == kSampleBlockIdMin) {
+        // first block contains extra data that make libfaad struggle.
+        *pNumBytes = 6;
+    } else {
+        *pNumBytes = packet.size;
+    }
     av_packet_unref(&packet);
     return error;
 }
@@ -649,16 +673,19 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     // Read data for next sample block into input buffer
                     uint8_t* pInputBuffer = m_inputBuffer.data();
                     uint32_t inputBufferLength = m_inputBuffer.size(); // in/out parameter
-                    if (seekAndReadSampleBlock(
-                                m_curSampleBlockId,
-                                &pInputBuffer,
-                                &inputBufferLength) < 0) {
+
+                    int error = seekAndReadSampleBlock(
+                            m_curSampleBlockId,
+                            &pInputBuffer,
+                            &inputBufferLength);
+                    if (error < 0) {
                         kLogger.warning()
                                 << "Failed to read MP4 input data for sample "
                                    "block"
                                 << m_curSampleBlockId << "("
                                 << "min =" << kSampleBlockIdMin << ","
-                                << "max =" << m_maxSampleBlockId << ")";
+                                << "max =" << m_maxSampleBlockId << ")"
+                                << error;
                         break; // abort
                     }
                     DEBUG_ASSERT(pInputBuffer == m_inputBuffer.data());

@@ -74,6 +74,7 @@ class SoundSourceM4A : public SoundSource {
     faad2::DecoderHandle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;
     int m_curSampleBlockId;
+    int m_nextSampleBlockId;
 
     ReadAheadSampleBuffer m_sampleBuffer;
 
