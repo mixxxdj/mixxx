@@ -44,6 +44,13 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     m_pCoColor->connectValueChanged(this, &WHotcueButton::slotColorChanged);
     slotColorChanged(m_pCoColor->get());
 
+    m_pCoType = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("type")),
+            this,
+            ControlFlag::NoAssertIfMissing);
+    m_pCoType->connectValueChanged(this, &WHotcueButton::slotTypeChanged);
+    slotTypeChanged(m_pCoType->get());
+
     auto pLeftConnection = new ControlParameterWidgetConnection(
             this,
             createConfigKey(QStringLiteral("activate")),
@@ -130,6 +137,42 @@ void WHotcueButton::slotColorChanged(double color) {
     }
 
     setStyleSheet(style);
+    restyleAndRepaint();
+}
+
+void WHotcueButton::slotTypeChanged(double type) {
+    switch (static_cast<mixxx::CueType>(type)) {
+    case mixxx::CueType::Invalid:
+        m_type = QStringLiteral("");
+        break;
+    case mixxx::CueType::HotCue:
+        m_type = QStringLiteral("hotcue");
+        break;
+    case mixxx::CueType::MainCue:
+        m_type = QStringLiteral("maincue");
+        break;
+    case mixxx::CueType::Beat:
+        m_type = QStringLiteral("beat");
+        break;
+    case mixxx::CueType::Loop:
+        m_type = QStringLiteral("loop");
+        break;
+    case mixxx::CueType::Jump:
+        m_type = QStringLiteral("jump");
+        break;
+    case mixxx::CueType::Intro:
+        m_type = QStringLiteral("intro");
+        break;
+    case mixxx::CueType::Outro:
+        m_type = QStringLiteral("outro");
+        break;
+    case mixxx::CueType::AudibleSound:
+        m_type = QStringLiteral("audiblesound");
+        break;
+    default:
+        DEBUG_ASSERT(!"Unknown cue type!");
+        m_type = QStringLiteral("");
+    }
     restyleAndRepaint();
 }
 
