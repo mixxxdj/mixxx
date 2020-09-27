@@ -26,7 +26,8 @@ const mixxx::Logger kLogger("BaseTrackTableModel");
 
 const QString kEmptyString = QStringLiteral("");
 
-constexpr int kHeightOfCoverartTooltip = 150; // Height of the image for the tooltip in pixel
+constexpr float kRelHeightOfCoverartTooltip =
+        0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
 const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_ALBUM,
@@ -481,12 +482,24 @@ QVariant BaseTrackTableModel::roleValue(
             if (!pTrack) {
                 return kEmptyString;
             }
+            // Determine height of the cover art image depending on the screen size
+            unsigned int absHeightOfCoverartTooltip;
+            const QScreen* primaryScreen = getPrimaryScreen();
+            if (primaryScreen) {
+                absHeightOfCoverartTooltip =
+                        primaryScreen->availableGeometry().height() *
+                        kRelHeightOfCoverartTooltip;
+            } else {
+                qWarning() << "Assuming screen height of 800px.";
+                absHeightOfCoverartTooltip = 800 * kRelHeightOfCoverartTooltip;
+            }
+            // Get image from cover art cache
             CoverArtCache* pCache = CoverArtCache::instance();
-            QPixmap pixmap = QPixmap(kHeightOfCoverartTooltip,
-                    kHeightOfCoverartTooltip); // Height also used as default for the width, in assumption that covers are squares
+            QPixmap pixmap = QPixmap(absHeightOfCoverartTooltip,
+                    absHeightOfCoverartTooltip); // Height also used as default for the width, in assumption that covers are squares
             pixmap = pCache->tryLoadCover(this,
                     pTrack->getCoverInfoWithLocation(),
-                    kHeightOfCoverartTooltip,
+                    absHeightOfCoverartTooltip,
                     CoverArtCache::Loading::NoSignal);
             if (pixmap.isNull()) {
                 // Cache miss -> Don't show a tooltip
