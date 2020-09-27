@@ -4,7 +4,7 @@
 #include <QHash>
 
 #include "track/beats.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 class BeatFactory {
   public:

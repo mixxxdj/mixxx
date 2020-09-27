@@ -2,12 +2,12 @@
 #define KEYFACTORY_H
 
 #include <QHash>
-#include <QVector>
 #include <QString>
+#include <QVector>
 
-#include "track/keys.h"
 #include "proto/keys.pb.h"
-#include "track/track.h"
+#include "track/keys.h"
+#include "track/track_decl.h"
 
 class KeyFactory {
   public:

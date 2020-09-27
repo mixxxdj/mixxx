@@ -1,8 +1,9 @@
 #pragma once
 
-#include "track/track.h"
-
 #include "sources/soundsourceproviderregistry.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "util/sandbox.h"
 
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not shareable between multiple threads!

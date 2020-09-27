@@ -5,10 +5,12 @@
 #include <QPointer>
 #include <memory>
 
+#include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
 #include "track/trackref.h"
+#include "util/color/rgbcolor.h"
 
 class ControlProxy;
 class DlgTagFetcher;

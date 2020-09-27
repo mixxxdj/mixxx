@@ -4,7 +4,7 @@
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
-#include "track/trackmetadata.h"
+#include "track/track.h"
 #include "util/samplebuffer.h"
 
 namespace {

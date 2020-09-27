@@ -4,12 +4,12 @@
 #include <QList>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class Library;
 class LibraryFeature;
-class Track;
 
 // This interface and base class enable to synchronize external
 // track collections with Mixxx. It provides methods that will
