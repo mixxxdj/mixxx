@@ -1127,7 +1127,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             }
             if (decodedFrameRange.end() > frameIndexRange().end()) {
                 const auto leadoutRange = IndexRange::between(
-                        math_min(frameIndexRange().end(), decodedFrameRange.start()),
+                        math_max(frameIndexRange().end(), decodedFrameRange.start()),
                         decodedFrameRange.end());
                 DEBUG_ASSERT(leadoutRange.orientation() != IndexRange::Orientation::Backward);
                 if (leadoutRange.orientation() == IndexRange::Orientation::Forward) {
