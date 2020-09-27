@@ -249,6 +249,11 @@ bool HidController::poll() {
     Trace hidRead("HidController poll");
 
     int result = 1;
+    // This loop risks becoming a high priority endless loop in case processing
+    // the mapping JS code takes longer than the controller polling rate.
+    // This could stall other low priority tasks.
+    // There is no safety net for this because it has not been demonstrated to be
+    // a problem in practice.
     while (result > 0) {
         // Rotate between two buffers so the memcmp below does not require deep copying to another buffer.
         unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
@@ -262,7 +267,12 @@ bool HidController::poll() {
             Trace process("HidController process packet");
             // Some controllers such as the Gemini GMX continuously send input packets even if it
             // is identical to the previous packet. If this loop processed all those redundant
-            // packets, it would be a big performance problem.
+            // packets, it would be a big performance problem to run JS code for every packet and
+            // would be unnecessary.
+            // This assumes that the redundant packets all use the same report ID. In practice we
+            // have not encountered any controllers that send redundant packets with different report
+            // IDs. If any such devices exist, this may be changed to use a separate buffer to store
+            // the last packet for each report ID.
             if (memcmp(pCurrentBuffer, pPreviousBuffer, kBufferSize) == 0) {
                 continue;
             }
