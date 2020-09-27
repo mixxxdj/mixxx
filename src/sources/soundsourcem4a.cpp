@@ -1,5 +1,7 @@
 #include "sources/soundsourcem4a.h"
 
+#include <mutex>
+
 #include "util/logger.h"
 #include "util/sample.h"
 
@@ -20,6 +22,23 @@ namespace mixxx {
 namespace {
 
 const Logger kLogger("SoundSourceM4A");
+
+#ifndef __FFMPEG__
+std::once_flag initFFmpegLibFlag;
+
+// FFmpeg API Changes:
+// https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
+
+// This function must be called once during startup.
+void initFFmpegLib() {
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
+    av_register_all();
+#endif
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 10, 100)
+    avcodec_register_all();
+#endif
+}
+#endif
 
 constexpr int kSampleBlockIdMin = 0;
 constexpr int kSampleBlockIdInvalid = -1;
@@ -835,6 +854,12 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     } while (retryAfterReopeningDecoder);
     DEBUG_ASSERT(!"unreachable");
     return {};
+}
+
+SoundSourceProviderM4A::SoundSourceProviderM4A() {
+#ifndef __FFMPEG__
+    std::call_once(initFFmpegLibFlag, initFFmpegLib);
+#endif
 }
 
 QString SoundSourceProviderM4A::getName() const {

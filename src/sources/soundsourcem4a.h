@@ -126,6 +126,8 @@ class SoundSourceM4A : public SoundSource {
 
 class SoundSourceProviderM4A : public SoundSourceProvider {
   public:
+    SoundSourceProviderM4A();
+
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
