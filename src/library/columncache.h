@@ -1,5 +1,4 @@
-#ifndef COLUMNCACHE_H
-#define COLUMNCACHE_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -77,29 +76,32 @@ class ColumnCache : public QObject {
 
     void setColumns(const QStringList& columns);
 
-    inline int fieldIndex(Column column) const {
-        if (column < 0 || column >= NUM_COLUMNS) {
+    int fieldIndex(Column column) const {
+        if (column <= COLUMN_LIBRARYTABLE_INVALID) {
+            return -1;
+        }
+        VERIFY_OR_DEBUG_ASSERT(column < NUM_COLUMNS) {
             return -1;
         }
         return m_columnIndexByEnum[column];
     }
 
-    inline int fieldIndex(const QString& columnName) const {
+    int fieldIndex(const QString& columnName) const {
         return m_columnIndexByName.value(columnName, -1);
     }
 
-    inline QString columnName(Column column) const {
+    QString columnName(Column column) const {
         return columnNameForFieldIndex(fieldIndex(column));
     }
 
-    inline QString columnNameForFieldIndex(int index) const {
+    QString columnNameForFieldIndex(int index) const {
         if (index < 0 || index >= m_columnsByIndex.size()) {
             return QString();
         }
         return m_columnsByIndex.at(index);
     }
 
-    inline QString columnSortForFieldIndex(int index) const {
+    QString columnSortForFieldIndex(int index) const {
         // Check if there is a special sort clause
         QString format = m_columnSortByIndex.value(index, "%1");
         return format.arg(columnNameForFieldIndex(index));
@@ -117,10 +119,12 @@ class ColumnCache : public QObject {
     }
 
   private:
+    void initColumnIndexByEnum(
+            Column columnEnum,
+            const QString& columnName);
+
     ControlProxy* m_pKeyNotationCP;
 
   private slots:
     void slotSetKeySortOrder(double);
 };
-
-#endif /* COLUMNCACHE_H */
