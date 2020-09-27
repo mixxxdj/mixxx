@@ -1,6 +1,7 @@
 #include "sources/soundsourceffmpeg.h"
 
 #include <mutex>
+#include <string>
 
 #include "util/logger.h"
 #include "util/sample.h"
@@ -198,13 +199,10 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     }
 }
 
-QString formatErrorMessage(int errnum) {
-    char errbuf[256];
-    if (av_strerror(errnum, errbuf, sizeof(errbuf) / sizeof(errbuf[0]) == 0)) {
-        return QString("%1 (%2)").arg(errbuf, errnum);
-    } else {
-        return QString("No description for error code (%1) found").arg(errnum);
-    }
+inline std::string formatErrorString(int errnum) {
+    char errbuf[AV_ERROR_MAX_STRING_SIZE];
+    av_strerror(errnum, errbuf, sizeof(errbuf) / sizeof(errbuf[0]) == 0);
+    return std::string(errbuf);
 }
 
 #if VERBOSE_DEBUG_LOG
@@ -248,7 +246,7 @@ AVFormatContext* openInputFile(
         DEBUG_ASSERT(avformat_open_input_result < 0);
         kLogger.warning()
                 << "avformat_open_input() failed:"
-                << formatErrorMessage(avformat_open_input_result).toLocal8Bit().constData();
+                << formatErrorString(avformat_open_input_result).c_str();
         DEBUG_ASSERT(pavInputFormatContext == nullptr);
     }
     return pavInputFormatContext;
@@ -263,7 +261,7 @@ bool openDecodingContext(
         DEBUG_ASSERT(avcodec_open2_result < 0);
         kLogger.warning()
                 << "avcodec_open2() failed:"
-                << formatErrorMessage(avcodec_open2_result).toLocal8Bit().constData();
+                << formatErrorString(avcodec_open2_result).c_str();
         return false;
     }
     return true;
@@ -488,7 +486,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         DEBUG_ASSERT(avformat_find_stream_info_result < 0);
         kLogger.warning()
                 << "avformat_find_stream_info() failed:"
-                << formatErrorMessage(avformat_find_stream_info_result).toLocal8Bit().constData();
+                << formatErrorString(avformat_find_stream_info_result).c_str();
         return OpenResult::Failed;
     }
 
@@ -514,7 +512,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         default:
             kLogger.warning()
                     << "av_find_best_stream() failed:"
-                    << formatErrorMessage(av_find_best_stream_result).toLocal8Bit().constData();
+                    << formatErrorString(av_find_best_stream_result).c_str();
         }
         return SoundSource::OpenResult::Aborted;
     }
@@ -538,7 +536,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         DEBUG_ASSERT(avcodec_parameters_to_context_result < 0);
         kLogger.warning()
                 << "avcodec_parameters_to_context() failed:"
-                << formatErrorMessage(avcodec_parameters_to_context_result).toLocal8Bit().constData();
+                << formatErrorString(avcodec_parameters_to_context_result).c_str();
         return SoundSource::OpenResult::Aborted;
     }
 
@@ -730,7 +728,7 @@ bool SoundSourceFFmpeg::initResampling(
         if (swr_init_result < 0) {
             kLogger.warning()
                     << "swr_init() failed:"
-                    << formatErrorMessage(swr_init_result).toLocal8Bit().constData();
+                    << formatErrorString(swr_init_result).c_str();
             return false;
         }
         DEBUG_ASSERT(!m_pavResampledFrame);
@@ -782,7 +780,7 @@ SINT readNextPacket(
             } else {
                 kLogger.warning()
                         << "av_read_frame() failed:"
-                        << formatErrorMessage(av_read_frame_result).toLocal8Bit().constData();
+                        << formatErrorString(av_read_frame_result).c_str();
                 return ReadAheadFrameBuffer::kInvalidFrameIndex;
             }
         }
@@ -847,9 +845,7 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
         // Unrecoverable seek error: Invalidate the current position and abort
         kLogger.warning()
                 << "av_seek_frame() failed:"
-                << formatErrorMessage(av_seek_frame_result)
-                           .toLocal8Bit()
-                           .constData();
+                << formatErrorString(av_seek_frame_result).c_str();
         m_frameBuffer.invalidate();
         return false;
     }
@@ -904,9 +900,7 @@ bool SoundSourceFFmpeg::consumeNextAVPacket(
         } else {
             kLogger.warning()
                     << "avcodec_send_packet() failed:"
-                    << formatErrorMessage(avcodec_send_packet_result)
-                               .toLocal8Bit()
-                               .constData();
+                    << formatErrorString(avcodec_send_packet_result).c_str();
             // Release ownership on packet
             av_packet_unref(pavNextPacket);
             *ppavNextPacket = nullptr;
@@ -936,9 +930,7 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame() {
         if (swr_convert_frame_result != 0) {
             kLogger.warning()
                     << "swr_convert_frame() failed:"
-                    << formatErrorMessage(swr_convert_frame_result)
-                               .toLocal8Bit()
-                               .constData();
+                    << formatErrorString(swr_convert_frame_result).c_str();
             // Discard decoded frame and abort after unrecoverable error
             av_frame_unref(m_pavDecodedFrame);
             return nullptr;
@@ -1088,9 +1080,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             } else {
                 kLogger.warning()
                         << "avcodec_receive_frame() failed:"
-                        << formatErrorMessage(avcodec_receive_frame_result)
-                                   .toLocal8Bit()
-                                   .constData();
+                        << formatErrorString(avcodec_receive_frame_result).c_str();
                 // Invalidate the current position and abort reading
                 m_frameBuffer.invalidate();
                 break;
