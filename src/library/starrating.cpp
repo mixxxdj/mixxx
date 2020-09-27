@@ -8,9 +8,13 @@
 // Magic number? Explain what this factor affects and how
 const int PaintingScaleFactor = 15;
 
-StarRating::StarRating(int starCount, int maxStarCount)
-        : m_myStarCount(starCount),
-          m_myMaxStarCount(maxStarCount) {
+StarRating::StarRating(
+        int starCount,
+        int maxStarCount)
+        : m_starCount(starCount),
+          m_maxStarCount(maxStarCount) {
+    DEBUG_ASSERT(m_starCount >= kMinStarCount);
+    DEBUG_ASSERT(m_starCount <= m_maxStarCount);
     // 1st star cusp at 0° of the unit circle whose center is shifted to adapt the 0,0-based paint area
     m_starPolygon << QPointF(1.0, 0.5);
     for (int i = 1; i < 5; ++i) {
@@ -26,7 +30,7 @@ StarRating::StarRating(int starCount, int maxStarCount)
 }
 
 QSize StarRating::sizeHint() const {
-    return PaintingScaleFactor * QSize(m_myMaxStarCount, 1);
+    return PaintingScaleFactor * QSize(m_maxStarCount, 1);
 }
 
 void StarRating::paint(QPainter *painter, const QRect &rect) const {
@@ -41,8 +45,8 @@ void StarRating::paint(QPainter *painter, const QRect &rect) const {
     //determine number of stars that are possible to paint
     int n = rect.width() / PaintingScaleFactor;
 
-    for (int i = 0; i < m_myMaxStarCount && i<n; ++i) {
-        if (i < m_myStarCount) {
+    for (int i = 0; i < m_maxStarCount && i < n; ++i) {
+        if (i < m_starCount) {
             painter->drawPolygon(m_starPolygon, Qt::WindingFill);
         } else {
             painter->drawPolygon(m_diamondPolygon, Qt::WindingFill);

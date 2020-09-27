@@ -149,8 +149,14 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags readWriteFlags(
             const QModelIndex& index) const;
 
+    // At least one of the following functions must be overridden,
+    // because each default implementation will call the other
+    // function!!
     virtual QVariant rawValue(
-            const QModelIndex& index) const = 0;
+            const QModelIndex& index) const;
+    virtual QVariant rawSiblingValue(
+            const QModelIndex& index,
+            ColumnCache::Column siblingField) const;
 
     // Reimplement in derived classes to handle columns other
     // then COLUMN_LIBRARYTABLE
