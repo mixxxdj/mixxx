@@ -49,7 +49,7 @@ LoopingControl::LoopingControl(QString group,
           m_bAdjustingLoopInOld(false),
           m_bAdjustingLoopOutOld(false),
           m_bLoopOutPressedWhileLoopDisabled(false) {
-    m_oldLoopSamples = { kNoTrigger, kNoTrigger, LoopSeekMode::MovedOut };
+    m_oldLoopSamples = {kNoTrigger, kNoTrigger, LoopSeekMode::MovedOut};
     m_loopSamples.setValue(m_oldLoopSamples);
     m_currentSample.setValue(0.0);
     m_pActiveBeatLoop = NULL;
@@ -283,7 +283,9 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
     }
 
     // Reseek if the loop shrank out from under the playposition.
-    loopSamples.seekMode = (m_bLoopingEnabled && scaleFactor < 1.0) ? LoopSeekMode::Changed : LoopSeekMode::MovedOut;
+    loopSamples.seekMode = (m_bLoopingEnabled && scaleFactor < 1.0)
+            ? LoopSeekMode::Changed
+            : LoopSeekMode::MovedOut;
 
     m_loopSamples.setValue(loopSamples);
     emit loopUpdated(loopSamples.start, loopSamples.end);
@@ -395,33 +397,37 @@ double LoopingControl::nextTrigger(bool reverse,
                 loopSamples.end != m_oldLoopSamples.end) {
             // bool seek is only valid after the loop has changed
             bool movedOut;
-            switch(loopSamples.seekMode) {
-                case LoopSeekMode::Changed:
-                    // here the loop has changed and the play position
-                    // should be moved with it
+            switch (loopSamples.seekMode) {
+            case LoopSeekMode::Changed:
+                // here the loop has changed and the play position
+                // should be moved with it
+                *pTarget = seekInsideAdjustedLoop(currentSample,
+                        m_oldLoopSamples.start,
+                        loopSamples.start,
+                        loopSamples.end);
+                break;
+            case LoopSeekMode::MovedOut:
+                movedOut = false;
+                // Check if we have moved out of the loop, before we could enable it
+                if (reverse) {
+                    if (loopSamples.start > currentSample) {
+                        movedOut = true;
+                    }
+                } else {
+                    if (loopSamples.end < currentSample) {
+                        movedOut = true;
+                    }
+                }
+                if (movedOut) {
                     *pTarget = seekInsideAdjustedLoop(currentSample,
-                            m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
-                    break;
-                case LoopSeekMode::MovedOut:
-                    movedOut = false;
-                    // Check if we have moved out of the loop, before we could enable it
-                    if (reverse) {
-                        if (loopSamples.start > currentSample) {
-                            movedOut = true;
-                        }
-                    } else {
-                        if (loopSamples.end < currentSample) {
-                            movedOut = true;
-                        }
-                    }
-                    if (movedOut) {
-                        *pTarget = seekInsideAdjustedLoop(currentSample,
-                                loopSamples.start, loopSamples.start, loopSamples.end);
-                    }
-                    break;
-                case LoopSeekMode::None:
-                    // Nothing to do here
-                    break;
+                            loopSamples.start,
+                            loopSamples.start,
+                            loopSamples.end);
+                }
+                break;
+            case LoopSeekMode::None:
+                // Nothing to do here
+                break;
             }
             m_oldLoopSamples = loopSamples;
             if (*pTarget != kNoTrigger) {

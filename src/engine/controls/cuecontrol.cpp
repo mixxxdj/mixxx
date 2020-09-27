@@ -2240,13 +2240,17 @@ HotcueControl::HotcueControl(QString group, int i)
             Qt::DirectConnection);
 
     m_hotcueSetCue = new ControlPushButton(keyForControl(i, "setcue"));
-    connect(m_hotcueSetCue, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueSetCue,
+    connect(m_hotcueSetCue,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueSetCue,
             Qt::DirectConnection);
 
     m_hotcueSetLoop = new ControlPushButton(keyForControl(i, "setloop"));
-    connect(m_hotcueSetLoop, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueSetLoop,
+    connect(m_hotcueSetLoop,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueSetLoop,
             Qt::DirectConnection);
 
     m_hotcueGoto = new ControlPushButton(keyForControl(i, "goto"));
@@ -2265,8 +2269,10 @@ HotcueControl::HotcueControl(QString group, int i)
             Qt::DirectConnection);
 
     m_hotcueGotoAndLoop = new ControlPushButton(keyForControl(i, "gotoandloop"));
-    connect(m_hotcueGotoAndLoop, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueGotoAndLoop,
+    connect(m_hotcueGotoAndLoop,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueGotoAndLoop,
             Qt::DirectConnection);
 
     m_hotcueLoopToggle = new ControlPushButton(keyForControl(i, "loop_toggle"));
@@ -2282,13 +2288,17 @@ HotcueControl::HotcueControl(QString group, int i)
             Qt::DirectConnection);
 
     m_hotcueActivateCue = new ControlPushButton(keyForControl(i, "activatecue"));
-    connect(m_hotcueActivateCue, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueActivateCue,
+    connect(m_hotcueActivateCue,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueActivateCue,
             Qt::DirectConnection);
 
     m_hotcueActivateLoop = new ControlPushButton(keyForControl(i, "activateloop"));
-    connect(m_hotcueActivateLoop, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueActivateLoop,
+    connect(m_hotcueActivateLoop,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueActivateLoop,
             Qt::DirectConnection);
 
     m_hotcueActivatePreview = new ControlPushButton(keyForControl(i, "activate_preview"));
