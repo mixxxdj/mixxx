@@ -428,8 +428,12 @@ class SeratoMarkers2 final {
     }
 
     QList<CueInfo> getCues() const;
+
     RgbColor::optional_t getTrackColor() const;
+    void setTrackColor(RgbColor color);
+
     bool isBpmLocked() const;
+    void setBpmLocked(bool bpmLocked);
 
   private:
     static bool parseCommon(
@@ -461,6 +465,8 @@ class SeratoMarkers2 final {
     /// overwrites the last byte with the value stored in
     /// `m_lastBase64ByteFLAC`.
     QByteArray dumpFLAC() const;
+
+    int countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const;
 
     int m_allocatedSize;
     char m_lastBase64ByteFLAC;

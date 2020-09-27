@@ -14,48 +14,48 @@ namespace mixxx {
 
 class TrackInfo final {
     // Properties in alphabetical order
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,               Artist)
-    PROPERTY_SET_BYVAL_GET_BYREF(Bpm,        bpm,                  Bpm)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    comment,              Comment)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    composer,             Composer)
+    MIXXX_DECL_PROPERTY(QString, artist, Artist)
+    MIXXX_DECL_PROPERTY(Bpm, bpm, Bpm)
+    MIXXX_DECL_PROPERTY(QString, comment, Comment)
+    MIXXX_DECL_PROPERTY(QString, composer, Composer)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    conductor,            Conductor)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    discNumber,           DiscNumber)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    discTotal,            DiscTotal)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    encoder,              Encoder)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    encoderSettings,      EncoderSettings)
+    MIXXX_DECL_PROPERTY(QString, conductor, Conductor)
+    MIXXX_DECL_PROPERTY(QString, discNumber, DiscNumber)
+    MIXXX_DECL_PROPERTY(QString, discTotal, DiscTotal)
+    MIXXX_DECL_PROPERTY(QString, encoder, Encoder)
+    MIXXX_DECL_PROPERTY(QString, encoderSettings, EncoderSettings)
 #endif // __EXTRA_METADATA__
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    genre,                Genre)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    grouping,             Grouping)
+    MIXXX_DECL_PROPERTY(QString, genre, Genre)
+    MIXXX_DECL_PROPERTY(QString, grouping, Grouping)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    isrc,                 ISRC)
+    MIXXX_DECL_PROPERTY(QString, isrc, ISRC)
 #endif // __EXTRA_METADATA__
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    key,                  Key)
+    MIXXX_DECL_PROPERTY(QString, key, Key)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    language,             Language)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    lyricist,             Lyricist)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    mood,                 Mood)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    movement,             Movement)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,  MusicBrainzArtistId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzRecordingId, MusicBrainzRecordingId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId, MusicBrainzReleaseId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzWorkId,    MusicBrainzWorkId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    remixer,              Remixer)
+    MIXXX_DECL_PROPERTY(QString, language, Language)
+    MIXXX_DECL_PROPERTY(QString, lyricist, Lyricist)
+    MIXXX_DECL_PROPERTY(QString, mood, Mood)
+    MIXXX_DECL_PROPERTY(QString, movement, Movement)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzArtistId, MusicBrainzArtistId)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzRecordingId, MusicBrainzRecordingId)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzReleaseId, MusicBrainzReleaseId)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzWorkId, MusicBrainzWorkId)
+    MIXXX_DECL_PROPERTY(QString, remixer, Remixer)
 #endif // __EXTRA_METADATA__
-    PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,           ReplayGain)
-    PROPERTY_SET_BYVAL_GET_BYREF(SeratoTags, seratoTags,           SeratoTags)
+    MIXXX_DECL_PROPERTY(ReplayGain, replayGain, ReplayGain)
+    MIXXX_DECL_PROPERTY(SeratoTags, seratoTags, SeratoTags)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    subtitle,             Subtitle)
+    MIXXX_DECL_PROPERTY(QString, subtitle, Subtitle)
 #endif // __EXTRA_METADATA__
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                Title)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    trackNumber,          TrackNumber)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    trackTotal,           TrackTotal)
+    MIXXX_DECL_PROPERTY(QString, title, Title)
+    MIXXX_DECL_PROPERTY(QString, trackNumber, TrackNumber)
+    MIXXX_DECL_PROPERTY(QString, trackTotal, TrackTotal)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    work,                 Work)
+    MIXXX_DECL_PROPERTY(QString, work, Work)
 #endif // __EXTRA_METADATA__
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    year,                 Year) // = release date
+    MIXXX_DECL_PROPERTY(QString, year, Year) // = release date
 
-public:
+  public:
     TrackInfo() = default;
     TrackInfo(TrackInfo&&) = default;
     TrackInfo(const TrackInfo&) = default;

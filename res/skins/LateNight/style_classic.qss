@@ -40,7 +40,9 @@ WLibrary,
 #PreviewDeck,
 #LibExpandBox,
 #SearchLineBox,
-QAbstractScrollArea::corner {
+QAbstractScrollArea::corner,
+/* Prevent cut-off or shifted stars on macOS */
+WStarRating {
   background-color: #1e1e1e;
 }
 
@@ -2088,7 +2090,7 @@ WCueMenuPopup QPushButton:focus {
       image: url(skin:/classic/buttons/btn__lib_sort_up.svg);
       }
     #LibraryContainer QHeaderView::down-arrow {
-      image: url(skin:/classic/style/btn__lib_sort_down.svg);
+      image: url(skin:/classic/buttons/btn__lib_sort_down.svg);
     }
 
 

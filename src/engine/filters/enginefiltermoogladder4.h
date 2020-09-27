@@ -27,8 +27,8 @@ namespace {
 // defines the strange of the non linearity
 // 1.2 = drives the transistor in full range, giving a maximum Waveshaper effect
 // big values disables the non linearity
-const float kVt = 1.2;
-const float kPi = 3.14159265358979323846;
+constexpr float kVt = 1.2f;
+constexpr float kPi = 3.14159265358979323846f;
 
 } // anonymous namespace
 
@@ -163,8 +163,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 // of the new filter but it turns out that this produces
                 // a gain drop due to the filter delay which is more
                 // conspicuous than the settling noise.
-                double old1 = pIn[i];
-                double old2 = pIn[i + 1];
+                CSAMPLE old1 = pIn[i];
+                CSAMPLE old2 = pIn[i + 1];
                 double new1 = processSample(pIn[i], &m_buf[0]);
                 double new2 = processSample(pIn[i+1], &m_buf[1]);
 
@@ -172,9 +172,9 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                     pOutput[i] = old1;
                     pOutput[i + 1] = old2;
                 } else {
-                    pOutput[i] = new1 * cross_mix + old1 * (1.0 - cross_mix);
-                    pOutput[i + 1] = new2 * cross_mix
-                            + old2 * (1.0 - cross_mix);
+                    pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
+                    pOutput[i + 1] = static_cast<CSAMPLE>(
+                            new2 * cross_mix + old2 * (1.0 - cross_mix));
                     cross_mix += cross_inc;
                 }
             }

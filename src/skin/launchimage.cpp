@@ -1,11 +1,11 @@
-#include <skin/launchimage.h>
+#include "skin/launchimage.h"
 
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QLabel>
+#include <QPainter>
 #include <QProgressBar>
 #include <QStyleOption>
-#include <QPainter>
+#include <QVBoxLayout>
 
 LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         : QWidget(pParent) {

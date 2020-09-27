@@ -142,7 +142,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             continue;
         }
 
-        double xfl, xfr;
+        CSAMPLE_GAIN xfl, xfr;
         // TODO: supply correct parameters to the function. If the hamster style
         // for the crossfader is enabled, the result is currently wrong.
         EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, MIXXX_XFADER_ADDITIVE, false,

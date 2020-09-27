@@ -136,7 +136,7 @@ class Duration : public DurationBase {
     // Returns a Duration object representing a duration of 'seconds'.
     template<typename T>
     static constexpr Duration fromSeconds(T seconds) {
-        return Duration(seconds * kNanosPerSecond);
+        return Duration(static_cast<qint64>(seconds * kNanosPerSecond));
     }
 
     // Returns a Duration object representing a duration of 'millis'.

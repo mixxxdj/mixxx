@@ -3,6 +3,7 @@
           <name>Denon DN SC2000</name>
           <author>Jan Riewe, Moba</author>
           <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=2048</forums>
+          <manual>denon_dn_sc2000</manual>
     </info>
     <controller id="Denon DN-SC2000">
         <scriptfiles>
