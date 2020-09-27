@@ -753,6 +753,7 @@ void SoundSourceFFmpeg::close() {
     m_pSwrContext.close();
     m_pavCodecContext.close();
     m_pavInputFormatContext.close();
+    m_pavStream = nullptr;
 }
 
 namespace {
