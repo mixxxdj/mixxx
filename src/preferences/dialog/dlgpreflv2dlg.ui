@@ -16,8 +16,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+
      <item>
-      <layout class="QVBoxLayout" name="lv2_vertical_layout_left">
+      <layout class="QVBoxLayout" name="vertical_layout_left">
        <item>
         <widget class="QLabel" name="label">
          <property name="font">
@@ -34,8 +35,31 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QScrollArea" name="scrollArea1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+          <widget class="QWidget" name="verticalLayoutWidget1">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" name="lv2_VLayout_effects"/>
+          </widget>
+        </widget>
+       </item>
       </layout>
      </item>
+
      <item>
       <layout class="QVBoxLayout" name="vertical_layout_center">
        <item>
@@ -48,7 +72,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
+           <width>10</width>
            <height>20</height>
           </size>
          </property>
@@ -56,31 +80,69 @@
        </item>
       </layout>
      </item>
+
      <item>
-      <layout class="QVBoxLayout" name="lv2_vertical_layout_params">
+      <layout class="QVBoxLayout" name="vertical_layout_right">
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="effect_name_label">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
          <property name="text">
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QScrollArea" name="scrollArea2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+          <widget class="QWidget" name="verticalLayoutWidget2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" name="lv2_VLayout_parameters"/>
+          </widget>
+        </widget>
+       </item>
+<!--        <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>10000</height>
+          </size>
+         </property>
+        </spacer>
+       </item> -->
       </layout>
      </item>
+
     </layout>
    </item>
   </layout>

@@ -35,6 +35,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
 
         QPushButton* button = new QPushButton(this);
         button->setText(pEffectManifest->name());
+        button->setStyleSheet("text-align:left; padding: 5px;");
 
         if (!m_pLV2Backend->canInstantiateEffect(effectId)) {
             // Tooltip displaying why this effect is disabled
@@ -56,10 +57,11 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
             button->setDisabled(false);
         }
 
-        lv2_vertical_layout_left->addWidget(button);
+        lv2_VLayout_effects->addWidget(button);
         button->setProperty("id", QVariant(pEffectManifest->id()));
         connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
     }
+    effect_name_label->setText(QStringLiteral(""));
 }
 
 DlgPrefLV2::~DlgPrefLV2() {
@@ -76,8 +78,8 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_pluginParameters.clear();
 
     QLayoutItem* item;
-    while ((item = lv2_vertical_layout_params->takeAt(1)) != 0) {
-        lv2_vertical_layout_params->removeWidget(item->widget());
+    while ((item = lv2_VLayout_parameters->takeAt(1)) != 0) {
+        lv2_VLayout_parameters->removeWidget(item->widget());
         delete item->widget();
     }
 
@@ -87,18 +89,22 @@ void DlgPrefLV2::slotDisplayParameters() {
 
     EffectManifestPointer pCurrentEffectManifest = m_pLV2Backend->getManifest(pluginId);
     if (pCurrentEffectManifest) {
+        // Show the effect name above the parameter list
+        effect_name_label->setText(QObject::tr("Parameters for %1")
+                                           .arg(pCurrentEffectManifest->name()));
+        // Populate the parameters list
         const QList<EffectManifestParameterPointer>& parameterList =
                 pCurrentEffectManifest->parameters();
-        for (const auto& pPrameter: parameterList) {
+        for (const auto& pParameter : parameterList) {
             QCheckBox* entry = new QCheckBox(this);
-            entry->setText(pPrameter->name());
-            if (pPrameter->showInParameterSlot()) {
+            entry->setText(pParameter->name());
+            if (pParameter->showInParameterSlot()) {
                 entry->setChecked(true);
             } else {
                 entry->setChecked(false);
                 entry->setEnabled(false);
             }
-            lv2_vertical_layout_params->addWidget(entry);
+            lv2_VLayout_parameters->addWidget(entry);
             m_pluginParameters.append(entry);
             connect(entry, SIGNAL(stateChanged(int)),
                     this, SLOT(slotUpdateOnParameterCheck(int)));
@@ -108,7 +114,7 @@ void DlgPrefLV2::slotDisplayParameters() {
     } else {
         m_iCheckedParameters = 0;
     }
-    lv2_vertical_layout_params->addStretch();
+    lv2_VLayout_parameters->addStretch();
 }
 
 void DlgPrefLV2::slotUpdate() {
