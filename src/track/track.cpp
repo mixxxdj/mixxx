@@ -608,7 +608,7 @@ void Track::setPlayCounter(const PlayCounter& playCounter) {
 void Track::updatePlayCounter(bool bPlayed) {
     QMutexLocker lock(&m_qMutex);
     PlayCounter playCounter(m_record.getPlayCounter());
-    playCounter.setPlayedAndUpdateTimesPlayed(bPlayed);
+    playCounter.updateLastPlayedNowAndTimesPlayed(bPlayed);
     if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
         markDirtyAndUnlock(&lock);
     }
