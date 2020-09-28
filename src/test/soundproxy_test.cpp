@@ -5,6 +5,7 @@
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
+#include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
 
 namespace {

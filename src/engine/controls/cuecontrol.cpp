@@ -10,6 +10,7 @@
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/track.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/sample.h"

@@ -22,6 +22,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 
 namespace {
 

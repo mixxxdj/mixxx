@@ -1,8 +1,8 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
-#include "vinylcontrol/vinylcontrol.h"
-#include "track/cue.h"
+#include "track/track.h"
 #include "util/math.h"
+#include "vinylcontrol/vinylcontrol.h"
 
 VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),

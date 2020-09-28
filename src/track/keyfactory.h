@@ -7,7 +7,6 @@
 
 #include "proto/keys.pb.h"
 #include "track/keys.h"
-#include "track/track_decl.h"
 
 class KeyFactory {
   public:

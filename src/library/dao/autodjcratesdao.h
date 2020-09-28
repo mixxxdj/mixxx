@@ -3,9 +3,10 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-#include "preferences/usersettings.h"
 #include "library/crate/crateid.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/class.h"
 
 class TrackCollection;

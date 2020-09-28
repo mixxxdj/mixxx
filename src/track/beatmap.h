@@ -12,9 +12,10 @@
 
 #include "proto/beats.pb.h"
 #include "track/beats.h"
-#include "track/track_decl.h"
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
+
+class Track;
 
 typedef QList<mixxx::track::io::Beat> BeatList;
 

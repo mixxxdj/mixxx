@@ -6,13 +6,13 @@
 
 #include "audio/types.h"
 #include "track/cueinfo.h"
-#include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 
 class CuePosition;
 class CueDAO;
+class Track;
 
 class Cue : public QObject {
     Q_OBJECT

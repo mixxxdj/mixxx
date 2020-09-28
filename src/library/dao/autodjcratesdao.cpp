@@ -14,6 +14,7 @@
 #include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"
