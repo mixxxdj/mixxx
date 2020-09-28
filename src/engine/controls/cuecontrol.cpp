@@ -823,7 +823,6 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             m_iCurrentlyPreviewingHotcues++;
             double position = pCue->getPosition();
             m_bypassCueSetByPlay = true;
-            m_pPlay->set(1.0);
             pControl->setPreviewing(true);
             pControl->setPreviewingPosition(position);
 
@@ -831,6 +830,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             lock.unlock();
 
             seekAbs(position);
+            m_pPlay->set(1.0);
         }
     } else if (m_iCurrentlyPreviewingHotcues) {
         // This is a activate release and we are previewing at least one
