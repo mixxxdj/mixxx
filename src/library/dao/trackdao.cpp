@@ -29,6 +29,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
@@ -56,6 +57,14 @@ void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory
                 << "Couldn't mark tracks in" << directory << "as deleted.";
     }
 }
+
+const QString kQueryTrackLastPlayedAtById = QStringLiteral(
+        "SELECT MAX(PlaylistTracks.pl_datetime_added) "
+        "FROM PlaylistTracks "
+        "JOIN Playlists ON PlaylistTracks.playlist_id==Playlists.id "
+        "WHERE PlaylistTracks.track_id=:track_id "
+        "AND Playlists.hidden=2 "
+        "GROUP BY PlaylistTracks.track_id");
 
 } // anonymous namespace
 
@@ -1142,7 +1151,7 @@ bool setTrackTimesPlayed(const QSqlRecord& record, const int column,
 bool setTrackPlayed(const QSqlRecord& record, const int column,
                     TrackPointer pTrack) {
     PlayCounter playCounter(pTrack->getPlayCounter());
-    playCounter.setPlayed(record.value(column).toBool());
+    playCounter.setPlayedLatch(record.value(column).toBool());
     pTrack->setPlayCounter(playCounter);
     return false;
 }
@@ -1415,6 +1424,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                 shouldDirty = true;
             }
         }
+    }
+    {
+        // TODO: Store lastPlayedAt in library table
+        PlayCounter playCounter = pTrack->getPlayCounter();
+        playCounter.setLastPlayedAt(loadTrackLastPlayedAtById(trackId));
+        pTrack->setPlayCounter(playCounter);
     }
 
     // Populate track cues from the cues table.
@@ -2136,4 +2151,37 @@ TrackFile TrackDAO::relocateCachedTrack(
     } else {
         return TrackFile(trackLocation);
     }
+}
+
+QDateTime TrackDAO::loadTrackLastPlayedAtById(const TrackId& trackId) const {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return QDateTime();
+    }
+    if (!m_pQueryTrackLastPlayedAtById) {
+        m_pQueryTrackLastPlayedAtById = std::make_unique<FwdSqlQuery>(
+                m_database,
+                kQueryTrackLastPlayedAtById);
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pQueryTrackLastPlayedAtById->isPrepared()) {
+        return QDateTime();
+    }
+    m_pQueryTrackLastPlayedAtById->bindValue(QStringLiteral(":track_id"), trackId.toVariant());
+    if (!m_pQueryTrackLastPlayedAtById->execPrepared()) {
+        kLogger.warning() << m_pQueryTrackLastPlayedAtById->lastError();
+    }
+    if (!m_pQueryTrackLastPlayedAtById->next()) {
+        // Track has never been played before
+        return QDateTime();
+    }
+    const auto record = m_pQueryTrackLastPlayedAtById->record();
+    VERIFY_OR_DEBUG_ASSERT(!record.isEmpty()) {
+        // Track has never been played before
+        return QDateTime();
+    }
+    const auto lastPlayedAt = m_pQueryTrackLastPlayedAtById->record().value(0);
+    DEBUG_ASSERT(!m_pQueryTrackLastPlayedAtById->next());
+    VERIFY_OR_DEBUG_ASSERT(lastPlayedAt.canConvert<QDateTime>()) {
+        return QDateTime();
+    }
+    return lastPlayedAt.value<QDateTime>();
 }
