@@ -382,6 +382,7 @@ void TrackDAO::addTracksPrepare() {
             "replaygain_peak,"
             "wavesummaryhex,"
             "timesplayed,"
+            "last_played_at,"
             "played,"
             "mixxx_deleted,"
             "header_parsed,"
@@ -428,6 +429,7 @@ void TrackDAO::addTracksPrepare() {
             ":replaygain_peak,"
             ":wavesummaryhex,"
             ":timesplayed,"
+            ":last_played_at,"
             ":played,"
             ":mixxx_deleted,"
             ":header_parsed,"
@@ -541,6 +543,7 @@ void bindTrackLibraryValues(
 
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
+    pTrackLibraryQuery->bindValue(":last_played_at", playCounter.getLastPlayedAt());
     pTrackLibraryQuery->bindValue(":played", playCounter.isPlayed() ? 1 : 0);
 
     const CoverInfoRelative& coverInfo = track.getCoverInfo();
@@ -1156,6 +1159,13 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
     return false;
 }
 
+bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+    PlayCounter playCounter(pTrack->getPlayCounter());
+    playCounter.setLastPlayedAt(record.value(column).toDateTime());
+    pTrack->setPlayCounter(playCounter);
+    return false;
+}
+
 bool setTrackDateAdded(const QSqlRecord& record, const int column,
                        TrackPointer pTrack) {
     pTrack->setDateAdded(
@@ -1300,6 +1310,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"replaygain", setTrackReplayGainRatio},
             {"replaygain_peak", setTrackReplayGainPeak},
             {"timesplayed", setTrackTimesPlayed},
+            {"last_played_at", setTrackLastPlayedAt},
             {"played", setTrackPlayed},
             {"datetime_added", setTrackDateAdded},
             {"header_parsed", setTrackMetadataSynchronized},
@@ -1566,6 +1577,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "replaygain=:replaygain,"
             "replaygain_peak=:replaygain_peak,"
             "timesplayed=:timesplayed,"
+            "last_played_at=:last_played_at,"
             "played=:played,"
             "header_parsed=:header_parsed,"
             "channels=:channels,"
