@@ -58,8 +58,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     connect(beatGridAlphaSpinBox, SIGNAL(valueChanged(int)),
             beatGridAlphaSlider, SLOT(setValue(int)));
 
-    connect(waveformTypeComboBox, SIGNAL(activated(int)),
-            this, SLOT(slotSetWaveformType(int)));
+    connect(waveformTypeComboBox,
+            SIGNAL(currentIndexChanged(int)),
+            this,
+            SLOT(slotSetWaveformType(int)));
     connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotSetDefaultZoom(int)));
     connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
