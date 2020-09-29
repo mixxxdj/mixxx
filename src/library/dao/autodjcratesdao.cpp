@@ -15,6 +15,11 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 
+#if !defined(VERBOSE_DEBUG_LOG)
+// set to true for verbose debug logs
+#define VERBOSE_DEBUG_LOG false
+#endif
+
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"
 #define AUTODJCRATESTABLE_TIMESPLAYED "timesplayed"
@@ -165,6 +170,11 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
                                CRATETRACKSTABLE_CRATEID,    // %6
                                CRATETABLE_ID,               // %7
                                CRATETABLE_AUTODJ_SOURCE);   // %8
+#if !defined(VERBOSE_DEBUG_LOG)
+    qDebug().noquote()
+            << "Populating " AUTODJCRATES_TABLE " using the following SQL query:"
+            << strQuery;
+#endif
     oQuery.prepare(strQuery);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
