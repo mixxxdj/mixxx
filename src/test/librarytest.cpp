@@ -1,5 +1,7 @@
 #include "test/librarytest.h"
 
+#include "track/track.h"
+
 namespace {
 
 const bool kInMemoryDbConnection = true;
