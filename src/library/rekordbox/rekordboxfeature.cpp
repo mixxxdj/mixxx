@@ -1,31 +1,35 @@
 // rekordboxfeature.cpp
 // Created 05/24/2019 by Evan Dekker
 
+#include "library/rekordbox/rekordboxfeature.h"
+
+#include <mp3guessenc.h>
+
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QtDebug>
 
-#include "library/rekordbox/rekordbox_anlz.h"
-#include "library/rekordbox/rekordbox_pdb.h"
-#include "library/rekordbox/rekordboxfeature.h"
-
-#include <mp3guessenc.h>
-
+#include "engine/engine.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
+#include "library/rekordbox/rekordbox_anlz.h"
+#include "library/rekordbox/rekordbox_pdb.h"
+#include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "track/beatfactory.h"
+#include "track/beatmap.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-
+#include "util/file.h"
+#include "util/sandbox.h"
+#include "waveform/waveform.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -851,10 +855,9 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
             QHash<QString, QString> extraVersionInfo;
 
-            mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-                    *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
-
-            track->setBeats(pBeats);
+            auto pBeats = new mixxx::BeatMap(*track, sampleRate, beats);
+            pBeats->setSubVersion(mixxx::rekordboxconstants::beatsSubversion);
+            track->setBeats(mixxx::BeatsPointer(pBeats));
         } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {
             if (ignoreCues) {

@@ -21,6 +21,7 @@
 #include "mixer/sampler.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "track/track.h"
 #include "util/defs.h"
 #include "util/memory.h"
 #include "util/sample.h"

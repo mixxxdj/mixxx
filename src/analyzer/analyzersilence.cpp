@@ -2,6 +2,7 @@
 
 #include "analyzer/constants.h"
 #include "engine/engine.h"
+#include "track/track.h"
 
 namespace {
 

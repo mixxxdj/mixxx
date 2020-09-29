@@ -4,7 +4,7 @@
 #include "control/controlobject.h"
 #include "defs_urls.h"
 
-DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
+DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_bpmSettings(pConfig),
           m_minBpm(m_bpmSettings.getBpmRangeStartDefault()),
@@ -13,7 +13,8 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
           m_bfixedtempoEnabled(m_bpmSettings.getFixedTempoAssumptionDefault()),
           m_boffsetEnabled(m_bpmSettings.getFixedTempoOffsetCorrectionDefault()),
           m_FastAnalysisEnabled(m_bpmSettings.getFastAnalysisDefault()),
-          m_bReanalyze(m_bpmSettings.getReanalyzeWhenSettingsChangeDefault()) {
+          m_bReanalyze(m_bpmSettings.getReanalyzeWhenSettingsChangeDefault()),
+          m_bReanalyzeImported(m_bpmSettings.getReanalyzeImportedDefault()) {
     setupUi(this);
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
@@ -43,6 +44,10 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
 
     connect(bReanalyse,SIGNAL(stateChanged(int)),
             this, SLOT(slotReanalyzeChanged(int)));
+    connect(bReanalyzeImported,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::slotReanalyzeImportedChanged);
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
@@ -125,6 +130,7 @@ void DlgPrefBeats::slotUpdate() {
     txtMaxBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
     txtMinBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
     bReanalyse->setEnabled(m_banalyzerEnabled);
+    bReanalyzeImported->setEnabled(m_bReanalyzeImported);
 
     if (!m_banalyzerEnabled) {
         return;
@@ -165,6 +171,11 @@ void DlgPrefBeats::slotReanalyzeChanged(int value) {
     slotUpdate();
 }
 
+void DlgPrefBeats::slotReanalyzeImportedChanged(int value) {
+    m_bReanalyzeImported = static_cast<bool>(value);
+    slotUpdate();
+}
+
 void DlgPrefBeats::fastAnalysisEnabled(int i) {
     m_FastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
@@ -176,6 +187,7 @@ void DlgPrefBeats::slotApply() {
     m_bpmSettings.setFixedTempoAssumption(m_bfixedtempoEnabled);
     m_bpmSettings.setFixedTempoOffsetCorrection(m_boffsetEnabled);
     m_bpmSettings.setReanalyzeWhenSettingsChange(m_bReanalyze);
+    m_bpmSettings.setReanalyzeImported(m_bReanalyzeImported);
     m_bpmSettings.setFastAnalysis(m_FastAnalysisEnabled);
     m_bpmSettings.setBpmRangeStart(m_minBpm);
     m_bpmSettings.setBpmRangeEnd(m_maxBpm);
