@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "mixer/playerinfo.h"
+#include "track/track.h"
 
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),

@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QtDebug>
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformmark.h"
@@ -15,7 +15,6 @@
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
-class Track;
 class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;

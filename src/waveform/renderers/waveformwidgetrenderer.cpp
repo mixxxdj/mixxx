@@ -5,6 +5,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "track/track.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
 #include "waveform/visualplayposition.h"

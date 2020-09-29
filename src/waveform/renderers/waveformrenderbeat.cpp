@@ -5,7 +5,6 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "control/controlobject.h"
-#include "track/beats.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
