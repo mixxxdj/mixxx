@@ -58,14 +58,6 @@ void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory
     }
 }
 
-const QString kQueryTrackLastPlayedAtById = QStringLiteral(
-        "SELECT MAX(PlaylistTracks.pl_datetime_added) "
-        "FROM PlaylistTracks "
-        "JOIN Playlists ON PlaylistTracks.playlist_id==Playlists.id "
-        "WHERE PlaylistTracks.track_id=:track_id "
-        "AND Playlists.hidden=2 "
-        "GROUP BY PlaylistTracks.track_id");
-
 QString joinTrackIdList(const QSet<TrackId>& trackIds) {
     QStringList trackIdList;
     trackIdList.reserve(trackIds.size());
