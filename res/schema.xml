@@ -531,7 +531,7 @@ METADATA
       UPDATE library SET last_played_at=(
         SELECT MAX(PlaylistTracks.pl_datetime_added)
           FROM PlaylistTracks
-          JOIN Playlists ON PlaylistTracks.playlist_id==Playlists.id
+          JOIN Playlists ON PlaylistTracks.playlist_id=Playlists.id
           WHERE PlaylistTracks.track_id=library.id
           AND Playlists.hidden=2
           GROUP BY PlaylistTracks.track_id);
