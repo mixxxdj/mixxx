@@ -66,6 +66,15 @@ const QString kQueryTrackLastPlayedAtById = QStringLiteral(
         "AND Playlists.hidden=2 "
         "GROUP BY PlaylistTracks.track_id");
 
+QString joinTrackIdList(const QSet<TrackId>& trackIds) {
+    QStringList trackIdList;
+    trackIdList.reserve(trackIds.size());
+    for (const auto& trackId : trackIds) {
+        trackIdList.append(trackId.toString());
+    }
+    return trackIdList.join(QChar(','));
+}
+
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
@@ -81,6 +90,36 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
           m_trackLocationIdColumn(UndefinedRecordIndex),
           m_queryLibraryIdColumn(UndefinedRecordIndex),
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
+    connect(&m_playlistDao,
+            &PlaylistDAO::deleted,
+            [this](int playlistId, PlaylistDAO::HiddenType hiddenType, const QList<TrackId>& trackIds) {
+                Q_UNUSED(playlistId)
+                if (hiddenType != PlaylistDAO::PLHT_SET_LOG) {
+                    // Nothing to do
+                    return;
+                }
+                QSet<TrackId> trackIdSet;
+                for (const auto& trackId : trackIds) {
+                    trackIdSet.insert(trackId);
+                }
+                VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromHistoryPlaylists(trackIdSet)) {
+                    return;
+                }
+            });
+    connect(&m_playlistDao,
+            &PlaylistDAO::trackRemoved,
+            [this](int playlistId, TrackId trackId, int position) {
+                Q_UNUSED(position)
+                if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
+                    // Nothing to do
+                    return;
+                }
+                QSet<TrackId> trackIdSet;
+                trackIdSet.insert(trackId);
+                VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromHistoryPlaylists(trackIdSet)) {
+                    return;
+                }
+            });
 }
 
 TrackDAO::~TrackDAO() {
@@ -2157,4 +2196,37 @@ TrackFile TrackDAO::relocateCachedTrack(
     } else {
         return TrackFile(trackLocation);
     }
+}
+
+bool TrackDAO::updatePlayCounterFromHistoryPlaylists(
+        const QSet<TrackId> trackIds) const {
+    FwdSqlQuery query(
+            m_database,
+            QStringLiteral(
+                    "UPDATE library SET "
+                    "timesplayed=q.timesplayed,"
+                    "last_played_at=q.last_played_at "
+                    "FROM("
+                    "SELECT "
+                    "PlaylistTracks.track_id as id,"
+                    "COUNT(PlaylistTracks.track_id) as timesplayed,"
+                    "MAX(PlaylistTracks.pl_datetime_added) as last_played_at "
+                    "FROM PlaylistTracks "
+                    "JOIN Playlists ON "
+                    "PlaylistTracks.playlist_id=Playlists.id "
+                    "WHERE Playlists.hidden=%2 "
+                    "GROUP BY PlaylistTracks.track_id"
+                    ") q "
+                    "WHERE library.id=q.id "
+                    "AND library.id IN (%1)")
+                    .arg(joinTrackIdList(trackIds),
+                            QString::number(PlaylistDAO::PLHT_SET_LOG)));
+    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return false;
+    }
+    emit tracksChanged(trackIds);
+    return true;
 }

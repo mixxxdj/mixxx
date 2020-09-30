@@ -70,6 +70,9 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Only used by friend class TrackCollection, but public for testing!
     void saveTrack(Track* pTrack) const;
 
+    bool updatePlayCounterFromHistoryPlaylists(
+            const QSet<TrackId> trackIds) const;
+
   signals:
     // Forwarded from Track object
     void trackDirty(TrackId trackId) const;

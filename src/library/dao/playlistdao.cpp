@@ -172,6 +172,9 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     //qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
 
+    const HiddenType hiddenType = getHiddenType(playlistId);
+    const QList<TrackId> trackIds = getTrackIds(playlistId);
+
     // Get the playlist id for this
     QSqlQuery query(m_database);
 
@@ -205,7 +208,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
         }
     }
 
-    emit deleted(playlistId);
+    emit deleted(playlistId, hiddenType, trackIds);
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
