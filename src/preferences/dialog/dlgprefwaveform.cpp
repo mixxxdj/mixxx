@@ -39,6 +39,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
     slotUpdate();
+
     connect(frameRateSpinBox,
             SIGNAL(valueChanged(int)),
             this,
