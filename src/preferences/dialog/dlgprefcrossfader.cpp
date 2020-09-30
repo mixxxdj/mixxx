@@ -89,7 +89,7 @@ void DlgPrefCrossfader::slotResetToDefaults() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
-    SliderXFader->setValue(sliderVal);
+    SliderXFader->setValue(static_cast<int>(sliderVal));
 
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);

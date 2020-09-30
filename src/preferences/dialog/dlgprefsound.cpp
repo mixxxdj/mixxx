@@ -564,7 +564,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     }
     audioBufferComboBox->clear();
     for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex; ++i) {
-        float latency = framesPerBuffer / sampleRate * 1000;
+        const auto latency = static_cast<float>(framesPerBuffer / sampleRate * 1000);
         // i + 1 in the next line is a latency index as described in SSConfig
         audioBufferComboBox->addItem(tr("%1 ms").arg(latency,0,'g',3), i + 1);
         framesPerBuffer <<= 1; // *= 2
