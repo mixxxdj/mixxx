@@ -11,7 +11,7 @@ void PlayCounter::updateLastPlayedNowAndTimesPlayed(bool setPlayed) {
         // stamp!
         decTimesPlayed();
     }
-    setPlayedLatch(setPlayed);
+    setPlayedFlag(setPlayed);
 }
 
 bool operator==(const PlayCounter& lhs, const PlayCounter& rhs) {

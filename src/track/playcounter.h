@@ -12,7 +12,7 @@ class PlayCounter final {
   public:
     explicit PlayCounter(int timesPlayed = 0)
             : m_timesPlayed(timesPlayed),
-              m_playedLatch(false) {
+              m_playedFlag(false) {
     }
 
     /// Set the total number of times a track has been played
@@ -33,42 +33,26 @@ class PlayCounter final {
         m_lastPlayedAt = lastPlayedAt;
     }
 
-    /// Returns the actual time at which the track has been played
-    /// during this session.
-    ///
-    /// Note: Not stored persistently, so might be null or invalid
-    /// even if the corresponding boolean flags is true!
+    /// Returns the actual time at which the track has been played.
     const QDateTime& getLastPlayedAt() const {
         return m_lastPlayedAt;
     }
 
     /// Returns true if track is considered as played during the current session.
-    ///
-    /// This latch overrides the last played time stamp, which could never
-    /// be reset.
     bool isPlayed() const {
-        return m_playedLatch;
+        return m_playedFlag;
     }
 
-    /// Sets or resets the played latch.
-    ///
-    /// The latch is also set implicitly to true when updating the
-    /// played at time stamp. It overrides the played at time stamp,
-    /// which could never be reset.
-    void setPlayedLatch(bool setPlayed) {
-        m_playedLatch = setPlayed;
-    }
-
-    /// Resets the played latch.
-    void resetPlayedLatch() {
-        setPlayedLatch(false);
+    /// Sets or resets the played flag for the current session.
+    void setPlayedFlag(bool setPlayed) {
+        m_playedFlag = setPlayed;
     }
 
     /// Sets the played status of a track for the current session but
     /// keeps the total play count.
     void triggerLastPlayedNow() {
         setLastPlayedNow();
-        setPlayedLatch(true);
+        setPlayedFlag(true);
     }
 
     /// Sets the played status of a track for the current session and
@@ -93,7 +77,10 @@ class PlayCounter final {
 
     int m_timesPlayed;
     QDateTime m_lastPlayedAt;
-    bool m_playedLatch;
+
+    // The last played flag is not stored persistently and
+    // only valid during the current session.
+    bool m_playedFlag;
 };
 
 Q_DECLARE_METATYPE(PlayCounter)

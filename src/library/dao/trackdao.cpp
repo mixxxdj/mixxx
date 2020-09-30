@@ -1154,7 +1154,7 @@ bool setTrackTimesPlayed(const QSqlRecord& record, const int column,
 bool setTrackPlayed(const QSqlRecord& record, const int column,
                     TrackPointer pTrack) {
     PlayCounter playCounter(pTrack->getPlayCounter());
-    playCounter.setPlayedLatch(record.value(column).toBool());
+    playCounter.setPlayedFlag(record.value(column).toBool());
     pTrack->setPlayCounter(playCounter);
     return false;
 }
