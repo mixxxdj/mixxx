@@ -80,7 +80,7 @@ class WaveformWidgetRenderer {
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
 
-    int beatGridAlpha() const { return m_alphaBeatGrid; }
+    int getBeatGridAlpha() const { return m_alphaBeatGrid; }
 
     void resize(int width, int height, float devicePixelRatio);
     int getHeight() const { return m_height;}

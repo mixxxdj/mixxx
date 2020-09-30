@@ -158,8 +158,8 @@ void DlgPrefWaveform::slotUpdate() {
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
-    beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
-    beatGridAlphaSlider->setValue(factory->beatGridAlpha());
+    beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
+    beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
