@@ -1436,12 +1436,6 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             }
         }
     }
-    {
-        // TODO: Store lastPlayedAt in library table
-        PlayCounter playCounter = pTrack->getPlayCounter();
-        playCounter.setLastPlayedAt(loadTrackLastPlayedAtById(trackId));
-        pTrack->setPlayCounter(playCounter);
-    }
 
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
@@ -2163,37 +2157,4 @@ TrackFile TrackDAO::relocateCachedTrack(
     } else {
         return TrackFile(trackLocation);
     }
-}
-
-QDateTime TrackDAO::loadTrackLastPlayedAtById(const TrackId& trackId) const {
-    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
-        return QDateTime();
-    }
-    if (!m_pQueryTrackLastPlayedAtById) {
-        m_pQueryTrackLastPlayedAtById = std::make_unique<FwdSqlQuery>(
-                m_database,
-                kQueryTrackLastPlayedAtById);
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_pQueryTrackLastPlayedAtById->isPrepared()) {
-        return QDateTime();
-    }
-    m_pQueryTrackLastPlayedAtById->bindValue(QStringLiteral(":track_id"), trackId.toVariant());
-    if (!m_pQueryTrackLastPlayedAtById->execPrepared()) {
-        kLogger.warning() << m_pQueryTrackLastPlayedAtById->lastError();
-    }
-    if (!m_pQueryTrackLastPlayedAtById->next()) {
-        // Track has never been played before
-        return QDateTime();
-    }
-    const auto record = m_pQueryTrackLastPlayedAtById->record();
-    VERIFY_OR_DEBUG_ASSERT(!record.isEmpty()) {
-        // Track has never been played before
-        return QDateTime();
-    }
-    const auto lastPlayedAt = m_pQueryTrackLastPlayedAtById->record().value(0);
-    DEBUG_ASSERT(!m_pQueryTrackLastPlayedAtById->next());
-    VERIFY_OR_DEBUG_ASSERT(lastPlayedAt.canConvert<QDateTime>()) {
-        return QDateTime();
-    }
-    return lastPlayedAt.value<QDateTime>();
 }

@@ -151,9 +151,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
-    // TODO: Remove after storing lastPlayedAt in library table
-    QDateTime loadTrackLastPlayedAtById(const TrackId& trackId) const;
-
     // Callback for GlobalTrackCache
     TrackFile relocateCachedTrack(
             TrackId trackId,
@@ -175,9 +172,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     int m_trackLocationIdColumn;
     int m_queryLibraryIdColumn;
     int m_queryLibraryMixxxDeletedColumn;
-
-    // TODO: Remove after storing lastPlayedAt in library table
-    mutable std::unique_ptr<FwdSqlQuery> m_pQueryTrackLastPlayedAtById;
 
     QSet<TrackId> m_tracksAddedSet;
 
