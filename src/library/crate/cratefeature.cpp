@@ -1,11 +1,10 @@
 #include "library/crate/cratefeature.h"
 
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
-#include <QDesktopServices>
-
 #include <algorithm>
 #include <vector>
 
@@ -13,21 +12,18 @@
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/parser.h"
+#include "library/parsercsv.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
-#include "library/parsercsv.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-
 #include "sources/soundsourceproxy.h"
-
+#include "track/track.h"
+#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
-
-#include "util/dnd.h"
-
 
 namespace {
 

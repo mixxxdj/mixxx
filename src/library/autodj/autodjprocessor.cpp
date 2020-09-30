@@ -1,12 +1,13 @@
 #include "library/autodj/autodjprocessor.h"
 
-#include "library/trackcollection.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/engine.h"
-#include "util/math.h"
-#include "mixer/playermanager.h"
+#include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "track/track.h"
+#include "util/math.h"
 
 #define kConfigKey "[Auto DJ]"
 namespace {
