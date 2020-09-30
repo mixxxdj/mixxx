@@ -746,7 +746,7 @@ void CrateFeature::slotExportTrackFiles() {
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
-    QList<TrackPointer> trackpointers;
+    TrackPointerList trackpointers;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = m_crateTableModel.index(i, 0);
         trackpointers.push_back(m_crateTableModel.getTrack(index));
