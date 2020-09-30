@@ -198,6 +198,11 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
                     track.getSecurityToken()));
 }
 
+void CoverInfoGuesser::guessAndSetCoverInfoForTrack(
+        Track& track) {
+    track.setCoverInfo(guessCoverInfoForTrack(track));
+}
+
 void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
         const QList<TrackPointer>& tracks) {
     for (const auto& pTrack : tracks) {

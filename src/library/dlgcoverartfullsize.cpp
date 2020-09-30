@@ -1,12 +1,14 @@
+#include "library/dlgcoverartfullsize.h"
+
 #include <QDesktopWidget>
 #include <QRect>
 #include <QScreen>
 #include <QStyle>
 #include <QWheelEvent>
 
-#include "library/dlgcoverartfullsize.h"
-#include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
