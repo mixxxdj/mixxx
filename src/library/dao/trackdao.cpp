@@ -83,32 +83,9 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
           m_queryLibraryIdColumn(UndefinedRecordIndex),
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
     connect(&m_playlistDao,
-            &PlaylistDAO::deleted,
-            [this](int playlistId, PlaylistDAO::HiddenType hiddenType, const QList<TrackId>& trackIds) {
-                Q_UNUSED(playlistId)
-                if (hiddenType != PlaylistDAO::PLHT_SET_LOG) {
-                    // Nothing to do
-                    return;
-                }
-                QSet<TrackId> trackIdSet;
-                for (const auto& trackId : trackIds) {
-                    trackIdSet.insert(trackId);
-                }
-                VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromHistoryPlaylists(trackIdSet)) {
-                    return;
-                }
-            });
-    connect(&m_playlistDao,
-            &PlaylistDAO::trackRemoved,
-            [this](int playlistId, TrackId trackId, int position) {
-                Q_UNUSED(position)
-                if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
-                    // Nothing to do
-                    return;
-                }
-                QSet<TrackId> trackIdSet;
-                trackIdSet.insert(trackId);
-                VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromHistoryPlaylists(trackIdSet)) {
+            &PlaylistDAO::tracksRemovedFromPlayedHistory,
+            [this](const QSet<TrackId>& playedTrackIds) {
+                VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromPlayedHistory(playedTrackIds)) {
                     return;
                 }
             });
@@ -2190,8 +2167,15 @@ TrackFile TrackDAO::relocateCachedTrack(
     }
 }
 
-bool TrackDAO::updatePlayCounterFromHistoryPlaylists(
+bool TrackDAO::updatePlayCounterFromPlayedHistory(
         const QSet<TrackId> trackIds) const {
+    // Update both timesplay and last_played_at according to the
+    // corresponding aggregated properties from the played history,
+    // i.e. COUNT for the number of times a track has been played
+    // and MAX for the last time it has been played.
+    // NOTE: The played flag for the current session is NOT updated!
+    // The current session is unaffected, because the corresponding
+    // playlist cannot be deleted.
     FwdSqlQuery query(
             m_database,
             QStringLiteral(
@@ -2219,6 +2203,9 @@ bool TrackDAO::updatePlayCounterFromHistoryPlaylists(
     VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         return false;
     }
+    // TODO: DAOs should be passive and simply execute queries. They
+    // should neither make assumptions about transaction boundaries
+    // nor receive or emit any signals.
     emit tracksChanged(trackIds);
     return true;
 }

@@ -70,7 +70,9 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Only used by friend class TrackCollection, but public for testing!
     void saveTrack(Track* pTrack) const;
 
-    bool updatePlayCounterFromHistoryPlaylists(
+    /// Update the play counter properties according to the corresponding
+    /// aggregated properties obtained from the played history.
+    bool updatePlayCounterFromPlayedHistory(
             const QSet<TrackId> trackIds) const;
 
   signals:
