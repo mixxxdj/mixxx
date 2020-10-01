@@ -256,24 +256,6 @@
     ############################################################################################
     -->
     <SingletonDefinition>
-      <ObjectName>Waveform1</ObjectName>
-      <Children>
-        <Template src="skin:waveform.xml">
-          <SetVariable name="channum">1</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>Waveform2</ObjectName>
-      <Children>
-        <Template src="skin:waveform.xml">
-          <SetVariable name="channum">2</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
       <ObjectName>Overview1</ObjectName>
       <Children>
         <Template src="skin:deck_overview.xml">
@@ -291,15 +273,6 @@
       </Children>
     </SingletonDefinition>
 
-    <SingletonDefinition>
-      <ObjectName>LibraryTable</ObjectName>
-      <Children>
-        <Library>
-          <ShowButtonText>false</ShowButtonText>
-          <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
-        </Library>
-      </Children>
-    </SingletonDefinition>
     <!--
     ############################################################################################
     ############################################################################################
@@ -474,9 +447,10 @@
                   </Children>
                 </WidgetGroup><!-- Sidebar etc. -->
 
-                <SingletonContainer>
-                  <ObjectName>LibraryTable</ObjectName>
-                </SingletonContainer>
+                <Library>
+                  <ShowButtonText>false</ShowButtonText>
+                  <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+                </Library>
 
               </Children>
             </Splitter>
