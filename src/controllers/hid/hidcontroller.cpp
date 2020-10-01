@@ -254,7 +254,7 @@ bool HidController::poll() {
     // There is no safety net for this because it has not been demonstrated to be
     // a problem in practice.
     while (true) {
-        // Rotate between two buffers so the memcmp below does not require deep copying to another buffer.
+        // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
         unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
         m_iPollingBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
         unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
