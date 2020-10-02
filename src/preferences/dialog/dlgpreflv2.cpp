@@ -78,9 +78,8 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_pluginParameters.clear();
 
     QLayoutItem* item;
-    while ((item = lv2_VLayout_parameters->takeAt(1)) != 0) {
-        lv2_VLayout_parameters->removeWidget(item->widget());
-        delete item->widget();
+    while ((item = lv2_VLayout_parameters->takeAt(0)) != 0) {
+        delete item;
     }
 
     QPushButton* button = qobject_cast<QPushButton*>(sender());
