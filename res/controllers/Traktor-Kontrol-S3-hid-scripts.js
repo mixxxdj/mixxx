@@ -1564,19 +1564,19 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
         deck.registerInputs(messageShort, messageLong);
     }
 
-    this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, this.deckSwitchHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, this.deckSwitchHandler);
-    this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, this.deckSwitchHandler);
-    this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, this.deckSwitchHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!switchDeck", 0x02, 0x02, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
+    this.registerInputButton(messageShort, "[Channel2]", "!switchDeck", 0x05, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
+    this.registerInputButton(messageShort, "[Channel3]", "!switchDeck", 0x02, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
+    this.registerInputButton(messageShort, "[Channel4]", "!switchDeck", 0x05, 0x08, TraktorS3.bind(TraktorS3.Controller.prototype.deckSwitchHandler, this));
 
     // Headphone buttons
-    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x08, 0x01, this.headphoneHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x08, 0x02, this.headphoneHandler);
-    this.registerInputButton(messageShort, "[Channel3]", "pfl", 0x07, 0x80, this.headphoneHandler);
-    this.registerInputButton(messageShort, "[Channel4]", "pfl", 0x08, 0x04, this.headphoneHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x08, 0x01, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
+    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x08, 0x02, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
+    this.registerInputButton(messageShort, "[Channel3]", "pfl", 0x07, 0x80, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
+    this.registerInputButton(messageShort, "[Channel4]", "pfl", 0x08, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.headphoneHandler, this));
 
     // EXT Button
-    this.registerInputButton(messageShort, "[Master]", "!extButton", 0x07, 0x04, this.extModeHandler);
+    this.registerInputButton(messageShort, "[Master]", "!extButton", 0x07, 0x04, TraktorS3.bind(TraktorS3.Controller.prototype.extModeHandler, this));
 
     this.fxController.registerInputs(messageShort, messageLong);
 
@@ -1609,7 +1609,7 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel4]_Effect1]", "parameter1", 0x35, 0xFFFF, this.parameterHandler);
 
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x0B, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Master]", "gain", 0x17, 0xFFFF, this.masterGainHandler);
+    this.registerInputScaler(messageLong, "[Master]", "gain", 0x17, 0xFFFF, TraktorS3.bind(TraktorS3.Controller.prototype.masterGainHandler, this));
     this.registerInputScaler(messageLong, "[Master]", "headMix", 0x1D, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
 
