@@ -286,9 +286,6 @@ WOverview QLabel {
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
-  #PlayPositionGutter, #DurationGutter {
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  }
 
 #DeckSettings {
   qproperty-layoutAlignment: 'AlignCenter';

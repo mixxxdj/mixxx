@@ -426,10 +426,10 @@ WLibrary,
     margin: 0px 2px 1px 0px;
   }
 #SpinnyCoverContainer_Big {
-  min-width: 115px;
-  max-width: 115px;
-  min-height: 115px;
-  max-height: 115px;
+  min-width: 114px;
+  max-width: 114px;
+  min-height: 114px;
+  max-height: 114px;
   margin: 1px 2px 1px 0px;
   }
   #SpinnyCoverContainer_BigCompact {

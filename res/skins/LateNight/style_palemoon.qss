@@ -503,10 +503,10 @@ WSearchLineEdit {
     margin: 0px 1px 1px 0px;
   }
 #SpinnyCoverContainer_Big{
-  min-width: 120px;
-  max-width: 120px;
-  min-height: 120px;
-  max-height: 120px;
+  min-width: 118px;
+  max-width: 118x;
+  min-height: 118px;
+  max-height: 118px;
   margin: 1px 2px 0px 0px;
   }
   #SpinnyCoverContainer_BigCompact {
