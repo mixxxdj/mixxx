@@ -158,9 +158,5 @@ Use smaller spinny sizes for 4 decks than 2 decks.
         </Connection>
       </WidgetGroup>
     </Children>
-    <Connection>
-      <ConfigKey>[Skin],show_spinnies</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

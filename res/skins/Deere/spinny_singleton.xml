@@ -24,6 +24,10 @@ Use smaller spinny sizes for 4 decks than 2 decks.
             <ShowCover>true</ShowCover>
           </Spinny>
         </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
     </Children>
   </SingletonDefinition>
@@ -44,6 +48,10 @@ Use smaller spinny sizes for 4 decks than 2 decks.
             <ShowCover>false</ShowCover>
           </Spinny>
         </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
     </Children>
   </SingletonDefinition>
