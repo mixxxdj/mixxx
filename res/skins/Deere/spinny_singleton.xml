@@ -1,0 +1,50 @@
+<!--
+Spinny template
+Stacked waveforms: always show cover art in spinny
+Split waveforms: show cover art in spinny when it is not showing in deck text row,
+but do not show cover art in spinny when the cover art is showing right above it
+in the deck text row.
+
+Use smaller spinny sizes for 4 decks than 2 decks.
+-->
+<Template>
+  <SingletonDefinition>
+    <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
+            <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
+            <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+            <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
+            <ShowCover>true</ShowCover>
+          </Spinny>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
+            <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
+            <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+            <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
+            <ShowCover>false</ShowCover>
+          </Spinny>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+</Template>

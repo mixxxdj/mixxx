@@ -136,6 +136,19 @@
     main_decks.xml, left_deck.xml, and right_deck.xml, so define them in singletons. This makes
     toggling between 2/4 decks and stacked/split waveforms slower, but it makes Mixxx startup
     and shutdown much faster and saves a lot of memory.-->
+    <Template src="skin:../Deere/spinny_singleton.xml">
+      <SetVariable name="group">[Channel1]</SetVariable>
+    </Template>
+    <Template src="skin:../Deere/spinny_singleton.xml">
+      <SetVariable name="group">[Channel2]</SetVariable>
+    </Template>
+    <Template src="skin:../Deere/spinny_singleton.xml">
+      <SetVariable name="group">[Channel3]</SetVariable>
+    </Template>
+    <Template src="skin:../Deere/spinny_singleton.xml">
+      <SetVariable name="group">[Channel4]</SetVariable>
+    </Template>
+
     <SingletonDefinition>
       <ObjectName>DeckVisualRow1</ObjectName>
       <Children>

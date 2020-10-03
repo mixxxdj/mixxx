@@ -8,36 +8,6 @@ in the deck text row.
 Use smaller spinny sizes for 4 decks than 2 decks.
 -->
 <Template>
-  <SingletonDefinition>
-    <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
-    <Children>
-      <Spinny>
-        <TooltipId>spinny</TooltipId>
-        <Group><Variable name="group"/></Group>
-        <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
-        <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
-        <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
-        <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
-        <ShowCover>true</ShowCover>
-      </Spinny>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SpinnySingletonNoCover<Variable name="group"/></ObjectName>
-    <Children>
-      <Spinny>
-        <TooltipId>spinny</TooltipId>
-        <Group><Variable name="group"/></Group>
-        <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
-        <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
-        <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
-        <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
-        <ShowCover>false</ShowCover>
-      </Spinny>
-    </Children>
-  </SingletonDefinition>
-
   <WidgetGroup>
     <ObjectName>SpinnyHolder</ObjectName>
     <Layout>horizontal</Layout>
@@ -57,8 +27,8 @@ Use smaller spinny sizes for 4 decks than 2 decks.
             </Connection>
             <Children>
               <SingletonContainer>
-                  <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
-                  <Size>75f,75f</Size>
+                <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
+                <Size>75f,75f</Size>
               </SingletonContainer>
             </Children>
           </WidgetGroup>
@@ -82,8 +52,8 @@ Use smaller spinny sizes for 4 decks than 2 decks.
                 </Connection>
                 <Children>
                   <SingletonContainer>
-                      <ObjectName>SpinnySingletonNoCover<Variable name="group"/></ObjectName>
-                      <Size>75f,75f</Size>
+                    <ObjectName>SpinnySingletonNoCover<Variable name="group"/></ObjectName>
+                    <Size>75f,75f</Size>
                   </SingletonContainer>
                 </Children>
               </WidgetGroup>
@@ -99,8 +69,8 @@ Use smaller spinny sizes for 4 decks than 2 decks.
                 </Connection>
                 <Children>
                   <SingletonContainer>
-                      <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
-                      <Size>75f,75f</Size>
+                    <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
+                    <Size>75f,75f</Size>
                   </SingletonContainer>
                 </Children>
               </WidgetGroup>
@@ -131,8 +101,8 @@ Use smaller spinny sizes for 4 decks than 2 decks.
             </Connection>
             <Children>
               <SingletonContainer>
-                  <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
-                  <Size>55f,55f</Size>
+                <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
+                <Size>55f,55f</Size>
               </SingletonContainer>
             </Children>
           </WidgetGroup>
@@ -156,8 +126,8 @@ Use smaller spinny sizes for 4 decks than 2 decks.
                 </Connection>
                 <Children>
                   <SingletonContainer>
-                      <ObjectName>SpinnySingletonNoCover<Variable name="group"/></ObjectName>
-                      <Size>55f,55f</Size>
+                    <ObjectName>SpinnySingletonNoCover<Variable name="group"/></ObjectName>
+                    <Size>55f,55f</Size>
                   </SingletonContainer>
                 </Children>
               </WidgetGroup>
@@ -173,8 +143,8 @@ Use smaller spinny sizes for 4 decks than 2 decks.
                 </Connection>
                 <Children>
                   <SingletonContainer>
-                      <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
-                      <Size>55f,55f</Size>
+                    <ObjectName>SpinnySingletonWithCover<Variable name="group"/></ObjectName>
+                    <Size>55f,55f</Size>
                   </SingletonContainer>
                 </Children>
               </WidgetGroup>
