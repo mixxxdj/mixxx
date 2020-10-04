@@ -172,6 +172,7 @@
                                   <!-- Spinning Vinyl sub-widget -->
                                   <WidgetGroup>
                                     <Size>81f,81f</Size>
+                                    <Layout>horizontal</Layout>
                                     <Children>
                                       <!--
                                       **********************************************
@@ -180,10 +181,11 @@
                                       -->
                                       <Spinny>
                                         <TooltipId>spinny</TooltipId>
+                                        <Size>81f,81f</Size>
                                         <Channel><Variable name="channum"/></Channel>
-                                        <PathBackground>vinyl_spinny_background.png</PathBackground>
-                                        <PathForeground>vinyl_spinny_foreground.png</PathForeground>
-                                        <PathGhost>vinyl_spinny_foreground_ghost.png</PathGhost>
+                                        <PathBackground scalemode="STRETCH_ASPECT">vinyl_spinny_background.png</PathBackground>
+                                        <PathForeground scalemode="STRETCH_ASPECT">vinyl_spinny_foreground.png</PathForeground>
+                                        <PathGhost scalemode="STRETCH_ASPECT">vinyl_spinny_foreground_ghost.png</PathGhost>
                                       </Spinny>
                                     </Children>
                                     <Connection>
