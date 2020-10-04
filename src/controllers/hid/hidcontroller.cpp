@@ -260,7 +260,9 @@ bool HidController::poll() {
         unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
 
         int bytesRead = hid_read(m_pHidDevice, pCurrentBuffer, kBufferSize);
-        if (bytesRead == -1) {
+        if (bytesRead < 0) {
+            // -1 is the only error value according to hidapi documentation.
+            DEBUG_ASSERT(bytesRead == -1);
             return false;
         } else if (bytesRead == 0) {
             return true;
