@@ -75,10 +75,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     ///////////////////////////////////////////////////////////////////////////
     QVariant rawValue(
             const QModelIndex& index) const override;
-    QVariant roleValue(
-            const QModelIndex& index,
-            QVariant&& rawValue,
-            int role) const override;
 
     bool setTrackValueForColumn(
             const TrackPointer& pTrack,
@@ -105,8 +101,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
   private slots:
     void tracksChanged(QSet<TrackId> trackIds);
-
-    void slotRefreshCoverRows(QList<int> rows);
 
   private:
     BaseCoverArtDelegate* doCreateCoverArtDelegate(

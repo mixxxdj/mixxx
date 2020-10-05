@@ -218,10 +218,6 @@ Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
-void BansheePlaylistModel::tracksChanged(QSet<TrackId> trackIds) {
-    Q_UNUSED(trackIds);
-}
-
 TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         for (int row = 0; row < rowCount(); ++row) {

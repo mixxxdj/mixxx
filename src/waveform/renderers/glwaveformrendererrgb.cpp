@@ -1,12 +1,13 @@
 #include "waveform/renderers/glwaveformrendererrgb.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveformwidgetrenderer.h"
+#include "track/track.h"
+#include "util/math.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "widget/wwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "util/math.h"
+#include "widget/wwidget.h"
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)

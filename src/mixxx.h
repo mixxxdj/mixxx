@@ -9,7 +9,7 @@
 #include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
@@ -110,6 +110,9 @@ class MixxxMainWindow : public QMainWindow {
     void checkDirectRendering();
 
     bool initializeDatabase();
+
+    /// Load skin to a QWidget that we set as the central widget.
+    bool loadConfiguredSkin();
 
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(

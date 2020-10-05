@@ -1,25 +1,27 @@
 #pragma once
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QTest>
+#include <QtDebug>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "mixer/deck.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginebuffer.h"
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
+#include "mixer/deck.h"
+#include "mixer/playerinfo.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "track/track.h"
 #include "util/defs.h"
 #include "util/memory.h"
 #include "util/sample.h"
@@ -59,12 +61,14 @@ class BaseSignalPathTest : public MixxxTest {
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
+        m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
         m_pVisualsManager = new VisualsManager();
-        m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
-                                               m_pEffectsManager, m_pChannelHandleFactory,
-                                               false);
+        m_pEngineMaster = new TestEngineMaster(m_pConfig,
+                m_sMasterGroup,
+                m_pEffectsManager,
+                m_pChannelHandleFactory,
+                false);
 
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
@@ -112,7 +116,9 @@ class BaseSignalPathTest : public MixxxTest {
         addDeck(m_pChannel3);
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
-        ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
+        ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
+
+        PlayerInfo::create();
     }
 
     ~BaseSignalPathTest() override {
@@ -130,6 +136,7 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pEffectsManager;
         delete m_pVisualsManager;
         delete m_pNumDecks;
+        PlayerInfo::destroy();
     }
 
     void addDeck(EngineDeck* pDeck) {

@@ -30,18 +30,30 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
 
-    connect(this, SIGNAL(requestAddDir(QString)),
-            m_pLibrary, SLOT(slotRequestAddDir(QString)));
-    connect(this, SIGNAL(requestRemoveDir(QString, Library::RemovalType)),
-            m_pLibrary, SLOT(slotRequestRemoveDir(QString, Library::RemovalType)));
-    connect(this, SIGNAL(requestRelocateDir(QString,QString)),
-            m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
-    connect(PushButtonAddDir, SIGNAL(clicked()),
-            this, SLOT(slotAddDir()));
-    connect(PushButtonRemoveDir, SIGNAL(clicked()),
-            this, SLOT(slotRemoveDir()));
-    connect(PushButtonRelocateDir, SIGNAL(clicked()),
-            this, SLOT(slotRelocateDir()));
+    connect(this,
+            &DlgPrefLibrary::requestAddDir,
+            m_pLibrary,
+            &Library::slotRequestAddDir);
+    connect(this,
+            &DlgPrefLibrary::requestRemoveDir,
+            m_pLibrary,
+            &Library::slotRequestRemoveDir);
+    connect(this,
+            &DlgPrefLibrary::requestRelocateDir,
+            m_pLibrary,
+            &Library::slotRequestRelocateDir);
+    connect(PushButtonAddDir,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefLibrary::slotAddDir);
+    connect(PushButtonRemoveDir,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefLibrary::slotRemoveDir);
+    connect(PushButtonRelocateDir,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefLibrary::slotRelocateDir);
 
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -259,17 +271,14 @@ void DlgPrefLibrary::slotRemoveDir() {
         return;
     }
 
-    bool deleteAll = removeMsgBox.clickedButton() == deleteAllButton;
-    bool hideAll = removeMsgBox.clickedButton() == hideAllButton;
-    bool leaveUnchanged = removeMsgBox.clickedButton() == leaveUnchangedButton;
-
-    Library::RemovalType removalType = Library::LeaveTracksUnchanged;
-    if (leaveUnchanged) {
-        removalType = Library::LeaveTracksUnchanged;
-    } else if (deleteAll) {
-        removalType = Library::PurgeTracks;
-    } else if (hideAll) {
-        removalType = Library::HideTracks;
+    Library::RemovalType removalType;
+    if (removeMsgBox.clickedButton() == hideAllButton) {
+        removalType = Library::RemovalType::HideTracks;
+    } else if (removeMsgBox.clickedButton() == deleteAllButton) {
+        removalType = Library::RemovalType::PurgeTracks;
+    } else {
+        DEBUG_ASSERT(removeMsgBox.clickedButton() == leaveUnchangedButton);
+        removalType = Library::RemovalType::KeepTracks;
     }
 
     emit requestRemoveDir(fd, removalType);

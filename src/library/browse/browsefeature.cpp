@@ -18,7 +18,6 @@
 #include "library/treeitem.h"
 #include "track/track.h"
 #include "util/memory.h"
-#include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"

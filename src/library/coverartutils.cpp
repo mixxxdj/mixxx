@@ -5,6 +5,7 @@
 #include <QtConcurrentRun>
 
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/regex.h"
@@ -110,9 +111,8 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
             if (bestType > TRACK_BASENAME &&
                 coverBaseName.compare(trackFile.baseName(),
                                       Qt::CaseInsensitive) == 0) {
-                bestType = TRACK_BASENAME;
                 bestInfo = &file;
-                // This is the best type so we know we're done.
+                // This is the best type (TRACK_BASENAME) so we know we're done.
                 break;
             } else if (bestType > ALBUM_NAME &&
                        coverBaseName.compare(albumName,

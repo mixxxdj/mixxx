@@ -5,10 +5,12 @@
 #include <QPointer>
 #include <memory>
 
+#include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
 #include "track/trackref.h"
+#include "util/color/rgbcolor.h"
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -67,6 +69,7 @@ class WTrackMenu : public QMenu {
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
+    void slotShowDlgTrackInfo();
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -97,7 +100,6 @@ class WTrackMenu : public QMenu {
     void slotScaleBpm(int);
 
     // Info and metadata
-    void slotShowTrackInfo();
     void slotShowDlgTagFetcher();
     void slotImportMetadataFromFileTags();
     void slotExportMetadataIntoFileTags();
@@ -164,7 +166,11 @@ class WTrackMenu : public QMenu {
     void clearTrackSelection();
 
     bool isAnyTrackBpmLocked() const;
-    std::optional<mixxx::RgbColor> getCommonTrackColor() const;
+
+    /// Get the common track color of all tracks this menu is shown for, or
+    /// return `nullopt` if there is no common color. Tracks may have no color
+    /// assigned to them. In that case the inner optional is set to `nullopt`.
+    std::optional<std::optional<mixxx::RgbColor>> getCommonTrackColor() const;
     CoverInfo getCoverInfoOfLastTrack() const;
 
     TrackModel* m_pTrackModel{};
@@ -249,8 +255,8 @@ class WTrackMenu : public QMenu {
     const UserSettingsPointer m_pConfig;
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-    QScopedPointer<DlgTrackInfo> m_pTrackInfo;
-    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
+    std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
+    std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> externalTrackCollection;

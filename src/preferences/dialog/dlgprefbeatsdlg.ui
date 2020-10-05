@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>537</width>
+    <width>564</width>
     <height>400</height>
    </rect>
   </property>
@@ -146,6 +146,13 @@ by analyzing the beats to discard outliers.</string>
         </property>
         <property name="text">
          <string>Re-analyze beats when settings change or beat detection data is outdated</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="bReanalyzeImported">
+        <property name="text">
+         <string>Re-analyze beatgrids imported from other DJ software</string>
         </property>
        </widget>
       </item>

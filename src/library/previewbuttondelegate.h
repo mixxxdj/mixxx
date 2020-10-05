@@ -5,7 +5,7 @@
 #include <QStyleOptionButton>
 
 #include "library/tableitemdelegate.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 class ControlProxy;
@@ -55,7 +55,7 @@ class PreviewButtonDelegate : public TableItemDelegate {
                               const QModelIndex& index) const;
 
   signals:
-    void loadTrackToPlayer(TrackPointer Track, QString group, bool play);
+    void loadTrackToPlayer(TrackPointer track, QString group, bool play);
     void buttonSetChecked(bool);
 
   public slots:

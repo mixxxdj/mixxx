@@ -5,6 +5,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    id="svg4"
    version="1.1"
    height="13"
@@ -22,15 +23,50 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs8" />
-  <g
-     transform="translate(0.5,-1)"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#9a9a9a;fill-opacity:1;stroke:none"
-     id="text838-3"
-     aria-label="R">
-    <path
-       id="path845"
-       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:13.3333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#b2b2b2;fill-opacity:1"
-       d="m 3.5559856,7.4270722 h 1.0807265 c 0.7248245,0 1.2499968,-0.1345483 1.5755168,-0.4036448 0.32552,-0.2690966 0.48828,-0.6684012 0.48828,-1.1979137 0,-0.5381931 -0.1757808,-0.9244768 -0.5273424,-1.1588512 C 5.8216049,4.4322881 5.2920924,4.3151009 4.5846289,4.3151009 H 3.5559856 Z m 0,1.2890592 V 12 H 2 V 3 h 2.6887953 c 1.2282955,0 2.1375814,0.2300341 2.7278577,0.6901024 0.5902763,0.4600683 0.8854144,1.154511 0.8854144,2.0833281 0,1.1848929 -0.6163179,2.0290748 -1.8489537,2.5325457 L 9.141909,12 H 7.3710802 L 5.0924401,8.7161314 Z" />
-  </g>
+     id="defs8">
+    <linearGradient
+       xlink:href="#linearGradient851"
+       id="linearGradient853"
+       x1="-11.258929"
+       y1="8"
+       x2="-1.077"
+       y2="8"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.87543597,0,0,0.87544454,-3.8812138,-10.065712)" />
+    <linearGradient
+       id="linearGradient851">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop847" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0"
+         offset="1"
+         id="stop849" />
+    </linearGradient>
+  </defs>
+  <rect
+     style="fill:#0f0f0f;fill-opacity:1;stroke:none;stroke-width:0.845999;stroke-linecap:round;stroke-linejoin:round"
+     id="rect868"
+     width="15"
+     height="8"
+     x="-11"
+     y="2"
+     rx="3.9999998"
+     ry="4"
+     transform="scale(-1,1)" />
+  <circle
+     style="fill:#787878;fill-opacity:1;stroke:none;stroke-width:0.846;stroke-linecap:round;stroke-linejoin:round"
+     id="path834"
+     cx="7"
+     cy="6"
+     r="4" />
+  <ellipse
+     style="fill:none;fill-opacity:1;stroke:url(#linearGradient853);stroke-width:1.00001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path834-3"
+     cx="-8.6961126"
+     cy="-3.062156"
+     transform="matrix(-0.50000733,-0.86602117,-0.86602963,0.49999269,0,0)"
+     rx="3.5017438"
+     ry="3.5017784" />
 </svg>

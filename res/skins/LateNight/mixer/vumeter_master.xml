@@ -46,8 +46,8 @@
           </VuMeter>
         </Children>
       </WidgetGroup><!-- VuMeterBoxMasterSingle -->
-      <!-- Left -->
-      <WidgetGroup><!-- Right -->
+      <!-- Right -->
+      <WidgetGroup>
         <ObjectName>VuMeterBoxMasterSingle</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>

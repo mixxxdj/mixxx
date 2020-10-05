@@ -6,6 +6,7 @@
 #include "library/queryutil.h"
 #include "library/trackset/crate/crateschema.h"
 #include "track/keyutils.h"
+#include "track/track.h"
 #include "util/db/dbconnection.h"
 #include "util/db/sqllikewildcards.h"
 
@@ -76,7 +77,7 @@ QString QueryNode::concatSqlClauses(
 }
 
 bool AndNode::match(const TrackPointer& pTrack) const {
-    for (const auto& pNode: m_nodes) {
+    for (const auto& pNode : m_nodes) {
         if (!pNode->match(pTrack)) {
             return false;
         }
@@ -89,7 +90,7 @@ bool AndNode::match(const TrackPointer& pTrack) const {
 QString AndNode::toSql() const {
     QStringList queryFragments;
     queryFragments.reserve(static_cast<int>(m_nodes.size()));
-    for (const auto& pNode: m_nodes) {
+    for (const auto& pNode : m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {
             queryFragments << sql;
@@ -107,7 +108,7 @@ bool OrNode::match(const TrackPointer& pTrack) const {
         // the generated SQL query.
         return true;
     }
-    for (const auto& pNode: m_nodes) {
+    for (const auto& pNode : m_nodes) {
         if (pNode->match(pTrack)) {
             return true;
         }
@@ -118,7 +119,7 @@ bool OrNode::match(const TrackPointer& pTrack) const {
 QString OrNode::toSql() const {
     QStringList queryFragments;
     queryFragments.reserve(static_cast<int>(m_nodes.size()));
-    for (const auto& pNode: m_nodes) {
+    for (const auto& pNode : m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {
             queryFragments << sql;
@@ -144,8 +145,8 @@ QString NotNode::toSql() const {
 }
 
 TextFilterNode::TextFilterNode(const QSqlDatabase& database,
-               const QStringList& sqlColumns,
-               const QString& argument)
+        const QStringList& sqlColumns,
+        const QString& argument)
         : m_database(database),
           m_sqlColumns(sqlColumns),
           m_argument(argument) {
@@ -153,7 +154,7 @@ TextFilterNode::TextFilterNode(const QSqlDatabase& database,
 }
 
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
-    for (const auto& sqlColumn: m_sqlColumns) {
+    for (const auto& sqlColumn : m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
             continue;
@@ -181,7 +182,7 @@ QString TextFilterNode::toSql() const {
     QString escapedArgument = escaper.escapeString(
             kSqlLikeMatchAll + argument + kSqlLikeMatchAll);
     QStringList searchClauses;
-    for (const auto& sqlColumn: m_sqlColumns) {
+    for (const auto& sqlColumn : m_sqlColumns) {
         searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
     }
     return concatSqlClauses(searchClauses, "OR");
@@ -208,16 +209,16 @@ QString NullOrEmptyTextFilterNode::toSql() const {
 }
 
 CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
-                                 const QString& crateNameLike)
-    : m_pCrateStorage(pCrateStorage),
-      m_crateNameLike(crateNameLike),
-      m_matchInitialized(false) {
+        const QString& crateNameLike)
+        : m_pCrateStorage(pCrateStorage),
+          m_crateNameLike(crateNameLike),
+          m_matchInitialized(false) {
 }
 
 bool CrateFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_matchInitialized) {
         CrateTrackSelectResult crateTracks(
-             m_pCrateStorage->selectTracksSortedByCrateNameLike(m_crateNameLike));
+                m_pCrateStorage->selectTracksSortedByCrateNameLike(m_crateNameLike));
 
         while (crateTracks.next()) {
             m_matchingTrackIds.push_back(crateTracks.trackId());
@@ -230,14 +231,14 @@ bool CrateFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString CrateFilterNode::toSql() const {
-    return QString("id IN (%1)").arg(
-            m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
+    return QString("id IN (%1)")
+            .arg(m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(
+                    m_crateNameLike));
 }
 
-
 NoCrateFilterNode::NoCrateFilterNode(const CrateStorage* pCrateStorage)
-    : m_pCrateStorage(pCrateStorage),
-      m_matchInitialized(false) {
+        : m_pCrateStorage(pCrateStorage),
+          m_matchInitialized(false) {
 }
 
 bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
@@ -256,9 +257,9 @@ bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString NoCrateFilterNode::toSql() const {
-    return QString("%1 NOT IN (%2)").arg(
-            CRATETABLE_ID,
-            CrateStorage::formatQueryForTrackIdsWithCrate());
+    return QString("%1 NOT IN (%2)")
+            .arg(CRATETABLE_ID,
+                    CrateStorage::formatQueryForTrackIdsWithCrate());
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
@@ -310,12 +311,12 @@ void NumericFilterNode::init(QString argument) {
     }
 }
 
-double NumericFilterNode::parse(const QString& arg, bool *ok) {
+double NumericFilterNode::parse(const QString& arg, bool* ok) {
     return arg.toDouble(ok);
 }
 
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
-    for (const auto& sqlColumn: m_sqlColumns) {
+    for (const auto& sqlColumn : m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
             if (m_bNullQuery) {
@@ -327,14 +328,14 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
         double dValue = value.toDouble();
         if (m_bOperatorQuery) {
             if ((m_operator == "=" && dValue == m_dOperatorArgument) ||
-                (m_operator == "<" && dValue < m_dOperatorArgument) ||
-                (m_operator == ">" && dValue > m_dOperatorArgument) ||
-                (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
-                (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
+                    (m_operator == "<" && dValue < m_dOperatorArgument) ||
+                    (m_operator == ">" && dValue > m_dOperatorArgument) ||
+                    (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
+                    (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
                 return true;
             }
         } else if (m_bRangeQuery && dValue >= m_dRangeLow &&
-                   dValue <= m_dRangeHigh) {
+                dValue <= m_dRangeHigh) {
             return true;
         }
     }
@@ -343,7 +344,7 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
 
 QString NumericFilterNode::toSql() const {
     if (m_bNullQuery) {
-        for (const auto& sqlColumn: m_sqlColumns) {
+        for (const auto& sqlColumn : m_sqlColumns) {
             // only use the major column
             return QString("%1 IS NULL").arg(sqlColumn);
         }
@@ -352,21 +353,22 @@ QString NumericFilterNode::toSql() const {
 
     if (m_bOperatorQuery) {
         QStringList searchClauses;
-        for (const auto& sqlColumn: m_sqlColumns) {
-            searchClauses << QString("%1 %2 %3").arg(
-                sqlColumn, m_operator, QString::number(m_dOperatorArgument));
+        for (const auto& sqlColumn : m_sqlColumns) {
+            searchClauses << QString("%1 %2 %3")
+                                     .arg(sqlColumn,
+                                             m_operator,
+                                             QString::number(
+                                                     m_dOperatorArgument));
         }
         return concatSqlClauses(searchClauses, "OR");
     }
 
     if (m_bRangeQuery) {
         QStringList searchClauses;
-        for (const auto& sqlColumn: m_sqlColumns) {
+        for (const auto& sqlColumn : m_sqlColumns) {
             QStringList rangeClauses;
-            rangeClauses << QString("%1 >= %2").arg(
-                    sqlColumn, QString::number(m_dRangeLow));
-            rangeClauses << QString("%1 <= %2").arg(
-                    sqlColumn, QString::number(m_dRangeHigh));
+            rangeClauses << QString("%1 >= %2").arg(sqlColumn, QString::number(m_dRangeLow));
+            rangeClauses << QString("%1 <= %2").arg(sqlColumn, QString::number(m_dRangeHigh));
             searchClauses << concatSqlClauses(rangeClauses, "AND");
         }
         return concatSqlClauses(searchClauses, "OR");
@@ -397,7 +399,6 @@ QString NullNumericFilterNode::toSql() const {
     }
     return QString();
 }
-
 
 DurationFilterNode::DurationFilterNode(
         const QStringList& sqlColumns, const QString& argument)
@@ -438,7 +439,7 @@ double DurationFilterNode::parse(const QString& arg, bool* ok) {
 }
 
 KeyFilterNode::KeyFilterNode(mixxx::track::io::key::ChromaticKey key,
-                             bool fuzzy) {
+        bool fuzzy) {
     if (fuzzy) {
         m_matchKeys = KeyUtils::getCompatibleKeys(key);
     } else {
@@ -452,7 +453,7 @@ bool KeyFilterNode::match(const TrackPointer& pTrack) const {
 
 QString KeyFilterNode::toSql() const {
     QStringList searchClauses;
-    for (const auto& matchKey: m_matchKeys) {
+    for (const auto& matchKey : m_matchKeys) {
         searchClauses << QString("key_id IS %1").arg(QString::number(matchKey));
     }
     return concatSqlClauses(searchClauses, "OR");

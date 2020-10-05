@@ -27,25 +27,14 @@
   <g
      style="fill:#559b99;fill-opacity:1"
      id="g6"
-     shape-rendering="auto"
-     fill="#85bdbb">
+     shape-rendering="auto">
     <path
        id="path2"
        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;paint-order:fill markers stroke;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal;fill:#559b99;fill-opacity:1"
-       solid-color="#000000"
-       image-rendering="auto"
-       dominant-baseline="auto"
-       color-rendering="auto"
-       color="#000000"
        d="M 13,1.4492188 V 4 H 6.9003906 C 4.1893262,4 2,6.2607148 2,9 2,9.3724736 2.0482349,9.7336886 2.125,10.083984 L 4,9 C 4,7.3072852 5.2902549,6 6.9003906,6 H 13 v 3 l 6.541016,-3.7753906 z" />
     <path
        id="path4"
        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;paint-order:fill markers stroke;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal;fill:#559b99;fill-opacity:1"
-       solid-color="#000000"
-       image-rendering="auto"
-       dominant-baseline="auto"
-       color-rendering="auto"
-       color="#000000"
        d="M 18.876953,7.9179688 17,9 c 0,1.692715 -1.290255,3 -2.900391,3 H 8 V 9 L 1.4589844,12.775391 8,16.552734 V 14 h 6.099609 C 16.810674,14 19,11.739285 19,9 19,8.6283798 18.953376,8.2675235 18.876953,7.9179688 Z" />
   </g>
 </svg>

@@ -35,11 +35,14 @@
 #Sampler, #SamplerMini,
 WEffectSelector::checked, #fadeModeCombobox::checked,
 WLibrary,
+#SidebarCoverSplitter,
 #SidebarBox,
 #PreviewDeck,
 #LibExpandBox,
 #SearchLineBox,
-QAbstractScrollArea::corner {
+QAbstractScrollArea::corner,
+/* Prevent cut-off or shifted stars on macOS */
+WStarRating {
   background-color: #1e1e1e;
 }
 
@@ -188,10 +191,10 @@ WSearchLineEdit,
 }
 
 #FxSlotSeparatorV {
-  min-width: 2px;
-  max-width: 2px;
-  image: url(skin:/classic/style/fx_separator.png) repeat center center;
-  margin: 2px 0px;
+  min-width: 1px;
+  max-width: 1px;
+  image: url(skin:/classic/style/fx_separator.svg) repeat center center;
+  margin: 2px 1px;
 }
 #FxSlotSeparatorH {
   min-height: 2px;
@@ -199,10 +202,13 @@ WSearchLineEdit,
 }
 
 WBeatSpinBox,
-#spinBoxTransition,
-#LibraryBPMSpinBox  {
+#spinBoxTransition  {
   selection-color: #000;
   selection-background-color: #d2d2d2;
+  }
+  WBeatSpinBox:focus  {
+    selection-color: #000;
+    selection-background-color: #d2d2d2;
   }
   WBeatSpinBox:focus,
   #spinBoxTransition:focus {
@@ -707,12 +713,14 @@ WLibrary,
 
 /************** Fx *********************************************************/
 
-#FxUnitHeaderCollapsed {
+#FxUnitHeaderCollapsed[highlight="0"],
+#FxUnitHeaderCollapsed[highlight="1"] {
   border-left: 0px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   }
-  #FxUnitHeaderExpanded {
+  #FxUnitHeaderExpanded[highlight="0"],
+  #FxUnitHeaderExpanded[highlight="1"] {
     border-bottom-left-radius: 0px;
   }
   #FxUnitHeader {
@@ -939,6 +947,9 @@ WPushButton#FxSuperLinkInvertButton {
 #SkinSettingsCategory {
   padding: 2px 5px 7px 3px;
   }
+  #SkinSettingsSubMenu {
+    padding: 0px 0px 0px 13px;
+  }
   #CategoryLabel {
     padding: 3px 0px 2px 0px;
   }
@@ -1012,16 +1023,29 @@ WTrackMenu QMenu QCheckBox,
 }
 
 /* green for Fx 1/2 */
-#FxUnit1 #FxUnitLabel,
-#FxUnit2 #FxUnitLabel {
+#FxUnit1 #FxUnitLabel[highlight="1"],
+#FxUnit2 #FxUnitLabel[highlight="1"] {
   color: #73b508;
 }
 
 /* blue for Fx 3/4 */
-#FxUnit3 #FxUnitLabel,
-#FxUnit4 #FxUnitLabel {
+#FxUnit3 #FxUnitLabel[highlight="1"],
+#FxUnit4 #FxUnitLabel[highlight="1"] {
   color: #0795b5;
-}
+  }
+  #FxUnitControllerInputIndicator {
+    margin: 2px 0px;
+  }
+  #FxUnit1 #FxUnitControllerInputIndicator[highlight="1"],
+  #FxUnit2 #FxUnitControllerInputIndicator[highlight="1"] {
+    background-color: #73b508;
+    color: #73b508;
+  }
+  #FxUnit3 #FxUnitControllerInputIndicator[highlight="1"],
+  #FxUnit4 #FxUnitControllerInputIndicator[highlight="1"] {
+    background-color: #0795b5;
+    color: #0795b5;
+  }
 
 /* Grey. default for all deck labels */
 #PlayPositionText, #PlayPositionTextSmall,
@@ -1039,6 +1063,7 @@ WLibrary QLabel, WLibrary QRadioButton {
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
+#FxUnitLabel[highlight="0"],
 #MicAuxLabelUnconfigured,
 #DlgMissing > QPushButton:!enabled,
 #DlgHidden > QPushButton:!enabled,
@@ -1050,6 +1075,7 @@ WLibrary QLabel, WLibrary QRadioButton {
 
 #VinylButton[displayValue="0"],
 #VinylModeButton,
+#PassthroughButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
@@ -1059,7 +1085,7 @@ WLibrary QLabel, WLibrary QRadioButton {
   }
 
 #VinylButton[displayValue="1"],
-#VinylButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
 #FxAssignButtons WPushButton[displayValue="1"],
@@ -1141,8 +1167,18 @@ WOverview #PassthroughLabel {
 
 /************** Button styles *************************************************
 *************** Button borders ************************************************/
-#FxAssignButtons WPushButton[displayValue="0"],
-#VinylButton[displayValue="0"], #VinylModeButton, #VinylCueButton[displayValue="0"],
+/* crop shadow on the left border for all buttons in Fx assign and vinyl control grid
+  (except leftmost button in each grid > overwritten in the block below) */
+#VinylModeButton,
+#VinylCueButton[displayValue="0"],
+#PassthroughButton[displayValue="0"],
+#FxAssignButtons WPushButton[displayValue="0"] {
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/classic/buttons/btn_embedded_grid.svg) 2 2 2 1;
+  }
+WPushButton#FxAssignButton1[displayValue="0"],
+#VinylButton[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
@@ -1158,30 +1194,36 @@ WEffectSelector:on {
   border-width: 2px;
   border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-  #FxAssignButtons WPushButton[displayValue="1"],
-  #VinylButton[displayValue="1"],
-  #VinylButton[displayValue="2"],
-  #VinylCueButton[displayValue="1"],
-  #VinylCueButton[displayValue="2"],
-  #KeyMatchReset[pressed="true"],
-  #GuiToggleButton[displayValue="1"],
-  #RecFeedback[displayValue="1"],
-  #RecFeedback[displayValue="2"],
-  #BroadcastButton[displayValue="1"],
-  #BroadcastButton[displayValue="2"],
-  #BroadcastButton[displayValue="3"],
-  #SkinSettingsToggle[displayValue="1"],
-  #DlgMissing > QPushButton:pressed,
-  #DlgHidden > QPushButton:pressed,
-  #DlgAutoDJ > QPushButton:pressed,
-  #DlgRecording > QPushButton:pressed,
-  #DlgAnalysis > QPushButton:pressed,
-  QPushButton#pushButtonAutoDJ:checked,
-  QPushButton#pushButtonRepeatPlaylist:checked,
-  #DlgAnalysis > QPushButton:checked,
-  QPushButton#pushButtonRecording:checked {
-    border-width: 2px;
-    border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
+/* Active */
+#VinylCueButton[displayValue="1"],
+#VinylCueButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
+#FxAssignButtons WPushButton[displayValue="1"] {
+  outline: none;
+  border-width: 2px 2px 2px 1px;
+  border-image: url(skin:/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  }
+WPushButton#VinylButton[displayValue="1"],
+WPushButton#FxAssignButton1[displayValue="1"],
+#KeyMatchReset[pressed="true"],
+#GuiToggleButton[displayValue="1"],
+#RecFeedback[displayValue="1"],
+#RecFeedback[displayValue="2"],
+#BroadcastButton[displayValue="1"],
+#BroadcastButton[displayValue="2"],
+#BroadcastButton[displayValue="3"],
+#SkinSettingsToggle[displayValue="1"],
+#DlgMissing > QPushButton:pressed,
+#DlgHidden > QPushButton:pressed,
+#DlgAutoDJ > QPushButton:pressed,
+#DlgRecording > QPushButton:pressed,
+#DlgAnalysis > QPushButton:pressed,
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonRepeatPlaylist:checked,
+#DlgAnalysis > QPushButton:checked,
+QPushButton#pushButtonRecording:checked {
+  border-width: 2px;
+  border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
   #KeyUp {
     border-width: 1px 2px 0px 2px;
@@ -1346,7 +1388,7 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 
 /* Golden */
 #VinylButton[displayValue="1"],
-#VinylButton[displayValue="2"],
+#PassthroughButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"],   /* connecting: yellow */
@@ -1766,9 +1808,18 @@ WPushButton#SamplerExpand[displayValue="0"],
     image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
-#SkinSettingsToggle[displayValue="0"] {
+#BroadcastButton[displayValue="0"] {
   /* for some reason the alignment isn't rescpected, so the icons
-    have to be sized like available area (76x16px) */
+    have to be sized like available area (button size - margin) */
+  image: url(skin:/classic/buttons/btn__broadcast_off.svg) no-repeat left top;
+  }
+  #BroadcastButton[displayValue="1"],
+  #BroadcastButton[displayValue="2"],
+  #BroadcastButton[displayValue="3"] {
+    image: url(skin:/classic/buttons/btn__broadcast_on.svg) no-repeat left top;
+  }
+
+#SkinSettingsToggle[displayValue="0"] {
   image: url(skin:/classic/buttons/btn__settings_off.svg) no-repeat left top;
   }
   #SkinSettingsToggle[displayValue="1"] {
@@ -1779,7 +1830,7 @@ WPushButton#SamplerExpand[displayValue="0"],
   image: url(skin:/classic/style/mixxx_logo_small.svg) no-repeat center center;
 }
 #ToolbarSeparator {
-  image: url(skin:/classic/style/toolbar_separator.png) no-repeat center center;
+  image: url(skin:/classic/style/toolbar_separator.svg) no-repeat center center;
   margin: 0px 3px;
 }
 
@@ -1900,7 +1951,12 @@ WLibrary,
 #LibraryContainer QTreeView:focus,
 #LibraryContainer QTextBrowser:focus {
   border: 1px solid #d09300;
-}
+  }
+  #FxUnitHeaderCollapsed[highlight="1"],
+  #FxUnitHeaderExpanded[highlight="1"] {
+    border-top: 1px solid #d09300;
+    border-right: 1px solid #d09300;
+  }
 
 #LibraryContainer QTreeView {
   show-decoration-selected: 0;
@@ -2034,7 +2090,7 @@ WCueMenuPopup QPushButton:focus {
       image: url(skin:/classic/buttons/btn__lib_sort_up.svg);
       }
     #LibraryContainer QHeaderView::down-arrow {
-      image: url(skin:/classic/style/btn__lib_sort_down.svg);
+      image: url(skin:/classic/buttons/btn__lib_sort_down.svg);
     }
 
 
@@ -2140,41 +2196,46 @@ WSearchLineEdit {
   Used to split
   - Waveforms & Decks/FX/etc
   - Library feature & Coverart */
-#HorizontalSplitter {
+#WaveformSplitter,
+#SidebarCoverSplitter {
   padding: 0px;
   margin: 0px;
 }
 
-#HorizontalSplitter::handle {
-    image: url(skin:/classic/style/splitter_handle_horizontal_unchecked.png); /*
+#WaveformSplitter::handle,
+#SidebarCoverSplitter::handle {
+    image: url(skin:/classic/style/splitter_handle_horizontal.png); /*
     border-top: 1px solid #000; */
   }
-  #HorizontalSplitter::handle:pressed,
-  #HorizontalSplitter::handle:hover {
-    image: url(skin:/classic/style/splitter_handle_horizontal_checked.png);
+  #WaveformSplitter::handle:pressed,
+  #WaveformSplitter::handle:hover,
+  #SidebarCoverSplitter::handle:pressed,
+  #SidebarCoverSplitter::handle:hover {
+    image: url(skin:/classic/style/splitter_handle_horizontal_pressed.png);
   }
-#HorizontalSplitter::handle:vertical {
+  #WaveformSplitter::handle:vertical,
+  #SidebarCoverSplitter::handle:vertical {
   height: 9px;
 }
 
-/* VerticalSplitter
+/* LibrarySplitter
   (the splitter itself is vertical)
   Used to split Library sidebar & Tracks table */
-#VerticalSplitter {
+#LibrarySplitter {
   border-top: 1px solid #333333;
 }
-#VerticalSplitter::handle { /*
+#LibrarySplitter::handle { /*
   background-image: url(skin:/classic/style/library_splitter_handle_unchecked.svg);
   background-position: center top;
   background-repeat: no-repeat;  */
-  image: url(skin:/classic/style/splitter_handle_vertical_unchecked.png);
+  image: url(skin:/classic/style/splitter_handle_vertical.png);
   background-color: #1e1e1e;
 }
-#VerticalSplitter::handle:pressed,
-#VerticalSplitter::handle:hover {
-  image: url(skin:/classic/style/splitter_handle_vertical_checked.png);
+#LibrarySplitter::handle:pressed,
+#LibrarySplitter::handle:hover {
+  image: url(skin:/classic/style/splitter_handle_vertical_pressed.png);
 }
-#VerticalSplitter::handle:vertical {
+#LibrarySplitter::handle:vertical {
   /* 'height' works although it's actually the width of the handle */
   height: 6px;
 }

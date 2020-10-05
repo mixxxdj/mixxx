@@ -5,7 +5,7 @@
         <author>josepma</author>
         <description>Hercules DJ Console 4-Mx 2017-12-16</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3023</forums>
-        <wiki>http://mixxx.org/wiki/doku.php/hercules_dj_console_4-mx</wiki>
+        <manual>hercules_dj_console_4_mx</manual>
     </info>
     <controller id="DJ">
         <scriptfiles>

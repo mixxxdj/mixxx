@@ -4,8 +4,9 @@
 #include <QList>
 #include <QTableView>
 
+#include "library/coverart.h"
 #include "library/tableitemdelegate.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/cache.h"
 
 class CoverArtCache;

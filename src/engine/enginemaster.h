@@ -90,10 +90,10 @@ class EngineMaster : public QObject, public AudioSource {
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
     EngineChannel* getChannel(const QString& group);
-    static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                                            double leftGain,
-                                            double centerGain,
-                                            double rightGain) {
+    static inline CSAMPLE_GAIN gainForOrientation(EngineChannel::ChannelOrientation orientation,
+            CSAMPLE_GAIN leftGain,
+            CSAMPLE_GAIN centerGain,
+            CSAMPLE_GAIN rightGain) {
         switch (orientation) {
             case EngineChannel::LEFT:
                 return leftGain;
@@ -147,24 +147,25 @@ class EngineMaster : public QObject, public AudioSource {
 
     class GainCalculator {
       public:
-        virtual double getGain(ChannelInfo* pChannelInfo) const = 0;
+        virtual CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const = 0;
     };
     class PflGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
             Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
-        inline void setGain(double dGain) {
+        inline void setGain(CSAMPLE_GAIN dGain) {
             m_dGain = dGain;
         }
+
       private:
-        double m_dGain;
+        CSAMPLE_GAIN m_dGain;
     };
     class TalkoverGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
-            return pChannelInfo->m_pVolumeControl->get();
+        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
+            return static_cast<CSAMPLE_GAIN>(pChannelInfo->m_pVolumeControl->get());
         }
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
@@ -176,16 +177,21 @@ class EngineMaster : public QObject, public AudioSource {
                   m_dTalkoverDuckingGain(1.0) {
         }
 
-        inline double getGain(ChannelInfo* pChannelInfo) const {
-            const double channelVolume = pChannelInfo->m_pVolumeControl->get();
-            const double orientationGain = EngineMaster::gainForOrientation(
+        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const {
+            const CSAMPLE_GAIN channelVolume = static_cast<CSAMPLE_GAIN>(
+                    pChannelInfo->m_pVolumeControl->get());
+            const CSAMPLE_GAIN orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
-                    m_dLeftGain, m_dCenterGain, m_dRightGain);
+                    m_dLeftGain,
+                    m_dCenterGain,
+                    m_dRightGain);
             return channelVolume * orientationGain * m_dTalkoverDuckingGain;
         }
 
-        inline void setGains(double leftGain, double centerGain, double rightGain,
-                             double talkoverDuckingGain) {
+        inline void setGains(CSAMPLE_GAIN leftGain,
+                CSAMPLE_GAIN centerGain,
+                CSAMPLE_GAIN rightGain,
+                CSAMPLE_GAIN talkoverDuckingGain) {
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
@@ -193,10 +199,10 @@ class EngineMaster : public QObject, public AudioSource {
         }
 
       private:
-        double m_dLeftGain;
-        double m_dCenterGain;
-        double m_dRightGain;
-        double m_dTalkoverDuckingGain;
+        CSAMPLE_GAIN m_dLeftGain;
+        CSAMPLE_GAIN m_dCenterGain;
+        CSAMPLE_GAIN m_dRightGain;
+        CSAMPLE_GAIN m_dTalkoverDuckingGain;
     };
 
     enum class MicMonitorMode {
@@ -272,7 +278,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMasterEffects();
-    void processHeadphones(const double masterMixGainInHeadphones);
+    void processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphones);
     bool sidechainMixRequired() const;
 
     EngineEffectsManager* m_pEngineEffectsManager;

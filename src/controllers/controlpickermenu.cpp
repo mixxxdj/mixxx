@@ -125,10 +125,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
                              tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
+    addDeckAndSamplerControl("pitch_up", tr("Increase Pitch"),
+                            tr("Increases the pitch by one semitone"), speedMenu);
+    addDeckAndSamplerControl("pitch_up_small", tr("Increase Pitch (Fine)"),
+                            tr("Increases the pitch by 10 cents"), speedMenu);
+    addDeckAndSamplerControl("pitch_down", tr("Decrease Pitch"),
+                            tr("Decreases the pitch by one semitone"), speedMenu);
+    addDeckAndSamplerControl("pitch_down_small", tr("Decrease Pitch (Fine)"),
+                            tr("Decreases the pitch by 10 cents"), speedMenu);
     addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
                              tr("Adjust pitch from speed slider pitch"), speedMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu, true);
-    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu, true);
+    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu);
+    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
                              tr("Adjust speed faster (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
@@ -148,8 +156,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    const int kNumEqRacks = 1;
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
+    constexpr int kNumEqRacks = 1;
+    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
     for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
@@ -467,8 +475,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Clear Effect Rack"), tr("Clear effect rack"),
                    rackMenu, false, descriptionPrefix);
 
-        const int numEffectUnits = ControlObject::get(
-            ConfigKey(rackGroup, "num_effectunits"));
+        const int numEffectUnits = static_cast<int>(ControlObject::get(
+                ConfigKey(rackGroup, "num_effectunits")));
         for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
              ++iEffectUnitNumber) {
             const QString effectUnitGroup =
@@ -535,8 +543,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        m_effectHeadphoneOutputStr,
                        effectUnitGroups, false, groupDescriptionPrefix);
 
-            const int iNumDecks = ControlObject::get(
-                    ConfigKey("[Master]", "num_decks"));
             for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
@@ -548,8 +554,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            effectUnitGroups, false, groupDescriptionPrefix);
             }
 
-            const int iNumSamplers = ControlObject::get(
-                    ConfigKey("[Master]", "num_samplers"));
+            const int iNumSamplers = static_cast<int>(ControlObject::get(
+                    ConfigKey("[Master]", "num_samplers")));
             for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                  ++iSamplerNumber) {
                 // PlayerManager::groupForSampler is 0-indexed.
@@ -563,8 +569,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
             }
 
-            const int iNumMicrophones = ControlObject::get(
-                ConfigKey("[Master]", "num_microphones"));
+            const int iNumMicrophones = static_cast<int>(ControlObject::get(
+                    ConfigKey("[Master]", "num_microphones")));
             for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
                  ++iMicrophoneNumber) {
                 QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
@@ -576,8 +582,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            effectUnitGroups, false, groupDescriptionPrefix);
             }
 
-            const int iNumAuxiliaries = ControlObject::get(
-                    ConfigKey("[Master]", "num_auxiliaries"));
+            const int iNumAuxiliaries = static_cast<int>(ControlObject::get(
+                    ConfigKey("[Master]", "num_auxiliaries")));
             for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                  ++iAuxiliaryNumber) {
                 QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
@@ -589,8 +595,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            effectUnitGroups, false, groupDescriptionPrefix);
             }
 
-            const int numEffectSlots = ControlObject::get(
-                    ConfigKey(effectUnitGroup, "num_effectslots"));
+            const int numEffectSlots = static_cast<int>(ControlObject::get(
+                    ConfigKey(effectUnitGroup, "num_effectslots")));
             for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
                      ++iEffectSlotNumber) {
                 const QString effectSlotGroup =
@@ -625,8 +631,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            tr("Switch to either next or previous effect"),
                            effectSlotMenu, false, slotDescriptionPrefix);
 
-                const int numParameterSlots = ControlObject::get(
-                        ConfigKey(effectSlotGroup, "num_parameterslots"));
+                const int numParameterSlots = static_cast<int>(ControlObject::get(
+                        ConfigKey(effectSlotGroup, "num_parameterslots")));
                 for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
                      ++iParameterSlotNumber) {
                     // The parameter slot group is the same as the effect slot
@@ -837,9 +843,11 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
                                          bool deckControls, bool samplerControls,
                                          bool previewdeckControls,
                                          bool addReset) {
-    const int iNumSamplers = ControlObject::get(ConfigKey("[Master]", "num_samplers"));
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
-    const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
+    const int iNumSamplers = static_cast<int>(
+            ControlObject::get(ConfigKey("[Master]", "num_samplers")));
+    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
+    const int iNumPreviewDecks = static_cast<int>(
+            ControlObject::get(ConfigKey("[Master]", "num_preview_decks")));
 
     parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
@@ -847,8 +855,8 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
     parented_ptr<QMenu> resetControlMenu = nullptr;
     QString resetControl = QString("%1_set_default").arg(control);
     if (addReset) {
-        QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        resetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
+        QString resetMenuTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+        resetControlMenu = make_parented<QMenu>(resetMenuTitle, pMenu);
         pMenu->addMenu(resetControlMenu);
     }
 
@@ -863,7 +871,7 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
             addSingleControl(group, resetControl, resetTitle, resetDescription,
-                             controlMenu, prefix, prefix);
+                    resetControlMenu, prefix, prefix);
         }
     }
 
@@ -878,7 +886,7 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
             addSingleControl(group, resetControl, resetTitle, resetDescription,
-                             controlMenu, prefix, prefix);
+                    resetControlMenu, prefix, prefix);
         }
     }
 
@@ -893,7 +901,7 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
             addSingleControl(group, resetControl, resetTitle, resetDescription,
-                             controlMenu, prefix, prefix);
+                    resetControlMenu, prefix, prefix);
         }
     }
 }
@@ -917,7 +925,8 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     }
 
     if (microphoneControls) {
-        const int kNumMicrophones = ControlObject::get(ConfigKey("[Master]", "num_microphones"));
+        const int kNumMicrophones = static_cast<int>(
+                ControlObject::get(ConfigKey("[Master]", "num_microphones")));
         for (int i = 1; i <= kNumMicrophones; ++i) {
             QString prefix = m_microphoneStr.arg(i);
             QString group = PlayerManager::groupForMicrophone(i - 1);
@@ -928,12 +937,13 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
                 addSingleControl(group, resetControl, resetTitle, resetDescription,
-                                 controlMenu, prefix, prefix);
+                        resetControlMenu, prefix, prefix);
             }
         }
     }
 
-    const int kNumAuxiliaries = ControlObject::get(ConfigKey("[Master]", "num_auxiliaries"));
+    const int kNumAuxiliaries = static_cast<int>(
+            ControlObject::get(ConfigKey("[Master]", "num_auxiliaries")));
     if (auxControls) {
         for (int i = 1; i <= kNumAuxiliaries; ++i) {
             QString prefix = m_auxStr.arg(i);
@@ -945,7 +955,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
                 addSingleControl(group, resetControl, resetTitle, resetDescription,
-                                 controlMenu, prefix, prefix);
+                        resetControlMenu, prefix, prefix);
             }
         }
     }
@@ -1021,7 +1031,9 @@ int ControlPickerMenu::addAvailableControl(ConfigKey key,
     m_controlsAvailable.append(key);
     m_descriptionsByKey.insert(key, description);
     m_titlesByKey.insert(key, title);
-    return m_controlsAvailable.size();
+    // return the index of the control which will be connected to the index
+    // of the respective action in the menu
+    return m_controlsAvailable.size() - 1;
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {
