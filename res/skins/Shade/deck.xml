@@ -57,23 +57,45 @@
                         <Layout>vertical</Layout>
                         <BackPath>style/style_bg_deck_top_mid.png</BackPath>
                         <Children>
-                          <TrackProperty>
-                            <TooltipId>track_title</TooltipId>
-                            <Style>QLabel {
-                              font: bold 13px sans-serif;
-                              font-family: "Open Sans";
-                              background-color: transparent;
-                              color: #191F24;
-                              text-align: left;
-                              padding-left: 1px;
-                              padding-top: 4px;
-                            }
-                            </Style>
-                            <Property>titleInfo</Property>
-                            <Channel><Variable name="channum"/></Channel>
-                            <Size>0e,23f</Size>
-                            <Elide>right</Elide>
-                          </TrackProperty>
+                          <WidgetGroup>
+                            <ObjectName>ArtistAndTimeRow</ObjectName>
+                            <Size>0e,19f</Size>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <TrackProperty>
+                                <TooltipId>track_title</TooltipId>
+                                <Style>QLabel {
+                                  font: bold 13px sans-serif;
+                                  font-family: "Open Sans";
+                                  background-color: transparent;
+                                  color: #191F24;
+                                  text-align: left;
+                                  padding-left: 1px;
+                                  padding-top: 4px;
+                                }
+                                </Style>
+                                <Property>titleInfo</Property>
+                                <Channel><Variable name="channum"/></Channel>
+                                <Size>0e,23f</Size>
+                                <Elide>right</Elide>
+                              </TrackProperty>
+                              <PushButton>
+                                <TooltipId>eject</TooltipId>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Pressed>skin:/btn/btn_eject_over.png</Pressed>
+                                  <Unpressed>skin:/btn/btn_eject.png</Unpressed>
+                                </State>
+                                <Connection>
+                                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+                                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                  <ButtonState>LeftButton</ButtonState>
+                                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                                </Connection>
+                              </PushButton>
+                            </Children>
+                          </WidgetGroup>
 
                           <TrackWidgetGroup>
                             <Size>0e,1f</Size>
@@ -263,19 +285,23 @@
                             </Connection>
                           </PushButton>
                           <PushButton>
-                            <TooltipId>eject</TooltipId>
-                            <NumberStates>1</NumberStates>
+                            <TooltipId>slip_mode</TooltipId>
+                            <NumberStates>2</NumberStates>
                             <State>
                               <Number>0</Number>
-                              <Pressed>skin:/btn/btn_eject_over.png</Pressed>
-                              <Unpressed>skin:/btn/btn_eject.png</Unpressed>
+                              <Pressed>skin:/btn/btn_slip.png</Pressed>
+                              <Unpressed>skin:/btn/btn_slip.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>skin:/btn/btn_slip_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_slip_over.png</Unpressed>
                             </State>
                             <Pos>43,1</Pos>
                             <Connection>
-                              <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,slip_enabled</ConfigKey>
                               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                               <ButtonState>LeftButton</ButtonState>
-                              <ConnectValueToWidget>false</ConnectValueToWidget>
                             </Connection>
                           </PushButton>
                           <PushButton>
