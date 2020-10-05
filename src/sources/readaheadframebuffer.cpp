@@ -39,7 +39,7 @@ ReadAheadFrameBuffer::ReadAheadFrameBuffer(
           m_readIndex(kUnknownFrameIndex) {
 }
 
-void ReadAheadFrameBuffer::beforeBuffering(
+void ReadAheadFrameBuffer::adjustCapacityBeforeBuffering(
         FrameCount frameCount) {
     DEBUG_ASSERT(frameCount >= 0);
     const auto requiredCapacity = bufferedLength() + frameCount;
@@ -141,7 +141,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
             break;
         case DiscontinuityGapMode::FillWithSilence: {
             const auto clearFrameCount = gapRange.length();
-            beforeBuffering(clearFrameCount);
+            adjustCapacityBeforeBuffering(clearFrameCount);
             const auto clearSampleCount =
                     m_signalInfo.frames2samples(clearFrameCount);
             const SampleBuffer::WritableSlice writableSamples(
@@ -166,7 +166,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
             << "Buffering sample frames"
             << inputRange;
 #endif
-    beforeBuffering(inputRange.length());
+    adjustCapacityBeforeBuffering(inputRange.length());
     const auto copySampleCount =
             m_signalInfo.frames2samples(inputRange.length());
     const SampleBuffer::WritableSlice writableSamples(

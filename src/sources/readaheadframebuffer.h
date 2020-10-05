@@ -144,7 +144,7 @@ class ReadAheadFrameBuffer final {
                             DiscontinuityGapMode::Default));
 
   private:
-    void beforeBuffering(
+    void adjustCapacityBeforeBuffering(
             FrameCount frameCount);
 
     /// Buffer the given readable samples frames.
