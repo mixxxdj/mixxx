@@ -41,6 +41,9 @@ enum class WriteFlag {
 
 Q_DECLARE_FLAGS(WriteFlags, WriteFlag)
 
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
 Q_DECLARE_OPERATORS_FOR_FLAGS(WriteFlags)
 
 // Handles actually writing to stderr and the log file.
