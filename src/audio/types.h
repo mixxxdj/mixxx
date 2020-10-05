@@ -137,6 +137,10 @@ class SampleRate {
                 (m_value <= kValueMax);
     }
 
+    void operator=(const value_t& value) {
+        m_value = value;
+    }
+
     /*implicit*/ constexpr operator value_t() const {
         return m_value;
     }

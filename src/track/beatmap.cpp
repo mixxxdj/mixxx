@@ -5,13 +5,15 @@
  *      Author: vittorio
  */
 
-#include <algorithm>
+#include "track/beatmap.h"
+
+#include <QMutexLocker>
 #include <QtDebug>
 #include <QtGlobal>
-#include <QMutexLocker>
+#include <algorithm>
 
-#include "track/beatmap.h"
 #include "track/beatutils.h"
+#include "track/track.h"
 #include "util/math.h"
 
 using mixxx::track::io::Beat;

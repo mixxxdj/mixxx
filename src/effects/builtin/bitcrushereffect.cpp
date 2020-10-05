@@ -76,11 +76,11 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
 
-    const CSAMPLE downsample = m_pDownsampleParameter ?
-            m_pDownsampleParameter->value() : 0.0;
+    const auto downsample = static_cast<CSAMPLE>(
+            m_pDownsampleParameter ? m_pDownsampleParameter->value() : 0.0);
 
-    CSAMPLE bit_depth = m_pBitDepthParameter ?
-            m_pBitDepthParameter->value() : 16;
+    auto bit_depth = static_cast<CSAMPLE>(
+            m_pBitDepthParameter ? m_pBitDepthParameter->value() : 16);
 
     // divided by two because we use float math which includes the sing bit anyway
     const CSAMPLE scale = pow(2.0f, bit_depth) / 2;
@@ -94,7 +94,7 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
         pState->accumulator += downsample;
 
         if (pState->accumulator >= 1.0) {
-            pState->accumulator -= 1.0;
+            pState->accumulator -= 1.0f;
             if (bit_depth < 16) {
 
                 pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;

@@ -14,7 +14,7 @@
 
 class CoverInfo;
 class CoverInfoRelative;
-
+class TrackFile;
 
 class CoverArtUtils {
   public:

@@ -4,8 +4,8 @@
 #include <QList>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 
 class Library;
 class LibraryFeature;

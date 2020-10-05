@@ -190,7 +190,7 @@ DlgAutoDJ::DlgAutoDJ(
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
     // skin changes, etc.).
-    spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
+    spinBoxTransition->setValue(static_cast<int>(m_pAutoDJProcessor->getTransitionTime()));
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::transitionTimeChanged,
             this,

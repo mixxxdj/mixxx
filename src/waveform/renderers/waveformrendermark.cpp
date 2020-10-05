@@ -243,20 +243,20 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         if (markAlignH == Qt::AlignHCenter) {
             if (labelRect.top() > 0) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(middle, 0, middle, labelRect.top());
+                painter.drawLine(QLineF(middle, 0, middle, labelRect.top()));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(middle - 1, 0, middle - 1, labelRect.top());
-                painter.drawLine(middle + 1, 0, middle + 1, labelRect.top());
+                painter.drawLine(QLineF(middle - 1, 0, middle - 1, labelRect.top()));
+                painter.drawLine(QLineF(middle + 1, 0, middle + 1, labelRect.top()));
             }
 
             if (labelRect.bottom() < height) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(middle, labelRect.bottom(), middle, height);
+                painter.drawLine(QLineF(middle, labelRect.bottom(), middle, height));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(middle - 1, labelRect.bottom(), middle - 1, height);
-                painter.drawLine(middle + 1, labelRect.bottom(), middle + 1, height);
+                painter.drawLine(QLineF(middle - 1, labelRect.bottom(), middle - 1, height));
+                painter.drawLine(QLineF(middle + 1, labelRect.bottom(), middle + 1, height));
             }
         } else { // AlignLeft || AlignRight
             painter.setPen(pMark->fillColor());
@@ -272,20 +272,20 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         if (markAlignV == Qt::AlignVCenter) {
             if (labelRect.left() > 0) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(0, middle, labelRect.left(), middle);
+                painter.drawLine(QLineF(0, middle, labelRect.left(), middle));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(0, middle - 1, labelRect.left(), middle - 1);
-                painter.drawLine(0, middle + 1, labelRect.left(), middle + 1);
+                painter.drawLine(QLineF(0, middle - 1, labelRect.left(), middle - 1));
+                painter.drawLine(QLineF(0, middle + 1, labelRect.left(), middle + 1));
             }
 
             if (labelRect.right() < width) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(labelRect.right(), middle, width, middle);
+                painter.drawLine(QLineF(labelRect.right(), middle, width, middle));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(labelRect.right(), middle - 1, width, middle - 1);
-                painter.drawLine(labelRect.right(), middle + 1, width, middle + 1);
+                painter.drawLine(QLineF(labelRect.right(), middle - 1, width, middle - 1));
+                painter.drawLine(QLineF(labelRect.right(), middle + 1, width, middle + 1));
             }
         } else { // AlignTop || AlignBottom
             painter.setPen(pMark->fillColor());

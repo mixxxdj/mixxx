@@ -18,14 +18,50 @@
 //
 // The ptrName() function is overloaded for both mutable and
 // immutable access by a pointer.
-//
-// TODO: Adjust the name of this macro, e.g. DECL_MIXXX_PROPERTY
-#define PROPERTY_SET_BYVAL_GET_BYREF(TYPE, NAME, CAP_NAME) \
-public: template <typename T> typename std::enable_if<(std::is_fundamental<TYPE>::value || std::is_same<TYPE, bool>::value) && std::is_same<TYPE, T>::value>::type set##CAP_NAME(T _val) { m_##NAME = _val; } \
-public: template <typename T> typename std::enable_if<!(std::is_fundamental<TYPE>::value || std::is_same<TYPE, bool>::value) && std::is_assignable<TYPE, T>::value>::type set##CAP_NAME(T&& _val) { m_##NAME = std::forward<T>(_val); } \
-public: constexpr std::conditional<std::is_fundamental<TYPE>::value, TYPE, const TYPE&>::type get##CAP_NAME() const { return m_##NAME; } \
-public: constexpr TYPE& ref##CAP_NAME() { return m_##NAME; } \
-public: constexpr TYPE* ptr##CAP_NAME() { return &m_##NAME; } \
-public: constexpr const TYPE* ptr##CAP_NAME() const { return &m_##NAME; } \
-public: QDebug dbg##CAP_NAME(QDebug dbg) const { return dbg << #NAME ":" << m_##NAME; } \
-private: TYPE m_##NAME;
+#define MIXXX_DECL_PROPERTY(TYPE, NAME, CAP_NAME)                       \
+  public:                                                               \
+    template<typename T>                                                \
+    typename std::enable_if<(std::is_fundamental<TYPE>::value ||        \
+                                    std::is_same<TYPE, bool>::value) && \
+            std::is_same<TYPE, T>::value>::type set##CAP_NAME(T _val) { \
+        m_##NAME = _val;                                                \
+    }                                                                   \
+                                                                        \
+  public:                                                               \
+    template<typename T>                                                \
+    typename std::enable_if<!(std::is_fundamental<TYPE>::value ||       \
+                                    std::is_same<TYPE, bool>::value) && \
+            std::is_assignable<TYPE, T>::value>::type                   \
+            set##CAP_NAME(T&& _val) {                                   \
+        m_##NAME = std::forward<T>(_val);                               \
+    }                                                                   \
+                                                                        \
+  public:                                                               \
+    constexpr std::conditional<std::is_fundamental<TYPE>::value,        \
+            TYPE,                                                       \
+            const TYPE&>::type get##CAP_NAME() const {                  \
+        return m_##NAME;                                                \
+    }                                                                   \
+                                                                        \
+  public:                                                               \
+    constexpr TYPE& ref##CAP_NAME() {                                   \
+        return m_##NAME;                                                \
+    }                                                                   \
+                                                                        \
+  public:                                                               \
+    constexpr TYPE* ptr##CAP_NAME() {                                   \
+        return &m_##NAME;                                               \
+    }                                                                   \
+                                                                        \
+  public:                                                               \
+    constexpr const TYPE* ptr##CAP_NAME() const {                       \
+        return &m_##NAME;                                               \
+    }                                                                   \
+                                                                        \
+  public:                                                               \
+    QDebug dbg##CAP_NAME(QDebug dbg) const {                            \
+        return dbg << #NAME ":" << m_##NAME;                            \
+    }                                                                   \
+                                                                        \
+  private:                                                              \
+    TYPE m_##NAME;

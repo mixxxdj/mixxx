@@ -265,6 +265,18 @@ QString DlgPrefController::presetWikiLink(
     return url;
 }
 
+QString DlgPrefController::presetManualLink(
+        const ControllerPresetPointer pPreset) const {
+    QString url;
+    if (pPreset) {
+        QString link = pPreset->manualLink();
+        if (!link.isEmpty()) {
+            url = "<a href=\"" + link + "\">Manual</a>";
+        }
+    }
+    return url;
+}
+
 QString DlgPrefController::presetScriptFileLinks(
         const ControllerPresetPointer pPreset) const {
     if (!pPreset || pPreset->getScriptFiles().empty()) {
@@ -553,6 +565,11 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     QString forumLink = presetForumLink(preset);
     if (forumLink.length() > 0) {
         supportLinks << forumLink;
+    }
+
+    QString manualLink = presetManualLink(preset);
+    if (manualLink.length() > 0) {
+        supportLinks << manualLink;
     }
 
     QString wikiLink = presetWikiLink(preset);

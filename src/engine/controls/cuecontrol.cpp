@@ -10,6 +10,7 @@
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/track.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/sample.h"
@@ -705,7 +706,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
             seekAbs(position);
         }
@@ -726,7 +727,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
             m_pPlay->set(0.0);
             seekExact(position);
@@ -749,7 +750,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
             seekAbs(position);
             if (!isPlayingByPlayButton()) {
@@ -823,7 +824,6 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             m_iCurrentlyPreviewingHotcues++;
             double position = pCue->getPosition();
             m_bypassCueSetByPlay = true;
-            m_pPlay->set(1.0);
             pControl->setPreviewing(true);
             pControl->setPreviewingPosition(position);
 
@@ -831,6 +831,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             lock.unlock();
 
             seekAbs(position);
+            m_pPlay->set(1.0);
         }
     } else if (m_iCurrentlyPreviewingHotcues) {
         // This is a activate release and we are previewing at least one

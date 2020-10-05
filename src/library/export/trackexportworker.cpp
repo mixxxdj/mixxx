@@ -1,8 +1,10 @@
 #include "library/export/trackexportworker.h"
 
+#include <QDebug>
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QDebug>
+
+#include "track/track.h"
 
 namespace {
 

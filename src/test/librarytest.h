@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "control/controlobject.h"
 #include "database/mixxxdb.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"

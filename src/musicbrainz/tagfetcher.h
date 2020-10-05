@@ -5,7 +5,7 @@
 
 #include "musicbrainz/web/acoustidlookuptask.h"
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 class TagFetcher : public QObject {

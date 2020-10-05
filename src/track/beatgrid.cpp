@@ -1,7 +1,9 @@
+#include "track/beatgrid.h"
+
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "track/beatgrid.h"
+#include "track/track.h"
 #include "util/math.h"
 
 static const int kFrameSize = 2;
