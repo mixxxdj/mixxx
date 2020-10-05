@@ -34,7 +34,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (!trackBeats)
         return;
 
-    int alpha = m_waveformRenderer->beatGridAlpha();
+    int alpha = m_waveformRenderer->getBeatGridAlpha();
     if (alpha == 0)
         return;
     m_beatColor.setAlphaF(alpha/100.0);

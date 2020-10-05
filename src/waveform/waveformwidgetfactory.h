@@ -105,7 +105,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int isZoomSync() const { return m_zoomSync;}
 
     void setDisplayBeatGridAlpha(int alpha);
-    int beatGridAlpha() const { return m_beatGridAlpha; }
+    int getBeatGridAlpha() const { return m_beatGridAlpha; }
 
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
