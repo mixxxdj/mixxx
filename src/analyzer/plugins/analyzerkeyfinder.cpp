@@ -71,8 +71,7 @@ ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
 namespace mixxx {
 
 AnalyzerKeyFinder::AnalyzerKeyFinder()
-        : m_currentFrame(0),
-          m_previousKey(mixxx::track::io::key::INVALID) {
+        : m_currentFrame(0) {
 }
 
 AnalyzerPluginInfo AnalyzerKeyFinder::pluginInfo() {
