@@ -199,9 +199,11 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     }
 }
 
+// The error string is passed as a plain C string to logging doesn't
+// need to be converted to QString/UTF-16.
 inline std::string formatErrorString(int errnum) {
     char errbuf[AV_ERROR_MAX_STRING_SIZE];
-    av_strerror(errnum, errbuf, sizeof(errbuf) / sizeof(errbuf[0]) == 0);
+    av_strerror(errnum, errbuf, sizeof(errbuf) / sizeof(errbuf[0]));
     return std::string(errbuf);
 }
 
