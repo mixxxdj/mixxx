@@ -1,0 +1,87 @@
+<!--
+Spinny template
+
+Stacked waveforms: always show cover art in spinny
+
+Split waveforms: show cover art in spinny when it is not showing in deck text row,
+but do not show cover art in spinny when the cover art is showing right above it
+in the deck text row.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup><!-- Parallel waves -->
+        <Layout>horizontal</Layout>
+        <Connection>
+          <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Children>
+          <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <ObjectName>Spinny_NoCover<Variable name="i"/></ObjectName>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
+            <PathForeground scalemode="STRETCH">image/vinyl_spinny_foreground.svg</PathForeground>
+            <PathGhost scalemode="STRETCH">image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+            <PathMask scalemode="STRETCH">image/vinyl_spinny_cover_mask.svg</PathMask>
+            <ShowCover>true</ShowCover>
+          </Spinny>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Split waves -->
+        <Layout>horizontal</Layout>
+        <Connection>
+          <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
+            <Children>
+              <Spinny>
+                <TooltipId>spinny</TooltipId>
+                <ObjectName>Spinny_NoCover<Variable name="i"/></ObjectName>
+                <Group><Variable name="group"/></Group>
+                <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
+                <PathForeground scalemode="STRETCH">image/vinyl_spinny_foreground.svg</PathForeground>
+                <PathGhost scalemode="STRETCH">image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+                <PathMask scalemode="STRETCH">image/vinyl_spinny_cover_mask.svg</PathMask>
+                <ShowCover>true</ShowCover>
+              </Spinny>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+              <Spinny>
+                <TooltipId>spinny</TooltipId>
+                <ObjectName>Spinny_NoCover<Variable name="i"/></ObjectName>
+                <Group><Variable name="group"/></Group>
+                <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
+                <PathForeground scalemode="STRETCH">image/vinyl_spinny_foreground.svg</PathForeground>
+                <PathGhost scalemode="STRETCH">image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+                <PathMask scalemode="STRETCH">image/vinyl_spinny_cover_mask.svg</PathMask>
+                <ShowCover>false</ShowCover>
+              </Spinny>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- Split waves -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

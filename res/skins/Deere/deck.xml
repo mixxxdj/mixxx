@@ -19,24 +19,18 @@
         <SizePolicy>me,me</SizePolicy>
         <Children>
           <Template src="skin:deck_text_row.xml"/>
-          <!--Hides if the stacked waveforms option is activated in the skin settings -->
+          <!-- Hides if the 'Parallel Waveforms' option is activated in the skin settings -->
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup>
-                <ObjectName>Spacer22</ObjectName>
-                <Size>0me,1f</Size>
-              </WidgetGroup>
               <SingletonContainer>
-                <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
+                <ObjectName>DeckVisualRow<Variable name="i"/></ObjectName>
               </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
-              <Transform>
-                <Not/>
-              </Transform>
             </Connection>
           </WidgetGroup>
           <Template src="skin:deck_overview_row.xml"/>
