@@ -571,6 +571,27 @@ Select from different types of displays for the waveform, which differ primarily
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>waveformTypeComboBox</tabstop>
+  <tabstop>waveformOverviewComboBox</tabstop>
+  <tabstop>frameRateSlider</tabstop>
+  <tabstop>frameRateSpinBox</tabstop>
+  <tabstop>endOfTrackWarningTimeSlider</tabstop>
+  <tabstop>endOfTrackWarningTimeSpinBox</tabstop>
+  <tabstop>beatGridAlphaSlider</tabstop>
+  <tabstop>beatGridAlphaSpinBox</tabstop>
+  <tabstop>playMarkerPositionSlider</tabstop>
+  <tabstop>defaultZoomComboBox</tabstop>
+  <tabstop>synchronizeZoomCheckBox</tabstop>
+  <tabstop>normalizeOverviewCheckBox</tabstop>
+  <tabstop>allVisualGain</tabstop>
+  <tabstop>lowVisualGain</tabstop>
+  <tabstop>midVisualGain</tabstop>
+  <tabstop>highVisualGain</tabstop>
+  <tabstop>enableWaveformCaching</tabstop>
+  <tabstop>enableWaveformGenerationWithAnalysis</tabstop>
+  <tabstop>clearCachedWaveforms</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
