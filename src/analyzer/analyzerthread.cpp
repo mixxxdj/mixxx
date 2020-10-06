@@ -311,9 +311,11 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
             const double frameProgress =
                     double(audioSource->frameLength() - remainingFrameRange.length()) /
                     double(audioSource->frameLength());
+            // math_min is required to compensate rounding errors
             const AnalyzerProgress progress =
-                    frameProgress *
-                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
+                    math_min(kAnalyzerProgressFinalizing,
+                            frameProgress *
+                                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone));
             DEBUG_ASSERT(progress > kAnalyzerProgressNone);
             DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
             emitBusyProgress(progress);
