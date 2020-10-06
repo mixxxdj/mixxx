@@ -393,11 +393,9 @@ QString SetlogFeature::getRootViewHtml() const {
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
-    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(playlistsSummary));
     html.append(QString("<p>%1</p>").arg(playlistsSummary2));
     html.append(QString("<p>%1</p>").arg(playlistsSummary3));
     html.append(QString("<p>%1</p>").arg(playlistsSummary4));
-    html.append("</td></tr></table>");
     return html;
 }
