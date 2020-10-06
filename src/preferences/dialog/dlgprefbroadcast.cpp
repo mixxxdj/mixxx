@@ -69,6 +69,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
     updateModel();
     connectionList->setModel(m_pSettingsModel);
+    connectionList->setTabKeyNavigation(false);
 
     connect(connectionList->selectionModel(),
             SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
