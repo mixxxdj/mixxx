@@ -25,19 +25,38 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
     loadSettings();
 
     // Connections
-    connect(comboBoxBeatPlugin, SIGNAL(activated(int)), this, SLOT(pluginSelected(int)));
-    connect(checkBoxAnalyzerEnabled, SIGNAL(stateChanged(int)), this, SLOT(analyzerEnabled(int)));
-    connect(checkBoxFixedTempo, SIGNAL(stateChanged(int)), this, SLOT(fixedtempoEnabled(int)));
-    connect(checkBoxOffsetCorr, SIGNAL(stateChanged(int)), this, SLOT(offsetEnabled(int)));
-
-    connect(checkBoxFastAnalysis, SIGNAL(stateChanged(int)), this, SLOT(fastAnalysisEnabled(int)));
-
-    connect(txtMinBpm, SIGNAL(valueChanged(int)),
-            this, SLOT(minBpmRangeChanged(int)));
-    connect(txtMaxBpm, SIGNAL(valueChanged(int)),
-            this, SLOT(maxBpmRangeChanged(int)));
-
-    connect(checkBoxReanalyse, SIGNAL(stateChanged(int)), this, SLOT(slotReanalyzeChanged(int)));
+    connect(comboBoxBeatPlugin,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefBeats::pluginSelected);
+    connect(checkBoxAnalyzerEnabled,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::analyzerEnabled);
+    connect(checkBoxFixedTempo,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::fixedtempoEnabled);
+    connect(checkBoxOffsetCorr,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::offsetEnabled);
+    connect(checkBoxFastAnalysis,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::fastAnalysisEnabled);
+    connect(txtMinBpm,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefBeats::minBpmRangeChanged);
+    connect(txtMaxBpm,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefBeats::maxBpmRangeChanged);
+    connect(checkBoxReanalyse,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::slotReanalyzeChanged);
     connect(checkBoxReanalyseImported,
             &QCheckBox::stateChanged,
             this,
