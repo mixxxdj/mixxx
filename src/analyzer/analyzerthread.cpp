@@ -317,7 +317,6 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                             frameProgress *
                                     (kAnalyzerProgressFinalizing - kAnalyzerProgressNone));
             DEBUG_ASSERT(progress > kAnalyzerProgressNone);
-            DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
             emitBusyProgress(progress);
         } else {
             // Unreadable audio source
