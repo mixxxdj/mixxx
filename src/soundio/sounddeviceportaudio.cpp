@@ -24,10 +24,6 @@
 #include <QRegularExpression>
 #include <QThread>
 
-#ifdef __LINUX__
-#include <QLibrary>
-#endif
-
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "soundio/sounddevice.h"
@@ -41,6 +37,14 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
+#ifdef __LINUX__
+extern "C" {
+
+// Declare the following function to enable real-time priority callback
+// thread from ALSA/PortAudio. This is not part of the generic interface.
+extern void PaAlsa_EnableRealtimeScheduling(PaStream* s, int enable);
+}
+#endif
 
 namespace {
 
@@ -336,20 +340,9 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
 
 
 #ifdef __LINUX__
-    //Attempt to dynamically load and resolve stuff in the PortAudio library
-    //in order to enable RT priority with ALSA.
-    QLibrary portaudio("libportaudio.so.2");
-    if (!portaudio.load())
-       qWarning() << "Failed to dynamically load PortAudio library";
-    else
-       qDebug() << "Dynamically loaded PortAudio library";
-
-    EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve(
-            "PaAlsa_EnableRealtimeScheduling");
-    if (enableRealtime) {
-        enableRealtime(pStream, 1);
+    if (m_deviceInfo->hostApi == paALSA) {
+        PaAlsa_EnableRealtimeScheduling(pStream, 1);
     }
-    portaudio.unload();
 #endif
 
     // Start stream
