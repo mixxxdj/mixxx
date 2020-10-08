@@ -326,14 +326,6 @@ bool SoundSourceM4A::openDecoder() {
         m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
     }
 
-    // Discard all buffered input data
-    m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
-    m_inputBufferLength = 0;
-    m_inputBufferOffset = 0;
-
-    // Invalidate current stream position
-    m_curFrameIndex = frameIndexMax();
-
     return true;
 }
 
@@ -348,6 +340,17 @@ bool SoundSourceM4A::reopenDecoder() {
         return false;
     }
     DEBUG_ASSERT(m_hDecoder == hNewDecoder);
+
+    // Discard all previously buffered input data
+    m_inputBufferLength = 0;
+    m_inputBufferOffset = 0;
+
+    // Decoding always starts at the start of the stream
+    // This avoids an unnecessary first seek operation and
+    // is also a workaround for a bug in FAAD2.
+    // https://github.com/knik0/faad2/pull/64
+    m_curSampleBlockId = kSampleBlockIdMin;
+    m_curFrameIndex = frameIndexMin();
 
     return true;
 }
