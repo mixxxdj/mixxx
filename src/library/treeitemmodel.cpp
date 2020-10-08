@@ -131,7 +131,7 @@ QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
     TreeItem *parentItem = childItem->parent();
     if (!parentItem) {
         return QModelIndex();
-    } if (parentItem == getRootItem()) {
+    } else if (parentItem == getRootItem()) {
         return createIndex(0, 0, getRootItem());
     } else {
         return createIndex(parentItem->parentRow(), 0, parentItem);
@@ -163,8 +163,7 @@ TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
     return getRootItem();
 }
 
-/// Returns the QModelIndex of the Root element.
-QModelIndex TreeItemModel::getRootIndex() {
+const QModelIndex TreeItemModel::getRootIndex() {
     return createIndex(0, 0, getRootItem());
 }
 

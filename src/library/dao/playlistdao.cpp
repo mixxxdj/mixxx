@@ -227,7 +227,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
-void PlaylistDAO::deleteEmptyPlaylists(const PlaylistDAO::HiddenType type) {
+void PlaylistDAO::deleteAllEmptyPlaylists(PlaylistDAO::HiddenType type) {
     //qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
 
@@ -237,7 +237,8 @@ void PlaylistDAO::deleteEmptyPlaylists(const PlaylistDAO::HiddenType type) {
     // Delete the row in the Playlists table.
     query.prepare(QStringLiteral(
             "DELETE FROM Playlists  "
-            "WHERE NOT EXISTS (SELECT playlist_id FROM PlaylistTracks WHERE Playlists.ID = PlaylistTracks.playlist_id) AND "
+            "WHERE NOT EXISTS (SELECT playlist_id FROM PlaylistTracks WHERE "
+            "Playlists.ID = PlaylistTracks.playlist_id) AND "
             "Playlists.hidden = :hidden"));
     query.bindValue(":hidden", static_cast<int>(type));
     if (!query.exec()) {

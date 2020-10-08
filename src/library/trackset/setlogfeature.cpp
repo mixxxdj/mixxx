@@ -19,7 +19,7 @@
 #include "widget/wtracktableview.h"
 
 namespace {
-    constexpr int kNumDirectHistoryEntries = 5;
+constexpr int kNumDirectHistoryEntries = 5;
 }
 
 SetlogFeature::SetlogFeature(
@@ -38,7 +38,7 @@ SetlogFeature::SetlogFeature(
           m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     // clear old empty entries
-    m_playlistDao.deleteEmptyPlaylists(PlaylistDAO::HiddenType::PLHT_SET_LOG);
+    m_playlistDao.deleteAllEmptyPlaylists(PlaylistDAO::HiddenType::PLHT_SET_LOG);
 
     //construct child model
     m_childModel.setRootItem(TreeItem::newRoot(this));
@@ -191,7 +191,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        if (row >= kNumDirectHistoryEntries ) {
+        if (row >= kNumDirectHistoryEntries) {
             int yearCreated = dateCreated.date().year();
 
             auto i = groups.find(yearCreated);
@@ -204,7 +204,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                 itemList.append(groupItem);
             }
 
-            std::unique_ptr<TreeItem> item (new TreeItem(name, id));
+            std::unique_ptr<TreeItem> item(new TreeItem(name, id));
             item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
 
             decorateChild(item.get(), id);

@@ -4,8 +4,8 @@
 #include <QList>
 #include <QModelIndex>
 #include <QObject>
-#include <QPointer>
 #include <QPair>
+#include <QPointer>
 #include <QSet>
 #include <QString>
 #include <QUrl>
