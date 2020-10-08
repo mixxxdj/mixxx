@@ -129,7 +129,7 @@ QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
 
     TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem = childItem->parent();
-    if (parentItem == nullptr) {
+    if (!parentItem) {
         return QModelIndex();
     } if (parentItem == getRootItem()) {
         return createIndex(0, 0, getRootItem());
@@ -163,12 +163,11 @@ TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
     return getRootItem();
 }
 
-/**
- * Returns the QModelIndex of the Root element.
- */
+/// Returns the QModelIndex of the Root element.
 QModelIndex TreeItemModel::getRootIndex() {
     return createIndex(0, 0, getRootItem());
 }
+
 /**
  * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
  * make sure you have initialized

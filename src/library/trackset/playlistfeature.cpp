@@ -231,12 +231,10 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     return QString();
 }
 
-/**
-  * Purpose: When inserting or removing playlists,
-  * we require the sidebar model not to reset.
-  * This method queries the database and does dynamic insertion
-  * @param selectedId entry which should be selected
-*/
+/// Purpose: When inserting or removing playlists,
+/// we require the sidebar model not to reset.
+/// This method queries the database and does dynamic insertion
+/// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     QList<TreeItem*> data_list;
     int selectedRow = -1;

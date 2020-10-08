@@ -329,8 +329,8 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    QModelIndex next = m_lastRightClickedIndex.siblingAtRow(m_lastRightClickedIndex.row() + 1);
-    int nextId = playlistIdFromIndex(next);
+    QModelIndex nextIndex = m_lastRightClickedIndex.siblingAtRow(m_lastRightClickedIndex.row() + 1);
+    int nextId = playlistIdFromIndex(nextIndex);
     if (playlistId == -1) {
         return;
     }
@@ -352,8 +352,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
             activatePlaylist(nextId);
             if (m_pSidebarWidget) {
                 // FIXME: this does not scroll to the correct position for some reason
-                next = indexFromPlaylistId(nextId);
-                m_pSidebarWidget->scrollTo(next);
+                nextIndex = indexFromPlaylistId(nextId);
+                m_pSidebarWidget->scrollTo(nextIndex);
             }
         }
     }
@@ -653,14 +653,14 @@ void BasePlaylistFeature::clearChildModel() {
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     QVariant variantId = QVariant(playlistId);
-    auto results = m_childModel.match(
-                        m_childModel.getRootIndex(),
-                        TreeItemModel::kDataRole,
-                        variantId,
-                        1,
-                        Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
+    QModelIndexList results = m_childModel.match(
+                                m_childModel.getRootIndex(),
+                                TreeItemModel::kDataRole,
+                                variantId,
+                                1,
+                                Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
     qDebug() << "indexFromPlaylistId: len:" << results.length();
-    if (results.length()) {
+    if (!results.isEmpty()) {
         return results.front();
     }
     return QModelIndex();
@@ -698,10 +698,9 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
         }
     }
     if (pTreeItem->hasChildren()) {
-        auto children = pTreeItem->children();
-        QList<TreeItem*>::const_iterator i;
+        QList<TreeItem*> children = pTreeItem->children();
 
-        for (i = children.constBegin(); i != children.constEnd(); ++i) {
+        for (auto i = children.constBegin(); i != children.constEnd(); ++i) {
             markTreeItem(*i);
         }
     }
