@@ -256,8 +256,8 @@ bool HidController::poll() {
     while (true) {
         // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
         unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
-        m_iPollingBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
-        unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
+        const int nextBufIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
+        unsigned char* pCurrentBuffer = m_pPollData[nextBufIndex];
 
         int bytesRead = hid_read(m_pHidDevice, pCurrentBuffer, kBufferSize);
         if (bytesRead < 0) {
@@ -280,6 +280,9 @@ bool HidController::poll() {
         if (memcmp(pCurrentBuffer, pPreviousBuffer, kBufferSize) == 0) {
             continue;
         }
+        m_iPollingBufferIndex = nextBufIndex;
+        // Zero out the other buffer to remove stale data.
+        memset(pPreviousBuffer, 0, kBufferSize);
         auto incomingData = QByteArray::fromRawData(
                 reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
         receive(incomingData, mixxx::Time::elapsed());
