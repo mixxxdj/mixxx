@@ -879,6 +879,7 @@ WOverview #PassthroughLabel {
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
+#PlayCueContainer,
 #HotcueGrid,
 #VinylControlsGrid {
   padding: 1px;
