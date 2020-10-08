@@ -333,7 +333,9 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    QModelIndex nextIndex = m_lastRightClickedIndex.sibling(m_lastRightClickedIndex.row() + 1, m_lastRightClickedIndex.column());
+    QModelIndex nextIndex =
+            m_lastRightClickedIndex.sibling(m_lastRightClickedIndex.row() + 1,
+                    m_lastRightClickedIndex.column());
     int nextId = playlistIdFromIndex(nextIndex);
     if (playlistId == -1) {
         return;
