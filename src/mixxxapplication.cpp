@@ -41,13 +41,23 @@ Q_IMPORT_PLUGIN(qtaccessiblewidgets)
 #endif
 #endif
 
+namespace {
+
+class QMouseEventEditable : public QMouseEvent {
+  public:
+    // Inherit constructors from base class
+    using QMouseEvent::QMouseEvent;
+    void setButton(Qt::MouseButton button) {
+        b = button;
+    }
+};
+
+} // anonymous namespace
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
-          m_fakeMouseSourcePointId(0),
-          m_fakeMouseWidget(NULL),
-          m_activeTouchButton(Qt::NoButton),
-          m_pTouchShift(NULL) {
+          m_rightPessedButtons(0),
+          m_pTouchShift(nullptr) {
     registerMetaTypes();
 }
 
@@ -206,6 +216,39 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
 }
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif // Q_OS_MAC
+
+bool MixxxApplication::notify(QObject* target, QEvent* event) {
+    // All touch events are translated in two simultaneous events one for
+    // target QWidgetWindow and one for the target QWidget
+    // A second touch becomes a mouse move without additional press and release
+    // events
+    switch (event->type()) {
+    case QEvent::MouseButtonPress: {
+        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
+                mouseEvent->button() == Qt::LeftButton &&
+                touchIsRightButton()) {
+            mouseEvent->setButton(Qt::RightButton);
+            m_rightPessedButtons++;
+            DEBUG_ASSERT(m_rightPessedButtons <= 2);
+        }
+        break;
+    }
+    case QEvent::MouseButtonRelease: {
+        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
+                mouseEvent->button() == Qt::LeftButton &&
+                m_rightPessedButtons > 0) {
+            mouseEvent->setButton(Qt::RightButton);
+            m_rightPessedButtons--;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return QApplication::notify(target, event);
+}
 
 bool MixxxApplication::touchIsRightButton() {
     if (!m_pTouchShift) {
