@@ -4,45 +4,63 @@
 #include "control/controlobject.h"
 #include "defs_urls.h"
 
-DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
+DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_bpmSettings(pConfig),
           m_minBpm(m_bpmSettings.getBpmRangeStartDefault()),
           m_maxBpm(m_bpmSettings.getBpmRangeEndDefault()),
-          m_banalyzerEnabled(m_bpmSettings.getBpmDetectionEnabledDefault()),
-          m_bfixedtempoEnabled(m_bpmSettings.getFixedTempoAssumptionDefault()),
-          m_boffsetEnabled(m_bpmSettings.getFixedTempoOffsetCorrectionDefault()),
-          m_FastAnalysisEnabled(m_bpmSettings.getFastAnalysisDefault()),
-          m_bReanalyze(m_bpmSettings.getReanalyzeWhenSettingsChangeDefault()) {
+          m_bAnalyzerEnabled(m_bpmSettings.getBpmDetectionEnabledDefault()),
+          m_bFixedTempoEnabled(m_bpmSettings.getFixedTempoAssumptionDefault()),
+          m_bOffsetEnabled(m_bpmSettings.getFixedTempoOffsetCorrectionDefault()),
+          m_bFastAnalysisEnabled(m_bpmSettings.getFastAnalysisDefault()),
+          m_bReanalyze(m_bpmSettings.getReanalyzeWhenSettingsChangeDefault()),
+          m_bReanalyzeImported(m_bpmSettings.getReanalyzeImportedDefault()) {
     setupUi(this);
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
     for (const auto& info : m_availablePlugins) {
-        plugincombo->addItem(info.name, info.id);
+        comboBoxBeatPlugin->addItem(info.name, info.id);
     }
 
     loadSettings();
 
     // Connections
-    connect(plugincombo, SIGNAL(activated(int)),
-            this, SLOT(pluginSelected(int)));
-    connect(banalyzerenabled, SIGNAL(stateChanged(int)),
-            this, SLOT(analyzerEnabled(int)));
-    connect(bfixedtempo, SIGNAL(stateChanged(int)),
-            this, SLOT(fixedtempoEnabled(int)));
-    connect(boffset, SIGNAL(stateChanged(int)),
-            this, SLOT(offsetEnabled(int)));
-
-    connect(bFastAnalysis, SIGNAL(stateChanged(int)),
-            this, SLOT(fastAnalysisEnabled(int)));
-
-    connect(txtMinBpm, SIGNAL(valueChanged(int)),
-            this, SLOT(minBpmRangeChanged(int)));
-    connect(txtMaxBpm, SIGNAL(valueChanged(int)),
-            this, SLOT(maxBpmRangeChanged(int)));
-
-    connect(bReanalyse,SIGNAL(stateChanged(int)),
-            this, SLOT(slotReanalyzeChanged(int)));
+    connect(comboBoxBeatPlugin,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefBeats::pluginSelected);
+    connect(checkBoxAnalyzerEnabled,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::analyzerEnabled);
+    connect(checkBoxFixedTempo,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::fixedtempoEnabled);
+    connect(checkBoxOffsetCorr,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::offsetEnabled);
+    connect(checkBoxFastAnalysis,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::fastAnalysisEnabled);
+    connect(txtMinBpm,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefBeats::minBpmRangeChanged);
+    connect(txtMaxBpm,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefBeats::maxBpmRangeChanged);
+    connect(checkBoxReanalyse,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::slotReanalyzeChanged);
+    connect(checkBoxReanalyseImported,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::slotReanalyzeImportedChanged);
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
@@ -54,11 +72,11 @@ QUrl DlgPrefBeats::helpUrl() const {
 
 void DlgPrefBeats::loadSettings() {
     m_selectedAnalyzerId = m_bpmSettings.getBeatPluginId();
-    m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabled();
-    m_bfixedtempoEnabled = m_bpmSettings.getFixedTempoAssumption();
-    m_boffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrection();
+    m_bAnalyzerEnabled = m_bpmSettings.getBpmDetectionEnabled();
+    m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumption();
+    m_bOffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bReanalyze =  m_bpmSettings.getReanalyzeWhenSettingsChange();
-    m_FastAnalysisEnabled = m_bpmSettings.getFastAnalysis();
+    m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysis();
 
     // TODO(rryan): Above range enabled is not exposed?
     m_minBpm = m_bpmSettings.getBpmRangeStart();
@@ -71,10 +89,10 @@ void DlgPrefBeats::slotResetToDefaults() {
     if (m_availablePlugins.size() > 0) {
         m_selectedAnalyzerId = m_availablePlugins[0].id;
     }
-    m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();
-    m_bfixedtempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
-    m_boffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrectionDefault();
-    m_FastAnalysisEnabled = m_bpmSettings.getFastAnalysisDefault();
+    m_bAnalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();
+    m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
+    m_bOffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrectionDefault();
+    m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysisDefault();
     m_bReanalyze = m_bpmSettings.getReanalyzeWhenSettingsChangeDefault();
     // TODO(rryan): Above range enabled is not exposed?
     m_minBpm = m_bpmSettings.getBpmRangeStartDefault();
@@ -91,17 +109,17 @@ void DlgPrefBeats::pluginSelected(int i) {
 }
 
 void DlgPrefBeats::analyzerEnabled(int i) {
-    m_banalyzerEnabled = static_cast<bool>(i);
+    m_bAnalyzerEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void DlgPrefBeats::fixedtempoEnabled(int i) {
-    m_bfixedtempoEnabled = static_cast<bool>(i);
+    m_bFixedTempoEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void DlgPrefBeats::offsetEnabled(int i) {
-    m_boffsetEnabled = static_cast<bool>(i);
+    m_bOffsetEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
@@ -116,17 +134,18 @@ void DlgPrefBeats::maxBpmRangeChanged(int value) {
 }
 
 void DlgPrefBeats::slotUpdate() {
-    bfixedtempo->setEnabled(m_banalyzerEnabled);
-    boffset->setEnabled((m_banalyzerEnabled && m_bfixedtempoEnabled));
-    plugincombo->setEnabled(m_banalyzerEnabled);
-    banalyzerenabled->setChecked(m_banalyzerEnabled);
+    checkBoxFixedTempo->setEnabled(m_bAnalyzerEnabled);
+    checkBoxOffsetCorr->setEnabled((m_bAnalyzerEnabled && m_bFixedTempoEnabled));
+    comboBoxBeatPlugin->setEnabled(m_bAnalyzerEnabled);
+    checkBoxAnalyzerEnabled->setChecked(m_bAnalyzerEnabled);
     // Fast analysis cannot be combined with non-constant tempo beatgrids.
-    bFastAnalysis->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
-    txtMaxBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
-    txtMinBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
-    bReanalyse->setEnabled(m_banalyzerEnabled);
+    checkBoxFastAnalysis->setEnabled(m_bAnalyzerEnabled && m_bFixedTempoEnabled);
+    txtMaxBpm->setEnabled(m_bAnalyzerEnabled && m_bFixedTempoEnabled);
+    txtMinBpm->setEnabled(m_bAnalyzerEnabled && m_bFixedTempoEnabled);
+    checkBoxReanalyse->setEnabled(m_bAnalyzerEnabled);
+    checkBoxReanalyseImported->setEnabled(m_bReanalyzeImported);
 
-    if (!m_banalyzerEnabled) {
+    if (!m_bAnalyzerEnabled) {
         return;
     }
 
@@ -136,28 +155,28 @@ void DlgPrefBeats::slotUpdate() {
             const auto& info = m_availablePlugins.at(i);
             if (info.id == m_selectedAnalyzerId) {
                 found = true;
-                plugincombo->setCurrentIndex(i);
+                comboBoxBeatPlugin->setCurrentIndex(i);
                 if (!m_availablePlugins[i].constantTempoSupported) {
-                    bfixedtempo->setEnabled(false);
-                    boffset->setEnabled(false);
+                    checkBoxFixedTempo->setEnabled(false);
+                    checkBoxOffsetCorr->setEnabled(false);
                 }
                 break;
             }
         }
         if (!found) {
-            plugincombo->setCurrentIndex(0);
+            comboBoxBeatPlugin->setCurrentIndex(0);
             m_selectedAnalyzerId = m_availablePlugins[0].id;
         }
     }
 
-    bfixedtempo->setChecked(m_bfixedtempoEnabled);
-    boffset->setChecked(m_boffsetEnabled);
+    checkBoxFixedTempo->setChecked(m_bFixedTempoEnabled);
+    checkBoxOffsetCorr->setChecked(m_bOffsetEnabled);
     // Fast analysis cannot be combined with non-constant tempo beatgrids.
-    bFastAnalysis->setChecked(m_FastAnalysisEnabled && m_bfixedtempoEnabled);
+    checkBoxFastAnalysis->setChecked(m_bFastAnalysisEnabled && m_bFixedTempoEnabled);
 
     txtMaxBpm->setValue(m_maxBpm);
     txtMinBpm->setValue(m_minBpm);
-    bReanalyse->setChecked(m_bReanalyze);
+    checkBoxReanalyse->setChecked(m_bReanalyze);
 }
 
 void DlgPrefBeats::slotReanalyzeChanged(int value) {
@@ -165,18 +184,24 @@ void DlgPrefBeats::slotReanalyzeChanged(int value) {
     slotUpdate();
 }
 
+void DlgPrefBeats::slotReanalyzeImportedChanged(int value) {
+    m_bReanalyzeImported = static_cast<bool>(value);
+    slotUpdate();
+}
+
 void DlgPrefBeats::fastAnalysisEnabled(int i) {
-    m_FastAnalysisEnabled = static_cast<bool>(i);
+    m_bFastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void DlgPrefBeats::slotApply() {
     m_bpmSettings.setBeatPluginId(m_selectedAnalyzerId);
-    m_bpmSettings.setBpmDetectionEnabled(m_banalyzerEnabled);
-    m_bpmSettings.setFixedTempoAssumption(m_bfixedtempoEnabled);
-    m_bpmSettings.setFixedTempoOffsetCorrection(m_boffsetEnabled);
+    m_bpmSettings.setBpmDetectionEnabled(m_bAnalyzerEnabled);
+    m_bpmSettings.setFixedTempoAssumption(m_bFixedTempoEnabled);
+    m_bpmSettings.setFixedTempoOffsetCorrection(m_bOffsetEnabled);
     m_bpmSettings.setReanalyzeWhenSettingsChange(m_bReanalyze);
-    m_bpmSettings.setFastAnalysis(m_FastAnalysisEnabled);
+    m_bpmSettings.setReanalyzeImported(m_bReanalyzeImported);
+    m_bpmSettings.setFastAnalysis(m_bFastAnalysisEnabled);
     m_bpmSettings.setBpmRangeStart(m_minBpm);
     m_bpmSettings.setBpmRangeEnd(m_maxBpm);
 }

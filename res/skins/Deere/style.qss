@@ -1615,6 +1615,7 @@ do not highlight either state. */
 #EffectUnitMixModeButton {
   margin: 1px 4px;
   border-radius: 2px;
+  border: 0px;
 }
 
 #EffectUnitMixModeButton[value="0"]:hover,

@@ -9,7 +9,7 @@
 #include "library/trackcollection.h"
 #include "preferences/usersettings.h"
 #include "recording/recordingmanager.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 class PlaylistTableModel;
 class WLibrary;

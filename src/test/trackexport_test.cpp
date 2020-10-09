@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QScopedPointer>
 
+#include "track/track.h"
+
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 
 void FakeOverwriteAnswerer::slotProgress(QString filename, int progress, int count) {

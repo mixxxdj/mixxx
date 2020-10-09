@@ -1,20 +1,19 @@
 #ifndef SEARCHQUERY_H
 #define SEARCHQUERY_H
 
-#include <vector>
-#include <utility>
-
 #include <QList>
-#include <QSqlDatabase>
 #include <QRegExp>
+#include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
+#include <utility>
+#include <vector>
 
-#include "track/track.h"
+#include "library/crate/cratestorage.h"
 #include "proto/keys.pb.h"
+#include "track/track_decl.h"
 #include "util/assert.h"
 #include "util/memory.h"
-#include "library/crate/cratestorage.h"
 
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
 

@@ -347,9 +347,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 }
 
 void WaveformWidgetFactory::destroyWidgets() {
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        WaveformWidgetAbstract* pWidget = m_waveformWidgetHolders[i].m_waveformWidget;;
-        m_waveformWidgetHolders[i].m_waveformWidget = NULL;
+    for (auto& holder : m_waveformWidgetHolders) {
+        WaveformWidgetAbstract* pWidget = holder.m_waveformWidget;
+        holder.m_waveformWidget = NULL;
         delete pWidget;
     }
     m_waveformWidgetHolders.clear();
@@ -512,13 +512,13 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
     //qDebug() << "recreate start";
 
     //re-create/setup all waveform widgets
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
+    for (auto& holder : m_waveformWidgetHolders) {
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
         double previousZoom = previousWidget->getZoomFactor();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
+        double previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -527,6 +527,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
         viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
+        viewer->setDisplayBeatGridAlpha(previousbeatgridAlpha);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
@@ -548,8 +549,8 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(m_defaultZoom);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformViewer->setZoom(m_defaultZoom);
     }
 }
 
@@ -564,8 +565,8 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 
     double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
-    for (std::size_t i = 1; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformViewer->setZoom(refZoom);
     }
 }
 
@@ -575,10 +576,9 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
         return;
     }
 
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
-
 }
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
@@ -699,8 +699,8 @@ void WaveformWidgetFactory::swap() {
         if (m_type) {   // no regular updates for an empty waveform
             // Show rendered buffer from last render() run
             //qDebug() << "swap() start" << m_vsyncThread->elapsed();
-            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+            for (const auto& holder : m_waveformWidgetHolders) {
+                WaveformWidgetAbstract* pWaveformWidget = holder.m_waveformWidget;
 
                 // Don't swap invalid / invisible widgets or widgets with an
                 // unexposed window. Prevents continuous log spew of

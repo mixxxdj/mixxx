@@ -5,6 +5,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"

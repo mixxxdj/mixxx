@@ -33,7 +33,7 @@ class SeratoBeatGridNonTerminalMarker final {
         return m_positionSecs;
     }
 
-    float beatsTillNextMarker() const {
+    quint32 beatsTillNextMarker() const {
         return m_beatsTillNextMarker;
     }
 

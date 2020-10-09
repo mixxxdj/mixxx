@@ -66,7 +66,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+      <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

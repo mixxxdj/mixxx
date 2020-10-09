@@ -5,7 +5,7 @@
 #include <QStyleOptionButton>
 
 #include "library/tableitemdelegate.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 class ControlProxy;
@@ -41,21 +41,24 @@ class PreviewButtonDelegate : public TableItemDelegate {
     virtual ~PreviewButtonDelegate();
 
     QWidget* createEditor(QWidget* parent,
-                          const QStyleOptionViewItem& option,
-                          const QModelIndex& index) const;
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
 
-    void setEditorData(QWidget* editor, const QModelIndex& index) const;
-    void setModelData(QWidget* editor, QAbstractItemModel* model,
-                      const QModelIndex &index) const;
-    void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
-               const QModelIndex& index) const;
-    QSize sizeHint(const QStyleOptionViewItem &option,
-                   const QModelIndex& index) const;
-    void updateEditorGeometry(QWidget* editor,const QStyleOptionViewItem& option,
-                              const QModelIndex& index) const;
+    void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+    void setModelData(QWidget* editor,
+            QAbstractItemModel* model,
+            const QModelIndex& index) const override;
+    void paintItem(QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
+    QSize sizeHint(const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
+    void updateEditorGeometry(QWidget* editor,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
 
   signals:
-    void loadTrackToPlayer(TrackPointer Track, QString group, bool play);
+    void loadTrackToPlayer(TrackPointer track, QString group, bool play);
     void buttonSetChecked(bool);
 
   public slots:
