@@ -697,7 +697,7 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
         pTreeItem->setBold(shouldBold);
         if (shouldBold && pTreeItem->hasParent()) {
             TreeItem* item = pTreeItem;
-            while ((item = item->parent())) {
+            while (item = item->parent()) {
                 item->setBold(true);
             }
         }

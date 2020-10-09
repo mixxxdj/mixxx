@@ -44,7 +44,7 @@ class PlaylistFeature : public BasePlaylistFeature {
   protected:
     QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
-    virtual QList<IdAndLabel> createPlaylistLabels();
+    QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
 
   private:
