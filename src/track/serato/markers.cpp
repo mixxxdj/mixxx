@@ -9,9 +9,13 @@ namespace {
 
 mixxx::Logger kLogger("SeratoMarkers");
 
+// The number of entries are fixed, the "SeratoMarkers_" tag always contains
+// the first 5 cues and 9 loops. Additional cues points can be stored in the
+// "SeratoMarkers2" tag.
 constexpr int kNumCueEntries = 5;
 constexpr int kNumLoopEntries = 9;
 constexpr int kNumEntries = kNumCueEntries + kNumLoopEntries;
+
 constexpr int kEntrySizeID3 = 22;
 constexpr int kEntrySizeMP4 = 19;
 constexpr quint32 kNoPosition = 0x7F7F7F7F;
@@ -593,6 +597,9 @@ QList<CueInfo> SeratoMarkers::getCues() const {
         case SeratoMarkersEntry::TypeId::Loop: {
             if (pEntry->hasStartPosition()) {
                 if (!pEntry->hasEndPosition()) {
+                    // Usually this can't happen unless Serato is buggy or the
+                    // Metadata is broken. But we should never trust user data
+                    // and better be safe than sorry.
                     qWarning() << "SeratoMarkers: Loop" << loopIndex << "has no end position!";
                     continue;
                 }
@@ -702,6 +709,8 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     false,
                     0,
                     RgbColor(0),
+                    // In contrast to cues, unset saved loop have the same type
+                    // ID as set ones.
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
                     false);
         }

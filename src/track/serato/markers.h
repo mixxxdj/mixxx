@@ -17,9 +17,14 @@ typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {
   public:
+    /// We didn't encounter other type IDs as those listed here (e.g. "2") yet.
+    /// Apparently these are not used.
     enum class TypeId : int {
+        /// Used for unset cue points
         Unknown = 0,
+        /// Used for set cue points
         Cue = 1,
+        /// Used for saved loops (both set and unset ones)
         Loop = 3,
     };
 
