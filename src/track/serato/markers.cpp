@@ -621,7 +621,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
     QMap<int, CueInfo> cueMap;
     QMap<int, CueInfo> loopMap;
 
-    for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
+    for (const CueInfo& cueInfo : cueInfos) {
         // All of these check can be debug assertions, as the list should be
         // pre-filtered by the seratoTags class.
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
