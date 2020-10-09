@@ -420,10 +420,10 @@ class SeratoMarkers2 final {
         return m_entries.isEmpty();
     }
 
-    const QList<std::shared_ptr<SeratoMarkers2Entry>>& getEntries() const {
+    const QList<SeratoMarkers2EntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(QList<std::shared_ptr<SeratoMarkers2Entry>> entries) {
+    void setEntries(QList<SeratoMarkers2EntryPointer> entries) {
         m_entries = std::move(entries);
     }
 
@@ -473,7 +473,7 @@ class SeratoMarkers2 final {
 
     int m_allocatedSize;
     char m_lastBase64ByteFLAC;
-    QList<std::shared_ptr<SeratoMarkers2Entry>> m_entries;
+    QList<SeratoMarkers2EntryPointer> m_entries;
 };
 
 inline bool operator==(const SeratoMarkers2& lhs, const SeratoMarkers2& rhs) {
