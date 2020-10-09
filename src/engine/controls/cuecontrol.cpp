@@ -957,7 +957,6 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (!pCue || pCue->getPosition() == Cue::kNoPosition) {
-        hotcueSet(pControl, v, HotcueMode::Loop);
         return;
     }
 
@@ -1007,7 +1006,7 @@ void CueControl::hotcueActivate(
                         hotcueGoto(pControl, v);
                         break;
                     case mixxx::CueType::Loop:
-                        hotcueGotoAndLoop(pControl, v);
+                        hotcueLoopToggle(pControl, v);
                         break;
                     default:
                         DEBUG_ASSERT(!"Invalid CueType!");
