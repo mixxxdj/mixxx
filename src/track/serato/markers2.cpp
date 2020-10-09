@@ -731,7 +731,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     // a robust way.
     newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Unknown));
 
-    setEntries(newEntries);
+    setEntries(std::move(newEntries));
 }
 
 QByteArray SeratoMarkers2::dumpBase64Encoded() const {
@@ -839,7 +839,7 @@ void SeratoMarkers2::setTrackColor(RgbColor color) {
     // a robust way.
     newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Unknown));
 
-    setEntries(newEntries);
+    setEntries(std::move(newEntries));
 }
 
 bool SeratoMarkers2::isBpmLocked() const {
@@ -889,7 +889,7 @@ void SeratoMarkers2::setBpmLocked(bool bpmLocked) {
     // a robust way.
     newEntries.append(findEntriesByType(SeratoMarkers2Entry::TypeId::Unknown));
 
-    setEntries(newEntries);
+    setEntries(std::move(newEntries));
 }
 
 int SeratoMarkers2::countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const {
