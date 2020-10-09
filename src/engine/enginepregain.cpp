@@ -11,13 +11,13 @@
 #include "util/sample.h"
 
 namespace {
-constexpr float kSpeedGainMultiplier =
-        4.0f; // Bends the speed to gain curve for a natural vinyl sound
-constexpr float kMaxTotalGainBySpeed =
-        0.9f; // -1 dB to not risk any clipping even for lossy track that may
-              // have samples above 1.0
-constexpr float kSpeedOneDiv = log10((1 * kSpeedGainMultiplier) +
-        1); // value to normalize gain to 1 at speed one
+
+// Bends the speed to gain curve for a natural vinyl sound
+constexpr float kSpeedGainMultiplier = 4.0f;
+// -1 dB to not risk any clipping even for lossy track that may have samples above 1.0
+constexpr float kMaxTotalGainBySpeed = 0.9f;
+// value to normalize gain to 1 at speed one
+const float kSpeedOneDiv = log10((1 * kSpeedGainMultiplier) + 1);
 } // anonymous namespace
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
