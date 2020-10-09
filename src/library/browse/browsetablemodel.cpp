@@ -16,6 +16,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrarytableview.h"
 

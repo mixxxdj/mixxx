@@ -5,11 +5,13 @@
 #include <QPixmap>
 #include <QWidget>
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 class WCoverArtMenu;
 class DlgCoverArtFullSize;
+class CoverInfo;
+class CoverInfoRelative;
 
 class WCoverArtLabel : public QLabel {
     Q_OBJECT

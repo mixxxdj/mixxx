@@ -3,13 +3,14 @@
 
 #include "library/basetrackcache.h"
 
-#include "library/trackcollection.h"
-#include "library/searchqueryparser.h"
 #include "library/queryutil.h"
-#include "track/keyutils.h"
+#include "library/searchqueryparser.h"
+#include "library/trackcollection.h"
 #include "track/globaltrackcache.h"
-#include "util/performancetimer.h"
+#include "track/keyutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
+#include "util/performancetimer.h"
 
 namespace {
 

@@ -5,6 +5,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "track/track.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
 #include "waveform/visualplayposition.h"
@@ -35,6 +36,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_visualPlayPosition(NULL),
           m_playPos(-1),
           m_playPosVSample(0),
+          m_totalVSamples(0),
           m_pRateRatioCO(NULL),
           m_rateRatio(1.0),
           m_pGainControlObject(NULL),
@@ -133,7 +135,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount;
-        m_playPosVSample = m_playPos * m_trackPixelCount * m_visualSamplePerPixel;
+        m_totalVSamples = m_trackPixelCount * m_visualSamplePerPixel;
+        m_playPosVSample = m_playPos * m_totalVSamples;
 
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;

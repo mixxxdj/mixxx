@@ -498,9 +498,8 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return QString("(%1)").arg(rawValue.toInt());
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
-            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
-        } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+                column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
             return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
             bool ok;

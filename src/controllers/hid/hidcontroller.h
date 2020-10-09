@@ -91,7 +91,10 @@ class HidController final : public Controller {
     hid_device* m_pHidDevice;
     HidControllerPreset m_preset;
 
-    unsigned char m_pPollData[255];
+    static constexpr int kNumBuffers = 2;
+    static constexpr int kBufferSize = 255;
+    unsigned char m_pPollData[kNumBuffers][kBufferSize];
+    int m_iPollingBufferIndex;
 
     friend class HidControllerJSProxy;
 };

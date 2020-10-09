@@ -14,7 +14,8 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/beats.h"
+#include "track/track_decl.h"
 
 class EngineMaster;
 class EngineBuffer;

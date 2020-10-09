@@ -7,7 +7,7 @@
 namespace{
 
 // Gain correction was verified with replay gain and default parameters
-const double kGainCorrection = 1.4125375446227544; // 3 dB
+constexpr CSAMPLE kGainCorrection = 1.41253754f; // 3 dB
 
 inline CSAMPLE tanh_approx(CSAMPLE input) {
     // return tanhf(input); // 142ns for process;
@@ -156,7 +156,8 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     // When the period is changed, the position of the sound shouldn't
     // so time need to be recalculated
     if (pState->previousPeriodFrames != -1.0) {
-        pState->lfoFrames *= lfoPeriodFrames / pState->previousPeriodFrames;
+        pState->lfoFrames *= static_cast<unsigned int>(
+                lfoPeriodFrames / pState->previousPeriodFrames);
     }
     pState->previousPeriodFrames = lfoPeriodFrames;
 
@@ -165,12 +166,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     // independently in the loop below, so do not multiply lfoPeriodSamples by
     // the number of channels.
 
-    CSAMPLE_GAIN mix = m_pMixParameter->value();
+    const auto mix = static_cast<CSAMPLE_GAIN>(m_pMixParameter->value());
     RampingValue<CSAMPLE_GAIN> mixRamped(
             pState->prev_mix, mix, bufferParameters.framesPerBuffer());
     pState->prev_mix = mix;
 
-    CSAMPLE_GAIN regen = m_pRegenParameter->value();
+    const auto regen = static_cast<CSAMPLE_GAIN>(m_pRegenParameter->value());
     RampingValue<CSAMPLE_GAIN> regenRamped(
             pState->prev_regen, regen, bufferParameters.framesPerBuffer());
     pState->prev_regen = regen;
@@ -185,11 +186,11 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
     RampingValue<double> widthRamped(
             pState->prev_width, width, bufferParameters.framesPerBuffer());
-    pState->prev_width = width;
+    pState->prev_width = static_cast<CSAMPLE_GAIN>(width);
 
     RampingValue<double> manualRamped(
             pState->prev_manual, manual, bufferParameters.framesPerBuffer());
-    pState->prev_manual = manual;
+    pState->prev_manual = static_cast<CSAMPLE_GAIN>(manual);
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
@@ -208,7 +209,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
             pState->lfoFrames = 0;
         }
 
-        float periodFraction = static_cast<float>(pState->lfoFrames) / lfoPeriodFrames;
+        auto periodFraction = pState->lfoFrames / static_cast<float>(lfoPeriodFrames);
         double delayMs = manual_ramped + width_ramped / 2 * sin(M_PI * 2.0f * periodFraction);
         double delayFrames = delayMs * bufferParameters.sampleRate() / 1000;
 
@@ -222,7 +223,8 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         CSAMPLE prevRight = delayRight[framePrev];
         CSAMPLE nextRight = delayRight[frameNext];
 
-        CSAMPLE frac = delayFrames - floorf(delayFrames);
+        const CSAMPLE_GAIN frac = static_cast<CSAMPLE_GAIN>(
+                delayFrames - floorf(static_cast<float>(delayFrames)));
         CSAMPLE delayedSampleLeft = prevLeft + frac * (nextLeft - prevLeft);
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
@@ -231,7 +233,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
         pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
 
-        double gain = (1 - mix_ramped + kGainCorrection * mix_ramped);
+        CSAMPLE_GAIN gain = (1 - mix_ramped + kGainCorrection * mix_ramped);
         pOutput[i] = (pInput[i] + mix_ramped * delayedSampleLeft) / gain;
         pOutput[i + 1] = (pInput[i + 1] + mix_ramped * delayedSampleRight) / gain;
     }

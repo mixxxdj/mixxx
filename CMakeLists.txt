@@ -49,6 +49,10 @@ endif()
 #######################################################################
 
 set(CMAKE_CXX_STANDARD 17)
+if(MSVC)
+  # Ensure MSVC populates __cplusplus correctly.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+endif()
 
 # Speed up builds on HDDs
 if(GNU_GCC OR LLVM_CLANG)
@@ -1490,15 +1494,32 @@ if(ENGINEPRIME)
     target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
   else()
     # Fetch djinterop sources from GitHub and build them statically.
-    message(STATUS "Linking statically to libdjinterop fetched from GitHub")
+
+    # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
+    # embedded SQLite in such a case.
+    if (APPLE)
+      message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
+      set(DJINTEROP_SYSTEM_SQLITE OFF)
+    else()
+      message(STATUS "Building libdjinterop sources (with system SQLite) fetched from GitHub")
+      set(DJINTEROP_SYSTEM_SQLITE ON)
+    endif()
 
     set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
+    set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
     ExternalProject_Add(libdjinterop
       GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
-      GIT_TAG tags/0.13.0
+      GIT_TAG tags/0.14.3
       GIT_SHALLOW TRUE
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
-      CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      CMAKE_ARGS
+        -DBUILD_SHARED_LIBS=OFF
+        -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
+        -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
+      BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
     )
 
@@ -1506,9 +1527,8 @@ if(ENGINEPRIME)
     add_library(mixxx-libdjinterop STATIC IMPORTED)
     add_dependencies(mixxx-libdjinterop libdjinterop)
     set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
-    set(DJINTEROP_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    set(DJINTEROP_LIBRARY_DIR "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
-    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_DIR}")
+    set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
+    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
     target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
     target_link_libraries(mixxx-lib PUBLIC mixxx-libdjinterop)
 

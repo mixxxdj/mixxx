@@ -13,7 +13,8 @@
 #include "engine/controls/ratecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
-#include "track/track.h"
+#include "track/cue.h"
+#include "track/track_decl.h"
 
 #define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 

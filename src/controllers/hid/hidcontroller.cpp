@@ -22,8 +22,8 @@ ControllerJSProxy* HidController::jsProxy() {
 
 HidController::HidController(const hid_device_info& deviceInfo)
         : Controller(),
-          m_pHidDevice(NULL) {
-
+          m_pHidDevice(nullptr),
+          m_iPollingBufferIndex(0) {
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
@@ -220,6 +220,10 @@ int HidController::open() {
         return -1;
     }
 
+    for (int i = 0; i < kNumBuffers; i++) {
+        memset(m_pPollData[i], 0, kBufferSize);
+    }
+
     setOpen(true);
     startEngine();
 
@@ -248,16 +252,42 @@ int HidController::close() {
 bool HidController::poll() {
     Trace hidRead("HidController poll");
 
-    int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
-    if (result == -1) {
-        return false;
-    } else if (result > 0) {
-        Trace process("HidController process packet");
-        QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
-        receive(outData, mixxx::Time::elapsed());
-    }
+    // This loop risks becoming a high priority endless loop in case processing
+    // the mapping JS code takes longer than the controller polling rate.
+    // This could stall other low priority tasks.
+    // There is no safety net for this because it has not been demonstrated to be
+    // a problem in practice.
+    while (true) {
+        // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
+        unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
+        m_iPollingBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
+        unsigned char* pCurrentBuffer = m_pPollData[m_iPollingBufferIndex];
 
-    return true;
+        int bytesRead = hid_read(m_pHidDevice, pCurrentBuffer, kBufferSize);
+        if (bytesRead < 0) {
+            // -1 is the only error value according to hidapi documentation.
+            DEBUG_ASSERT(bytesRead == -1);
+            return false;
+        } else if (bytesRead == 0) {
+            return true;
+        }
+
+        Trace process("HidController process packet");
+        // Some controllers such as the Gemini GMX continuously send input packets even if it
+        // is identical to the previous packet. If this loop processed all those redundant
+        // packets, it would be a big performance problem to run JS code for every packet and
+        // would be unnecessary.
+        // This assumes that the redundant packets all use the same report ID. In practice we
+        // have not encountered any controllers that send redundant packets with different report
+        // IDs. If any such devices exist, this may be changed to use a separate buffer to store
+        // the last packet for each report ID.
+        if (memcmp(pCurrentBuffer, pPreviousBuffer, kBufferSize) == 0) {
+            continue;
+        }
+        auto incomingData = QByteArray::fromRawData(
+                reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
+        receive(incomingData, mixxx::Time::elapsed());
+    }
 }
 
 bool HidController::isPolling() const {

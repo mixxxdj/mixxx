@@ -205,8 +205,8 @@ class EngineFilterIIR : public EngineFilterIIRBase {
                          const int iBufferSize) {
         if (!m_doRamping) {
             for (int i = 0; i < iBufferSize; i += 2) {
-                pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
-                pOutput[i+1] = processSample(m_coef, m_buf2, pIn[i + 1]);
+                pOutput[i] = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
+                pOutput[i + 1] = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
             }
         } else {
             double cross_mix = 0.0;
@@ -227,8 +227,8 @@ class EngineFilterIIR : public EngineFilterIIRBase {
                 double old2;
                 if (!m_doStart) {
                     // Process old filter, but only if we do not do a fresh start
-                    old1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
-                    old2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
+                    old1 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf1, pIn[i]));
+                    old2 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]));
                 } else {
                     if (m_startFromDry) {
                         old1 = pIn[i];
@@ -238,17 +238,16 @@ class EngineFilterIIR : public EngineFilterIIRBase {
                         old2 = 0;
                     }
                 }
-                double new1 = processSample(m_coef, m_buf1, pIn[i]);
-                double new2 = processSample(m_coef, m_buf2, pIn[i + 1]);
+                double new1 = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
+                double new2 = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
 
                 if (i < iBufferSize / 2) {
-                    pOutput[i] = old1;
-                    pOutput[i + 1] = old2;
+                    pOutput[i] = static_cast<CSAMPLE>(old1);
+                    pOutput[i + 1] = static_cast<CSAMPLE>(old2);
                 } else {
-                    pOutput[i] = new1 * cross_mix +
-                                 old1 * (1.0 - cross_mix);
-                    pOutput[i + 1] = new2  * cross_mix +
-                                     old2 * (1.0 - cross_mix);
+                    pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
+                    pOutput[i + 1] = static_cast<CSAMPLE>(
+                            new2 * cross_mix + old2 * (1.0 - cross_mix));
                     cross_mix += cross_inc;
                 }
             }
