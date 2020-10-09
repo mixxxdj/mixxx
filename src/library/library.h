@@ -1,14 +1,15 @@
 #pragma once
 
-#include <QList>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QList>
+#include <QObject>
 #include <QPointer>
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 

@@ -132,7 +132,8 @@ bool WLabel::event(QEvent* pEvent) {
         // resetting the font to the original css values.
         // Only scale pixel size fonts, point size fonts are scaled by the OS
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
         // measure text with the new font
         setText(m_longText);

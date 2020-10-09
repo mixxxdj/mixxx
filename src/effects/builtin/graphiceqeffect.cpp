@@ -173,10 +173,10 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
             fMid[i] = 1.0;
         }
     } else {
-        fLow = m_pPotLow->value();
-        fHigh = m_pPotHigh->value();
+        fLow = static_cast<float>(m_pPotLow->value());
+        fHigh = static_cast<float>(m_pPotHigh->value());
         for (int i = 0; i < 6; i++) {
-            fMid[i] = m_pPotMid[i]->value();
+            fMid[i] = static_cast<float>(m_pPotMid[i]->value());
         }
     }
 

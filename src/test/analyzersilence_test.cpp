@@ -1,9 +1,10 @@
+#include "analyzer/analyzersilence.h"
+
 #include <gtest/gtest.h>
 
-#include "test/mixxxtest.h"
-
-#include "analyzer/analyzersilence.h"
 #include "engine/engine.h"
+#include "test/mixxxtest.h"
+#include "track/track.h"
 
 namespace {
 

@@ -1,23 +1,20 @@
 #pragma once
 
-#include <QModelIndex>
-#include <QList>
 #include <QAction>
-#include <QVariant>
-#include <QUrl>
 #include <QIcon>
+#include <QList>
+#include <QModelIndex>
 #include <QPoint>
 #include <QPointer>
+#include <QUrl>
+#include <QVariant>
 
+#include "library/basetracksetfeature.h"
 #include "library/crate/cratestorage.h"
 #include "library/crate/cratetablemodel.h"
-#include "library/basetracksetfeature.h"
 #include "library/treeitemmodel.h"
-
-#include "track/track.h"
-
 #include "preferences/usersettings.h"
-
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 // forward declaration(s)

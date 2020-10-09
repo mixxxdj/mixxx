@@ -4,6 +4,7 @@
 
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wcoverartmenu.h"
 

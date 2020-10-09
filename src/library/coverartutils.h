@@ -1,18 +1,18 @@
 #pragma once
 
+#include <QFileInfo>
 #include <QImage>
+#include <QList>
+#include <QSize>
 #include <QString>
 #include <QStringList>
-#include <QSize>
-#include <QFileInfo>
-#include <QList>
 
 #include "track/track.h"
 #include "util/sandbox.h"
 
 class CoverInfo;
 class CoverInfoRelative;
-
+class TrackFile;
 
 class CoverArtUtils {
   public:

@@ -1,24 +1,25 @@
 #ifndef MIXXX_LIBRARYSCANNER_H
 #define MIXXX_LIBRARYSCANNER_H
 
-#include <QThread>
-#include <QThreadPool>
+#include <gtest/gtest.h>
+
+#include <QScopedPointer>
+#include <QSemaphore>
 #include <QString>
 #include <QStringList>
-#include <QSemaphore>
-#include <QScopedPointer>
+#include <QThread>
+#include <QThreadPool>
 
+#include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
-#include "library/dao/libraryhashdao.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
-#include "library/dao/analysisdao.h"
 #include "library/scanner/scannerglobal.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
-
-#include <gtest/gtest.h>
 
 class ScannerTask;
 class LibraryScannerDlg;

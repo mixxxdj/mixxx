@@ -1,5 +1,7 @@
 #include "preferences/replaygainsettings.h"
 
+#include "track/track.h"
+
 namespace {
 const char* kConfigKey = "[ReplayGain]";
 
