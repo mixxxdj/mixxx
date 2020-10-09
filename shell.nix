@@ -17,7 +17,7 @@ let inherit (nixroot) stdenv pkgs lib
     libmodplug
     mp4v2
     nix-gitignore
-    python3
+    python3 python37Packages
     wavpack;
 
   git-clang-format = stdenv.mkDerivation {
@@ -49,6 +49,12 @@ let inherit (nixroot) stdenv pkgs lib
     mkdir -p cbuild
     cd cbuild
     cmake .. "$@"
+    cd ..
+    if [ ! -e venv/bin/pre-commit ]; then
+      virtualenv -p python3 venv
+      ./venv/bin/pip install pre-commit
+      ./venv/bin/pre-commit install
+    fi
   '';
 
   shell-build = nixroot.writeShellScriptBin "build" ''
@@ -93,7 +99,10 @@ in stdenv.mkDerivation rec {
               lib.strings.removePrefix "#define MIXXX_VERSION \"" (
                 builtins.readFile ./src/_version.h ));
 
+  # SOURCE_DATE_EPOCH helps with python and pre-commit hook
   shellHook =  ''
+    export PYTHONPATH=venv/lib/python3.7/site-packages/:$PYTHONPATH
+    export SOURCE_DATE_EPOCH=315532800
     echo -e "Mixxx development shell. Available commands:\n"
     echo " configure - configures cmake (only has to run once)"
     echo " build - compiles Mixxx"
@@ -106,6 +115,7 @@ in stdenv.mkDerivation rec {
     /.envrc
     /result
     /shell.nix
+    /venv
   '' ./.) else null;
 
   nativeBuildInputs = [
@@ -114,6 +124,9 @@ in stdenv.mkDerivation rec {
     ccache
     gdb
     git-clang-format
+    clang-tools
+    # for pre-commit installation since nixpkg.pre-commit may be to old
+    python3 python37Packages.virtualenv python37Packages.pip python37Packages.setuptools
     shell-configure shell-build shell-run shell-debug
   ] else []);
 
@@ -129,9 +142,9 @@ in stdenv.mkDerivation rec {
     wavpack
   ] ++ allLv2Plugins;
 
-  postBuild = ''
-    wrapProgram mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
-  '';
+  postInstall = (if releaseMode then ''
+    wrapProgram $out/bin/mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
+  '' else "");
 
   meta = with nixroot.stdenv.lib; {
     homepage = https://mixxx.org;
