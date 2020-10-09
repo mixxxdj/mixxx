@@ -145,6 +145,10 @@ class SampleRate {
         return m_value;
     }
 
+    static constexpr SampleRate fromDouble(double value) {
+        return SampleRate(static_cast<value_t>(value));
+    }
+
   private:
     value_t m_value;
 };

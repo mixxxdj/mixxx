@@ -383,9 +383,7 @@ void ShoutConnection::updateFromPreferences() {
         qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
-    auto masterSamplerate = mixxx::audio::SampleRate(
-            static_cast<mixxx::audio::SampleRate::value_t>(
-                    m_pMasterSamplerate->get()));
+    auto masterSamplerate = mixxx::audio::SampleRate::fromDouble(m_pMasterSamplerate->get());
     VERIFY_OR_DEBUG_ASSERT(masterSamplerate.isValid()) {
         qWarning() << "Invalid sample rate!" << masterSamplerate;
         return;
