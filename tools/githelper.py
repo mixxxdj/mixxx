@@ -77,13 +77,20 @@ def get_changed_lines(
             # Current line contains an added/removed line
             hunk_lines_left -= 1
 
-            assert line[0] in ("+", "-")
             if line.startswith("+"):
                 lineno_added += 1
                 current_lineno = lineno_added
-            else:
+            elif line.startswith("-"):
                 lineno_removed += 1
                 current_lineno = lineno_removed
+            else:
+                assert line[0] == "\\"
+                # This case can happen if the last line is lacking a newline at
+                # the EOF, e.g. if the diff looks like this:
+                #     -This is the last line.
+                #     \ No newline at end of file
+                #     +This is the last line.
+                continue
 
             lineobj = Line(
                 sourcefile=current_file,

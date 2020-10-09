@@ -1,22 +1,22 @@
-#ifndef DLGTRACKINFO_H
-#define DLGTRACKINFO_H
+#pragma once
 
 #include <QDialog>
-#include <QHash>
-#include <QList>
-#include <QMutex>
-#include <QScopedPointer>
+#include <QModelIndex>
+#include <memory>
 
 #include "library/coverart.h"
-#include "library/dlgtagfetcher.h"
-#include "library/trackmodel.h"
 #include "library/ui_dlgtrackinfo.h"
-#include "track/track.h"
+#include "track/beats.h"
+#include "track/keys.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/parented_ptr.h"
 #include "util/tapfilter.h"
-#include "util/types.h"
-#include "widget/wcoverartlabel.h"
-#include "widget/wcoverartmenu.h"
-#include "widget/wstarrating.h"
+
+class TrackModel;
+class DlgTagFetcher;
+class WCoverArtLabel;
+class WStarRating;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -26,10 +26,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
     // TODO: Remove dependency on TrackModel
-    DlgTrackInfo(QWidget* parent,
-            UserSettingsPointer pConfig,
+    explicit DlgTrackInfo(
             const TrackModel* trackModel = nullptr);
-    virtual ~DlgTrackInfo();
+    ~DlgTrackInfo() override;
 
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
@@ -90,22 +89,24 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void unloadTrack(bool save);
     void clear();
     void init();
+
+    const TrackModel* const m_pTrackModel;
+
     TrackPointer m_pLoadedTrack;
+
+    QModelIndex m_currentTrackIndex;
+
     mixxx::BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
     bool m_trackHasBeatMap;
 
-    QScopedPointer<TapFilter> m_pTapFilter;
-    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
+    TapFilter m_tapFilter;
     double m_dLastTapedBpm;
 
     CoverInfo m_loadedCoverInfo;
-    WCoverArtLabel* m_pWCoverArtLabel;
-    WStarRating* m_pWStarRating;
-    UserSettingsPointer m_pConfig;
 
-    const TrackModel* m_pTrackModel;
-    QModelIndex m_currentTrackIndex;
+    parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
+    parented_ptr<WStarRating> m_pWStarRating;
+
+    std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 };
-
-#endif /* DLGTRACKINFO_H */

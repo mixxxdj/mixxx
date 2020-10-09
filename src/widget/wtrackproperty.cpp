@@ -1,10 +1,12 @@
+#include "widget/wtrackproperty.h"
+
 #include <QDebug>
 #include <QUrl>
 
 #include "control/controlobject.h"
-#include "widget/wtrackmenu.h"
-#include "widget/wtrackproperty.h"
+#include "track/track.h"
 #include "util/dnd.h"
+#include "widget/wtrackmenu.h"
 
 namespace {
 const WTrackMenu::Features kTrackMenuFeatures =
@@ -88,7 +90,7 @@ void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack);
-        m_pTrackMenu->slotShowTrackInfo();
+        m_pTrackMenu->slotShowDlgTrackInfo();
     }
 }
 

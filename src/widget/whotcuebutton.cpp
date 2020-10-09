@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "mixer/playerinfo.h"
+#include "track/track.h"
 
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),
@@ -110,7 +111,7 @@ void WHotcueButton::slotColorChanged(double color) {
     VERIFY_OR_DEBUG_ASSERT(color >= 0 && color <= 0xFFFFFF) {
         return;
     }
-    QColor cueColor = QColor::fromRgb(color);
+    QColor cueColor = QColor::fromRgb(static_cast<QRgb>(color));
     m_cueColorDimmed = Color::isDimmColor(cueColor);
 
     QString style =

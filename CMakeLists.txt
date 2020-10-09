@@ -1519,11 +1519,52 @@ target_link_libraries(mixxx-lib PUBLIC fidlib)
 
 # KeyFinder
 find_package(KeyFinder)
-option(KEYFINDER "KeyFinder" OFF)
+# If KeyFinder is built statically, we need FFTW
+find_package(FFTW)
+cmake_dependent_option(KEYFINDER "KeyFinder support" ON "KeyFinder_FOUND OR FFTW_FOUND" OFF)
 if(KEYFINDER)
+  if (KeyFinder_FOUND)
+    target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
+  else()
+    find_package(FFTW REQUIRED)
+    set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
+    set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    ExternalProject_Add(keyfinder
+      GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
+      GIT_TAG faa563f0898b3cbfbd2ed0696deebc8a9b0c9af6
+      GIT_SHALLOW TRUE
+      INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
+      CMAKE_ARGS
+        -DBUILD_STATIC_LIBS=ON
+        -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
+      BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
+      EXCLUDE_FROM_ALL TRUE
+    )
+
+    # This is a bit of a hack to make sure that the include directory actually
+    # exists when configuring the build.
+    # ExternalProject_Add() will create it
+    # at compile time, but CMake already
+    # checks that all directories passed to
+    # target_include_directories() exist
+    # during configuration and will throw
+    # an error if not.
+    file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
+
+    add_library(mixxx-keyfinder STATIC IMPORTED)
+    add_dependencies(mixxx-keyfinder keyfinder)
+    set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
+    target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
+    target_include_directories(mixxx-keyfinder INTERFACE "${KeyFinder_INSTALL_DIR}/include")
+    target_link_libraries(mixxx-lib PUBLIC mixxx-keyfinder)
+  endif()
+
   target_sources(mixxx-lib PRIVATE src/analyzer/plugins/analyzerkeyfinder.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __KEYFINDER__)
-  target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
 endif()
 
 # FLAC

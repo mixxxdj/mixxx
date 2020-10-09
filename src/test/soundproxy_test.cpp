@@ -1,10 +1,10 @@
 #include <QTemporaryFile>
 #include <QtDebug>
 
-#include "test/mixxxtest.h"
-
-#include "sources/soundsourceproxy.h"
 #include "sources/audiosourcestereoproxy.h"
+#include "sources/soundsourceproxy.h"
+#include "test/mixxxtest.h"
+#include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
 
@@ -35,7 +35,7 @@ const CSAMPLE kMaxDecodingError = 0.01f;
 
 } // anonymous namespace
 
-class SoundSourceProxyTest: public MixxxTest {
+class SoundSourceProxyTest : public MixxxTest {
   protected:
     static QStringList getFileNameSuffixes() {
         QStringList availableFileNameSuffixes;
@@ -178,14 +178,14 @@ TEST_F(SoundSourceProxyTest, open) {
 
 TEST_F(SoundSourceProxyTest, openEmptyFile) {
     for (const auto& fileNameSuffix: getFileNameSuffixes()) {
-        QTemporaryFile tempFile("emptyXXXXXX" + fileNameSuffix);
-        qDebug() << "Created testing to open empty file:"
-                << tempFile.fileName();
-        tempFile.open();
-        tempFile.close();
+        const auto tmpFileName =
+                mixxxtest::createEmptyTemporaryFile("emptyXXXXXX" + fileNameSuffix);
+        const mixxxtest::FileRemover tmpFileRemover(tmpFileName);
 
-        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(tempFile.fileName()));
-        auto pTrack = Track::newTemporary(tempFile.fileName());
+        ASSERT_TRUE(QFile::exists(tmpFileName));
+        ASSERT_TRUE(!tmpFileName.isEmpty());
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(tmpFileName));
+        auto pTrack = Track::newTemporary(tmpFileName);
         SoundSourceProxy proxy(pTrack);
 
         auto pAudioSource = proxy.openAudioSource();

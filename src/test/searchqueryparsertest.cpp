@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
-#include <QtDebug>
-#include <QDir>
 
-#include "test/librarytest.h"
+#include <QDir>
+#include <QtDebug>
 
 #include "library/searchqueryparser.h"
+#include "test/librarytest.h"
+#include "track/track.h"
 #include "util/assert.h"
 
 TrackPointer newTestTrack(int sampleRate) {

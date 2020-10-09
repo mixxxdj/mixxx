@@ -4,6 +4,7 @@
 #include <QtConcurrentRun>
 
 #include "musicbrainz/chromaprinter.h"
+#include "track/track.h"
 #include "util/thread_affinity.h"
 
 namespace {

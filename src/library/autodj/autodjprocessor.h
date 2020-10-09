@@ -1,16 +1,16 @@
 #ifndef AUTODJPROCESSOR_H
 #define AUTODJPROCESSOR_H
 
+#include <QModelIndexList>
 #include <QObject>
 #include <QString>
-#include <QModelIndexList>
 
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/controls/cuecontrol.h"
 #include "library/playlisttablemodel.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 #include "util/class.h"
 
 class ControlPushButton;

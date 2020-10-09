@@ -29,10 +29,10 @@ void EngineSideChainCompressor::calculateRates() {
         m_decayPerFrame = m_strength / m_decayTime;
     }
     if (m_attackPerFrame <= 0) {
-        m_attackPerFrame = 0.005;
+        m_attackPerFrame = 0.005f;
     }
     if (m_decayPerFrame <= 0) {
-        m_decayPerFrame = 0.005;
+        m_decayPerFrame = 0.005f;
     }
     //qDebug() << "Compressor attack per frame: " << m_attackPerFrame
     //         << "decay per frame: " << m_decayPerFrame;

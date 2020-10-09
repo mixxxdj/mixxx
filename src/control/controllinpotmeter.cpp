@@ -10,9 +10,9 @@ ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
             new ControlLinPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
     }
     if (dStep) {
-        setStepCount((dMaxValue - dMinValue) / dStep);
+        setStepCount(static_cast<int>((dMaxValue - dMinValue) / dStep));
     }
     if (dSmallStep) {
-        setSmallStepCount((dMaxValue - dMinValue) / dSmallStep);
+        setSmallStepCount(static_cast<int>((dMaxValue - dMinValue) / dSmallStep));
     }
 }

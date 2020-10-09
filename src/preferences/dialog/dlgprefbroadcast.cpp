@@ -64,25 +64,35 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     stream_ICQ->setVisible(false);
 #endif
 
-    connect(connectionList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
-            this, SLOT(onSectionResized()));
+    connect(connectionList->horizontalHeader(),
+            &QHeaderView::sectionResized,
+            this,
+            &DlgPrefBroadcast::onSectionResized);
 
     updateModel();
     connectionList->setModel(m_pSettingsModel);
+    connectionList->setTabKeyNavigation(false);
 
     connect(connectionList->selectionModel(),
-            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+            &QItemSelectionModel::currentRowChanged,
             this,
-            SLOT(connectionListItemSelected(const QModelIndex&)));
-    connect(btnRemoveConnection, SIGNAL(clicked(bool)),
-            this, SLOT(btnRemoveConnectionClicked()));
-    connect(btnRenameConnection, SIGNAL(clicked(bool)),
-            this, SLOT(btnRenameConnectionClicked()));
-    connect(btnCreateConnection, SIGNAL(clicked(bool)),
-            this, SLOT(btnCreateConnectionClicked()));
-
-    connect(btnDisconnectAll, SIGNAL(clicked(bool)),
-            this, SLOT(btnDisconnectAllClicked()));
+            &DlgPrefBroadcast::connectionListItemSelected);
+    connect(btnRemoveConnection,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnRemoveConnectionClicked);
+    connect(btnRenameConnection,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnRenameConnectionClicked);
+    connect(btnCreateConnection,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnCreateConnectionClicked);
+    connect(btnDisconnectAll,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnDisconnectAllClicked);
 
     // Highlight first row
     connectionList->selectRow(0);
@@ -132,14 +142,18 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      comboBoxEncodingChannels->addItem(tr("Stereo"),
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
-     connect(checkBoxEnableReconnect, SIGNAL(stateChanged(int)),
-             this, SLOT(checkBoxEnableReconnectChanged(int)));
-
-     connect(checkBoxLimitReconnects, SIGNAL(stateChanged(int)),
-             this, SLOT(checkBoxLimitReconnectsChanged(int)));
-
-     connect(enableCustomMetadata, SIGNAL(stateChanged(int)),
-             this, SLOT(enableCustomMetadataChanged(int)));
+     connect(checkBoxEnableReconnect,
+             &QCheckBox::stateChanged,
+             this,
+             &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
+     connect(checkBoxLimitReconnects,
+             &QCheckBox::stateChanged,
+             this,
+             &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
+     connect(enableCustomMetadata,
+             &QCheckBox::stateChanged,
+             this,
+             &DlgPrefBroadcast::enableCustomMetadataChanged);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {

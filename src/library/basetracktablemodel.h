@@ -7,6 +7,7 @@
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
+#include "track/track.h"
 
 class BaseCoverArtDelegate;
 class TrackCollectionManager;

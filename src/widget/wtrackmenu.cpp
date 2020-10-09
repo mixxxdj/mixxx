@@ -28,7 +28,10 @@
 #include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "widget/wcolorpickeraction.h"
+#include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
+#include "widget/wstarrating.h"
 #include "widget/wwidget.h"
 
 WTrackMenu::WTrackMenu(QWidget* parent,
@@ -179,7 +182,7 @@ void WTrackMenu::createActions() {
 
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
-        connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowTrackInfo);
+        connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
     }
 
     if (featureIsEnabled(Feature::FileBrowser)) {
@@ -208,10 +211,6 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotExportMetadataIntoFileTags);
-
-        // Give a nullptr parent because otherwise it inherits our style which can
-        // make it unreadable. Bug #673411
-        m_pTagFetcher.reset(new DlgTagFetcher(nullptr, m_pTrackModel));
 
         for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
@@ -312,12 +311,6 @@ void WTrackMenu::createActions() {
                 &WColorPickerAction::colorPicked,
                 this,
                 &WTrackMenu::slotColorPicked);
-    }
-
-    if (featureIsEnabled(Feature::Properties)) {
-        // Give a nullptr parent because otherwise it inherits our style which can
-        // make it unreadable. Bug #673411
-        m_pTrackInfo.reset(new DlgTrackInfo(nullptr, m_pConfig, m_pTrackModel));
     }
 }
 
@@ -557,7 +550,7 @@ void WTrackMenu::updateMenus() {
     const bool singleTrackSelected = getTrackCount() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        int iNumDecks = m_pNumDecks->get();
+        int iNumDecks = static_cast<int>(m_pNumDecks->get());
         m_pDeckMenu->clear();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
@@ -575,7 +568,7 @@ void WTrackMenu::updateMenus() {
             }
         }
 
-        int iNumSamplers = m_pNumSamplers->get();
+        int iNumSamplers = static_cast<int>(m_pNumSamplers->get());
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
@@ -1478,30 +1471,50 @@ void WTrackMenu::slotClearAllMetadata() {
             &trackOperator);
 }
 
-void WTrackMenu::slotShowTrackInfo() {
+void WTrackMenu::slotShowDlgTrackInfo() {
     if (isEmpty()) {
         return;
     }
+    // Create a fresh dialog on invocation
+    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+            m_pTrackModel);
+    connect(m_pDlgTrackInfo.get(),
+            &QDialog::finished,
+            [this]() {
+                if (m_pDlgTrackInfo.get() == sender()) {
+                    m_pDlgTrackInfo.release()->deleteLater();
+                }
+            });
     // Method getFirstTrackPointer() is not applicable here!
     if (m_pTrackModel) {
-        m_pTrackInfo->loadTrack(m_trackIndexList.at(0));
+        m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTrackInfo->loadTrack(m_trackPointerList.at(0));
+        m_pDlgTrackInfo->loadTrack(m_trackPointerList.at(0));
     }
-    m_pTrackInfo->show();
+    m_pDlgTrackInfo->show();
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
     if (isEmpty()) {
         return;
     }
+    // Create a fresh dialog on invocation
+    m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
+            m_pTrackModel);
+    connect(m_pDlgTagFetcher.get(),
+            &QDialog::finished,
+            [this]() {
+                if (m_pDlgTagFetcher.get() == sender()) {
+                    m_pDlgTagFetcher.release()->deleteLater();
+                }
+            });
     // Method getFirstTrackPointer() is not applicable here!
     if (m_pTrackModel) {
-        m_pTagFetcher->loadTrack(m_trackIndexList.at(0));
+        m_pDlgTagFetcher->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTagFetcher->loadTrack(m_trackPointerList.at(0));
+        m_pDlgTagFetcher->loadTrack(m_trackPointerList.at(0));
     }
-    m_pTagFetcher->show();
+    m_pDlgTagFetcher->show();
 }
 
 void WTrackMenu::slotAddToAutoDJBottom() {

@@ -4,6 +4,7 @@
     <name>Hercules DJ Console Mac Edition</name>
     <author>Daniel Svensson</author>
     <description>MIDI Mapping for Hercules DJ Console (Mac Edition)</description>
+    <manual>hercules_dj_console_mac_edition</manual>
   </info>
   <controller id="Hercules DJ Console Mac Edition" port="Port">
     <controls>
