@@ -1,14 +1,6 @@
 <Template>
 
   <SingletonDefinition>
-    <ObjectName>SamplerExpand_Singleton</ObjectName>
-    <Children>
-      <!-- needs an extra wrapper otherwise border wouldn't get applied -->
-
-    </Children>
-  </SingletonDefinition><!-- SamplerExpand_Singleton -->
-
-  <SingletonDefinition>
     <ObjectName>SamplerMini1_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
