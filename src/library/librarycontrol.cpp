@@ -656,10 +656,13 @@ void LibraryControl::slotSortColumn(double v) {
 void LibraryControl::slotSortColumnToggle(double v) {
     int sortColumnId = static_cast<int>(v);
     if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_CURRENTINDEX) {
+        if (!m_pLibraryWidget) {
+            return;
+        }
         // Get the ID of the column with the cursor
         sortColumnId = m_pLibraryWidget->getActiveView()->getColumnIdFromCurrentIndex();
-     }     
-     
+    }
+
     if (static_cast<int>(m_pSortColumn->get()) == sortColumnId) {
         m_pSortOrder->set(!m_pSortOrder->get());
     } else {
