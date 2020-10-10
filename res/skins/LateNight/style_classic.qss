@@ -940,7 +940,7 @@ WPushButton#FxSuperLinkInvertButton {
   #DeckSizeToggleContainer {
     padding: 0px 0px 0px 0px;
     }
-    #DeckSizeButton {
+    #SkinSettingsNumToggle {
       margin-left: 1px;
     }
 
@@ -979,7 +979,9 @@ WPushButton#FxSuperLinkInvertButton {
 #MicAuxLabel,
 #SamplerTitle, #SamplerTitleMini, #SamplerBpm,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
-#CategoryLabel, #SkinSettingsLabelButton,
+#CategoryLabel,
+#SkinSettingsLabelButton,
+#SkinSettingsNumToggleHeader[displayValue="1"],
 WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
@@ -1011,6 +1013,9 @@ WTrackMenu QMenu QCheckBox,
   #LibraryContainer QTextBrowser,
   #LibraryContainer QTreeView {
     selection-color: #f0bb2b;
+  }
+  #SkinSettingsNumToggleHeader[displayValue="0"] {
+    color: #b9901f;
   }
 
 /* light blue */
@@ -1142,13 +1147,16 @@ WOverview #PassthroughLabel {
   color: #d09300;
 }
   #SkinSettingsButton,
-  #DeckSizeButton,
+  #SkinSettingsNumToggle,
   #SkinSettingsText {
     color: #d2d2d2;
   }
-  #DeckSizeButton[value="1"] {
-    background-color: #555;
+  #SkinSettingsNumToggle[value="1"] {
     color: #fff;
+  }
+  #SkinSettingsNumToggle[value="1"],
+  #SkinSettingsNumToggleHeader[displayValue="1"] {
+    text-decoration: underline;
   }
 
 
@@ -2366,10 +2374,11 @@ WEffectSelector, #fadeModeCombobox {
   WTrackMenu QMenu QCheckBox:selected,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
-  #SkinSettingsButton:hover,
-  #DeckSizeButton:hover,
+  #SkinSettingsButton[hover="true"],
+  #SkinSettingsNumToggle[hover="true"],
+  #SkinSettingsNumToggleHeader[hover="true"],
   #SkinSettingsMixerToggle[hover="true"],
-  #SkinSettingsLabelButton:hover {
+  #SkinSettingsLabelButton[hover="true"] {
     background-color: #5E4507;
     color: white;
     /* remove OS focus indicator */

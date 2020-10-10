@@ -13,14 +13,23 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <WidgetStack currentpage="[Skin],8_samplers">
+          <WidgetStack currentpage="[LateNight],sampler_rows" persist="true">
             <Children>
 
-              <!--only 4 Sampler but big -->
-              <Template src="skin:/samplers/samplers_4decks.xml"/>
+              <!--4 Samplers -->
+              <Template trigger="[LateNight],show_4samplers" src="skin:/samplers/samplers_4decks.xml"/>
 
-              <!--8 Sampler -->
-              <Template trigger="[Skin],8_samplers" on_hide_select="0" src="skin:/samplers/samplers_8decks.xml"/>
+              <!--8 Samplers -->
+              <Template trigger="[LateNight],show_8samplers" src="skin:/samplers/samplers_8decks.xml"/>
+
+              <!--16 Samplers -->
+              <WidgetGroup trigger="[LateNight],show_16samplers">
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:/samplers/samplers_8decks.xml"/>
+                  <Template src="skin:/samplers/samplers_16decks.xml"/>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </WidgetStack>

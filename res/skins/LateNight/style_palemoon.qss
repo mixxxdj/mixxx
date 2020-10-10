@@ -1081,7 +1081,7 @@ WPushButton#FxSuperLinkInvertButton {
   #DeckSizeToggles {
     padding: 0px 0px 0px 0px;
     }
-    #DeckSizeButton {
+    #SkinSettingsNumToggle {
       margin-left: 1px;
     }
 
@@ -1183,10 +1183,14 @@ WTrackMenu QMenu QCheckBox {
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
   #SkinSettingsLabelButton, #CategoryLabel,
   #SkinSettingsButton,
-  #DeckSizeButton,
+  #SkinSettingsNumToggle,
+  #SkinSettingsNumToggleHeader[displayValue="1"],
   #SkinSettingsMixerToggle,
   #SkinSettingsText {
     color: #988f86;
+  }
+  #SkinSettingsNumToggleHeader[displayValue="0"] {
+    color: #756e6c;
   }
 WEffectSelector,
 #fadeModeCombobox {
@@ -1326,13 +1330,14 @@ WOverview #PassthroughLabel {
 }
 
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsText,
 #SkinSettingsMixerToggle {
   color: #d2d2d2;
   }
-  #DeckSizeButton[value="1"] {
-    background-color: #334;
+  #SkinSettingsNumToggle[value="1"],
+  #SkinSettingsNumToggleHeader[displayValue="1"] {
+    text-decoration: underline;
   }
 
 /************** font colors **************************************************/
@@ -2841,10 +2846,12 @@ WEffectSelector::item,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
   #SkinSettingsButton[hover="true"],
-  #DeckSizeButton[hover="true"],
+  #SkinSettingsNumToggle[hover="true"],
+  #SkinSettingsNumToggleHeader[hover="true"],
   #SkinSettingsMixerToggle[hover="true"],
   #SkinSettingsLabelButton[hover="true"] {
-    background-color: #2c454f;
+    background-color: 2#c454f;
+    border-radius: 1px;
     color: #fff;
     /* remove OS focus indicator */
     outline: none;

@@ -1,4 +1,21 @@
 <Template>
+
+  <SingletonDefinition>
+    <ObjectName>Samplers_Expander_1-4_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler_expand_button.xml">
+            <SetVariable name="SamCount">1-4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
     <ObjectName>SamplerContainer</ObjectName>
     <Layout>horizontal</Layout>
@@ -25,7 +42,7 @@
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>SamplerExpand_Singleton</ObjectName>
+                <ObjectName>Samplers_Expander_1-4_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
@@ -56,7 +73,7 @@
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>SamplerExpand_Singleton</ObjectName>
+                <ObjectName>Samplers_Expander_1-4_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
