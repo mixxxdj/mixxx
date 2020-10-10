@@ -119,7 +119,7 @@
           </WidgetGroup><!-- ArtistRow -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
           <BindProperty>highlight</BindProperty>
         </Connection>
       </WidgetGroup><!-- DeckRow_2_3_ArtistTitleTime -->

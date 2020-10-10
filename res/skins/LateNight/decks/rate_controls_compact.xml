@@ -7,7 +7,7 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>DeckRateSeparator</ObjectName>
+        <ObjectName>DeckRateSeparatorCompact</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children/>

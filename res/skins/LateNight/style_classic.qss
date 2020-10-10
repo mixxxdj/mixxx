@@ -185,10 +185,13 @@ WSearchLineEdit,
   }
 
 #DeckRateSeparator,
+#DeckRateSeparatorCompact,
 #MasterMixerSeparator {
+  /* needs a background color to paint the borders */
+  background-color: transparent;
   min-width: 0px;
   max-width: 0px;
-}
+  }
 
 #FxSlotSeparatorV {
   min-width: 1px;
@@ -251,6 +254,7 @@ WLibrary,
 #DeckRow_5_Compact,
 #DeckSettingsContainer, #DeckSettingsContainerCompact,
 #DeckRateSeparator,
+#DeckRateSeparatorCompact,
 #ExpandingBottomBorder,
 #PreviewPlayBox,
 #SamplerTitle, #SamplerPlay, #SamplerSettings,
@@ -281,6 +285,11 @@ WLibrary,
 #CompactDecksCenterSpacer {
   min-width: 4px;
   max-width: 4px;
+}
+
+#DeckRateSpacer {
+  min-width: 2px;
+  max-width: 2px;
 }
 
 #Deck1, #DeckCompact1, #DeckMini1,

@@ -267,6 +267,7 @@ WSearchLineEdit {
 /************ lines / grooves / splitters *********************/
 
 #DeckRateSeparator,
+#DeckRateSeparatorCompact,
 #MasterMixerSeparator,
 #MasterHeadphoneSeparator,
 #FxSlotSeparatorV,
@@ -276,6 +277,7 @@ WSearchLineEdit {
   background-color: transparent;
   }
   #DeckRateSeparator,
+  #DeckRateSeparatorCompact,
   #FxSlotSeparatorV {
     min-width: 0px;
     max-width: 0px;
@@ -355,6 +357,11 @@ WSearchLineEdit {
 #CompactDecksCenterSpacer {
   min-width: 4px;
   max-width: 4px;
+}
+
+#DeckRateSpacer {
+  min-width: 0px;
+  max-width: 0px;
 }
 
 #ToolBar {
@@ -570,16 +577,6 @@ WSearchLineEdit {
 #DeckSettingsContainer,
 #DeckSettingsContainerCompact {
   border-width: 1px 0px 1px 0px;
-  }
-  /* without rate controls */
-  #DeckSettingsContainer[highlight="0"],
-  #DeckSettingsContainerCompact[highlight="0"] {
-    margin-right: 2px;
-  }
-  /* with rate controls */
-  #DeckSettingsContainer[highlight="1"],
-  #DeckSettingsContainerCompact[highlight="1"] {
-    margin-right: 0px;
   }
 
   #DeckSettings {
