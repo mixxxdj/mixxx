@@ -219,6 +219,7 @@ int HidController::open() {
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
+    m_iLastPollSize = 0;
 
     setOpen(true);
     startEngine();
@@ -256,8 +257,8 @@ bool HidController::poll() {
     while (true) {
         // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
         unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
-        const int nextBufIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
-        unsigned char* pCurrentBuffer = m_pPollData[nextBufIndex];
+        const int currentBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
+        unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
 
         int bytesRead = hid_read(m_pHidDevice, pCurrentBuffer, kBufferSize);
         if (bytesRead < 0) {
@@ -277,12 +278,12 @@ bool HidController::poll() {
         // have not encountered any controllers that send redundant packets with different report
         // IDs. If any such devices exist, this may be changed to use a separate buffer to store
         // the last packet for each report ID.
-        if (memcmp(pCurrentBuffer, pPreviousBuffer, kBufferSize) == 0) {
+        if (bytesRead == m_iLastPollSize &&
+                memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
             continue;
         }
-        m_iPollingBufferIndex = nextBufIndex;
-        // Zero out the other buffer to remove stale data.
-        memset(pPreviousBuffer, 0, kBufferSize);
+        m_iLastPollSize = bytesRead;
+        m_iPollingBufferIndex = currentBufferIndex;
         auto incomingData = QByteArray::fromRawData(
                 reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
         receive(incomingData, mixxx::Time::elapsed());
