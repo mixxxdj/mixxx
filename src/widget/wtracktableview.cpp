@@ -363,6 +363,11 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     }
 }
 
+int WTrackTableView::getColumnIdFromCurrentIndex() {
+    TrackModel* trackModel = getTrackModel();        
+    return trackModel->sortColumnIdFromColumnIndex(currentIndex().column());
+}
+
 void WTrackTableView::assignPreviousTrackColor() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() <= 0) {

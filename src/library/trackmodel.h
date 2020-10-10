@@ -50,6 +50,7 @@ class TrackModel {
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
     enum SortColumnId {
+        SORTCOLUMN_CURRENTINDEX = -2, // Column with the cursor on it
         SORTCOLUMN_INVALID = -1,
         SORTCOLUMN_ARTIST = 0,
         SORTCOLUMN_TITLE,
