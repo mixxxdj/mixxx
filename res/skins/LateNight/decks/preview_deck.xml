@@ -126,6 +126,7 @@
                     <Children>
                       <Template src="skin:/decks/overview.xml">
                         <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizePreview"/></SetVariable>
+                        <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                       </Template>
                     </Children>
                     <Connection>
