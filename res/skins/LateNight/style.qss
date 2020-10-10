@@ -286,6 +286,12 @@ WOverview QLabel {
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
+ #TrackColorFullCompact {
+    padding: 0px 3px 0px 5px;
+  }
+  #TrackColorMini {
+    padding: 0px 0px 0px 5px;
+  }
 
 #DeckSettings {
   qproperty-layoutAlignment: 'AlignCenter';
