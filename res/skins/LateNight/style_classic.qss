@@ -1584,10 +1584,10 @@ WPushButton#SamplerExpand[displayValue="0"],
 }
 
 #JumpForward {
-  image: url(skin:/classic/buttons/btn__jump_right.svg) no-repeat center center;
+  image: url(skin:/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
 }
 #JumpBack {
-  image: url(skin:/classic/buttons/btn__jump_left.svg) no-repeat center center;
+  image: url(skin:/classic/buttons/btn__beatjump_left.svg) no-repeat center center;
 }
 
 /* Key buttons */

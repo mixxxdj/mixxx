@@ -24,9 +24,9 @@
   <defs
      id="defs18" />
   <path
-     style="fill:#bfbfbe"
+     style="fill:#f2f2f2;fill-opacity:1"
      id="path6"
-     d="m 21,19 -7,-4 7,-4 z" />
+     d="M 11,20 4,16 11,12 Z" />
   <path
      style="fill:#888886;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      d="M 14,3 H 6 v 7 h 6 v 11 h 2 z"

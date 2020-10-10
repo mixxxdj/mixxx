@@ -1943,16 +1943,16 @@ WPushButton#RecButton[displayValue="1"],
   }
 
 #JumpForward {
-  image: url(skin:/palemoon/buttons/btn__jump_right.svg) no-repeat center center;
+  image: url(skin:/palemoon/buttons/btn__beatjump_right.svg) no-repeat center center;
   }
   #JumpForward[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__jump_right_active.svg) no-repeat center center;
+    image: url(skin:/palemoon/buttons/btn__beatjump_right_active.svg) no-repeat center center;
   }
 #JumpBack {
-  image: url(skin:/palemoon/buttons/btn__jump_left.svg) no-repeat center center;
+  image: url(skin:/palemoon/buttons/btn__beatjump_left.svg) no-repeat center center;
   }
   #JumpBack[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__jump_left_active.svg) no-repeat center center;
+    image: url(skin:/palemoon/buttons/btn__beatjump_left_active.svg) no-repeat center center;
   }
 
 /* Key buttons */

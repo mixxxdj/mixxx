@@ -24,7 +24,7 @@
   <defs
      id="defs22" />
   <path
-     d="m 15,3 v 3 l -11,1e-6 v 2 L 15,8 v 3 l 7,-4 z"
+     d="M 15,3 V 6 L 2,6 v 2 h 13 v 3 l 7,-4 z"
      id="path6"
      style="fill:#000001;fill-opacity:1" />
   <g

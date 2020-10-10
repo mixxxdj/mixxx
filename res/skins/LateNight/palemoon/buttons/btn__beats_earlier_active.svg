@@ -24,10 +24,10 @@
   <defs
      id="defs20" />
   <path
-     style="fill-opacity:1;fill:#000001"
+     style="fill:#000001;fill-opacity:1"
      id="path4"
      fill="#a89a8c"
-     d="m9 3v3l11 1e-6v2l-11-1e-6v3l-7-4z" />
+     d="M 9,3 V 6 L 22,6 V 8 L 9,8 v 3 L 2,7 Z" />
   <g
      style="fill-opacity:1;fill:#000001"
      id="g838">

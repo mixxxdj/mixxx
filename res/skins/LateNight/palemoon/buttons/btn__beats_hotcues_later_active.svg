@@ -25,10 +25,10 @@
      id="defs18" />
   <path
      id="path833-3"
-     d="m 18,3 h -8 v 7 h 6 v 11 h 2 z"
+     d="M 14,3 H 6 v 7 h 6 v 11 h 2 z"
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   <path
-     d="m 8.000081,19 7,-4 -7,-4 z"
+     d="m 15,20 7,-4 -7,-4 z"
      id="path6"
      style="fill:#000000;fill-opacity:1" />
 </svg>
