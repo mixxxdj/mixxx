@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
     <info>
-        <name>AKAI MPKmini2 Mapping</name>
+        <name>Akai MPK Mini mkII</name>
         <author>Valerio Vitali</author>
         <description>Effect Rack and Samplers Controller</description>
 	</info>
