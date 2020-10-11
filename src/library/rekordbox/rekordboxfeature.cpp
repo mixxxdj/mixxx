@@ -1297,7 +1297,7 @@ QString RekordboxFeature::formatRootViewHtml() const {
             << tr("Beatgrids")
             << tr("Hot cues")
             << tr("Memory cues")
-            << tr("Loops (not yet supported in Mixxx 2.3)");
+            << tr("Loops (currently only the first loop)");
 
     QString html;
     QString refreshLink = tr("Check for attached Rekordbox USB / SD devices (refresh)");
