@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
     <info>
-        <name>APC Mini Mapping</name>
+        <name>Akai APC Mini</name>
         <author>Valerio Vitali</author>
         <description>MIDI-input and MIDI-output for light control</description>
     </info>
