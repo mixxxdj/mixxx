@@ -20,6 +20,11 @@ ControllerJSProxy* HidController::jsProxy() {
     return new HidControllerJSProxy(this);
 }
 
+namespace {
+constexpr int kReportIdSize = 1;
+constexpr int kMaxHidErrorMessageSize = 512;
+} // namespace
+
 HidController::HidController(const hid_device_info& deviceInfo)
         : Controller(),
           m_pHidDevice(nullptr),
@@ -316,15 +321,41 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
         if (ControllerDebug::enabled()) {
             qWarning() << "Unable to send data to" << getName()
                        << "serial #" << hid_serial << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+                       << safeDecodeWideString(hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         } else {
             qWarning() << "Unable to send data to" << getName() << ":"
-                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
+                       << safeDecodeWideString(hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         }
     } else {
         controllerDebug(result << "bytes sent to" << getName()
-                 << "serial #" << hid_serial
-                 << "(including report ID of" << reportID << ")");
+                               << "serial #" << hid_serial
+                               << "(including report ID of" << reportID << ")");
+    }
+}
+
+void HidController::sendFeatureReport(
+        const QList<int>& dataList, unsigned int reportID) {
+    QByteArray dataArray;
+    dataArray.reserve(kReportIdSize + dataList.size());
+
+    // Append the Report ID to the beginning of dataArray[] per the API..
+    dataArray.append(reportID);
+
+    for (const int datum : dataList) {
+        dataArray.append(datum);
+    }
+
+    int result = hid_send_feature_report(m_pHidDevice,
+            reinterpret_cast<const unsigned char*>(dataArray.constData()),
+            dataArray.size());
+    if (result == -1) {
+        qWarning() << "sendFeatureReport is unable to send data to" << getName()
+                   << "serial #" << hid_serial << ":"
+                   << safeDecodeWideString(hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
+    } else {
+        controllerDebug(result << "bytes sent by sendFeatureReport to" << getName()
+                               << "serial #" << hid_serial
+                               << "(including report ID of" << reportID << ")");
     }
 }
 
