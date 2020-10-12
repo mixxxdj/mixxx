@@ -11,11 +11,11 @@
 #include <QDataStream>
 #include <QFile>
 
-#include "preferences/usersettings.h"
-#include "encoder/encodercallback.h"
 #include "encoder/encoder.h"
+#include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class ConfigKey;
 class ControlProxy;

@@ -14,9 +14,7 @@
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
-
 #include "track/track.h"
-#include "track/beats.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
@@ -619,7 +617,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    int pos = m_currentSample.getValue();
+    double pos = m_currentSample.getValue();
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         if (m_bAdjustingLoopOut) {
             double closestBeat = m_pClosestBeat->get();

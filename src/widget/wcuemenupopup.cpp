@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 
 #include "engine/engine.h"
+#include "track/track.h"
 #include "util/color/color.h"
 
 WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)

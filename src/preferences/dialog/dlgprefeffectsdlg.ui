@@ -32,6 +32,9 @@
         <property name="text">
          <string>Keep metaknob position</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">rbGroupMetaKnob</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -39,6 +42,9 @@
         <property name="text">
          <string>Reset metaknob to effect default</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">rbGroupMetaKnob</string>
+        </attribute>
        </widget>
       </item>
      </layout>
@@ -301,9 +307,16 @@
     </widget>
    </item>
 
-
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>radioButtonKeepMetaknobPosition</tabstop>
+  <tabstop>radioButtonMetaknobLoadDefault</tabstop>
+  <tabstop>availableEffectsList</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="rbGroupMetaKnob"/>
+ </buttongroups>
 </ui>
