@@ -42,7 +42,7 @@ DDJ200.seek = function (channel, control, value, status, group) {
     engine.setValue(group, "playposition", newPos); // Strip search
 };
 
-DDJ200.headmix = function (channel, control, value, status, group) {
+DDJ200.headmix = function (channel, control, value) {
     if (value == 0) { return; }
     DDJ200.headMix_switch = 1 - DDJ200.headMix_switch;
     // toggle headMix knob to values of -1 and 1
