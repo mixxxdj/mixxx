@@ -594,20 +594,72 @@ TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
         this.wheelTouchInertiaTimer = 0;
     }
     if (field.value !== 0) {
-        engine.setValue(this.activeChannel, "scratch2_enable", true);
-    } else {
-        // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
-        // Depending on how fast the platter was moving, lengthen the time we'll wait.
-        var scratchRate = Math.abs(engine.getValue(this.activeChannel, "scratch2"));
-        // Note: inertiaTime multiplier is controller-specific and should be factored out.
-        var inertiaTime = Math.pow(1.8, scratchRate) * 2;
-        if (inertiaTime < 100) {
-            // Just do it now.
-            this.finishJogTouch();
-        } else {
-            this.wheelTouchInertiaTimer = engine.beginTimer(
-                inertiaTime, TraktorS3.bind(TraktorS3.Deck.prototype.finishJogTouch, this), true);
+        if (!this.jogButtonPressed) {
+            engine.setValue(this.activeChannel, "scratch2_enable", true);
         }
+        return;
+    }
+    // The wheel keeps moving after the user lifts their finger, so don't release scratch mode
+    // right away.
+    this.tickReceived = false;
+    this.wheelTouchInertiaTimer = engine.beginTimer(
+        100, TraktorS3.bind(TraktorS3.Deck.prototype.checkJogInertia, this), false);
+};
+
+TraktorS3.Deck.prototype.checkJogInertia = function() {
+    // If we've received no ticks since the last call we are stopped.
+    // In jog mode we always stop right away.
+    if (!this.tickReceived) {
+        engine.setValue(this.activeChannel, "scratch2", 0.0);
+        engine.setValue(this.activeChannel, "scratch2_enable", false);
+        this.playIndicatorHandler(0, this.activeChannel);
+        engine.stopTimer(this.wheelTouchInertiaTimer);
+        this.wheelTouchInertiaTimer = 0;
+    }
+    this.tickReceived = false;
+};
+
+TraktorS3.Deck.prototype.jogHandler = function(field) {
+    this.tickReceived = true;
+    var deltas = this.wheelDeltas(field.value);
+
+    // If jog button is held, do a simple seek.
+    if (this.jogButtonPressed) {
+        // But if we're in the inertial period, ignore any wheel motion.
+        if (this.wheelTouchInertiaTimer !== 0) {
+            return;
+        }
+        var playPosition = engine.getValue(this.activeChannel, "playposition");
+        playPosition += deltas[0] / 2048.0;
+        playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
+        engine.setValue(this.activeChannel, "playposition", playPosition);
+        return;
+    }
+    var tickDelta = deltas[0];
+    var timeDelta = deltas[1];
+
+    // The scratch rate is the ratio of the wheel's speed to "regular" speed,
+    // which we're going to call 33.33 RPM.  It's 768 ticks for a circle, and
+    // 400000 ticks per second, and 33.33 RPM is 1.8 seconds per rotation, so
+    // the standard speed is 768 / (400000 * 1.8)
+    var thirtyThree = 768 / 720000;
+
+    // Our actual speed is tickDelta / timeDelta.  Take the ratio of those to get the
+    // rate ratio.
+    var velocity = (tickDelta / timeDelta) / thirtyThree;
+
+    // The Mixxx scratch code tries to do accumulation and time calculation itself.
+    // This controller is better, so just use its values.
+    if (engine.getValue(this.activeChannel, "scratch2_enable")) {
+        engine.setValue(this.activeChannel, "scratch2", velocity);
+    } else {
+        // If we're playing, just nudge.
+        if (engine.getValue(this.activeChannel, "play")) {
+            velocity /= 4;
+        } else {
+            velocity *= 2;
+        }
+        engine.setValue(this.activeChannel, "jog", velocity);
     }
 };
 
@@ -648,62 +700,6 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
     }
 
     return [tickDelta, timeDelta];
-};
-
-TraktorS3.Deck.prototype.finishJogTouch = function() {
-    this.wheelTouchInertiaTimer = 0;
-
-    // If we've received no ticks since the last call, we are stopped.
-    if (!this.tickReceived) {
-        engine.setValue(this.activeChannel, "scratch2", 0.0);
-        engine.setValue(this.activeChannel, "scratch2_enable", false);
-        this.playIndicatorHandler(0, this.activeChannel);
-    } else {
-        // Check again soon.
-        this.wheelTouchInertiaTimer = engine.beginTimer(
-            100, TraktorS3.bind(TraktorS3.Deck.prototype.finishJogTouch, this), true);
-    }
-    this.tickReceived = false;
-};
-
-TraktorS3.Deck.prototype.jogHandler = function(field) {
-    this.tickReceived = true;
-    var deltas = this.wheelDeltas(field.value);
-
-    // If jog button is held, do a simple seek.
-    if (this.jogButtonPressed) {
-        var playPosition = engine.getValue(this.activeChannel, "playposition");
-        playPosition += deltas[0] / 2048.0;
-        playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
-        engine.setValue(this.activeChannel, "playposition", playPosition);
-        return;
-    }
-    var tickDelta = deltas[0];
-    var timeDelta = deltas[1];
-
-    // The scratch rate is the ratio of the wheel's speed to "regular" speed,
-    // which we're going to call 33.33 RPM.  It's 768 ticks for a circle, and
-    // 400000 ticks per second, and 33.33 RPM is 1.8 seconds per rotation, so
-    // the standard speed is 768 / (400000 * 1.8)
-    var thirtyThree = 768 / 720000;
-
-    // Our actual speed is tickDelta / timeDelta.  Take the ratio of those to get the
-    // rate ratio.
-    var velocity = (tickDelta / timeDelta) / thirtyThree;
-
-    // The Mixxx scratch code tries to do accumulation and time calculation itself.
-    // This controller is better, so just use its values.
-    if (engine.getValue(this.activeChannel, "scratch2_enable")) {
-        engine.setValue(this.activeChannel, "scratch2", velocity);
-    } else {
-        // If we're playing, just nudge.
-        if (engine.getValue(this.activeChannel, "play")) {
-            velocity /= 4;
-        } else {
-            velocity *= 2;
-        }
-        engine.setValue(this.activeChannel, "jog", velocity);
-    }
 };
 
 TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
@@ -854,9 +850,9 @@ TraktorS3.Deck.prototype.colorOutput = function(value, key) {
     this.controller.hid.setOutput(this.group, key, ledValue, !this.controller.batchingOutputs);
 };
 
-TraktorS3.Deck.prototype.playIndicatorHandler = function(value, group, key) {
+TraktorS3.Deck.prototype.playIndicatorHandler = function(value, group, _key) {
     // Also call regular handler
-    this.basicOutput(value, key);
+    this.basicOutput(value, "play_indicator");
     this.wheelOutputByValue(group, value);
 };
 
