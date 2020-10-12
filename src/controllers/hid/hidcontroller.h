@@ -92,6 +92,7 @@ class HidController final : public Controller {
     static constexpr int kNumBuffers = 2;
     static constexpr int kBufferSize = 255;
     unsigned char m_pPollData[kNumBuffers][kBufferSize];
+    int m_iLastPollSize;
     int m_iPollingBufferIndex;
 };
 
