@@ -277,6 +277,8 @@ void DlgPrefLibrary::slotRemoveDir() {
     } else if (removeMsgBox.clickedButton() == deleteAllButton) {
         removalType = Library::RemovalType::PurgeTracks;
     } else {
+        // prevent warning depending on build type
+        Q_UNUSED(leaveUnchangedButton);
         DEBUG_ASSERT(removeMsgBox.clickedButton() == leaveUnchangedButton);
         removalType = Library::RemovalType::KeepTracks;
     }

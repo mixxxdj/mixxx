@@ -1,8 +1,8 @@
 #pragma once
 
+#include <QComboBox>
 #include <QDomNode>
 #include <QEvent>
-#include <QLineEdit>
 #include <QTimer>
 #include <QToolButton>
 
@@ -11,13 +11,15 @@
 
 class SkinContext;
 
-class WSearchLineEdit : public QLineEdit, public WBaseWidget {
+class WSearchLineEdit : public QComboBox, public WBaseWidget {
     Q_OBJECT
   public:
     // Delay for triggering a search while typing
     static constexpr int kMinDebouncingTimeoutMillis = 100;
     static constexpr int kDefaultDebouncingTimeoutMillis = 300;
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
+    static constexpr int kSaveTimout = 5000;
+    static constexpr int kMaxSearchEntries = 500;
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
@@ -50,6 +52,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void slotTextChanged(const QString& text);
 
     void slotTriggerSearch();
+    void slotSaveSearch();
 
   private:
     // TODO(XXX): This setting shouldn't be static and the widget
@@ -74,6 +77,8 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
     int m_frameWidth;
     int m_innerHeight;
+    int m_dropButtonWidth;
 
     QTimer m_debouncingTimer;
+    QTimer m_saveTimer;
 };

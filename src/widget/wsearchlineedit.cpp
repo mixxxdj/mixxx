@@ -1,15 +1,16 @@
+#include "wsearchlineedit.h"
+
 #include <QFont>
+#include <QLineEdit>
 #include <QShortcut>
+#include <QSizePolicy>
 #include <QStyle>
 
-#include "wsearchlineedit.h"
-#include "wskincolor.h"
-#include "wwidget.h"
-
 #include "skin/skincontext.h"
-
 #include "util/assert.h"
 #include "util/logger.h"
+#include "wskincolor.h"
+#include "wwidget.h"
 
 #define ENABLE_TRACE_LOG false
 
@@ -26,7 +27,7 @@ const QString kDisabledText = QStringLiteral("- - -");
 inline QString clearButtonStyleSheet(int pxPaddingRight) {
     DEBUG_ASSERT(pxPaddingRight >= 0);
     return QString(
-            QStringLiteral("QLineEdit { padding-right: %1px; }"))
+            QStringLiteral("WSearchLineEdit { padding-right: %1px; }"))
             .arg(pxPaddingRight);
 }
 
@@ -52,6 +53,12 @@ constexpr int WSearchLineEdit::kDefaultDebouncingTimeoutMillis;
 constexpr int WSearchLineEdit::kMaxDebouncingTimeoutMillis;
 
 //static
+constexpr int WSearchLineEdit::kSaveTimout;
+
+//static
+constexpr int WSearchLineEdit::kMaxSearchEntries;
+
+//static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
 
 //static
@@ -60,21 +67,32 @@ void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
 }
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
-    : QLineEdit(pParent),
-      WBaseWidget(this),
-      m_clearButton(make_parented<QToolButton>(this)) {
+        : QComboBox(pParent),
+          WBaseWidget(this),
+          m_clearButton(make_parented<QToolButton>(this)) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
 
     setAcceptDrops(false);
+    setEditable(true);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setIconSize(QSize(0, 0));
+    setInsertPolicy(QComboBox::InsertAtTop);
 
     //: Shown in the library search bar when it is empty.
-    setPlaceholderText(tr("Search..."));
+    lineEdit()->setPlaceholderText(tr("Search..."));
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
-    // Assume the qss border is at least 1px wide
-    m_frameWidth = 1;
+    // Query style for arrow width and frame border
+    QStyleOptionComboBox styleArrow;
+    styleArrow.initFrom(this);
+    QRect rectArrow(style()->subControlRect(
+            QStyle::CC_ComboBox, &styleArrow, QStyle::SC_ComboBoxArrow, this));
+
+    m_dropButtonWidth = rectArrow.width() + 1;
+    m_frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, this);
+
     m_clearButton->hide();
     connect(m_clearButton,
             &QAbstractButton::clicked,
@@ -94,17 +112,22 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
+    m_saveTimer.setSingleShot(true);
     connect(&m_debouncingTimer,
             &QTimer::timeout,
             this,
             &WSearchLineEdit::slotTriggerSearch);
+    connect(&m_saveTimer,
+            &QTimer::timeout,
+            this,
+            &WSearchLineEdit::slotSaveSearch);
     connect(this,
-            &QLineEdit::textChanged,
+            &QComboBox::currentTextChanged,
             this,
             &WSearchLineEdit::slotTextChanged);
 
     // When you hit enter, it will trigger or clear the search.
-    connect(this,
+    connect(this->lineEdit(),
             &QLineEdit::returnPressed,
             this,
             [this] {
@@ -199,7 +222,7 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
-    QLineEdit::resizeEvent(e);
+    QComboBox::resizeEvent(e);
     m_innerHeight = this->height() - 2 * m_frameWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
@@ -214,7 +237,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     }
     int top = rect().top() + m_frameWidth;
     if (layoutDirection() == Qt::LeftToRight) {
-        m_clearButton->move(rect().right() - m_innerHeight - m_frameWidth, top);
+        m_clearButton->move(rect().right() - m_innerHeight - m_frameWidth - m_dropButtonWidth, top);
     } else {
         m_clearButton->move(m_frameWidth, top);
     }
@@ -223,7 +246,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!text().isNull());
-        return text();
+        return currentText();
     } else {
         return QString();
     }
@@ -234,7 +257,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     kLogger.trace()
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
-    QLineEdit::focusInEvent(event);
+    QComboBox::focusInEvent(event);
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -242,7 +265,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     kLogger.trace()
             << "focusOutEvent";
 #endif // ENABLE_TRACE_LOG
-    QLineEdit::focusOutEvent(event);
+    QComboBox::focusOutEvent(event);
     if (m_debouncingTimer.isActive()) {
         // Trigger a pending search before leaving the edit box.
         // Otherwise the entered text might be ignored and get lost
@@ -258,7 +281,7 @@ void WSearchLineEdit::setTextBlockSignals(const QString& text) {
             << text;
 #endif // ENABLE_TRACE_LOG
     blockSignals(true);
-    setText(text);
+    setCurrentText(text);
     blockSignals(false);
 }
 
@@ -294,6 +317,8 @@ void WSearchLineEdit::slotRestoreSearch(const QString& text) {
     if (text.isNull()) {
         slotDisableSearch();
     } else {
+        // we save the current search before we switch to a new text
+        slotSaveSearch();
         enableSearch(text);
     }
 }
@@ -307,6 +332,25 @@ void WSearchLineEdit::slotTriggerSearch() {
     DEBUG_ASSERT(isEnabled());
     m_debouncingTimer.stop();
     emit search(getSearchText());
+}
+
+/// saves the current query as selection
+void WSearchLineEdit::slotSaveSearch() {
+    qDebug() << "save search" << findData(currentText(), Qt::DisplayRole);
+    DEBUG_ASSERT(isEnabled());
+    m_saveTimer.stop();
+    if (currentText().length()) {
+        int cIndex = findData(currentText(), Qt::DisplayRole);
+        if (cIndex == -1) {
+            insertItem(0, currentText());
+            setCurrentIndex(0);
+            while (count() > kMaxSearchEntries) {
+                removeItem(kMaxSearchEntries);
+            }
+        } else {
+            setCurrentIndex(cIndex);
+        }
+    }
 }
 
 void WSearchLineEdit::refreshState() {
@@ -365,7 +409,7 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QLineEdit::event(pEvent);
+    return QComboBox::event(pEvent);
 }
 
 void WSearchLineEdit::slotClearSearch() {
@@ -379,7 +423,7 @@ void WSearchLineEdit::slotClearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
-    setText(kEmptySearch);
+    setCurrentText(kEmptySearch);
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }
@@ -413,6 +457,7 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
         // to an invalid value is an expected and valid use case.
         DEBUG_ASSERT(!m_debouncingTimer.isActive());
     }
+    m_saveTimer.start(kSaveTimout);
 }
 
 void WSearchLineEdit::slotSetShortcutFocus() {
