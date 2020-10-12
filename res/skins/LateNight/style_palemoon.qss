@@ -1477,7 +1477,8 @@ WEffectSelector,
 #SyncDeck, #SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
-#SamplerContainer WPushButton,
+#Sampler WPushButton,
+#SamplerMini WPushButton,
 #MicAuxRack WPushButton,
 #PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
@@ -1512,7 +1513,7 @@ WPushButton#CrossfaderButton,
 #EQKillButtonBox WPushButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 #FxToggleButton[displayValue="0"],
-#SamplerContainer WPushButton[displayValue="0"],
+WPushButton#PlaySampler[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
 /* Beatsize up/down buttons */
@@ -1577,8 +1578,8 @@ WBeatSpinBox::down-button {
 /* Orange for 'active' status */
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
-#PlaySampler[displayValue="1"],
-#PlayPreview[displayValue="1"],
+WPushButton#PlaySampler[displayValue="1"],
+WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
@@ -2847,7 +2848,7 @@ WEffectSelector::item,
   #SkinSettingsNumToggleHeader[hover="true"],
   #SkinSettingsMixerToggle[hover="true"],
   #SkinSettingsLabelButton[hover="true"] {
-    background-color: 2#c454f;
+    background-color: #2c454f;
     border-radius: 1px;
     color: #fff;
     /* remove OS focus indicator */

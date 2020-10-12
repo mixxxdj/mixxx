@@ -20,7 +20,7 @@
               <Number>1</Number>
             </State>
             <Connection>
-              <ConfigKey>[Skin],expand_samplers_<Variable name="SamCount"/></ConfigKey>
+              <ConfigKey>[LateNight],expand_samplers_<Variable name="SamCount"/></ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>

@@ -3,16 +3,9 @@
   <SingletonDefinition>
     <ObjectName>Samplers_Expander_1-4_Singleton</ObjectName>
     <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:/samplers/sampler_expand_button.xml">
-            <SetVariable name="SamCount">1-4</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
+      <Template src="skin:/samplers/sampler_expand_button.xml">
+        <SetVariable name="SamCount">1-4</SetVariable>
+      </Template>
     </Children>
   </SingletonDefinition>
 
@@ -23,7 +16,7 @@
     <Children>
 
       <!-- Select between big or small samplers -->
-      <WidgetStack currentpage="[Skin],expand_samplers">
+      <WidgetStack currentpage="[LateNight],expand_samplers_1-4">
         <Children>
 
           <!-- 4 small Samplers -->
@@ -58,7 +51,7 @@
           <!-- /4 small Samplers -->
 
           <!-- 4 big Samplers -->
-          <WidgetGroup trigger="[Skin],expand_samplers" on_hide_select="0">
+          <WidgetGroup trigger="[LateNight],expand_4samplers" on_hide_select="0">
             <ObjectName>SamplerRow</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
