@@ -216,6 +216,7 @@ int HidController::open() {
         return -1;
     }
 
+    // This isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
