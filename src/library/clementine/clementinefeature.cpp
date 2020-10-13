@@ -5,6 +5,8 @@
 #include "library/clementine/clementinefeature.h"
 
 #include "library/clementine/clementinedbconnection.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "library/dao/settingsdao.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/clementine/clementineplaylistmodel.h"
@@ -91,9 +93,8 @@ void ClementineFeature::activate() {
 
         m_isActivated =  true;
 
-        auto pRootItem = std::make_unique<TreeItem>(this);
+        std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
         QList<ClementineDbConnection::Playlist> playlists = m_connection.getPlaylists();
-
         for (const ClementineDbConnection::Playlist& playlist: playlists) {
             qDebug() << playlist.name;
             // append the playlist to the child model
@@ -141,8 +142,9 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackI
         int playlistID = item->getData().toInt();
         qDebug() << "ClementineFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistID;
         if (playlistID > 0) {
-            ClementinePlaylistModel* pPlaylistModelToAdd = new ClementinePlaylistModel(this, m_pTrackCollection, &m_connection);
+            ClementinePlaylistModel* pPlaylistModelToAdd = new ClementinePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
             pPlaylistModelToAdd->setTableModel(playlistID);
+            pPlaylistModelToAdd->select();
 
             // Copy Tracks
             int rows = pPlaylistModelToAdd->rowCount();

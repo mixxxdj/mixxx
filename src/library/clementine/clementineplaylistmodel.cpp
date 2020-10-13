@@ -1,14 +1,14 @@
-#include <QtAlgorithms>
+//#include <QtAlgorithms>
 #include <QtDebug>
 
 #include "library/clementine/clementineplaylistmodel.h"
 #include "library/clementine/clementinedbconnection.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
-#include "library/previewbuttondelegate.h"
+#include "library/trackcollectionmanager.h"
+#include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
-#include "mixer/playermanager.h"
 
 #define Clementine_TABLE "Clementine"
 #define CLM_VIEW_ORDER "position"
@@ -186,7 +186,7 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
          << CLM_COMPOSER;
 
     QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(),
+            new BaseTrackCache(m_pTrackCollectionManager ->internalCollection(),
                 Clementine_TABLE, 
                 CLM_VIEW_ORDER,
                 trackSourceColumns,
