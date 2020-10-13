@@ -1,5 +1,4 @@
-#ifndef CLEMENTINEPLAYLISTMODEL_H
-#define CLEMENTINEPLAYLISTMODEL_H
+#pragma once
 
 #include <QHash>
 #include <QtSql>
@@ -28,18 +27,6 @@ class ClementinePlaylistModel : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     Capabilities getCapabilities() const final;
 
-    //bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) final;
-
-  //protected:
-  //  // Use this if you want a model that is read-only.
-  //  Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const final;
-  //  // Use this if you want a model that can be changed
-  //  Qt::ItemFlags readWriteFlags(const QModelIndex &index) const final;
-
-  //private slots:
-  //  void tracksChanged(QSet<TrackId> trackIds);
-  //  void trackLoaded(QString group, TrackPointer pTrack);
-
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const final;
 
@@ -49,5 +36,3 @@ class ClementinePlaylistModel : public BaseSqlTableModel {
     ClementineDbConnection* m_pConnection;
     int m_playlistId;
 };
-
-#endif // ClementinePLAYLISTMODEL_H

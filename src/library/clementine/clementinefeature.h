@@ -1,6 +1,4 @@
-
-#ifndef CLEMENTINEFEATURE_H
-#define CLEMENTINEFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -9,7 +7,7 @@
 #include <QFutureWatcher>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
 #include "library/clementine/clementinedbconnection.h"
@@ -28,8 +26,6 @@ class ClementineFeature : public BaseExternalLibraryFeature {
     virtual QVariant title();
     virtual QIcon getIcon();
 
-    //QString getSettingsName() const override;
-
     virtual TreeItemModel* getChildModel();
 
   public slots:
@@ -42,7 +38,6 @@ class ClementineFeature : public BaseExternalLibraryFeature {
     ClementinePlaylistModel* m_pClementinePlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
-    TrackCollection* m_pTrackCollection;
     
     //a new DB connection for the worker thread
     ClementineDbConnection m_connection;
@@ -61,5 +56,3 @@ class ClementineFeature : public BaseExternalLibraryFeature {
 
     static const QString Clementine_MOUNT_KEY;
 };
-
-#endif // CLEMENTINEFEATURE_H

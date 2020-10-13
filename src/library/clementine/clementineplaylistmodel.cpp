@@ -41,7 +41,7 @@ ClementinePlaylistModel::~ClementinePlaylistModel() {
 }
 
 void ClementinePlaylistModel::setTableModel(int playlistId) {
-    //qDebug() << "ClementinePlaylistModel::setTableModel" << playlistId;
+    qDebug() << "ClementinePlaylistModel::setTableModel" << playlistId;
     if (m_playlistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;
@@ -198,13 +198,6 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
-//bool ClementinePlaylistModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-//    Q_UNUSED(index);
-//    Q_UNUSED(value);
-//    Q_UNUSED(role);
-//    return false;
-//}
-
 TrackModel::Capabilities ClementinePlaylistModel::getCapabilities() const {
     return Capability::AddToTrackSet |
             Capability::AddToAutoDJ |
@@ -227,65 +220,6 @@ TrackId ClementinePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const 
     }
     return TrackId();
 }
-/*
-Qt::ItemFlags ClementinePlaylistModel::readWriteFlags(const QModelIndex &index) const {
-    if (!index.isValid()) {
-        return Qt::ItemIsEnabled;
-    }
-
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-
-    // Enable dragging songs from this data model to elsewhere (like the waveform
-    // widget to load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    return defaultFlags;
-}
-
-Qt::ItemFlags ClementinePlaylistModel::readOnlyFlags(const QModelIndex &index) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
-
-    //Enable dragging songs from this data model to elsewhere (like the waveform widget to
-    //load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    return defaultFlags;
-}
-
-void ClementinePlaylistModel::tracksChanged(QSet<TrackId> trackIds) {
-    Q_UNUSED(trackIds);
-}
-
-void ClementinePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
-    if (group == m_previewDeckGroup) {
-        // If there was a previously loaded track, refresh its rows so the
-        // preview state will update.
-        if (m_previewDeckTrackId.isValid()) {
-            const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
-            m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
-                QModelIndex left = index(row, 0);
-                QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
-            }
-        }
-        if (pTrack) {
-            for (int row = 0; row < rowCount(); ++row) {
-                QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-                if (rowUrl.toLocalFile() == pTrack->getLocation()) {
-                    m_previewDeckTrackId =
-                            TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
-                    break;
-                }
-            }
-        }
-    }
-}
-*/
 
 QVariant ClementinePlaylistModel::getFieldVariant(const QModelIndex& index,
         const QString& fieldName) const {
@@ -386,6 +320,7 @@ QString ClementinePlaylistModel::getTrackLocation(const QModelIndex& index) cons
 }
 
 bool ClementinePlaylistModel::isColumnInternal(int column) {
-    Q_UNUSED(column);
-    return false;
+    return (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)));
 }

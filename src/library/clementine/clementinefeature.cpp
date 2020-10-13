@@ -19,7 +19,7 @@ ClementineFeature::ClementineFeature(Library* pLibrary, UserSettingsPointer pCon
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_clementine.png") {
     Q_UNUSED(pConfig);
-    m_connection.setTrackCollection(m_pTrackCollection);
+    m_connection.setTrackCollection(m_pLibrary->trackCollections());
     m_pClementinePlaylistModel = new ClementinePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
     m_isActivated = false;
     m_title = tr("Clementine");
@@ -117,7 +117,6 @@ void ClementineFeature::activate() {
     m_pClementinePlaylistModel->setTableModel(0); // Gets the master playlist
     emit(showTrackModel(m_pClementinePlaylistModel));
     emit(enableCoverArtDisplay(false));
-    //showBreadCrumb();
 }
 
 void ClementineFeature::activateChild(const QModelIndex& index) {

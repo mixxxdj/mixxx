@@ -1,9 +1,8 @@
-#ifndef CLEMENTINEDBCONNECTION_H
-#define CLEMENTINEDBCONNECTION_H
+#pragma once
 
 #include <QSqlDatabase>
 #include <QUrl>
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 
 class ClementineDbConnection
@@ -38,7 +37,7 @@ public:
 
     ClementineDbConnection();
     virtual ~ClementineDbConnection();
-    void setTrackCollection(TrackCollection* pTrackCollection);
+    void setTrackCollection(TrackCollectionManager* pTrackCollection);
 
     static QString getDatabaseFile();
 
@@ -48,8 +47,6 @@ public:
 
 private:
     QSqlDatabase m_database;
-    TrackCollection* m_pTrackCollection;
+    TrackCollectionManager* m_pTrackCollectionManager;
 
 };
-
-#endif // CLEMENTINEDBCONNECTION_H

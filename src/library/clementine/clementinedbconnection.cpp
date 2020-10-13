@@ -1,4 +1,4 @@
-#include <QtDebug>
+//#include <QtDebug>
 #include <QDesktopServices>
 #include <QSettings>
 #include <QFile>
@@ -8,6 +8,7 @@
 #include "library/queryutil.h"
 #include "library/clementine/clementinedbconnection.h"
 #include "util/performancetimer.h"
+#include "track/track.h"
 
 ClementineDbConnection::ClementineDbConnection() {
 }
@@ -17,8 +18,8 @@ ClementineDbConnection::~ClementineDbConnection() {
     m_database.close();
 }
 
-void ClementineDbConnection::setTrackCollection(TrackCollection* pTrackCollection) {
-    m_pTrackCollection = pTrackCollection;
+void ClementineDbConnection::setTrackCollection(TrackCollectionManager* pTrackCollection) {
+    m_pTrackCollectionManager = pTrackCollection;
 }
 
 bool ClementineDbConnection::open(const QString& databaseFile) {
@@ -98,7 +99,6 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
 
 
     query.prepare(queryString);
-    //TrackDAO& dao = m_pTrackCollection->getTrackDAO();
     if (query.exec()) {
         while (query.next()) {
             QString type =  query.value(16).toString();
@@ -106,14 +106,11 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
                 continue;
 
             //Search for track in mixxx lib to provide bpm information
-            //QString location = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode).toLocalFile();
-            //bool track_already_in_library = false;
-            //TrackId idTrack = dao.getTrackIdByLocation(location);
-            //bool track_already_in_library = -1;
-            //if (idTrack > 0){
-            //    track_already_in_library  = true;
-            //}
-            //TrackPointer pTrack = dao.getTrackById(idTrack);// getOrAddTrack(location, true, &track_already_in_library);
+            QString location = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode).toLocalFile();
+            bool track_already_in_library = false;
+            TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFileInfo(location),
+                &track_already_in_library);
 
             entry.artist = query.value(4).toString();
             entry.title = query.value(1).toString();
@@ -134,8 +131,8 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
             entry.composer = query.value(14).toString();
 
             if(entry.artist == "" && entry.title == ""){
-                entry.artist = "Unknown";
-                entry.title = "";//location.split(QDir::separator()).last();
+                entry.artist = "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
+                entry.title = location.split(QDir::separator()).last();
             }
             if(entry.bpm == -1){
                 entry.bpm=0;
@@ -147,11 +144,11 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
                 entry.duration=int(duration/1000000000);
             }
 
-            //If found im mixxx lib overwrite information
-            //if(track_already_in_library){
-            //    entry.bpm = pTrack->getBpm();
-            //    entry.duration = pTrack->getDurationInt();
-            //}
+            //If found in mixxx lib overwrite information
+            if(track_already_in_library){
+                entry.bpm = pTrack->getBpm();
+                entry.duration = pTrack->getDurationInt();
+            }
 
             list.append(entry);
         }
@@ -169,20 +166,6 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
 QString ClementineDbConnection::getDatabaseFile() {
 
     QString dbfile;
-
-//#ifdef __APPLE__
-//    dbfile = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-//    dbfile += "/Library/Application Support/Clementine/clementine.db";
-//    if (QFile::exists(dbfile)) {
-//        return dbfile;
-//    }
-//#endif
-//
-//    dbfile = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-//    dbfile += "/.config/Clementine/clementine.db";
-//    if (QFile::exists(dbfile)) {
-//        return dbfile;
-//    }
 
     QSettings ini(QSettings::IniFormat, QSettings::UserScope,
             "Clementine","Clementine");
