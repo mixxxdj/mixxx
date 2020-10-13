@@ -507,4 +507,7 @@ void WSearchLineEdit::slotSetShortcutFocus() {
 void WSearchLineEdit::slotSetFont(const QFont& font) {
     updateStyleMetrics();
     setFont(font);
+    if (lineEdit()) {
+        lineEdit()->setFont(font);
+    }
 }
