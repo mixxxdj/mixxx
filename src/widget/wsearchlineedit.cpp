@@ -81,17 +81,12 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     //: Shown in the library search bar when it is empty.
     lineEdit()->setPlaceholderText(tr("Search..."));
+    installEventFilter(this);
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
     // Query style for arrow width and frame border
-    QStyleOptionComboBox styleArrow;
-    styleArrow.initFrom(this);
-    QRect rectArrow(style()->subControlRect(
-            QStyle::CC_ComboBox, &styleArrow, QStyle::SC_ComboBoxArrow, this));
-
-    m_dropButtonWidth = rectArrow.width() + 1;
-    m_frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, this);
+    updateStyleMetrics();
 
     m_clearButton->hide();
     connect(m_clearButton,
@@ -221,8 +216,19 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
 }
 
+void WSearchLineEdit::updateStyleMetrics() {
+    QStyleOptionComboBox styleArrow;
+    styleArrow.initFrom(this);
+    QRect rectArrow(style()->subControlRect(
+            QStyle::CC_ComboBox, &styleArrow, QStyle::SC_ComboBoxArrow, this));
+
+    m_dropButtonWidth = rectArrow.width() + 1;
+    m_frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, this);
+}
+
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QComboBox::resizeEvent(e);
+    updateStyleMetrics();
     m_innerHeight = this->height() - 2 * m_frameWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
@@ -239,7 +245,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     if (layoutDirection() == Qt::LeftToRight) {
         m_clearButton->move(rect().right() - m_innerHeight - m_frameWidth - m_dropButtonWidth, top);
     } else {
-        m_clearButton->move(m_frameWidth, top);
+        m_clearButton->move(m_frameWidth + m_dropButtonWidth, top);
     }
 }
 
@@ -250,6 +256,25 @@ QString WSearchLineEdit::getSearchText() const {
     } else {
         return QString();
     }
+}
+
+bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Down) {
+            // in case the user entered a new search query
+            // und presses the down key, save the query for later recall
+            if (findData(currentText(), Qt::DisplayRole) == -1) {
+                slotSaveSearch();
+            }
+        } else if (keyEvent->key() == Qt::Key_Enter) {
+            if (findData(currentText(), Qt::DisplayRole) == -1) {
+                slotSaveSearch();
+            }
+            return true;
+        }
+    }
+    return QComboBox::eventFilter(obj, event);
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
@@ -336,19 +361,22 @@ void WSearchLineEdit::slotTriggerSearch() {
 
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
-    qDebug() << "save search" << findData(currentText(), Qt::DisplayRole);
-    DEBUG_ASSERT(isEnabled());
+    int cIndex = findData(currentText(), Qt::DisplayRole);
+    qDebug() << "save search. Index: " << cIndex;
     m_saveTimer.stop();
-    if (currentText().length()) {
-        int cIndex = findData(currentText(), Qt::DisplayRole);
-        if (cIndex == -1) {
-            insertItem(0, currentText());
-            setCurrentIndex(0);
-            while (count() > kMaxSearchEntries) {
-                removeItem(kMaxSearchEntries);
-            }
-        } else {
-            setCurrentIndex(cIndex);
+    // entry already exists and is on top
+    if (cIndex == 0) {
+        return;
+    }
+    if (currentText().length() && isEnabled()) {
+        // we remove the existing item and add a new one at the top
+        if (cIndex != -1) {
+            removeItem(cIndex);
+        }
+        insertItem(0, currentText());
+        setCurrentIndex(0);
+        while (count() > kMaxSearchEntries) {
+            removeItem(kMaxSearchEntries);
         }
     }
 }
@@ -363,6 +391,17 @@ void WSearchLineEdit::refreshState() {
     } else {
         slotDisableSearch();
     }
+}
+
+void WSearchLineEdit::showPopup() {
+    int cIndex = findData(currentText(), Qt::DisplayRole);
+    if (cIndex == -1) {
+        slotSaveSearch();
+    } else {
+        m_saveTimer.stop();
+        setCurrentIndex(cIndex);
+    }
+    QComboBox::showPopup();
 }
 
 void WSearchLineEdit::updateEditBox(const QString& text) {
@@ -466,5 +505,6 @@ void WSearchLineEdit::slotSetShortcutFocus() {
 
 // Use the same font as the library table and the sidebar
 void WSearchLineEdit::slotSetFont(const QFont& font) {
+    updateStyleMetrics();
     setFont(font);
 }

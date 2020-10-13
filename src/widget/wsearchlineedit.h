@@ -23,6 +23,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
+    virtual void showPopup();
 
     explicit WSearchLineEdit(QWidget* pParent);
     ~WSearchLineEdit() override = default;
@@ -34,6 +35,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void focusInEvent(QFocusEvent*) override;
     void focusOutEvent(QFocusEvent*) override;
     bool event(QEvent*) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
   signals:
     void search(const QString& text);
@@ -67,6 +69,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void enableSearch(const QString& text);
     void updateEditBox(const QString& text);
     void updateClearButton(const QString& text);
+    void updateStyleMetrics();
 
     QString getSearchText() const;
 
