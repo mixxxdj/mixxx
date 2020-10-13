@@ -425,6 +425,7 @@ void DlgTrackInfo::saveTrack() {
     if (m_beatsChanged) {
         m_pLoadedTrack->setBeats(m_pBeatsClone);
         reloadTrackBeats(*m_pLoadedTrack);
+        m_beatsChanged = false;
     }
 
     // If the user is editing the key and hits enter to close DlgTrackInfo, the

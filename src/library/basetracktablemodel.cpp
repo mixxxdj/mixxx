@@ -546,7 +546,7 @@ QVariant BaseTrackTableModel::roleValue(
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
             if (ok && bpmValue > 0.0) {
-                return mixxx::Bpm::roundBpm(bpmValue);
+                return mixxx::Bpm::displayString(bpmValue);
             } else {
                 return QChar('-');
             }

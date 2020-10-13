@@ -1260,7 +1260,7 @@ class RoundBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
 } // anonymous namespace
 
 void WTrackMenu::slotRoundBpm() {
-    const auto progressLabelText = tr("Round BPM of %n track(s)", "", getTrackCount());
+    const auto progressLabelText = tr("Rounding BPM of %n track(s)", "", getTrackCount());
     const auto trackOperator = RoundBpmTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
