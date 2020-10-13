@@ -467,4 +467,7 @@ void WSearchLineEdit::slotSetShortcutFocus() {
 // Use the same font as the library table and the sidebar
 void WSearchLineEdit::slotSetFont(const QFont& font) {
     setFont(font);
+    if (lineEdit()) {
+        lineEdit()->setFont(font);
+    }
 }
