@@ -49,9 +49,10 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
     if (m_playlistId >= 0) {
         // Clear old playlist
         m_playlistId = -1;
-        QSqlQuery query(m_database);//m_pTrackCollection->database());
+        QSqlQuery query(m_database);
         QString strQuery("DELETE FROM " Clementine_TABLE);
         if (!query.exec(strQuery)) {
+            LOG_FAILED_QUERY(query);
         }
     }
 
@@ -59,7 +60,7 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
         // setup new playlist
         m_playlistId = playlistId;
 
-        QSqlQuery query(m_database);//m_pTrackCollection->database());
+        QSqlQuery query(m_database);
         QString strQuery("CREATE TEMP TABLE IF NOT EXISTS " Clementine_TABLE
             " (" CLM_VIEW_ORDER " INTEGER, "
                  CLM_ARTIST " TEXT, "
