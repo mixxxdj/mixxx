@@ -1,6 +1,4 @@
-
-#ifndef CLEMENTINEFEATURE_H
-#define CLEMENTINEFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -62,5 +60,3 @@ class ClementineFeature : public BaseExternalLibraryFeature {
 
     static const QString Clementine_MOUNT_KEY;
 };
-
-#endif // CLEMENTINEFEATURE_H

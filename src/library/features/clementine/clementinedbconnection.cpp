@@ -129,7 +129,7 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
             entry.composer = query.value(14).toString();
 
             if(entry.artist == "" && entry.title == ""){
-                entry.artist = "Unknown";
+                entry.artist = QStringLiteral("[unknown]");
                 entry.title = location.split(QDir::separator()).last();
             }
             if(entry.bpm == -1){
@@ -139,7 +139,7 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
                 entry.duration=0;
             }
             else{
-                entry.duration=int(duration/1000000000);
+                entry.duration = static_cast<int>(duration / 1000000000);
             }
 
             //If found im mixxx lib overwrite information

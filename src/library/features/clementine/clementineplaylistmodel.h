@@ -1,5 +1,4 @@
-#ifndef CLEMENTINEPLAYLISTMODEL_H
-#define CLEMENTINEPLAYLISTMODEL_H
+#pragma once
 
 #include <QHash>
 #include <QtSql>
@@ -45,5 +44,3 @@ class ClementinePlaylistModel : public BaseSqlTableModel {
     ClementineDbConnection* m_pConnection;
     int m_playlistId;
 };
-
-#endif // ClementinePLAYLISTMODEL_H
