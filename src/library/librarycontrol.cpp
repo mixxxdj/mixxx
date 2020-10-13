@@ -211,6 +211,38 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotTrackColorNext);
 
+    // Control to navigate between widgets (tab/shit+tab button)
+    m_pSelectHistroyNext = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_next"));
+    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_prev"));
+    m_pSelectHistory = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "search_history_move"), false);
+    connect(m_pSelectHistroyNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this]() {
+                if (m_pSearchbox) {
+                    m_pSearchbox->slotMoveSelectedHistory(1);
+                }
+            });
+    connect(m_pSelectHistoryPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this]() {
+                if (m_pSearchbox) {
+                    m_pSearchbox->slotMoveSelectedHistory(-1);
+                }
+            });
+    connect(m_pSelectHistory.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double direction) {
+                if (m_pSearchbox) {
+                    m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(direction));
+                }
+            });
+
     /// Deprecated controls
     m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));
     connect(m_pSelectNextTrack.get(),

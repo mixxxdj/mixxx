@@ -49,9 +49,13 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void slotClearSearch();
     bool slotClearSearchIfClearButtonHasFocus();
 
+    /// Select the next/previous entry from the history
+    void slotMoveSelectedHistory(int direction);
+
   private slots:
     void slotSetShortcutFocus();
     void slotTextChanged(const QString& text);
+    void slotIndexChanged(int index);
 
     void slotTriggerSearch();
     void slotSaveSearch();

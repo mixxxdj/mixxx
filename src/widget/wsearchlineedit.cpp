@@ -120,6 +120,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             &QComboBox::currentTextChanged,
             this,
             &WSearchLineEdit::slotTextChanged);
+    connect(this,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &WSearchLineEdit::slotIndexChanged);
 
     // When you hit enter, it will trigger or clear the search.
     connect(this->lineEdit(),
@@ -381,6 +385,16 @@ void WSearchLineEdit::slotSaveSearch() {
     }
 }
 
+void WSearchLineEdit::slotMoveSelectedHistory(int direction) {
+    int nIndex = currentIndex() + direction;
+    // we wrap around to the last entry on backwards direction
+    if (nIndex < -1) {
+        nIndex = count() - 1;
+    }
+    setCurrentIndex(nIndex);
+    m_saveTimer.stop();
+}
+
 void WSearchLineEdit::refreshState() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -473,6 +487,13 @@ bool WSearchLineEdit::slotClearSearchIfClearButtonHasFocus() {
     }
     slotClearSearch();
     return true;
+}
+
+void WSearchLineEdit::slotIndexChanged(int index) {
+    qDebug() << "index changed " << index;
+    if (index != -1) {
+        m_saveTimer.stop();
+    }
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {
