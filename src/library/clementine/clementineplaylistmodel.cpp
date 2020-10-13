@@ -1,4 +1,3 @@
-//#include <QtAlgorithms>
 #include <QtDebug>
 
 #include "library/clementine/clementineplaylistmodel.h"

@@ -5,9 +5,7 @@
 
 #include "library/trackmodel.h"
 #include "library/trackcollection.h"
-#include "library/dao/trackdao.h"
 #include "library/clementine/clementinedbconnection.h"
-#include "library/stardelegate.h"
 #include "library/basesqltablemodel.h"
 
 class ClementinePlaylistModel : public BaseSqlTableModel {

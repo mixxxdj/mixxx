@@ -1101,7 +1101,7 @@ class MixxxCore(Feature):
                    "src/library/banshee/bansheeplaylistmodel.cpp",
                    "src/library/banshee/bansheedbconnection.cpp",
                    
-	           "src/library/clementine/clementinedbconnection.cpp", 
+                   "src/library/clementine/clementinedbconnection.cpp", 
                    "src/library/clementine/clementinefeature.cpp", 
                    "src/library/clementine/clementineplaylistmodel.cpp", 
 
