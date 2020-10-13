@@ -160,6 +160,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
+    checkBox_show_clementine->setChecked(true); 
     checkBox_show_rekordbox->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
     checkBoxEditMetadataSelectedClicked->setChecked(PREF_LIBRARY_EDIT_METADATA_DEFAULT);
@@ -185,6 +186,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"), true));
     checkBox_show_traktor->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
+    checkBox_show_clementine->setChecked(m_pConfig->getValue( 
+            ConfigKey("[Library]","ShowClementineLibrary"), true)); 
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
@@ -324,6 +327,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]","ShowClementineLibrary"), 
+                ConfigValue((int)checkBox_show_clementine->isChecked())); 
     m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),

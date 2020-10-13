@@ -11,6 +11,7 @@
 #include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
+#include "library/clementine/clementinefeature.h"
 #include "library/browse/browsefeature.h"
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
@@ -150,6 +151,13 @@ Library::Library(
         BansheeFeature::prepareDbPath(m_pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pConfig));
+        }
+    }
+    if (m_pConfig->getValue(
+                ConfigKey(kConfigGroup, "ShowClementineLibrary"), true)) {
+        ClementineFeature::prepareDbPath(m_pConfig);
+        if (ClementineFeature::isSupported()) {
+            addFeature(new ClementineFeature(this, m_pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
