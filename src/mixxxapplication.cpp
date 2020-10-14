@@ -43,10 +43,11 @@ Q_IMPORT_PLUGIN(qtaccessiblewidgets)
 
 namespace {
 
+/// This class allows to change the button of a mouse event on the fly. 
+/// This is required because we want to change the behaviour of Qts mouse
+/// buttony synthesizer without duplicate all the code. 
 class QMouseEventEditable : public QMouseEvent {
   public:
-    // Inherit constructors from base class
-    using QMouseEvent::QMouseEvent;
     void setButton(Qt::MouseButton button) {
         b = button;
     }
