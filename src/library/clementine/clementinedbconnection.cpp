@@ -103,7 +103,9 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
                 continue;
 
             //Search for track in mixxx lib to provide bpm information
-            QString location = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode).toLocalFile();
+            QString location = QUrl::fromEncoded(
+                    query.value(2).toByteArray(), QUrl::StrictMode)
+                                       .toLocalFile();
             bool track_already_in_library = false;
             TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
                     TrackRef::fromFileInfo(location),
@@ -128,7 +130,8 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
             entry.composer = query.value(14).toString();
 
             if (entry.artist == "" && entry.title == "") {
-                entry.artist = "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
+                entry.artist =
+                        "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
                 entry.title = location.split(QDir::separator()).last();
             }
             if (entry.bpm == -1) {
