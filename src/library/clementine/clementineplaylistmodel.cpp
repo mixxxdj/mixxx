@@ -1,6 +1,7 @@
+#include "library/clementine/clementineplaylistmodel.h"
+
 #include <QtDebug>
 
-#include "library/clementine/clementineplaylistmodel.h"
 #include "library/clementine/clementinedbconnection.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
@@ -62,68 +63,21 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
 
         QSqlQuery query(m_database);
         QString strQuery("CREATE TEMP TABLE IF NOT EXISTS " Clementine_TABLE
-            " (" CLM_VIEW_ORDER " INTEGER, "
-                 CLM_ARTIST " TEXT, "
-                 CLM_TITLE " TEXT, "
-                 CLM_DURATION " INTEGER, "
-                 CLM_URI " TEXT, "
-                 CLM_ALBUM " TEXT, "
-                 CLM_ALBUM_ARTIST " TEXT, "
-                 CLM_YEAR " INTEGER, "
-                 CLM_RATING " INTEGER, "
-                 CLM_GENRE " TEXT, "
-                 CLM_GROUPING " TEXT, "
-                 CLM_TRACKNUMBER " INTEGER, "
-                 //CLM_DATEADDED " INTEGER, "
-                 CLM_BPM " INTEGER, "
-                 CLM_BITRATE " INTEGER, "
-                 CLM_COMMENT " TEXT, "
-                 CLM_PLAYCOUNT" INTEGER, "
-                 CLM_COMPOSER " TEXT, "
-                 CLM_PREVIEW " TEXT)");
+                         " (" CLM_VIEW_ORDER " INTEGER, " CLM_ARTIST " TEXT, " CLM_TITLE " TEXT, " CLM_DURATION " INTEGER, " CLM_URI " TEXT, " CLM_ALBUM " TEXT, " CLM_ALBUM_ARTIST " TEXT, " CLM_YEAR " INTEGER, " CLM_RATING " INTEGER, " CLM_GENRE " TEXT, " CLM_GROUPING " TEXT, " CLM_TRACKNUMBER " INTEGER, "
+                //CLM_DATEADDED " INTEGER, "
+                CLM_BPM " INTEGER, " CLM_BITRATE " INTEGER, " CLM_COMMENT " TEXT, " CLM_PLAYCOUNT " INTEGER, " CLM_COMPOSER " TEXT, " CLM_PREVIEW " TEXT)");
         if (!query.exec(strQuery)) {
             LOG_FAILED_QUERY(query);
         }
 
         query.prepare("INSERT INTO " Clementine_TABLE
-                " (" CLM_VIEW_ORDER ", "
-                     CLM_ARTIST ", "
-                     CLM_TITLE ", "
-                     CLM_DURATION ", "
-                     CLM_URI ", "
-                     CLM_ALBUM ", "
-                     CLM_ALBUM_ARTIST ", "
-                     CLM_YEAR ", "
-                     CLM_RATING ", "
-                     CLM_GENRE ", "
-                     CLM_GROUPING ", "
-                     CLM_TRACKNUMBER ", "
-                     //CLM_DATEADDED ", "
-                     CLM_BPM ", "
-                     CLM_BITRATE ", "
-                     CLM_COMMENT ", "
-                     CLM_PLAYCOUNT ", "
-                     CLM_COMPOSER ") "
-                     "VALUES (:"
-                     CLM_VIEW_ORDER ", :"
-                     CLM_ARTIST ", :"
-                     CLM_TITLE ", :"
-                     CLM_DURATION ", :"
-                     CLM_URI ", :"
-                     CLM_ALBUM ", :"
-                     CLM_ALBUM_ARTIST ", :"
-                     CLM_YEAR ", :"
-                     CLM_RATING ", :"
-                     CLM_GENRE ", :"
-                     CLM_GROUPING ", :"
-                     CLM_TRACKNUMBER ", :"
-                     //CLM_DATEADDED ", :"
-                     CLM_BPM ", :"
-                     CLM_BITRATE ", :"
-                     CLM_COMMENT ", :"
-                     CLM_PLAYCOUNT ", :"
-                     CLM_COMPOSER ") ");
-
+                      " (" CLM_VIEW_ORDER ", " CLM_ARTIST ", " CLM_TITLE ", " CLM_DURATION ", " CLM_URI ", " CLM_ALBUM ", " CLM_ALBUM_ARTIST ", " CLM_YEAR ", " CLM_RATING ", " CLM_GENRE ", " CLM_GROUPING ", " CLM_TRACKNUMBER ", "
+                //CLM_DATEADDED ", "
+                CLM_BPM ", " CLM_BITRATE ", " CLM_COMMENT ", " CLM_PLAYCOUNT ", " CLM_COMPOSER
+                      ") "
+                      "VALUES (:" CLM_VIEW_ORDER ", :" CLM_ARTIST ", :" CLM_TITLE ", :" CLM_DURATION ", :" CLM_URI ", :" CLM_ALBUM ", :" CLM_ALBUM_ARTIST ", :" CLM_YEAR ", :" CLM_RATING ", :" CLM_GENRE ", :" CLM_GROUPING ", :" CLM_TRACKNUMBER ", :"
+                //CLM_DATEADDED ", :"
+                CLM_BPM ", :" CLM_BITRATE ", :" CLM_COMMENT ", :" CLM_PLAYCOUNT ", :" CLM_COMPOSER ") ");
 
         QList<struct ClementineDbConnection::PlaylistEntry> list =
                 m_pConnection->getPlaylistEntries(playlistId);
@@ -163,34 +117,34 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
 
     QStringList tableColumns;
     tableColumns << CLM_VIEW_ORDER // 0
-         << CLM_PREVIEW;
+                 << CLM_PREVIEW;
 
     QStringList trackSourceColumns;
     trackSourceColumns << CLM_VIEW_ORDER // 0
-         << CLM_ARTIST
-         << CLM_TITLE
-         << CLM_DURATION
-         << CLM_URI
-         << CLM_ALBUM
-         << CLM_ALBUM_ARTIST
-         << CLM_YEAR
-         << CLM_RATING
-         << CLM_GENRE
-         << CLM_GROUPING
-         << CLM_TRACKNUMBER
-         //<< CLM_DATEADDED
-         << CLM_BPM
-         << CLM_BITRATE
-         << CLM_COMMENT
-         << CLM_PLAYCOUNT
-         << CLM_COMPOSER;
+                       << CLM_ARTIST
+                       << CLM_TITLE
+                       << CLM_DURATION
+                       << CLM_URI
+                       << CLM_ALBUM
+                       << CLM_ALBUM_ARTIST
+                       << CLM_YEAR
+                       << CLM_RATING
+                       << CLM_GENRE
+                       << CLM_GROUPING
+                       << CLM_TRACKNUMBER
+                       //<< CLM_DATEADDED
+                       << CLM_BPM
+                       << CLM_BITRATE
+                       << CLM_COMMENT
+                       << CLM_PLAYCOUNT
+                       << CLM_COMPOSER;
 
     QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollectionManager ->internalCollection(),
-                Clementine_TABLE, 
-                CLM_VIEW_ORDER,
-                trackSourceColumns,
-                false));
+            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(),
+                    Clementine_TABLE,
+                    CLM_VIEW_ORDER,
+                    trackSourceColumns,
+                    false));
 
     setTable(Clementine_TABLE, CLM_VIEW_ORDER, tableColumns, trackSource);
     setSearch("");
@@ -205,7 +159,7 @@ TrackModel::Capabilities ClementinePlaylistModel::getCapabilities() const {
             Capability::LoadToSampler;
 }
 
-Qt::ItemFlags ClementinePlaylistModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags ClementinePlaylistModel::flags(const QModelIndex& index) const {
     return readWriteFlags(index);
 }
 
@@ -268,7 +222,6 @@ TrackPointer ClementinePlaylistModel::getTrack(const QModelIndex& index) const {
             mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
             pTrack->setBeats(pBeats);
         }
-
     }
     return pTrack;
 }

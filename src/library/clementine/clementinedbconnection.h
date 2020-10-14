@@ -2,13 +2,12 @@
 
 #include <QSqlDatabase>
 #include <QUrl>
+
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 
-class ClementineDbConnection
-{
-public:
-
+class ClementineDbConnection {
+  public:
     struct Playlist {
         QString playlistId;
         QString name;
@@ -45,8 +44,7 @@ public:
     QList<struct Playlist> getPlaylists();
     QList<struct PlaylistEntry> getPlaylistEntries(int playlistId);
 
-private:
+  private:
     QSqlDatabase m_database;
     TrackCollectionManager* m_pTrackCollectionManager;
-
 };

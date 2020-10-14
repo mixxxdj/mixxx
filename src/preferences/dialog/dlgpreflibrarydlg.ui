@@ -340,16 +340,16 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0"> 
-       <widget class="QCheckBox" name="checkBox_show_clementine"> 
-        <property name="text"> 
-         <string>Show Clementine Library</string> 
-        </property> 
-        <property name="checked"> 
-         <bool>true</bool> 
-        </property> 
-       </widget> 
-      </item> 
+      <item row="6" column="0">
+       <widget class="QCheckBox" name="checkBox_show_clementine">
+        <property name="text">
+         <string>Show Clementine Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item row="7" column="0">
        <widget class="Line" name="line">
         <property name="orientation">

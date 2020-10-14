@@ -1,15 +1,15 @@
-#include <QMessageBox>
-#include <QtDebug>
-#include <QList>
-
 #include "library/clementine/clementinefeature.h"
 
+#include <QList>
+#include <QMessageBox>
+#include <QtDebug>
+
+#include "library/baseexternalplaylistmodel.h"
 #include "library/clementine/clementinedbconnection.h"
+#include "library/clementine/clementineplaylistmodel.h"
+#include "library/dao/settingsdao.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "library/dao/settingsdao.h"
-#include "library/baseexternalplaylistmodel.h"
-#include "library/clementine/clementineplaylistmodel.h"
 
 const QString ClementineFeature::Clementine_MOUNT_KEY = "mixxx.ClementineFeature.mount";
 QString ClementineFeature::m_databaseFile;
@@ -20,7 +20,8 @@ ClementineFeature::ClementineFeature(Library* pLibrary, UserSettingsPointer pCon
           m_icon(":/images/library/ic_library_clementine.png") {
     Q_UNUSED(pConfig);
     m_connection.setTrackCollection(m_pLibrary->trackCollections());
-    m_pClementinePlaylistModel = new ClementinePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
+    m_pClementinePlaylistModel = new ClementinePlaylistModel(
+            this, m_pLibrary->trackCollections(), &m_connection);
     m_isActivated = false;
     m_title = tr("Clementine");
 }
@@ -45,7 +46,7 @@ bool ClementineFeature::isSupported() {
 
 // static
 void ClementineFeature::prepareDbPath(UserSettingsPointer pConfig) {
-    m_databaseFile = pConfig->getValueString(ConfigKey("[Clementine]","Database"));
+    m_databaseFile = pConfig->getValueString(ConfigKey("[Clementine]", "Database"));
     if (!QFile::exists(m_databaseFile)) {
         // Fall back to default
         m_databaseFile = ClementineDbConnection::getDatabaseFile();
@@ -78,7 +79,7 @@ void ClementineFeature::activate() {
                     NULL,
                     tr("Error loading Clementine database"),
                     tr("Clementine database file not found at\n") +
-                    m_databaseFile);
+                            m_databaseFile);
             qDebug() << m_databaseFile << "does not exist";
         }
 
@@ -87,15 +88,15 @@ void ClementineFeature::activate() {
                     NULL,
                     tr("Error loading Clementine database"),
                     tr("There was an error loading your Clementine database at\n") +
-                    m_databaseFile);
+                            m_databaseFile);
             return;
         }
 
-        m_isActivated =  true;
+        m_isActivated = true;
 
         std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
         QList<ClementineDbConnection::Playlist> playlists = m_connection.getPlaylists();
-        for (const ClementineDbConnection::Playlist& playlist: playlists) {
+        for (const ClementineDbConnection::Playlist& playlist : playlists) {
             qDebug() << playlist.name;
             // append the playlist to the child model
             pRootItem->appendChild(playlist.name, playlist.playlistId);
@@ -120,7 +121,7 @@ void ClementineFeature::activate() {
 }
 
 void ClementineFeature::activateChild(const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     int playlistID = item->getData().toInt();
     if (playlistID > 0) {
         qDebug() << "Activating " << item->getLabel();
@@ -134,21 +135,26 @@ TreeItemModel* ClementineFeature::getChildModel() {
     return &m_childModel;
 }
 
-void ClementineFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
+void ClementineFeature::appendTrackIdsFromRightClickIndex(
+        QList<TrackId>* trackIds, QString* pPlaylist) {
     if (lastRightClickedIndex().isValid()) {
-        TreeItem *item = static_cast<TreeItem*>(lastRightClickedIndex().internalPointer());
+        TreeItem* item = static_cast<TreeItem*>(lastRightClickedIndex().internalPointer());
         *pPlaylist = item->getLabel();
         int playlistID = item->getData().toInt();
-        qDebug() << "ClementineFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistID;
+        qDebug() << "ClementineFeature::appendTrackIdsFromRightClickIndex "
+                 << *pPlaylist << " " << playlistID;
         if (playlistID > 0) {
-            ClementinePlaylistModel* pPlaylistModelToAdd = new ClementinePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
+            ClementinePlaylistModel* pPlaylistModelToAdd =
+                    new ClementinePlaylistModel(this,
+                            m_pLibrary->trackCollections(),
+                            &m_connection);
             pPlaylistModelToAdd->setTableModel(playlistID);
             pPlaylistModelToAdd->select();
 
             // Copy Tracks
             int rows = pPlaylistModelToAdd->rowCount();
             for (int i = 0; i < rows; ++i) {
-                QModelIndex index = pPlaylistModelToAdd->index(i,0);
+                QModelIndex index = pPlaylistModelToAdd->index(i, 0);
                 if (index.isValid()) {
                     //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
                     TrackPointer track = pPlaylistModelToAdd->getTrack(index);

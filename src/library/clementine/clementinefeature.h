@@ -1,17 +1,16 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QStringListModel>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/trackcollectionmanager.h"
-#include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 #include "library/clementine/clementinedbconnection.h"
-
+#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 
 class ClementinePlaylistModel;
 
@@ -38,7 +37,7 @@ class ClementineFeature : public BaseExternalLibraryFeature {
     ClementinePlaylistModel* m_pClementinePlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
-    
+
     //a new DB connection for the worker thread
     ClementineDbConnection m_connection;
 

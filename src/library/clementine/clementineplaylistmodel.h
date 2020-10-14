@@ -3,15 +3,17 @@
 #include <QHash>
 #include <QtSql>
 
-#include "library/trackmodel.h"
-#include "library/trackcollection.h"
-#include "library/clementine/clementinedbconnection.h"
 #include "library/basesqltablemodel.h"
+#include "library/clementine/clementinedbconnection.h"
+#include "library/trackcollection.h"
+#include "library/trackmodel.h"
 
 class ClementinePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    ClementinePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, ClementineDbConnection* pConnection);
+    ClementinePlaylistModel(QObject* pParent,
+            TrackCollectionManager* pTrackCollectionManager,
+            ClementineDbConnection* pConnection);
     ~ClementinePlaylistModel() final;
 
     void setTableModel(int playlistId);
@@ -22,7 +24,7 @@ class ClementinePlaylistModel : public BaseSqlTableModel {
     QString getTrackLocation(const QModelIndex& index) const final;
     bool isColumnInternal(int column) final;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const final;
+    Qt::ItemFlags flags(const QModelIndex& index) const final;
     Capabilities getCapabilities() const final;
 
   private:
