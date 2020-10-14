@@ -283,14 +283,14 @@ TraktorZ2.selectTrackHandler = function(field) {
 };
 
 TraktorZ2.LibraryFocusHandler = function(field) {
-    HIDDebug("TraktorZ2: LibraryFocusHandler");
-
-    // if (TraktorZ2.shiftActive) {
-    // HIDDebug("sorcolum" + engine.getValue("[Library]", "MoveHorizontal"));
-    // script.toggleControl("[Library]", "sort_column_toggle", );
-    // } else {
-    script.toggleControl("[Library]", "MoveFocus");
-    //}
+	HIDDebug("TraktorZ2: LibraryFocusHandler");
+    if (field.value) {
+        if (TraktorZ2.shiftActive) {	          
+            engine.setValue("[Library]", "sort_column_toggle", -1);
+        } else {
+            script.toggleControl("[Library]", "MoveFocus");
+        }
+    }
 };
 
 TraktorZ2.Deck.prototype.loadTrackHandler = function(field) {
