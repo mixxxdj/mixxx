@@ -24,6 +24,7 @@
 #include "track/beatmap.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
+#include "track/track.h"
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"

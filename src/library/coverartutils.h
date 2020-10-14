@@ -7,7 +7,7 @@
 #include <QString>
 #include <QStringList>
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/sandbox.h"
 
 class CoverInfo;
@@ -16,6 +16,8 @@ class TrackFile;
 
 class CoverArtUtils {
   public:
+    CoverArtUtils() = delete;
+
     static QString defaultCoverLocation();
 
     // Extracts the first cover art image embedded within the file.
@@ -55,10 +57,6 @@ class CoverArtUtils {
             const TrackFile& trackFile,
             const QString& albumName,
             const QList<QFileInfo>& covers);
-
-
-  private:
-    CoverArtUtils() {}
 };
 
 // Stateful guessing of cover art by caching the possible
@@ -78,11 +76,9 @@ class CoverInfoGuesser {
             const Track& track);
 
     void guessAndSetCoverInfoForTrack(
-            Track& track) {
-        track.setCoverInfo(guessCoverInfoForTrack(track));
-    }
+            Track& track);
     void guessAndSetCoverInfoForTracks(
-            const QList<TrackPointer>& tracks);
+            const TrackPointerList& tracks);
 
   private:
     QString m_cachedFolder;

@@ -1,20 +1,22 @@
+#include "widget/wcoverart.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QBitmap>
-#include <QLabel>
 #include <QIcon>
-#include <QStylePainter>
+#include <QLabel>
 #include <QStyleOption>
+#include <QStylePainter>
 
 #include "control/controlobject.h"
-#include "widget/wcoverart.h"
-#include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
+#include "widget/wskincolor.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,

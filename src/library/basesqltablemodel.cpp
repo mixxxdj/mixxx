@@ -14,6 +14,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "track/keyutils.h"
+#include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/assert.h"
 #include "util/datetime.h"

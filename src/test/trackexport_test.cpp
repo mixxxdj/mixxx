@@ -47,7 +47,7 @@ TEST_F(TrackExporterTest, SimpleListExport) {
 
     // An initializer list would be prettier here, but it doesn't compile
     // on MSVC or OSX.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     tracks.append(track3);
@@ -85,7 +85,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -131,7 +131,7 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -172,7 +172,7 @@ TEST_F(TrackExporterTest, SkipAll) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -211,7 +211,7 @@ TEST_F(TrackExporterTest, Cancel) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -242,7 +242,7 @@ TEST_F(TrackExporterTest, DedupeList) {
     TrackPointer track2(Track::newTemporary(fileinfo1));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -279,7 +279,7 @@ TEST_F(TrackExporterTest, MungeFilename) {
     TrackPointer track2(Track::newTemporary(fileinfo2));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
