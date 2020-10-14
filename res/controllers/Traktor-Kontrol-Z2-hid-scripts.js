@@ -71,11 +71,11 @@ TraktorZ2.fxOnLedHandler = function(field) {
             }
         }
         if (numOfLoadedandEnabledEffects === 0) {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x00,       MacroFxUnitIdx==2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x00, MacroFxUnitIdx === 2);
         } else if (numOfLoadedandEnabledEffects > 0 && numOfLoadedButDisabledEffects > 0) {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x04,       MacroFxUnitIdx==2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x04, MacroFxUnitIdx === 2);
         } else {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x07,       MacroFxUnitIdx==2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x07, MacroFxUnitIdx == 2);
         }
     }
 };
@@ -283,9 +283,9 @@ TraktorZ2.selectTrackHandler = function(field) {
 };
 
 TraktorZ2.LibraryFocusHandler = function(field) {
-	HIDDebug("TraktorZ2: LibraryFocusHandler");
+    HIDDebug("TraktorZ2: LibraryFocusHandler");
     if (field.value) {
-        if (TraktorZ2.shiftActive) {	          
+        if (TraktorZ2.shiftActive) {
             engine.setValue("[Library]", "sort_column_toggle", -1);
         } else {
             script.toggleControl("[Library]", "MoveFocus");
@@ -377,7 +377,7 @@ TraktorZ2.registerInputPackets = function() {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
     var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
 
-	    HIDDebug("TraktorZ2: registerInputPackets");
+        HIDDebug("TraktorZ2: registerInputPackets");
     for (var idx in TraktorZ2.Decks) {
         var deck = TraktorZ2.Decks[idx];
         deck.registerInputs(messageShort, messageLong);
@@ -528,7 +528,7 @@ TraktorZ2.shiftHandler = function(field) {
         }
 
         if (TraktorZ2.shiftLocked === false) {
-		    TraktorZ2.shiftActive = false;
+            TraktorZ2.shiftActive = false;
             TraktorZ2.controller.setOutput("[Master]", "shift",  0x00,  true);
         }
         HIDDebug("TraktorZ2: shift released");
@@ -567,7 +567,7 @@ TraktorZ2.debugLights = function() {
     // Call this if you want to just send raw packets to the controller (good for figuring out what
     // bytes do what).
     var dataA = [
-	    /* 0x80 */
+        /* 0x80 */
         0x00,  // 0x01 3 bits (0x40, 0x20, 0x10) control Warning Symbol on top left brightness (orange)
         0x00,  // 0x02 3 bits (0x40, 0x20, 0x10) control Timecode-Vinyl Symbol on top right brightness (orange)
         0x0A,  // 0x03 3 bits (0x40, 0x20, 0x10) control Snap-Button S brightness (blue)
@@ -776,24 +776,23 @@ TraktorZ2.hotcueOutputHandler = function() {
 };
 
 TraktorZ2.beatOutputHandler = function(value, group, key) {
-    var ledValue = value;
-    if (value === 1 || value === true) {
+        if (value === 1 || value === true) {
         TraktorZ2.displayLoopCount(group, 0x07);
 
         engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5 * 1000, function() {
             TraktorZ2.displayLoopCount(group, 0x06);
         }, true);
         engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5 * 2 * 1000, function() {
-		    TraktorZ2.displayLoopCount(group, 0x05);
+            TraktorZ2.displayLoopCount(group, 0x05);
         }, true);
         engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 3 * 1000, function() {
-		    TraktorZ2.displayLoopCount(group, 0x04);
+            TraktorZ2.displayLoopCount(group, 0x04);
         }, true);
         engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 4 * 1000, function() {
-		    TraktorZ2.displayLoopCount(group, 0x03);
+            TraktorZ2.displayLoopCount(group, 0x03);
         }, true);
         engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 5 * 1000, function() {
-		    TraktorZ2.displayLoopCount(group, 0x02);
+            TraktorZ2.displayLoopCount(group, 0x02);
         }, true);
     }
 };
@@ -803,13 +802,13 @@ TraktorZ2.displayLoopCount = function(group, brightness) {
     // @param brightness may be aninteger value from 0x00 to 0x07
     var beatloopSize = engine.getValue(group, "beatloopSize");
 
-    var LED_DigitModulus = {
+    var ledDigitModulus = {
         "[Digit3]": 10,
         "[Digit2]": 100,
         "[Digit1]": 1000
     };
 
-    for (var digit in LED_DigitModulus) {
+    for (var digit in ledDigitModulus) {
         var leastSignificiantDigit = (beatloopSize % 10);
         HIDDebug(leastSignificiantDigit + " " + beatloopSize + " " + group + " " + digit);
         beatloopSize = beatloopSize - leastSignificiantDigit;
@@ -874,7 +873,7 @@ TraktorZ2.displayloopCountDigit = function(group, digit, brightness) {
     if (digit === 2 || digit === 3  || digit === 4 || digit === 5 || digit === 6 || digit === 8 || digit === 9) {
         TraktorZ2.controller.setOutput(group, "segment_g", brightness, batching); // ON
     } else {
-	    TraktorZ2.controller.setOutput(group, "segment_g", 0x00,       batching); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_g", 0x00,       batching); // OFF
     }
 };
 
