@@ -38,7 +38,7 @@ WWidget::~WWidget() {
 }
 
 bool WWidget::touchIsRightButton() {
-    return (m_pTouchShift->toBool());
+    return m_pTouchShift->toBool();
 }
 
 bool WWidget::event(QEvent* e) {

@@ -255,5 +255,5 @@ bool MixxxApplication::touchIsRightButton() {
         m_pTouchShift = new ControlProxy(
                 "[Controls]", "touch_shift", this);
     }
-    return (m_pTouchShift->toBool());
+    return m_pTouchShift->toBool();
 }
