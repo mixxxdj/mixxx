@@ -228,9 +228,13 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
                 touchIsRightButton()) {
+            // Assert the assumption that QT synthesizes only one click at a time
+            // = two events (see above)
+            VERIFY_OR_DEBUG_ASSERT(m_rightPessedButtons < 2) {
+                break;
+            }
             mouseEvent->setButton(Qt::RightButton);
             m_rightPessedButtons++;
-            DEBUG_ASSERT(m_rightPessedButtons <= 2);
         }
         break;
     }
