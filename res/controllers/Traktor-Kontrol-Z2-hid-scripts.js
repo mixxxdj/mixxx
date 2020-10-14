@@ -22,6 +22,15 @@ var TraktorZ2 = new function() {
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
     this.browseKnobEncoderState = 0;
+    
+    this.chTimer = [];
+    for (var chidx = 1; chidx <= 2; chidx++) {
+        var ch = "[Channel" + chidx + "]";
+        this.chTimer[ch] = [];
+        for (var timerIdx = 1; timerIdx <= 5; timerIdx++) {
+            this.chTimer[ch][timerIdx] = -1;
+        }
+    }
 };
 
 // Mixxx's javascript doesn't support .bind natively, so here's a simple version.
@@ -148,7 +157,7 @@ TraktorZ2.deckSwitchHandler = function(field) {
 
         } else if (engine.getValue("[Skin]", "show_8_hotcues")) {
             TraktorZ2.deckSwitchHandler[field.group] = 2;
-            TraktorZ2.controller.setOutput(field.group, "!deck", 0x03,       true);
+            TraktorZ2.controller.setOutput(field.group, "!deck", 0x02,       true);
         }
         TraktorZ2.hotcueOutputHandler(); // Set new hotcue button colors
     }
@@ -779,23 +788,35 @@ TraktorZ2.hotcueOutputHandler = function() {
 };
 
 TraktorZ2.beatOutputHandler = function(value, group, key) {
-    if (value === 1 || value === true) {
+    if (value === 1 || value === true) {    
+        for (var timerIdx = 1; timerIdx <= 5; timerIdx++) {
+            if(TraktorZ2.chTimer[group][timerIdx] !== -1) {
+                engine.stopTimer(TraktorZ2.chTimer[group][timerIdx]);
+            }
+        }
         TraktorZ2.displayLoopCount(group, 0x07);
-
-        engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5 * 1000, function() {
-            TraktorZ2.displayLoopCount(group, 0x06);
-        }, true);
-        engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5 * 2 * 1000, function() {
-            TraktorZ2.displayLoopCount(group, 0x05);
-        }, true);
-        engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 3 * 1000, function() {
-            TraktorZ2.displayLoopCount(group, 0x04);
-        }, true);
-        engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 4 * 1000, function() {
-            TraktorZ2.displayLoopCount(group, 0x03);
-        }, true);
-        engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 5 * 1000, function() {
+        
+        if (engine.getValue(group, "bpm") < 160) {            
+            TraktorZ2.chTimer[group][1] = engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5 * 1000, function() {
+                TraktorZ2.displayLoopCount(group, 0x06);
+                TraktorZ2.chTimer[group][1] = -1;
+            }, true);
+            TraktorZ2.chTimer[group][2] = engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5 * 2 * 1000, function() {
+                TraktorZ2.displayLoopCount(group, 0x05);
+                TraktorZ2.chTimer[group][2] = -1;
+            }, true);
+            TraktorZ2.chTimer[group][3] = engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 3 * 1000, function() {
+                TraktorZ2.displayLoopCount(group, 0x04);
+                TraktorZ2.chTimer[group][3] = -1;
+            }, true);
+            TraktorZ2.chTimer[group][4] = engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 4 * 1000, function() {
+                TraktorZ2.displayLoopCount(group, 0x03);
+                TraktorZ2.chTimer[group][4] = -1;
+            }, true);
+        }
+        TraktorZ2.chTimer[group][5] = engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5  * 5 * 1000, function() {
             TraktorZ2.displayLoopCount(group, 0x02);
+            TraktorZ2.chTimer[group][5] = -1;
         }, true);
     }
 };
@@ -803,7 +824,7 @@ TraktorZ2.beatOutputHandler = function(value, group, key) {
 TraktorZ2.displayLoopCount = function(group, brightness) {
     // @param group may be either[Channel1] or [Channel2]
     // @param brightness may be aninteger value from 0x00 to 0x07
-    var beatloopSize = engine.getValue(group, "beatloopSize");
+    var beatloopSize = engine.getValue(group, "beatloop_size");
 
     var ledDigitModulus = {
         "[Digit3]": 10,
