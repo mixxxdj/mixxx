@@ -4,6 +4,9 @@
 /* Last modification: August 2020                                                */
 /* Author: Jörg Wartenberg (based on the Traktor Z2 mapping by Owen Williams)    */
 /* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_Z2     */
+/*                                                                               */
+/* To inhibit false 'Undeclared variable' warnings by codefactor:                */
+/* global HIDController, HIDDebug, HIDPacket, controller                         */
 ///////////////////////////////////////////////////////////////////////////////////
 
 var TraktorZ2 = new function() {
@@ -75,7 +78,7 @@ TraktorZ2.fxOnLedHandler = function(field) {
         } else if (numOfLoadedandEnabledEffects > 0 && numOfLoadedButDisabledEffects > 0) {
             TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x04, MacroFxUnitIdx === 2);
         } else {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x07, MacroFxUnitIdx == 2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x07, MacroFxUnitIdx === 2);
         }
     }
 };
@@ -377,7 +380,7 @@ TraktorZ2.registerInputPackets = function() {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
     var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
 
-        HIDDebug("TraktorZ2: registerInputPackets");
+    HIDDebug("TraktorZ2: registerInputPackets");
     for (var idx in TraktorZ2.Decks) {
         var deck = TraktorZ2.Decks[idx];
         deck.registerInputs(messageShort, messageLong);
@@ -776,7 +779,7 @@ TraktorZ2.hotcueOutputHandler = function() {
 };
 
 TraktorZ2.beatOutputHandler = function(value, group, key) {
-        if (value === 1 || value === true) {
+    if (value === 1 || value === true) {
         TraktorZ2.displayLoopCount(group, 0x07);
 
         engine.beginTimer(0.25  * 60 / engine.getValue(group, "bpm") / 5 * 1000, function() {
