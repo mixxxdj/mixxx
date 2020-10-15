@@ -1,42 +1,6 @@
 <Template>
 
   <SingletonDefinition>
-    <ObjectName>SamplerExpand_Singleton</ObjectName>
-    <Children>
-      <!-- needs an extra wrapper otherwise border wouldn't get applied -->
-      <WidgetGroup>
-        <SizePolicy>min,me</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-          <WidgetGroup>
-            <ObjectName>SamplerExpandBox</ObjectName>
-            <SizePolicy>min,me</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <PushButton>
-                <TooltipId>show_samplers</TooltipId>
-                <ObjectName>SamplerExpand</ObjectName>
-                <Size>16f,36f</Size>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                </State>
-                <State>
-                  <Number>1</Number>
-                </State>
-                <Connection>
-                  <ConfigKey>[Skin],expand_samplers</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
-            </Children>
-          </WidgetGroup><!-- SamplerExpandBox -->
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition><!-- SamplerExpand_Singleton -->
-
-  <SingletonDefinition>
     <ObjectName>SamplerMini1_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
@@ -94,70 +58,6 @@
         <Children>
           <Template src="skin:/samplers/sampler_mini.xml">
             <SetVariable name="SamplerNum">4</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini5_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
-            <SetVariable name="SamplerNum">5</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini6_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
-            <SetVariable name="SamplerNum">6</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini7_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
-            <SetVariable name="SamplerNum">7</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini8_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
-            <SetVariable name="SamplerNum">8</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
