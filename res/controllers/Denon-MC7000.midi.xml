@@ -3,9 +3,9 @@
     <info>
     	<name>Denon MC7000</name>
     	<author>OsZ</author>
-    	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI page.</description>
-    	<forums>https://www.mixxx.org/forums/</forums>
-    	<wiki>https://www.mixxx.org/wiki/doku.php/denon_mc7000</wiki>
+    	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI</description>
+    	<forums>https://mixxx.discourse.group/t/denon-mc7000-mapping/18235</forums>
+    	<wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-MC7000</wiki>
     </info>
     <controller id="DENON">
         <scriptfiles>
@@ -2066,7 +2066,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.LoadBtn</key>
+                <key>MC7000.LoadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x02</midino>
@@ -2076,7 +2076,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.LoadBtn</key>
+                <key>MC7000.LoadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x03</midino>
@@ -2086,7 +2086,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.LoadBtn</key>
+                <key>MC7000.LoadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x04</midino>
@@ -2096,7 +2096,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.LoadBtn</key>
+                <key>MC7000.LoadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x05</midino>

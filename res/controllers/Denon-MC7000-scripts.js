@@ -69,7 +69,7 @@ MC7000.scratchParams = {
 // Sensitivity of the jog wheel (also depends on audio latency)
 MC7000.jogParams = {
     // Sensitivity factor (0.5 for half, 2 for double sensitivity)
-    jogSensitivity: 0.8, // default: 1
+    jogSensitivity: 1, // default: 1
     // this will limit the parameter of "jog" (keep between 0.5 and 3)
     maxJogValue: 3      // default: 3
 };
@@ -245,8 +245,9 @@ MC7000.padModeCue = function(channel, control, value, status, group) {
 // PAD Mode Cue Loop
 MC7000.padModeCueLoop = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = true;
@@ -267,8 +268,9 @@ MC7000.padModeCueLoop = function(channel, control, value, status, group) {
 // PAD Mode Flip
 MC7000.padModeFlip = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -289,8 +291,9 @@ MC7000.padModeFlip = function(channel, control, value, status, group) {
 // PAD Mode Roll
 MC7000.padModeRoll = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -311,8 +314,9 @@ MC7000.padModeRoll = function(channel, control, value, status, group) {
 // PAD Mode Saved Loop
 MC7000.padModeSavedLoop = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -333,8 +337,9 @@ MC7000.padModeSavedLoop = function(channel, control, value, status, group) {
 // PAD Mode Slicer
 MC7000.padModeSlicer = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -355,8 +360,9 @@ MC7000.padModeSlicer = function(channel, control, value, status, group) {
 // PAD Mode Slicer Loop
 MC7000.padModeSlicerLoop = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -377,8 +383,9 @@ MC7000.padModeSlicerLoop = function(channel, control, value, status, group) {
 // PAD Mode Sampler
 MC7000.padModeSampler = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -409,8 +416,9 @@ MC7000.padModeSampler = function(channel, control, value, status, group) {
 // PAD Mode Velocity Sampler
 MC7000.padModeVelSamp = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -431,8 +439,9 @@ MC7000.padModeVelSamp = function(channel, control, value, status, group) {
 // PAD Mode Pitch
 MC7000.padModePitch = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
+    }
     if (value === 0x7F) {
         MC7000.PADModeCue[deckNumber] = false;
         MC7000.PADModeCueLoop[deckNumber] = false;
@@ -544,13 +553,15 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
 MC7000.shiftButton = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     MC7000.shift[deckNumber - 1] = ! MC7000.shift[deckNumber - 1];
+    midi.sendShortMsg(0x90 + deckNumber - 1, 0x32,
+        MC7000.shift[deckNumber - 1] ? 0x7F : 0x01);
 };
 
 // Toggle Vinyl Mode
 MC7000.vinylModeToggle = function(channel, control, value, status, group) {
-    if (value === 0x00)
+    if (value === 0x00) {
         return; // don't respond to note off messages
-
+    }
     if (value === 0x7F) {
         var deckNumber = script.deckFromGroup(group);
         MC7000.isVinylMode[deckNumber - 1] = !MC7000.isVinylMode[deckNumber - 1];
@@ -560,16 +571,16 @@ MC7000.vinylModeToggle = function(channel, control, value, status, group) {
 };
 
 // Use select button to load and eject track from deck
-MC7000.LOADlongpress = false;
+MC7000.LoadLongPress = false;
 MC7000.LOADtimer = 0;
 
 MC7000.LOADassertlongpress = function() {
-    MC7000.LOADlongpress = true;
+    MC7000.LoadLongPress = true;
     MC7000.LOADtimer = 0;
 };
 
 MC7000.LOADdown = function() {
-    MC7000.LOADlongpress = false;
+    MC7000.LoadLongPress = false;
     MC7000.LOADtimer = engine.beginTimer(500, MC7000.LOADassertlongpress, true);
 };
 
@@ -578,13 +589,13 @@ MC7000.LOADup = function(group) {
         engine.stopTimer(MC7000.LOADtimer);
         MC7000.LOADtimer = 0;
     }
-    if (MC7000.LOADlongpress) {
+    if (MC7000.LoadLongPress) {
         script.triggerControl(group, "eject", 100);
     } else {
         script.triggerControl(group, "LoadSelectedTrack", 100);
     }
 };
-MC7000.LoadBtn = function(channel, control, value, status, group) {
+MC7000.LoadButton = function(channel, control, value, status, group) {
     //LOAD hold <500ms: load track, >500ms: eject
     if (value === 0x7F) {
         MC7000.LOADdown();
@@ -681,8 +692,9 @@ MC7000.pitchFaderPosition = function(channel, control, value, status, group) {
 
 // Next Rate range toggle
 MC7000.nextRateRange = function(midichan, control, value, status, group) {
-    if (value === 0)
+    if (value === 0) {
         return; // don't respond to note off messages
+    }
     var deckNumber = script.deckFromGroup(group);
     // increment currentRateRangeIndex and check for overflow
     if (++MC7000.currentRateRangeIndex[deckNumber - 1] ===
@@ -696,8 +708,9 @@ MC7000.nextRateRange = function(midichan, control, value, status, group) {
 
 // Previous Rate range toggle
 MC7000.prevRateRange = function(midichan, control, value, status, group) {
-    if (value === 0)
+    if (value === 0) {
         return; // don't respond to note off messages
+    }
     var deckNumber = script.deckFromGroup(group);
     // decrement currentRateRangeIndex and check for underflow
     if (--MC7000.currentRateRangeIndex[deckNumber - 1] < 0) {
@@ -731,7 +744,9 @@ MC7000.keySelect = function(midichan, control, value, status, group) {
 // Key & Waveform zoom Reset
 MC7000.keyReset = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
-    if (value === 0x00) return;
+    if (value === 0x00) {
+        return;
+    }
     // While Shift Button is pressed: Waveform Zoom Reset
     if (MC7000.shift[deckNumber - 1]) {
         script.triggerControl(group, "waveform_zoom_set_default", 100);
@@ -792,7 +807,7 @@ MC7000.censor = function(channel, control, value, status, group) {
     }
 };
 
-// SET CROSSFADER CURVE
+// Set Crossfader Curve
 MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);
 };
@@ -806,8 +821,9 @@ MC7000.fxWetDry = function(channel, control, value, status, group) {
 
 // Sort the library for Artist, Title, BPM and Key
 MC7000.sortLibrary = function(channel, control, value) {
-    if (value === 0) return;
-
+    if (value === 0) {
+        return;
+    }
     var sortColumn;
     switch (control) {
     case 0x12:  // TITLE
@@ -829,7 +845,7 @@ MC7000.sortLibrary = function(channel, control, value) {
 /* LEDs for VuMeter */
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
-    var VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : value*value*value*value*MC7000.VuMeterLEDPeakValue -1,
+    var VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : Math.pow(value, 4) * MC7000.VuMeterLEDPeakValue - 1,
         deckNumber = script.deckFromGroup(group);
     midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, VULevelOutValue);
 };
@@ -837,8 +853,9 @@ MC7000.VuMeter = function(value, group) {
 /* LEDs around Jog wheel */
 MC7000.JogLed = function(value, group) {
     // do nothing before track starts
-    if (value < 0) return;
-
+    if (value === 0) {
+        return;
+    }
     var deckNumber = script.deckFromGroup(group),
         trackDuration = engine.getValue(group, "duration"),
         position = value * trackDuration / 60 * MC7000.scratchParams.recordSpeed,
