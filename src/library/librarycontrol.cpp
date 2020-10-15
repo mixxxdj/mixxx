@@ -680,6 +680,11 @@ void LibraryControl::slotGoToItem(double v) {
         return slotLoadSelectedIntoFirstStopped(v);
     }
 
+    // If searchbox has focus jump to the tracks table
+    if (m_pSearchbox->hasFocus()) {
+        return setLibraryFocus();
+    }
+
     // Clear the search if the searchbox has focus
     emit clearSearchIfClearButtonHasFocus();
 
