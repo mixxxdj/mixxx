@@ -3,11 +3,12 @@
 
 #include "widget/wwidgetstack.h"
 
-WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
-                                                       ControlObject* pControl,
-                                                       int index)
+WidgetStackControlListener::WidgetStackControlListener(
+        QObject* pParent, ControlObject* pControl, int index)
         : QObject(pParent),
-          m_control(pControl ? pControl->getKey() : ConfigKey(), this),
+          m_control(pControl ? pControl->getKey() : ConfigKey(),
+                  this,
+                  ControlFlag::AllowInvalidKey),
           m_index(index) {
     m_control.connectValueChanged(this, &WidgetStackControlListener::slotValueChanged);
 }
@@ -28,13 +29,16 @@ void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
     }
 }
 
-WWidgetStack::WWidgetStack(QWidget* pParent, const ConfigKey& nextConfigKey,
-        const ConfigKey& prevConfigKey, const ConfigKey& currentPageConfigKey)
+WWidgetStack::WWidgetStack(QWidget* pParent,
+        const ConfigKey& nextConfigKey,
+        const ConfigKey& prevConfigKey,
+        const ConfigKey& currentPageConfigKey)
         : QStackedWidget(pParent),
           WBaseWidget(this),
-          m_nextControl(nextConfigKey, this),
-          m_prevControl(prevConfigKey, this),
-          m_currentPageControl(currentPageConfigKey, this) {
+          m_nextControl(nextConfigKey, this, ControlFlag::AllowInvalidKey),
+          m_prevControl(prevConfigKey, this, ControlFlag::AllowInvalidKey),
+          m_currentPageControl(
+                  currentPageConfigKey, this, ControlFlag::AllowInvalidKey) {
     m_nextControl.connectValueChanged(this, &WWidgetStack::onNextControlChanged);
     m_prevControl.connectValueChanged(this, &WWidgetStack::onPrevControlChanged);
     m_currentPageControl.connectValueChanged(this, &WWidgetStack::onCurrentPageControlChanged);

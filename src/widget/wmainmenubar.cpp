@@ -266,8 +266,22 @@ void WMainMenuBar::initialize() {
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
     QList<QKeySequence> shortcuts;
-    shortcuts << QKeySequence::FullScreen;
+    // We use F11 _AND_ the OS shortcut only on Linux and Windows because on
+    // newer macOS versions there might be issues with getting F11 working.
+    // https://github.com/mixxxdj/mixxx/pull/3011#issuecomment-678678328
+#ifndef __APPLE__
     shortcuts << QKeySequence("F11");
+#endif
+    QKeySequence osShortcut = QKeySequence::FullScreen;
+    // Note(ronso0) Only add the OS shortcut if it's not empty and not F11.
+    // In some Linux distros the window managers doesn't pass the OS fullscreen
+    // key sequence to Mixxx for some reason.
+    // Both adding an empty key sequence or the same sequence twice can render
+    // the fullscreen shortcut nonfunctional.
+    // https://bugs.launchpad.net/mixxx/+bug/1882474  PR #3011
+    if (!osShortcut.isEmpty() && !shortcuts.contains(osShortcut)) {
+        shortcuts << osShortcut;
+    }
 
     pViewFullScreen->setShortcuts(shortcuts);
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
@@ -679,7 +693,6 @@ VisibilityControlConnection::VisibilityControlConnection(
         : QObject(pParent),
           m_key(key),
           m_pAction(pAction) {
-    slotReconnectControl();
     connect(m_pAction, SIGNAL(triggered(bool)),
             this, SLOT(slotActionToggled(bool)));
 }
@@ -690,8 +703,7 @@ void VisibilityControlConnection::slotClearControl() {
 }
 
 void VisibilityControlConnection::slotReconnectControl() {
-    m_pControl.reset(new ControlProxy(this));
-    m_pControl->initialize(m_key, false);
+    m_pControl.reset(new ControlProxy(m_key, this, ControlFlag::NoAssertIfMissing));
     m_pControl->connectValueChanged(this, &VisibilityControlConnection::slotControlChanged);
     m_pAction->setEnabled(m_pControl->valid());
     slotControlChanged();

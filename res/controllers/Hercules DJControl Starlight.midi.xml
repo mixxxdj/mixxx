@@ -4,8 +4,8 @@
         <name>Hercules DJControl Starlight</name>
         <author>DJ Phatso for Hercules Technical Support, contributions by Kerrick Staley</author>
         <description>MIDI Preset for Hercules DJControl Starlight</description>
-        <wiki>https://mixxx.org/wiki/doku.php/hercules_dj_control_starlight</wiki>
-        <forums>https://mixxx.org/forums/viewtopic.php?f=7&amp;t=12570</forums>
+        <forums>https://mixxx.discourse.group/t/hercules-djcontrol-starlight/17833</forums>
+        <manual>hercules_djcontrol_starlight</manual>
     </info>
     <controller id="DJControl Starlight">
         <scriptfiles>

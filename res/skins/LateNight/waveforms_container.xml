@@ -1,4 +1,5 @@
 <Template>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
@@ -10,95 +11,81 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- Waveforms -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <Size>100me,40me</Size>
             <Children>
 
-              <WidgetGroup><!-- Waveform 3 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:waveform.xml">
-                    <SetVariable name="channum">3</SetVariable>
+                    <SetVariable name="ChanNum">3</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-                    <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
-                    <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
-                    <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
-                    <SetVariable name="SignalRGBHighColor">#0034fe</SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- Waveform 3 -->
+              </WidgetGroup>
 
-              <WidgetGroup><!-- Waveform 1 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:waveform.xml">
-                    <SetVariable name="channum">1</SetVariable>
+                    <SetVariable name="ChanNum">1</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-                    <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
-                    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-                    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-                    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- Waveform 2 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:waveform.xml">
-                    <SetVariable name="channum">2</SetVariable>
+                    <SetVariable name="ChanNum">2</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-                    <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
-                    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-                    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-                    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup><!-- Waveform 2 -->
+              </WidgetGroup>
 
-              <WidgetGroup><!-- Waveform 4 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:waveform.xml">
-                    <SetVariable name="channum">4</SetVariable>
+                    <SetVariable name="ChanNum">4</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-                    <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
-                    <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
-                    <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
-                    <SetVariable name="SignalRGBHighColor">#0034fe</SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
                   </Template>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- Waveform 4 -->
-
-              <!-- 3D border like in all embedded containers.
-                   Right border is a similar widget in each instance of waveform.xml -->
-              <WidgetGroup>
-                <ObjectName>WaveformsBottomBorder</ObjectName>
-                <Size>0me,0min</Size>
               </WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- /Waveforms -->
+          </WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">BeatgridButtonsToggle</SetVariable>
-            <SetVariable name="Size">26f,40me</SetVariable>
-            <SetVariable name="btn_type"></SetVariable>
-            <SetVariable name="btn_format"></SetVariable>
-            <SetVariable name="ConfigKey">[Skin],beatgrid_buttons</SetVariable>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_beatgrid_controls</SetVariable>
+            <SetVariable name="ObjectName">BeatgridControlsToggle</SetVariable>
+            <SetVariable name="Size">26f,52f</SetVariable>
+            <SetVariable name="BtnSize"></SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_beatgrid_controls</SetVariable>
           </Template>
 
           <WidgetGroup>
@@ -115,14 +102,6 @@
           <BindProperty>highlight</BindProperty>
         </Connection>
       </WidgetGroup><!-- WaveformsContainer -->
-
-      <WidgetGroup>
-        <Size>5f,1min</Size>
-        <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
 
     </Children>
   </WidgetGroup>

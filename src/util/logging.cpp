@@ -148,46 +148,54 @@ void MessageHandler(QtMsgType type,
 }  // namespace
 
 // static
-void Logging::initialize(const QDir& settingsDir,
-                         LogLevel logLevel,
-                         LogLevel logFlushLevel,
-                         bool debugAssertBreak) {
+void Logging::initialize(
+        const QDir& logDir,
+        LogLevel logLevel,
+        LogLevel logFlushLevel,
+        bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
         return;
     }
 
     setLogLevel(logLevel);
-    g_logFlushLevel = logFlushLevel;
 
-    QString logFileName;
+    if (logDir.exists()) {
+        QString logFileName;
 
-    // Rotate old logfiles.
-    for (int i = 9; i >= 0; --i) {
-        if (i == 0) {
-            logFileName = settingsDir.filePath("mixxx.log");
-        } else {
-            logFileName = settingsDir.filePath(QString("mixxx.log.%1").arg(i));
-        }
-        QFileInfo logbackup(logFileName);
-        if (logbackup.exists()) {
-            QString olderlogname =
-                    settingsDir.filePath(QString("mixxx.log.%1").arg(i + 1));
-            // This should only happen with number 10
-            if (QFileInfo::exists(olderlogname)) {
-                QFile::remove(olderlogname);
+        // Rotate old logfiles.
+        for (int i = 9; i >= 0; --i) {
+            if (i == 0) {
+                logFileName = logDir.filePath("mixxx.log");
+            } else {
+                logFileName = logDir.filePath(QString("mixxx.log.%1").arg(i));
             }
-            if (!QFile::rename(logFileName, olderlogname)) {
-                fprintf(stderr, "Error rolling over logfile %s",
-                        logFileName.toLocal8Bit().constData());
+            QFileInfo logbackup(logFileName);
+            if (logbackup.exists()) {
+                QString olderlogname =
+                        logDir.filePath(QString("mixxx.log.%1").arg(i + 1));
+                // This should only happen with number 10
+                if (QFileInfo::exists(olderlogname)) {
+                    QFile::remove(olderlogname);
+                }
+                if (!QFile::rename(logFileName, olderlogname)) {
+                    fprintf(stderr,
+                            "Error rolling over logfile %s",
+                            logFileName.toLocal8Bit().constData());
+                }
             }
         }
+        // Since the message handler is not installed yet, we can touch s_logfile
+        // without the lock.
+        g_logfile.setFileName(logFileName);
+        g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+        g_logFlushLevel = logFlushLevel;
+    } else {
+        qInfo() << "No directory for writing a log file";
+        // No need to flush anything
+        g_logFlushLevel = LogLevel::Critical;
     }
 
-    // Since the message handler is not installed yet, we can touch g_logfile
-    // without the lock.
-    g_logfile.setFileName(logFileName);
-    g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     g_debugAssertBreak = debugAssertBreak;
 
     // Install the Qt message handler.

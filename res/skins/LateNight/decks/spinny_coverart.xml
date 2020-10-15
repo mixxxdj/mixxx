@@ -1,0 +1,101 @@
+<Template>
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>SpinnyContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+
+              <Spinny><!-- without cover -->
+                <TooltipId>spinny</TooltipId>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>40,40</MinimumSize>
+                <Group><Variable name="Group"/></Group>
+                <PathBackground scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
+                <PathForeground>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
+                <PathGhost>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
+                <ShowCover>false</ShowCover>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Spinny>
+
+              <Spinny><!-- with cover -->
+                <TooltipId>spinny</TooltipId>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>40,40</MinimumSize>
+                <Group><Variable name="Group"/></Group>
+                <PathBackground scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
+                <PathForeground>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
+                <PathGhost>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
+                <ShowCover>true</ShowCover>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Spinny>
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>CoverArtContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <CoverArt>
+                    <TooltipId>coverart</TooltipId>
+                    <SizePolicy>me,me</SizePolicy>
+                    <MinimumSize>40,40</MinimumSize>
+                    <Group><Variable name="Group"/></Group>
+                    <DefaultCover>skin:/<Variable name="StyleScheme"/>/style/cover_default.svg</DefaultCover>
+                  </CoverArt>
+                </Children>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+
+</Template>

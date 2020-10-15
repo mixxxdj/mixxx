@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLOBJECT_H
-#define CONTROLOBJECT_H
+#pragma once
 
 #include <QObject>
 #include <QEvent>
@@ -42,10 +41,12 @@ class ControlObject : public QObject {
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
-    static ControlObject* getControl(const ConfigKey& key, bool warn = true);
-    static inline ControlObject* getControl(const QString& group, const QString& item, bool warn = true) {
+    static ControlObject* getControl(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
+    static ControlObject* getControl(const QString& group,
+            const QString& item,
+            ControlFlags flags = ControlFlag::None) {
         ConfigKey key(group, item);
-        return getControl(key, warn);
+        return getControl(key, flags);
     }
 
     QString name() const {
@@ -179,9 +180,12 @@ class ControlObject : public QObject {
     void readOnlyHandler(double v);
 
   private:
+    ControlObject(ControlObject&&) = delete;
+    ControlObject(const ControlObject&) = delete;
+    ControlObject& operator=(ControlObject&&) = delete;
+    ControlObject& operator=(const ControlObject&) = delete;
+
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
 };
-
-#endif

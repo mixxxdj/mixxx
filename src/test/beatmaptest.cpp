@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
+#include <memory.h>
+
 #include <QtDebug>
 
 #include "track/beatmap.h"
-#include "util/memory.h"
+#include "track/track.h"
 
 using namespace mixxx;
 

@@ -13,7 +13,7 @@
 /* global script                                                      */
 /* global print                                                       */
 /* global midi                                                        */
-//////////////////////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////
 
 // Master function definition.
 function BehringerCMDStudio4a() {}
@@ -58,7 +58,7 @@ BehringerCMDStudio4a.initLEDs = function () {
     midi.sendShortMsg(0x90, 0x16, 0x00);
     midi.sendShortMsg(0x91, 0x36, 0x00);
     midi.sendShortMsg(0x92, 0x16, 0x00);
-    midi.sendShortMsg(0x93, 0x36, 0x00);    
+    midi.sendShortMsg(0x93, 0x36, 0x00);
 }
 
 BehringerCMDStudio4a.init = function () {
@@ -68,7 +68,7 @@ BehringerCMDStudio4a.init = function () {
     engine.connectControl("[Master]","VuMeterL","BehringerCMDStudio4a.vuMeterUpdate");
     engine.connectControl("[Master]","VuMeterR","BehringerCMDStudio4a.vuMeterUpdate");
 }
- 
+
 BehringerCMDStudio4a.shutdown = function() {
     // Leave the deck in a properly initialised state.
     BehringerCMDStudio4a.initLEDs();

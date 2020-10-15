@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include "rigtorp/SPSCQueue.h"
-
 #include "analyzer/analyzer.h"
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
+#include "rigtorp/SPSCQueue.h"
 #include "sources/audiosource.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/memory.h"
 #include "util/performancetimer.h"
@@ -19,6 +19,7 @@ enum AnalyzerModeFlags {
     None = 0x00,
     WithBeats = 0x01,
     WithWaveform = 0x02,
+    LowPriority = 0x04,
     All = WithBeats | WithWaveform,
 };
 

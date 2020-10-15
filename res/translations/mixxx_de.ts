@@ -479,7 +479,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="47"/>
         <source>Add to Quick Links</source>
-        <translation>Zu Schnellzugriff hinzufügen</translation>
+        <translation>Zum Schnellzugriff hinzufügen</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="53"/>
@@ -2921,7 +2921,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="353"/>
         <source>Unlock</source>
-        <translation>Entsprerren</translation>
+        <translation>Entsperren</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="649"/>
@@ -8215,7 +8215,7 @@ Wollen Sie ein Eingabegerät auswählen?</translation>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="86"/>
         <source>Unlock</source>
-        <translation>Entsprerren</translation>
+        <translation>Entsperren</translation>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="273"/>
@@ -9755,12 +9755,12 @@ Ganz rechts: Ende der Effektperiode</translation>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1294"/>
         <source>Memory cues</source>
-        <translation type="unfinished"/>
+        <translation>Memory-Cues</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1295"/>
         <source>Loops (after first not usable in Mixxx 2.3 yet)</source>
-        <translation type="unfinished"/>
+        <translation>Loops (abgesehen vom ersten noch nicht nutzbar in Mixxx 2.3)</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1298"/>
@@ -9878,7 +9878,7 @@ Ganz rechts: Ende der Effektperiode</translation>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="112"/>
         <source>Unlock</source>
-        <translation>Entsprerren</translation>
+        <translation>Entsperren</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="112"/>
@@ -11530,7 +11530,7 @@ Verwenden Sie diese Option, um nur das verarbeitete (Wet) Signal mit EQ- und Fil
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="386"/>
         <source>Adjust beatgrid so the closest beat is aligned with the current play position.</source>
-        <translation>Passt den Beatgrid so an das der nächte Beat an der aktuellen Wiedergabeposition ausgerichtet ist.</translation>
+        <translation>Passt den Beatgrid so an das der nächste Beat an der aktuellen Wiedergabeposition ausgerichtet ist.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="387"/>

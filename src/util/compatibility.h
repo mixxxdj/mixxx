@@ -7,6 +7,7 @@
 #include <QUuid>
 #include <QWindow>
 #include <QWidget>
+#include <QList>
 
 #include "util/assert.h"
 
@@ -217,3 +218,22 @@ inline uint qHash(const QList<T>& key, uint seed = 0) {
     return hash;
 }
 #endif
+
+/// Helper to insert values into a QList with specific indices.
+///
+/// *For legacy code only - Do not use for new code!*
+template <typename T>
+inline void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
+    VERIFY_OR_DEBUG_ASSERT(index <= pList->size()) {
+        qWarning() << "listAppendOrReplaceAt: Padding list with"
+                   << (index - pList->size()) << "default elements";
+        while (index > pList->size()) {
+            pList->append(T());
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(index == pList->size()) {
+        pList->replace(index, value);
+        return;
+    }
+    pList->append(value);
+}

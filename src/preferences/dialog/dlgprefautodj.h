@@ -20,12 +20,12 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotCancel() override;
 
   private slots:
-    void slotSetAutoDjMinimumAvailable(int);
-    void slotSetAutoDjUseIgnoreTime(int);
-    void slotSetAutoDjIgnoreTime(const QTime &a_rTime);
-    void slotSetAutoDJRandomQueueMin(int);
-    void slotEnableAutoDJRandomQueueComboBox(int);
-    void slotEnableAutoDJRandomQueue(int);
+    void slotSetMinimumAvailable(int);
+    void slotToggleRequeueIgnore(int);
+    void slotSetRequeueIgnoreTime(const QTime& a_rTime);
+    void slotSetRandomQueueMin(int);
+    void slotConsiderRepeatPlaylistState(int);
+    void slotToggleRandomQueue(int);
 
   private:
     UserSettingsPointer m_pConfig;

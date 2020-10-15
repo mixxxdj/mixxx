@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="52"
+   height="26"
+   version="1.1"
+   id="svg17">
+  <metadata
+     id="metadata21">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9">
+    <linearGradient
+       id="a"
+       x1=".5"
+       x2="24.405561"
+       y1="12"
+       y2="12"
+       gradientTransform="matrix(-.91304348 0 0 .95918367 -1.1304075 -24.081632)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-opacity=".47451"
+         offset="0"
+         id="stop2" />
+      <stop
+         stop-opacity="0"
+         offset=".50727087"
+         id="stop4" />
+      <stop
+         stop-opacity=".0047619"
+         offset="1"
+         id="stop6" />
+    </linearGradient>
+  </defs>
+  <path
+     id="rect15-9"
+     d="M 0.8007307,0 C 0.3661794,0 -5.1399436e-5,0.36623 -5.05e-5,0.8007812 L 0,25.199219 C 8.9943568e-7,25.63377 0.36623,26 0.8007812,26 H 51.199346 c 0.434551,0 0.800782,-0.36623 0.800781,-0.800781 L 52.000076,0.8007812 C 52.000075,0.3662299 51.633846,0 51.199295,0 Z M 1.9999495,1 H 50.000076 c 0.562649,0 0.999999,0.4373514 1,1 l 5.1e-5,22 c 10e-7,0.562649 -0.437351,1 -1,1 H 2 C 1.4373514,25 1.0000013,24.562649 1,24 L 0.9999495,2 c -1.29e-6,-0.5626486 0.4373514,-1 1,-1 z"
+     style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#000001;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+  <path
+     id="rect15-3-7-1"
+     d="m 1.9999495,1 c -0.5626486,0 -1,0.437352 -1,1 V 2.5 H 2.1073714 C 2.2574491,2.2065045 2.554278,2 2.9081526,2 H 49.091873 c 0.353875,0 0.650703,0.2065045 0.800781,0.5 h 1.107422 V 2 c 0,-0.562648 -0.437351,-1 -1,-1 z"
+     style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.21176471;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+  <path
+     id="rect15-3-7-9"
+     d="M 2,25 C 1.4373514,25 1,24.562648 1,24 L 0.9999495,2.5 h 1 L 2,17.560547 v 5.53125 C 2,23.595433 2.4045667,24 2.9082031,24 H 49.091924 c 0.503636,0 1.400816,-0.803405 0.908203,-0.908203 v -5.53125 L 50.000076,2.5 h 1 l 5.1e-5,21.5 c 10e-7,0.562648 -0.437351,1 -1,1 z"
+     style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#000000;fill-opacity:0.31764706;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+</svg>

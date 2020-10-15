@@ -2,6 +2,7 @@
 
 #include <mp3guessenc.h>
 
+#include "track/serato/beatsimporter.h"
 #include "track/serato/cueinfoimporter.h"
 #include "track/taglib/trackmetadata_file.h"
 #include "util/color/predefinedcolorpalettes.h"
@@ -199,6 +200,15 @@ double SeratoTags::guessTimingOffsetMillis(
     return timingOffset;
 }
 
+BeatsImporterPointer SeratoTags::importBeats() const {
+    if (m_seratoBeatGrid.isEmpty() || !m_seratoBeatGrid.terminalMarker()) {
+        return std::make_shared<SeratoBeatsImporter>();
+    }
+    return std::make_shared<SeratoBeatsImporter>(
+            m_seratoBeatGrid.nonTerminalMarkers(),
+            m_seratoBeatGrid.terminalMarker());
+}
+
 CueInfoImporterPointer SeratoTags::importCueInfos() const {
     // Import "Serato Markers2" first, then overwrite values with those
     // from "Serato Markers_". This is what Serato does too (i.e. if
@@ -291,8 +301,18 @@ RgbColor::optional_t SeratoTags::getTrackColor() const {
     return color;
 }
 
+void SeratoTags::setTrackColor(RgbColor::optional_t color) {
+    mixxx::RgbColor rgbColor = SeratoTags::displayedToStoredTrackColor(color);
+    m_seratoMarkers.setTrackColor(rgbColor);
+    m_seratoMarkers2.setTrackColor(rgbColor);
+}
+
 bool SeratoTags::isBpmLocked() const {
     return m_seratoMarkers2.isBpmLocked();
+}
+
+void SeratoTags::setBpmLocked(bool bpmLocked) {
+    m_seratoMarkers2.setBpmLocked(bpmLocked);
 }
 
 } // namespace mixxx

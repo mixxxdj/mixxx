@@ -4,13 +4,14 @@
 #include <gtest/gtest_prod.h>
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
+#include "track/beats.h"
 #include "util/tapfilter.h"
 
 class ControlObject;
 class ControlLinPotmeter;
-class ControlProxy;
 class ControlPushButton;
 class EngineBuffer;
 class SyncControl;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sources/audiosourceproxy.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 namespace mixxx {
 

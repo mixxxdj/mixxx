@@ -19,14 +19,20 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
+#include "library/trackmodeliterator.h"
+#include "library/trackprocessing.h"
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
-#include "track/trackref.h"
+#include "track/track.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
+#include "util/qt.h"
 #include "widget/wcolorpickeraction.h"
+#include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
+#include "widget/wstarrating.h"
 #include "widget/wwidget.h"
 
 WTrackMenu::WTrackMenu(QWidget* parent,
@@ -177,7 +183,7 @@ void WTrackMenu::createActions() {
 
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
-        connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowTrackInfo);
+        connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
     }
 
     if (featureIsEnabled(Feature::FileBrowser)) {
@@ -186,18 +192,26 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
-        m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), m_pMetadataMenu);
-        connect(m_pImportMetadataFromFileAct, &QAction::triggered, this, &WTrackMenu::slotImportTrackMetadataFromFileTags);
+        m_pImportMetadataFromFileAct =
+                new QAction(tr("Import From File Tags"), m_pMetadataMenu);
+        connect(m_pImportMetadataFromFileAct,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotImportMetadataFromFileTags);
 
-        m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import From MusicBrainz"), m_pMetadataMenu);
-        connect(m_pImportMetadataFromMusicBrainzAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTagFetcher);
+        m_pImportMetadataFromMusicBrainzAct =
+                new QAction(tr("Import From MusicBrainz"), m_pMetadataMenu);
+        connect(m_pImportMetadataFromMusicBrainzAct,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotShowDlgTagFetcher);
 
-        // Give a nullptr parent because otherwise it inherits our style which can
-        // make it unreadable. Bug #673411
-        m_pTagFetcher.reset(new DlgTagFetcher(nullptr, m_pTrackModel));
-
-        m_pExportMetadataAct = new QAction(tr("Export To File Tags"), m_pMetadataMenu);
-        connect(m_pExportMetadataAct, &QAction::triggered, this, &WTrackMenu::slotExportTrackMetadataIntoFileTags);
+        m_pExportMetadataAct =
+                new QAction(tr("Export To File Tags"), m_pMetadataMenu);
+        connect(m_pExportMetadataAct,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotExportMetadataIntoFileTags);
 
         for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
@@ -298,12 +312,6 @@ void WTrackMenu::createActions() {
                 &WColorPickerAction::colorPicked,
                 this,
                 &WTrackMenu::slotColorPicked);
-    }
-
-    if (featureIsEnabled(Feature::Properties)) {
-        // Give a nullptr parent because otherwise it inherits our style which can
-        // make it unreadable. Bug #673411
-        m_pTrackInfo.reset(new DlgTrackInfo(nullptr, m_pConfig, m_pTrackModel));
     }
 }
 
@@ -456,7 +464,7 @@ bool WTrackMenu::isAnyTrackBpmLocked() const {
     return false;
 }
 
-std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
+std::optional<std::optional<mixxx::RgbColor>> WTrackMenu::getCommonTrackColor() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return std::nullopt;
     }
@@ -466,9 +474,6 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
         commonColor = mixxx::RgbColor::fromQVariant(
                 m_trackIndexList.first().sibling(m_trackIndexList.first().row(), column).data());
-        if (!commonColor) {
-            return std::nullopt;
-        }
         for (const auto trackIndex : m_trackIndexList) {
             const auto otherColor = mixxx::RgbColor::fromQVariant(
                     trackIndex.sibling(trackIndex.row(), column).data());
@@ -478,10 +483,7 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
             }
         }
     } else {
-        auto commonColor = m_trackPointerList.first()->getColor();
-        if (!commonColor) {
-            return std::nullopt;
-        }
+        commonColor = m_trackPointerList.first()->getColor();
         for (const auto& pTrack : m_trackPointerList) {
             if (commonColor != pTrack->getColor()) {
                 // Multiple, different colors
@@ -489,7 +491,7 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
             }
         }
     }
-    return commonColor;
+    return make_optional(commonColor);
 }
 
 CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
@@ -549,7 +551,7 @@ void WTrackMenu::updateMenus() {
     const bool singleTrackSelected = getTrackCount() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        int iNumDecks = m_pNumDecks->get();
+        int iNumDecks = static_cast<int>(m_pNumDecks->get());
         m_pDeckMenu->clear();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
@@ -567,7 +569,7 @@ void WTrackMenu::updateMenus() {
             }
         }
 
-        int iNumSamplers = m_pNumSamplers->get();
+        int iNumSamplers = static_cast<int>(m_pNumSamplers->get());
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
@@ -647,7 +649,7 @@ void WTrackMenu::updateMenus() {
 
         const auto commonColor = getCommonTrackColor();
         if (commonColor) {
-            m_pColorPickerAction->setSelectedColor(commonColor);
+            m_pColorPickerAction->setSelectedColor(*commonColor);
         } else {
             m_pColorPickerAction->resetSelectedColor();
         }
@@ -729,28 +731,88 @@ TrackIdList WTrackMenu::getTrackIds() const {
     return trackIds;
 }
 
-TrackPointerList WTrackMenu::getTrackPointers(
-        int maxSize) const {
-    if (!m_pTrackModel) {
-        return m_trackPointerList;
-    }
-    TrackPointerList trackPointers;
-    trackPointers.reserve(m_trackIndexList.size());
-    for (const auto& index : m_trackIndexList) {
-        if (maxSize >= 0 && maxSize <= trackPointers.size()) {
-            return trackPointers;
+QList<TrackRef> WTrackMenu::getTrackRefs() const {
+    QList<TrackRef> trackRefs;
+    if (m_pTrackModel) {
+        trackRefs.reserve(m_trackIndexList.size());
+        for (const auto& index : m_trackIndexList) {
+            auto trackRef = TrackRef::fromFileInfo(
+                    m_pTrackModel->getTrackLocation(index),
+                    m_pTrackModel->getTrackId(index));
+            if (!trackRef.isValid()) {
+                // Skip unavailable tracks
+                continue;
+            }
+            trackRefs.push_back(std::move(trackRef));
         }
-        const auto pTrack = m_pTrackModel->getTrack(index);
-        if (!pTrack) {
-            // Skip unavailable tracks
-            continue;
+    } else {
+        trackRefs.reserve(m_trackPointerList.size());
+        for (const auto& pTrack : m_trackPointerList) {
+            DEBUG_ASSERT(pTrack);
+            auto trackRef = TrackRef::fromFileInfo(
+                    pTrack->getLocation(),
+                    pTrack->getId());
+            trackRefs.push_back(std::move(trackRef));
         }
-        trackPointers.push_back(pTrack);
     }
-    return trackPointers;
+    return trackRefs;
 }
 
-QModelIndexList WTrackMenu::getTrackIndices() const {
+TrackPointer WTrackMenu::getFirstTrackPointer() const {
+    if (m_pTrackModel) {
+        for (const auto& index : m_trackIndexList) {
+            const auto pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                return pTrack;
+            }
+            // Skip unavailable tracks
+        }
+        return TrackPointer();
+    } else {
+        if (m_trackPointerList.isEmpty()) {
+            return TrackPointer();
+        }
+        DEBUG_ASSERT(m_trackPointerList.first());
+        return m_trackPointerList.first();
+    }
+}
+
+std::unique_ptr<mixxx::TrackPointerIterator> WTrackMenu::newTrackPointerIterator() const {
+    if (m_pTrackModel) {
+        if (m_trackIndexList.isEmpty()) {
+            return nullptr;
+        }
+        return std::make_unique<mixxx::TrackPointerModelIterator>(
+                m_pTrackModel,
+                m_trackIndexList);
+    } else {
+        if (m_trackPointerList.isEmpty()) {
+            return nullptr;
+        }
+        return std::make_unique<mixxx::TrackPointerListIterator>(
+                m_trackPointerList);
+    }
+}
+
+int WTrackMenu::applyTrackPointerOperation(
+        const QString& progressLabelText,
+        const mixxx::TrackPointerOperation* pTrackPointerOperation,
+        mixxx::ModalTrackBatchOperationProcessor::Mode operationMode) const {
+    const auto pTrackPointerIter = newTrackPointerIterator();
+    if (!pTrackPointerIter) {
+        // Empty, i.e. nothing to do
+        return 0;
+    }
+    mixxx::ModalTrackBatchOperationProcessor modalOperation(
+            pTrackPointerOperation,
+            operationMode);
+    return modalOperation.processTracks(
+            progressLabelText,
+            m_pTrackCollectionManager,
+            pTrackPointerIter.get());
+}
+
+const QModelIndexList& WTrackMenu::getTrackIndices() const {
     // Indices are associated with a TrackModel. Can only be obtained
     // if a TrackModel is available.
     DEBUG_ASSERT(m_pTrackModel);
@@ -758,36 +820,73 @@ QModelIndexList WTrackMenu::getTrackIndices() const {
 }
 
 void WTrackMenu::slotOpenInFileBrowser() {
-    const auto trackPointers = getTrackPointers();
+    const auto trackRefs = getTrackRefs();
     QStringList locations;
-    locations.reserve(trackPointers.size());
-    for (const auto& pTrack : trackPointers) {
-        locations << pTrack->getLocation();
+    locations.reserve(trackRefs.size());
+    for (const auto& trackRef : trackRefs) {
+        locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
 }
 
-void WTrackMenu::slotImportTrackMetadataFromFileTags() {
-    for (const auto& pTrack : getTrackPointers()) {
+namespace {
+
+class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
         // The user has explicitly requested to reload metadata from the file
         // to override the information within Mixxx! Custom cover art must be
         // reloaded separately.
         SoundSourceProxy(pTrack).updateTrackFromSource(
                 SoundSourceProxy::ImportTrackMetadataMode::Again);
     }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotImportMetadataFromFileTags() {
+    const auto progressLabelText =
+            tr("Importing metadata of %n track(s) from file tags", "", getTrackCount());
+    const auto trackOperator =
+            ImportMetadataFromFileTagsTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator,
+            // Update the database to reflect the recent changes. This is
+            // crucial for additional metadata like custom tags that are
+            // directly fetched from the database for certain use cases!
+            mixxx::ModalTrackBatchOperationProcessor::Mode::ApplyAndSave);
 }
 
-void WTrackMenu::slotExportTrackMetadataIntoFileTags() {
-    mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+namespace {
 
-    for (const auto& pTrack : getTrackPointers()) {
-        // Export of metadata is deferred until all references to the
-        // corresponding track object have been dropped. Otherwise
-        // writing to files that are still used for playback might
-        // cause crashes or at least audible glitches!
-        mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+class ExportMetadataIntoFileTagsTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
         pTrack->markForMetadataExport();
     }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotExportMetadataIntoFileTags() {
+    // Export of metadata is deferred until all references to the
+    // corresponding track object have been dropped. Otherwise
+    // writing to files that are still used for playback might
+    // cause crashes or at least audible glitches!
+    mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+
+    const auto progressLabelText =
+            tr("Marking metadata of %n track(s) to be exported into file tags",
+                    "",
+                    getTrackCount());
+    const auto trackOperator =
+            ExportMetadataIntoFileTagsTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 void WTrackMenu::slotUpdateExternalTrackCollection(
@@ -795,18 +894,8 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     VERIFY_OR_DEBUG_ASSERT(externalTrackCollection) {
         return;
     }
-    auto trackPointers = getTrackPointers();
 
-    QList<TrackRef> trackRefs;
-    trackRefs.reserve(trackPointers.size());
-    for (const auto& pTrack : trackPointers) {
-        trackRefs.append(
-                TrackRef::fromFileInfo(
-                        pTrack->getLocation(),
-                        pTrack->getId()));
-    }
-
-    externalTrackCollection->updateTracks(std::move(trackRefs));
+    externalTrackCollection->updateTracks(getTrackRefs());
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {
@@ -830,7 +919,9 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         if (!playlistDao.isHidden(it.value())) {
             // No leak because making the menu the parent means they will be
             // auto-deleted
-            auto pAction = new QAction(it.key(), m_pPlaylistMenu);
+            auto pAction = new QAction(
+                    mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
+                    m_pPlaylistMenu);
             bool locked = playlistDao.isPlaylistLocked(it.value());
             pAction->setEnabled(!locked);
             m_pPlaylistMenu->addAction(pAction);
@@ -910,12 +1001,12 @@ void WTrackMenu::slotPopulateCrateMenu() {
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
-        auto pAction = make_parented<QWidgetAction>(m_pCrateMenu);
-        auto pCheckBox = make_parented<QCheckBox>(m_pCrateMenu);
-
-        pCheckBox->setText(crate.getName());
-        pCheckBox->setProperty("crateId",
-                QVariant::fromValue(crate.getId()));
+        auto pAction = make_parented<QWidgetAction>(
+                m_pCrateMenu);
+        auto pCheckBox = make_parented<QCheckBox>(
+                mixxx::escapeTextPropertyWithoutShortcuts(crate.getName()),
+                m_pCrateMenu);
+        pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
         // Strangely, the normal styling of QActions does not automatically
         // apply to QWidgetActions. The :selected pseudo-state unfortunately
@@ -1014,42 +1105,110 @@ void WTrackMenu::slotUnlockBpm() {
     lockBpm(false);
 }
 
-void WTrackMenu::slotScaleBpm(int scale) {
-    for (const auto& pTrack : getTrackPointers()) {
+namespace {
+
+class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ScaleBpmTrackPointerOperation(mixxx::Beats::BPMScale bpmScale)
+            : m_bpmScale(bpmScale) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
         if (pTrack->isBpmLocked()) {
-            continue;
+            return;
         }
         mixxx::BeatsPointer pBeats = pTrack->getBeats();
         if (!pBeats) {
-            continue;
+            return;
         }
-        pBeats->scale(static_cast<mixxx::Beats::BPMScale>(scale));
+        pBeats->scale(m_bpmScale);
     }
+
+    const mixxx::Beats::BPMScale m_bpmScale;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotScaleBpm(int scale) {
+    const auto progressLabelText =
+            tr("Scaling BPM of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ScaleBpmTrackPointerOperation(
+                    static_cast<mixxx::Beats::BPMScale>(scale));
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
+
+namespace {
+
+class LockBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit LockBpmTrackPointerOperation(bool lock)
+            : m_lock(lock) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setBpmLocked(m_lock);
+    }
+
+    const bool m_lock;
+};
+
+} // anonymous namespace
 
 void WTrackMenu::lockBpm(bool lock) {
-    // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->setBpmLocked(lock);
-    }
+    const auto progressLabelText = lock
+            ? tr("Locking BPM of %n track(s)", "", getTrackCount())
+            : tr("Unlocking BPM of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            LockBpmTrackPointerOperation(lock);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
-void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
-    // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->setColor(color);
+namespace {
+
+class SetColorTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit SetColorTrackPointerOperation(mixxx::RgbColor::optional_t color)
+            : m_color(color) {
     }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setColor(m_color);
+    }
+
+    const mixxx::RgbColor::optional_t m_color;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
+    const auto progressLabelText =
+            tr("Setting color of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            SetColorTrackPointerOperation(color);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 
     hide();
 }
 
 void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
-    const auto trackPointers = getTrackPointers(1);
-    if (trackPointers.empty()) {
+    TrackPointer pTrack = getFirstTrackPointer();
+    if (!pTrack) {
         return;
     }
-    // Only the first track was requested
-    DEBUG_ASSERT(trackPointers.size() == 1);
+
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it
     if (!(m_pConfig->getValueString(
@@ -1062,117 +1221,301 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
         }
     }
 
-    TrackPointer pTrack = trackPointers.at(0);
-    if (pTrack) {
-        // TODO: load track from this class without depending on
-        // external slot to load track
-        emit loadTrackToPlayer(pTrack, group, play);
-    }
+    // TODO: load track from this class without depending on
+    // external slot to load track
+    emit loadTrackToPlayer(pTrack, group, play);
 }
+
+namespace {
+
+class ResetPlayCounterTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->resetPlayCounter();
+    }
+};
+
+} // anonymous namespace
 
 //slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearPlayCount() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->resetPlayCounter();
-    }
+    const auto progressLabelText =
+            tr("Resetting play count of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ResetPlayCounterTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
-void WTrackMenu::slotClearBeats() {
-    // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : getTrackPointers()) {
+namespace {
+
+class ResetBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
         if (pTrack->isBpmLocked()) {
-            continue;
+            return;
         }
         pTrack->setBeats(mixxx::BeatsPointer());
     }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotClearBeats() {
+    const auto progressLabelText =
+            tr("Resetting beats of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ResetBeatsTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
-void WTrackMenu::slotClearMainCue() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->removeCuesOfType(mixxx::CueType::MainCue);
+namespace {
+
+class RemoveCuesOfTypeTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType cueType)
+            : m_cueType(cueType) {
     }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->removeCuesOfType(m_cueType);
+    }
+
+    const mixxx::CueType m_cueType;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotClearMainCue() {
+    const auto progressLabelText =
+            tr("Removing main cue from %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::MainCue);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 void WTrackMenu::slotClearOutroCue() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->removeCuesOfType(mixxx::CueType::Outro);
-    }
+    const auto progressLabelText =
+            tr("Removing outro cue from %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::Outro);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 void WTrackMenu::slotClearIntroCue() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->removeCuesOfType(mixxx::CueType::Intro);
-    }
-}
-
-void WTrackMenu::slotClearKey() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->resetKeys();
-    }
-}
-
-void WTrackMenu::slotClearReplayGain() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->setReplayGain(mixxx::ReplayGain());
-    }
-}
-
-void WTrackMenu::slotClearWaveform() {
-    AnalysisDao& analysisDao = m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
-    for (const auto& pTrack : getTrackPointers()) {
-        analysisDao.deleteAnalysesForTrack(pTrack->getId());
-        pTrack->setWaveform(WaveformPointer());
-        pTrack->setWaveformSummary(WaveformPointer());
-    }
+    const auto progressLabelText =
+            tr("Removing intro cue from %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::Intro);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 void WTrackMenu::slotClearLoop() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->removeCuesOfType(mixxx::CueType::Loop);
-    }
+    const auto progressLabelText =
+            tr("Removing loop cues from %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::Loop);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 void WTrackMenu::slotClearHotCues() {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->removeCuesOfType(mixxx::CueType::HotCue);
-    }
+    const auto progressLabelText =
+            tr("Removing hot cues from %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::HotCue);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
+
+namespace {
+
+class ResetKeysTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->resetKeys();
+    }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotClearKey() {
+    const auto progressLabelText =
+            tr("Resetting keys of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ResetKeysTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class ResetReplayGainTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setReplayGain(mixxx::ReplayGain());
+    }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotClearReplayGain() {
+    const auto progressLabelText =
+            tr("Resetting replay gain of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ResetReplayGainTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class ResetWaveformTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ResetWaveformTrackPointerOperation(AnalysisDao& analysisDao)
+            : m_analysisDao(analysisDao) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        m_analysisDao.deleteAnalysesForTrack(pTrack->getId());
+        pTrack->setWaveform(WaveformPointer());
+        pTrack->setWaveformSummary(WaveformPointer());
+    }
+
+    AnalysisDao& m_analysisDao;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotClearWaveform() {
+    const auto progressLabelText =
+            tr("Resetting waveform of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ResetReplayGainTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class ClearAllPerformanceMetadataTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ClearAllPerformanceMetadataTrackPointerOperation(AnalysisDao& analysisDao)
+            : m_removeMainCue(mixxx::CueType::MainCue),
+              m_removeIntroCue(mixxx::CueType::Intro),
+              m_removeOutroCue(mixxx::CueType::Outro),
+              m_removeHotCues(mixxx::CueType::HotCue),
+              m_removeLoopCues(mixxx::CueType::Loop),
+              m_resetWaveform(analysisDao) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        m_resetBeats.apply(pTrack);
+        m_resetPlayCounter.apply(pTrack);
+        m_removeMainCue.apply(pTrack);
+        m_removeIntroCue.apply(pTrack);
+        m_removeOutroCue.apply(pTrack);
+        m_removeHotCues.apply(pTrack);
+        m_removeLoopCues.apply(pTrack);
+        m_resetKeys.apply(pTrack);
+        m_resetReplayGain.apply(pTrack);
+        m_resetWaveform.apply(pTrack);
+    }
+
+    const ResetBeatsTrackPointerOperation m_resetBeats;
+    const ResetPlayCounterTrackPointerOperation m_resetPlayCounter;
+    const RemoveCuesOfTypeTrackPointerOperation m_removeMainCue;
+    const RemoveCuesOfTypeTrackPointerOperation m_removeIntroCue;
+    const RemoveCuesOfTypeTrackPointerOperation m_removeOutroCue;
+    const RemoveCuesOfTypeTrackPointerOperation m_removeHotCues;
+    const RemoveCuesOfTypeTrackPointerOperation m_removeLoopCues;
+    const ResetKeysTrackPointerOperation m_resetKeys;
+    const ResetReplayGainTrackPointerOperation m_resetReplayGain;
+    const ResetWaveformTrackPointerOperation m_resetWaveform;
+};
+
+} // anonymous namespace
 
 void WTrackMenu::slotClearAllMetadata() {
-    slotClearBeats();
-    slotClearPlayCount();
-    slotClearMainCue();
-    slotClearHotCues();
-    slotClearIntroCue();
-    slotClearOutroCue();
-    slotClearLoop();
-    slotClearKey();
-    slotClearReplayGain();
-    slotClearWaveform();
+    const auto progressLabelText =
+            tr("Resetting all performance metadata of %n track(s)", "", getTrackCount());
+    AnalysisDao& analysisDao =
+            m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
+    const auto trackOperator =
+            ClearAllPerformanceMetadataTrackPointerOperation(analysisDao);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
-void WTrackMenu::slotShowTrackInfo() {
+void WTrackMenu::slotShowDlgTrackInfo() {
     if (isEmpty()) {
         return;
     }
+    // Create a fresh dialog on invocation
+    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+            m_pTrackModel);
+    connect(m_pDlgTrackInfo.get(),
+            &QDialog::finished,
+            [this]() {
+                if (m_pDlgTrackInfo.get() == sender()) {
+                    m_pDlgTrackInfo.release()->deleteLater();
+                }
+            });
+    // Method getFirstTrackPointer() is not applicable here!
     if (m_pTrackModel) {
-        m_pTrackInfo->loadTrack(m_trackIndexList.at(0));
+        m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTrackInfo->loadTrack(m_trackPointerList.at(0));
+        m_pDlgTrackInfo->loadTrack(m_trackPointerList.at(0));
     }
-    m_pTrackInfo->show();
+    m_pDlgTrackInfo->show();
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
     if (isEmpty()) {
         return;
     }
+    // Create a fresh dialog on invocation
+    m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
+            m_pTrackModel);
+    connect(m_pDlgTagFetcher.get(),
+            &QDialog::finished,
+            [this]() {
+                if (m_pDlgTagFetcher.get() == sender()) {
+                    m_pDlgTagFetcher.release()->deleteLater();
+                }
+            });
+    // Method getFirstTrackPointer() is not applicable here!
     if (m_pTrackModel) {
-        m_pTagFetcher->loadTrack(m_trackIndexList.at(0));
+        m_pDlgTagFetcher->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTagFetcher->loadTrack(m_trackPointerList.at(0));
+        m_pDlgTagFetcher->loadTrack(m_trackPointerList.at(0));
     }
-    m_pTagFetcher->show();
+    m_pDlgTagFetcher->show();
 }
 
 void WTrackMenu::slotAddToAutoDJBottom() {
@@ -1202,14 +1545,57 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
-void WTrackMenu::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    for (const auto& pTrack : getTrackPointers()) {
-        pTrack->setCoverInfo(coverInfo);
+namespace {
+
+class SetCoverInfoTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit SetCoverInfoTrackPointerOperation(CoverInfoRelative&& coverInfo)
+            : m_coverInfo(std::move(coverInfo)) {
     }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setCoverInfo(m_coverInfo);
+    }
+
+    const CoverInfoRelative m_coverInfo;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotCoverInfoSelected(CoverInfoRelative coverInfo) {
+    const auto progressLabelText =
+            tr("Setting cover art of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            SetCoverInfoTrackPointerOperation(std::move(coverInfo));
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
+namespace {
+
+class ReloadCoverInfoTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        m_coverInfoGuesser.guessAndSetCoverInfoForTrack(*pTrack);
+    }
+
+    mutable CoverInfoGuesser m_coverInfoGuesser;
+};
+
+} // anonymous namespace
+
 void WTrackMenu::slotReloadCoverArt() {
-    guessTrackCoverInfoConcurrently(getTrackPointers());
+    const auto progressLabelText =
+            tr("Reloading cover art of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ReloadCoverInfoTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 void WTrackMenu::slotRemove() {

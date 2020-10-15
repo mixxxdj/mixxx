@@ -11,15 +11,17 @@ language: cpp
 # Build flags common to OS X and Linux.
 # Parallel builds are important for avoiding OSX build timeouts.
 # We turn off verbose output to avoid going over the 4MB output limit.
-# TODO(2019-07-21): Add "ffmpeg=1" if FFmpeg 4.x becomes available in Ubuntu
 env:
   global:
     # For SCons builds
-    - SCONSFLAGS="test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
+    - SCONSFLAGS="battery=1 bulk=1 debug_assertions_fatal=1 hid=1 hss1394=0 lilv=1 opus=1 qtkeychain=1 shoutcast=1 test=1 verbose=0 vinylcontrol=1 virtualize=0"
     # For CMake builds
-    - CMAKEFLAGS="-DOPUS=ON -DHSS1394=OFF"
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
+    - CMAKEFLAGS="-DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON"
     - GTEST_COLOR=1
     - CTEST_OUTPUT_ON_FAILURE=1
+    # Render analyzer waveform tests to an offscreen buffer
+    - QT_QPA_PLATFORM=offscreen
 
 jobs:
   include:
@@ -50,27 +52,31 @@ jobs:
       before_install:
         - pip install pre-commit==2.5.1
       script:
-        - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
+        # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
+        # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
+        - pre-commit run --from-ref HEAD^1 --to-ref HEAD --show-diff-on-failure
       addons: []
 
     - name: Ubuntu/gcc/SCons build
       compiler: gcc
       # Ubuntu Bionic build prerequisites
       before_install:
-        - sudo apt-get install -y scons
+        - sudo apt install -y scons
       install:
-        - scons -j "$(nproc)" localecompare=1
+        # TODO for Ubuntu Focal: faad=0 ffmpeg=1
+        - scons -j "$(nproc)" faad=1 ffmpeg=0 localecompare=1 mad=1 modplug=1 wv=1
       script:
         # NOTE(sblaisot): 2018-01-02 removing gdb wrapper on linux due to a bug in
         # return code in order to avoid having a successful build when a test fail.
         # https://bugs.launchpad.net/mixxx/+bug/1699689
-        - ./mixxx-test
+        - ./mixxx-test --logLevel info
 
     - name: Ubuntu/gcc/CMake build
       compiler: gcc
       cache: ccache
       # Ubuntu Bionic build prerequisites
-      env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON -DFAAD=ON -DWAVPACK=ON -DMAD=ON -DMODPLUG=ON"
+      # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
+      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -86,7 +92,7 @@ jobs:
         - cpack -G DEB
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
 
     - name: OSX/clang/SCons build
@@ -98,13 +104,34 @@ jobs:
         directories:
           - $HOME/Library/Caches/Homebrew
           - /usr/local/Homebrew
+      addons:
+        homebrew:
+          update: true
+          packages:
+            - chromaprint
+            - flac
+            - lame
+            - libsndfile
+            - libogg
+            - libvorbis
+            - libshout
+            - libid3tag
+            - libmad
+            - lilv
+            - opusfile
+            - portaudio
+            - portmidi
+            - protobuf
+            - qt5
+            - qtkeychain
+            - rubberband
+            - sound-touch
+            - taglib
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
-      # Virtual X (Xvfb) is needed for analyzer waveform tests
       env: >-
         CFLAGS="-isystem /usr/local/include/opus"
         CXXFLAGS="-isystem /usr/local/include/opus"
-        DISPLAY=:99.0
       before_install:
       - brew install scons
       - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
@@ -113,11 +140,11 @@ jobs:
         # We are hardcoding 4 threads here since "$(sysctl -n hw.ncpu)" only
         # returns 2 and makes the travis job run into a timeout:
         # https://docs.travis-ci.com/user/reference/overview/#virtualization-environments
-        - scons -j4
+        - scons -j4 coreaudio=1
       script:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
-        - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)"
+        - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)" -- --logLevel info
       before_cache:
         # Avoid indefinite cache growth
         - brew cleanup
@@ -146,9 +173,8 @@ jobs:
             - ccache
       env: >-
         MIXXX_ENVPATH="${HOME}/buildenv"
-        CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DFAAD=OFF -DWAVPACK=OFF -DWAVPACK=OFF -DMAD=OFF -DMODPLUG=OFF"
+        CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DHSS1394=ON"
         PATH="/usr/local/opt/ccache/bin:$PATH"
-        DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
         CTEST_PARALLEL_LEVEL=1
       before_install:
@@ -172,7 +198,7 @@ jobs:
         - cpack -G DragNDrop
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
       before_cache:
         # Avoid indefinite cache growth
@@ -185,10 +211,7 @@ jobs:
 git:
   depth: 1
 
-services:
-  # Virtual X is needed for analyzer waveform tests
-  - xvfb
-
+# Common Addons
 addons:
   apt:
     sources:
@@ -196,7 +219,9 @@ addons:
     packages:
       - libavformat-dev
       - libchromaprint-dev
+      - libebur128-dev
       - libfaad-dev
+      - libfftw3-dev
       - libflac-dev
       - libid3tag0-dev
       - liblilv-dev
@@ -226,32 +251,6 @@ addons:
       - qt5-default
       - qtscript5-dev
       - qt5keychain-dev
-  homebrew:
-    update: true
-    packages:
-      - chromaprint
-      - faad2
-      - ffmpeg
-      - flac
-      - lame
-      - libsndfile
-      - libogg
-      - libvorbis
-      - libshout
-      - libmodplug
-      - libid3tag
-      - libmad
-      - lilv
-      - mp4v2
-      - opusfile
-      - portaudio
-      - portmidi
-      - protobuf
-      - qt5
-      - rubberband
-      - sound-touch
-      - taglib
-      - wavpack
 
 
 notifications:

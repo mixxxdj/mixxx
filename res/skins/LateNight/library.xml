@@ -15,31 +15,64 @@
         <Children>
 
           <Splitter>
-            <ObjectName>VerticalSplitter</ObjectName>
+            <ObjectName>LibrarySplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
             <Collapsible>1,0</Collapsible>
             <Children>
               <WidgetGroup>
+                <ObjectName>SidebarSearchPreviewContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>100,</MinimumSize>
                 <Children>
 
-                  <Template src="skin:preview_deck.xml"/>
-
-                  <!--Search Input Field-->
+                  <!--Search Input Field + Library Expand toggle -->
                   <WidgetGroup>
-                    <ObjectName>SearchLineBox</ObjectName>
-                    <Layout>vertical</Layout>
+                    <ObjectName></ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
                     <Children>
-                      <SearchBox></SearchBox>
+
+                      <WidgetGroup>
+                        <ObjectName>SearchLineBox</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,max</SizePolicy>
+                        <Children>
+                          <SearchBox></SearchBox>
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <ObjectName>LibExpandBox</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <PushButton>
+                            <TooltipId>maximize_library</TooltipId>
+                            <ObjectName>LibExpand</ObjectName>
+                            <Size>16f,18me</Size>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                            </State>
+                            <Connection>
+                              <ConfigKey>[Master],maximize_library</ConfigKey>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup><!-- LibExpandBox -->
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- SearchLineBox -->
+
+                  <Template src="skin:/decks/preview_deck.xml"/>
 
                   <Splitter>
-                    <ObjectName>HorizontalSplitter</ObjectName>
+                    <ObjectName>SidebarCoverSplitter</ObjectName>
                     <Size>me,me</Size>
                     <SplitSizes>1,1</SplitSizes>
                     <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
@@ -55,19 +88,25 @@
                         </Children>
                       </WidgetGroup>
                       <!--Cover Art-->
-                      <CoverArt>
-                        <SizePolicy>me,me</SizePolicy>
-                        <MinimumSize>40,40</MinimumSize>
+                      <WidgetGroup>
+                        <ObjectName>AlignCenter</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <CoverArt>
+                            <SizePolicy>me,me</SizePolicy>
+                            <MinimumSize>40,40</MinimumSize>
+                          </CoverArt>
+                        </Children>
                         <Connection>
                           <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </CoverArt>
+                      </WidgetGroup><!--Cover Art-->
                     </Children>
-                  </Splitter>
+                  </Splitter><!-- HorizontalSplitter -->
 
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- SidebarSearchPreviewContainer -->
 
               <!-- Library Table-->
               <Library>
@@ -78,15 +117,7 @@
               </Library>
 
             </Children>
-          </Splitter>
-
-          <WidgetGroup>
-            <Size>5f,1min</Size>
-            <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          </Splitter><!-- VerticalSplitter -->
 
         </Children>
       </WidgetGroup><!-- LibraryContainer -->

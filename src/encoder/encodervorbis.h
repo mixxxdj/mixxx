@@ -13,9 +13,11 @@
 // this also includes vorbis/codec.h
 #include <vorbis/vorbisenc.h>
 
-#include "util/types.h"
+#include <QFile>
+
 #include "encoder/encoder.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/types.h"
 
 class EncoderCallback;
 

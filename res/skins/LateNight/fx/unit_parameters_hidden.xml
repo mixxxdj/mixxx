@@ -1,0 +1,123 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect unit widget.
+  Variables:
+    group: The group for the controls.
+    FxRack
+    FxUnit
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>FxSlotsCollapsed</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>190,</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls1</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children/>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>190,</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls2</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children/>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>190,</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls3</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children/>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- FxSlotsCollapsed -->
+
+      <WidgetGroup>
+        <ObjectName>FxUnitControlsCollapsed</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Super knob, optional -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <SingletonContainer>
+            <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
+          </SingletonContainer>
+
+          <SingletonContainer>
+            <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup><!-- FxUnitControlsCollapsed -->
+
+      <!-- Fx label + Expand_Collapsed -->
+      <WidgetGroup>
+        <ObjectName>FxUnitHeaderCollapsed</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

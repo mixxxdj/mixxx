@@ -224,24 +224,6 @@ TEST_F(SampleUtilTest, copy2WithGain) {
     }
 }
 
-TEST_F(SampleUtilTest, copy2WithGainAliased) {
-    for (int i = 0; i < buffers.size(); ++i) {
-        CSAMPLE* buffer = buffers[i];
-        int size = sizes[i];
-        FillBuffer(buffer, 1.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 2.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer, 2.0,
-                                  buffer, 3.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 10.0f, size);
-    }
-}
-
 TEST_F(SampleUtilTest, copy3WithGain) {
     for (int i = 0; i < buffers.size(); ++i) {
         CSAMPLE* buffer = buffers[i];
@@ -268,26 +250,6 @@ TEST_F(SampleUtilTest, copy3WithGain) {
         SampleUtil::free(buffer2);
         SampleUtil::free(buffer3);
         SampleUtil::free(buffer4);
-    }
-}
-
-TEST_F(SampleUtilTest, copy3WithGainAliased) {
-    for (int i = 0; i < buffers.size(); ++i) {
-        CSAMPLE* buffer = buffers[i];
-        int size = sizes[i];
-        FillBuffer(buffer, 1.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 3.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer, 2.0,
-                                  buffer, 3.0,
-                                  buffer, 4.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 27.0f, size);
     }
 }
 

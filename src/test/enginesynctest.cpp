@@ -980,11 +980,9 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
             ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
-    m_pMixerDeck1->slotLoadTrack(track1, true);
-    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-    m_pMixerDeck2->slotLoadTrack(track2, false);
-    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
     EXPECT_FLOAT_EQ(
             140.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
@@ -996,11 +994,9 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
     ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
-    m_pMixerDeck1->slotLoadTrack(track1, true);
-    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
-    m_pMixerDeck2->slotLoadTrack(track2, false);
-    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
     EXPECT_FLOAT_EQ(
             128.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_FLOAT_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
@@ -1016,11 +1012,9 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
             ->set(getRateSliderValue(1.5));
     pButtonSyncEnabled1->set(0.0);
     pButtonSyncEnabled2->set(0.0);
-    m_pMixerDeck1->slotLoadTrack(track1, true);
-    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
-    m_pMixerDeck2->slotLoadTrack(track2, false);
-    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
     EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
@@ -1034,11 +1028,9 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
             ->set(getRateSliderValue(1.5));
     pButtonSyncEnabled1->slotSet(0.0);
     pButtonSyncEnabled2->slotSet(0.0);
-    m_pMixerDeck1->slotLoadTrack(track1, true);
-    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
+    track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-    m_pMixerDeck2->slotLoadTrack(track2, false);
-    m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
+    track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
     EXPECT_FLOAT_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     EXPECT_FLOAT_EQ(128.0,

@@ -10,21 +10,25 @@
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/track.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
+namespace {
+
 // TODO: Convert these doubles to a standard enum
 // and convert elseif logic to switch statements
-static const double CUE_MODE_MIXXX = 0.0;
-static const double CUE_MODE_PIONEER = 1.0;
-static const double CUE_MODE_DENON = 2.0;
-static const double CUE_MODE_NUMARK = 3.0;
-static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
-static const double CUE_MODE_CUP = 5.0;
+constexpr double CUE_MODE_MIXXX = 0.0;
+constexpr double CUE_MODE_PIONEER = 1.0;
+constexpr double CUE_MODE_DENON = 2.0;
+constexpr double CUE_MODE_NUMARK = 3.0;
+constexpr double CUE_MODE_MIXXX_NO_BLINK = 4.0;
+constexpr double CUE_MODE_CUP = 5.0;
 
-namespace {
+/// This is the position of a fresh loaded tack without any seek
+constexpr double kDefaultLoadPosition = 0.0;
 
 // Helper function to convert control values (i.e. doubles) into RgbColor
 // instances (or nullopt if value < 0). This happens by using the integer
@@ -356,6 +360,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroEndEnabled->forceSet(0.0);
         m_pHotcueFocus->set(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
+        m_usedSeekOnLoadPosition.setValue(kDefaultLoadPosition);
     }
 
     if (!pNewTrack) {
@@ -413,15 +418,19 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         // This allows users to load tracks and have the needle-drop be maintained.
         if (!(m_pVinylControlEnabled->get() &&
                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
-            seekExact(0.0);
+            seekOnLoad(0.0);
         }
         break;
     case SeekOnLoadMode::FirstSound: {
         CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
-        if (pAudibleSound && pAudibleSound->getPosition() != Cue::kNoPosition) {
-            seekExact(pAudibleSound->getPosition());
+        double audibleSoundPosition = Cue::kNoPosition;
+        if (pAudibleSound) {
+            audibleSoundPosition = pAudibleSound->getPosition();
+        }
+        if (audibleSoundPosition != Cue::kNoPosition) {
+            seekOnLoad(audibleSoundPosition);
         } else {
-            seekExact(0.0);
+            seekOnLoad(0.0);
         }
         break;
     }
@@ -432,25 +441,31 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         // This prevents jumps when track analysis finishes while quantization is enabled.
         double cuePoint = m_pCuePoint->get();
         if (cuePoint != Cue::kNoPosition) {
-            seekExact(cuePoint);
+            seekOnLoad(cuePoint);
         } else {
-            seekExact(0.0);
+            seekOnLoad(0.0);
         }
         break;
     }
     case SeekOnLoadMode::IntroStart: {
         double introStart = m_pIntroStartPosition->get();
         if (introStart != Cue::kNoPosition) {
-            seekExact(introStart);
+            seekOnLoad(introStart);
         } else {
-            seekExact(0.0);
+            seekOnLoad(0.0);
         }
         break;
     }
     default:
-        seekExact(0.0);
+        DEBUG_ASSERT(!"Unknown enum value");
+        seekOnLoad(0.0);
         break;
     }
+}
+
+void CueControl::seekOnLoad(double seekOnLoadPosition) {
+    seekExact(seekOnLoadPosition);
+    m_usedSeekOnLoadPosition.setValue(seekOnLoadPosition);
 }
 
 void CueControl::cueUpdated() {
@@ -569,25 +584,24 @@ void CueControl::trackAnalyzed() {
         return;
     }
 
-    // if we are playing (no matter what reason for) do not seek
-    if (m_pPlay->toBool()) {
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+    if (sampleOfTrack.current != m_usedSeekOnLoadPosition.getValue()) {
+        // the track is already manual cued, don't re-cue
         return;
     }
-
-    // Retrieve current position of cues from COs.
-    double cue = m_pCuePoint->get();
-    double intro = m_pIntroStartPosition->get();
 
     // Make track follow the updated cues.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
+        double cue = m_pCuePoint->get();
         if (cue != Cue::kNoPosition) {
-            seekExact(cue);
+            seekOnLoad(cue);
         }
     } else if (seekOnLoadMode == SeekOnLoadMode::IntroStart) {
+        double intro = m_pIntroStartPosition->get();
         if (intro != Cue::kNoPosition) {
-            seekExact(intro);
+            seekOnLoad(intro);
         }
     }
 }
@@ -692,7 +706,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
             seekAbs(position);
         }
@@ -713,7 +727,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
             m_pPlay->set(0.0);
             seekExact(position);
@@ -736,7 +750,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     lock.unlock();
 
     if (pCue) {
-        int position = pCue->getPosition();
+        double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
             seekAbs(position);
             if (!isPlayingByPlayButton()) {
@@ -810,7 +824,6 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             m_iCurrentlyPreviewingHotcues++;
             double position = pCue->getPosition();
             m_bypassCueSetByPlay = true;
-            m_pPlay->set(1.0);
             pControl->setPreviewing(true);
             pControl->setPreviewingPosition(position);
 
@@ -818,6 +831,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             lock.unlock();
 
             seekAbs(position);
+            m_pPlay->set(1.0);
         }
     } else if (m_iCurrentlyPreviewingHotcues) {
         // This is a activate release and we are previewing at least one
