@@ -1,0 +1,31 @@
+<Template>
+  <WidgetGroup>
+    <SizePolicy>min,me</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>SamplerExpandBox</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <PushButton>
+            <TooltipId>show_samplers</TooltipId>
+            <ObjectName>SamplerExpand</ObjectName>
+            <Size>16f,36f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+            </State>
+            <State>
+              <Number>1</Number>
+            </State>
+            <Connection>
+              <ConfigKey>[LateNight],expand_samplers_<Variable name="SamCount"/></ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup><!-- SamplerExpandBox -->
+    </Children>
+  </WidgetGroup>
+</Template>

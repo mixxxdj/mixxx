@@ -47,7 +47,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     void finish();
 
     UserSettingsPointer m_pConfig;
-    QList<TrackPointer> m_tracks;
+    TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
 };
 

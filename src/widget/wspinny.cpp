@@ -1,23 +1,25 @@
-#include <QtDebug>
+#include "widget/wspinny.h"
+
 #include <QApplication>
-#include <QUrl>
 #include <QMimeData>
 #include <QStylePainter>
+#include <QUrl>
 #include <QWindow>
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
-#include "waveform/sharedglcontext.h"
 #include "util/math.h"
-#include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "widget/wspinny.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
