@@ -45,8 +45,8 @@ TraktorZ2.fxOnClickHandler = function(field) {
     var numOfLoadedButDisabledEffects = 0;
     var numOfLoadedandEnabledEffects = 0;
     for (var effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effects"); effectIdx++) {
-        if (engine.getValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "loaded") === true) {
-            if (engine.getValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "enabled") === true) {
+        if (engine.getValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "loaded") === 1) {
+            if (engine.getValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "enabled") === 1) {
                 numOfLoadedandEnabledEffects++;
             } else {
                 numOfLoadedButDisabledEffects++;
@@ -54,10 +54,10 @@ TraktorZ2.fxOnClickHandler = function(field) {
         }
     }
 
-    if (field.value === 1) {
+    if (field.value == 1) {
         if (numOfLoadedandEnabledEffects === 0) {
             for (effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effects"); effectIdx++) {
-                if (engine.getValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "loaded") === true) {
+                if (engine.getValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "loaded") === 1) {
                     engine.setValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "enabled", 1);
                 }
             }
@@ -70,12 +70,12 @@ TraktorZ2.fxOnClickHandler = function(field) {
 
 TraktorZ2.fxOnLedHandler = function(field) {
     HIDDebug("TraktorZ2: fxOnLedHandler");
-    for (var MacroFxUnitIdx = 1; MacroFxUnitIdx <= 2; MacroFxUnitIdx++) {
+    for (var macroFxUnitIdx = 1; macroFxUnitIdx <= 2; macroFxUnitIdx++) {
         var numOfLoadedButDisabledEffects = 0;
         var numOfLoadedandEnabledEffects = 0;
-        for (var effectIdx = 1; effectIdx <= engine.getValue("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "num_effects"); effectIdx++) {
-            if (engine.getValue("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"_Effect" + effectIdx + "]", "loaded") === true) {
-                if (engine.getValue("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"_Effect" + effectIdx + "]", "enabled") === true) {
+        for (var effectIdx = 1; effectIdx <= engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "num_effects"); effectIdx++) {
+            if (engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx +"_Effect" + effectIdx + "]", "loaded") === 1) {
+                if (engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx +"_Effect" + effectIdx + "]", "enabled") === 1) {
                     numOfLoadedandEnabledEffects++;
                 } else {
                     numOfLoadedButDisabledEffects++;
@@ -83,11 +83,11 @@ TraktorZ2.fxOnLedHandler = function(field) {
             }
         }
         if (numOfLoadedandEnabledEffects === 0) {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x00, MacroFxUnitIdx === 2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", 0x00, macroFxUnitIdx === 2);
         } else if (numOfLoadedandEnabledEffects > 0 && numOfLoadedButDisabledEffects > 0) {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x04, MacroFxUnitIdx === 2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", 0x02, macroFxUnitIdx === 2);
         } else {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + MacroFxUnitIdx +"]", "!On", 0x07, MacroFxUnitIdx === 2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", 0x07, macroFxUnitIdx === 2);
         }
     }
 };
@@ -119,7 +119,7 @@ TraktorZ2.Deck.prototype.registerInputs = function(messageShort, messageLong) {
     this.defineButton(messageShort, "!pad_4", 0x06, 0x20, 0x07, 0x40, deckFn.numberButtonHandler);
 
     // Vinyl control mode (REL / INTL)
-    this.defineButton(messageShort, "vinylControlMode", 0x04, 0x10, 0x04, 0x20, this.vinylcontrolHandler);
+    this.defineButton(messageShort, "vinylcontrol_mode", 0x04, 0x10, 0x04, 0x20, deckFn.vinylcontrolHandler);
     this.defineButton(messageShort, "!sync", 0x04, 0x40, 0x04, 0x80, deckFn.syncHandler);
 
     // Load/Duplicate buttons
@@ -223,15 +223,16 @@ TraktorZ2.Deck.prototype.fluxHandler = function(field) {
 };
 
 TraktorZ2.Deck.prototype.vinylcontrolHandler = function(field) {
-    HIDDebug("TraktorZ2: vinylcontrolHandler");
-    var vinylControlMode = engine.getValue(this.activeChannel, "vinylControlMode");
+    HIDDebug("TraktorZ2: vinylcontrolHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field);
+    var vinylControlMode = engine.getValue(this.activeChannel, "vinylcontrol_mode");
+    var ch = this.activeChannel; // Use global variable in timer function, because this.activeChannel can change until the timer is active
     this.vinylcontrolTimer = engine.beginTimer(300, function() {
         if (vinylControlMode >= 2) {
             vinylControlMode = 0;
         } else {
             vinylControlMode++;
         }
-        engine.setValue(this.activeChannel, "vinylControlMode", vinylControlMode);
+        engine.setValue(ch, "vinylcontrol_mode", vinylControlMode);
         // Reset vinylcontrol button timer state if active
         if (this.vinylcontrolTimer !== 0) {
             this.vinylcontrolTimer = 0;
@@ -240,7 +241,7 @@ TraktorZ2.Deck.prototype.vinylcontrolHandler = function(field) {
 };
 
 TraktorZ2.Deck.prototype.syncHandler = function(field) {
-    HIDDebug("TraktorZ2: syncHandler");
+    HIDDebug("TraktorZ2: syncHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field);
     if (TraktorZ2.shiftActive) {
         engine.setValue(this.activeChannel, "beatsync_phase", field.value);
         // Light LED while pressed
@@ -255,8 +256,9 @@ TraktorZ2.Deck.prototype.syncHandler = function(field) {
         if (engine.getValue(this.activeChannel, "sync_enabled") === 0) {
             script.triggerControl(this.activeChannel, "beatsync");
             // Start timer to measure how long button is pressed
+            var ch = this.activeChannel; // Use global variable in timer function, because this.activeChannel can change until the timer is active
             this.syncPressedTimer = engine.beginTimer(300, function() {
-                engine.setValue(this.activeChannel, "sync_enabled", 1);
+                engine.setValue(ch, "sync_enabled", 1);
                 // Reset sync button timer state if active
                 if (this.syncPressedTimer !== 0) {
                     this.syncPressedTimer = 0;
@@ -788,7 +790,7 @@ TraktorZ2.hotcueOutputHandler = function() {
 };
 
 TraktorZ2.beatOutputHandler = function(value, group, key) {
-    if (value === 1 || value === true) {    
+    if (value === 1) {    
         for (var timerIdx = 1; timerIdx <= 5; timerIdx++) {
             if(TraktorZ2.chTimer[group][timerIdx] !== -1) {
                 engine.stopTimer(TraktorZ2.chTimer[group][timerIdx]);
@@ -834,7 +836,7 @@ TraktorZ2.displayLoopCount = function(group, brightness) {
 
     for (var digit in ledDigitModulus) {
         var leastSignificiantDigit = (beatloopSize % 10);
-        HIDDebug(leastSignificiantDigit + " " + beatloopSize + " " + group + " " + digit);
+        //HIDDebug(leastSignificiantDigit + " " + beatloopSize + " " + group + " " + digit);
         beatloopSize = beatloopSize - leastSignificiantDigit;
         TraktorZ2.displayloopCountDigit(group + digit, leastSignificiantDigit, brightness);
         beatloopSize /= 10;
@@ -845,7 +847,7 @@ TraktorZ2.displayloopCountDigit = function(group, digit, brightness) {
     // @param offset of the first LED (center horizontal bar) of the digit
     // @param digit to display (-2 represents all OFF, -1 represents "1/" )
     // @param brightness may be aninteger value from 0x00 to 0x07
-    HIDDebug("Offset:" + " Digit:" + digit + " Brightness:" + brightness);
+    //HIDDebug("Offset:" + " Digit:" + digit + " Brightness:" + brightness);
 
     //
     if (digit === 0 || digit === 2 || digit === 3 || digit === 5 || digit === 6 || digit === 7  || digit === 8  || digit === 9) {
@@ -887,7 +889,6 @@ TraktorZ2.displayloopCountDigit = function(group, digit, brightness) {
         TraktorZ2.controller.setOutput(group, "segment_f", 0x00,       false); // OFF
     }
 
-    HIDDebug(group);
     var batching = false;
     if (group === "[Channel1][Digit1]" || group === "[Channel2][Digit1]") {
         batching = true;
