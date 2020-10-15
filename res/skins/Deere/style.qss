@@ -28,7 +28,6 @@
 }
 
 #CrossfaderContainer {
-  padding: 3px 3px 0px 3px;
 }
 
 #DeckTextRow {
@@ -89,7 +88,7 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 3px 0 3px;
+  padding: 0 2px 0 3px;
 }
 
 #ControlsRow {
@@ -879,6 +878,7 @@ WOverview #PassthroughLabel {
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
+#PlayCueContainer,
 #HotcueGrid,
 #VinylControlsGrid {
   padding: 1px;
@@ -1257,6 +1257,10 @@ WBeatSpinBox,
   qproperty-alignment: 'AlignHCenter';
   font: 10px;
   margin-top: 1px;
+}
+
+#Crossfader {
+  margin-top: 3px;
 }
 
 #Crossfader[highlight="0"] {
