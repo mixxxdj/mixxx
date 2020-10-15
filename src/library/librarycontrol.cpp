@@ -569,19 +569,27 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+        return;
+    }
     if (!QApplication::focusWindow()) {
         qDebug() << "Mixxx window is not focused, don't send key events";
         return;
     }
 
     bool keyIsTab = event.key() == static_cast<int>(Qt::Key_Tab);
+    bool keyIsUpDown = event.key() == static_cast<int>(Qt::Key_Up) ||
+            event.key() == static_cast<int>(Qt::Key_Down);
 
     // If the main window has focus, any widget can receive Tab.
     // Other keys should be sent to library widgets only to not
     // accidentally alter spinboxes etc.
+    // If the searchbox has focus allow only Up/Down to select previous queries.
     if (!keyIsTab && !m_pSidebarWidget->hasFocus()
             && !m_pLibraryWidget->getActiveView()->hasFocus()) {
-        setLibraryFocus();
+        if (keyIsUpDown && !m_pSearchbox->hasFocus()) {
+            setLibraryFocus();
+        }
     }
     if (keyIsTab && !QApplication::focusWidget()){
         setLibraryFocus();
