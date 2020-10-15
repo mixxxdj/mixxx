@@ -10,7 +10,7 @@
 #include "widget/wwidget.h"
 
 namespace {
-constexpr float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
+const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
 }
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
