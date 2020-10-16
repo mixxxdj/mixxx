@@ -1243,7 +1243,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
     // If resizing an inactive loop by changing beatloop_size,
     // do not seek to the adjusted loop.
-    newloopSamples.seekMode = (keepStartPoint && (enable || m_bLoopingEnabled)) ? LoopSeekMode::Changed : LoopSeekMode::MovedOut;
+    newloopSamples.seekMode = (keepStartPoint && (enable || m_bLoopingEnabled))
+            ? LoopSeekMode::Changed
+            : LoopSeekMode::MovedOut;
 
     m_loopSamples.setValue(newloopSamples);
     emit loopUpdated(newloopSamples.start, newloopSamples.end);
