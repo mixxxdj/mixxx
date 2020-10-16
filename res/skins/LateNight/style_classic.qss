@@ -658,16 +658,15 @@ WLibrary,
     padding: 0px 0px 0px 1px;
   }
 
-  #CrossfaderButtonContainer_Deck {
+  #CrossfaderButtonContainer_Deck,
+  #CrossfaderButtonContainer_Aux {
     padding: 1px;
     border-bottom: 1px solid #333;
     border-right: 1px solid #333;
     border-bottom-right-radius: 1px;
     }
   #CrossfaderButtonContainer_Aux {
-    padding: 1px 1px 0px 1px;
-    margin-left: 5px;
-    border-right: 1px solid #333;
+    margin-left: 4px;
     }
     #CrossfaderButton[value="1"] {
       background-color: #262626;
@@ -887,18 +886,19 @@ WPushButton#FxSuperLinkInvertButton {
   #MicAuxLabel {
     padding: 3px 0px 3px 1px;
   }
-  #AuxPlayBox {
+
+  #AuxPlayBox,
+  #MicTalkBox {
     padding: 0px 0px 2px 1px;
   }
-  #MicTalkBox {
-    padding: 0px 0px 7px 1px;
+
+  #MicAuxAddBox {
+    margin: 1px 0px 1px 1px;
   }
+
   #MicAuxVUMeter {
     padding: 2px 1px 3px 0px;
     margin-left: 2px;
-  }
-  #MicAuxAddBox {
-    margin: 1px 0px 1px 1px;
   }
 
 #MicAuxSubControls {

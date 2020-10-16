@@ -27,6 +27,8 @@
                 <Alignment>center</Alignment>
               </Label>
 
+              <Template src="skin:/controls/button_xfader_aux.xml"/>
+
               <WidgetGroup>
                 <ObjectName>AuxPlayBox</ObjectName>
                 <Layout>vertical</Layout>
@@ -41,8 +43,6 @@
                   </Template>
                 </Children>
               </WidgetGroup>
-
-              <Template src="skin:/controls/button_xfader_aux.xml"/>
 
             </Children>
           </WidgetGroup><!-- MicAuxMainControls -->

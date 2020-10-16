@@ -732,7 +732,7 @@ WBeatSpinBox::down-button,
     }
   #CrossfaderButtonContainer_Aux {
     padding: 1px;
-    margin-left: 5px;
+    margin-left: 3px;
     }
 
 #MixerMasterHeadphone {
@@ -1008,18 +1008,19 @@ WPushButton#FxSuperLinkInvertButton {
   #MicAuxLabel {
     padding: 3px 0px 3px 1px;
   }
-  #AuxPlayBox {
-    padding: 0px 0px 2px 1px;
-  }
+
+  #AuxPlayBox,
   #MicTalkBox {
-    padding: 0px 0px 5px 1px;
+    padding: 0px 0px 2px 0px;
   }
+
+  #MicAuxAddBox {
+    margin: 1px 0px 1px 1px;
+  }
+
   #MicAuxVUMeter {
     padding: 4px 1px 1px 0px;
     margin-left: 2px;
-  }
-  #MicAuxAddBox {
-    margin: 1px 0px 1px 1px;
   }
 
 #MicAuxSubControls {
