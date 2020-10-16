@@ -248,17 +248,16 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
     if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
         return;
     }
-    double loop_length = loopSamples.end - loopSamples.start;
-    int trackSamples = m_pTrackSamples->get();
-    loop_length *= scaleFactor;
+    const double loopLength = (loopSamples.end - loopSamples.start) * scaleFactor;
+    const int trackSamples = static_cast<int>(m_pTrackSamples->get());
 
     // Abandon loops that are too short of extend beyond the end of the file.
-    if (loop_length < MINIMUM_AUDIBLE_LOOP_SIZE ||
-            loopSamples.start + loop_length > trackSamples) {
+    if (loopLength < MINIMUM_AUDIBLE_LOOP_SIZE ||
+            loopSamples.start + loopLength > trackSamples) {
         return;
     }
 
-    loopSamples.end = loopSamples.start + loop_length;
+    loopSamples.end = loopSamples.start + loopLength;
 
     // TODO(XXX) we could be smarter about taking the active beatloop, scaling
     // it by the desired amount and trying to find another beatloop that matches
@@ -1029,7 +1028,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         beats = minBeatSize;
     }
 
-    int samples = m_pTrackSamples->get();
+    int samples = static_cast<int>(m_pTrackSamples->get());
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (samples == 0 || !pBeats) {
         clearActiveBeatLoop();

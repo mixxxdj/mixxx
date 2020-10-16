@@ -1124,8 +1124,8 @@ double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
 
 double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
     samplePosition /= kChannelCount;
-    double sampleRate = pDeck->sampleRate();
-    if (sampleRate <= 0.0) {
+    mixxx::audio::SampleRate sampleRate = pDeck->sampleRate();
+    if (!sampleRate.isValid()) {
         return 0.0;
     }
     return samplePosition / sampleRate / pDeck->rateRatio();

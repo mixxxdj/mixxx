@@ -259,5 +259,5 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     m_pEffectSlot->syncSofttakeover();
     newParam = 0.5 + SoftTakeover::kDefaultTakeoverThreshold * 1.5;
     m_pEffectSlot->slotEffectMetaParameter(newParam);
-    EXPECT_FLOAT_EQ(0.0703125, m_pControlValue->get());
+    EXPECT_DOUBLE_EQ(0.0703125, m_pControlValue->get());
 }

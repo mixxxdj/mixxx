@@ -89,9 +89,11 @@ void MetronomeEffect::processChannel(
 
     unsigned int maxFrames;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
-        maxFrames = bufferParameters.sampleRate() * groupFeatures.beat_length_sec;
+        maxFrames = static_cast<decltype(maxFrames)>(
+                bufferParameters.sampleRate() * groupFeatures.beat_length_sec);
         if (groupFeatures.has_beat_fraction) {
-            unsigned int currentFrame =  maxFrames * groupFeatures.beat_fraction;
+            const auto currentFrame = static_cast<unsigned int>(
+                    maxFrames * groupFeatures.beat_fraction);
             if (maxFrames > clickSize &&
                     currentFrame > clickSize &&
                     currentFrame < maxFrames - clickSize &&
@@ -101,7 +103,8 @@ void MetronomeEffect::processChannel(
             }
         }
     } else {
-        maxFrames = bufferParameters.sampleRate() * 60 / m_pBpmParameter->value();
+        maxFrames = static_cast<decltype(maxFrames)>(
+                bufferParameters.sampleRate() * 60 / m_pBpmParameter->value());
     }
 
     SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
@@ -135,4 +138,3 @@ void MetronomeEffect::processChannel(
                 copyFrames);
     }
 }
-
