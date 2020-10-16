@@ -11,7 +11,8 @@
 #include "engine/controls/enginecontrol.h"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/cue.h"
+#include "track/track_decl.h"
 
 #define NUM_HOT_CUES 37
 

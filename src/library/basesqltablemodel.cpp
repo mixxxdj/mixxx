@@ -14,6 +14,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "track/keyutils.h"
+#include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/assert.h"
 #include "util/datetime.h"
@@ -615,17 +616,6 @@ QVariant BaseSqlTableModel::rawValue(
         m_trackSource->ensureCached(trackId);
     }
     return m_trackSource->data(trackId, trackSourceColumn);
-}
-
-QVariant BaseSqlTableModel::roleValue(
-        const QModelIndex& index,
-        QVariant&& rawValue,
-        int role) const {
-    if (role == Qt::DisplayRole &&
-            index.column() == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-        return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
-    }
-    return BaseTrackTableModel::roleValue(index, std::move(rawValue), role);
 }
 
 bool BaseSqlTableModel::setTrackValueForColumn(

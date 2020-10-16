@@ -2,17 +2,16 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
-#include <QtDebug>
-#include <QStringList>
 #include <QDateTime>
 #include <QDirIterator>
+#include <QStringList>
+#include <QtDebug>
 
 #include "library/browse/browsetablemodel.h"
-
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/datetime.h"
 #include "util/trace.h"
-
 
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;

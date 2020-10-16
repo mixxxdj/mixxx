@@ -275,7 +275,7 @@ void LibraryControl::maybeCreateGroupController(const QString& group) {
 }
 
 void LibraryControl::slotNumDecksChanged(double v) {
-    int iNumDecks = v;
+    int iNumDecks = static_cast<int>(v);
 
     if (iNumDecks < 0) {
         return;
@@ -287,7 +287,7 @@ void LibraryControl::slotNumDecksChanged(double v) {
 }
 
 void LibraryControl::slotNumSamplersChanged(double v) {
-    int iNumSamplers = v;
+    int iNumSamplers = static_cast<int>(v);
 
     if (iNumSamplers < 0) {
         return;
@@ -300,7 +300,7 @@ void LibraryControl::slotNumSamplersChanged(double v) {
 
 
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
-    int iNumPreviewDecks = v;
+    int iNumPreviewDecks = static_cast<int>(v);
 
     if (iNumPreviewDecks < 0) {
         return;

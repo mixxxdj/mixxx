@@ -4,8 +4,8 @@
         <name>Hercules P32 DJ</name>
         <author>Be</author>
         <description>4-deck mapping for Hercules P32 controller</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8132</forums>
-        <wiki>http://mixxx.org/wiki/doku.php/hercules_p32_dj</wiki>
+        <forums>https://mixxx.discourse.group/t/hercules-p32-dj-controller-mapping/15804</forums>
+        <manual>hercules_p32_dj</manual>
     </info>
     <controller id="Hercules">
         <scriptfiles>

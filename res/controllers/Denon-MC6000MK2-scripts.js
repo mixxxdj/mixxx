@@ -625,10 +625,7 @@ DenonMC6000MK2.OldDeck = function(number, midiChannel) {
 /* Shift */
 
 DenonMC6000MK2.OldDeck.prototype.getShiftState = function() {
-    DenonMC6000MK2.logInfo("### DenonMC6000MK2.OldDeck.prototype.getShiftState " + this.group);
     var side = DenonMC6000MK2.getSideByGroup(this.group);
-    DenonMC6000MK2.logInfo("### side " + typeof side);
-    DenonMC6000MK2.logInfo("### side " + typeof side.getShiftState);
     return side.getShiftState();
 };
 

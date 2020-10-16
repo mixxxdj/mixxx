@@ -1,15 +1,15 @@
-#include <QtDebug>
+#include "engine/cachingreader/cachingreaderworker.h"
+
 #include <QFileInfo>
 #include <QMutexLocker>
+#include <QtDebug>
 
 #include "control/controlobject.h"
-
-#include "engine/cachingreader/cachingreaderworker.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/logger.h"
-
 
 namespace {
 
@@ -134,16 +134,17 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Emit that a new track is loading, stops the current track
     emit trackLoading();
 
-    QString filename = pTrack->getLocation();
-    if (filename.isEmpty() || !pTrack->checkFileExists()) {
+    const QString trackLocation = pTrack->getLocation();
+    if (trackLocation.isEmpty() || !pTrack->checkFileExists()) {
         kLogger.warning()
                 << m_group
                 << "File not found"
-                << filename;
+                << trackLocation;
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
-        emit trackLoadFailed(
-                pTrack, QString("The file '%1' could not be found.").arg(QDir::toNativeSeparators(filename)));
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' could not be found.")
+                        .arg(QDir::toNativeSeparators(trackLocation)));
         return;
     }
 
@@ -154,11 +155,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open file"
-                << filename;
+                << trackLocation;
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
-        emit trackLoadFailed(
-                pTrack, QString("The file '%1' could not be loaded").arg(filename));
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' could not be loaded.")
+                        .arg(QDir::toNativeSeparators(trackLocation)));
         return;
     }
 
@@ -170,11 +172,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open empty file"
-                << filename;
+                << trackLocation;
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
-        emit trackLoadFailed(
-                pTrack, QString("The file '%1' is empty and could not be loaded").arg(filename));
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' is empty and could not be loaded.")
+                        .arg(QDir::toNativeSeparators(trackLocation)));
         return;
     }
 

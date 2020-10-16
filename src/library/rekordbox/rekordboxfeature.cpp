@@ -1,31 +1,36 @@
 // rekordboxfeature.cpp
 // Created 05/24/2019 by Evan Dekker
 
+#include "library/rekordbox/rekordboxfeature.h"
+
+#include <mp3guessenc.h>
+
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QtDebug>
 
-#include "library/rekordbox/rekordbox_anlz.h"
-#include "library/rekordbox/rekordbox_pdb.h"
-#include "library/rekordbox/rekordboxfeature.h"
-
-#include <mp3guessenc.h>
-
+#include "engine/engine.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
+#include "library/rekordbox/rekordbox_anlz.h"
+#include "library/rekordbox/rekordbox_pdb.h"
+#include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "track/beatfactory.h"
+#include "track/beatmap.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
+#include "track/track.h"
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-
+#include "util/file.h"
+#include "util/sandbox.h"
+#include "waveform/waveform.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -851,10 +856,9 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
             QHash<QString, QString> extraVersionInfo;
 
-            mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-                    *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
-
-            track->setBeats(pBeats);
+            auto pBeats = new mixxx::BeatMap(*track, static_cast<SINT>(sampleRate), beats);
+            pBeats->setSubVersion(mixxx::rekordboxconstants::beatsSubversion);
+            track->setBeats(mixxx::BeatsPointer(pBeats));
         } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {
             if (ignoreCues) {
@@ -1277,7 +1281,15 @@ TreeItemModel* RekordboxFeature::getChildModel() {
 
 QString RekordboxFeature::formatRootViewHtml() const {
     QString title = tr("Rekordbox");
-    QString summary = tr("Reads the following from Rekordbox prepared removable devices:");
+    QString summary = tr(
+            "Reads databases for Pioneer CDJ / XDJ players. <br/>"
+            "The database has to be exported to a USB or SD device <br/>"
+            "with a FAT or HFS file system using the Rekordbox Export mode. <br/>"
+            "Not supported are databases that have been moved to an external device via <br/>"
+            "Preferences > Advanced > Database management. <br/>"
+            "<br/>"
+            "The following data is read:");
+
     QStringList items;
 
     items
@@ -1286,10 +1298,10 @@ QString RekordboxFeature::formatRootViewHtml() const {
             << tr("Beatgrids")
             << tr("Hot cues")
             << tr("Memory cues")
-            << tr("Loops (after first not usable in Mixxx 2.3 yet)");
+            << tr("Loops (only the first loop is currently usable in Mixxx)");
 
     QString html;
-    QString refreshLink = tr("Check for attached Rekordbox devices (refresh)");
+    QString refreshLink = tr("Check for attached Rekordbox USB / SD devices (refresh)");
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));

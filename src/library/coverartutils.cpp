@@ -5,6 +5,7 @@
 #include <QtConcurrentRun>
 
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/regex.h"
@@ -197,8 +198,13 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
                     track.getSecurityToken()));
 }
 
+void CoverInfoGuesser::guessAndSetCoverInfoForTrack(
+        Track& track) {
+    track.setCoverInfo(guessCoverInfoForTrack(track));
+}
+
 void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
-        const QList<TrackPointer>& tracks) {
+        const TrackPointerList& tracks) {
     for (const auto& pTrack : tracks) {
         VERIFY_OR_DEBUG_ASSERT(pTrack) {
             continue;

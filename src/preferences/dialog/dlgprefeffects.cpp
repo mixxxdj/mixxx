@@ -27,11 +27,12 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         m_pEffectsManager->setEffectVisibility(pManifest, visible);
     }
     availableEffectsList->setModel(&m_availableEffectsModel);
+    availableEffectsList->setTabKeyNavigation(false);
 
     connect(availableEffectsList->selectionModel(),
-            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+            &QItemSelectionModel::currentRowChanged,
             this,
-            SLOT(availableEffectsListItemSelected(const QModelIndex&)));
+            &DlgPrefEffects::availableEffectsListItemSelected);
 
     // Highlight first row
     availableEffectsList->selectRow(0);

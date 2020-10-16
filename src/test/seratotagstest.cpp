@@ -103,3 +103,61 @@ TEST_F(SeratoTagsTest, SetBpmLocked) {
     seratoTags.setBpmLocked(false);
     EXPECT_EQ(seratoTags.isBpmLocked(), false);
 }
+
+TEST_F(SeratoTagsTest, SetCueInfos) {
+    mixxx::SeratoTags seratoTags;
+    EXPECT_TRUE(seratoTags.getCueInfos().isEmpty());
+
+    // To be able to compare the whole list easily, the reference CueInfo list
+    // needs to be in a specific order:
+    //
+    //    1. Cue 1
+    //    2. Cue 2
+    //       ...
+    //    5. Cue 5
+    //    6. Loop 1
+    //       ...
+    //   14. Loop 9
+    const QList<mixxx::CueInfo> cueInfos = {
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    0,
+                    std::nullopt,
+                    0,
+                    QString(),
+                    mixxx::RgbColor(0xFF0000)),
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    1337,
+                    std::nullopt,
+                    2,
+                    QStringLiteral("Hello World!"),
+                    mixxx::RgbColor(0x123456)),
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    2500,
+                    std::nullopt,
+                    3,
+                    QStringLiteral("Foo"),
+                    mixxx::RgbColor(0x123456)),
+            mixxx::CueInfo(mixxx::CueType::HotCue,
+                    100,
+                    std::nullopt,
+                    7,
+                    QStringLiteral("Bar"),
+                    mixxx::RgbColor(0x123456)),
+            mixxx::CueInfo(mixxx::CueType::Loop,
+                    1000,
+                    2000,
+                    8,
+                    QString(),
+                    std::nullopt),
+            mixxx::CueInfo(mixxx::CueType::Loop,
+                    4000,
+                    2000,
+                    11,
+                    QStringLiteral("Some Loop"),
+                    std::nullopt),
+    };
+
+    seratoTags.setCueInfos(cueInfos);
+    EXPECT_EQ(seratoTags.getCueInfos().size(), cueInfos.size());
+    EXPECT_EQ(seratoTags.getCueInfos(), cueInfos);
+}

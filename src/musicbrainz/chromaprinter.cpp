@@ -1,14 +1,15 @@
 #include "musicbrainz/chromaprinter.h"
 
 #include <chromaprint.h>
-#include <vector>
 
 #include <QtDebug>
+#include <vector>
 
-#include "sources/soundsourceproxy.h"
 #include "sources/audiosourcestereoproxy.h"
-#include "util/sample.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/performancetimer.h"
+#include "util/sample.h"
 
 namespace
 {

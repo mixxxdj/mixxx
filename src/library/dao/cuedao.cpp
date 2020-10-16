@@ -8,7 +8,6 @@
 #include <QtSql>
 
 #include "library/queryutil.h"
-#include "track/cue.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/color/rgbcolor.h"

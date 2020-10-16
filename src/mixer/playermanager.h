@@ -4,14 +4,14 @@
 #ifndef MIXER_PLAYERMANAGER_H
 #define MIXER_PLAYERMANAGER_H
 
-#include <QObject>
 #include <QList>
 #include <QMap>
 #include <QMutex>
+#include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
@@ -28,6 +28,7 @@ class Sampler;
 class SamplerBank;
 class SoundManager;
 class VisualsManager;
+class ControlProxy;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {

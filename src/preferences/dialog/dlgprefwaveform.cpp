@@ -30,58 +30,102 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     }
 
     // Populate zoom options.
-    for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
-        defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
+    for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
+            i <= static_cast<int>(WaveformWidgetRenderer::s_waveformMaxZoom);
+            i++) {
+        defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
     slotUpdate();
-    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetFrameRate(int)));
-    connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetWaveformEndRender(int)));
-    connect(beatGridAlphaSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetBeatGridAlpha(int)));
-    connect(frameRateSlider, SIGNAL(valueChanged(int)),
-            frameRateSpinBox, SLOT(setValue(int)));
-    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
-            frameRateSlider, SLOT(setValue(int)));
-    connect(endOfTrackWarningTimeSlider, SIGNAL(valueChanged(int)),
-            endOfTrackWarningTimeSpinBox, SLOT(setValue(int)));
-    connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
-            endOfTrackWarningTimeSlider, SLOT(setValue(int)));
-    connect(beatGridAlphaSlider, SIGNAL(valueChanged(int)),
-            beatGridAlphaSpinBox, SLOT(setValue(int)));
-    connect(beatGridAlphaSpinBox, SIGNAL(valueChanged(int)),
-            beatGridAlphaSlider, SLOT(setValue(int)));
 
-    connect(waveformTypeComboBox, SIGNAL(activated(int)),
-            this, SLOT(slotSetWaveformType(int)));
-    connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotSetDefaultZoom(int)));
-    connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
-            this, SLOT(slotSetZoomSynchronization(bool)));
-    connect(allVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainAll(double)));
-    connect(lowVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainLow(double)));
-    connect(midVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainMid(double)));
-    connect(highVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainHigh(double)));
-    connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetNormalizeOverview(bool)));
-    connect(factory, SIGNAL(waveformMeasured(float,int)),
-            this, SLOT(slotWaveformMeasured(float,int)));
-    connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotSetWaveformOverviewType(int)));
-    connect(clearCachedWaveforms, SIGNAL(clicked()),
-            this, SLOT(slotClearCachedWaveforms()));
-    connect(playMarkerPositionSlider, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetPlayMarkerPosition(int)));
+    connect(frameRateSpinBox,
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(slotSetFrameRate(int)));
+    connect(endOfTrackWarningTimeSpinBox,
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(slotSetWaveformEndRender(int)));
+    connect(beatGridAlphaSpinBox,
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(slotSetBeatGridAlpha(int)));
+    connect(frameRateSlider,
+            SIGNAL(valueChanged(int)),
+            frameRateSpinBox,
+            SLOT(setValue(int)));
+    connect(frameRateSpinBox,
+            SIGNAL(valueChanged(int)),
+            frameRateSlider,
+            SLOT(setValue(int)));
+    connect(endOfTrackWarningTimeSlider,
+            SIGNAL(valueChanged(int)),
+            endOfTrackWarningTimeSpinBox,
+            SLOT(setValue(int)));
+    connect(endOfTrackWarningTimeSpinBox,
+            SIGNAL(valueChanged(int)),
+            endOfTrackWarningTimeSlider,
+            SLOT(setValue(int)));
+    connect(beatGridAlphaSlider,
+            SIGNAL(valueChanged(int)),
+            beatGridAlphaSpinBox,
+            SLOT(setValue(int)));
+    connect(beatGridAlphaSpinBox,
+            SIGNAL(valueChanged(int)),
+            beatGridAlphaSlider,
+            SLOT(setValue(int)));
+
+    connect(waveformTypeComboBox,
+            SIGNAL(currentIndexChanged(int)),
+            this,
+            SLOT(slotSetWaveformType(int)));
+    connect(defaultZoomComboBox,
+            SIGNAL(currentIndexChanged(int)),
+            this,
+            SLOT(slotSetDefaultZoom(int)));
+    connect(synchronizeZoomCheckBox,
+            SIGNAL(clicked(bool)),
+            this,
+            SLOT(slotSetZoomSynchronization(bool)));
+    connect(allVisualGain,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotSetVisualGainAll(double)));
+    connect(lowVisualGain,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotSetVisualGainLow(double)));
+    connect(midVisualGain,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotSetVisualGainMid(double)));
+    connect(highVisualGain,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotSetVisualGainHigh(double)));
+    connect(normalizeOverviewCheckBox,
+            SIGNAL(toggled(bool)),
+            this,
+            SLOT(slotSetNormalizeOverview(bool)));
+    connect(factory,
+            SIGNAL(waveformMeasured(float, int)),
+            this,
+            SLOT(slotWaveformMeasured(float, int)));
+    connect(waveformOverviewComboBox,
+            SIGNAL(currentIndexChanged(int)),
+            this,
+            SLOT(slotSetWaveformOverviewType(int)));
+    connect(clearCachedWaveforms,
+            SIGNAL(clicked()),
+            this,
+            SLOT(slotClearCachedWaveforms()));
+    connect(playMarkerPositionSlider,
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(slotSetPlayMarkerPosition(int)));
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -114,9 +158,9 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
-    playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
-    beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
-    beatGridAlphaSlider->setValue(factory->beatGridAlpha());
+    playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
+    beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
+    beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
