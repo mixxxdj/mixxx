@@ -14,6 +14,7 @@
 #include "library/trackset/crate/crateschema.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 
 #if !defined(VERBOSE_DEBUG_LOG)
 // set to true for verbose debug logs

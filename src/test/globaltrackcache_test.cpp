@@ -1,12 +1,11 @@
+#include "track/globaltrackcache.h"
+
 #include <QThread>
 #include <QtDebug>
-
 #include <atomic>
 
 #include "test/mixxxtest.h"
-
-#include "track/globaltrackcache.h"
-
+#include "track/track.h"
 
 namespace {
 

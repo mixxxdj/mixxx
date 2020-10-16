@@ -3,11 +3,11 @@
 #include "library/externaltrackcollection.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
-
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
+#include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/logger.h"
-#include "util/assert.h"
 
 namespace {
 

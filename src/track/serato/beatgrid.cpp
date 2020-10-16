@@ -71,7 +71,7 @@ SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
     }
 
     float positionSecs;
-    uint32_t beatsTillNextMarker;
+    quint32 beatsTillNextMarker;
 
     QDataStream stream(data);
     stream.setByteOrder(QDataStream::BigEndian);

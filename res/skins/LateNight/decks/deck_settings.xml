@@ -1,11 +1,12 @@
 <Template>
   <WidgetGroup>
+    <SizePolicy>min,min</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckSettings</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>f,min</SizePolicy>
+        <Size>76min,0min</Size>
         <Children>
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>

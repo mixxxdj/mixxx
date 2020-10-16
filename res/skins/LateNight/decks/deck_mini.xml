@@ -166,14 +166,27 @@
                     </Children>
                   </WidgetGroup><!-- Title / PlayPos -->
 
+                  <WidgetGroup>
+                    <ObjectName>TrackColorFullMini</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>0me,2f</Size>
+                    <Children>
+                      <TrackWidgetGroup>
+                        <Size>0me,2f</Size>
+                        <Group><Variable name="Group"/></Group>
+                        <TrackColorAlpha>255</TrackColorAlpha>
+                      </TrackWidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
                   <WidgetGroup><!-- Artist / Key / BPM -->
                     <Layout>horizontal</Layout>
-                    <Size>200me,25f</Size>
+                    <Size>200me,23f</Size>
                     <Children>
                       <TrackProperty>
                         <TooltipId>track_title</TooltipId>
                         <ObjectName>ArtistTextSmall</ObjectName>
-                        <Size>96me,25f</Size>
+                        <Size>96me,23f</Size>
                         <Property>artist</Property>
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
@@ -188,7 +201,7 @@
                         <TooltipId>visual_key</TooltipId>
                         <ObjectName>KeyTextSmall</ObjectName>
                         <Channel><Variable name="ChanNum"/></Channel>
-                        <Size>44min,25f</Size>
+                        <Size>44min,23f</Size>
                         <Alignment>center</Alignment>
                         <Elide>right</Elide>
                         <Connection>
@@ -199,7 +212,7 @@
                       <NumberBpm>
                         <ObjectName>BpmTextSmall</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
-                        <Size>60f,25f</Size>
+                        <Size>60f,23f</Size>
                         <Alignment>right</Alignment>
                         <Channel><Variable name="ChanNum" /></Channel>
                         <NumberOfDigits>2</NumberOfDigits>

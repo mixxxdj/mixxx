@@ -19,6 +19,7 @@
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"

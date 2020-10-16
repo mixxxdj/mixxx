@@ -859,6 +859,48 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>connectionList</tabstop>
+  <tabstop>btnRemoveConnection</tabstop>
+  <tabstop>btnRenameConnection</tabstop>
+  <tabstop>btnDisconnectAll</tabstop>
+  <tabstop>btnCreateConnection</tabstop>
+  <tabstop>connectOnApply</tabstop>
+
+  <tabstop>comboBoxServerType</tabstop>
+  <tabstop>mountpoint</tabstop>
+  <tabstop>host</tabstop>
+  <tabstop>port</tabstop>
+  <tabstop>login</tabstop>
+  <tabstop>password</tabstop>
+  <tabstop>rbPasswordCleartext</tabstop>
+
+  <tabstop>checkBoxEnableReconnect</tabstop>
+  <tabstop>spinBoxFirstDelay</tabstop>
+  <tabstop>spinBoxReconnectPeriod</tabstop>
+  <tabstop>checkBoxLimitReconnects</tabstop>
+  <tabstop>spinBoxMaximumRetries</tabstop>
+
+  <tabstop>comboBoxEncodingBitrate</tabstop>
+  <tabstop>comboBoxEncodingFormat</tabstop>
+  <tabstop>comboBoxEncodingChannels</tabstop>
+
+  <tabstop>stream_public</tabstop>
+  <tabstop>stream_name</tabstop>
+  <tabstop>stream_website</tabstop>
+  <tabstop>stream_desc</tabstop>
+  <tabstop>stream_genre</tabstop>
+  <tabstop>stream_IRC</tabstop>
+  <tabstop>stream_AIM</tabstop>
+  <tabstop>stream_ICQ</tabstop>
+
+  <tabstop>metadata_format</tabstop>
+  <tabstop>enableCustomMetadata</tabstop>
+  <tabstop>custom_artist</tabstop>
+  <tabstop>custom_title</tabstop>
+  <tabstop>ogg_dynamicupdate</tabstop>
+  <tabstop>enableUtf8Metadata</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
  <buttongroups>

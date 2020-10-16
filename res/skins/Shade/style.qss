@@ -431,7 +431,10 @@ WLibrary WColorPicker QPushButton {
   alternate-background-color: #1a1a1a;
   selection-color: #e6e6e6;
   selection-background-color: #666;
-}
+  }
+  QTextBrowser {
+    padding-left: 5px;
+  }
 
 #LibraryContainer QTableView::item:selected,
 #LibraryContainer QTreeView::item:selected,

@@ -10,6 +10,7 @@
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
 #include "track/keyfactory.h"
+#include "track/track.h"
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {

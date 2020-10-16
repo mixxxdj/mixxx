@@ -354,22 +354,22 @@ TEST_F(SampleUtilTest, reverse) {
     if (buffers.size() > 0 && sizes[0] > 10) {
         CSAMPLE* buffer = buffers[1];
         for (int i = 0; i < 10; ++i) {
-            buffer[i] = i * 0.1;
+            buffer[i] = i * 0.1f;
         }
 
         SampleUtil::reverse(buffer, 10);
 
         // check if right channel remains at odd index
-        EXPECT_FLOAT_EQ(buffer[0], 0.8);
-        EXPECT_FLOAT_EQ(buffer[1], 0.9);
-        EXPECT_FLOAT_EQ(buffer[2], 0.6);
-        EXPECT_FLOAT_EQ(buffer[3], 0.7);
-        EXPECT_FLOAT_EQ(buffer[4], 0.4);
-        EXPECT_FLOAT_EQ(buffer[5], 0.5);
-        EXPECT_FLOAT_EQ(buffer[6], 0.2);
-        EXPECT_FLOAT_EQ(buffer[7], 0.3);
-        EXPECT_FLOAT_EQ(buffer[8], 0.0);
-        EXPECT_FLOAT_EQ(buffer[9], 0.1);
+        EXPECT_FLOAT_EQ(buffer[0], 0.8f);
+        EXPECT_FLOAT_EQ(buffer[1], 0.9f);
+        EXPECT_FLOAT_EQ(buffer[2], 0.6f);
+        EXPECT_FLOAT_EQ(buffer[3], 0.7f);
+        EXPECT_FLOAT_EQ(buffer[4], 0.4f);
+        EXPECT_FLOAT_EQ(buffer[5], 0.5f);
+        EXPECT_FLOAT_EQ(buffer[6], 0.2f);
+        EXPECT_FLOAT_EQ(buffer[7], 0.3f);
+        EXPECT_FLOAT_EQ(buffer[8], 0.0f);
+        EXPECT_FLOAT_EQ(buffer[9], 0.1f);
     }
 }
 
@@ -378,22 +378,22 @@ TEST_F(SampleUtilTest, copyReverse) {
         CSAMPLE* source = buffers[0];
         CSAMPLE* destination = buffers[1];
         for (int i = 0; i < 10; ++i) {
-            source[i] = i * 0.1;
+            source[i] = i * 0.1f;
         }
 
         SampleUtil::copyReverse(destination, source, 10);
 
         // check if right channel remains at odd index
-        EXPECT_FLOAT_EQ(destination[0], 0.8);
-        EXPECT_FLOAT_EQ(destination[1], 0.9);
-        EXPECT_FLOAT_EQ(destination[2], 0.6);
-        EXPECT_FLOAT_EQ(destination[3], 0.7);
-        EXPECT_FLOAT_EQ(destination[4], 0.4);
-        EXPECT_FLOAT_EQ(destination[5], 0.5);
-        EXPECT_FLOAT_EQ(destination[6], 0.2);
-        EXPECT_FLOAT_EQ(destination[7], 0.3);
-        EXPECT_FLOAT_EQ(destination[8], 0.0);
-        EXPECT_FLOAT_EQ(destination[9], 0.1);
+        EXPECT_FLOAT_EQ(destination[0], 0.8f);
+        EXPECT_FLOAT_EQ(destination[1], 0.9f);
+        EXPECT_FLOAT_EQ(destination[2], 0.6f);
+        EXPECT_FLOAT_EQ(destination[3], 0.7f);
+        EXPECT_FLOAT_EQ(destination[4], 0.4f);
+        EXPECT_FLOAT_EQ(destination[5], 0.5f);
+        EXPECT_FLOAT_EQ(destination[6], 0.2f);
+        EXPECT_FLOAT_EQ(destination[7], 0.3f);
+        EXPECT_FLOAT_EQ(destination[8], 0.0f);
+        EXPECT_FLOAT_EQ(destination[9], 0.1f);
     }
 }
 

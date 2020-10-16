@@ -267,6 +267,7 @@ WSearchLineEdit {
 /************ lines / grooves / splitters *********************/
 
 #DeckRateSeparator,
+#DeckRateSeparatorCompact,
 #MasterMixerSeparator,
 #MasterHeadphoneSeparator,
 #FxSlotSeparatorV,
@@ -276,6 +277,7 @@ WSearchLineEdit {
   background-color: transparent;
   }
   #DeckRateSeparator,
+  #DeckRateSeparatorCompact,
   #FxSlotSeparatorV {
     min-width: 0px;
     max-width: 0px;
@@ -355,6 +357,11 @@ WSearchLineEdit {
 #CompactDecksCenterSpacer {
   min-width: 4px;
   max-width: 4px;
+}
+
+#DeckRateSpacer {
+  min-width: 0px;
+  max-width: 0px;
 }
 
 #ToolBar {
@@ -503,10 +510,10 @@ WSearchLineEdit {
     margin: 0px 1px 1px 0px;
   }
 #SpinnyCoverContainer_Big{
-  min-width: 120px;
-  max-width: 120px;
-  min-height: 120px;
-  max-height: 120px;
+  min-width: 118px;
+  max-width: 118x;
+  min-height: 118px;
+  max-height: 118px;
   margin: 1px 2px 0px 0px;
   }
   #SpinnyCoverContainer_BigCompact {
@@ -570,16 +577,6 @@ WSearchLineEdit {
 #DeckSettingsContainer,
 #DeckSettingsContainerCompact {
   border-width: 1px 0px 1px 0px;
-  }
-  /* without rate controls */
-  #DeckSettingsContainer[highlight="0"],
-  #DeckSettingsContainerCompact[highlight="0"] {
-    margin-right: 2px;
-  }
-  /* with rate controls */
-  #DeckSettingsContainer[highlight="1"],
-  #DeckSettingsContainerCompact[highlight="1"] {
-    margin-right: 0px;
   }
 
   #DeckSettings {
@@ -1081,7 +1078,7 @@ WPushButton#FxSuperLinkInvertButton {
   #DeckSizeToggles {
     padding: 0px 0px 0px 0px;
     }
-    #DeckSizeButton {
+    #SkinSettingsNumToggle {
       margin-left: 1px;
     }
 
@@ -1183,10 +1180,14 @@ WTrackMenu QMenu QCheckBox {
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
   #SkinSettingsLabelButton, #CategoryLabel,
   #SkinSettingsButton,
-  #DeckSizeButton,
+  #SkinSettingsNumToggle,
+  #SkinSettingsNumToggleHeader[displayValue="1"],
   #SkinSettingsMixerToggle,
   #SkinSettingsText {
     color: #988f86;
+  }
+  #SkinSettingsNumToggleHeader[displayValue="0"] {
+    color: #756e6c;
   }
 WEffectSelector,
 #fadeModeCombobox {
@@ -1326,13 +1327,14 @@ WOverview #PassthroughLabel {
 }
 
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsText,
 #SkinSettingsMixerToggle {
   color: #d2d2d2;
   }
-  #DeckSizeButton[value="1"] {
-    background-color: #334;
+  #SkinSettingsNumToggle[value="1"],
+  #SkinSettingsNumToggleHeader[displayValue="1"] {
+    text-decoration: underline;
   }
 
 /************** font colors **************************************************/
@@ -1354,6 +1356,16 @@ WOverview #PassthroughLabel {
   border-width: 2px 2px 2px 1px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
   }
+  /* Active */
+  #VinylCueButton[displayValue="1"],
+  #VinylCueButton[displayValue="2"],
+  #PassthroughButton[displayValue="1"],
+  #FxAssignButtons WPushButton[displayValue="1"] {
+    outline: none;
+    border-width: 2px 2px 2px 1px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  }
+
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
@@ -1373,42 +1385,6 @@ WEffectSelector,
   outline: none;
   border-width: 2px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
-  }
-  #LibraryContainer QHeaderView {
-    border-bottom-right-radius: 1px solid #000; /*
-    outline: none;
-    border-width: 1px 0px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 1 1 1;  */
-  }
-  #LibraryContainer QHeaderView::section {
-    outline: none;
-    border-width: 1px 2px 1px 1px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
-  }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
-    outline: none;
-    border-width: 1px 2px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1;
-  }
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
-    outline: none;
-    border-width: 2px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
-  }
-
-/* Active */
-#VinylCueButton[displayValue="1"],
-#VinylCueButton[displayValue="2"],
-#PassthroughButton[displayValue="1"],
-#FxAssignButtons WPushButton[displayValue="1"] {
-  outline: none;
-  border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
   /*
   WPushButton#BpmTap[displayValue="1"], */
@@ -1438,6 +1414,35 @@ WEffectSelector,
     border-width: 2px;
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
+
+  #LibraryContainer QHeaderView {
+    border-bottom-right-radius: 1px solid #000; /*
+    outline: none;
+    border-width: 1px 0px 1px 0px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 1 1 1;  */
+  }
+  #LibraryContainer QHeaderView::section {
+    outline: none;
+    border-width: 1px 2px 1px 1px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
+  }
+  #LibraryContainer QHeaderView::up-arrow,
+  #LibraryContainer QHeaderView::down-arrow {
+    outline: none;
+    border-width: 1px 2px 1px 0px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1;
+  }
+
+  #DlgMissing > QPushButton:!enabled,
+  #DlgHidden > QPushButton:!enabled,
+  #DlgAutoDJ > QPushButton:!enabled,
+  #DlgRecording > QPushButton:!enabled,
+  #DlgAnalysis > QPushButton:!enabled {
+    outline: none;
+    border-width: 2px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
+  }
+
   WEffectSelector,
   WEffectSelector:on {
     margin-top: 1px;
@@ -1472,7 +1477,8 @@ WEffectSelector,
 #SyncDeck, #SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
-#SamplerContainer WPushButton,
+#Sampler WPushButton,
+#SamplerMini WPushButton,
 #MicAuxRack WPushButton,
 #PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
@@ -1495,6 +1501,8 @@ WPushButton#CrossfaderButton,
   border-radius: 0px;
 }
 
+
+
 /************** button background colors **************************************/
 
 /* top-level buttons in transport, fx, micaux and others */
@@ -1505,7 +1513,7 @@ WPushButton#CrossfaderButton,
 #EQKillButtonBox WPushButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 #FxToggleButton[displayValue="0"],
-#SamplerContainer WPushButton[displayValue="0"],
+WPushButton#PlaySampler[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
 /* Beatsize up/down buttons */
@@ -1570,8 +1578,8 @@ WBeatSpinBox::down-button {
 /* Orange for 'active' status */
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
-#PlaySampler[displayValue="1"],
-#PlayPreview[displayValue="1"],
+WPushButton#PlaySampler[displayValue="1"],
+WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
@@ -1744,7 +1752,7 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #555;
 }
 
-/* Special flat buttons */
+/* Special flat/invisible buttons */
 #BeatgridControlsToggle,
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
@@ -1761,6 +1769,8 @@ WPushButton#RecButton[displayValue="1"],
 #RecDot {
   background-color: transparent;
 }
+
+
 
 /************** Button icons **************************************************/
 #PlayDeck[displayValue="0"] {
@@ -1931,16 +1941,16 @@ WPushButton#RecButton[displayValue="1"],
   }
 
 #JumpForward {
-  image: url(skin:/palemoon/buttons/btn__jump_right.svg) no-repeat center center;
+  image: url(skin:/palemoon/buttons/btn__beatjump_right.svg) no-repeat center center;
   }
   #JumpForward[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__jump_right_active.svg) no-repeat center center;
+    image: url(skin:/palemoon/buttons/btn__beatjump_right_active.svg) no-repeat center center;
   }
 #JumpBack {
-  image: url(skin:/palemoon/buttons/btn__jump_left.svg) no-repeat center center;
+  image: url(skin:/palemoon/buttons/btn__beatjump_left.svg) no-repeat center center;
   }
   #JumpBack[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__jump_left_active.svg) no-repeat center center;
+    image: url(skin:/palemoon/buttons/btn__beatjump_left_active.svg) no-repeat center center;
   }
 
 /* Key buttons */
@@ -2359,7 +2369,6 @@ WColorPicker QPushButton[checked="true"] {
   * set to 18px it's 2px too small
   qproperty-iconSize: 20px;*/
 }
-
 
 /************** Button icons **************************************************/
 /************** Button styles *************************************************/
@@ -2835,10 +2844,12 @@ WEffectSelector::item,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
   #SkinSettingsButton[hover="true"],
-  #DeckSizeButton[hover="true"],
+  #SkinSettingsNumToggle[hover="true"],
+  #SkinSettingsNumToggleHeader[hover="true"],
   #SkinSettingsMixerToggle[hover="true"],
   #SkinSettingsLabelButton[hover="true"] {
     background-color: #2c454f;
+    border-radius: 1px;
     color: #fff;
     /* remove OS focus indicator */
     outline: none;

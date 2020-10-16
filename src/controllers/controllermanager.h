@@ -30,6 +30,8 @@ class ControllerManager : public QObject {
     ControllerManager(UserSettingsPointer pConfig);
     virtual ~ControllerManager();
 
+    static const mixxx::Duration kPollInterval;
+
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;

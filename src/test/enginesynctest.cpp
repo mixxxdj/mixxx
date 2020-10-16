@@ -1,9 +1,3 @@
-// Tests for Master Sync.
-// The following manual tests should probably be performed:
-// * Quantize mode nudges tracks in sync, whether internal or deck master.
-// * Flinging tracks with the waveform should work.
-// * vinyl??
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -21,6 +15,15 @@
 #include "track/beatmap.h"
 #include "util/memory.h"
 
+namespace {
+constexpr double kMaxFloatingPointError = 0.005;
+}
+
+/// Tests for Master Sync.
+/// The following manual tests should probably be performed:
+/// * Quantize mode nudges tracks in sync, whether internal or deck master.
+/// * Flinging tracks with the waveform should work.
+/// * vinyl??
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
     QString getMasterGroup() {
@@ -149,7 +152,7 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     ProcessBuffer();
 
     // No tracks are playing and we have no beats, SYNC_MASTER_EXPLICIT state is in stand-by
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             0.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     // The master sync should now be channel 1.
     ASSERT_TRUE(isExplicitMaster(m_sGroup1));
@@ -344,9 +347,9 @@ TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.25),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_FLOAT_EQ(100.0,
+    EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 }
 
@@ -361,7 +364,7 @@ TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
     pButtonSyncEnabled1->set(1.0);
 
     // After setting up the first deck, the internal BPM should be 80.
-    EXPECT_FLOAT_EQ(80.0,
+    EXPECT_DOUBLE_EQ(80.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
 
@@ -372,7 +375,7 @@ TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
     pButtonSyncEnabled2->set(1.0);
 
     // After the second one, though, the internal BPM should still be 80.
-    EXPECT_FLOAT_EQ(80.0,
+    EXPECT_DOUBLE_EQ(80.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
 }
@@ -405,7 +408,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
 
     // The master sync should now be deck 1.
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
-    EXPECT_FLOAT_EQ(100.0,
+    EXPECT_DOUBLE_EQ(100.0,
             ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set channel 2 to be enabled.
@@ -418,7 +421,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     ASSERT_TRUE(isFollower(m_sGroup2));
 
     // The rate should not have changed -- deck 1 still matches deck 2.
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 
     // Reset channel 2 rate, set channel 2 to play, and process a buffer.
@@ -439,7 +442,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     ASSERT_TRUE(isFollower(m_sInternalClockGroup));
 
     // Rate should now match channel 2.
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
@@ -536,32 +539,32 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     // Set the file bpm of channel 1 to 160bpm.
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 160, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sGroup1, "file_bpm")));
     ProcessBuffer();
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set the rate of channel 1 to 1.2.
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.2),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.2),
             ControlObject::get(ConfigKey(m_sGroup1, "rate")));
-    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 
     // Internal master should also be 192.
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             192.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set the file bpm of channel 2 to 120bpm.
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 120, 0.0);
     m_pTrack2->setBeats(pBeats2);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
     // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.6),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 }
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
@@ -577,7 +580,7 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     // Set the file bpm of channel 1 to 160bpm.
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 160, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set the file bpm of channel 2 to 120bpm.
@@ -588,12 +591,12 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
 
     // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120) - 1.0.
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.6),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Internal Master BPM should read the same.
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             192.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
@@ -601,13 +604,13 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     // Set the file bpm of channel 1 to 160bpm.
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 160, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sGroup1, "file_bpm")));
 
     // Set the file bpm of channel 2 to 120bpm.
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 120, 0.0);
     m_pTrack2->setBeats(pBeats2);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
     // Turn on Master and Follower.
@@ -624,10 +627,11 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     ProcessBuffer();
 
     // Follower should immediately set its slider.
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.3333333333),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-    EXPECT_FLOAT_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(
+    EXPECT_NEAR(getRateSliderValue(1.3333333333),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate")),
+            kMaxFloatingPointError);
+    EXPECT_DOUBLE_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
@@ -653,9 +657,9 @@ TEST_F(EngineSyncTest, FollowerRateChange) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
 
     // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120).
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.6),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Try to twiddle the rate slider on channel 2.
     auto pSlider2 = std::make_unique<ControlProxy>(m_sGroup2, "rate");
@@ -663,12 +667,12 @@ TEST_F(EngineSyncTest, FollowerRateChange) {
     ProcessBuffer();
 
     // Rates should still be changed even though it's a follower.
-    EXPECT_FLOAT_EQ(getRateSliderValue(0.8),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.8),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-    EXPECT_FLOAT_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(getRateSliderValue(0.6),
+    EXPECT_DOUBLE_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.6),
             ControlObject::get(ConfigKey(m_sGroup1, "rate")));
-    EXPECT_FLOAT_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 }
 
 TEST_F(EngineSyncTest, InternalRateChangeTest) {
@@ -690,20 +694,20 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     // Set the file bpm of channel 1 to 160bpm.
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 160, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    EXPECT_FLOAT_EQ(160.0,
+    EXPECT_DOUBLE_EQ(160.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 120, 0.0);
     m_pTrack2->setBeats(pBeats2);
-    EXPECT_FLOAT_EQ(120.0,
+    EXPECT_DOUBLE_EQ(120.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
 
     // Set the internal rate to 150.
     auto pMasterSyncSlider =
             std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
     pMasterSyncSlider->set(150.0);
-    EXPECT_FLOAT_EQ(150.0,
+    EXPECT_DOUBLE_EQ(150.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
     // Set decks playing, and process a buffer to update all the COs.
@@ -713,13 +717,13 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ProcessBuffer();
 
     // Rate sliders for channels 1 and 2 should change appropriately.
-    EXPECT_FLOAT_EQ(getRateSliderValue(0.9375),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375),
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_FLOAT_EQ(150.0,
+    EXPECT_DOUBLE_EQ(150.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.25),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_FLOAT_EQ(150.0,
+    EXPECT_DOUBLE_EQ(150.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     // Set the internal rate to 140.
@@ -729,13 +733,14 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ProcessBuffer();
 
     // Rate sliders for channels 1 and 2 should change appropriately.
-    EXPECT_FLOAT_EQ(getRateSliderValue(.875),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(.875),
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_FLOAT_EQ(140.0,
+    EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.16666667),
-            ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_FLOAT_EQ(140.0,
+    EXPECT_NEAR(getRateSliderValue(1.16666667),
+            ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get(),
+            kMaxFloatingPointError);
+    EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
 
@@ -764,16 +769,16 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
 
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(getRateSliderValue(0.9375),
+    EXPECT_DOUBLE_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 
     pChannel1Play->set(0.0);
 
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(getRateSliderValue(0.9375),
+    EXPECT_DOUBLE_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 }
 
@@ -802,12 +807,12 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     ASSERT_TRUE(isFollower(m_sInternalClockGroup));
 
     // Internal clock rate and beat distance should match that deck.
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(
             0.2, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.2,
+    EXPECT_DOUBLE_EQ(0.2,
             ControlObject::get(
                     ConfigKey(m_sInternalClockGroup, "beat_distance")));
 
@@ -826,12 +831,12 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     ASSERT_TRUE(isFollower(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(
             0.2, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.2,
+    EXPECT_DOUBLE_EQ(0.2,
             ControlObject::get(
                     ConfigKey(m_sInternalClockGroup, "beat_distance")));
 }
@@ -855,15 +860,15 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
 
     // Internal clock rate should be set and beat distances reset.
-    EXPECT_FLOAT_EQ(130.0,
+    EXPECT_DOUBLE_EQ(130.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
-    EXPECT_FLOAT_EQ(130.0,
+    EXPECT_DOUBLE_EQ(130.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(0.2,
+    EXPECT_DOUBLE_EQ(0.2,
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
                     ->get());
-    EXPECT_FLOAT_EQ(0.2,
+    EXPECT_DOUBLE_EQ(0.2,
             ControlObject::getControl(
                     ConfigKey(m_sInternalClockGroup, "beat_distance"))
                     ->get());
@@ -881,13 +886,13 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
 
     // No master because this deck has no track.
     EXPECT_EQ(NULL, m_pEngineSync->getMaster());
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             0.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     // The track load trigger a master change.
     m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
-    EXPECT_FLOAT_EQ(140.0,
+    EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     // But as soon as we play, deck 1 is master
@@ -910,7 +915,7 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
 
     // Deck 2 is still empty so Deck 1 becomes master again
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
-    EXPECT_FLOAT_EQ(128.0,
+    EXPECT_DOUBLE_EQ(128.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     // If sync is on two decks and one deck is loaded but not playing, we should
@@ -918,12 +923,12 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
     m_pMixerDeck2->loadFakeTrack(false, 110.0);
 
     ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
-    EXPECT_FLOAT_EQ(128.0,
+    EXPECT_DOUBLE_EQ(128.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
-    EXPECT_FLOAT_EQ(128.0,
+    EXPECT_DOUBLE_EQ(128.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(128.0,
+    EXPECT_DOUBLE_EQ(128.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
 
@@ -946,9 +951,9 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // If sync is on and we load a track, that should initialize master.
     TrackPointer track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             140.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 
     // If sync is on two decks and we load a track while one is playing,
     // that should not change the playing deck.
@@ -956,10 +961,10 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
 
     TrackPointer track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             140.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Repeat with RESET_PITCH_AND_SPEED
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
@@ -969,10 +974,10 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             140.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Repeat with RESET_NONE
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
@@ -983,10 +988,10 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             128.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_FLOAT_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_SPEED
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
@@ -1001,8 +1006,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
-    EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_PITCH_AND_SPEED
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
@@ -1017,9 +1022,9 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
-    EXPECT_FLOAT_EQ(140.0,
+    EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(128.0,
+    EXPECT_DOUBLE_EQ(128.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
 
@@ -1041,7 +1046,7 @@ TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
 
     // Internal clock rate should be set.
-    EXPECT_FLOAT_EQ(130.0,
+    EXPECT_DOUBLE_EQ(130.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
 }
@@ -1074,10 +1079,10 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     // There should be no master, and deck2 should match rate of deck1.  Sync slider should be
     // updated with the value, however.
     assertNoMaster();
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     assertSyncOff(m_sGroup2);
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.3),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.3),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 
     // Reset the pitch of deck 2.
@@ -1092,14 +1097,14 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     EXPECT_EQ(0,
             ControlObject::get(
                     ConfigKey(m_sInternalClockGroup, "sync_master")));
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             100.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_EQ(NULL, m_pEngineSync->getMaster());
     EXPECT_EQ(NULL, m_pEngineSync->getMasterSyncable());
     EXPECT_EQ(SYNC_NONE, ControlObject::get(ConfigKey(m_sGroup1, "sync_mode")));
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "sync_enabled")));
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "sync_master")));
-    EXPECT_FLOAT_EQ(getRateSliderValue(100.0 / 130.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(100.0 / 130.0),
             ControlObject::get(ConfigKey(m_sGroup1, "rate")));
 
     // Reset again.
@@ -1117,14 +1122,14 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     EXPECT_EQ(0,
             ControlObject::get(
                     ConfigKey(m_sInternalClockGroup, "sync_master")));
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             100.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_EQ(NULL, m_pEngineSync->getMaster());
     EXPECT_EQ(NULL, m_pEngineSync->getMasterSyncable());
     EXPECT_EQ(SYNC_NONE, ControlObject::get(ConfigKey(m_sGroup2, "sync_mode")));
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "sync_enabled")));
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "sync_master")));
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 }
 
@@ -1157,7 +1162,7 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     assertNoMaster();
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Also works if deck 1 is not playing.
@@ -1171,7 +1176,7 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     assertNoMaster();
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Also works if neither deck is playing.
@@ -1185,7 +1190,7 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     assertNoMaster();
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // But it doesn't work if deck 2 isn't playing and deck 1 is. (This would
@@ -1200,7 +1205,7 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     assertNoMaster();
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             100.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
@@ -1225,7 +1230,7 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     // When an eject happens, the bpm gets set to zero.
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             0.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     // No valid tempo available all are waiting as follower
@@ -1234,7 +1239,7 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     assertSyncOff(m_sGroup2);
 
     m_pMixerDeck1->loadFakeTrack(false, 128.0);
-    EXPECT_FLOAT_EQ(128.0,
+    EXPECT_DOUBLE_EQ(128.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 135, 0.0);
     m_pTrack2->setBeats(pBeats2);
@@ -1272,7 +1277,7 @@ TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
 
     pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 160, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             100.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
@@ -1288,8 +1293,9 @@ TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(
-            0.0023219956, m_pChannel1->getEngineBuffer()->getVisualPlayPos());
+    EXPECT_NEAR(0.0023219956,
+            m_pChannel1->getEngineBuffer()->getVisualPlayPos(),
+            kMaxFloatingPointError);
 }
 
 TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
@@ -1314,7 +1320,7 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(1.3));
 
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 
     // Also try with explicit master/follower setting
@@ -1324,7 +1330,7 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(1.4));
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 
     pButtonSyncEnabled1->set(0.0);
@@ -1333,7 +1339,7 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(0.9));
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
@@ -1402,7 +1408,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     EXPECT_EQ(1.0,
             m_pChannel2->getEngineBuffer()
                     ->m_pSyncControl->m_masterBpmAdjustFactor);
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
             m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
@@ -1416,10 +1422,10 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
         ProcessBuffer();
         // The beat distances are NOT as simple as x2 or /2.  Use the built-in functions
         // to do the proper conversion.
-        EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()
-                                ->m_pSyncControl->getBeatDistance(),
-                m_pChannel2->getEngineBuffer()
-                        ->m_pSyncControl->getBeatDistance());
+        EXPECT_NEAR(
+                m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+                m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+                kMaxFloatingPointError);
     }
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
@@ -1463,8 +1469,8 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
 
     for (int i = 0; i < 50; ++i) {
         ProcessBuffer();
-        EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()
-                                ->m_pSyncControl->getBeatDistance(),
+        EXPECT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()
+                                 ->m_pSyncControl->getBeatDistance(),
                 m_pChannel2->getEngineBuffer()
                         ->m_pSyncControl->getBeatDistance());
     }
@@ -1492,30 +1498,30 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     // We Expect that m_sGroup1 has adjusted its own bpm to the second deck and becomes a single master.
     // When the second deck is synced the master bpm is adopted by the interna clock, which becomes now
     // the master
-    EXPECT_FLOAT_EQ(87.5,
+    EXPECT_DOUBLE_EQ(87.5,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
-    EXPECT_FLOAT_EQ(87.5,
+    EXPECT_DOUBLE_EQ(87.5,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(175.0,
+    EXPECT_DOUBLE_EQ(175.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-    EXPECT_FLOAT_EQ(87.5 / 80,
+    EXPECT_DOUBLE_EQ(87.5 / 80,
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate_ratio"))
                     ->get());
-    EXPECT_FLOAT_EQ(1,
+    EXPECT_DOUBLE_EQ(1,
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate_ratio"))
                     ->get());
-    EXPECT_FLOAT_EQ(80,
+    EXPECT_DOUBLE_EQ(80,
             ControlObject::getControl(ConfigKey(m_sGroup1, "local_bpm"))
                     ->get());
-    EXPECT_FLOAT_EQ(175.0,
+    EXPECT_DOUBLE_EQ(175.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "local_bpm"))
                     ->get());
 
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
-    EXPECT_FLOAT_EQ(175.0,
+    EXPECT_DOUBLE_EQ(175.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
 
@@ -1523,7 +1529,7 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ProcessBuffer();
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
             m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
 
@@ -1539,16 +1545,16 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
-    EXPECT_FLOAT_EQ(87.5 / 80,
+    EXPECT_DOUBLE_EQ(87.5 / 80,
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate_ratio"))
                     ->get());
-    EXPECT_FLOAT_EQ(1,
+    EXPECT_DOUBLE_EQ(1,
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate_ratio"))
                     ->get());
 
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             (m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
             (m_pChannel2->getEngineBuffer()
                             ->m_pSyncControl->getBeatDistance()));
@@ -1556,10 +1562,10 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ProcessBuffer();
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(87.5,
+    EXPECT_DOUBLE_EQ(87.5,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             (m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
             (m_pChannel2->getEngineBuffer()
                             ->m_pSyncControl->getBeatDistance()));
@@ -1568,7 +1574,7 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ProcessBuffer();
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(
+    EXPECT_DOUBLE_EQ(
             m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
             m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
 }
@@ -1586,12 +1592,12 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
 
-    EXPECT_FLOAT_EQ(70.0,
+    EXPECT_DOUBLE_EQ(70.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
@@ -1624,23 +1630,23 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
-    EXPECT_FLOAT_EQ(180.0,
+    EXPECT_DOUBLE_EQ(180.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
-    EXPECT_FLOAT_EQ(90.0,
+    EXPECT_DOUBLE_EQ(90.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(180.0,
+    EXPECT_DOUBLE_EQ(180.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(0);
     ProcessBuffer();
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
     ProcessBuffer();
-    EXPECT_FLOAT_EQ(90.0,
+    EXPECT_DOUBLE_EQ(90.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(180.0,
+    EXPECT_DOUBLE_EQ(180.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
 
@@ -1679,20 +1685,18 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     ProcessBuffer();
 
     // Internal clock rate should be set and beat distance already updated
-    EXPECT_FLOAT_EQ(100.0,
+    EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(0.019349962,
-            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                    ->get());
+    EXPECT_NEAR(0.019349962,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxFloatingPointError);
 
     // The internal clock must also have been advanced to the same fraction of a beat.
-    EXPECT_FLOAT_EQ(100.0,
-            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
-                    ->get());
-    EXPECT_FLOAT_EQ(0.019349962,
-            ControlObject::getControl(
-                    ConfigKey(m_sInternalClockGroup, "beat_distance"))
-                    ->get());
+    EXPECT_DOUBLE_EQ(100.0,
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_NEAR(0.019349962,
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
+            kMaxFloatingPointError);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
 
@@ -1700,13 +1704,12 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 
     // we expect that Deck 1 distance has not changed and the internal clock has continued
     // with the same rate
-    EXPECT_FLOAT_EQ(0.019349962,
-            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                    ->get());
-    EXPECT_FLOAT_EQ(0.019349962,
-            ControlObject::getControl(
-                    ConfigKey(m_sInternalClockGroup, "beat_distance"))
-                    ->get());
+    EXPECT_NEAR(0.019349962,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxFloatingPointError);
+    EXPECT_NEAR(0.019349962,
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
+            kMaxFloatingPointError);
 
     // Now make the second deck playing and see if it works.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -1721,24 +1724,22 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // rid of the additional buffer ahead
     // TODO: It does sounds odd to start the track 1 at a random position and adjust the
     // phase later. Seeking into phase is the best option even with quantize off.
-    EXPECT_FLOAT_EQ(100.0,
+    EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     // The adjustment is calculated here: BpmControl::calcSyncAdjustment
-    EXPECT_GT(0.038699925,
-            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                    ->get());
-    EXPECT_FLOAT_EQ(100.0,
+    EXPECT_GT(0.038699925, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-    EXPECT_FLOAT_EQ(0.019349962,
-            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
-                    ->get());
-    EXPECT_FLOAT_EQ(100.0,
-            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
-                    ->get());
-    EXPECT_FLOAT_EQ(0.038699925,
-            ControlObject::getControl(
-                    ConfigKey(m_sInternalClockGroup, "beat_distance"))
-                    ->get());
+    EXPECT_NEAR(
+            0.019349962,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+            kMaxFloatingPointError);
+    EXPECT_DOUBLE_EQ(100.0,
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_NEAR(
+            0.038699925,
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
+            kMaxFloatingPointError);
 
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     pButtonSyncEnabled1->set(0.0);
@@ -1758,11 +1759,11 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // This will sync to the first deck here and not the second (lp1784185)
     pButtonSyncEnabled3->set(1.0);
     ProcessBuffer();
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
     // revert that
     ControlObject::set(ConfigKey(m_sGroup3, "rate_ratio"), 1.0);
     ProcessBuffer();
-    EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
     // now we have Deck 3 with 140 bpm and sync enabled
 
     pButtonSyncEnabled1->set(1.0);
@@ -1774,10 +1775,10 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     ProcessBuffer();
 
     // We expect Deck 1 is Deck 3 bpm
-    EXPECT_FLOAT_EQ(140.0,
+    EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
-    EXPECT_FLOAT_EQ(140.0,
+    EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     // The exact beat distance will be one buffer past .6, but this is good
     // enough to confirm that it worked.
@@ -1837,7 +1838,7 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
                     ->get(),
             .00001);
 
-    EXPECT_FLOAT_EQ(0.0,
+    EXPECT_DOUBLE_EQ(0.0,
             m_pChannel1->getEngineBuffer()
                     ->m_pBpmControl->m_dUserOffset.getValue());
 }
@@ -1860,15 +1861,17 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
 
     ProcessBuffer();
-    EXPECT_FLOAT_EQ(kDivisibleBpm,
+    EXPECT_DOUBLE_EQ(kDivisibleBpm,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(kDivisibleBpm,
+    EXPECT_DOUBLE_EQ(kDivisibleBpm,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
-    EXPECT_FLOAT_EQ(0.024806201,
-            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.0023219956,
-            ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+    EXPECT_NEAR(0.024806201,
+            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+            kMaxFloatingPointError);
+    EXPECT_NEAR(0.0023219956,
+            ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
+            kMaxFloatingPointError);
 
     ControlObject::set(ConfigKey(m_sGroup2, "playposition"), 0.2);
     ProcessBuffer();
@@ -1878,13 +1881,19 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
     // We are a few buffers past the seeked position.  It's less than 0.2 because
     // of quantizing.  The playpositions are different because the tracks are at
     // different bpms.
-    EXPECT_FLOAT_EQ(0.19417687, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
-    EXPECT_FLOAT_EQ(0.19148479, ControlObject::get(ConfigKey(m_sGroup2, "playposition")));
+    EXPECT_NEAR(0.19417687,
+            ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
+            kMaxFloatingPointError);
+    EXPECT_NEAR(0.19148479,
+            ControlObject::get(ConfigKey(m_sGroup2, "playposition")),
+            kMaxFloatingPointError);
     // The beat distances are identical though.
-    EXPECT_FLOAT_EQ(0.074418604,
-            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.074418604,
-            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+    EXPECT_NEAR(0.074418604,
+            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+            kMaxFloatingPointError);
+    EXPECT_NEAR(0.074418604,
+            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+            kMaxFloatingPointError);
 
     // Apply user tweak offset.
     m_pChannel1->getEngineBuffer()
@@ -1898,12 +1907,18 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
 
     // Now, the locations are much more different - but the beat distance appears
     // to be the same because beat distance CO hides the user offset.
-    EXPECT_FLOAT_EQ(0.2269025, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
-    EXPECT_FLOAT_EQ(0.1960644, ControlObject::get(ConfigKey(m_sGroup2, "playposition")));
-    EXPECT_FLOAT_EQ(0.12403101,
-            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.12403101,
-            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+    EXPECT_NEAR(0.2269025,
+            ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
+            kMaxFloatingPointError);
+    EXPECT_NEAR(0.1960644,
+            ControlObject::get(ConfigKey(m_sGroup2, "playposition")),
+            kMaxFloatingPointError);
+    EXPECT_NEAR(0.12403101,
+            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+            kMaxFloatingPointError);
+    EXPECT_NEAR(0.12403101,
+            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+            kMaxFloatingPointError);
 }
 
 TEST_F(EngineSyncTest, MasterBpmNeverZero) {
@@ -2164,8 +2179,8 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     ProcessBuffer();
 
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // sync 0 bpm track to the first one
     pButtonSyncEnabled2->set(1.0);
@@ -2176,9 +2191,9 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     // expect no change in Deck 1
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
 
@@ -2197,9 +2212,9 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     ASSERT_TRUE(isSoftMaster(m_sGroup2));
     ASSERT_TRUE(isFollower(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sInternalClockGroup));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Play Both Tracks.
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
@@ -2217,10 +2232,10 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 
     // we expect that the new beatgrid is aligned to the other playing track
     // Not the case before fixing lp1808698
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     // Expect to sync on half beats
-    EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+    EXPECT_DOUBLE_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
 TEST_F(EngineSyncTest, BeatMapQantizePlay) {
@@ -2248,7 +2263,7 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
 
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+    EXPECT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
             m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
 }
 
@@ -2259,8 +2274,8 @@ TEST_F(EngineSyncTest, BpmAdjustFactor) {
     m_pMixerDeck2->loadFakeTrack(false, 150.0);
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
@@ -2269,8 +2284,8 @@ TEST_F(EngineSyncTest, BpmAdjustFactor) {
     ProcessBuffer();
 
     // group 2 should be synced to the first playing deck and becomes master
-    EXPECT_FLOAT_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(80.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(80.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     ASSERT_TRUE(isSoftMaster(m_sGroup2));
     assertSyncOff(m_sGroup1);
 
@@ -2286,8 +2301,8 @@ TEST_F(EngineSyncTest, BpmAdjustFactor) {
 
     // Group 1 should be already in sync, it must not change due to sync
     // and Group 2 must also remain.
-    EXPECT_FLOAT_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_FLOAT_EQ(80.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(80.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     ASSERT_TRUE(isFollower(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
     ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
