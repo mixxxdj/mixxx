@@ -2,8 +2,7 @@
 /*                                                                               */
 /* Traktor Kontrol Z2 HID controller script v1.00                                */
 /* Last modification: August 2020                                                */
-/* Author: Jörg Wartenberg (based on the Traktor Z2 mapping by Owen Williams)    */
-/* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_Z2     */
+/* Author: Jörg Wartenberg (based on the Traktor S3 mapping by Owen Williams)    */
 /*                                                                               */
 /* To inhibit false 'Undeclared variable' warnings by codefactor:                */
 /* global HIDController, HIDDebug, HIDPacket, controller                         */
@@ -399,6 +398,15 @@ TraktorZ2.buttonHandler = function(field) {
     script.toggleControl(field.group, field.name);
 };
 
+TraktorZ2.traktorbuttonHandler = function(field) {
+    HIDDebug("TraktorZ2: traktorbuttonHandler" + " field: " + field + " field.value: " + field.value);
+    if (field.value === 1) {        
+        TraktorZ2.controller.setOutput(field.group, "traktorbutton", LedBright,  true); // Controller internal state ON -> Switch LED to represent this state
+    } else {        
+        TraktorZ2.controller.setOutput(field.group, "traktorbutton", LedOff,     true); // Controller internal state OFF -> Switch LED to represent this state
+    }
+};
+
 TraktorZ2.registerInputPackets = function() {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
     var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
@@ -414,9 +422,12 @@ TraktorZ2.registerInputPackets = function() {
     this.registerInputButton(messageShort, "[Channel3]", "switchDeck", 0x06, 0x01, this.deckSwitchHandler);
     this.registerInputButton(messageShort, "[Channel4]", "switchDeck", 0x07, 0x04, this.deckSwitchHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "passthrough", 0x03, 0x01, this.buttonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "passthrough", 0x03, 0x02, this.buttonHandler);
+    // this.registerInputButton(messageShort, "[Channel1]", "!traktorbutton", 0x03, 0x01, this.traktorbuttonHandler);
+    // this.registerInputButton(messageShort, "[Channel2]", "!traktorbutton", 0x03, 0x02, this.traktorbuttonHandler);
 
+    this.registerInputButton(messageShort, "[Channel1]", "!traktorbutton", 0x09, 0x08, this.traktorbuttonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!traktorbutton", 0x09, 0x10, this.traktorbuttonHandler);    
+    
     this.registerInputButton(messageShort, "[Master]", "skin_settings", 0x03, 0x08, this.buttonHandler);
 
     this.registerInputButton(messageShort, "[Channel1]", "quantize", 0x03, 0x10, this.buttonHandler);
@@ -1056,11 +1067,11 @@ TraktorZ2.registerOutputPackets = function() {
     outputB.addOutput("[Channel2]", "pfl", 0x24, "B", 0x70);
     engine.connectControl("[Channel2]", "pfl", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 
-    outputB.addOutput("[Channel1]", "passthrough", 0x25, "B", 0x70);
-    engine.connectControl("[Channel1]", "passthrough", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+    outputB.addOutput("[Channel1]", "traktorbutton", 0x25, "B", 0x70);
+    // engine.connectControl("[Channel1]", "passthrough", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 
-    outputB.addOutput("[Channel2]", "passthrough", 0x26, "B", 0x70);
-    engine.connectControl("[Channel2]", "passthrough", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+    outputB.addOutput("[Channel2]", "traktorbutton", 0x26, "B", 0x70);
+    // engine.connectControl("[Channel2]", "passthrough", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 
     var VuOffsets = {
         "[Channel1]": 0x02, // ChA
@@ -1150,6 +1161,8 @@ TraktorZ2.init = function(_id) {
 
     var data = [0x9F, 0x40];
     controller.sendFeatureReport(data, 0xF1);
+    // var data = [0x91, 0x40];
+    // controller.sendFeatureReport(data, 0xF3);
 
     //TraktorZ2.debugLights();
 
@@ -1168,5 +1181,5 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.hotcueOutputHandler();
     HIDDebug("TraktorZ2: Init done!");
 
-  //  this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
+    //this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
 };
