@@ -2421,9 +2421,6 @@ WColorPicker QPushButton[checked="true"] {
 #LibraryContainer QTreeView::item:selected,
 #LibraryContainer QTableView::item:selected,
 #LibraryBPMButton::item:selected {
-/* this doesn't style BPM value in selected row
-#LibraryContainer QTableView::item:selected #LibraryBPMSpinBox::item:selected,
-#LibraryContainer QTableView::item:selected > #LibraryBPMSpinBox::item:selected */
   color: #fff;
   background-color: #2c454f;
 }
@@ -2488,13 +2485,6 @@ WLibrary QLineEdit,
   #LibraryBPMSpinBox::down-button {
     image: url(skin:/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
     }
-
-/* remove OS focus indicator from BPM cell */
-WLibrary QCheckBox,
-#LibraryBPMButton::item:selected,
-WCueMenuPopup QPushButton:focus {
-  outline: none;
-}
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
@@ -2855,10 +2845,17 @@ WEffectSelector::item,
     /* remove OS focus indicator */
     outline: none;
   }
+  /* remove OS focus indicator from some buttons */
+  #LibraryBPMButton::item:selected,
+  WLibrary QCheckBox,
+  WCueMenuPopup QPushButton:focus {
+    outline: none;
+  }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
+  WSearchLineEdit::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
-    background-color: #0a2329;
+    background-color: #2f2f2f;
     color: #fff;
     }
   /* disabled items */
