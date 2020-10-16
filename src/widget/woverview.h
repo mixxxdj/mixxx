@@ -89,7 +89,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_pixmapDone;
     float m_waveformPeak;
 
-    int m_diffGain;
+    float m_diffGain;
     qreal m_devicePixelRatio;
 
   private slots:
