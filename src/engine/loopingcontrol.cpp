@@ -1173,6 +1173,12 @@ void LoopingControl::slotLoopMove(double beats) {
                 pBeats->findNBeatsFromSample(new_loop_in, m_pCOBeatLoopSize->get()) :
                 pBeats->findNBeatsFromSample(loopSamples.end, beats);
 
+        // The track would stop as soon as the playhead crosses track end,
+        // so we don't allow moving a loop beyond end.
+        // https://bugs.launchpad.net/mixxx/+bug/1799574
+        if (new_loop_out > m_pTrackSamples->get()) {
+            return;
+        }
         // If we are looping make sure that the play head does not leave the
         // loop as a result of our adjustment.
         loopSamples.seek = m_bLoopingEnabled;
