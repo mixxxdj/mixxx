@@ -9,9 +9,9 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 // Each color has 8 brightnesses, so these values can be between 0 and 7.
-const LedOff    = 0x00;
-const LedDimmed = 0x02;
-const LedBright = 0x07;
+var LedOff    = 0x00;
+var LedDimmed = 0x02;
+var LedBright = 0x07;
 
 var TraktorZ2 = new function() {
     this.controller = new HIDController();
