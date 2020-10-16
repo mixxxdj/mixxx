@@ -861,12 +861,12 @@ TraktorZ2.displayLoopCount = function(group) {
     // @param TraktorZ2.displayBrightness[group] may be aninteger value from 0x00 to 0x07
     var beatloopSize = engine.getValue(group, "beatloop_size");
        
-    const led2DigitModulus = {
+    var led2DigitModulus = {
         "[Digit3]": 10,
         "[Digit2]": 100
     };
     
-    const led3DigitModulus = {
+    var led3DigitModulus = {
         "[Digit3]": 10,
         "[Digit2]": 100,
         "[Digit1]": 1000
