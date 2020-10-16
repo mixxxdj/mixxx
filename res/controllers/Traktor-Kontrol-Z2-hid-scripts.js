@@ -374,20 +374,20 @@ TraktorZ2.Deck.prototype.selectLoopHandler = function(field) {
 
 TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
     HIDDebug("TraktorZ2: activateLoopHandler");
-    if (field.value === 0) {
-        return;
-    }
-    var isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
+    if (field.value === 1) {
+        var isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
 
-    if (TraktorZ2.shiftActive) {
-        engine.setValue(this.activeChannel, "reloop_toggle", field.value);
-    } else {
-        if (isLoopActive) {
+        if (TraktorZ2.shiftActive) {
             engine.setValue(this.activeChannel, "reloop_toggle", field.value);
         } else {
-            engine.setValue(this.activeChannel, "beatloop_activate", field.value);
+            if (isLoopActive) {
+                engine.setValue(this.activeChannel, "reloop_toggle", field.value);
+            } else {
+                engine.setValue(this.activeChannel, "beatloop_activate", field.value);
+            }
         }
-    }
+    }    
+    TraktorZ2.displayLoopCount(this.activeChannel)
 };
 
 TraktorZ2.buttonHandler = function(field) {
@@ -822,11 +822,11 @@ TraktorZ2.beatOutputHandler = function(value, group, key) {
 
         TraktorZ2.displayBrightness[group] = 0x07; //LedBright
         TraktorZ2.displayLoopCount(group);                 
-        
+         
         var beatPeriodMillis = 60 / engine.getValue(group, "bpm") * 1000;
         
         if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "play_indicator") && (engine.getValue(group, "beatloop_size") < 1)) {
-            // If beatloop_size is < 1, it can be, that the loop is inbetween two beats. Than beat_active will never trigger this function.
+            // If beatloop_size is < 1, it can be, that the loop is in between two beats. Than beat_active will never trigger this function.
             var timerPeriodMillis = 0.5 * beatPeriodMillis * engine.getValue(group, "beatloop_size");
             if (timerPeriodMillis <= 20) {
                 timerPeriodMillis = 20;
@@ -872,6 +872,20 @@ TraktorZ2.displayLoopCount = function(group) {
         "[Digit1]": 1000
     };
     
+    if (engine.getValue(group, "loop_enabled")) {
+        var playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
+        if (
+            (playposition >= engine.getValue(group, "loop_start_position")) &&
+            (playposition <= engine.getValue(group, "loop_end_position"))
+           ) {
+           displayBrightness = TraktorZ2.displayBrightness[group];
+        } else {
+            displayBrightness = LedDimmed;
+        }
+    } else {
+        displayBrightness = LedBright;
+    }
+    
     if (beatloopSize < 1) {
         // Fraction of a beat
         var beatloopSizeRemainder = 1 / beatloopSize;
@@ -882,13 +896,13 @@ TraktorZ2.displayLoopCount = function(group) {
             if (digit === "[Digit2]" && beatloopSize > .1) {
                 leastSignificiantDigit = -1; // Leading ero -> Show special symbol of number 1 and the fraction stroke combined in left digit
             }
-            TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, TraktorZ2.displayBrightness[group]);
+            TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
             beatloopSizeRemainder /= 10;
         }
         if (beatloopSize > .1) {
-            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -2, TraktorZ2.displayBrightness[group]);  // Leading ero -> Blank
+            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -2, displayBrightness);  // Leading ero -> Blank
         } else {        
-            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -1, TraktorZ2.displayBrightness[group]); // Show special symbol of number 1 and the fraction stroke combined in left digit
+            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -1, displayBrightness); // Show special symbol of number 1 and the fraction stroke combined in left digit
         }
     } else {
         // Beat integer        
@@ -900,7 +914,7 @@ TraktorZ2.displayLoopCount = function(group) {
             if ((digit === "[Digit1]" && beatloopSize < 100) || (digit === "[Digit2]" && beatloopSize < 10)) {
                 leastSignificiantDigit = -2; // Leading ero -> Blank
             }
-            TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, TraktorZ2.displayBrightness[group]);
+            TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
             beatloopSizeRemainder /= 10;
         }
     }
@@ -1152,7 +1166,7 @@ TraktorZ2.init = function(_id) {
         "deck2": new TraktorZ2.Deck(2, "deck2"),
     };
 
-    // Traktor Z2 can be swiched per channel from internal mixing to external mixing
+    // Traktor Z2 can be switched per channel from internal mixing to external mixing
     // This is done by USB HID: Set Reports (Feature) 0xF1
     // 0xF1 9n 40  -> Bit 0x01 of n means  Ch1 (internal) mixing
     // 0xF1 9n 40  -> Bit 0x02 of n means  Ch2 (internal) mixing
@@ -1181,5 +1195,5 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.hotcueOutputHandler();
     HIDDebug("TraktorZ2: Init done!");
 
-    //this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
+    this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
 };
