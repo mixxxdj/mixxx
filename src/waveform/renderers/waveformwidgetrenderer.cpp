@@ -136,7 +136,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         // pixel.
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount;
         m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
-        m_playPosVSample = static_cast<int>(m_playPos) * m_totalVSamples;
+        m_playPosVSample = static_cast<int>(m_playPos * m_totalVSamples);
 
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;
