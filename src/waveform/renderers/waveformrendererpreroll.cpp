@@ -40,20 +40,21 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     bool preRollVisible = firstDisplayedPosition < 0;
     bool postRollVisible = lastDisplayedPosition > 1;
     if (preRollVisible || postRollVisible) {
-        double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
-        double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-        double numberOfSamples = m_waveformRenderer->getLength() * samplesPerPixel;
+        const double playMarkerPositionFrac = m_waveformRenderer->getPlayMarkerPosition();
+        const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
+        const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
 
-        int currentPosition = m_waveformRenderer->getPlayPosVSample();
-        int totalSamples = m_waveformRenderer->getTotalVSample();
-        //qDebug() << "currentPosition" << currentPosition
-        //         << "lastDisplayedPosition" << lastDisplayedPosition
-        //         << "samplesPerPixel" << samplesPerPixel
-        //         << "numberOfSamples" << numberOfSamples
-        //         << "totalSamples" << totalSamples
-        //         << "WaveformRendererPreroll::playMarkerPosition=" << playMarkerPosition;
+        int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
+        int totalVSamples = m_waveformRenderer->getTotalVSample();
+        // qDebug() << "currentVSamplePosition" << currentVSamplePosition
+        //          << "lastDisplayedPosition" << lastDisplayedPosition
+        //          << "vSamplesPerPixel" << vSamplesPerPixel
+        //          << "numberOfVSamples" << numberOfVSamples
+        //          << "totalVSamples" << totalVSamples
+        //          << "WaveformRendererPreroll::playMarkerPosition=" << playMarkerPositionFrac;
 
-        const int polyLength = static_cast<int>(40.0 / samplesPerPixel);
+        const double polyLength = 40.0 / vSamplesPerPixel;
+        const double polyVSampleSize = (polyLength + 1) * vSamplesPerPixel;
         const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0f;
         const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0f;
 
@@ -71,46 +72,40 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         }
 
         if (preRollVisible) {
-            // Sample position of the right-most triangle's tip
-            int index = static_cast<int>(numberOfSamples * playMarkerPosition - currentPosition);
+            // VSample position of the right-most triangle's tip
+            double triangleTipVSamplePosition =
+                    numberOfVSamples * playMarkerPositionFrac -
+                    currentVSamplePosition;
 
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
                     << QPointF(-polyLength, halfBreadth - halfPolyBreadth)
                     << QPointF(-polyLength, halfBreadth + halfPolyBreadth);
+            polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
 
-            // Draw at most one not or halve visible polygon at the widget borders
-            if (index > (numberOfSamples + ((polyLength + 1) * samplesPerPixel))) {
-                int rest = index - static_cast<int>(numberOfSamples);
-                rest %= (polyLength + 1) * static_cast<int>(samplesPerPixel);
-                index = static_cast<int>(numberOfSamples) + rest;
-            }
-
-            polygon.translate(((qreal)index) / samplesPerPixel, 0);
-            while (index > 0) {
+            for (; triangleTipVSamplePosition > 0; triangleTipVSamplePosition -= polyVSampleSize) {
                 painter->drawPolygon(polygon);
                 polygon.translate(-(polyLength + 1), 0);
-                index -= (polyLength + 1) * samplesPerPixel;
             }
         }
 
         if (postRollVisible) {
-            int remainingVSamples = totalSamples - currentPosition;
+            const int remainingVSamples = totalVSamples - currentVSamplePosition;
             // Sample position of the left-most triangle's tip
-            int index = (playMarkerPosition * numberOfSamples) + remainingVSamples;
-            qreal endPos = index / samplesPerPixel;
-            //painter->drawLine(endPos, 0, endPos, m_waveformRenderer->getBreadth());
+            double triangleTipVSamplePosition =
+                    playMarkerPositionFrac * numberOfVSamples +
+                    remainingVSamples;
 
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
                     << QPointF(polyLength, halfBreadth - halfPolyBreadth)
                     << QPointF(polyLength, halfBreadth + halfPolyBreadth);
+            polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
 
-            polygon.translate(endPos, 0);
-            while (index < numberOfSamples) {
+            for (; triangleTipVSamplePosition < numberOfVSamples;
+                    triangleTipVSamplePosition += polyVSampleSize) {
                 painter->drawPolygon(polygon);
-                polygon.translate(+(polyLength + 1), 0);
-                index -= (polyLength + 1) * static_cast<int>(samplesPerPixel);
+                polygon.translate(polyLength + 1, 0);
             }
         }
     }
