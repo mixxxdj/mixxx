@@ -21,7 +21,6 @@
 
 #include "util/types.h"
 #include "encoder/encoderwave.h"
-#include "track/track.h"
 
 class EncoderCallback;
 

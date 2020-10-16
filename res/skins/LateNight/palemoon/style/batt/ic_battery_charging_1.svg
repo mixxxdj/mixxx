@@ -5,9 +5,9 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg8"
+   version="1.1"
    viewBox="0 0 48 48"
-   version="1.1">
+   id="svg8">
   <metadata
      id="metadata14">
     <rdf:RDF>
@@ -22,20 +22,27 @@
   </metadata>
   <defs
      id="defs12" />
+  <rect
+     y="15.317858"
+     x="11.182595"
+     height="16.699163"
+     width="30.193836"
+     id="rect838"
+     style="fill:#60d1fe;fill-opacity:1;stroke:none;stroke-width:0.846;stroke-linecap:round;stroke-linejoin:round" />
   <path
-     id="path2-3"
+     style="fill:none;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 4.0001,27.9999 h 4 L 8,31.841 C 7.9999615,33.3201 8.6792,34 10.159,34 h 31.68 C 43.309,34 44,33.3203 44,31.841 V 16.169 C 44,14.6997 43.31,14.000052 41.83,14 L 10.159526,13.9999 C 8.6797254,14.0099 8.0003,14.6899 8,16.169 v 3.8309 H 4 Z"
-     style="fill:none;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+     id="path2-3" />
   <g
-     id="g6"
-     transform="rotate(-90,24,24)">
+     transform="rotate(-90,24,24)"
+     id="g6">
     <path
-       id="path2"
+       d="m22 35.111h-8v6.2188c0 1.47 1.1887 2.6699 2.668 2.6699h14.664c1.4693 0 2.668-1.1899 2.668-2.6699v-6.2188h-9.3926l-2.6074 4.8887z"
        fill="#ff5c00"
-       d="m22 35.111h-8v6.2188c0 1.47 1.1887 2.6699 2.668 2.6699h14.664c1.4693 0 2.668-1.1899 2.668-2.6699v-6.2188h-9.3926l-2.6074 4.8887z" />
+       id="path2" />
     <path
-       id="path4"
+       d="m20 4v4h-3.332c-1.4791 0-2.668 1.1882-2.668 2.668v24.443h8v-6.1113h-4l8-15v11h4l-5.3926 10.111h9.3906l.002-24.443c-.01-1.4798-1.1986-2.6677-2.6777-2.668h-3.3223v-4z"
        fill="#444443"
-       d="m20 4v4h-3.332c-1.4791 0-2.668 1.1882-2.668 2.668v24.443h8v-6.1113h-4l8-15v11h4l-5.3926 10.111h9.3906l.002-24.443c-.01-1.4798-1.1986-2.6677-2.6777-2.668h-3.3223v-4z" />
+       id="path4" />
   </g>
 </svg>

@@ -17,17 +17,18 @@
 #ifndef MIXER_PLAYERINFO_H
 #define MIXER_PLAYERINFO_H
 
-#include <QObject>
-#include <QMutex>
 #include <QMap>
+#include <QMutex>
+#include <QObject>
 #include <QTimerEvent>
 
 #include "control/controlproxy.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 class PlayerInfo : public QObject {
     Q_OBJECT
   public:
+    static PlayerInfo& create();
     static PlayerInfo& instance();
     static void destroy();
     TrackPointer getTrackInfo(const QString& group);

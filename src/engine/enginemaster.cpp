@@ -36,7 +36,7 @@ EngineMaster::EngineMaster(
         ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)
         : m_pChannelHandleFactory(pChannelHandleFactory),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
@@ -465,11 +465,15 @@ void EngineMaster::process(const int iBufferSize) {
     // Process effects on all microphones mixed together
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
     GroupFeatureState busFeatures;
-    m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busTalkoverHandle.handle(),
-            m_masterHandle.handle(),
-            m_pTalkover,
-            m_iBufferSize, m_iSampleRate, busFeatures);
+    if (m_pEngineEffectsManager) {
+        m_pEngineEffectsManager->processPostFaderInPlace(
+                m_busTalkoverHandle.handle(),
+                m_masterHandle.handle(),
+                m_pTalkover,
+                m_iBufferSize,
+                m_iSampleRate,
+                busFeatures);
+    }
 
     switch (m_pTalkoverDucking->getMode()) {
     case EngineTalkoverDucking::OFF:
@@ -488,7 +492,7 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
-    double crossfaderLeftGain, crossfaderRightGain;
+    CSAMPLE_GAIN crossfaderLeftGain, crossfaderRightGain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get(),
@@ -499,8 +503,10 @@ void EngineMaster::process(const int iBufferSize) {
     // m_masterGain takes care of applying the attenuation from
     // channel volume faders, crossfader, and talkover ducking.
     // Talkover is mixed in later according to the configured MicMonitorMode
-    m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
-                            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
+    m_masterGain.setGains(crossfaderLeftGain,
+            1.0f,
+            crossfaderRightGain,
+            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(
@@ -559,7 +565,7 @@ void EngineMaster::process(const int iBufferSize) {
             // Copy master mix to booth output with booth gain before mixing
             // talkover with master mix
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -572,7 +578,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -601,7 +607,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Copy master mix (with talkover mixed in) to booth output with booth gain
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -609,7 +615,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -626,7 +632,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Copy master mix to booth output with booth gain
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -644,7 +650,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -760,7 +766,7 @@ void EngineMaster::applyMasterEffects() {
     }
 }
 
-void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
+void EngineMaster::processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphones) {
     // Add master mix to headphones
     SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
                                    m_headphoneMasterGainOld,
@@ -779,7 +785,7 @@ void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
     }
 
     // Apply headphone gain
-    CSAMPLE headphoneGain = m_pHeadGain->get();
+    CSAMPLE_GAIN headphoneGain = static_cast<CSAMPLE_GAIN>(m_pHeadGain->get());
     SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
                                  headphoneGain, m_iBufferSize);
     m_headphoneGainOld = headphoneGain;

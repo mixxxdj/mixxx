@@ -9,6 +9,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"
 #include "util/logger.h"

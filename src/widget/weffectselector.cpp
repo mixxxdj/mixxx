@@ -120,6 +120,9 @@ bool WEffectSelector::event(QEvent* pEvent) {
         }
         // repopulate to add text according to the new font measures
         populate();
+    } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
+        // don't change effect by scrolling hovered effect selector
+        return false;
     }
 
     return QComboBox::event(pEvent);

@@ -145,9 +145,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
-    double send_current = m_pSendParameter->value();
-    double feedback_current = m_pFeedbackParameter->value();
-    double pingpong_frac = m_pPingPongParameter->value();
+    const auto send_current = static_cast<CSAMPLE_GAIN>(m_pSendParameter->value());
+    const auto feedback_current = static_cast<CSAMPLE_GAIN>(m_pFeedbackParameter->value());
+    const auto pingpong_frac = static_cast<CSAMPLE_GAIN>(m_pPingPongParameter->value());
 
     int delay_frames;
     if (groupFeatures.has_beat_length_sec) {
@@ -160,11 +160,12 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         } else if (period < 1/8.0) {
             period = 1/8.0;
         }
-        delay_frames = period * groupFeatures.beat_length_sec * bufferParameters.sampleRate();
+        delay_frames = static_cast<int>(period * groupFeatures.beat_length_sec *
+                bufferParameters.sampleRate());
     } else {
         // period is a number of seconds
         period = std::max(period, 1/8.0);
-        delay_frames = period * bufferParameters.sampleRate();
+        delay_frames = static_cast<int>(period * bufferParameters.sampleRate());
     }
     VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
         delay_frames = 1;
@@ -197,8 +198,8 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
-            double frac = static_cast<double>(i)
-                / bufferParameters.samplesPerBuffer();
+            const CSAMPLE_GAIN frac = static_cast<CSAMPLE_GAIN>(i) /
+                    bufferParameters.samplesPerBuffer();
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
             bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);
@@ -222,8 +223,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.ping_pong < delay_samples / 2) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] = (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
-                         (1 + pingpong_frac);
+            pOutput[i] =
+                    (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
+                    (1 + pingpong_frac);
             // Right sample reduced by (1 - fraction)
             pOutput[i + 1] = bufferedSampleRight * (1 - pingpong_frac);
         } else {
@@ -231,8 +233,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             pOutput[i] = bufferedSampleLeft * (1 - pingpong_frac);
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
-                             (1 + pingpong_frac);
+            pOutput[i + 1] =
+                    (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
+                    (1 + pingpong_frac);
         }
 
         incrementRing(&gs.write_position, bufferParameters.channelCount(),

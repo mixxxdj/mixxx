@@ -27,6 +27,10 @@
                     <Alignment>Left</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="ChanNum"/></Channel>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </TrackProperty>
                 </Children>
               </WidgetGroup>
@@ -72,9 +76,11 @@
                     <TooltipId>track_artist</TooltipId>
                     <Property>artist</Property>
                     <Elide>right</Elide>
-                    <Channel>
-                      <Variable name="ChanNum"/>
-                    </Channel>
+                    <Channel><Variable name="ChanNum"/></Channel>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </TrackProperty>
                 </Children>
               </WidgetGroup>

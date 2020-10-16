@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>537</width>
+    <width>564</width>
     <height>400</height>
    </rect>
   </property>
@@ -15,9 +15,9 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QCheckBox" name="banalyzerenabled">
+    <widget class="QCheckBox" name="checkBoxAnalyzerEnabled">
      <property name="toolTip">
-      <string>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
+      <string>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks,
 automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</string>
      </property>
      <property name="text">
@@ -104,10 +104,10 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QCheckBox" name="bFastAnalysis">
+       <widget class="QCheckBox" name="checkBoxFastAnalysis">
         <property name="toolTip">
-         <string>Enable fast beat detection. 
-If activated Mixxx only analyzes the first minute of a track for beat information. 
+         <string>Enable fast beat detection.
+If activated Mixxx only analyzes the first minute of a track for beat information.
 This can speed up beat detection on slower computers but may result in lower quality beatgrids.</string>
         </property>
         <property name="text">
@@ -116,10 +116,10 @@ This can speed up beat detection on slower computers but may result in lower qua
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="bfixedtempo">
+       <widget class="QCheckBox" name="checkBoxFixedTempo">
         <property name="toolTip">
-         <string>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
-Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+         <string>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
+Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</string>
         </property>
         <property name="text">
@@ -128,9 +128,9 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="boffset">
+       <widget class="QCheckBox" name="checkBoxOffsetCorr">
         <property name="toolTip">
-         <string>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
+         <string>Attempts to correct the phase (first beat) of fixed-tempo beatgrids
 by analyzing the beats to discard outliers.</string>
         </property>
         <property name="text">
@@ -139,13 +139,20 @@ by analyzing the beats to discard outliers.</string>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="bReanalyse">
+       <widget class="QCheckBox" name="checkBoxReanalyse">
         <property name="toolTip">
          <string>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyze only, if no beats exist.)</string>
         </property>
         <property name="text">
          <string>Re-analyze beats when settings change or beat detection data is outdated</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxReanalyseImported">
+        <property name="text">
+         <string>Re-analyze beatgrids imported from other DJ software</string>
         </property>
        </widget>
       </item>
@@ -181,7 +188,7 @@ by analyzing the beats to discard outliers.</string>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="plugincombo">
+       <widget class="QComboBox" name="comboBoxBeatPlugin">
         <property name="minimumSize">
          <size>
           <width>200</width>
@@ -208,6 +215,17 @@ by analyzing the beats to discard outliers.</string>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>checkBoxAnalyzerEnabled</tabstop>
+  <tabstop>comboBoxBeatPlugin</tabstop>
+  <tabstop>checkBoxFastAnalysis</tabstop>
+  <tabstop>checkBoxFixedTempo</tabstop>
+  <tabstop>checkBoxOffsetCorr</tabstop>
+  <tabstop>checkBoxReanalyse</tabstop>
+  <tabstop>checkBoxReanalyseImported</tabstop>
+  <tabstop>txtMinBpm</tabstop>
+  <tabstop>txtMaxBpm</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

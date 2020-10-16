@@ -376,7 +376,7 @@ void DlgPrefDeck::slotUpdate() {
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
     double deck1RateRange = m_rateRangeControls[0]->get();
-    int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
+    int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100.0));
     if (index == -1) {
         ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
                                    deck1RateRange * 100.);
@@ -708,7 +708,7 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
     }
 }
 
@@ -741,7 +741,7 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
     }
 }
 

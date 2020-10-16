@@ -2,14 +2,16 @@
 
 #include <QLabel>
 #include <QMouseEvent>
-#include <QWidget>
 #include <QPixmap>
+#include <QWidget>
 
-#include "track/track.h"
-#include "widget/wcoverartmenu.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
+class WCoverArtMenu;
 class DlgCoverArtFullSize;
+class CoverInfo;
+class CoverInfoRelative;
 
 class WCoverArtLabel : public QLabel {
     Q_OBJECT
@@ -26,14 +28,18 @@ class WCoverArtLabel : public QLabel {
 
   protected:
     void mousePressEvent(QMouseEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private slots:
       void slotCoverMenu(const QPoint& pos);
 
   private:
-    QPixmap m_loadedCover;
+    const parented_ptr<WCoverArtMenu> m_pCoverMenu;
+    const parented_ptr<DlgCoverArtFullSize> m_pDlgFullSize;
+
+    const QPixmap m_defaultCover;
+
     TrackPointer m_pLoadedTrack;
-    parented_ptr<WCoverArtMenu> m_pCoverMenu;
-    parented_ptr<DlgCoverArtFullSize> m_pDlgFullSize;
-    QPixmap m_defaultCover;
+
+    QPixmap m_loadedCover;
 };

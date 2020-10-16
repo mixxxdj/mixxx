@@ -14,7 +14,7 @@ ControlPro2.wheelTouch = function (channel, control, value, status, group) {
         engine.scratchDisable(deck);
     }
 }
- 
+
 // The wheel that actually controls the scratching
 ControlPro2.wheelTurn = function (channel, control, value, status, group) {
     // See if we're scratching. If not, do wheel jog.

@@ -55,7 +55,6 @@ repos:
   - id: check-xml
   - id: check-yaml
   - id: end-of-file-fixer
-    exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     stages:
     - commit
     - manual
@@ -66,6 +65,13 @@ repos:
     - commit
     - manual
   - id: no-commit-to-branch
+- repo: https://github.com/codespell-project/codespell
+  rev: f7f304cb40596e4706be27ca44d1401396a97420
+  hooks:
+  - id: codespell
+    # ignore-regex is substituted by ' '
+    entry: tools/codespell.py --ignore-file .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
+    exclude: ^(\.codespellignore|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.2.0
   hooks:
@@ -78,15 +84,14 @@ repos:
   hooks:
   - id: clang-format
     name: clang-format
-    entry: tools/clang_format_wrapper.py
+    description: "Run clang-format in two passes (reformat, then break long lines)"
+    entry: tools/clang_format.py
     require_serial: true
     stages:
     - commit
     - manual
     language: python
-    files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
-    additional_dependencies:
-    - clang-format
+    files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
 - repo: https://github.com/psf/black
   rev: stable
   hooks:
@@ -114,14 +119,3 @@ repos:
     stages:
     - commit
     - manual
-- repo: local
-  hooks:
-  - id: line-length
-    name: line-length
-    description: Check for lines longer 100 and brakes them before 80.
-    entry: ./tools/line_length.py
-    stages:
-    - commit
-    - manual
-    language: python
-    files: \.(c|cpp|h)$

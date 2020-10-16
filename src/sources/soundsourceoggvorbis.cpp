@@ -1,6 +1,6 @@
-#include <QFile>
-
 #include "sources/soundsourceoggvorbis.h"
+
+#include <QFile>
 
 #include "util/logger.h"
 

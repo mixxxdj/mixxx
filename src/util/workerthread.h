@@ -30,7 +30,8 @@ class WorkerThread : public QThread {
 
   public:
     explicit WorkerThread(
-            const QString& name = QString());
+            const QString& name = QString(),
+            const QThread::Priority priority = QThread::InheritPriority);
     /// The destructor must be triggered by calling deleteLater() to
     /// ensure that the thread has already finished and is not running
     /// while destroyed! Connect finished() to deleteAfter() and then
@@ -134,6 +135,7 @@ class WorkerThread : public QThread {
 
   private:
     const QString m_name;
+    const QThread::Priority m_priority;
 
     const mixxx::Logger m_logger;
 

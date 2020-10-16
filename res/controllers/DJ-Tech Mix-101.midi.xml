@@ -1,9 +1,10 @@
 <MixxxMIDIPreset mixxxVersion="1.10.1+" schemaVersion="1">
     <info>
-      <name>DJ-Tech Mix-101</name>
+      <name>DJ-Tech MIX-101</name>
       <author>rasda</author>
-      <description>Midi mapping for DJ-Tech Mix-101</description>
-      <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=3981</forums>
+      <description>MIDI mapping for DJ-Tech MIX-101</description>
+      <forums>https://mixxx.discourse.group/t/dj-tech-mix-101-mapping/12679</forums>
+      <manual>dj_tech_mix_101</manual>
     </info>
     <controller id="Mix-101 MIDI 1">
     <scriptfiles/>

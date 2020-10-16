@@ -9,7 +9,7 @@
 #include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
@@ -183,6 +183,8 @@ class MixxxMainWindow : public QMainWindow {
 
     ControlPushButton* m_pTouchShift;
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
+
+    QSet<ControlObject*> m_skinCreatedControls;
 
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;

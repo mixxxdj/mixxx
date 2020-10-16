@@ -1,14 +1,16 @@
+#include "library/banshee/bansheeplaylistmodel.h"
+
 #include <QtDebug>
 
-#include "library/banshee/bansheeplaylistmodel.h"
 #include "library/banshee/bansheedbconnection.h"
+#include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
-#include "library/previewbuttondelegate.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
-#include "mixer/playermanager.h"
+#include "track/track.h"
 
 #define BANSHEE_TABLE "banshee"
 #define CLM_TRACK_ID "track_id"
@@ -234,10 +236,6 @@ Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-void BansheePlaylistModel::tracksChanged(QSet<TrackId> trackIds) {
-    Q_UNUSED(trackIds);
-}
-
 TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         for (int row = 0; row < rowCount(); ++row) {
@@ -297,7 +295,6 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
             mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
             pTrack->setBeats(pBeats);
         }
-
     }
     return pTrack;
 }

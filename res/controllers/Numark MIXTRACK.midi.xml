@@ -4,6 +4,7 @@
       <name>Numark MIXTRACK</name>
       <author>Matteo (matteo@magm3.com), RAWRR, and uncleeugene</author>
       <description>Numark MixTrack Mapping v1.0b</description>
+      <manual>numark_mixtrack</manual>
     </info>
     <controller id="Numark Mix Track MIDI 1">
         <scriptfiles>

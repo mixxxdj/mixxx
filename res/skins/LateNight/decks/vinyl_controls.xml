@@ -48,17 +48,17 @@
               <Template src="skin:/controls/button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
                 <SetVariable name="ObjectName">VinylModeButton</SetVariable>
-                <SetVariable name="Size">44f,20f</SetVariable>
+                <SetVariable name="Size">46f,20f</SetVariable>
                 <SetVariable name="state_0_text">ABS</SetVariable>
                 <SetVariable name="state_1_text">REL</SetVariable>
-                <SetVariable name="state_2_text">&#8202;CONST</SetVariable>
+                <SetVariable name="state_2_text">&#8202;CONST&#8202;</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_mode</SetVariable>
               </Template>
 
               <Template src="skin:/controls/button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
                 <SetVariable name="ObjectName">VinylCueButton</SetVariable>
-                <SetVariable name="Size">28f,20f</SetVariable>
+                <SetVariable name="Size">32f,20f</SetVariable>
                 <SetVariable name="state_0_text">&#8202;CUE</SetVariable>
                 <SetVariable name="state_1_text">&#8202;CUE</SetVariable>
                 <SetVariable name="state_2_text">&#8202;HOT</SetVariable>
@@ -67,10 +67,10 @@
 
               <Template src="skin:/controls/button_2state.xml">
                 <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
-                <SetVariable name="ObjectName">VinylButton</SetVariable>
+                <SetVariable name="ObjectName">PassthroughButton</SetVariable>
                 <SetVariable name="Size">35f,20f</SetVariable>
-                <SetVariable name="state_0_text">&#8202;PASS</SetVariable>
-                <SetVariable name="state_1_text">&#8202;PASS</SetVariable>
+                <SetVariable name="state_0_text">&#8202;PASS&#8202;</SetVariable>
+                <SetVariable name="state_1_text">&#8202;PASS&#8202;</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,passthrough</SetVariable>
               </Template>
             </Children>

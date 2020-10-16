@@ -69,14 +69,14 @@ jobs:
         # NOTE(sblaisot): 2018-01-02 removing gdb wrapper on linux due to a bug in
         # return code in order to avoid having a successful build when a test fail.
         # https://bugs.launchpad.net/mixxx/+bug/1699689
-        - ./mixxx-test
+        - ./mixxx-test --logLevel info
 
     - name: Ubuntu/gcc/CMake build
       compiler: gcc
       cache: ccache
       # Ubuntu Bionic build prerequisites
       # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
-      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
+      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -92,7 +92,7 @@ jobs:
         - cpack -G DEB
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
 
     - name: OSX/clang/SCons build
@@ -144,7 +144,7 @@ jobs:
       script:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
-        - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)"
+        - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)" -- --logLevel info
       before_cache:
         # Avoid indefinite cache growth
         - brew cleanup
@@ -198,7 +198,7 @@ jobs:
         - cpack -G DragNDrop
       script:
         # Run tests and benchmarks
-        - ctest
+        - ctest --timeout 45
         - cmake --build . --target benchmark
       before_cache:
         # Avoid indefinite cache growth
@@ -221,6 +221,7 @@ addons:
       - libchromaprint-dev
       - libebur128-dev
       - libfaad-dev
+      - libfftw3-dev
       - libflac-dev
       - libid3tag0-dev
       - liblilv-dev

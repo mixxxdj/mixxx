@@ -11,6 +11,8 @@
 #include <QSharedPointer>
 #include <QString>
 
+#include "defs_urls.h"
+
 class ControllerPresetVisitor;
 class ConstControllerPresetVisitor;
 
@@ -123,6 +125,24 @@ class ControllerPreset {
         return m_forumlink;
     }
 
+    void setManualPage(const QString& manualPage) {
+        m_manualPage = manualPage;
+        setDirty(true);
+    }
+
+    QString manualPage() const {
+        return m_manualPage;
+    }
+
+    QString manualLink() const {
+        QString page = manualPage();
+        if (page.isEmpty()) {
+            return {};
+        }
+
+        return MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX + page + MIXXX_MANUAL_CONTROLLERMANUAL_SUFFIX;
+    }
+
     inline void setWikiLink(const QString wikilink) {
         m_wikilink = wikilink;
         setDirty(true);
@@ -174,6 +194,7 @@ class ControllerPreset {
     QString m_author;
     QString m_description;
     QString m_forumlink;
+    QString m_manualPage;
     QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;

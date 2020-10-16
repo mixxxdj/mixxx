@@ -6,6 +6,7 @@
 
 #include "engine/engine.h"
 #include "track/beatfactory.h"
+#include "track/beatmap.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
@@ -86,6 +87,10 @@ Track::Track(
 }
 
 Track::~Track() {
+    if (m_pBeatsImporterPending && !m_pBeatsImporterPending->isEmpty()) {
+        kLogger.warning()
+                << "Import of beats is still pending and discarded";
+    }
     if (m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty()) {
         kLogger.warning()
                 << "Import of"
@@ -182,6 +187,7 @@ void Track::importMetadata(
         // If the Serato tags are empty they are not present. In this case
         // all existing metadata must be preserved!
         if (!newSeratoTags.isEmpty()) {
+            importBeats(newSeratoTags.importBeats());
             importCueInfos(newSeratoTags.importCueInfos());
             setColor(newSeratoTags.getTrackColor());
             setBpmLocked(newSeratoTags.isBpmLocked());
@@ -280,7 +286,7 @@ double Track::setBpm(double bpmValue) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
         mixxx::BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
-        setBeatsAndUnlock(&lock, pBeats);
+        setBeatsMarkDirtyAndUnlock(&lock, pBeats);
         return bpmValue;
     }
 
@@ -305,16 +311,15 @@ QString Track::getBpmText() const {
 
 void Track::setBeats(mixxx::BeatsPointer pBeats) {
     QMutexLocker lock(&m_qMutex);
-    setBeatsAndUnlock(&lock, pBeats);
+    setBeatsMarkDirtyAndUnlock(&lock, pBeats);
 }
 
-void Track::setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats) {
+bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     // This whole method is not so great. The fact that Beats is an ABC is
     // limiting with respect to QObject and signals/slots.
 
     if (m_pBeats == pBeats) {
-        pLock->unlock();
-        return;
+        return false;
     }
 
     if (m_pBeats) {
@@ -329,6 +334,17 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats) {
         connect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
+    return true;
+}
+
+void Track::setBeatsMarkDirtyAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats) {
+    DEBUG_ASSERT(pLock);
+    if (!setBeatsWhileLocked(pBeats)) {
+        pLock->unlock();
+        return;
+    }
+
+    auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
 
     markDirtyAndUnlock(pLock);
     emit bpmUpdated(bpmValue);
@@ -693,7 +709,7 @@ void Track::initId(TrackId id) {
         return; // abort
     }
     m_record.setId(id);
-    for (const auto pCue : qAsConst(m_cuePoints)) {
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->setTrackId(id);
     }
     // Changing the Id does not make the track dirty because the Id is always
@@ -703,7 +719,7 @@ void Track::initId(TrackId id) {
 void Track::resetId() {
     QMutexLocker lock(&m_qMutex);
     m_record.setId(TrackId());
-    for (const auto pCue : qAsConst(m_cuePoints)) {
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->setTrackId(TrackId());
     }
 }
@@ -900,11 +916,85 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
             cuePoints);
 }
 
-Track::CueImportStatus Track::importCueInfos(
+Track::ImportStatus Track::importBeats(
+        mixxx::BeatsImporterPointer pBeatsImporter) {
+    QMutexLocker lock(&m_qMutex);
+    VERIFY_OR_DEBUG_ASSERT(pBeatsImporter) {
+        return ImportStatus::Complete;
+    }
+    DEBUG_ASSERT(!m_pBeatsImporterPending);
+    m_pBeatsImporterPending = pBeatsImporter;
+    if (m_streamInfo) {
+        // Replace existing cue points with imported cue
+        // points immediately
+        importPendingBeatsMarkDirtyAndUnlock(&lock);
+        return ImportStatus::Complete;
+    } else if (m_pBeatsImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        return ImportStatus::Complete;
+    } else {
+        kLogger.debug()
+                << "Import of beats is pending until the actual sample rate becomes available";
+        // Clear all existing cue points, that are supposed
+        // to be replaced with the imported cue points soon.
+        setBeatsMarkDirtyAndUnlock(&lock, nullptr);
+        return ImportStatus::Pending;
+    }
+}
+
+Track::ImportStatus Track::getBeatsImportStatus() const {
+    QMutexLocker lock(&m_qMutex);
+    return (!m_pBeatsImporterPending || m_pBeatsImporterPending->isEmpty())
+            ? ImportStatus::Complete
+            : ImportStatus::Pending;
+}
+
+bool Track::importPendingBeatsWhileLocked() {
+    if (!m_pBeatsImporterPending) {
+        // Nothing to do here
+        return false;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(!m_pBeatsImporterPending->isEmpty()) {
+        m_pBeatsImporterPending.reset();
+        return false;
+    }
+    // The sample rate can only be trusted after the audio
+    // stream has been opened.
+    DEBUG_ASSERT(m_streamInfo);
+    // The sample rate is supposed to be consistent
+    DEBUG_ASSERT(m_streamInfo->getSignalInfo().getSampleRate() ==
+            m_record.getMetadata().getSampleRate());
+    mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
+            static_cast<SINT>(m_streamInfo->getSignalInfo().getSampleRate()),
+            m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
+                    getLocation(), *m_streamInfo)));
+    DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
+    m_pBeatsImporterPending.reset();
+    return setBeatsWhileLocked(pBeats);
+}
+
+void Track::importPendingBeatsMarkDirtyAndUnlock(
+        QMutexLocker* pLock) {
+    DEBUG_ASSERT(pLock);
+    if (!importPendingBeatsWhileLocked()) {
+        pLock->unlock();
+        return;
+    }
+
+    auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
+
+    markDirtyAndUnlock(pLock);
+    emit bpmUpdated(bpmValue);
+    emit beatsUpdated();
+}
+
+Track::ImportStatus Track::importCueInfos(
         mixxx::CueInfoImporterPointer pCueInfoImporter) {
     QMutexLocker lock(&m_qMutex);
     VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter) {
-        return CueImportStatus::Complete;
+        return ImportStatus::Complete;
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
     m_pCueInfoImporterPending = pCueInfoImporter;
@@ -912,16 +1002,12 @@ Track::CueImportStatus Track::importCueInfos(
         // Replace existing cue points with imported cue
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
-        return CueImportStatus::Complete;
+        return ImportStatus::Complete;
+    } else if (m_pCueInfoImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        return ImportStatus::Complete;
     } else {
-        if (m_pCueInfoImporterPending->isEmpty()) {
-            // Just return the current import status without clearing any
-            // existing cue points.
-            return (!m_pCueInfoImporterPending->isEmpty())
-                    ? CueImportStatus::Complete
-                    : CueImportStatus::Pending;
-        }
-        DEBUG_ASSERT(!m_pCueInfoImporterPending->isEmpty());
         kLogger.debug()
                 << "Import of"
                 << m_pCueInfoImporterPending->size()
@@ -931,25 +1017,21 @@ Track::CueImportStatus Track::importCueInfos(
         setCuePointsMarkDirtyAndUnlock(
                 &lock,
                 QList<CuePointer>{});
-        return CueImportStatus::Pending;
+        return ImportStatus::Pending;
     }
 }
 
-Track::CueImportStatus Track::getCueImportStatus() const {
+Track::ImportStatus Track::getCueImportStatus() const {
     QMutexLocker lock(&m_qMutex);
     return (!m_pCueInfoImporterPending || m_pCueInfoImporterPending->isEmpty())
-            ? CueImportStatus::Complete
-            : CueImportStatus::Pending;
+            ? ImportStatus::Complete
+            : ImportStatus::Pending;
 }
 
-void Track::setCuePointsMarkDirtyAndUnlock(
-        QMutexLocker* pLock,
-        const QList<CuePointer>& cuePoints) {
-    DEBUG_ASSERT(pLock);
-    if (m_cuePoints.isEmpty() &&
-            cuePoints.isEmpty()) {
+bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
+    if (m_cuePoints.isEmpty() && cuePoints.isEmpty()) {
         // Nothing to do
-        return;
+        return false;
     }
     // Prevent inconsistencies between cue infos that have been queued
     // and are waiting to be imported and new cue points. At least one
@@ -980,21 +1062,30 @@ void Track::setCuePointsMarkDirtyAndUnlock(
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
+    return true;
+}
+
+void Track::setCuePointsMarkDirtyAndUnlock(
+        QMutexLocker* pLock,
+        const QList<CuePointer>& cuePoints) {
+    DEBUG_ASSERT(pLock);
+    if (!setCuePointsWhileLocked(cuePoints)) {
+        pLock->unlock();
+        return;
+    }
     markDirtyAndUnlock(pLock);
     emit cuesUpdated();
 }
 
-void Track::importPendingCueInfosMarkDirtyAndUnlock(
-        QMutexLocker* pLock) {
-    DEBUG_ASSERT(pLock);
+bool Track::importPendingCueInfosWhileLocked() {
     if (!m_pCueInfoImporterPending) {
         // Nothing to do here
-        return;
+        return false;
     }
 
     VERIFY_OR_DEBUG_ASSERT(!m_pCueInfoImporterPending->isEmpty()) {
         m_pCueInfoImporterPending.reset();
-        return;
+        return false;
     }
     // The sample rate can only be trusted after the audio
     // stream has been opened.
@@ -1007,7 +1098,7 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size());
-    for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosWithCorrectTiming(
+    for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                  getLocation(), m_streamInfo->getSignalInfo())) {
         CuePointer pCue(new Cue(cueInfo, sampleRate));
         // While this method could be called from any thread,
@@ -1019,9 +1110,20 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     }
     DEBUG_ASSERT(m_pCueInfoImporterPending->isEmpty());
     m_pCueInfoImporterPending.reset();
-    setCuePointsMarkDirtyAndUnlock(
-            pLock,
-            cuePoints);
+    return setCuePointsWhileLocked(cuePoints);
+}
+
+void Track::importPendingCueInfosMarkDirtyAndUnlock(
+        QMutexLocker* pLock) {
+    DEBUG_ASSERT(pLock);
+
+    if (!importPendingCueInfosWhileLocked()) {
+        pLock->unlock();
+        return;
+    }
+
+    markDirtyAndUnlock(pLock);
+    emit cuesUpdated();
 }
 
 void Track::markDirty() {
@@ -1233,6 +1335,15 @@ ExportTrackMetadataResult Track::exportMetadata(
         // abort
         return ExportTrackMetadataResult::Skipped;
     }
+
+#if defined(__EXPORT_SERATO_MARKERS__)
+    {
+        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
+        seratoTags->setTrackColor(getColor());
+        seratoTags->setBpmLocked(isBpmLocked());
+    }
+#endif
+
     // Normalize metadata before exporting to adjust the precision of
     // floating values, ... Otherwise the following comparisons may
     // repeatedly indicate that values have changed only due to
@@ -1303,7 +1414,8 @@ ExportTrackMetadataResult Track::exportMetadata(
             << m_record.getMetadata();
     const auto trackMetadataExported =
             pMetadataSource->exportTrackMetadata(m_record.getMetadata());
-    if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
+    switch (trackMetadataExported.first) {
+    case mixxx::MetadataSource::ExportResult::Succeeded:
         // After successfully exporting the metadata we record the fact
         // that now the file tags and the track's metadata are in sync.
         // This information (flag or time stamp) is stored in the database.
@@ -1319,12 +1431,16 @@ ExportTrackMetadataResult Track::exportMetadata(
                     << getLocation();
         }
         return ExportTrackMetadataResult::Succeeded;
-    } else {
+    case mixxx::MetadataSource::ExportResult::Unsupported:
+        return ExportTrackMetadataResult::Skipped;
+    case mixxx::MetadataSource::ExportResult::Failed:
         kLogger.warning()
                 << "Failed to export track metadata:"
                 << getLocation();
         return ExportTrackMetadataResult::Failed;
     }
+    DEBUG_ASSERT(!"unhandled case in switch statement");
+    return ExportTrackMetadataResult::Skipped;
 }
 
 void Track::setAudioProperties(
@@ -1374,18 +1490,48 @@ void Track::updateAudioPropertiesFromStream(
     bool updated = m_record.refMetadata().updateAudioPropertiesFromStream(
             streamInfo);
     m_streamInfo = std::make_optional(std::move(streamInfo));
-    if (!m_pCueInfoImporterPending || m_pCueInfoImporterPending->isEmpty()) {
+
+    bool importBeats = m_pBeatsImporterPending && !m_pBeatsImporterPending->isEmpty();
+    bool importCueInfos = m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty();
+
+    if (!importBeats && !importCueInfos) {
         // Nothing more to do
         if (updated) {
             markDirtyAndUnlock(&lock);
         }
         return;
     }
-    DEBUG_ASSERT(m_cuePoints.isEmpty());
-    kLogger.debug()
-            << "Finishing deferred import of"
-            << m_pCueInfoImporterPending->size()
-            << "cue(s)";
-    importPendingCueInfosMarkDirtyAndUnlock(
-            &lock);
+
+    auto bpmValue = mixxx::Bpm::kValueUndefined;
+
+    if (importBeats) {
+        kLogger.debug() << "Finishing deferred import of beats because stream "
+                           "audio properties are available now";
+        importBeats = importPendingBeatsWhileLocked();
+        if (m_pBeats) {
+            bpmValue = m_pBeats->getBpm();
+        }
+    }
+
+    if (importCueInfos) {
+        DEBUG_ASSERT(m_cuePoints.isEmpty());
+        kLogger.debug()
+                << "Finishing deferred import of"
+                << m_pCueInfoImporterPending->size()
+                << "cue(s) because stream audio properties are available now";
+        importCueInfos = importPendingCueInfosWhileLocked();
+    }
+
+    if (!importBeats && !importCueInfos) {
+        return;
+    }
+
+    markDirtyAndUnlock(&lock);
+    if (importBeats) {
+        emit bpmUpdated(bpmValue);
+        emit beatsUpdated();
+    }
+    if (importCueInfos) {
+        emit cuesUpdated();
+    }
 }

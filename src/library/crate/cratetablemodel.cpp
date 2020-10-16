@@ -1,13 +1,14 @@
 
 #include "library/crate/cratetablemodel.h"
 
+#include <QtDebug>
+
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #include "util/db/fwdsqlquery.h"
-
-#include <QtDebug>
 
 CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollectionManager* pTrackCollectionManager)

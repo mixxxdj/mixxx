@@ -4,13 +4,13 @@
 #ifndef WLIBRARYTABLEVIEW_H
 #define WLIBRARYTABLEVIEW_H
 
+#include <QFont>
 #include <QString>
 #include <QTableView>
-#include <QFont>
 
-#include "preferences/usersettings.h"
 #include "library/libraryview.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class TrackModel;
 
@@ -52,6 +52,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void setSelectedClick(bool enable);
 
   protected:
+    void focusInEvent(QFocusEvent* event) override;
+
     void saveNoSearchVScrollBarPos();
     void restoreNoSearchVScrollBarPos();
 

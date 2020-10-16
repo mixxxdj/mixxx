@@ -1,6 +1,4 @@
 <Template>
-  <SetVariable name="BtnType">embedded</SetVariable>
-  <SetVariable name="BtnSize">library</SetVariable>
 
   <WidgetGroup>
     <Layout>horizontal</Layout>
@@ -83,7 +81,7 @@
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:/controls/button_2state_persist.xml">
-            <SetVariable name="TooltipId">FIXME_beatgrid_controls</SetVariable>
+            <SetVariable name="TooltipId">show_beatgrid_controls</SetVariable>
             <SetVariable name="ObjectName">BeatgridControlsToggle</SetVariable>
             <SetVariable name="Size">26f,52f</SetVariable>
             <SetVariable name="BtnSize"></SetVariable>

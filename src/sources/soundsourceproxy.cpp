@@ -38,6 +38,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "track/globaltrackcache.h"
+#include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/logger.h"
 #include "util/regex.h"
@@ -439,15 +440,21 @@ void SoundSourceProxy::updateTrackFromSource(
             }
         }
         m_pTrack->importMetadata(trackMetadata, metadataImported.second);
-        if (m_pTrack->getCueImportStatus() == Track::CueImportStatus::Pending) {
+        bool pendingBeatsImport = m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;
+        bool pendingCueImport = m_pTrack->getCueImportStatus() == Track::ImportStatus::Pending;
+        if (pendingBeatsImport || pendingCueImport) {
             // Try to open the audio source once to determine the actual
             // stream properties for finishing the pending import.
             kLogger.debug()
-                    << "Opening audio source to finish import of cue points";
+                    << "Opening audio source to finish import of beats/cues";
             const auto pAudioSource = openAudioSource();
             Q_UNUSED(pAudioSource); // only used in debug assertion
             DEBUG_ASSERT(!pAudioSource ||
-                    m_pTrack->getCueImportStatus() == Track::CueImportStatus::Complete);
+                    m_pTrack->getBeatsImportStatus() ==
+                            Track::ImportStatus::Complete);
+            DEBUG_ASSERT(!pAudioSource ||
+                    m_pTrack->getCueImportStatus() ==
+                            Track::ImportStatus::Complete);
         }
     }
 
