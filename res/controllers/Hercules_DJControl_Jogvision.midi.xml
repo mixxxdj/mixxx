@@ -5,7 +5,7 @@
     <author>DJ Phatso for Hercules Technical Support</author>
     <description>MIDI Mapping for Hercules DJControl Jogvision</description>
     <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12580</forums>
-    <wiki>https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision</wiki>
+    <manual>hercules_djcontrol_jogvision</manual>
   </info>
   <controller id="Hercules DJControl Jogvision">
     <scriptfiles>
