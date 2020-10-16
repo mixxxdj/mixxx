@@ -93,7 +93,8 @@ int VSyncThread::elapsed() {
 
 void VSyncThread::setSyncIntervalTimeMicros(int syncTime) {
     m_syncIntervalTimeMicros = syncTime;
-    m_vSyncPerRendering = round(m_displayFrameRate * m_syncIntervalTimeMicros / 1000);
+    m_vSyncPerRendering = static_cast<int>(
+            round(m_displayFrameRate * m_syncIntervalTimeMicros / 1000));
 }
 
 void VSyncThread::setVSyncType(int type) {

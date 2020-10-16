@@ -335,9 +335,9 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         // Some covers aren't square, so center them.
-        int x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
-        int y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
-        p.drawPixmap(x, y, m_loadedCoverScaled);
+        double x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
+        double y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
+        p.drawPixmap(QPointF(x, y), m_loadedCoverScaled);
     }
 
     if (m_pMaskImage) {
@@ -364,12 +364,12 @@ void WSpinny::render(VSyncThread* vSyncThread) {
     }
 
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos) {
-        m_fAngle = calculateAngle(m_dAngleCurrentPlaypos);
+        m_fAngle = static_cast<float>(calculateAngle(m_dAngleCurrentPlaypos));
         m_dAngleLastPlaypos = m_dAngleCurrentPlaypos;
     }
 
     if (m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos) {
-        m_fGhostAngle = calculateAngle(m_dGhostAngleCurrentPlaypos);
+        m_fGhostAngle = static_cast<float>(calculateAngle(m_dGhostAngleCurrentPlaypos));
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
@@ -455,11 +455,11 @@ double WSpinny::calculateAngle(double playpos) {
     const double originalAngle = angle;
     if (angle > 0)
     {
-        int x = (angle+180)/360;
+        const auto x = static_cast<int>((angle + 180) / 360);
         angle = angle - (360*x);
     } else
     {
-        int x = (angle-180)/360;
+        const auto x = static_cast<int>((angle - 180) / 360);
         angle = angle - (360*x);
     }
 

@@ -617,7 +617,7 @@ void DlgPrefBroadcast::onSectionResized() {
 
     sender()->blockSignals(true);
     connectionList->setColumnWidth(kColumnEnabled, 100);
-    connectionList->setColumnWidth(kColumnName, width * 0.65);
+    connectionList->setColumnWidth(kColumnName, static_cast<int>(width * 0.65));
     // The last column is automatically resized to fill
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);
