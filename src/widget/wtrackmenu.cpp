@@ -465,6 +465,11 @@ void WTrackMenu::createActions() {
 }
 
 void WTrackMenu::setupActions() {
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        addMenu(m_pSearchRelatedMenu);
+        addSeparator();
+    }
+
     if (featureIsEnabled(Feature::AutoDJ)) {
         addAction(m_pAutoDJBottomAct);
         addAction(m_pAutoDJTopAct);
@@ -482,11 +487,6 @@ void WTrackMenu::setupActions() {
         }
 
         addMenu(m_pLoadToMenu);
-        addSeparator();
-    }
-
-    if (featureIsEnabled(Feature::SearchRelated)) {
-        addMenu(m_pSearchRelatedMenu);
         addSeparator();
     }
 
