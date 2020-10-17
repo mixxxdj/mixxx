@@ -44,8 +44,8 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
         const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
 
-        int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
-        int totalVSamples = m_waveformRenderer->getTotalVSample();
+        const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
+        const int totalVSamples = m_waveformRenderer->getTotalVSample();
         // qDebug() << "currentVSamplePosition" << currentVSamplePosition
         //          << "lastDisplayedPosition" << lastDisplayedPosition
         //          << "vSamplesPerPixel" << vSamplesPerPixel
