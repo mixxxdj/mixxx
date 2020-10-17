@@ -365,6 +365,9 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
 
 int WTrackTableView::getColumnIdFromCurrentIndex() {
     TrackModel* trackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return TrackModel::SortColumnId::SORTCOLUMN_INVALID;
+    }
     return trackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
