@@ -84,16 +84,19 @@ TrackCollectionManager::TrackCollectionManager(
         // Handle signals
         connect(m_pScanner.get(),
                 &LibraryScanner::trackAdded,
-                this,
-                &TrackCollectionManager::slotScanTrackAdded);
+                [this](const TrackPointer& pTrack) {
+                    afterTrackAdded(pTrack);
+                });
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksChanged,
-                this,
-                &TrackCollectionManager::slotScanTracksUpdated);
+                [this](const QSet<TrackId>& updatedTrackIds) {
+                    afterTracksUpdated(updatedTrackIds);
+                });
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksRelocated,
-                this,
-                &TrackCollectionManager::slotScanTracksRelocated);
+                [this](const QList<RelocatedTrack>& relocatedTracks) {
+                    afterTracksRelocated(relocatedTracks);
+                });
 
         // Force the GUI thread's Track cache to be cleared when a library
         // scan is finished, because we might have modified the database directly
@@ -414,12 +417,12 @@ TrackPointer TrackCollectionManager::getOrAddTrack(
     }
     if (pTrack && !alreadyInLibrary) {
         // Add to external libraries
-        slotScanTrackAdded(pTrack);
+        afterTrackAdded(pTrack);
     }
     return pTrack;
 }
 
-void TrackCollectionManager::slotScanTrackAdded(TrackPointer pTrack) {
+void TrackCollectionManager::afterTrackAdded(const TrackPointer& pTrack) const {
     DEBUG_ASSERT(pTrack);
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
@@ -438,7 +441,7 @@ void TrackCollectionManager::slotScanTrackAdded(TrackPointer pTrack) {
     }
 }
 
-void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds) {
+void TrackCollectionManager::afterTracksUpdated(const QSet<TrackId>& updatedTrackIds) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Already updated in m_pInternalCollection
@@ -479,8 +482,8 @@ void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds
     }
 }
 
-void TrackCollectionManager::slotScanTracksRelocated(
-        QList<RelocatedTrack> relocatedTracks) {
+void TrackCollectionManager::afterTracksRelocated(
+        const QList<RelocatedTrack>& relocatedTracks) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Already replaced in m_pInternalCollection

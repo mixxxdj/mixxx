@@ -76,11 +76,11 @@ class TrackCollectionManager: public QObject,
     void startLibraryScan();
     void stopLibraryScan();
 
-    void slotScanTrackAdded(TrackPointer pTrack);
-    void slotScanTracksUpdated(QSet<TrackId> updatedTrackIds);
-    void slotScanTracksRelocated(QList<RelocatedTrack> relocatedTracks);
-
   private:
+    void afterTrackAdded(const TrackPointer& pTrack) const;
+    void afterTracksUpdated(const QSet<TrackId>& updatedTrackIds) const;
+    void afterTracksRelocated(const QList<RelocatedTrack>& relocatedTracks) const;
+
     // Callback for GlobalTrackCache
     void saveEvictedTrack(Track* pTrack) noexcept override;
 
