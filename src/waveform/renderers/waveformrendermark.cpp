@@ -94,10 +94,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                         gradient.setColorAt(0.75, QColor(Qt::transparent));
                         gradient.setColorAt(1, color);
                         painter->fillRect(
-                                QRect(QPoint(currentMarkPoint, 0),
-                                        QPoint(currentMarkEndPoint,
-                                                m_waveformRenderer
-                                                        ->getHeight())),
+                                QRectF(currentMarkPoint,
+                                        0,
+                                        currentMarkEndPoint,
+                                        m_waveformRenderer->getHeight()),
                                 QBrush(gradient));
                         visible = true;
                     }
@@ -137,9 +137,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                         gradient.setColorAt(0.75, QColor(Qt::transparent));
                         gradient.setColorAt(1, color);
                         painter->fillRect(
-                                QRect(QPoint(0, currentMarkPoint),
-                                        QPoint(m_waveformRenderer->getWidth(),
-                                                currentMarkEndPoint)),
+                                QRectF(0,
+                                        currentMarkPoint,
+                                        m_waveformRenderer->getWidth(),
+                                        currentMarkEndPoint),
                                 QBrush(gradient));
                         visible = true;
                     }
