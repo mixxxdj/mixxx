@@ -144,7 +144,7 @@ void WTrackMenu::createMenus() {
         // TODO: Create a new subclass of QMenu?
         DEBUG_ASSERT(!m_pSearchRelatedMenu);
         m_pSearchRelatedMenu =
-                make_parented<QMenu>(tr("Search related tracks"), this);
+                make_parented<QMenu>(tr("Search related Tracks"), this);
         connect(m_pSearchRelatedMenu,
                 &QMenu::aboutToShow,
                 this,
@@ -154,6 +154,32 @@ void WTrackMenu::createMenus() {
                     const auto pTrack = getFirstTrackPointer();
                     if (!pTrack) {
                         return;
+                    }
+                    const auto musicalKey = pTrack->getKeyText();
+                    if (!musicalKey.isEmpty()) {
+                        const auto musicalKeyText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(musicalKey);
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Harmonic keys for \"%1\"")
+                                        .arg(musicalKeyText),
+                                [this, musicalKey]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("~key:\"") +
+                                            musicalKey + QChar('"'));
+                                });
+                    }
+                    const auto genre = pTrack->getGenre();
+                    if (!genre.isEmpty()) {
+                        const auto genreText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(genre);
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Genre \"%1\"")
+                                        .arg(genreText),
+                                [this, genre]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("genre:\"") +
+                                            genre + QChar('"'));
+                                });
                     }
                     auto primaryArtist = pTrack->getArtist();
                     auto secondaryArtist = pTrack->getAlbumArtist();
@@ -180,7 +206,7 @@ void WTrackMenu::createMenus() {
                                 mixxx::escapeTextPropertyWithoutShortcuts(secondaryArtist);
                         // Search tracks with similar artist(s)
                         m_pSearchRelatedMenu->addAction(
-                                tr("Search artist \"%1\"")
+                                tr("Artist \"%1\"")
                                         .arg(primaryArtistText),
                                 [this, primaryArtist]() {
                                     m_pLibrary->searchTracksInCollection(
@@ -189,7 +215,7 @@ void WTrackMenu::createMenus() {
                                 });
                         if (!secondaryArtist.isEmpty()) {
                             m_pSearchRelatedMenu->addAction(
-                                    tr("Search artist \"%1\"")
+                                    tr("Artist \"%1\"")
                                             .arg(secondaryArtistText),
                                     [this, secondaryArtist]() {
                                         m_pLibrary->searchTracksInCollection(
@@ -198,7 +224,7 @@ void WTrackMenu::createMenus() {
                                     });
                         }
                         m_pSearchRelatedMenu->addAction(
-                                tr("Search album artist \"%1\"")
+                                tr("Album artist \"%1\"")
                                         .arg(primaryArtistText),
                                 [this, primaryArtist]() {
                                     m_pLibrary->searchTracksInCollection(
@@ -207,7 +233,7 @@ void WTrackMenu::createMenus() {
                                 });
                         if (!secondaryArtist.isEmpty()) {
                             m_pSearchRelatedMenu->addAction(
-                                    tr("Search album artist \"%1\"")
+                                    tr("Album artist \"%1\"")
                                             .arg(secondaryArtistText),
                                     [this, secondaryArtist]() {
                                         m_pLibrary->searchTracksInCollection(
@@ -216,6 +242,45 @@ void WTrackMenu::createMenus() {
                                                 secondaryArtist + QChar('"'));
                                     });
                         }
+                    }
+                    const auto albumTitle = pTrack->getAlbum();
+                    if (!albumTitle.isEmpty()) {
+                        const auto albumTitleText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(albumTitle);
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Album \"%1\"")
+                                        .arg(albumTitleText),
+                                [this, albumTitle]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("album:\"") +
+                                            albumTitle + QChar('"'));
+                                });
+                    }
+                    const auto composer = pTrack->getComposer();
+                    if (!composer.isEmpty()) {
+                        const auto composerText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(composer);
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Composer \"%1\"")
+                                        .arg(composerText),
+                                [this, composer]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("composer:\"") +
+                                            composer + QChar('"'));
+                                });
+                    }
+                    const auto locationPath = pTrack->getFileInfo().directory();
+                    if (!locationPath.isEmpty()) {
+                        const auto locationPathText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(locationPath);
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Folder \"%1\"")
+                                        .arg(locationPathText),
+                                [this, locationPath]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("location:\"") +
+                                            locationPath + QChar('"'));
+                                });
                     }
                     m_pSearchRelatedMenu->setEnabled(
                             !m_pSearchRelatedMenu->isEmpty());
