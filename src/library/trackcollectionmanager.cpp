@@ -274,19 +274,19 @@ void TrackCollectionManager::exportTrackMetadata(
     }
 }
 
-bool TrackCollectionManager::addDirectory(const QString& dir) {
+bool TrackCollectionManager::addDirectory(const QString& dir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->addDirectory(dir);
 }
 
-bool TrackCollectionManager::removeDirectory(const QString& dir) {
+bool TrackCollectionManager::removeDirectory(const QString& dir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->removeDirectory(dir);
 }
 
-void TrackCollectionManager::relocateDirectory(QString oldDir, QString newDir) {
+void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.debug()
@@ -311,25 +311,25 @@ void TrackCollectionManager::relocateDirectory(QString oldDir, QString newDir) {
     }
 }
 
-bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) {
+bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->hideTracks(trackIds);
 }
 
-bool TrackCollectionManager::unhideTracks(const QList<TrackId>& trackIds) {
+bool TrackCollectionManager::unhideTracks(const QList<TrackId>& trackIds) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->unhideTracks(trackIds);
 }
 
-void TrackCollectionManager::hideAllTracks(const QDir& rootDir) {
+void TrackCollectionManager::hideAllTracks(const QDir& rootDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     m_pInternalCollection->hideAllTracks(rootDir);
 }
 
-void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
+void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     if (trackRefs.isEmpty()) {
@@ -372,7 +372,7 @@ void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
     }
 }
 
-void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) {
+void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.debug()
@@ -400,7 +400,7 @@ void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) {
 
 TrackPointer TrackCollectionManager::getOrAddTrack(
         const TrackRef& trackRef,
-        bool* pAlreadyInLibrary) {
+        bool* pAlreadyInLibrary) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     bool alreadyInLibrary;

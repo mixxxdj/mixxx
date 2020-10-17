@@ -46,20 +46,20 @@ class TrackCollectionManager: public QObject,
         return m_externalCollections;
     }
 
-    bool hideTracks(const QList<TrackId>& trackIds);
-    bool unhideTracks(const QList<TrackId>& trackIds);
-    void hideAllTracks(const QDir& rootDir);
+    bool hideTracks(const QList<TrackId>& trackIds) const;
+    bool unhideTracks(const QList<TrackId>& trackIds) const;
+    void hideAllTracks(const QDir& rootDir) const;
 
-    void purgeTracks(const QList<TrackRef>& trackRefs);
-    void purgeAllTracks(const QDir& rootDir);
+    void purgeTracks(const QList<TrackRef>& trackRefs) const;
+    void purgeAllTracks(const QDir& rootDir) const;
 
-    bool addDirectory(const QString& dir);
-    bool removeDirectory(const QString& dir);
-    void relocateDirectory(QString oldDir, QString newDir);
+    bool addDirectory(const QString& dir) const;
+    bool removeDirectory(const QString& dir) const;
+    void relocateDirectory(const QString& oldDir, const QString& newDir) const;
 
     TrackPointer getOrAddTrack(
             const TrackRef& trackRef,
-            bool* pAlreadyInLibrary = nullptr);
+            bool* pAlreadyInLibrary = nullptr) const;
 
     // Save the track in both the internal database and external collections.
     // Export of metadata is deferred until the track is evicted from the
