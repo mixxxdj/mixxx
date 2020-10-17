@@ -53,7 +53,7 @@ constexpr int WSearchLineEdit::kDefaultDebouncingTimeoutMillis;
 constexpr int WSearchLineEdit::kMaxDebouncingTimeoutMillis;
 
 //static
-constexpr int WSearchLineEdit::kSaveTimout;
+constexpr int WSearchLineEdit::kSaveTimoutMillis;
 
 //static
 constexpr int WSearchLineEdit::kMaxSearchEntries;
@@ -271,6 +271,8 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             if (findData(currentText(), Qt::DisplayRole) == -1) {
                 slotSaveSearch();
             }
+            // The default handler will add the entry to the list,
+            // this already happened in slotSaveSearch
             return true;
         }
     }
@@ -362,13 +364,17 @@ void WSearchLineEdit::slotTriggerSearch() {
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
     int cIndex = findData(currentText(), Qt::DisplayRole);
-    qDebug() << "save search. Index: " << cIndex;
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "save search. Index: "
+            << cIndex;
+#endif // ENABLE_TRACE_LOG
     m_saveTimer.stop();
     // entry already exists and is on top
     if (cIndex == 0) {
         return;
     }
-    if (currentText().length() && isEnabled()) {
+    if (!currentText().isEmpty() && isEnabled()) {
         // we remove the existing item and add a new one at the top
         if (cIndex != -1) {
             removeItem(cIndex);
@@ -486,7 +492,6 @@ bool WSearchLineEdit::slotClearSearchIfClearButtonHasFocus() {
 }
 
 void WSearchLineEdit::slotIndexChanged(int index) {
-    qDebug() << "index changed " << index;
     if (index != -1) {
         m_saveTimer.stop();
     }
@@ -513,7 +518,7 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
         // to an invalid value is an expected and valid use case.
         DEBUG_ASSERT(!m_debouncingTimer.isActive());
     }
-    m_saveTimer.start(kSaveTimout);
+    m_saveTimer.start(kSaveTimoutMillis);
 }
 
 void WSearchLineEdit::slotSetShortcutFocus() {
