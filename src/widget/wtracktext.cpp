@@ -23,13 +23,13 @@ const WTrackMenu::Features trackMenuFeatures =
 
 WTrackText::WTrackText(QWidget* pParent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         const QString& group)
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pTrackCollectionManager, trackMenuFeatures)) {
+                  this, pConfig, pLibrary, trackMenuFeatures)) {
     setAcceptDrops(true);
 }
 

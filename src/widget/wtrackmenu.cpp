@@ -35,15 +35,16 @@
 #include "widget/wstarrating.h"
 #include "widget/wwidget.h"
 
-WTrackMenu::WTrackMenu(QWidget* parent,
+WTrackMenu::WTrackMenu(
+        QWidget* parent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         Features flags,
         TrackModel* trackModel)
         : QMenu(parent),
           m_pTrackModel(trackModel),
           m_pConfig(pConfig),
-          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_pLibrary(pLibrary),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
@@ -138,6 +139,88 @@ void WTrackMenu::createMenus() {
         //: Reset metadata in right click track context menu in library
         m_pClearMetadataMenu->setTitle(tr("Reset"));
     }
+
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        // TODO: Create a new subclass of QMenu?
+        DEBUG_ASSERT(!m_pSearchRelatedMenu);
+        m_pSearchRelatedMenu =
+                make_parented<QMenu>(tr("Search related tracks"), this);
+        connect(m_pSearchRelatedMenu,
+                &QMenu::aboutToShow,
+                this,
+                [this] {
+                    m_pSearchRelatedMenu->clear();
+                    m_pSearchRelatedMenu->setEnabled(false);
+                    const auto pTrack = getFirstTrackPointer();
+                    if (!pTrack) {
+                        return;
+                    }
+                    auto primaryArtist = pTrack->getArtist();
+                    auto secondaryArtist = pTrack->getAlbumArtist();
+                    if (primaryArtist.isEmpty()) {
+                        primaryArtist = secondaryArtist;
+                        secondaryArtist = QString();
+                    } else {
+                        if (!secondaryArtist.isEmpty() &&
+                                primaryArtist.contains(secondaryArtist)) {
+                            // Use the shorter string as primary artist and the
+                            // longer string as secondary artist
+                            if (primaryArtist == secondaryArtist) {
+                                secondaryArtist = QString();
+                            } else {
+                                std::swap(primaryArtist, secondaryArtist);
+                            }
+                        }
+                    }
+                    DEBUG_ASSERT(!primaryArtist.isEmpty() || secondaryArtist.isEmpty());
+                    if (!primaryArtist.isEmpty()) {
+                        const auto primaryArtistText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(primaryArtist);
+                        const auto secondaryArtistText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(secondaryArtist);
+                        // Search tracks with similar artist(s)
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Search artist \"%1\"")
+                                        .arg(primaryArtistText),
+                                [this, primaryArtist]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("artist:\"") +
+                                            primaryArtist + QChar('"'));
+                                });
+                        if (!secondaryArtist.isEmpty()) {
+                            m_pSearchRelatedMenu->addAction(
+                                    tr("Search artist \"%1\"")
+                                            .arg(secondaryArtistText),
+                                    [this, secondaryArtist]() {
+                                        m_pLibrary->searchTracksInCollection(
+                                                QStringLiteral("artist:\"") +
+                                                secondaryArtist + QChar('"'));
+                                    });
+                        }
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Search album artist \"%1\"")
+                                        .arg(primaryArtistText),
+                                [this, primaryArtist]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("album_artist:\"") +
+                                            primaryArtist + QChar('"'));
+                                });
+                        if (!secondaryArtist.isEmpty()) {
+                            m_pSearchRelatedMenu->addAction(
+                                    tr("Search album artist \"%1\"")
+                                            .arg(secondaryArtistText),
+                                    [this, secondaryArtist]() {
+                                        m_pLibrary->searchTracksInCollection(
+                                                QStringLiteral(
+                                                        "album_artist:\"") +
+                                                secondaryArtist + QChar('"'));
+                                    });
+                        }
+                    }
+                    m_pSearchRelatedMenu->setEnabled(
+                            !m_pSearchRelatedMenu->isEmpty());
+                });
+    }
 }
 
 void WTrackMenu::createActions() {
@@ -213,7 +296,8 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotExportMetadataIntoFileTags);
 
-        for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
+        for (const auto& externalTrackCollection :
+                m_pLibrary->trackCollections()->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
             updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
             updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), m_pMetadataMenu);
@@ -333,6 +417,11 @@ void WTrackMenu::setupActions() {
         }
 
         addMenu(m_pLoadToMenu);
+        addSeparator();
+    }
+
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        addMenu(m_pSearchRelatedMenu);
         addSeparator();
     }
 
@@ -822,7 +911,7 @@ int WTrackMenu::applyTrackPointerOperation(
             operationMode);
     return modalOperation.processTracks(
             progressLabelText,
-            m_pTrackCollectionManager,
+            m_pLibrary->trackCollections(),
             pTrackPointerIter.get());
 }
 
@@ -920,7 +1009,9 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         return;
     }
     m_pPlaylistMenu->clear();
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
     QMap<QString, int> playlists;
     int numPlaylists = playlistDao.playlistCount();
     for (int i = 0; i < numPlaylists; ++i) {
@@ -957,7 +1048,9 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
 
     if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
         QString name;
@@ -997,7 +1090,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
     }
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollectionManager->unhideTracks(trackIds);
+    m_pLibrary->trackCollections()->unhideTracks(trackIds);
     playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
@@ -1011,7 +1104,11 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_pCrateMenu->clear();
     const TrackIdList trackIds = getTrackIds();
 
-    CrateSummarySelectResult allCrates(m_pTrackCollectionManager->internalCollection()->crates().selectCratesWithTrackCount(trackIds));
+    CrateSummarySelectResult allCrates(
+            m_pLibrary->trackCollections()
+                    ->internalCollection()
+                    ->crates()
+                    .selectCratesWithTrackCount(trackIds));
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
@@ -1078,17 +1175,19 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     pCheckBox->setTristate(false);
     if (!pCheckBox->isChecked()) {
         if (crateId.isValid()) {
-            m_pTrackCollectionManager->internalCollection()->removeCrateTracks(crateId, trackIds);
+            m_pLibrary->trackCollections()
+                    ->internalCollection()
+                    ->removeCrateTracks(crateId, trackIds);
         }
     } else {
         if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
             crateId = CrateFeatureHelper(
-                    m_pTrackCollectionManager->internalCollection(), m_pConfig)
+                    m_pLibrary->trackCollections()->internalCollection(), m_pConfig)
                               .createEmptyCrate();
         }
         if (crateId.isValid()) {
-            m_pTrackCollectionManager->unhideTracks(trackIds);
-            m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
+            m_pLibrary->trackCollections()->unhideTracks(trackIds);
+            m_pLibrary->trackCollections()->internalCollection()->addCrateTracks(crateId, trackIds);
         }
     }
 }
@@ -1102,12 +1201,12 @@ void WTrackMenu::addSelectionToNewCrate() {
     }
 
     CrateId crateId = CrateFeatureHelper(
-            m_pTrackCollectionManager->internalCollection(), m_pConfig)
+            m_pLibrary->trackCollections()->internalCollection(), m_pConfig)
                               .createEmptyCrate();
 
     if (crateId.isValid()) {
-        m_pTrackCollectionManager->unhideTracks(trackIds);
-        m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
+        m_pLibrary->trackCollections()->unhideTracks(trackIds);
+        m_pLibrary->trackCollections()->internalCollection()->addCrateTracks(crateId, trackIds);
     }
 }
 
@@ -1478,7 +1577,7 @@ void WTrackMenu::slotClearAllMetadata() {
     const auto progressLabelText =
             tr("Resetting all performance metadata of %n track(s)", "", getTrackCount());
     AnalysisDao& analysisDao =
-            m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
+            m_pLibrary->trackCollections()->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
             ClearAllPerformanceMetadataTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
@@ -1552,10 +1651,12 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollectionManager->unhideTracks(trackIds);
+    m_pLibrary->trackCollections()->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
@@ -1694,8 +1795,10 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return true;
     case Feature::Properties:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+    case Feature::SearchRelated:
+        return m_pLibrary != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");
-        return true;
+        return false;
     }
 }

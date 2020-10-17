@@ -152,6 +152,14 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     }
 }
 
+void MixxxLibraryFeature::searchAndActivate(const QString& query) {
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryTableModel) {
+        return;
+    }
+    m_pLibraryTableModel->search(query);
+    activate();
+}
+
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
     emit showTrackModel(m_pLibraryTableModel);
