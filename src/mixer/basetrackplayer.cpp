@@ -28,7 +28,8 @@ const double kShiftCuesOffsetSmallMillis = 1;
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
 }
-}
+
+} // anonymous namespace
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
         : BasePlayer(pParent, group) {

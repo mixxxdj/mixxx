@@ -6,6 +6,7 @@
 
 #include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
+#include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/track_decl.h"
@@ -26,8 +27,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
     // TODO: Remove dependency on TrackModel
-    explicit DlgTrackInfo(
-            const TrackModel* trackModel = nullptr);
+    explicit DlgTrackInfo(UserSettingsPointer pConfig, const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override;
 
   public slots:
@@ -93,12 +93,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
-
+    mixxx::BeatsInternal m_beatsClone;
     QModelIndex m_currentTrackIndex;
-
     mixxx::BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
-    bool m_trackHasBeatMap;
+    bool m_bpmIsConst;
 
     TapFilter m_tapFilter;
     double m_dLastTapedBpm;
@@ -107,6 +106,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;
+    UserSettingsPointer m_pConfig;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 };

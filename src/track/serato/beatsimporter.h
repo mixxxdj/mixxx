@@ -16,7 +16,7 @@ class SeratoBeatsImporter : public BeatsImporter {
     ~SeratoBeatsImporter() override = default;
 
     bool isEmpty() const override;
-    QVector<double> importBeatsAndApplyTimingOffset(
+    QVector<FramePos> importBeatsAndApplyTimingOffset(
             const QString& filePath,
             const audio::StreamInfo& streamInfo) override;
 

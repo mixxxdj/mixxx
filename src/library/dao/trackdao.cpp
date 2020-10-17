@@ -547,11 +547,11 @@ void bindTrackLibraryValues(
     QString beatsSubVersion;
     // Fall back on cached BPM
     double dBpm = trackInfo.getBpm().getValue();
-    if (!pBeats.isNull()) {
-        beatsBlob = pBeats->toByteArray();
+    if (pBeats) {
+        beatsBlob = pBeats->toProtobuf();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
-        dBpm = pBeats->getBpm();
+        dBpm = pBeats->getGlobalBpm().getValue();
     }
     pTrackLibraryQuery->bindValue(":bpm", dBpm);
     pTrackLibraryQuery->bindValue(":beats_version", beatsVersion);
@@ -1189,10 +1189,10 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
-    mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
-            *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
-    if (pBeats) {
-        pTrack->setBeats(pBeats);
+    const auto loadedBeats = BeatFactory::loadBeatsFromByteArray(
+            pTrack, beatsVersion, beatsSubVersion, beatsBlob);
+    if (loadedBeats.getGlobalBpm().getValue() != mixxx::Bpm::kValueUndefined) {
+        pTrack->setBeats(loadedBeats);
     } else {
         pTrack->setBpm(bpm);
     }

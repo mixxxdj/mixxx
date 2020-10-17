@@ -1,12 +1,13 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
-#include "mixxx.h"
-#include "library/library.h"
 #include "library/dao/analysisdao.h"
+#include "library/library.h"
+#include "mixxx.h"
+#include "preferences/beatgridmode.h"
 #include "preferences/waveformsettings.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  UserSettingsPointer pConfig, Library* pLibrary)
@@ -28,6 +29,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
         waveformTypeComboBox->addItem(handles[i].getDisplayName(),
                                       handles[i].getType());
     }
+
+    // Populate beatgrid options.
+    beatGridModeComboBox->addItem(tr("Beats"));             // BeatGridMode::BEATS = 0
+    beatGridModeComboBox->addItem(tr("Beats + Downbeats")); // BeatGridMode::BEATS_DOWNBEATS = 1
 
     // Populate zoom options.
     for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
@@ -82,6 +87,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             SIGNAL(currentIndexChanged(int)),
             this,
             SLOT(slotSetWaveformType(int)));
+    connect(beatGridModeComboBox,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefWaveform::slotSetBeatGridMode);
     connect(defaultZoomComboBox,
             SIGNAL(currentIndexChanged(int)),
             this,
@@ -158,9 +167,10 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
-    playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
-    beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
-    beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
+    beatGridModeComboBox->setCurrentIndex(static_cast<int>(factory->beatGridMode()));
+    playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
+    beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
+    beatGridAlphaSlider->setValue(factory->beatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -201,6 +211,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
+
+    beatGridModeComboBox->setCurrentIndex(static_cast<int>(kDefaultBeatGridMode));
 
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
@@ -254,6 +266,11 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
     m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
     m_pMixxx->rebootMixxxView();
+}
+
+void DlgPrefWaveform::slotSetBeatGridMode(int index) {
+    m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridMode"), index);
+    WaveformWidgetFactory::instance()->setBeatGridMode(BeatGridMode(index));
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {

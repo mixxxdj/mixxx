@@ -3,14 +3,13 @@
 #include <QHash>
 #include <QString>
 #include <QVector>
-#include <QtDebug>
 
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
-#include "track/beatmap.h"
+#include "track/beats.h"
 #include "track/beatutils.h"
 #include "track/track.h"
 
@@ -45,7 +44,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_iMaxBpm(9999) {
 }
 
-bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -57,7 +56,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool bpmLock = tio->isBpmLocked();
+    bool bpmLock = pTrack->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return false;
@@ -104,8 +103,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_iCurrentSample = 0;
 
     // if we can load a stored track don't reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(tio);
-
+    bool bShouldAnalyze = shouldAnalyze(pTrack);
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
@@ -134,11 +132,11 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     return bShouldAnalyze;
 }
 
-bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
+bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     int iMinBpm = m_bpmSettings.getBpmRangeStart();
     int iMaxBpm = m_bpmSettings.getBpmRangeEnd();
 
-    bool bpmLock = tio->isBpmLocked();
+    bool bpmLock = pTrack->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return false;
@@ -151,11 +149,11 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
-    mixxx::BeatsPointer pBeats = tio->getBeats();
+    mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (!pBeats) {
         return true;
     }
-    if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
+    if (!mixxx::Bpm::isValidValue(pBeats->getGlobalBpm().getValue())) {
         // Tracks with an invalid bpm <= 0 should be re-analyzed,
         // independent of the preference settings. We expect that
         // all tracks have a bpm > 0 when analyzed. Users that want
@@ -164,7 +162,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
         qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
         return true;
     }
-    if (pBeats->findNextBeat(0) <= 0.0) {
+    if (pBeats->findNextBeat(mixxx::kStartFramePos)->framePosition() <= mixxx::kStartFramePos) {
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
         return true;
     }
@@ -194,8 +192,8 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
     // Beat grid exists but version and settings differ
     if (!m_bPreferencesReanalyzeOldBpm) {
         qDebug() << "Beat calculation skips analyzing because the track has"
-                << "a BPM computed by a previous Mixxx version and user"
-                << "preferences indicate we should not change it.";
+                 << "a BPM computed by a previous Mixxx version and user"
+                 << "preferences indicate we should not change it.";
         return false;
     }
 
@@ -219,7 +217,7 @@ void AnalyzerBeats::cleanup() {
     m_pPlugin.reset();
 }
 
-void AnalyzerBeats::storeResults(TrackPointer tio) {
+void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return;
     }
@@ -229,63 +227,65 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
         return;
     }
 
-    mixxx::BeatsPointer pBeats;
+    mixxx::BeatsInternal newBeats;
     if (m_pPlugin->supportsBeatTracking()) {
         QVector<double> beats = m_pPlugin->getBeats();
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis);
-        pBeats = BeatFactory::makePreferredBeats(
-                *tio,
+        newBeats = BeatFactory::makePreferredBeats(
+                pTrack,
                 beats,
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
                 m_bPreferencesOffsetCorrection,
-                m_iSampleRate,
                 m_iTotalSamples,
                 m_iMinBpm,
                 m_iMaxBpm);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
-                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
+                 << "beats. Average BPM:" << newBeats.getGlobalBpm();
     } else {
-        float bpm = m_pPlugin->getBpm();
+        auto bpm = mixxx::Bpm(m_pPlugin->getBpm());
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = BeatFactory::makeBeatGrid(*tio, bpm, 0.0f);
+        pTrack->setBpm(bpm.getValue());
     }
 
-    mixxx::BeatsPointer pCurrentBeats = tio->getBeats();
+    mixxx::BeatsPointer pCurrentBeats = pTrack->getBeats();
 
     // If the track has no beats object then set our newly generated one
     // regardless of beat lock.
     if (!pCurrentBeats) {
-        tio->setBeats(pBeats);
+        pTrack->setBeats(newBeats);
         return;
     }
 
     // If the track received the beat lock while we were analyzing it then we
     // abort setting it.
-    if (tio->isBpmLocked()) {
+    if (pTrack->isBpmLocked()) {
         qDebug() << "Track was BPM-locked as we were analyzing it. Aborting analysis.";
         return;
     }
 
     // If the user prefers to replace old beatgrids with newly generated ones or
     // the old beatgrid has 0-bpm then we replace it.
-    bool zeroCurrentBpm = pCurrentBeats->getBpm() == 0.0;
+    bool zeroCurrentBpm = pCurrentBeats->getGlobalBpm().getValue() == 0.0;
     if (m_bPreferencesReanalyzeOldBpm || zeroCurrentBpm) {
         if (zeroCurrentBpm) {
-            qDebug() << "Replacing 0-BPM beatgrid with a" << pBeats->getBpm()
+            qDebug() << "Replacing 0-BPM beatgrid with a" << newBeats.getGlobalBpm()
                      << "beatgrid.";
         }
-        tio->setBeats(pBeats);
+        pTrack->setBeats(newBeats);
         return;
     }
 
     // If we got here then the user doesn't want to replace the beatgrid but
     // since the first beat is zero we'll apply the offset we just detected.
-    double currentFirstBeat = pCurrentBeats->findNextBeat(0);
-    double newFirstBeat = pBeats->findNextBeat(0);
-    if (currentFirstBeat == 0.0 && newFirstBeat > 0) {
-        pCurrentBeats->translate(newFirstBeat);
+    mixxx::FramePos currentFirstBeat =
+            pCurrentBeats->getBeatAtIndex(mixxx::kFirstBeatIndex)->framePosition();
+    mixxx::FramePos newFirstBeat = newBeats.getBeatAtIndex(mixxx::kFirstBeatIndex)->framePosition();
+    if (currentFirstBeat == mixxx::kStartFramePos && newFirstBeat > mixxx::kStartFramePos) {
+        const double translateDuration =
+                (newFirstBeat - currentFirstBeat) / pTrack->getSampleRate();
+        pCurrentBeats->translateBySeconds(translateDuration);
     }
 }
 

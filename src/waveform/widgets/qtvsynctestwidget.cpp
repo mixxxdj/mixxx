@@ -5,14 +5,10 @@
 #include "waveform/widgets/qtvsynctestwidget.h"
 
 #include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/qtvsynctestrenderer.h"
-#include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
-#include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
 
 #include "util/performancetimer.h"
 

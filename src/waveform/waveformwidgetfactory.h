@@ -4,6 +4,7 @@
 #include <QVector>
 #include <vector>
 
+#include "preferences/beatgridmode.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
@@ -105,7 +106,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int isZoomSync() const { return m_zoomSync;}
 
     void setDisplayBeatGridAlpha(int alpha);
-    int getBeatGridAlpha() const { return m_beatGridAlpha; }
+    int beatGridAlpha() const { return m_beatGridAlpha; }
+
+    void setBeatGridMode(BeatGridMode mode);
+    BeatGridMode beatGridMode() const {
+        return m_beatGridMode;
+    }
 
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
@@ -182,6 +188,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
+    BeatGridMode m_beatGridMode;
 
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned

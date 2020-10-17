@@ -110,6 +110,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
+          m_beatGridMode(kDefaultBeatGridMode),
           m_vsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
@@ -312,6 +313,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
 
+    BeatGridMode beatGridMode = BeatGridMode(m_config->getValue(
+            ConfigKey("[Waveform]", "beatGridMode"), (int)m_beatGridMode));
+    setBeatGridMode(beatGridMode);
+
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
     // Store the widget type on m_configType for later initialization.
@@ -406,6 +411,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    viewer->setBeatGridMode(m_beatGridMode);
     viewer->setPlayMarkerPosition(m_playMarkerPosition);
     waveformWidget->resize(viewer->width(), viewer->height());
     waveformWidget->getWidget()->show();
@@ -518,7 +524,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         //previousWidget->hold();
         double previousZoom = previousWidget->getZoomFactor();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
-        double previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
+        double previousbeatgridAlpha = previousWidget->beatGridAlpha();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -527,6 +533,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
         viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
+        viewer->setBeatGridMode(m_beatGridMode);
         viewer->setDisplayBeatGridAlpha(previousbeatgridAlpha);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
@@ -572,12 +579,18 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
 
 void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     m_beatGridAlpha = alpha;
-    if (m_waveformWidgetHolders.size() == 0) {
-        return;
-    }
 
     for (const auto& holder : m_waveformWidgetHolders) {
         holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    }
+}
+
+void WaveformWidgetFactory::setBeatGridMode(BeatGridMode mode) {
+    m_beatGridMode = mode;
+
+    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        m_waveformWidgetHolders[i].m_waveformWidget->setBeatGridMode(m_beatGridMode);
+        m_waveformWidgetHolders[i].m_waveformViewer->setBeatGridMode(m_beatGridMode);
     }
 }
 

@@ -94,13 +94,8 @@ void VinylControlProcessor::run() {
             FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[i];
 
             if (pSamplePipe->readAvailable() > 0) {
-                int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
-
-                if (samplesRead % 2 != 0) {
-                    qWarning() << "VinylControlProcessor received non-even number of samples via sample FIFO.";
-                    samplesRead--;
-                }
-                int framesRead = samplesRead / 2;
+                double samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
+                double framesRead = samplesRead / 2;
 
                 if (pProcessor) {
                     pProcessor->analyzeSamples(m_pWorkBuffer, framesRead);

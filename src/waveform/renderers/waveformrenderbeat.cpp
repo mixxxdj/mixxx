@@ -1,19 +1,31 @@
+#include "waveform/renderers/waveformrenderbeat.h"
+
 #include <QDomNode>
 #include <QPaintEvent>
 #include <QPainter>
 
-#include "waveform/renderers/waveformrenderbeat.h"
-
 #include "control/controlobject.h"
+#include "track/beats.h"
 #include "track/track.h"
+#include "util/frameadapter.h"
+#include "util/painterscope.h"
+#include "waveform/renderers/waveformbeat.h"
+#include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "util/painterscope.h"
+
+namespace {
+constexpr int kMaxZoomFactorToDisplayBeats = 15;
+const QList<double> kWaveformZoomToTakeOutDownbeats({35, 70});
+inline int opacityPercentageToAlpha(int opacityPercentageOnHundredScale) {
+    return opacityPercentageOnHundredScale * 255.0 / 100;
+}
+} // namespace
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_beats.resize(128);
+    m_beatMarkers.resize(8);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -26,18 +38,17 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-
     if (!trackInfo)
         return;
-
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
+
     if (!trackBeats)
         return;
 
-    int alpha = m_waveformRenderer->getBeatGridAlpha();
+    int alpha = m_waveformRenderer->beatGridAlpha();
     if (alpha == 0)
         return;
-    m_beatColor.setAlphaF(alpha/100.0);
+    m_beatColor.setAlphaF(alpha / 100.0);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
@@ -49,16 +60,29 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const double lastDisplayedPosition =
             m_waveformRenderer->getLastDisplayedPosition();
 
-    // qDebug() << "trackSamples" << trackSamples
-    //          << "firstDisplayedPosition" << firstDisplayedPosition
-    //          << "lastDisplayedPosition" << lastDisplayedPosition;
+    const auto leftLimit = samplePosToFramePos(firstDisplayedPosition * trackSamples);
+    const auto rightLimit = samplePosToFramePos(lastDisplayedPosition * trackSamples);
+    int displayBeatsStartIdxInclusive = trackBeats->findNextBeat(leftLimit)->beatIndex();
+    int displayBeatsEndIdxInclusive = trackBeats->findPrevBeat(rightLimit)->beatIndex();
 
-    std::unique_ptr<mixxx::BeatIterator> it(trackBeats->findBeats(
-            firstDisplayedPosition * trackSamples,
-            lastDisplayedPosition * trackSamples));
+    // We perform explicit limit check due to fuzzy beat boundaries used by Beats class.
+    // So it returns those beats which are slightly outside screen boundaries and we
+    // will remove them.
+    const auto leftMostBeatPosition =
+            trackBeats->getBeatAtIndex(displayBeatsStartIdxInclusive)
+                    ->framePosition();
+    if (leftMostBeatPosition < leftLimit) {
+        displayBeatsStartIdxInclusive++;
+    }
+    const auto rightMostBeatPosition =
+            trackBeats->getBeatAtIndex(displayBeatsEndIdxInclusive)
+                    ->framePosition();
+    if (rightMostBeatPosition > rightLimit) {
+        displayBeatsEndIdxInclusive--;
+    }
 
     // if no beat do not waste time saving/restoring painter
-    if (!it || !it->hasNext()) {
+    if (displayBeatsStartIdxInclusive > displayBeatsEndIdxInclusive) {
         return;
     }
 
@@ -75,26 +99,89 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
+    int beatMarkerCount = 0;
+    QList<WaveformBeat> beatsOnScreen;
 
-    while (it->hasNext()) {
-        double beatPosition = it->next();
-        double xBeatPoint =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
-
-        xBeatPoint = qRound(xBeatPoint);
+    for (int i = displayBeatsStartIdxInclusive; i <= displayBeatsEndIdxInclusive; i++) {
+        if (!trackBeats->getBeatAtIndex(i)) {
+            continue;
+        }
+        auto beat = trackBeats->getBeatAtIndex(i).value();
+        double beatSamplePosition = framePosToSamplePos(beat.framePosition());
+        int beatPixelPositionInWidgetSpace = qRound(
+                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                        beatSamplePosition));
 
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);
         }
 
-        if (orientation == Qt::Horizontal) {
-            m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
-        } else {
-            m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+        auto* waveformBeat = &m_beats[beatCount];
+        waveformBeat->setPositionPixels(beatPixelPositionInWidgetSpace);
+        waveformBeat->setBeatGridMode(m_waveformRenderer->beatGridMode());
+        waveformBeat->setBeat(beat);
+        waveformBeat->setOrientation(orientation);
+        waveformBeat->setLength((orientation == Qt::Horizontal) ? rendererHeight : rendererWidth);
+        double zoomFactor = m_waveformRenderer->getZoomFactor();
+        bool isVisible = beat.type() == mixxx::BeatType::Downbeat ||
+                (beat.type() == mixxx::BeatType::Beat &&
+                        zoomFactor <
+                                kMaxZoomFactorToDisplayBeats);
+        // TODO: Calculate adjacent beat distance to decide which beats to hide.
+        if (isVisible && zoomFactor >= kWaveformZoomToTakeOutDownbeats.at(0)) {
+            DEBUG_ASSERT(beat.type() == mixxx::BeatType::Downbeat);
+            const int zoomLevelIdx =
+                    std::lower_bound(
+                            kWaveformZoomToTakeOutDownbeats.constBegin(),
+                            kWaveformZoomToTakeOutDownbeats.constEnd(),
+                            zoomFactor)
+                            .i -
+                    kWaveformZoomToTakeOutDownbeats.constBegin().i;
+            const int allowedDownbeatIndexFactor = std::pow(2, zoomLevelIdx);
+            if ((beat.barIndex() + 1) % allowedDownbeatIndexFactor != 0) {
+                isVisible = false;
+            }
+        }
+        waveformBeat->setVisible(isVisible);
+        waveformBeat->setAlpha(opacityPercentageToAlpha(alpha));
+        beatsOnScreen.append(*waveformBeat);
+        beatCount++;
+
+        if (beatMarkerCount >= m_beatMarkers.size()) {
+            m_beatMarkers.resize(m_beatMarkers.size() * 2);
+        }
+        if (beat.markers()) {
+            m_beatMarkers[beatMarkerCount].setPositionPixels(beatPixelPositionInWidgetSpace);
+            m_beatMarkers[beatMarkerCount].setLength(
+                    (orientation == Qt::Horizontal) ? rendererHeight
+                                                    : rendererWidth);
+            QStringList displayItems;
+            bool markerIsDisplayed = false;
+            if (beat.markers().testFlag(mixxx::BeatMarker::TimeSignature)) {
+                QString timeSignatureString =
+                        QString::number(beat.timeSignature().getBeatsPerBar()) +
+                        "/" +
+                        QString::number(beat.timeSignature().getNoteValue());
+                displayItems.append(timeSignatureString);
+                markerIsDisplayed = true;
+            }
+            if (markerIsDisplayed) {
+                m_beatMarkers[beatMarkerCount].setTextDisplayItems(displayItems);
+                beatMarkerCount++;
+            }
         }
     }
 
     // Make sure to use constData to prevent detaches!
-    painter->drawLines(m_beats.constData(), beatCount);
+    for (int i = 0; i < beatCount; i++) {
+        const auto currentBeat = m_beats.constData() + i;
+        painter->setPen(beatPen);
+        currentBeat->draw(painter);
+    }
+    for (int i = 0; i < beatMarkerCount; i++) {
+        const auto currentBeatMarker = m_beatMarkers.constData() + i;
+        currentBeatMarker->draw(painter);
+    }
+    m_waveformRenderer->setBeatsOnScreen(beatsOnScreen);
 }

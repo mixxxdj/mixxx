@@ -8,11 +8,14 @@
 #include <QList>
 #include <QMutex>
 
+#include "preferences/beatgridmode.h"
 #include "skin/skincontext.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
+#include "waveform/renderers/waveformbeat.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"
+#include "widget/wbeatmenu.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wwidget.h"
 
@@ -59,6 +62,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void slotWidgetDead() {
         m_waveformWidget = nullptr;
     }
+    void slotCueMenuButtonClickedInBeatMenu();
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
@@ -68,6 +72,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     //direct access to let factory sync/set default zoom
     void setZoom(double zoom);
     void setDisplayBeatGridAlpha(int alpha);
+    void setBeatGridMode(BeatGridMode mode);
     void setPlayMarkerPosition(double position);
 
   private:
@@ -83,12 +88,15 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     bool m_bBending;
     QPoint m_mouseAnchor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    parented_ptr<WBeatMenu> m_pBeatMenu;
     WaveformMarkPointer m_pHoveredMark;
+    std::optional<WaveformBeat> m_hoveredBeat;
 
     WaveformWidgetAbstract* m_waveformWidget;
 
     friend class WaveformWidgetFactory;
 
+    // TODO(hacksdump): Make this an internal function of WaveformMark class.
     CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
     void highlightMark(WaveformMarkPointer pMark);
     void unhighlightMark(WaveformMarkPointer pMark);

@@ -4,12 +4,12 @@
 #include <QMutexLocker>
 #include <atomic>
 
+#include "audio/streaminfo.h"
 #include "engine/engine.h"
-#include "track/beatfactory.h"
-#include "track/beatmap.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
+#include "util/frameadapter.h"
 #include "util/logger.h"
 
 namespace {
@@ -50,7 +50,7 @@ inline mixxx::Bpm getActualBpm(
     // Reason: The BPM value in the metadata might be normalized
     // or rounded, e.g. ID3v2 only supports integer values.
     if (pBeats) {
-        return mixxx::Bpm(pBeats->getBpm());
+        return pBeats->getGlobalBpm();
     } else {
         return bpm;
     }
@@ -203,8 +203,7 @@ void Track::importMetadata(
         setBpm(actualBpm.getValue());
     }
 
-    if (!newKey.isEmpty()
-            && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
+    if (!newKey.isEmpty() && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
         setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
     }
 }
@@ -264,7 +263,7 @@ double Track::getBpm() const {
         // BPM from beat grid overrides BPM from metadata
         // Reason: The BPM value in the metadata might be imprecise,
         // e.g. ID3v2 only supports integer values!
-        double beatsBpm = m_pBeats->getBpm();
+        double beatsBpm = m_pBeats->getGlobalBpm().getValue();
         if (mixxx::Bpm::isValidValue(beatsBpm)) {
             bpm = beatsBpm;
         }
@@ -276,7 +275,7 @@ double Track::setBpm(double bpmValue) {
     if (!mixxx::Bpm::isValidValue(bpmValue)) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
-        setBeats(mixxx::BeatsPointer());
+        setBeats(mixxx::BeatsInternal());
         return bpmValue;
     }
 
@@ -284,18 +283,20 @@ double Track::setBpm(double bpmValue) {
 
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        double cue = getCuePoint().getPosition();
-        mixxx::BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
+        mixxx::FramePos cue = samplePosToFramePos(getCuePoint().getPosition());
+        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats());
+        pBeats->updateStreamInfo(streamInfo());
+        pBeats->setGrid(mixxx::Bpm(bpmValue), cue);
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
         return bpmValue;
     }
 
     // Continue with the regular case
-    if (m_pBeats->getBpm() != bpmValue) {
+    if (m_pBeats->getGlobalBpm().getValue() != bpmValue) {
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        m_pBeats->setBpm(bpmValue);
+        m_pBeats->setBpm(mixxx::Bpm(bpmValue));
         markDirtyAndUnlock(&lock);
         // Tell the GUI to update the bpm label...
         //qDebug() << "Track signaling BPM update to" << f;
@@ -309,29 +310,34 @@ QString Track::getBpmText() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
-void Track::setBeats(mixxx::BeatsPointer pBeats) {
+void Track::setBeats(const mixxx::BeatsInternal& beats) {
     QMutexLocker lock(&m_qMutex);
-    setBeatsMarkDirtyAndUnlock(&lock, pBeats);
+    auto beatsCopy = beats;
+    beatsCopy.updateStreamInfo(streamInfo());
+    if (!m_pBeats) {
+        const auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(beatsCopy));
+        setBeatsMarkDirtyAndUnlock(&lock, pBeats);
+    } else {
+        m_pBeats->initWithProtobuf(beatsCopy.toProtobuf());
+    }
 }
 
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
-    // This whole method is not so great. The fact that Beats is an ABC is
-    // limiting with respect to QObject and signals/slots.
-
     if (m_pBeats == pBeats) {
         return false;
     }
 
     if (m_pBeats) {
-        disconnect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
+        disconnect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
 
     m_pBeats = std::move(pBeats);
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
-        connect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
+        bpmValue = m_pBeats->getGlobalBpm().getValue();
+        connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
+        m_pBeats->moveToThread(thread());
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
     return true;
@@ -344,7 +350,7 @@ void Track::setBeatsMarkDirtyAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer 
         return;
     }
 
-    auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
+    auto bpmValue = m_pBeats ? m_pBeats->getGlobalBpm().getValue() : mixxx::Bpm::kValueUndefined;
 
     markDirtyAndUnlock(pLock);
     emit bpmUpdated(bpmValue);
@@ -361,7 +367,7 @@ void Track::slotBeatsUpdated() {
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
+        bpmValue = m_pBeats->getGlobalBpm().getValue();
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
@@ -433,6 +439,9 @@ void Track::setDuration(mixxx::Duration duration) {
                 m_record.refMetadata().ptrDuration(),
                 duration)) {
         markDirtyAndUnlock(&lock);
+        if (m_pBeats) {
+            m_pBeats->updateStreamInfo(streamInfo());
+        }
     }
 }
 
@@ -651,7 +660,7 @@ void Track::setType(const QString& sType) {
     }
 }
 
-int Track::getSampleRate() const {
+mixxx::audio::SampleRate Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getSampleRate();
 }
@@ -705,7 +714,7 @@ void Track::initId(TrackId id) {
     // the object has been created.
     VERIFY_OR_DEBUG_ASSERT(!m_record.getId().isValid()) {
         kLogger.warning() << "Cannot change id from"
-                << m_record.getId() << "to" << id;
+                          << m_record.getId() << "to" << id;
         return; // abort
     }
     m_record.setId(id);
@@ -955,10 +964,10 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_streamInfo->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getSampleRate());
-    mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
-            static_cast<SINT>(m_streamInfo->getSignalInfo().getSampleRate()),
+    auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(mixxx::BeatsInternal()));
+    pBeats->initWithAnalyzer(
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_streamInfo)));
+                    getLocation(), *m_streamInfo));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);
@@ -972,7 +981,7 @@ void Track::importPendingBeatsMarkDirtyAndUnlock(
         return;
     }
 
-    auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
+    auto bpmValue = m_pBeats ? m_pBeats->getGlobalBpm().getValue() : mixxx::Bpm::kValueUndefined;
 
     markDirtyAndUnlock(pLock);
     emit bpmUpdated(bpmValue);
@@ -1133,19 +1142,16 @@ void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
 
     // Unlock before emitting any signals!
     pLock->unlock();
-
-    if (trackId.isValid()) {
-        if (dirtyChanged) {
-            if (bDirty) {
-                emit dirty(trackId);
-            } else {
-                emit clean(trackId);
-            }
-        }
+    if (dirtyChanged) {
         if (bDirty) {
-            // Emit a changed signal regardless if this attempted to set us dirty.
-            emit changed(trackId);
+            emit dirty(trackId);
+        } else {
+            emit clean(trackId);
         }
+    }
+    if (bDirty) {
+        // Emit a changed signal regardless if this attempted to set us dirty.
+        emit changed(trackId);
     }
 }
 
@@ -1335,7 +1341,7 @@ ExportTrackMetadataResult Track::exportMetadata(
     // is we import it again into a temporary variable.
     mixxx::TrackMetadata importedFromFile;
     if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
-            mixxx::MetadataSource::ImportResult::Succeeded)) {
+                mixxx::MetadataSource::ImportResult::Succeeded)) {
         // Prevent overwriting any file tags that are not yet stored in the
         // library database!
         m_record.mergeImportedMetadata(importedFromFile);
@@ -1355,13 +1361,13 @@ ExportTrackMetadataResult Track::exportMetadata(
         if (!m_bMarkedForMetadataExport &&
                 !m_record.getMetadata().anyFileTagsModified(
                         importedFromFile,
-                        mixxx::Bpm::Comparison::Integer))  {
+                        mixxx::Bpm::Comparison::Integer)) {
             // The file tags are in-sync with the track's metadata and don't need
             // to be updated.
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
-                            << "Skip exporting of unmodified track metadata into file:"
-                            << getLocation();
+                        << "Skip exporting of unmodified track metadata into file:"
+                        << getLocation();
             }
             // abort
             return ExportTrackMetadataResult::Skipped;
@@ -1439,6 +1445,9 @@ void Track::setAudioProperties(
                 m_record.refMetadata().ptrSampleRate(),
                 sampleRate)) {
         dirty = true;
+        if (m_pBeats) {
+            m_pBeats->updateStreamInfo(streamInfo());
+        }
     }
     if (compareAndSet(
                 m_record.refMetadata().ptrBitrate(),
@@ -1449,6 +1458,9 @@ void Track::setAudioProperties(
                 m_record.refMetadata().ptrDuration(),
                 duration)) {
         dirty = true;
+        if (m_pBeats) {
+            m_pBeats->updateStreamInfo(streamInfo());
+        }
     }
     if (dirty) {
         markDirtyAndUnlock(&lock);
@@ -1488,7 +1500,7 @@ void Track::updateAudioPropertiesFromStream(
                            "audio properties are available now";
         importBeats = importPendingBeatsWhileLocked();
         if (m_pBeats) {
-            bpmValue = m_pBeats->getBpm();
+            bpmValue = m_pBeats->getGlobalBpm().getValue();
         }
     }
 
@@ -1513,4 +1525,33 @@ void Track::updateAudioPropertiesFromStream(
     if (importCueInfos) {
         emit cuesUpdated();
     }
+}
+
+mixxx::audio::StreamInfo Track::streamInfo() const {
+    // TODO: Fix m_streamInfo. The data is not consistent.
+    // DEBUG_ASSERT(getSampleRate() == m_streamInfo->getSignalInfo().getSampleRate());
+    // return *m_streamInfo;
+    mixxx::audio::ChannelCount channelCount(getChannels());
+    mixxx::audio::SampleRate sampleRate(getSampleRate());
+    mixxx::audio::Bitrate bitrate(getBitrate());
+    mixxx::Duration duration = mixxx::Duration::fromSeconds(getDuration());
+    mixxx::audio::SignalInfo signalInfo(channelCount, sampleRate);
+    mixxx::audio::StreamInfo streamInfo(signalInfo, bitrate, duration);
+    return streamInfo;
+}
+
+QDebug operator<<(QDebug dbg, const Track& arg) {
+    dbg << "Duration:" << arg.getDuration();
+    dbg << "Sample Rate:" << arg.getSampleRate();
+    if (!arg.getCuePoints().empty()) {
+        dbg << "Cue Points:";
+        for (auto cuePoint : arg.getCuePoints()) {
+            dbg << cuePoint->getPosition();
+        }
+    }
+    if (arg.getBeats()) {
+        dbg << "Beats:";
+        dbg << arg.getBeats();
+    }
+    return dbg;
 }

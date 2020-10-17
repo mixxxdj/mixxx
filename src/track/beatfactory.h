@@ -4,16 +4,15 @@
 #include <QHash>
 
 #include "track/beats.h"
-
-class Track;
+#include "track/track.h"
 
 class BeatFactory {
   public:
-    static mixxx::BeatsPointer loadBeatsFromByteArray(const Track& track,
-            QString beatsVersion,
-            QString beatsSubVersion,
+    static mixxx::BeatsInternal loadBeatsFromByteArray(const TrackPointer& track,
+            const QString& beatsVersion,
+            const QString& beatsSubVersion,
             const QByteArray& beatsSerialized);
-    static mixxx::BeatsPointer makeBeatGrid(const Track& track,
+    static mixxx::BeatsPointer makeBeatGrid(const TrackPointer& track,
             double dBpm,
             double dFirstBeatSample);
 
@@ -25,18 +24,14 @@ class BeatFactory {
         const int iMinBpm, const int iMaxBpm,
         const QHash<QString, QString> extraVersionInfo);
 
-    static mixxx::BeatsPointer makePreferredBeats(const Track& track,
+    static mixxx::BeatsInternal makePreferredBeats(const TrackPointer& track,
             QVector<double> beats,
             const QHash<QString, QString> extraVersionInfo,
             const bool bEnableFixedTempoCorrection,
             const bool bEnableOffsetCorrection,
-            const int iSampleRate,
             const int iTotalSamples,
             const int iMinBpm,
             const int iMaxBpm);
-
-  private:
-    static void deleteBeats(mixxx::Beats* pBeats);
 };
 
 #endif /* BEATFACTORY_H */

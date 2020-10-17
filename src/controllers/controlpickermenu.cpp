@@ -27,8 +27,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
-    addControl("[Master]", "balance", tr("Main Output Balance"), tr("Main output balance"), mixerMenu, true);
-    addControl("[Master]", "delay", tr("Main Output Delay"), tr("Main output delay"), mixerMenu, true);
+    addControl("[Master]",
+            "balance",
+            tr("Main Output Balance"),
+            tr("Main output balance"),
+            mixerMenu,
+            true);
+    addControl("[Master]",
+            "delay",
+            tr("Main Output Delay"),
+            tr("Main output delay"),
+            mixerMenu,
+            true);
     addControl("[Master]", "crossfader", tr("Crossfader"), tr("Crossfader"), mixerMenu, true);
     addControl("[Master]", "gain", tr("Main Output Gain"), tr("Main output gain"), mixerMenu, true);
     addControl("[Master]", "headGain", tr("Headphone Gain"), tr("Headphone gain"), mixerMenu, true);
@@ -125,14 +135,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
                              tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
-    addDeckAndSamplerControl("pitch_up", tr("Increase Pitch"),
-                            tr("Increases the pitch by one semitone"), speedMenu);
-    addDeckAndSamplerControl("pitch_up_small", tr("Increase Pitch (Fine)"),
-                            tr("Increases the pitch by 10 cents"), speedMenu);
-    addDeckAndSamplerControl("pitch_down", tr("Decrease Pitch"),
-                            tr("Decreases the pitch by one semitone"), speedMenu);
-    addDeckAndSamplerControl("pitch_down_small", tr("Decrease Pitch (Fine)"),
-                            tr("Decreases the pitch by 10 cents"), speedMenu);
+    addDeckAndSamplerControl("pitch_up",
+            tr("Increase Pitch"),
+            tr("Increases the pitch by one semitone"),
+            speedMenu);
+    addDeckAndSamplerControl("pitch_up_small",
+            tr("Increase Pitch (Fine)"),
+            tr("Increases the pitch by 10 cents"),
+            speedMenu);
+    addDeckAndSamplerControl("pitch_down",
+            tr("Decrease Pitch"),
+            tr("Decreases the pitch by one semitone"),
+            speedMenu);
+    addDeckAndSamplerControl("pitch_down_small",
+            tr("Decrease Pitch (Fine)"),
+            tr("Decreases the pitch by 10 cents"),
+            speedMenu);
     addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
                              tr("Adjust pitch from speed slider pitch"), speedMenu, true);
     addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu);
@@ -870,8 +888,13 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
         if (resetControlMenu) {
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-            addSingleControl(group, resetControl, resetTitle, resetDescription,
-                    resetControlMenu, prefix, prefix);
+            addSingleControl(group,
+                    resetControl,
+                    resetTitle,
+                    resetDescription,
+                    resetControlMenu,
+                    prefix,
+                    prefix);
         }
     }
 
@@ -885,8 +908,13 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
         if (resetControlMenu) {
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-            addSingleControl(group, resetControl, resetTitle, resetDescription,
-                    resetControlMenu, prefix, prefix);
+            addSingleControl(group,
+                    resetControl,
+                    resetTitle,
+                    resetDescription,
+                    resetControlMenu,
+                    prefix,
+                    prefix);
         }
     }
 
@@ -900,8 +928,13 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
         if (resetControlMenu) {
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-            addSingleControl(group, resetControl, resetTitle, resetDescription,
-                    resetControlMenu, prefix, prefix);
+            addSingleControl(group,
+                    resetControl,
+                    resetTitle,
+                    resetDescription,
+                    resetControlMenu,
+                    prefix,
+                    prefix);
         }
     }
 }
@@ -936,8 +969,13 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
             if (resetControlMenu) {
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-                addSingleControl(group, resetControl, resetTitle, resetDescription,
-                        resetControlMenu, prefix, prefix);
+                addSingleControl(group,
+                        resetControl,
+                        resetTitle,
+                        resetDescription,
+                        resetControlMenu,
+                        prefix,
+                        prefix);
             }
         }
     }
@@ -954,8 +992,13 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
             if (resetControlMenu) {
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-                addSingleControl(group, resetControl, resetTitle, resetDescription,
-                        resetControlMenu, prefix, prefix);
+                addSingleControl(group,
+                        resetControl,
+                        resetTitle,
+                        resetDescription,
+                        resetControlMenu,
+                        prefix,
+                        prefix);
             }
         }
     }

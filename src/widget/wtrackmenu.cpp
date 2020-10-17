@@ -277,22 +277,22 @@ void WTrackMenu::createActions() {
         m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
 
         connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::DOUBLE);
+            slotScaleBpm(mixxx::BPMScale::Double);
         });
         connect(m_pBpmHalveAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::HALVE);
+            slotScaleBpm(mixxx::BPMScale::Halve);
         });
         connect(m_pBpmTwoThirdsAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::TWOTHIRDS);
+            slotScaleBpm(mixxx::BPMScale::TwoThirds);
         });
         connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::THREEFOURTHS);
+            slotScaleBpm(mixxx::BPMScale::ThreeFourths);
         });
         connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::FOURTHIRDS);
+            slotScaleBpm(mixxx::BPMScale::FourThirds);
         });
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::THREEHALVES);
+            slotScaleBpm(mixxx::BPMScale::ThreeHalves);
         });
 
         m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
@@ -1123,7 +1123,7 @@ namespace {
 
 class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
-    explicit ScaleBpmTrackPointerOperation(mixxx::Beats::BPMScale bpmScale)
+    explicit ScaleBpmTrackPointerOperation(mixxx::BPMScale bpmScale)
             : m_bpmScale(bpmScale) {
     }
 
@@ -1140,17 +1140,16 @@ class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
         pBeats->scale(m_bpmScale);
     }
 
-    const mixxx::Beats::BPMScale m_bpmScale;
+    const mixxx::BPMScale m_bpmScale;
 };
 
 } // anonymous namespace
 
-void WTrackMenu::slotScaleBpm(int scale) {
+void WTrackMenu::slotScaleBpm(mixxx::BPMScale scale) {
     const auto progressLabelText =
             tr("Scaling BPM of %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            ScaleBpmTrackPointerOperation(
-                    static_cast<mixxx::Beats::BPMScale>(scale));
+            ScaleBpmTrackPointerOperation(scale);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
@@ -1272,7 +1271,7 @@ class ResetBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pTrack->isBpmLocked()) {
             return;
         }
-        pTrack->setBeats(mixxx::BeatsPointer());
+        pTrack->setBeats(mixxx::BeatsInternal());
     }
 };
 
@@ -1491,7 +1490,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         return;
     }
     // Create a fresh dialog on invocation
-    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(m_pConfig,
             m_pTrackModel);
     connect(m_pDlgTrackInfo.get(),
             &QDialog::finished,

@@ -1,19 +1,19 @@
-#include <QPainter>
+#include "waveform/widgets/glwaveformwidget.h"
+
 #include <QGLContext>
+#include <QPainter>
 #include <QtDebug>
 
-#include "waveform/widgets/glwaveformwidget.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/qtwaveformrendererfilteredsignal.h"
+#include "util/performancetimer.h"
 #include "waveform/renderers/glwaveformrendererfilteredsignal.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrenderplaymarker.h"
 #include "waveform/sharedglcontext.h"
-#include "util/performancetimer.h"
 
 GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -34,6 +34,7 @@ GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
+    addRenderer<WaveformRenderPlayMarker>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);

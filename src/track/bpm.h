@@ -65,7 +65,7 @@ public:
     };
 
     bool compareEq(
-            const Bpm& bpm,
+            Bpm bpm,
             Comparison cmp = Comparison::Default) const {
         switch (cmp) {
         case Comparison::Integer:
@@ -82,21 +82,33 @@ private:
     double m_value;
 };
 
-inline
-bool operator==(const Bpm& lhs, const Bpm& rhs) {
+inline bool operator==(Bpm lhs, Bpm rhs) {
     return lhs.compareEq(rhs);
 }
 
-inline
-bool operator!=(const Bpm& lhs, const Bpm& rhs) {
+inline bool operator!=(Bpm lhs, Bpm rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const Bpm& arg) {
+inline QDebug operator<<(QDebug dbg, Bpm arg) {
     return dbg << arg.getValue();
 }
 
+inline Bpm operator*(Bpm bpm, double val) {
+    return Bpm(bpm.getValue() * val);
+}
+
+inline Bpm operator/(Bpm bpm, double val) {
+    return Bpm(bpm.getValue() / val);
+}
+
+inline Bpm operator+(Bpm bpm, double val) {
+    return Bpm(bpm.getValue() + val);
+}
+
+inline Bpm operator-(Bpm& bpm, double val) {
+    return Bpm(bpm.getValue() - val);
+}
 }
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);

@@ -325,7 +325,8 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
             continue;
         }
 
-        double dValue = value.toDouble();
+        const double dValue = value.toDouble();
+
         if (m_bOperatorQuery) {
             if ((m_operator == "=" && dValue == m_dOperatorArgument) ||
                     (m_operator == "<" && dValue < m_dOperatorArgument) ||

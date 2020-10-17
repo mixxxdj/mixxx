@@ -1,3 +1,4 @@
+// This proto describes the beats information attached to a track.
 syntax = "proto2";
 
 package mixxx.track.io;
@@ -10,22 +11,73 @@ enum Source {
   USER = 2;
 }
 
-message Beat {
+message BpmMarker {
+  optional int32 beat_index = 1;
+  optional double bpm = 2;
+  optional Source source = 3;
+}
+
+message TimeSignature {
+  optional int32 beats_per_bar = 1 [ default = 4];
+  optional int32 note_value = 2 [ default = 4 ];
+}
+
+message TimeSignatureMarker {
+  optional int32 downbeat_index = 1;
+  optional TimeSignature time_signature = 2;
+}
+
+// NOTE: This part commented out in anticipation of future extensions.
+// This is only indicative and is subject to change.
+/*
+message PhraseMarker {
+  optional int32 downbeat_index = 1;
+}
+
+enum SectionType {
+  OTHER = 0;
+  INTRO = 1;
+  OUTRO = 2;
+}
+
+message Color {
+  optional int32 red = 1;
+  optional int32 green = 2;
+  optional int32 blue = 3;
+}
+
+message SectionMarker {
+  optional int32 downbeat_index = 1;
+  optional string name = 2;
+  optional SectionType type = 3;
+  optional Color color = 4;
+}
+*/
+
+message Beats {
+  optional double first_beat_time_seconds = 1;
+  optional int32 first_downbeat_index = 2;
+  repeated BpmMarker bpm_markers = 3;
+  repeated TimeSignatureMarker time_signature_markers = 4;
+}
+
+// These are legacy data structures for upgrading from Mixxx < 2.4
+message LegacyBeat {
   optional int32 frame_position = 1;
   optional bool enabled = 2 [ default = true ];
   optional Source source = 3 [ default = ANALYZER ];
 }
 
+message LegacyBeatMap {
+  repeated LegacyBeat beat = 1;
+}
+
 message Bpm {
-  optional double bpm = 1;
-  optional Source source = 2 [ default = ANALYZER ];
+  optional double bpm = 1 [ default = 0 ];
+  optional Source source = 2;
 }
 
-message BeatMap {
-  repeated Beat beat = 1;
-}
-
-message BeatGrid {
+message LegacyBeatGrid {
   optional Bpm bpm = 1;
-  optional Beat first_beat = 2;
+  optional LegacyBeat first_beat = 2;
 }

@@ -8,6 +8,7 @@
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
 #include "library/trackmodel.h"
+#include "preferences/beatdetectionsettings.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -19,6 +20,7 @@
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
+#include "util/frameadapter.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wstarrating.h"
 
@@ -28,8 +30,7 @@ const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
-DlgTrackInfo::DlgTrackInfo(
-        const TrackModel* trackModel)
+DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
@@ -37,7 +38,8 @@ DlgTrackInfo::DlgTrackInfo(
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_dLastTapedBpm(-1.),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
-          m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
+          m_pWStarRating(make_parented<WStarRating>(nullptr, this)),
+          m_pConfig(pConfig) {
     init();
 }
 
@@ -266,23 +268,21 @@ void DlgTrackInfo::populateFields(const Track& track) {
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     mixxx::BeatsPointer pBeats = track.getBeats();
     if (pBeats) {
-        spinBpm->setValue(pBeats->getBpm());
-        m_pBeatsClone = pBeats->clone();
+        spinBpm->setValue(pBeats->getGlobalBpm().getValue());
+        m_beatsClone = pBeats->getInternal();
     } else {
-        m_pBeatsClone.clear();
+        m_beatsClone = mixxx::BeatsInternal(track.streamInfo());
         spinBpm->setValue(0.0);
     }
-    m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
-    bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
-    bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
-    if (track.isBpmLocked()) {
-        tabBPM->setEnabled(false);
-    } else {
-        tabBPM->setEnabled(true);
-    }
+    m_bpmIsConst = pBeats &&
+            m_pConfig->getValue<bool>(
+                    ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION));
+    bpmConst->setChecked(m_bpmIsConst);
+    bpmConst->setEnabled(!m_bpmIsConst);
+    spinBpm->setEnabled(m_bpmIsConst); // We cannot change bpm continuously or tap them
+    bpmTap->setEnabled(m_bpmIsConst);  // when we have a variable bpm.
+    tabBPM->setEnabled(!track.isBpmLocked());
 }
 
 void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
@@ -392,7 +392,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
     if (!m_pLoadedTrack->isBpmLocked()) {
-        m_pLoadedTrack->setBeats(m_pBeatsClone);
+        m_pLoadedTrack->setBeats(m_beatsClone);
         reloadTrackBeats(*m_pLoadedTrack);
     }
 
@@ -443,7 +443,7 @@ void DlgTrackInfo::clear() {
     txtTrackNumber->setText("");
     txtComment->setPlainText("");
     spinBpm->setValue(0.0);
-    m_pBeatsClone.clear();
+    m_beatsClone = mixxx::BeatsInternal();
     m_keysClone = Keys();
 
     txtDuration->setText("");
@@ -459,53 +459,53 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    m_pBeatsClone->scale(mixxx::Beats::DOUBLE);
+    m_beatsClone.scale(mixxx::BPMScale::Double);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
+    double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    m_pBeatsClone->scale(mixxx::Beats::HALVE);
+    m_beatsClone.scale(mixxx::BPMScale::Halve);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
+    double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    m_pBeatsClone->scale(mixxx::Beats::TWOTHIRDS);
+    m_beatsClone.scale(mixxx::BPMScale::TwoThirds);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
+    double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    m_pBeatsClone->scale(mixxx::Beats::THREEFOURTHS);
+    m_beatsClone.scale(mixxx::BPMScale::ThreeFourths);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
+    double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
-    m_pBeatsClone->scale(mixxx::Beats::FOURTHIRDS);
+    m_beatsClone.scale(mixxx::BPMScale::FourThirds);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
+    double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
-    m_pBeatsClone->scale(mixxx::Beats::THREEHALVES);
+    m_beatsClone.scale(mixxx::BPMScale::ThreeHalves);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
+    double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmClear() {
     spinBpm->setValue(0);
-    m_pBeatsClone.clear();
+    m_beatsClone.clear();
 
     bpmConst->setChecked(true);
-    bpmConst->setEnabled(m_trackHasBeatMap);
+    bpmConst->setEnabled(!m_bpmIsConst);
     spinBpm->setEnabled(true);
     bpmTap->setEnabled(true);
 }
@@ -513,6 +513,7 @@ void DlgTrackInfo::slotBpmClear() {
 void DlgTrackInfo::slotBpmConstChanged(int state) {
     if (state != Qt::Unchecked) {
         // const beatgrid requested
+        m_beatsClone.clear();
         if (spinBpm->value() > 0) {
             // Since the user is not satisfied with the beat map,
             // it is hard to predict a fitting beat. We know that we
@@ -521,10 +522,8 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
             CuePosition cue = m_pLoadedTrack->getCuePoint();
-            m_pBeatsClone = BeatFactory::makeBeatGrid(
-                    *m_pLoadedTrack, spinBpm->value(), cue.getPosition());
-        } else {
-            m_pBeatsClone.clear();
+            m_beatsClone.setGrid(mixxx::Bpm(spinBpm->value()),
+                    samplePosToFramePos(cue.getPosition()));
         }
         spinBpm->setEnabled(true);
         bpmTap->setEnabled(true);
@@ -549,27 +548,29 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     if (value <= 0) {
-        m_pBeatsClone.clear();
+        m_beatsClone.clear();
         return;
     }
 
-    if (!m_pBeatsClone) {
+    if (m_beatsClone.getGlobalBpm().getValue() == mixxx::Bpm::kValueUndefined) {
         CuePosition cue = m_pLoadedTrack->getCuePoint();
-        m_pBeatsClone = BeatFactory::makeBeatGrid(
-                *m_pLoadedTrack, value, cue.getPosition());
+        m_beatsClone.clear();
+        m_beatsClone.updateStreamInfo(m_pLoadedTrack->streamInfo());
+        m_beatsClone.setGrid(mixxx::Bpm(spinBpm->value()),
+                samplePosToFramePos(cue.getPosition()));
     }
 
-    double oldValue = m_pBeatsClone->getBpm();
+    double oldValue = m_beatsClone.getGlobalBpm().getValue();
     if (oldValue == value) {
         return;
     }
 
-    if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
-        m_pBeatsClone->setBpm(value);
+    if (m_bpmIsConst) {
+        m_beatsClone.setBpm(mixxx::Bpm(value));
     }
 
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
+    double newValue = m_beatsClone.getGlobalBpm().getValue();
     spinBpm->setValue(newValue);
 }
 

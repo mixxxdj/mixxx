@@ -92,7 +92,7 @@ class Track : public QObject {
     int getChannels() const;
 
     // Get sample rate
-    int getSampleRate() const;
+    mixxx::audio::SampleRate getSampleRate() const;
 
     // Sets the bitrate
     void setBitrate(int);
@@ -279,7 +279,7 @@ class Track : public QObject {
     mixxx::BeatsPointer getBeats() const;
 
     // Set the track's Beats
-    void setBeats(mixxx::BeatsPointer beats);
+    void setBeats(const mixxx::BeatsInternal& beats);
 
     /// Imports the given list of cue infos as cue points,
     /// thereby replacing all existing cue points!
@@ -342,6 +342,8 @@ class Track : public QObject {
             mixxx::audio::SampleRate sampleRate,
             mixxx::audio::Bitrate bitrate,
             mixxx::Duration duration);
+
+    mixxx::audio::StreamInfo streamInfo() const;
 
   signals:
     void waveformUpdated();
@@ -470,3 +472,6 @@ class Track : public QObject {
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
 };
+
+/// Prints track contents information, for debugging purposes only
+QDebug operator<<(QDebug dbg, const Track& arg);

@@ -11,7 +11,7 @@
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/assert.h"
+#include "util/frameadapter.h"
 
 QuantizeControl::QuantizeControl(QString group,
                                  UserSettingsPointer pConfig)
@@ -42,7 +42,7 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
         lookupBeatPositions(0.0);
         updateClosestBeat(0.0);
     } else {
-        m_pBeats.clear();
+        m_pBeats.reset();
         m_pCOPrevBeat->set(-1);
         m_pCONextBeat->set(-1);
         m_pCOClosestBeat->set(-1);
@@ -56,10 +56,10 @@ void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     updateClosestBeat(current);
 }
 
-void QuantizeControl::setCurrentSample(const double dCurrentSample,
-                                       const double dTotalSamples,
-                                       const double dTrackSampleRate) {
-    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, dTrackSampleRate);
+void QuantizeControl::setCurrentSample(double dCurrentSample,
+        double dTotalSamples,
+        mixxx::audio::SampleRate trackSampleRate) {
+    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, trackSampleRate);
     playPosChanged(dCurrentSample);
 }
 
@@ -83,10 +83,11 @@ void QuantizeControl::playPosChanged(double dNewPlaypos) {
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        double prevBeat, nextBeat;
-        pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
-        m_pCOPrevBeat->set(prevBeat);
-        m_pCONextBeat->set(nextBeat);
+        const auto prevNextBeats = pBeats->findPrevNextBeats(samplePosToFramePos(dCurrentSample));
+        const auto prevBeat = prevNextBeats.first->framePosition();
+        const auto nextBeat = prevNextBeats.second->framePosition();
+        m_pCOPrevBeat->set(framePosToSamplePos(prevBeat));
+        m_pCONextBeat->set(framePosToSamplePos(nextBeat));
     }
 }
 

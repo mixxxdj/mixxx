@@ -5,6 +5,7 @@
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/frameadapter.h"
 
 ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
@@ -48,8 +49,9 @@ void ClockControl::process(const double dRate,
 
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        double closestBeat = pBeats->findClosestBeat(currentSample);
-        double distanceToClosestBeat = fabs(currentSample - closestBeat);
+        auto currentFrame = samplePosToFramePos(currentSample);
+        mixxx::FramePos closestBeat = pBeats->findClosestBeat(currentFrame);
+        double distanceToClosestBeat = fabs(framesToSamples(currentFrame - closestBeat));
         m_pCOBeatActive->set(distanceToClosestBeat < blinkIntervalSamples / 2.0);
     }
 }

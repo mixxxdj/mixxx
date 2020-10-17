@@ -3,7 +3,6 @@
 #include "util/compatibility.h"
 
 #include <QtDebug>
-#include <QWidget>
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
         : WaveformWidgetRenderer(group),

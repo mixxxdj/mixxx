@@ -27,6 +27,7 @@ WWaveformViewer::WWaveformViewer(
           m_bScratching(false),
           m_bBending(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
+          m_pBeatMenu(make_parented<WBeatMenu>(pConfig, this)),
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
     setAcceptDrops(true);
@@ -40,7 +41,10 @@ WWaveformViewer::WWaveformViewer(
     m_pWheel = new ControlProxy(
             group, "wheel", this, ControlFlag::NoAssertIfMissing);
     m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
-
+    connect(m_pBeatMenu,
+            &WBeatMenu::cueButtonClicked,
+            this,
+            &WWaveformViewer::slotCueMenuButtonClickedInBeatMenu);
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
@@ -83,11 +87,33 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
-        if (!isPlaying() && m_pHoveredMark) {
+        if (!isPlaying() && (m_pHoveredMark || m_hoveredBeat)) {
+            bool hasBeat = false, hasCue = false;
+            if (m_hoveredBeat) {
+                m_pBeatMenu->setBeat(m_hoveredBeat->getBeat());
+                hasBeat = true;
+            } else {
+                m_pBeatMenu->setBeat(std::nullopt);
+            }
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
-                m_pCueMenuPopup->popup(event->globalPos());
+                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
+                        *this,
+                        event->globalPos(),
+                        m_pCueMenuPopup->size());
+                m_pCueMenuPopup->move(cueMenuTopLeft);
+                hasCue = true;
+            }
+            // Clear Cue menu option from Beat Menu.
+            m_pBeatMenu->removeOptions(WBeatMenu::Option::CueMenu);
+            if (hasCue && !hasBeat) {
+                m_pCueMenuPopup->show();
+            } else if (hasBeat) {
+                if (hasCue) {
+                    m_pBeatMenu->addOptions(WBeatMenu::Option::CueMenu);
+                }
+                m_pBeatMenu->popup(event->globalPos());
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't
@@ -101,8 +127,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         }
     }
 
-    // Set the cursor to a hand while the mouse is down (when cue menu is not open).
-    if (!m_pCueMenuPopup->isVisible()) {
+    // Set the cursor to a hand while the mouse is down (when menu is not open).
+    if (!m_pCueMenuPopup->isVisible() && !m_pBeatMenu->isVisible()) {
         setCursor(Qt::ClosedHandCursor);
     }
 }
@@ -154,6 +180,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
                 m_pHoveredMark = nullptr;
             }
         }
+        m_hoveredBeat = m_waveformWidget->getBeatAtPoint(event->pos());
     }
 }
 
@@ -200,6 +227,13 @@ void WWaveformViewer::leaveEvent(QEvent*) {
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
+        if (track && track->getBeats()) {
+            m_pBeatMenu->setBeatsPointer(track->getBeats());
+            connect(track->getBeats().get(),
+                    &mixxx::Beats::updated,
+                    m_pBeatMenu,
+                    &WBeatMenu::slotBeatsUpdated);
+        }
     }
 }
 
@@ -238,6 +272,13 @@ void WWaveformViewer::setZoom(double zoom) {
 
 void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
     m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+}
+
+void WWaveformViewer::setBeatGridMode(BeatGridMode mode) {
+    m_waveformWidget->setBeatGridMode(mode);
+    m_pBeatMenu->setOptions(mode == BeatGridMode::BeatsAndDownbeats
+                    ? WBeatMenu::Option::SetDownbeat
+                    : WBeatMenu::Options());
 }
 
 void WWaveformViewer::setPlayMarkerPosition(double position) {
@@ -283,4 +324,8 @@ void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
 
 bool WWaveformViewer::isPlaying() const {
     return m_pPlayEnabled->get();
+}
+
+void WWaveformViewer::slotCueMenuButtonClickedInBeatMenu() {
+    m_pCueMenuPopup->show();
 }

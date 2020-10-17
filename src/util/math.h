@@ -90,3 +90,8 @@ inline const T db2ratio(const T a) {
                   "db2ratio works only for floating point types");
     return static_cast<T>(pow(10, a / 20));
 }
+
+inline uint clockModulo(int dividend, uint divisor) {
+    int rawModulo = dividend % divisor;
+    return rawModulo < 0 ? rawModulo + divisor : rawModulo;
+}

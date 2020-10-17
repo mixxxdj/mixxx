@@ -6,9 +6,12 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "preferences/beatgridmode.h"
+#include "track/track.h"
 #include "track/track_decl.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
+#include "waveform/renderers/waveformbeat.h"
 #include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -45,6 +48,8 @@ class WaveformWidgetRenderer {
     }
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
+    /// Get beat near a point on the waveform widget.
+    std::optional<WaveformBeat> getBeatAtPoint(QPoint point) const;
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
@@ -53,6 +58,7 @@ class WaveformWidgetRenderer {
 
     void setDisplayBeatGrid(bool set);
     void setDisplayBeatGridAlpha(int alpha);
+    void setBeatGridMode(BeatGridMode mode);
 
     double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
     double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
@@ -76,12 +82,17 @@ class WaveformWidgetRenderer {
 
     double getPlayPos() const { return m_playPos;}
     double getPlayPosVSample() const { return m_playPosVSample;}
-    double getTotalVSample() const { return m_totalVSamples;}
+    double getTotalVSample() const {
+        return m_totalVSamples;
+    }
     double getZoomFactor() const { return m_zoomFactor;}
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
 
-    int getBeatGridAlpha() const { return m_alphaBeatGrid; }
+    int beatGridAlpha() const { return m_alphaBeatGrid; }
+    BeatGridMode beatGridMode() const {
+        return m_modeBeatGrid;
+    }
 
     void resize(int width, int height, float devicePixelRatio);
     int getHeight() const { return m_height;}
@@ -102,6 +113,10 @@ class WaveformWidgetRenderer {
     void setTrack(TrackPointer track);
     void setMarkPositions(QMap<WaveformMarkPointer, int> markPositions) {
         m_markPositions = markPositions;
+    }
+
+    void setBeatsOnScreen(QList<WaveformBeat> beatsOnScreen) {
+        m_beatsOnScreen = beatsOnScreen;
     }
 
     double getPlayMarkerPosition() {
@@ -134,6 +149,7 @@ class WaveformWidgetRenderer {
     double m_audioSamplePerPixel;
 
     int m_alphaBeatGrid;
+    BeatGridMode m_modeBeatGrid;
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
@@ -163,13 +179,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
     QMap<WaveformMarkPointer, int> m_markPositions;
-    // draw play position indicator triangles
-    void drawPlayPosmarker(QPainter* painter);
-    void drawTriangle(QPainter* painter,
-            QBrush fillColor,
-            QPointF p1,
-            QPointF p2,
-            QPointF p3);
+    QList<WaveformBeat> m_beatsOnScreen;
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

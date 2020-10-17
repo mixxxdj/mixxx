@@ -210,16 +210,17 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjusts the headphone output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
-    add("headMix")
-            << tr("Headphone Mix")
-            << tr("Crossfades the headphone output between the main mix and cueing (PFL or Pre-Fader Listening) signal.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+    add("headMix") << tr("Headphone Mix")
+                   << tr("Crossfades the headphone output between the main mix "
+                         "and cueing (PFL or Pre-Fader Listening) signal.")
+                   << QString("%1: %2").arg(rightClick, resetToDefault);
 
-    add("headSplit")
-            << tr("Headphone Split Cue")
-            << tr("If activated, the main mix signal plays in the right channel, while the cueing signal "
-                  "plays in the left channel.")
-            << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
+    add("headSplit") << tr("Headphone Split Cue")
+                     << tr("If activated, the main mix signal plays in the "
+                           "right channel, while the cueing signal "
+                           "plays in the left channel.")
+                     << tr("Adjust the Headphone Mix so in the left channel is "
+                           "not the pure cueing signal.");
 
     add("orientation")
             << tr("Crossfader Orientation")
@@ -271,19 +272,17 @@ void Tooltips::addStandardTooltips() {
 
     add("maximize_library")
             << tr("Maximize Library")
-            << tr("Hide all skin sections except the decks to have more screen space for the track library.");
+            << tr("Hide all skin sections except the decks to have more screen "
+                  "space for the track library.");
 
-    add("show_mixer")
-            << tr("Toggle Mixer")
-            << tr("Show or hide the mixer.");
+    add("show_mixer") << tr("Toggle Mixer") << tr("Show or hide the mixer.");
 
     add("show_vumeters")
             << tr("Volume Meters")
             << tr("Show/hide volume meters for channels and master output.");
 
     add("microphone_volume")
-            << tr("Microphone Volume")
-            << tr("Adjusts the microphone volume.")
+            << tr("Microphone Volume") << tr("Adjusts the microphone volume.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("microphone_pregain")
@@ -304,17 +303,24 @@ void Tooltips::addStandardTooltips() {
     add("talkover_duck_mode")
             << tr("Microphone Talkover Mode")
             << tr("Off: Do not reduce music volume")
-            << tr("Auto: Automatically reduce music volume when microphone volume rises above threshold.")
-            << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.")
-            << tr("Adjust the amount the music volume is reduced with the Strength knob.");
+            << tr("Auto: Automatically reduce music volume when microphone "
+                  "volume rises above threshold.")
+            << tr("Manual: Reduce music volume by a fixed amount set by the "
+                  "Strength knob.")
+            << tr("Adjust the amount the music volume is reduced with the "
+                  "Strength knob.");
 
     add("talkover_duck_strength")
             << tr("Microphone Talkover Ducking Strength")
-            << tr("Adjust the amount the music volume is reduced with the Strength knob.")
+            << tr("Adjust the amount the music volume is reduced with the "
+                  "Strength knob.")
             << tr("Behavior depends on Microphone Talkover Mode:")
             << tr("Off: Does nothing")
-            << tr("Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.")
-            << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
+            << tr("Auto: Sets how much to reduce the music volume when the "
+                  "volume of active microphones rises above threshold.")
+            << tr("Manual: Sets how much to reduce the music volume, when "
+                  "talkover is activated regardless of volume of microphone "
+                  "inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
     add("rate_perm_up_rate_perm_up_small")
@@ -507,121 +513,137 @@ void Tooltips::addStandardTooltips() {
             << tr("Sends the selected channel's audio to the headphone output, "
                   "selected in Preferences -> Sound Hardware.");
 
-    add("mute")
-            << tr("Mute")
-            << tr("Mutes the selected channel's audio in the main output.");
+      add("mute")
+              << tr("Mute")
+              << tr("Mutes the selected channel's audio in the main output.");
 
-    add("master_enable")
-            << tr("Main mix enable")
-            << tr("Hold or short click for latching to "
-                  "mix this input into the main output.");
+      add("master_enable")
+              << tr("Main mix enable")
+              << tr("Hold or short click for latching to "
+                    "mix this input into the main output.");
 
-    add("back_start")
-            << tr("Fast Rewind")
-            << QString("%1: %2").arg(leftClick, tr("Fast rewind through the track."))
-            << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track."));
+      add("back_start")
+              << tr("Fast Rewind")
+              << QString("%1: %2").arg(leftClick, tr("Fast rewind through the track."))
+              << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track."));
 
-    add("fwd_end")
-            << tr("Fast Forward")
-            << QString("%1: %2").arg(leftClick, tr("Fast forward through the track."))
-            << QString("%1: %2").arg(rightClick, tr("Jumps to the end of the track."));
+      add("fwd_end")
+              << tr("Fast Forward")
+              << QString("%1: %2").arg(leftClick, tr("Fast forward through the track."))
+              << QString("%1: %2").arg(rightClick, tr("Jumps to the end of the track."));
 
-    // Ghetto-Sync (TM)
-    add("beatsync_beatsync_tempo")
-            << tr("Old Synchronize")
-            << tr("(This skin should be updated to use Master Sync!)")
-            << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "
-                                                   "if BPM is detected on both."))
-            << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track, "
-                                                    "if BPM is detected on both."))
-            << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
-            << tr("If no deck is playing, syncs to the first deck that has a BPM.")
-            << tr("Decks can't sync to samplers and samplers can only sync to decks.");
+      // Ghetto-Sync (TM)
+      add("beatsync_beatsync_tempo")
+              << tr("Old Synchronize")
+              << tr("(This skin should be updated to use Master Sync!)")
+              << QString("%1: %2").arg(leftClick,
+                         tr("Syncs the tempo (BPM) and phase to that of the "
+                            "other track, "
+                            "if BPM is detected on both."))
+              << QString("%1: %2").arg(rightClick,
+                         tr("Syncs the tempo (BPM) to that of the other track, "
+                            "if BPM is detected on both."))
+              << tr("Syncs to the first deck (in numerical order) that is "
+                    "playing a track and has a BPM.")
+              << tr("If no deck is playing, syncs to the first deck that has a "
+                    "BPM.")
+              << tr("Decks can't sync to samplers and samplers can only sync "
+                    "to decks.");
 
-    // Awesome-Sync (TM)
-    add("sync_enabled")
-            << tr("Enable Master Sync")
-            << tr("Tap to sync the tempo to other playing tracks or the master clock.")
-            << tr("Hold for at least a second to enable sync lock for this deck.")
-            << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
-                  "quantize enabled will always have their beats lined up.");
+      // Awesome-Sync (TM)
+      add("sync_enabled")
+              << tr("Enable Master Sync")
+              << tr("Tap to sync the tempo to other playing tracks or the "
+                    "master clock.")
+              << tr("Hold for at least a second to enable sync lock for this "
+                    "deck.")
+              << tr("Decks with sync locked will all play at the same tempo, "
+                    "and decks that also have "
+                    "quantize enabled will always have their beats lined up.");
 
-    // TODO(owen): find a better phrase for "the other deck"
-    add("sync_reset_key")
-            << tr("Sync and Reset Key")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch to a key that allows a harmonic transition "
-                                                   "from the other track. Requires a detected key on both involved decks."))
-            << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
+      // TODO(owen): find a better phrase for "the other deck"
+      add("sync_reset_key")
+              << tr("Sync and Reset Key")
+              << QString("%1: %2").arg(leftClick,
+                         tr("Sets the pitch to a key that allows a harmonic "
+                            "transition "
+                            "from the other track. Requires a detected key on "
+                            "both involved decks."))
+              << QString("%1: %2").arg(rightClick,
+                         tr("Resets the key to the original track key."));
 
-    add("sync_master")
-            << tr("Enable Sync Clock Master")
-            << tr("When enabled, this device will serve as the master clock for all other decks.");
+      add("sync_master") << tr("Enable Sync Clock Master")
+                         << tr("When enabled, this device will serve as the "
+                               "master clock for all other decks.");
 
-    add("rate")
-            << tr("Speed Control")
-            << tr("Changes the track playback speed (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+      add("rate") << tr("Speed Control")
+                  << tr("Changes the track playback speed (affects both the "
+                        "tempo and the pitch). If keylock is enabled, only the "
+                        "tempo is affected.")
+                  << QString("%1: %2").arg(rightClick, resetToDefault);
 
-    add("pitch")
-            << tr("Pitch Control")
-            << tr("Changes the track pitch independent of the tempo.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+      add("pitch") << tr("Pitch Control")
+                   << tr("Changes the track pitch independent of the tempo.")
+                   << QString("%1: %2").arg(rightClick, resetToDefault);
 
-    add("pitch_up")
-            << tr("Pitch Control")
-            << tr("Changes the track pitch independent of the tempo.")
-            << QString("%1: %2").arg(leftClick, tr("Increases the pitch by one semitone."))
-            << QString("%1: %2").arg(rightClick, tr("Increases the pitch by 10 cents."));
+      add("pitch_up") << tr("Pitch Control")
+                      << tr("Changes the track pitch independent of the tempo.")
+                      << QString("%1: %2").arg(leftClick,
+                                 tr("Increases the pitch by one semitone."))
+                      << QString("%1: %2").arg(rightClick,
+                                 tr("Increases the pitch by 10 cents."));
 
-    add("pitch_down")
-            << tr("Pitch Control")
-            << tr("Changes the track pitch independent of the tempo.")
-            << QString("%1: %2").arg(leftClick, tr("Decreases the pitch by one semitone."))
-            << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 10 cents."));
+      add("pitch_down")
+              << tr("Pitch Control")
+              << tr("Changes the track pitch independent of the tempo.")
+              << QString("%1: %2").arg(
+                         leftClick, tr("Decreases the pitch by one semitone."))
+              << QString("%1: %2").arg(
+                         rightClick, tr("Decreases the pitch by 10 cents."));
 
-    add("pitch_adjust")
-            << tr("Pitch Adjust")
-            << tr("Adjust the pitch in addition to the speed slider pitch.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
+      add("pitch_adjust")
+              << tr("Pitch Adjust")
+              << tr("Adjust the pitch in addition to the speed slider pitch.")
+              << QString("%1: %2").arg(rightClick, resetToDefault);
 
+      add("rate_display")
+              << tr("Pitch Rate")
+              << tr("Displays the current playback rate of the track.");
 
-    add("rate_display")
-            << tr("Pitch Rate")
-            << tr("Displays the current playback rate of the track.");
+      add("repeat") << tr("Repeat")
+                    << tr("When active the track will repeat if you go past "
+                          "the end or reverse before the start.");
 
-    add("repeat")
-            << tr("Repeat")
-            << tr("When active the track will repeat if you go past the end or reverse before the start.");
+      add("eject") << tr("Eject") << tr("Ejects track from the player.");
 
-    add("eject")
-            << tr("Eject")
-            << tr("Ejects track from the player.");
+      add("hotcue") << tr("Hotcue")
+                    << QString("%1: %2").arg(leftClick,
+                               tr("If hotcue is set, jumps to the hotcue."))
+                    << tr("If hotcue is not set, sets the hotcue to the "
+                          "current play position.")
+                    << quantizeSnap
+                    << QString("%1: %2").arg(rightClick,
+                               tr("Opens a menu to clear hotcues or edit their "
+                                  "labels and colors."));
 
-    add("hotcue")
-            << tr("Hotcue")
-            << QString("%1: %2").arg(leftClick, tr("If hotcue is set, jumps to the hotcue."))
-            << tr("If hotcue is not set, sets the hotcue to the current play position.")
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Opens a menu to clear hotcues or edit their labels and colors."));
+      // Status displays and toggle buttons
+      add("toggle_recording")
+              << tr("Record Mix")
+              << tr("Toggle mix recording.");
 
-    // Status displays and toggle buttons
-    add("toggle_recording")
-            << tr("Record Mix")
-            << tr("Toggle mix recording.");
+      // Status displays and toggle buttons
+      add("recording_duration")
+              << tr("Recording Duration")
+              << tr("Displays the duration of the running recording.");
 
-    // Status displays and toggle buttons
-    add("recording_duration")
-            << tr("Recording Duration")
-            << tr("Displays the duration of the running recording.");
-
-    // For legacy reasons also add tooltips for "shoutcast_enabled".
-    for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
-        add(key)
-                << tr("Enable Live Broadcasting")
-                << tr("Stream your mix over the Internet.")
-                << tr("Provides visual feedback for Live Broadcasting status:")
-                << tr("disabled, connecting, connected, failure.");
-    }
+      // For legacy reasons also add tooltips for "shoutcast_enabled".
+      for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
+          add(key)
+                  << tr("Enable Live Broadcasting")
+                  << tr("Stream your mix over the Internet.")
+                  << tr("Provides visual feedback for Live Broadcasting status:")
+                  << tr("disabled, connecting, connected, failure.");
+      }
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")
