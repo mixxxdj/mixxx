@@ -251,7 +251,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 
 QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
-        DEBUG_ASSERT(!text().isNull());
+        DEBUG_ASSERT(!currentText().isNull());
         return currentText();
     } else {
         return QString();
