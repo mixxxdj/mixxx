@@ -53,8 +53,6 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         //          << "totalVSamples" << totalVSamples
         //          << "WaveformRendererPreroll::playMarkerPosition=" << playMarkerPositionFrac;
 
-        const double polyLength = 40.0 / vSamplesPerPixel;
-        const double polyVSampleSize = (polyLength + 1) * vSamplesPerPixel;
         const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0f;
         const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0f;
 
@@ -65,6 +63,10 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         //painter->setBackgroundMode(Qt::TransparentMode);
         painter->setWorldMatrixEnabled(false);
         painter->setPen(QPen(QBrush(m_color), std::max(1.0, scaleFactor())));
+
+        const double polyPixelWidth = 40.0 / vSamplesPerPixel;
+        const double polyPixelOffset = polyPixelWidth + 1;
+        const double polyVSampleOffset = polyPixelOffset * vSamplesPerPixel;
 
         // Rotate if drawing vertical waveforms
         if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
@@ -79,13 +81,14 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
-                    << QPointF(-polyLength, halfBreadth - halfPolyBreadth)
-                    << QPointF(-polyLength, halfBreadth + halfPolyBreadth);
+                    << QPointF(-polyPixelWidth, halfBreadth - halfPolyBreadth)
+                    << QPointF(-polyPixelWidth, halfBreadth + halfPolyBreadth);
             polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
 
-            for (; triangleTipVSamplePosition > 0; triangleTipVSamplePosition -= polyVSampleSize) {
+            for (; triangleTipVSamplePosition > 0;
+                    triangleTipVSamplePosition -= polyVSampleOffset) {
                 painter->drawPolygon(polygon);
-                polygon.translate(-(polyLength + 1), 0);
+                polygon.translate(-polyPixelOffset, 0);
             }
         }
 
@@ -98,14 +101,14 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
-                    << QPointF(polyLength, halfBreadth - halfPolyBreadth)
-                    << QPointF(polyLength, halfBreadth + halfPolyBreadth);
+                    << QPointF(polyPixelWidth, halfBreadth - halfPolyBreadth)
+                    << QPointF(polyPixelWidth, halfBreadth + halfPolyBreadth);
             polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
 
             for (; triangleTipVSamplePosition < numberOfVSamples;
-                    triangleTipVSamplePosition += polyVSampleSize) {
+                    triangleTipVSamplePosition += polyVSampleOffset) {
                 painter->drawPolygon(polygon);
-                polygon.translate(polyLength + 1, 0);
+                polygon.translate(polyPixelOffset, 0);
             }
         }
     }
