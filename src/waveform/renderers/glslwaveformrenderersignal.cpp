@@ -3,6 +3,7 @@
 
 #include <QGLFramebufferObject>
 
+#include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -173,9 +174,12 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     // We create a frame buffer that is 4x the size of the renderer itself to
     // "oversample" the texture relative to the surface we're drawing on.
-    const int oversamplingFactor = 4;
-    const int bufferWidth = oversamplingFactor * m_waveformRenderer->getWidth() * devicePixelRatio;
-    const int bufferHeight = oversamplingFactor * m_waveformRenderer->getHeight() * devicePixelRatio;
+    constexpr int oversamplingFactor = 4;
+    const auto bufferWidth = oversamplingFactor *
+            static_cast<int>(m_waveformRenderer->getWidth() * devicePixelRatio);
+    const auto bufferHeight = oversamplingFactor *
+            static_cast<int>(
+                    m_waveformRenderer->getHeight() * devicePixelRatio);
 
     m_framebuffer = std::make_unique<QGLFramebufferObject>(bufferWidth,
                                                            bufferHeight);
@@ -282,8 +286,10 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize/2.0;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize/2.0;
+    const auto firstVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getFirstDisplayedPosition() * dataSize / 2.0);
+    const auto lastVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getLastDisplayedPosition() * dataSize / 2.0);
 
     // const int firstIndex = int(firstVisualIndex+0.5);
     // firstVisualIndex = firstIndex - firstIndex%2;
@@ -319,26 +325,47 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
         m_frameShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
 
-        m_frameShaderProgram->setUniformValue("firstVisualIndex", (float)firstVisualIndex);
-        m_frameShaderProgram->setUniformValue("lastVisualIndex", (float)lastVisualIndex);
+        m_frameShaderProgram->setUniformValue("firstVisualIndex", firstVisualIndex);
+        m_frameShaderProgram->setUniformValue("lastVisualIndex", lastVisualIndex);
 
         m_frameShaderProgram->setUniformValue("allGain", allGain);
         m_frameShaderProgram->setUniformValue("lowGain", lowGain);
         m_frameShaderProgram->setUniformValue("midGain", midGain);
         m_frameShaderProgram->setUniformValue("highGain", highGain);
 
-        m_frameShaderProgram->setUniformValue("axesColor", QVector4D(m_axesColor_r, m_axesColor_g,
-                                                                     m_axesColor_b, m_axesColor_a));
+        m_frameShaderProgram->setUniformValue("axesColor",
+                QVector4D(static_cast<GLfloat>(m_axesColor_r),
+                        static_cast<GLfloat>(m_axesColor_g),
+                        static_cast<GLfloat>(m_axesColor_b),
+                        static_cast<GLfloat>(m_axesColor_a)));
 
-        QVector4D lowColor = m_rgbShader ?
-                QVector4D(m_rgbLowColor_r, m_rgbLowColor_g, m_rgbLowColor_b, 1.0) :
-                QVector4D(m_lowColor_r, m_lowColor_g, m_lowColor_b, 1.0);
-        QVector4D midColor = m_rgbShader ?
-                QVector4D(m_rgbMidColor_r, m_rgbMidColor_g, m_rgbMidColor_b, 1.0) :
-                QVector4D(m_midColor_r, m_midColor_g, m_midColor_b, 1.0);
-        QVector4D highColor = m_rgbShader ?
-                QVector4D(m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b, 1.0) :
-                QVector4D(m_highColor_r, m_highColor_g, m_highColor_b, 1.0);
+        QVector4D lowColor = m_rgbShader
+                ? QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
+                          static_cast<GLfloat>(m_rgbLowColor_g),
+                          static_cast<GLfloat>(m_rgbLowColor_b),
+                          1.0f)
+                : QVector4D(static_cast<GLfloat>(m_lowColor_r),
+                          static_cast<GLfloat>(m_lowColor_g),
+                          static_cast<GLfloat>(m_lowColor_b),
+                          1.0f);
+        QVector4D midColor = m_rgbShader
+                ? QVector4D(static_cast<GLfloat>(m_rgbMidColor_r),
+                          static_cast<GLfloat>(m_rgbMidColor_g),
+                          static_cast<GLfloat>(m_rgbMidColor_b),
+                          1.0f)
+                : QVector4D(static_cast<GLfloat>(m_midColor_r),
+                          static_cast<GLfloat>(m_midColor_g),
+                          static_cast<GLfloat>(m_midColor_b),
+                          1.0f);
+        QVector4D highColor = m_rgbShader
+                ? QVector4D(static_cast<GLfloat>(m_rgbHighColor_r),
+                          static_cast<GLfloat>(m_rgbHighColor_g),
+                          static_cast<GLfloat>(m_rgbHighColor_b),
+                          1.0f)
+                : QVector4D(static_cast<GLfloat>(m_highColor_r),
+                          static_cast<GLfloat>(m_highColor_g),
+                          static_cast<GLfloat>(m_highColor_b),
+                          1.0f);
         m_frameShaderProgram->setUniformValue("lowColor", lowColor);
         m_frameShaderProgram->setUniformValue("midColor", midColor);
         m_frameShaderProgram->setUniformValue("highColor", highColor);
@@ -403,8 +430,12 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         // pixels like QPainter provides. We scale the viewport by the
         // devicePixelRatio to render the texture to the surface.
         const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-        glViewport(0, 0, devicePixelRatio * m_waveformRenderer->getWidth(),
-                   devicePixelRatio * m_waveformRenderer->getHeight());
+        glViewport(0,
+                0,
+                static_cast<GLsizei>(
+                        devicePixelRatio * m_waveformRenderer->getWidth()),
+                static_cast<GLsizei>(
+                        devicePixelRatio * m_waveformRenderer->getHeight()));
         glBindTexture(GL_TEXTURE_2D, m_framebuffer->texture());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

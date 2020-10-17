@@ -8,6 +8,7 @@
 
 #include "preferences/beatgridmode.h"
 #include "track/track.h"
+#include "track/track_decl.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformbeat.h"
@@ -17,7 +18,6 @@
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
-class Track;
 class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;
@@ -82,6 +82,9 @@ class WaveformWidgetRenderer {
 
     double getPlayPos() const { return m_playPos;}
     double getPlayPosVSample() const { return m_playPosVSample;}
+    double getTotalVSample() const {
+        return m_totalVSamples;
+    }
     double getZoomFactor() const { return m_zoomFactor;}
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
@@ -153,6 +156,7 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
+    int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
     double m_rateRatio;
     ControlProxy* m_pGainControlObject;

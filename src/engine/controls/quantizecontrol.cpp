@@ -10,7 +10,7 @@
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
-#include "util/assert.h"
+#include "track/track.h"
 #include "util/frameadapter.h"
 
 QuantizeControl::QuantizeControl(QString group,

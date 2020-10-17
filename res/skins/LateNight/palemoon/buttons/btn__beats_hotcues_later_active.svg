@@ -25,14 +25,10 @@
      id="defs18" />
   <path
      id="path833-3"
-     d="M 12,3 H 4 v 7 h 6 v 11 h 2 z M 11,9 H 5 V 4 h 6 z"
-     style="fill:#000001;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+     d="M 14,3 H 6 v 7 h 6 v 11 h 2 z"
+     style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   <path
-     style="opacity:1;fill:#000001;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="m 5,4 h 6 V 9 H 5 Z"
-     id="rect835-6" />
-  <path
-     d="m 13,16 h 2 v 3 l 7,-4 -7,-4 v 3 h -2 z"
-     id="path6-7"
-     style="fill:#000001;fill-opacity:1" />
+     d="m 15,20 7,-4 -7,-4 z"
+     id="path6"
+     style="fill:#000000;fill-opacity:1" />
 </svg>

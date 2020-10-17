@@ -3,12 +3,8 @@
 #include <gtest/gtest.h>
 
 #include <QScopedPointer>
-#include <QtDebug>
 
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "mixxxtest.h"
-#include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/track.h"
 

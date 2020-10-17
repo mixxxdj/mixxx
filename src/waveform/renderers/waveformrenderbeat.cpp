@@ -4,11 +4,13 @@
 #include <QPaintEvent>
 #include <QPainter>
 
+#include "control/controlobject.h"
 #include "track/beats.h"
 #include "track/track.h"
 #include "util/frameadapter.h"
 #include "util/painterscope.h"
 #include "waveform/renderers/waveformbeat.h"
+#include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 

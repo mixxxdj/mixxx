@@ -7,6 +7,8 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "track/track.h"
+#include "util/assert.h"
 #include "util/duration.h"
 #include "util/frameadapter.h"
 #include "util/logger.h"
@@ -329,7 +331,7 @@ bool BpmControl::syncTempo() {
         // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
 
-        float fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
+        double fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
         if (fabs(fThisLocalBpm * 2.0 - fOtherLocalBpm) < fFileBpmDelta) {
             desiredRate /= 2.0;
         } else if (fabs(fThisLocalBpm - 2.0 * fOtherLocalBpm) < fFileBpmDelta) {
@@ -754,7 +756,7 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
 
             // Syncing to after the loop end.
             if (endDelta > 0 && loopLength > 0.0) {
-                int i = endDelta / loopLength;
+                double i = endDelta / loopLength;
                 newPlaypos = loopStartPositionFrames + endDelta - i * loopLength;
 
                 // Move new position after loop jump into phase as well.
@@ -927,7 +929,7 @@ mixxx::FramePos BpmControl::getBeatMatchPosition(
 
             // Syncing to after the loop end.
             if (endDelta > 0 && loopLength > 0.0) {
-                int i = endDelta / loopLength;
+                double i = endDelta / loopLength;
                 newPlaypos = loopStartPositionFrames + endDelta - i * loopLength;
 
                 // Move new position after loop jump into phase as well.

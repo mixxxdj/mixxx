@@ -352,9 +352,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 }
 
 void WaveformWidgetFactory::destroyWidgets() {
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        WaveformWidgetAbstract* pWidget = m_waveformWidgetHolders[i].m_waveformWidget;;
-        m_waveformWidgetHolders[i].m_waveformWidget = NULL;
+    for (auto& holder : m_waveformWidgetHolders) {
+        WaveformWidgetAbstract* pWidget = holder.m_waveformWidget;
+        holder.m_waveformWidget = NULL;
         delete pWidget;
     }
     m_waveformWidgetHolders.clear();
@@ -428,7 +428,7 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
     if (m_vsyncThread) {
-        m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+        m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
     }
 }
 
@@ -518,13 +518,13 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
     //qDebug() << "recreate start";
 
     //re-create/setup all waveform widgets
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
+    for (auto& holder : m_waveformWidgetHolders) {
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
         double previousZoom = previousWidget->getZoomFactor();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
+        double previousbeatgridAlpha = previousWidget->beatGridAlpha();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -534,6 +534,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         viewer->setZoom(previousZoom);
         viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
         viewer->setBeatGridMode(m_beatGridMode);
+        viewer->setDisplayBeatGridAlpha(previousbeatgridAlpha);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
@@ -555,8 +556,8 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(m_defaultZoom);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformViewer->setZoom(m_defaultZoom);
     }
 }
 
@@ -571,16 +572,16 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 
     double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
-    for (std::size_t i = 1; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformViewer->setZoom(refZoom);
     }
 }
 
 void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     m_beatGridAlpha = alpha;
 
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
 }
 
@@ -686,7 +687,7 @@ void WaveformWidgetFactory::render() {
         emit waveformUpdateTick();
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
-        m_frameCnt += 1.0;
+        m_frameCnt += 1.0f;
         mixxx::Duration timeCnt = m_time.elapsed();
         if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
@@ -711,8 +712,8 @@ void WaveformWidgetFactory::swap() {
         if (m_type) {   // no regular updates for an empty waveform
             // Show rendered buffer from last render() run
             //qDebug() << "swap() start" << m_vsyncThread->elapsed();
-            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+            for (const auto& holder : m_waveformWidgetHolders) {
+                WaveformWidgetAbstract* pWaveformWidget = holder.m_waveformWidget;
 
                 // Don't swap invalid / invisible widgets or widgets with an
                 // unexposed window. Prevents continuous log spew of
@@ -1005,7 +1006,7 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_vsyncThread = new VSyncThread(this);
 
     m_vsyncThread->setVSyncType(m_vSyncType);
-    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+    m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
 
     connect(m_vsyncThread,
             &VSyncThread::vsyncRender,

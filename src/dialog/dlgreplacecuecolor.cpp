@@ -11,6 +11,7 @@
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/track.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {

@@ -4,6 +4,7 @@
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
+#include "track/track.h"
 #include "util/frameadapter.h"
 
 ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)

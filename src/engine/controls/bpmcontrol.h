@@ -5,14 +5,14 @@
 
 #include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
+#include "track/beats.h"
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 
-class ControlObject;
-class ControlProxy;
 class EngineBuffer;
 class SyncControl;
 

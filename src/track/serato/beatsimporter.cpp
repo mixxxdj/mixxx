@@ -58,7 +58,7 @@ QVector<FramePos> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
                 pMarker->beatsTillNextMarker();
 
         beats.resize(beats.size() + pMarker->beatsTillNextMarker());
-        for (int j = 0; j < pMarker->beatsTillNextMarker(); ++j) {
+        for (quint32 j = 0; j < pMarker->beatsTillNextMarker(); ++j) {
             beats.append(FramePos(streamInfo.getSignalInfo().millis2frames(
                     beatPositionMillis + (j * beatLengthMillis))));
         }

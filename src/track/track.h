@@ -10,26 +10,11 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#include "track/track_decl.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
-#include "util/memory.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
-
-// forward declaration(s)
-class Track;
-
-typedef std::shared_ptr<Track> TrackPointer;
-typedef std::weak_ptr<Track> TrackWeakPointer;
-typedef QList<TrackPointer> TrackPointerList;
-
-Q_DECLARE_METATYPE(TrackPointer);
-
-enum class ExportTrackMetadataResult {
-    Succeeded,
-    Failed,
-    Skipped,
-};
 
 class Track : public QObject {
     Q_OBJECT

@@ -18,8 +18,8 @@ void WaveformRenderPlayMarker::draw(QPainter* painter, QPaintEvent* event) {
     const int width = m_waveformRenderer->getWidth();
     const double playMarkerPosition =
             m_waveformRenderer->getPlayMarkerPosition();
-    const int lineX = width * playMarkerPosition;
-    const int lineY = height * playMarkerPosition;
+    const int lineX = static_cast<int>(width * playMarkerPosition);
+    const int lineY = static_cast<int>(height * playMarkerPosition);
     const auto colors = m_waveformRenderer->getWaveformSignalColors();
 
     // draw dim outlines to increase playpos/waveform contrast

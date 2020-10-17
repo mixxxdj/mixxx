@@ -3,12 +3,14 @@
 #include <QtDebug>
 
 #include "library/banshee/bansheedbconnection.h"
+#include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "track/track.h"
 
 #define BANSHEE_TABLE "banshee"
 #define CLM_TRACK_ID "track_id"

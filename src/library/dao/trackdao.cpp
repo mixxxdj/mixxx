@@ -1126,7 +1126,7 @@ bool setTrackReplayGainRatio(const QSqlRecord& record, const int column,
 bool setTrackReplayGainPeak(const QSqlRecord& record, const int column,
                         TrackPointer pTrack) {
     mixxx::ReplayGain replayGain(pTrack->getReplayGain());
-    replayGain.setPeak(record.value(column).toDouble());
+    replayGain.setPeak(record.value(column).toFloat());
     pTrack->setReplayGain(replayGain);
     return false;
 }

@@ -6,7 +6,11 @@
 
 #include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/beats.h"
+#include "track/keys.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 
