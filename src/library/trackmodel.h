@@ -49,42 +49,48 @@ class TrackModel {
     };
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
+    // Note that these enum values are used literally by controller scripts and must never be changed!
+    // Both reordering or insertion of new enum variants is strictly forbidden!
+    // New variants must always be inserted between the last valid and before the terminating variant SORTCOLUMN_ID_MAX!
     enum SortColumnId {
-        SORTCOLUMN_INVALID = -2,
-        SORTCOLUMN_CURRENTINDEX = -1, // Column with the cursor on it
-        SORTCOLUMN_ARTIST = 0,
-        SORTCOLUMN_TITLE,
-        SORTCOLUMN_ALBUM,
-        SORTCOLUMN_ALBUMARTIST,
-        SORTCOLUMN_YEAR,
-        SORTCOLUMN_GENRE,
-        SORTCOLUMN_COMPOSER,
-        SORTCOLUMN_GROUPING,
-        SORTCOLUMN_TRACKNUMBER,
-        SORTCOLUMN_FILETYPE,
-        SORTCOLUMN_NATIVELOCATION,
-        SORTCOLUMN_COMMENT,
-        SORTCOLUMN_DURATION,
-        SORTCOLUMN_BITRATE,
-        SORTCOLUMN_BPM,
-        SORTCOLUMN_REPLAYGAIN,
-        SORTCOLUMN_DATETIMEADDED,
-        SORTCOLUMN_TIMESPLAYED,
-        SORTCOLUMN_RATING,
-        SORTCOLUMN_KEY,
-        SORTCOLUMN_PREVIEW,
-        SORTCOLUMN_COVERART,
-        SORTCOLUMN_POSITION,
-        SORTCOLUMN_PLAYLISTID,
-        SORTCOLUMN_LOCATION,
-        SORTCOLUMN_FILENAME,
-        SORTCOLUMN_FILE_MODIFIED_TIME,
-        SORTCOLUMN_FILE_CREATION_TIME,
-        SORTCOLUMN_SAMPLERATE,
-        SORTCOLUMN_COLOR,
+        SORTCOLUMN_INVALID = -1,
+        SORTCOLUMN_CURRENTINDEX = 0, // Column with the cursor on it
+        SORTCOLUMN_ARTIST = 1,
+        SORTCOLUMN_TITLE = 2,
+        SORTCOLUMN_ALBUM = 3,
+        SORTCOLUMN_ALBUMARTIST = 4,
+        SORTCOLUMN_YEAR = 5,
+        SORTCOLUMN_GENRE = 6,
+        SORTCOLUMN_COMPOSER = 7,
+        SORTCOLUMN_GROUPING = 8,
+        SORTCOLUMN_TRACKNUMBER = 9,
+        SORTCOLUMN_FILETYPE = 10,
+        SORTCOLUMN_NATIVELOCATION = 11,
+        SORTCOLUMN_COMMENT = 12,
+        SORTCOLUMN_DURATION = 13,
+        SORTCOLUMN_BITRATE = 14,
+        SORTCOLUMN_BPM = 15,
+        SORTCOLUMN_REPLAYGAIN = 16,
+        SORTCOLUMN_DATETIMEADDED = 17,
+        SORTCOLUMN_TIMESPLAYED = 18,
+        SORTCOLUMN_RATING = 19,
+        SORTCOLUMN_KEY = 20,
+        SORTCOLUMN_PREVIEW = 21,
+        SORTCOLUMN_COVERART = 22,
+        SORTCOLUMN_POSITION = 23,
+        SORTCOLUMN_PLAYLISTID = 24,
+        SORTCOLUMN_LOCATION = 25,
+        SORTCOLUMN_FILENAME = 26,
+        SORTCOLUMN_FILE_MODIFIED_TIME = 27,
+        SORTCOLUMN_FILE_CREATION_TIME = 28,
+        SORTCOLUMN_SAMPLERATE = 29,
+        SORTCOLUMN_COLOR = 30,
 
-        // NUM_SORTCOLUMNS should always be the last item.
-        NUM_SORTCOLUMNIDS
+        // SORTCOLUMN_ID_MAX terminates the list of columns, it must be always after the last item
+        SORTCOLUMN_ID_MAX,
+
+        SORTCOLUMN_ID_MIN = SORTCOLUMN_ARTIST,
+        NUM_SORTCOLUMNIDS = (SORTCOLUMN_ID_MAX - SORTCOLUMN_ID_MIN) + 1
     };
 
     // Deserialize and return the track at the given QModelIndex

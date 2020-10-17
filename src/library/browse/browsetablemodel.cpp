@@ -68,7 +68,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 
     setDefaultSort(COLUMN_FILENAME, Qt::AscendingOrder);
 
-    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+    for (int i = 0; i < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX; ++i) {
         m_columnIndexBySortColumnId[i] = -1;
     }
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILENAME] = COLUMN_FILENAME;
@@ -95,7 +95,9 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILE_CREATION_TIME] = COLUMN_FILE_CREATION_TIME;
 
     m_sortColumnIdByColumnIndex.clear();
-    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+    for (int i = TrackModel::SortColumnId::SORTCOLUMN_ID_MIN;
+            i < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX;
+            ++i) {
         TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
         int columnIndex = m_columnIndexBySortColumnId[sortColumn];
         if (columnIndex >= 0) {
@@ -133,8 +135,8 @@ BrowseTableModel::~BrowseTableModel() {
 }
 
 int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
-    if (column == TrackModel::SortColumnId::SORTCOLUMN_INVALID ||
-        column >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
+    if (column < TrackModel::SortColumnId::SORTCOLUMN_ID_MIN ||
+            column > TrackModel::SortColumnId::SORTCOLUMN_ID_MAX) {
         return -1;
     }
 

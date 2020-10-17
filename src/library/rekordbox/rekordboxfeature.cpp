@@ -1028,7 +1028,7 @@ RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
     // Add a bijective mapping between the SortColumnIds and column indices
-    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+    for (int i = 0; i < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX; ++i) {
         m_columnIndexBySortColumnId[i] = -1;
     }
 
@@ -1058,7 +1058,9 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_POSITION] = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
     m_sortColumnIdByColumnIndex.clear();
-    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+    for (int i = TrackModel::SortColumnId::SORTCOLUMN_ID_MIN;
+            i < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX;
+            ++i) {
         TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
         m_sortColumnIdByColumnIndex.insert(m_columnIndexBySortColumnId[sortColumn], sortColumn);
     }
