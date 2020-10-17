@@ -216,7 +216,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
             ConfigKey("[Library]", "search_history_next"));
     m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "search_history_prev"));
-    m_pSelectHistory = std::make_unique<ControlEncoder>(
+    m_pSelectHistoryMove = std::make_unique<ControlEncoder>(
             ConfigKey("[Library]", "search_history_move"), false);
     connect(m_pSelectHistroyNext.get(),
             &ControlPushButton::valueChanged,
@@ -234,7 +234,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
                     m_pSearchbox->slotMoveSelectedHistory(-1);
                 }
             });
-    connect(m_pSelectHistory.get(),
+    connect(m_pSelectHistoryMove.get(),
             &ControlEncoder::valueChanged,
             this,
             [this](double direction) {

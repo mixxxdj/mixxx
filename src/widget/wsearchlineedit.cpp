@@ -53,7 +53,7 @@ constexpr int WSearchLineEdit::kDefaultDebouncingTimeoutMillis;
 constexpr int WSearchLineEdit::kMaxDebouncingTimeoutMillis;
 
 //static
-constexpr int WSearchLineEdit::kSaveTimoutMillis;
+constexpr int WSearchLineEdit::kSaveTimeoutMillis;
 
 //static
 constexpr int WSearchLineEdit::kMaxSearchEntries;
@@ -518,7 +518,7 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
         // to an invalid value is an expected and valid use case.
         DEBUG_ASSERT(!m_debouncingTimer.isActive());
     }
-    m_saveTimer.start(kSaveTimoutMillis);
+    m_saveTimer.start(kSaveTimeoutMillis);
 }
 
 void WSearchLineEdit::slotSetShortcutFocus() {

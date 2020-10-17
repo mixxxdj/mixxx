@@ -147,7 +147,7 @@ class LibraryControl : public QObject {
     // Controls to navigate search history
     std::unique_ptr<ControlPushButton> m_pSelectHistroyNext;
     std::unique_ptr<ControlPushButton> m_pSelectHistoryPrev;
-    std::unique_ptr<ControlEncoder> m_pSelectHistory;
+    std::unique_ptr<ControlEncoder> m_pSelectHistoryMove;
 
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;
