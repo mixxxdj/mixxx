@@ -65,7 +65,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         painter->setPen(QPen(QBrush(m_color), std::max(1.0, scaleFactor())));
 
         const double polyPixelWidth = 40.0 / vSamplesPerPixel;
-        const double polyPixelOffset = polyPixelWidth + 1;
+        const double polyPixelOffset = polyPixelWidth + painter->pen().widthF();
         const double polyVSampleOffset = polyPixelOffset * vSamplesPerPixel;
 
         // Rotate if drawing vertical waveforms
