@@ -92,8 +92,6 @@ repos:
     - manual
     language: python
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
-    additional_dependencies:
-    - clang-format
 - repo: https://github.com/psf/black
   rev: stable
   hooks:

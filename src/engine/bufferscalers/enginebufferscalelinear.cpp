@@ -67,8 +67,8 @@ double EngineBufferScaleLinear::scaleBuffer(
         m_dOldRate = m_dRate;  // If cleared, don't interpolate rate.
         m_bClear = false;
     }
-    float rate_add_old = m_dOldRate;  // Smoothly interpolate to new playback rate
-    float rate_add_new = m_dRate;
+    double rate_add_old = m_dOldRate; // Smoothly interpolate to new playback rate
+    double rate_add_new = m_dRate;
     SINT frames_read = 0;
 
     if (rate_add_new * rate_add_old < 0) {
@@ -177,9 +177,9 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
 
 // Stretch a specified buffer worth of audio using linear interpolation
 SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
-    float rate_old = m_dOldRate;
-    const float rate_new = m_dRate;
-    const float rate_diff = rate_new - rate_old;
+    double rate_old = m_dOldRate;
+    const double rate_new = m_dRate;
+    const double rate_diff = rate_new - rate_old;
 
     // Update the old base rate because we only need to
     // interpolate/ramp up the pitch changes once.

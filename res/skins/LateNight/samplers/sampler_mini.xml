@@ -34,7 +34,7 @@
           <WidgetGroup>
             <ObjectName>SamplerTitleBoxMini</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>i,f</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
             <MinimumSize>,18</MinimumSize>
             <Children>
               <TrackProperty>

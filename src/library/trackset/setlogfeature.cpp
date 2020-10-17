@@ -12,6 +12,7 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -412,11 +413,9 @@ QString SetlogFeature::getRootViewHtml() const {
 
     QString html;
     html.append(QStringLiteral("<h2>%1</h2>").arg(playlistsTitle));
-    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary));
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary2));
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary3));
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary4));
-    html.append("</td></tr></table>");
     return html;
 }

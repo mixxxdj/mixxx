@@ -171,29 +171,35 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
     // draw background arc
     if (m_dArcBgThickness > 0.0) {
         QPen arcBgPen = QPen(m_arcBgColor);
-        arcBgPen.setWidth(m_dArcBgThickness);
+        arcBgPen.setWidthF(m_dArcBgThickness);
         arcBgPen.setCapStyle(m_arcPenCap);
         pPainter->setPen(arcBgPen);
-        pPainter->drawArc(rect, (90 - m_dMinAngle) * 16, (m_dMinAngle - m_dMaxAngle) * 16);
+        pPainter->drawArc(rect,
+                static_cast<int>((90 - m_dMinAngle) * 16),
+                static_cast<int>((m_dMinAngle - m_dMaxAngle) * 16));
     }
 
     // draw foreground arc
     QPen arcPen = QPen(m_arcColor);
-    arcPen.setWidth(m_dArcThickness);
+    arcPen.setWidthF(m_dArcThickness);
     arcPen.setCapStyle(m_arcPenCap);
 
     pPainter->setPen(arcPen);
     if (m_arcUnipolar) {
         if (m_arcReversed) {
            // draw arc from maxAngle to current position
-           pPainter->drawArc(rect, (90 - m_dCurrentAngle) * 16, (m_dMaxAngle - m_dCurrentAngle) * -16);
+           pPainter->drawArc(rect,
+                   static_cast<int>((90 - m_dCurrentAngle) * 16),
+                   static_cast<int>((m_dMaxAngle - m_dCurrentAngle) * -16));
         } else {
             // draw arc from minAngle to current position
-            pPainter->drawArc(rect, (90 - m_dMinAngle) * 16, (m_dCurrentAngle - m_dMinAngle) * -16);
+            pPainter->drawArc(rect,
+                    static_cast<int>((90 - m_dMinAngle) * 16),
+                    static_cast<int>((m_dCurrentAngle - m_dMinAngle) * -16));
         }
     } else {
         // draw arc from center to current position
-        pPainter->drawArc(rect, 90 * 16, m_dCurrentAngle * -16);
+        pPainter->drawArc(rect, 90 * 16, static_cast<int>(m_dCurrentAngle * -16));
     }
 }
 

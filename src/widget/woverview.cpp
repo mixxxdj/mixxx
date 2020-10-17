@@ -584,7 +584,8 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         double trackSamples = m_trackSamplesControl->get();
         if (m_trackLoaded && trackSamples > 0) {
             const float offset = 1.0f;
-            const float gain = static_cast<float>(length() - 2) / m_trackSamplesControl->get();
+            const auto gain = static_cast<CSAMPLE_GAIN>(length() - 2) /
+                    static_cast<CSAMPLE_GAIN>(m_trackSamplesControl->get());
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
@@ -625,17 +626,22 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
     WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     if (!m_waveformSourceImage.isNull()) {
         PainterScope painterScope(pPainter);
-        int diffGain;
+        float diffGain;
         bool normalize = widgetFactory->isOverviewNormalized();
         if (normalize && m_pixmapDone && m_waveformPeak > 1) {
             diffGain = 255 - m_waveformPeak - 1;
         } else {
-            const double visualGain = widgetFactory->getVisualGain(WaveformWidgetFactory::All);
-            diffGain = 255.0 - 255.0 / visualGain;
+            const auto visualGain = static_cast<float>(
+                    widgetFactory->getVisualGain(WaveformWidgetFactory::All));
+            diffGain = 255.0f - (255.0f / visualGain);
         }
 
         if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-            QRect sourceRect(0, diffGain, m_waveformSourceImage.width(), m_waveformSourceImage.height() - 2 * diffGain);
+            QRect sourceRect(0,
+                    static_cast<int>(diffGain),
+                    m_waveformSourceImage.width(),
+                    m_waveformSourceImage.height() -
+                            2 * static_cast<int>(diffGain));
             QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
             if (m_orientation == Qt::Vertical) {
                 // Rotate pixmap
@@ -706,17 +712,15 @@ void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
 
         if (m_analyzerProgress > kAnalyzerProgressNone) {
             if (m_orientation == Qt::Horizontal) {
-                pPainter->drawLine(
-                        width() * m_analyzerProgress,
+                pPainter->drawLine(QLineF(width() * m_analyzerProgress,
                         height() / 2,
                         width(),
-                        height() / 2);
+                        height() / 2));
             } else {
-                pPainter->drawLine(
-                        width() / 2,
+                pPainter->drawLine(QLineF(width() / 2,
                         height() * m_analyzerProgress,
                         width() / 2,
-                        height());
+                        height()));
             }
         }
 
@@ -783,7 +787,7 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
 
 void WOverview::drawMarks(QPainter* pPainter, const float offset, const float gain) {
     QFont markerFont = pPainter->font();
-    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    markerFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QFontMetricsF fontMetrics(markerFont);
 
     // Text labels are rendered so they do not overlap with other WaveformMarks'
@@ -805,10 +809,10 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         PainterScope painterScope(pPainter);
 
         double samplePosition = m_marksToRender.at(i)->getSamplePosition();
-        const qreal markPosition = math_clamp(
-                offset + samplePosition * gain,
-                0.0,
-                static_cast<qreal>(width()));
+        const float markPosition = math_clamp(
+                offset + static_cast<float>(samplePosition) * gain,
+                0.0f,
+                static_cast<float>(width()));
         pMark->m_linePosition = markPosition;
 
         QLineF line;
@@ -824,10 +828,10 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         QRectF rect;
         double sampleEndPosition = m_marksToRender.at(i)->getSampleEndPosition();
         if (sampleEndPosition > 0) {
-            const qreal markEndPosition = math_clamp(
-                    offset + sampleEndPosition * gain,
-                    0.0,
-                    static_cast<qreal>(width()));
+            const float markEndPosition = math_clamp(
+                    offset + static_cast<float>(sampleEndPosition) * gain,
+                    0.0f,
+                    static_cast<float>(width()));
 
             if (m_orientation == Qt::Horizontal) {
                 rect.setCoords(markPosition, 0, markEndPosition, height());
@@ -859,14 +863,17 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // label, but do not elide it if the next mark's label is not at the
             // same vertical position.
             if (pMark != m_pHoveredMark && i < m_marksToRender.size() - 1) {
-                float nextMarkPosition = -1.0;
+                float nextMarkPosition = -1.0f;
                 for (int m = i + 1; m < m_marksToRender.size() - 1; ++m) {
                     WaveformMarkPointer otherMark = m_marksToRender.at(m);
                     bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
                     // Hotcues always show at least their number.
                     bool otherHasLabel = !otherMark->m_text.isEmpty() || otherMark->getHotCue() != Cue::kNoHotCue;
                     if (otherAtSameHeight && otherHasLabel) {
-                        nextMarkPosition = offset + otherMark->getSamplePosition() * gain;
+                        nextMarkPosition = offset +
+                                static_cast<float>(
+                                        otherMark->getSamplePosition()) *
+                                        gain;
                         break;
                     }
                 }
@@ -1025,12 +1032,12 @@ void WOverview::drawPickupPosition(QPainter* pPainter) {
 
 void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFont markerFont = pPainter->font();
-    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    markerFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
     shadowFont.setWeight(99);
-    shadowFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
     if (m_bTimeRulerActive) {
@@ -1105,7 +1112,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
 
 void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const float gain) {
     QFont markerFont = pPainter->font();
-    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    markerFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QFontMetricsF fontMetrics(markerFont);
 
     // Draw WaveformMark labels
@@ -1216,7 +1223,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     if (m_orientation == Qt::Vertical) {
         pPainter->setTransform(QTransform(0, 1, -1, 0, width(), 0));
     }
-    pPainter->drawText(10 * m_scaleFactor, 12 * m_scaleFactor, text);
+    pPainter->drawText(QPointF(10 * m_scaleFactor, 12 * m_scaleFactor), text);
     pPainter->resetTransform();
 }
 

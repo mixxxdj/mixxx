@@ -1,5 +1,4 @@
-#ifndef ENGINEPREGAIN_H
-#define ENGINEPREGAIN_H
+#pragma once
 
 #include "engine/engineobject.h"
 #include "control/controlobject.h"
@@ -33,8 +32,7 @@ class EnginePregain : public EngineObject {
     double m_dOldSpeed;
     double m_dNonScratchSpeed;
     bool m_scratching;
-    CSAMPLE_GAIN
-    m_fPrevGain;
+    CSAMPLE_GAIN m_fPrevGain;
     ControlAudioTaperPot* m_pPotmeterPregain;
     ControlObject* m_pTotalGain;
     ControlObject* m_pCOReplayGain;
@@ -45,5 +43,3 @@ class EnginePregain : public EngineObject {
     bool m_bSmoothFade;
     PerformanceTimer m_timer;
 };
-
-#endif

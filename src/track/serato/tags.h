@@ -57,6 +57,9 @@ class SeratoTags final {
     CueInfoImporterPointer importCueInfos() const;
     BeatsImporterPointer importBeats() const;
 
+    QList<CueInfo> getCueInfos() const;
+    void setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset = 0);
+
     RgbColor::optional_t getTrackColor() const;
     void setTrackColor(RgbColor::optional_t color);
 
