@@ -1185,7 +1185,7 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 2;
 }
 
-#EffectMetaKnob, WEffect {
+#EffectMetaKnob, WEffectName {
   font-size: 12px;
   background-color: none;
   border: none;
