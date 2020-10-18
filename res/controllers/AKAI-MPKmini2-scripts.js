@@ -80,23 +80,55 @@ MPKmini.setValue = function(group, key, newValue) {
     }
 };
 
-MPKmini.parameter1 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter1", value); };
-MPKmini.parameter2 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter2", value); };
-MPKmini.parameter3 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter3", value); };
-MPKmini.parameter4 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter4", value); };
-MPKmini.parameter5 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter5", value); };
-MPKmini.parameter6 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter6", value); };
-MPKmini.parameter7 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter7", value); };
-MPKmini.parameter8 = function(channel, control, value, status, group) { MPKmini.setValue(group, "parameter8", value); };
+MPKmini.parameter1 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter1", value);
+};
+MPKmini.parameter2 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter2", value);
+};
+MPKmini.parameter3 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter3", value);
+};
+MPKmini.parameter4 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter4", value);
+};
+MPKmini.parameter5 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter5", value);
+};
+MPKmini.parameter6 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter6", value);
+};
+MPKmini.parameter7 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter7", value);
+};
+MPKmini.parameter8 = function(channel, control, value, status, group) {
+    MPKmini.setValue(group, "parameter8", value);
+};
 
-MPKmini.parameter1Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 1, 1); };
-MPKmini.parameter2Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 1, 2); };
-MPKmini.parameter3Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 1, 3); };
-MPKmini.parameter4Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 1, 4); };
-MPKmini.parameter5Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 2, 1); };
-MPKmini.parameter6Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 2, 2); };
-MPKmini.parameter7Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 2, 3); };
-MPKmini.parameter8Enabled = function(channel, control, value, status, group) { MPKmini.effectSelectEnable(group, value, 2, 4); };
+MPKmini.parameter1Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 1, 1);
+};
+MPKmini.parameter2Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 1, 2);
+};
+MPKmini.parameter3Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 1, 3);
+};
+MPKmini.parameter4Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 1, 4);
+};
+MPKmini.parameter5Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 2, 1);
+};
+MPKmini.parameter6Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 2, 2);
+};
+MPKmini.parameter7Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 2, 3);
+};
+MPKmini.parameter8Enabled = function(channel, control, value, status, group) {
+    MPKmini.effectSelectEnable(group, value, 2, 4);
+};
 
 MPKmini.effectSelectEnable = function(group, value, unit, effect) {
 
