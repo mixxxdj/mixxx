@@ -3,6 +3,20 @@
 #include "track/track.h"
 #include "util/qt.h"
 
+namespace {
+
+constexpr double kRelativeBpmRange = 0.06; // +/-6 %
+
+inline int bpmLowerBound(double bpm) {
+    return static_cast<int>(std::floor((1 - kRelativeBpmRange) * bpm));
+}
+
+inline int bpmUpperBound(double bpm) {
+    return static_cast<int>(std::ceil((1 + kRelativeBpmRange) * bpm));
+}
+
+} // namespace
+
 WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
         QWidget* parent)
         : QMenu(tr("Search related Tracks"), parent) {
@@ -13,6 +27,22 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
     bool addSeparator = false;
 
     // Musical property actions
+    const auto bpm = track.getBpm();
+    if (bpm > 0) {
+        auto minBpmNumber = QString::number(bpmLowerBound(bpm));
+        auto maxBpmNumber = QString::number(bpmUpperBound(bpm));
+        addSeparator = addSeparatorBeforeAction(addSeparator);
+        addAction(
+                tr("Tempo between %1 and %2 bpm")
+                        .arg(minBpmNumber, maxBpmNumber),
+                [this, minBpmNumber, maxBpmNumber]() {
+                    emit triggerSearch(
+                            QStringLiteral("bpm:>=") +
+                            minBpmNumber +
+                            QStringLiteral(" bpm:<=") +
+                            maxBpmNumber);
+                });
+    }
     const auto keyText = track.getKeyText();
     if (!keyText.isEmpty()) {
         const auto keyTextDisplay =
@@ -125,7 +155,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                 });
     }
 
-    // Title actions
+    // Release actions
     addSeparator = true;
     const auto title = track.getTitle();
     if (!title.isEmpty()) {
