@@ -10,6 +10,8 @@
 class EffectChainPresetListModel : public QStringListModel {
     Q_OBJECT
   public:
+    EffectChainPresetListModel(QObject* parent);
+
     QMimeData* mimeData(const QModelIndexList& indexes) const override;
     bool dropMimeData(
             const QMimeData* data,

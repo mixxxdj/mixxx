@@ -12,8 +12,10 @@ const QString kMimeTextDelimiter = QStringLiteral("\n");
 const QStringList kAcceptedMimeTypes = {QLatin1String("text/plain")};
 } // anonymous namespace
 
-EffectManifestTableModel::EffectManifestTableModel(EffectsBackendManagerPointer pBackendManager)
-        : m_pBackendManager(pBackendManager) {
+EffectManifestTableModel::EffectManifestTableModel(QObject* parent,
+        EffectsBackendManagerPointer pBackendManager)
+        : QAbstractTableModel(parent),
+          m_pBackendManager(pBackendManager) {
 }
 
 void EffectManifestTableModel::setList(const QList<EffectManifestPointer>& newList) {
