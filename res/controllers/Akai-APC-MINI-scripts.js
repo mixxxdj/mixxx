@@ -36,7 +36,7 @@ APC.shutdown = function(id) { // called when the MIDI device is closed
 
 
 APC.toggleplay = function(group, state) {
-    if (state===true) {
+    if (state) {
         engine.setValue(group, "reverse", 0);
         engine.setValue(group, "play", false);
 
