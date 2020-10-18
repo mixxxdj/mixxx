@@ -6,6 +6,7 @@
 
 #include "control/controlobject.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/logger.h"

@@ -5,13 +5,12 @@
 #include <QMouseEvent>
 #include <QStylePainter>
 
-#include "skin/skincontext.h"
-#include "track/track.h"
-
-#include "library/starrating.h"
-#include "widget/wwidget.h"
-
 #include "control/controlpushbutton.h"
+#include "library/starrating.h"
+#include "skin/skincontext.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "widget/wwidget.h"
 
 class ControlObject;
 class ControlPushButton;

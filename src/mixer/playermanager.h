@@ -8,7 +8,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
@@ -25,6 +25,7 @@ class Sampler;
 class SamplerBank;
 class SoundManager;
 class VisualsManager;
+class ControlProxy;
 
 // For mocking PlayerManager
 class PlayerManagerInterface {
@@ -55,10 +56,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     Q_OBJECT
   public:
     PlayerManager(UserSettingsPointer pConfig,
-                  SoundManager* pSoundManager,
-                  EffectsManager* pEffectsManager,
-                  VisualsManager* pVisualsManager,
-                  EngineMaster* pEngine);
+            SoundManager* pSoundManager,
+            EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
+            EngineMaster* pEngine);
     ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
@@ -89,7 +90,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns true if the group is a sampler group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
-    static bool isSamplerGroup(const QString& group, int* number=nullptr);
+    static bool isSamplerGroup(const QString& group, int* number = nullptr);
 
     // Returns true if the group is a preview deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
@@ -136,17 +137,17 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
-        return QString("[Sampler%1]").arg(i+1);
+        return QString("[Sampler%1]").arg(i + 1);
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
-        return QString("[Channel%1]").arg(i+1);
+        return QString("[Channel%1]").arg(i + 1);
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
-        return QString("[PreviewDeck%1]").arg(i+1);
+        return QString("[PreviewDeck%1]").arg(i + 1);
     }
 
     // Returns the group for the ith Microphone where i is zero indexed

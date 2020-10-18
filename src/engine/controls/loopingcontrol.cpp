@@ -14,9 +14,7 @@
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
-
 #include "track/track.h"
-#include "track/beats.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
@@ -250,17 +248,16 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
     if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
         return;
     }
-    double loop_length = loopSamples.end - loopSamples.start;
-    int trackSamples = m_pTrackSamples->get();
-    loop_length *= scaleFactor;
+    const double loopLength = (loopSamples.end - loopSamples.start) * scaleFactor;
+    const int trackSamples = static_cast<int>(m_pTrackSamples->get());
 
     // Abandon loops that are too short of extend beyond the end of the file.
-    if (loop_length < MINIMUM_AUDIBLE_LOOP_SIZE ||
-            loopSamples.start + loop_length > trackSamples) {
+    if (loopLength < MINIMUM_AUDIBLE_LOOP_SIZE ||
+            loopSamples.start + loopLength > trackSamples) {
         return;
     }
 
-    loopSamples.end = loopSamples.start + loop_length;
+    loopSamples.end = loopSamples.start + loopLength;
 
     // TODO(XXX) we could be smarter about taking the active beatloop, scaling
     // it by the desired amount and trying to find another beatloop that matches
@@ -619,7 +616,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    int pos = m_currentSample.getValue();
+    double pos = m_currentSample.getValue();
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         if (m_bAdjustingLoopOut) {
             double closestBeat = m_pClosestBeat->get();
@@ -1031,7 +1028,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         beats = minBeatSize;
     }
 
-    int samples = m_pTrackSamples->get();
+    int samples = static_cast<int>(m_pTrackSamples->get());
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (samples == 0 || !pBeats) {
         clearActiveBeatLoop();
@@ -1245,6 +1242,12 @@ void LoopingControl::slotLoopMove(double beats) {
                 pBeats->findNBeatsFromSample(new_loop_in, m_pCOBeatLoopSize->get()) :
                 pBeats->findNBeatsFromSample(loopSamples.end, beats);
 
+        // The track would stop as soon as the playhead crosses track end,
+        // so we don't allow moving a loop beyond end.
+        // https://bugs.launchpad.net/mixxx/+bug/1799574
+        if (new_loop_out > m_pTrackSamples->get()) {
+            return;
+        }
         // If we are looping make sure that the play head does not leave the
         // loop as a result of our adjustment.
         loopSamples.seek = m_bLoopingEnabled;

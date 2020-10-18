@@ -1,18 +1,18 @@
 #pragma once
 
+#include <QHash>
 #include <QList>
 #include <QObject>
 #include <QSet>
-#include <QHash>
+#include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
-#include <QSqlDatabase>
 #include <QVector>
-
 #include <memory>
 
 #include "library/columncache.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/class.h"
 #include "util/string.h"
 

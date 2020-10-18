@@ -50,7 +50,7 @@ AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
-    m_stepSize = m_iSampleRate * kStepSecs;
+    m_stepSize = static_cast<int>(m_iSampleRate * kStepSecs);
     m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximumBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(m_stepSize, m_windowSize));

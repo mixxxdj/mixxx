@@ -92,10 +92,10 @@ void ReverbEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    const auto decay = m_pDecayParameter->value();
-    const auto bandwidth = m_pBandWidthParameter->value();
-    const auto damping = m_pDampingParameter->value();
-    const auto sendCurrent = m_pSendParameter->value();
+    const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
+    const auto bandwidth = static_cast<sample_t>(m_pBandWidthParameter->value());
+    const auto damping = static_cast<sample_t>(m_pDampingParameter->value());
+    const auto sendCurrent = static_cast<sample_t>(m_pSendParameter->value());
 
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.

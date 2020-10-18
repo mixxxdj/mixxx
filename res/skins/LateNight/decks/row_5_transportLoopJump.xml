@@ -134,45 +134,44 @@
               </WidgetGroup><!-- HotCues 1-2 / 1-4 -->
 
               <!-- HotCues (3-4 / 5-8) -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
+              <WidgetStack currentpage="[Skin],show_8_hotcues" persist="true">
                 <Children>
-                  <Template src="skin:/controls/button_hotcue.xml">
-                    <SetVariable name="number">3</SetVariable>
-                  </Template>
-                  <Template src="skin:/controls/button_hotcue.xml">
-                    <SetVariable name="number">4</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:/controls/button_hotcue.xml">
+                        <SetVariable name="number">3</SetVariable>
+                      </Template>
+                      <Template src="skin:/controls/button_hotcue.xml">
+                        <SetVariable name="number">4</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
 
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Template src="skin:/controls/button_hotcue.xml">
-                    <SetVariable name="number">5</SetVariable>
-                  </Template>
-                  <Template src="skin:/controls/button_hotcue.xml">
-                    <SetVariable name="number">6</SetVariable>
-                  </Template>
-                  <Template src="skin:/controls/button_hotcue.xml">
-                    <SetVariable name="number">7</SetVariable>
-                  </Template>
-                  <Template src="skin:/controls/button_hotcue.xml">
-                    <SetVariable name="number">8</SetVariable>
-                  </Template>
+                  <WidgetGroup  trigger="[Skin],show_8_hotcues">
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:/controls/button_hotcue.xml">
+                        <SetVariable name="number">5</SetVariable>
+                      </Template>
+                      <Template src="skin:/controls/button_hotcue.xml">
+                        <SetVariable name="number">6</SetVariable>
+                      </Template>
+                      <Template src="skin:/controls/button_hotcue.xml">
+                        <SetVariable name="number">7</SetVariable>
+                      </Template>
+                      <Template src="skin:/controls/button_hotcue.xml">
+                        <SetVariable name="number">8</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
-                <Connection>
-                  <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- HotCues (3-4 / 5-8) -->
+              </WidgetStack><!-- HotCues (3-4 / 5-8) -->
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_hotcues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- HotCues -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->

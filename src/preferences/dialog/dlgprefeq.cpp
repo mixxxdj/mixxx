@@ -467,7 +467,7 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue) {
     }
     double dsliderPos = (eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
     dsliderPos = pow(dsliderPos, 1.0 / 4.0) * (maxValue - minValue) + minValue;
-    return dsliderPos;
+    return static_cast<int>(dsliderPos);
 }
 
 void DlgPrefEQ::slotApply() {
@@ -624,10 +624,10 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
 
                     QSlider* slider = new QSlider(this);
-                    slider->setMinimum(pManifestParameter->getMinimum() * 100);
-                    slider->setMaximum(pManifestParameter->getMaximum() * 100);
+                    slider->setMinimum(static_cast<int>(pManifestParameter->getMinimum() * 100));
+                    slider->setMaximum(static_cast<int>(pManifestParameter->getMaximum() * 100));
                     slider->setSingleStep(1);
-                    slider->setValue(pManifestParameter->getDefault() * 100);
+                    slider->setValue(static_cast<int>(pManifestParameter->getDefault() * 100));
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
@@ -709,7 +709,7 @@ void DlgPrefEQ::setMasterEQParameter(int i, double value) {
 
         if (pParameterSlot->isLoaded()) {
             pParameterSlot->slotParameterValueChanged(value);
-            m_masterEQSliders[i]->setValue(value * 100);
+            m_masterEQSliders[i]->setValue(static_cast<int>(value * 100));
 
             QLabel* valueLabel = m_masterEQValues[i];
             QString valueText = QString::number(value);

@@ -14,7 +14,7 @@
 #include "library/trackset/crate/cratetablemodel.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 // forward declaration(s)

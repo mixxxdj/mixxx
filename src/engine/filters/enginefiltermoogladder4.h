@@ -84,14 +84,15 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         }
 
         // frequency & amplitude correction
-        float kfcr = 1.8730 * (kfc*kfc*kfc) + 0.4955 * (kfc*kfc) - 0.6490 * kfc + 0.9988;
+        const float kfcr = 1.8730f * (kfc * kfc * kfc) + 0.4955f * (kfc * kfc) -
+                0.6490f * kfc + 0.9988f;
 
-        float x  = -2.0 * kPi * kfcr * kf; // input for taylor approximations
+        float x = -2.0f * kPi * kfcr * kf; // input for taylor approximations
         float exp_out  = expf(x);
         m_k2vgNew = v2 * (1 - exp_out); // filter tuning
 
         // Resonance correction for self oscillation ~4
-        m_kacrNew = resonance * (-3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968);
+        m_kacrNew = resonance * (-3.9364f * (kfc * kfc) + 1.8409f * kfc + 0.9968f);
 
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
             m_postGainNew = 1;
@@ -135,12 +136,10 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
             for (int i = 0; i < iBufferSize; i += 2) {
                 cross_mix += cross_inc;
-                m_postGain = m_postGainNew * cross_mix
-                        + startPostGain * (1.0 - cross_mix);
-                m_kacr = m_kacrNew * cross_mix
-                        + startKacr * (1.0 - cross_mix);
-                m_k2vg = m_k2vgNew * cross_mix
-                        + startK2vg * (1.0 - cross_mix);
+                m_postGain = static_cast<float>(m_postGainNew * cross_mix +
+                        startPostGain * (1.0 - cross_mix));
+                m_kacr = static_cast<float>(m_kacrNew * cross_mix + startKacr * (1.0 - cross_mix));
+                m_k2vg = static_cast<float>(m_k2vgNew * cross_mix + startK2vg * (1.0 - cross_mix));
                 pOutput[i] = processSample(pIn[i], &m_buf[0]);
                 pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
             }
