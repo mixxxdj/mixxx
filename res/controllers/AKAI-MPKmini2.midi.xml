@@ -4,6 +4,8 @@
         <name>Akai MPK Mini mkII</name>
         <author>Valerio Vitali</author>
         <description>Effect Rack and Samplers Controller</description>
+        <forum><!-- forum thread URL goes here --></forum>
+        <manual>akai_mpk_mini_mkii</manual>
 	</info>
     <controller id="MPKmini2">
         <scriptfiles>
