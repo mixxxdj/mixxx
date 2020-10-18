@@ -82,18 +82,25 @@ TrackCollectionManager::TrackCollectionManager(
                 /*signal-to-signal*/ Qt::DirectConnection);
 
         // Handle signals
+        // NOTE: The receiver's thread context `this` is required to enforce
+        // establishing connections with Qt::AutoConnection and ensure that
+        // signals are handled within the receiver's and NOT the sender's
+        // event loop thread!!!
         connect(m_pScanner.get(),
                 &LibraryScanner::trackAdded,
+                /*receiver thread context*/ this,
                 [this](const TrackPointer& pTrack) {
                     afterTrackAdded(pTrack);
                 });
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksChanged,
+                /*receiver thread context*/ this,
                 [this](const QSet<TrackId>& updatedTrackIds) {
                     afterTracksUpdated(updatedTrackIds);
                 });
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksRelocated,
+                /*receiver thread context*/ this,
                 [this](const QList<RelocatedTrack>& relocatedTracks) {
                     afterTracksRelocated(relocatedTracks);
                 });
