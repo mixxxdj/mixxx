@@ -822,9 +822,6 @@ WPushButton#FxSuperLinkInvertButton {
   #SamplerTitleRow {
     margin: 0px 1px 0px 0px;
     }
-    #SamplerTitleBox {
-      border-width: 0px 1px 0px 0px;
-      }
     #SamplerTitle {
       padding: 1px 3px 1px 0px;
     }
@@ -832,32 +829,39 @@ WPushButton#FxSuperLinkInvertButton {
       margin-right: 2px;
     }
 
-  #SamplerPlayBox {
-    padding: 0px 2px 1px 0px;
-  }
+  #SamplerRows23 {
+    }
+    #SamplerPlayRow {
+    }
+    #SamplerPlayBox {
+      padding: 0px 2px 1px 0px;
+    }
+    #SamplerSettings {
+      border-width: 1px 1px 0px 0px;
+    }
 
-  #SamplerGain {
-    padding: 0px 0px 0px 2px;
-    border-width: 1px 0px 0px 0px;
-  }
-
-  #SamplerSettings {
-    border-width: 1px 1px 0px 0px;
-  }
   #SamplerButtons {
-    margin-right: 2px;
-  }
-  #SamplerHotcues {
-    padding: 1px 1px 2px 1px;
-  }
-  #SamplerPfl {
-    padding: 0px 2px 2px 6px;
-    border-width: 0px 0px 0px 0px;
-  }
-  #SamplerVU {
-    padding: 2px 3px 0px 3px;
-    border-width: 1px 1px 0px 0px;
-  }
+    }
+    #SamplerHotcues {
+      padding: 1px 1px 2px 1px;
+    }
+
+  #SamplerGainPflVu_Container {
+    }
+    #SamplerGainPflVu {
+      }
+      #SamplerGain {
+        padding: 3px 0px 0px 3px;
+        border-width: 1px 0px 0px 0px;
+      }
+      #SamplerPfl {
+        padding: 0px 4px 2px 4px;
+        border-width: 0px;
+      }
+      #SamplerVU {
+        padding: 2px 3px 0px 3px;
+        border-width: 1px 1px 0px 0px;
+      }
 
   #SamplerRateControls {
     padding: 0px 1px 1px 0px;
@@ -865,6 +869,7 @@ WPushButton#FxSuperLinkInvertButton {
     #SamplerPitchSlider {
       padding: 0px 0px 1px 0px;
     }
+
 
 /************** MicAux *****************************************************/
 
@@ -1177,6 +1182,7 @@ WOverview #PassthroughLabel {
 #DlgAnalysis > QPushButton {
   color: #bbb;
   }
+
 /*****************************************************************************/
 /************** font colors **************************************************/
 
@@ -1290,7 +1296,7 @@ QPushButton#pushButtonRecording:checked {
 #RateControls WPushButton, #SyncDeck,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
-#SamplerContainer WPushButton,
+#Sampler WPushButton,
 #MicAuxRack WPushButton,
 #PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
@@ -1330,7 +1336,7 @@ WPushButton#MixModeButton[displayValue="1"],
 #RateControls WPushButton[displayValue="0"], #SyncDeck[value="0"],
 #MixerContainer WPushButton[displayValue="0"],
 #FxUnitContainer WPushButton[displayValue="0"],
-#SamplerContainer WPushButton[displayValue="0"],
+#Sampler WPushButton[displayValue="0"],
 #MicAuxRack WPushButton[displayValue="0"],
 /* library buttons */
 QPushButton#pushButtonAutoDJ:enabled:!checked,

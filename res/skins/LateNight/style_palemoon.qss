@@ -191,6 +191,7 @@ WSearchLineEdit {
   #KeyText,
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
+  #SamplerSettingsContainer,
   #spinBoxTransition,
   /* Prevent cut-off or shifted stars on macOS */
   WStarRating {
@@ -198,12 +199,14 @@ WSearchLineEdit {
     }
     #KeyText,
     #DeckSettingsContainer,
-    #DeckSettingsContainerCompact {
-      border-top: 1px solid #0d0d0d;
+    #DeckSettingsContainerCompact,
+    #SamplerSettingsContainer {
+      border-top: 1px solid #080808;
       border-bottom: 1px solid #2a2a2a;
       }
-      #DeckSettings {
-        border-top: 1px solid #1c1c1c;
+      #DeckSettings,
+      #SamplerSettings {
+        border-top: 1px solid #1f1f1f;
         border-bottom: 1px solid #050505;
       }
 
@@ -310,9 +313,7 @@ WSearchLineEdit {
   border-bottom: 1px solid #0c0c0c;
 }
 
-#PreviewPlayBox,
-#SamplerTitle, #SamplerPlay, #SamplerSettings,
-#SamplerGain, #SamplerVU, #SamplerPfl {
+#PreviewPlayBox {
   border-style: solid;
   border-color: #0c0c0c;
 }
@@ -577,6 +578,10 @@ WSearchLineEdit {
 #DeckSettingsContainer,
 #DeckSettingsContainerCompact {
   border-width: 1px 0px 1px 0px;
+  }
+  #SamplerSettingsContainer {
+    border-width: 1px 0px 1px 0px;
+    border-bottom-right-radius: 1px;
   }
 
   #DeckSettings {
@@ -938,54 +943,86 @@ WPushButton#FxSuperLinkInvertButton {
   #SamplerTitleMini {
     padding: 2px 0px 0px 0px;
   }
+  #SamplerBpmMini {
+    margin-left: 2px;
+  }
 
 #Sampler {
-  padding: 1px 0px 2px 1px;
+  padding: 0px 0px 0px 1px;
   }
-  #SamplerTitleBox {
+  #SamplerTitleRow {
     border-width: 0px 1px 0px 0px;
+    padding-right: 2px;
     }
-    #SamplerTitle {
-      padding: 3px 3px 1px 4px;
+    #SamplerTitleBox {
+      }
+      #SamplerTitle {
+        padding: 3px 3px 1px 4px;
+      }
+    #SamplerTitleBpmSeparator {
+      min-width: 0px;
+      max-width: 0px;
+      border-right: 1px solid #292929;
+      border-left: 1px solid #0c0c0c;
+      background: transparent;
     }
-  #SamplerBpm {
-    margin-right: 2px;
 
-  }
-
-  #SamplerPlayBox {
-    padding: 1px 2px 1px 0px;
-  }
-
-  #SamplerSettings {
-    border-width: 1px 1px 1px 0px;
-    padding: 0px 0px 2px 0px;
-  }
-
-  #SamplerHotcues {
-    padding: 1px 0px 0px 0px;
-  }
-
-  #SamplerGain {
-    padding: 0px 0px 0px 2px;
-    border-width: 1px 0px 0px 0px;
-  }
-  #SamplerPfl {
-    border-width: 0px 0px 0px 1px;
-    padding: 0px 5px 0px 6px;
-  }
-
-  #SamplerVU {
-    padding: 2px 3px 0px 1px;
-    border-width: 1px 1px 0px 0px;
-  }
-
-  #SamplerRateControls {
-    padding: 0px 1px 1px 0px;
+  #SamplerRows23 {
     }
-    #SamplerPitchSlider {
-      padding: 0px 0px 1px 0px;
+    #SamplerPlayRow {
     }
+    #SamplerPlayBox {
+      padding: 1px 2px 1px 0px;
+    }
+
+    #Sampler #OverviewBox {
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+
+    #SamplerSettingsContainer {
+      }
+      #SamplerSettings {
+        border-width: 1px 0px 1px 0px;
+        padding: 0px 0px 2px 0px;
+      }
+
+    #SamplerButtons {
+      }
+      #SamplerHotcues {
+        padding: 1px 0px 2px 0px;
+      }
+
+    #SamplerGainPflVu_Container {
+      border-top: 1px solid #0c0c0c;
+      border-right: 1px solid #292929;
+      border-left: 1px solid #0c0c0c;
+      border-top-right-radius: 1px;
+      }
+      #SamplerGainPflVu {
+        border-top: 1px solid #2c2c2c;
+        border-right: 1px solid #0c0c0c;
+        border-left: 1px solid #292929;
+        padding-bottom: 2px;
+        }
+        #SamplerGain {
+          padding: 0px 0px 0px 1px;
+          border-width: 1px 0px 0px 0px;
+        }
+        #SamplerPfl {
+          padding: 0px 5px 0px 6px;
+        }
+        #SamplerVU {
+          padding: 2px 3px 0px 1px;
+          border-width: 1px 1px 0px 0px;
+        }
+
+    #SamplerRateControls {
+      padding: 1px 1px 1px 0px;
+      }
+      #SamplerPitchSlider {
+        padding: 0px 0px 1px 0px;
+      }
 
 
 /************** MicAux **************************************************/
@@ -1200,7 +1237,7 @@ WEffectSelector,
   #Deck1 #KeyText,  #DeckCompact1 #KeyText, #DeckMini1 #KeyTextSmall,
   #Deck2 #PlayPositionText, #DeckCompact2 #PlayPositionTextSmall, #DeckMini2 #PlayPositionTextSmall,
   #Deck2 #KeyText,  #DeckCompact2 #KeyText, #DeckMini2 #KeyTextSmall,
-  #SamplerBpm,
+  #SamplerBpm, #SamplerBpmMini,
   #LibraryContainer QHeaderView {
     color: #766b65;
   }
