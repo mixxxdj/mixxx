@@ -1,11 +1,11 @@
 #include <QtDebug>
 
 #include "library/clementine/clementineplaylistmodel.h"
-#include "library/trackcollectionmanager.h"
+#include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
+#include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
-#include "library/dao/playlistdao.h"
 #include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"

@@ -6,7 +6,6 @@
 #include "library/basesqltablemodel.h"
 #include "library/clementine/clementinedbconnection.h"
 
-
 class ClementinePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:

@@ -12,7 +12,6 @@
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 
-
 class ClementineFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:

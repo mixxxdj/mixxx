@@ -124,8 +124,8 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
         *pPlaylist = item->getLabel();
         int playlistID = item->getData().toInt();
         if (playlistID > 0) {
-            std::unique_ptr<ClementinePlaylistModel> pPlaylistModelToAdd = 
-            std::make_unique<ClementinePlaylistModel>(
+            std::unique_ptr<ClementinePlaylistModel> pPlaylistModelToAdd =
+                    std::make_unique<ClementinePlaylistModel>(
                             this,
                             m_pLibrary->trackCollections(),
                             &m_connection);
