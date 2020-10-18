@@ -74,7 +74,6 @@ class EffectChainPresetManager : public QObject {
     void quickEffectChainPresetListUpdated();
 
   private:
-    void loadEffectChainPresets();
     void savePresetXml(EffectChainPresetPointer pPreset);
 
     QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
