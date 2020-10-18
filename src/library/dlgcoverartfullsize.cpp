@@ -1,12 +1,14 @@
+#include "library/dlgcoverartfullsize.h"
+
 #include <QDesktopWidget>
 #include <QRect>
 #include <QScreen>
 #include <QStyle>
 #include <QWheelEvent>
 
-#include "library/dlgcoverartfullsize.h"
-#include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
@@ -14,11 +16,11 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
           m_pPlayer(pPlayer),
           m_pCoverMenu(make_parented<WCoverArtMenu>(this)) {
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgCoverArtFullSize::slotCoverFound);
     }
 
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -112,56 +114,65 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
-    if (m_pLoadedTrack != nullptr) {
-        CoverArtCache::requestCover(*m_pLoadedTrack, this);
+    if (m_pLoadedTrack) {
+        CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     }
 }
 
-void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
-                                         const CoverInfoRelative& info, QPixmap pixmap,
-                                         bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
-
-    if (pRequestor == this && m_pLoadedTrack != nullptr &&
-            m_pLoadedTrack->getCoverHash() == info.hash) {
-        // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
-        //          << pixmap.size();
-        m_pixmap = pixmap;
-        // Scale down dialog if the pixmap is larger than the screen.
-        // Use 90% of screen size instead of 100% to prevent an issue with
-        // whitespace appearing on the side when resizing a window whose
-        // borders touch the edges of the screen.
-        QSize dialogSize = m_pixmap.size();
-
-        const QScreen* primaryScreen = getPrimaryScreen();
-        QRect availableScreenGeometry;
-        if (primaryScreen) {
-            availableScreenGeometry = primaryScreen->availableGeometry();
-        } else {
-            qWarning() << "Assuming screen size of 800x600px.";
-            availableScreenGeometry = QRect(0, 0, 800, 600);
-        }
-        const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
-        if (dialogSize.height() > availableScreenSpace.height()) {
-            dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
-                             Qt::KeepAspectRatio);
-        } else if (dialogSize.width() > availableScreenSpace.width()) {
-            dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
-                             Qt::KeepAspectRatio);
-        }
-        QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
-        coverArt->setPixmap(resizedPixmap);
-
-        // center the window
-        setGeometry(QStyle::alignedRect(
-                Qt::LeftToRight,
-                Qt::AlignCenter,
-                dialogSize,
-                availableScreenGeometry));
+void DlgCoverArtFullSize::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        mixxx::cache_key_t requestedCacheKey,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedCacheKey);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor != this || !m_pLoadedTrack ||
+            m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
+        return;
     }
+
+    m_pixmap = pixmap;
+
+    if (m_pixmap.isNull()) {
+        coverArt->setPixmap(QPixmap());
+        hide();
+        return;
+    }
+
+    // Scale down dialog if the pixmap is larger than the screen.
+    // Use 90% of screen size instead of 100% to prevent an issue with
+    // whitespace appearing on the side when resizing a window whose
+    // borders touch the edges of the screen.
+    QSize dialogSize = m_pixmap.size();
+
+    const QScreen* primaryScreen = getPrimaryScreen();
+    QRect availableScreenGeometry;
+    if (primaryScreen) {
+        availableScreenGeometry = primaryScreen->availableGeometry();
+    } else {
+        qWarning() << "Assuming screen size of 800x600px.";
+        availableScreenGeometry = QRect(0, 0, 800, 600);
+    }
+
+    const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
+    if (dialogSize.height() > availableScreenSpace.height()) {
+        dialogSize.scale(dialogSize.width(), availableScreenSpace.height(), Qt::KeepAspectRatio);
+    } else if (dialogSize.width() > availableScreenSpace.width()) {
+        dialogSize.scale(availableScreenSpace.width(), dialogSize.height(), Qt::KeepAspectRatio);
+    }
+    QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
+    coverArt->setPixmap(resizedPixmap);
+
+    // center the window
+    setGeometry(QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            dialogSize,
+            availableScreenGeometry));
 }
 
 // slots to handle signals from the context menu
@@ -238,17 +249,24 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // Scale the image size
     int oldWidth = width();
     int oldHeight = height();
-    int newWidth = oldWidth + (0.2 * event->delta());
-    int newHeight = oldHeight + (0.2 * event->delta());
+    auto newWidth = static_cast<int>(oldWidth + (0.2 * event->angleDelta().y()));
+    auto newHeight = static_cast<int>(oldHeight + (0.2 * event->angleDelta().y()));
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
 
     // To keep the same part of the image under the cursor, shift the
     // origin (top left point) by the distance the point moves under the cursor.
     QPoint oldOrigin = geometry().topLeft();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QPoint oldPointUnderCursor = event->position().toPoint();
+#else
     QPoint oldPointUnderCursor = event->pos();
-    int newPointX = (double) oldPointUnderCursor.x() / oldWidth * newSize.width();
-    int newPointY = (double) oldPointUnderCursor.y() / oldHeight * newSize.height();
+#endif
+
+    const auto newPointX = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.x()) / oldWidth * newSize.width());
+    const auto newPointY = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.y()) / oldHeight * newSize.height());
     QPoint newOrigin = QPoint(
         oldOrigin.x() + (oldPointUnderCursor.x() - newPointX),
         oldOrigin.y() + (oldPointUnderCursor.y() - newPointY));

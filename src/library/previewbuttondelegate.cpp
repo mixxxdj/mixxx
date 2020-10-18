@@ -85,6 +85,8 @@ void PreviewButtonDelegate::setModelData(QWidget* editor,
 void PreviewButtonDelegate::paintItem(QPainter* painter,
                                       const QStyleOptionViewItem& option,
                                       const QModelIndex& index) const {
+    paintItemBackground(painter, option, index);
+
     // Let the editor paint in this case
     if (index == m_currentEditedCellIndex) {
         return;

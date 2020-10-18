@@ -517,42 +517,42 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
      <item row="5" column="0">
-        <widget class="QLabel" name="label">
-        <property name="text">
-                <string>Play marker position</string>
-        </property>
-        </widget>
-        </item>
-        <item row="5" column="1" colspan="3">
-        <widget class="QSlider" name="playMarkerPositionSlider">
-         <property name="toolTip">
-           <string>Moves the play marker position on the waveforms to the left, right or center (default).</string>
-         </property>
-         <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                 </sizepolicy>
-         </property>
-         <property name="maximumSize">
-                 <size>
-                 <width>16777215</width>
-                 <height>16777215</height>
-                 </size>
-         </property>
-         <property name="minimum">
-                 <number>0</number>
-         </property>
-         <property name="maximum">
-                 <number>100</number>
-         </property>
-         <property name="value">
-                 <number>50</number>
-         </property>
-         <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
+      <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Play marker position</string>
+      </property>
+      </widget>
+      </item>
+      <item row="5" column="1" colspan="3">
+      <widget class="QSlider" name="playMarkerPositionSlider">
+       <property name="toolTip">
+        <string>Moves the play marker position on the waveforms to the left, right or center (default).</string>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>50</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -571,6 +571,27 @@ Select from different types of displays for the waveform, which differ primarily
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>waveformTypeComboBox</tabstop>
+  <tabstop>waveformOverviewComboBox</tabstop>
+  <tabstop>frameRateSlider</tabstop>
+  <tabstop>frameRateSpinBox</tabstop>
+  <tabstop>endOfTrackWarningTimeSlider</tabstop>
+  <tabstop>endOfTrackWarningTimeSpinBox</tabstop>
+  <tabstop>beatGridAlphaSlider</tabstop>
+  <tabstop>beatGridAlphaSpinBox</tabstop>
+  <tabstop>playMarkerPositionSlider</tabstop>
+  <tabstop>defaultZoomComboBox</tabstop>
+  <tabstop>synchronizeZoomCheckBox</tabstop>
+  <tabstop>normalizeOverviewCheckBox</tabstop>
+  <tabstop>allVisualGain</tabstop>
+  <tabstop>lowVisualGain</tabstop>
+  <tabstop>midVisualGain</tabstop>
+  <tabstop>highVisualGain</tabstop>
+  <tabstop>enableWaveformCaching</tabstop>
+  <tabstop>enableWaveformGenerationWithAnalysis</tabstop>
+  <tabstop>clearCachedWaveforms</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

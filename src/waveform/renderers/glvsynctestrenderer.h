@@ -1,7 +1,7 @@
-#ifndef GLVSYNCTESTRENDERER_H
-#define GLVSYNCTESTRENDERER_H
+#pragma once
 
 #include <QOpenGLFunctions_2_1>
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "waveformrenderersignalbase.h"
 
@@ -20,4 +20,4 @@ private:
     int m_drawcount;
 };
 
-#endif // GLVSYNCTESTRENDERER_H
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2

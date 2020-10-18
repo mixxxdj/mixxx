@@ -1,0 +1,55 @@
+<Template>
+  <SetVariable name="Group">[Microphone<Variable name="MicNum"/>]</SetVariable>
+
+  <!-- input device is NOT configured -->
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MicAuxAddFrame</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <Label>
+            <ObjectName>MicAuxLabelUnconfigured</ObjectName>
+            <Size>0min,21min</Size>
+            <Text>mic <Variable name="Mic1Hack"/><Variable name="MicNum"/></Text>
+            <Alignment>center</Alignment>
+          </Label>
+
+          <WidgetGroup>
+            <ObjectName>MicAuxAddBox</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <PushButton>
+                <TooltipId>configure_input</TooltipId>
+                <ObjectName>MicAuxAdd</ObjectName>
+                <Size>26f,26f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_flat_square.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_flat_square.svg</Pressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,talkover</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup><!-- MicAuxAddBox -->
+
+        </Children>
+      </WidgetGroup><!-- MicAuxAddFrame -->
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="Group"/>,enabled</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /MicAuxUnit -->
+</Template>

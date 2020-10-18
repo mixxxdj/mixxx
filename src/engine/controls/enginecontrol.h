@@ -4,16 +4,18 @@
 #ifndef ENGINECONTROL_H
 #define ENGINECONTROL_H
 
-#include <QObject>
-#include <QList>
-
 #include <gtest/gtest_prod.h>
 
-#include "preferences/usersettings.h"
-#include "track/track.h"
+#include <QList>
+#include <QObject>
+
 #include "control/controlvalue.h"
-#include "engine/effects/groupfeaturestate.h"
 #include "engine/cachingreader/cachingreader.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
+#include "track/beats.h"
+#include "track/track_decl.h"
 
 class EngineMaster;
 class EngineBuffer;
@@ -67,6 +69,7 @@ class EngineControl : public QObject {
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypos);
     virtual void trackLoaded(TrackPointer pNewTrack);
+    virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
 
   protected:
     struct SampleOfTrack {
@@ -82,13 +85,14 @@ class EngineControl : public QObject {
     void seekAbs(double sample);
     // Seek to an exact sample and don't allow quantizing adjustment.
     void seekExact(double sample);
+    // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
 
   private:

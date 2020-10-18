@@ -31,8 +31,8 @@ class SoundSourceFFmpeg : public SoundSource {
             const OpenParams& params) override;
 
     bool initResampling(
-            ChannelCount* pResampledChannelCount,
-            SampleRate* pResampledSampleRate);
+            audio::ChannelCount* pResampledChannelCount,
+            audio::SampleRate* pResampledSampleRate);
     const CSAMPLE* resampleDecodedFrame();
 
     // Consume as many buffered sample frames as possible and return

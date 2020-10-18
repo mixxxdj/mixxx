@@ -1,0 +1,10 @@
+<svg width="24" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+		<g fill="none" stroke="#000001" stroke-width="1.6">
+				<path d="m20 18v-12h-5v-3l-7 3.75 7 3.75-1e-4-2.9999 3.5001-1e-4v9l-1.5-1e-4v1.5001z" color="#000001"/>
+				<path d="m4 6v12h5v3l7-3.75-7-3.75 1e-4 2.9999-3.5001 1e-4v-9l1.5 1e-4v-1.5001z" color="#000001"/>
+		</g>
+		<g fill="#d2d2d1">
+				<path d="m20 18v-12h-5v-3l-7 3.75 7 3.75-1e-4-2.9999 3.5001-1e-4v9l-1.5-1e-4v1.5001z" color="#000001"/>
+				<path d="m4 6v12h5v3l7-3.75-7-3.75 1e-4 2.9999-3.5001 1e-4v-9l1.5 1e-4v-1.5001z" color="#000001"/>
+		</g>
+</svg>

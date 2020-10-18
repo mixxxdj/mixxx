@@ -1,0 +1,93 @@
+<Template>
+  <WidgetGroup>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckSettings</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>76min,0min</Size>
+        <Children>
+
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>Stars</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>0min,15f</Size>
+            <Children>
+              <StarRating>
+                <TooltipId>starrating</TooltipId>
+                <Size>75f,15f</Size>
+                <Channel><Variable name="ChanNum"/></Channel>
+              </StarRating>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>DeckSettingsGrid</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:/controls/button_2state.xml">
+                <SetVariable name="TooltipId">slip_mode</SetVariable>
+                <SetVariable name="ObjectName">SlipmodeButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,slip_enabled</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
+              </Template>
+
+              <Template src="skin:/controls/button_2state.xml">
+                <SetVariable name="TooltipId">quantize</SetVariable>
+                <SetVariable name="ObjectName">QuantizeButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,quantize</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
+              </Template>
+
+              <Template src="skin:/controls/button_1state_right.xml">
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="ObjectName">CurposButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- DeckSettingsGrid row 1 -->
+
+          <WidgetGroup>
+            <ObjectName>DeckSettingsGrid</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:/controls/button_1state.xml">
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="ObjectName">EjectButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
+              </Template>
+
+              <Template src="skin:/controls/button_2state.xml">
+                <SetVariable name="TooltipId">repeat</SetVariable>
+                <SetVariable name="ObjectName">RepeatButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,repeat</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
+              </Template>
+
+              <Template src="skin:/controls/button_2state.xml">
+                <SetVariable name="TooltipId">keylock</SetVariable>
+                <SetVariable name="ObjectName">KeylockButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /DeckSettingsGrid row 2 -->
+
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

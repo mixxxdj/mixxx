@@ -20,7 +20,7 @@ class RgbColor {
     // without an an alpha channel.
     // We are using a separate typedef, because QRgb implicitly
     // includes an alpha channel whereas this type does not!
-    typedef quint32 code_t;
+    typedef QRgb code_t;
 
     static constexpr code_t validateCode(code_t code) {
         return code & kRgbCodeMask;
@@ -35,10 +35,6 @@ class RgbColor {
     // Explicit conversion from code_t with implicit validation.
     explicit constexpr RgbColor(code_t code)
             : m_code(validateCode(code)) {
-    }
-    // Explicit conversion from QColor.
-    RgbColor(QColor anyColor, code_t codeIfInvalid)
-            : m_code(anyColorToCode(anyColor, codeIfInvalid)) {
     }
 
     // Implicit conversion to a color code.
@@ -64,39 +60,164 @@ class RgbColor {
     static constexpr optional_t optional(RgbColor color) {
         return std::make_optional(color);
     }
-    static optional_t optional(QColor color) {
-        if (color.isValid()) {
-            return optional(validateCode(color.rgb()));
+
+    ///////////////////////////////////////////////////////////////////
+    // Conversion functions from/to Qt types
+    ///////////////////////////////////////////////////////////////////
+
+    // Explicit conversion of both non-optional and optional
+    // RgbColor values to/from QColor as overloaded free functions.
+
+    static QColor toQColor(RgbColor color) {
+        return QColor::fromRgb(color);
+    }
+
+    static QColor toQColor(
+            RgbColor::optional_t optional,
+            const QColor& defaultColor = QColor()) {
+        if (optional) {
+            return toQColor(*optional);
         } else {
-            return nullopt();
+            return defaultColor;
         }
     }
-    static optional_t optional(const QVariant& varCode) {
-        if (varCode.isNull()) {
-            return nullopt();
+
+    static RgbColor::optional_t fromQColor(
+            const QColor& color,
+            RgbColor::optional_t defaultColor = RgbColor::nullopt()) {
+        if (color.isValid()) {
+            return RgbColor::optional(
+                    RgbColor::validateCode(color.rgb()));
         } else {
-            DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt));
-            bool ok = false;
-            const auto code = varCode.toUInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok) {
-                return nullopt();
-            }
-            return optional(static_cast<code_t>(code));
+            return defaultColor;
         }
+    }
+
+    // Explicit conversion of both non-optional and optional
+    // RgbColor values to/from QString in the format #RRGGBB,
+    // e.g. for tool tips or settings.
+
+    static QString toQString(
+            mixxx::RgbColor color) {
+        return toQColor(color).name(QColor::HexRgb);
+    }
+
+    static QString toQString(
+            mixxx::RgbColor::optional_t color,
+            const QString& defaultString = QString()) {
+        if (color) {
+            return toQString(*color);
+        } else {
+            return defaultString;
+        }
+    }
+
+    static RgbColor::optional_t fromQString(
+            const QString& hexCode,
+            RgbColor::optional_t defaultColor = RgbColor::nullopt()) {
+        const auto color = QColor(hexCode);
+        if (color.isValid()) {
+            return fromQColor(color);
+        } else {
+            return defaultColor;
+        }
+    }
+
+    // Explicit conversion of both non-optional and optional
+    // RgbColor values to QVariant as overloaded free functions.
+    //
+    // The default versions encode the internal color code as
+    // an unsigned integer. The `Color` and `String` variants
+    // use the corresponding mapping to QColor and QString
+    // respectively.
+
+    static QVariant toQVariant(
+            RgbColor color) {
+        return QVariant(static_cast<code_t>(color));
+    }
+
+    static QVariant toQVariantColor(
+            RgbColor color) {
+        return QVariant(toQColor(color));
+    }
+
+    static QVariant toQVariantString(
+            RgbColor color) {
+        return QVariant(toQString(color));
+    }
+
+    static QVariant toQVariant(
+            optional_t optional,
+            const QVariant& defaultVariant = QVariant()) {
+        if (optional) {
+            return toQVariant(*optional);
+        } else {
+            return defaultVariant;
+        }
+    }
+
+    static QVariant toQVariantColor(
+            optional_t optional,
+            const QVariant& defaultVariant = QVariant()) {
+        if (optional) {
+            return toQVariantColor(*optional);
+        } else {
+            return defaultVariant;
+        }
+    }
+
+    static QVariant toQVariantString(
+            optional_t optional,
+            const QVariant& defaultVariant = QVariant()) {
+        if (optional) {
+            return toQVariantString(*optional);
+        } else {
+            return defaultVariant;
+        }
+    }
+
+    static optional_t fromQVariant(
+            const QVariant& varCode,
+            optional_t defaultColor = nullopt()) {
+        if (varCode.isNull()) {
+            return defaultColor;
+        }
+        VERIFY_OR_DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt)) {
+            return defaultColor;
+        }
+        const auto value = varCode.value<code_t>();
+        return RgbColor::optional(value);
+    }
+
+    static optional_t fromQVariantColor(
+            const QVariant& varColor,
+            optional_t defaultColor = nullopt()) {
+        if (varColor.isNull()) {
+            return defaultColor;
+        }
+        VERIFY_OR_DEBUG_ASSERT(varColor.canConvert(QMetaType::QColor)) {
+            return defaultColor;
+        }
+        const auto value = varColor.value<QColor>();
+        return fromQColor(value);
+    }
+
+    static optional_t fromQVariantString(
+            const QVariant& varString,
+            optional_t defaultColor = nullopt()) {
+        if (varString.isNull()) {
+            return defaultColor;
+        }
+        VERIFY_OR_DEBUG_ASSERT(varString.canConvert(QMetaType::QString)) {
+            return defaultColor;
+        }
+        const auto value = varString.value<QString>();
+        return fromQString(value);
     }
 
   protected:
     // Bitmask of valid codes = 0x00RRGGBB
     static constexpr code_t kRgbCodeMask = 0x00FFFFFF;
-
-    static code_t anyColorToCode(QColor anyColor, code_t codeIfInvalid) {
-        if (anyColor.isValid()) {
-            // Strip alpha channel bits!
-            return validateCode(anyColor.rgb());
-        } else {
-            return codeIfInvalid;
-        }
-    }
 
     code_t m_code;
 };
@@ -105,44 +226,14 @@ inline bool operator!=(RgbColor lhs, RgbColor rhs) {
     return !(lhs == rhs);
 }
 
-// Explicit conversion of both non-optional and optional
-// RgbColor values to QColor as overloaded free functions.
-
-inline QColor toQColor(RgbColor color) {
-    return QColor::fromRgb(color);
-}
-
-inline QColor toQColor(RgbColor::optional_t optional, QColor defaultColor = QColor()) {
-    if (optional) {
-        return toQColor(*optional);
-    } else {
-        return defaultColor;
-    }
-}
-
-// Explicit conversion of both non-optional and optional
-// RgbColor values to QVariant as overloaded free functions.
-
-inline QVariant toQVariant(RgbColor color) {
-    return QVariant(static_cast<RgbColor::code_t>(color));
-}
-
-inline QVariant toQVariant(RgbColor::optional_t optional) {
-    if (optional) {
-        return toQVariant(*optional);
-    } else {
-        return QVariant();
-    }
-}
-
 // Debug output stream operators
 
 inline QDebug operator<<(QDebug dbg, RgbColor color) {
-    return dbg << toQColor(color);
+    return dbg << RgbColor::toQString(color).toLatin1().constData();
 }
 
-inline QDebug operator<<(QDebug dbg, RgbColor::optional_t optional) {
-    return dbg << toQColor(optional);
+inline QDebug operator<<(QDebug dbg, RgbColor::optional_t optionalColor) {
+    return dbg << RgbColor::toQString(optionalColor).toLatin1().constData();
 }
 
 } // namespace mixxx

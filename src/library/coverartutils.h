@@ -1,41 +1,31 @@
 #pragma once
 
+#include <QFileInfo>
 #include <QImage>
+#include <QList>
+#include <QSize>
 #include <QString>
 #include <QStringList>
-#include <QSize>
-#include <QFileInfo>
-#include <QList>
 
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/cache.h"
+#include "util/imageutils.h"
 #include "util/sandbox.h"
 
 class CoverInfo;
 class CoverInfoRelative;
-
+class TrackFile;
 
 class CoverArtUtils {
   public:
+    CoverArtUtils() = delete;
+
     static QString defaultCoverLocation();
 
-    // Extracts the first cover art image embedded within the file at
-    // fileInfo. If no security token is provided a new one is created.
-    static QImage extractEmbeddedCover(
-            TrackFile trackFile);
+    // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
             TrackFile trackFile,
             SecurityTokenPointer pToken);
-
-    static QImage loadCover(const CoverInfo& info);
-    static quint16 calculateHash(const QImage& image) {
-        return qChecksum(reinterpret_cast<const char*>(image.constBits()),
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-                         image.sizeInBytes()
-#else
-                         image.byteCount()
-#endif
-                );
-    }
 
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
@@ -69,10 +59,6 @@ class CoverArtUtils {
             const TrackFile& trackFile,
             const QString& albumName,
             const QList<QFileInfo>& covers);
-
-
-  private:
-    CoverArtUtils() {}
 };
 
 // Stateful guessing of cover art by caching the possible
@@ -91,7 +77,21 @@ class CoverInfoGuesser {
     CoverInfoRelative guessCoverInfoForTrack(
             const Track& track);
 
+    void guessAndSetCoverInfoForTrack(
+            Track& track);
+    void guessAndSetCoverInfoForTracks(
+            const TrackPointerList& tracks);
+
   private:
     QString m_cachedFolder;
     QList<QFileInfo> m_cachedPossibleCoversInFolder;
 };
+
+// Guesses the cover art for the provided tracks by searching the tracks'
+// metadata and folders for image files. All I/O is done in a separate
+// thread.
+void guessTrackCoverInfoConcurrently(TrackPointer pTrack);
+
+// Concurrent guessing of track covers during short running
+// tests may cause spurious test failures due to timing issues.
+void disableConcurrentGuessingOfTrackCoverInfoDuringTests();

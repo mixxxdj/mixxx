@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg26"
+   version="1.1"
+   height="22"
+   width="48">
+  <metadata
+     id="metadata30">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs16">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-3.99997,-26.00003)"
+       y2="19.699568"
+       y1="19.699568"
+       x2="24.143082"
+       x1="4.99997"
+       id="b">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-color="#393939" />
+      <stop
+         id="stop4"
+         offset=".30102351"
+         stop-color="#393939" />
+      <stop
+         id="stop6"
+         offset="1"
+         stop-color="#141414" />
+    </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-4,-24)"
+       y2="12"
+       y1="12"
+       x2="24"
+       x1="6"
+       id="a">
+      <stop
+         id="stop9"
+         offset="0"
+         stop-opacity=".0047619" />
+      <stop
+         id="stop11"
+         offset=".5"
+         stop-opacity="0" />
+      <stop
+         id="stop13"
+         offset="1"
+         stop-opacity=".47451" />
+    </linearGradient>
+  </defs>
+  <path
+     id="path18"
+     d="M 47,2.7089616 V 19.999992 c 0,0.545351 -0.454649,1 -1,1 L 2,21 C 1.956626,21 1.926809,21.0036 1.8847656,20.998 2.1739751,21.569048 2.6797603,22 3.5,22 l 42,-8e-6 c 1.108,0 2,-0.892 2,-2 V 3.9999772 C 47.5,3.5001153 47.30179,3.0579663 47,2.7089616 Z" />
+  <path
+     id="rect20"
+     d="M 3.0000076,-46.5 H 19.000022 c 0.831,0 1.5,0.669 1.5,1.5 l 8e-6,42 c 0,0.831 -0.669,1.5 -1.5,1.5 H 3.0000152 c -0.831,0 -1.4999998,-0.669 -1.5,-1.5 l -7.6e-6,-42 c -2e-7,-0.831 0.669,-1.5 1.5,-1.5 z"
+     style="color:#000000;fill:url(#a)"
+     transform="rotate(90)" />
+  <path
+     id="rect22"
+     d="M 1.8000077,-46.5 H 20.200022 c 0.1662,0 0.3,0.1338 0.3,0.3 l 8e-6,44.4 c 0,0.1662 -0.1338,0.3 -0.3,0.3 H 1.8000153 c -0.1662001,0 -0.3000001,-0.1338 -0.3000001,-0.3 l -7.6e-6,-44.4 c 0,-0.1662 0.1338,-0.3 0.3000001,-0.3 z"
+     style="fill:none;stroke:url(#b);stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke"
+     transform="rotate(90)" />
+  <path
+     id="rect24"
+     d="M 1.9999776,-46 H 19.999992 L 20,-2 H 1.9999852 Z"
+     style="color:#000000;fill-opacity:0.09019608"
+     transform="rotate(90)" />
+</svg>

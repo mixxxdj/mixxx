@@ -6,7 +6,7 @@
 class WOverviewRGB : public WOverview {
   public:
     WOverviewRGB(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);

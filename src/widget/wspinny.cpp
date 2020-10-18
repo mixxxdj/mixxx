@@ -1,22 +1,25 @@
-#include <QtDebug>
+#include "widget/wspinny.h"
+
 #include <QApplication>
-#include <QUrl>
 #include <QMimeData>
 #include <QStylePainter>
+#include <QUrl>
 #include <QWindow>
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
-#include "waveform/sharedglcontext.h"
 #include "util/math.h"
-#include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "widget/wspinny.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
@@ -76,11 +79,11 @@ WSpinny::WSpinny(
     }
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &WSpinny::slotCoverFound);
     }
 
     if (m_pPlayer != nullptr) {
@@ -188,35 +191,35 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
 #endif
 
     m_pPlayPos = new ControlProxy(
-            m_group, "playposition", this);
+            m_group, "playposition", this, ControlFlag::NoAssertIfMissing);
     m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
     m_pTrackSamples = new ControlProxy(
-            m_group, "track_samples", this);
+            m_group, "track_samples", this, ControlFlag::NoAssertIfMissing);
     m_pTrackSampleRate = new ControlProxy(
-            m_group, "track_samplerate", this);
+            m_group, "track_samplerate", this, ControlFlag::NoAssertIfMissing);
 
     m_pScratchToggle = new ControlProxy(
-            m_group, "scratch_position_enable", this);
+            m_group, "scratch_position_enable", this, ControlFlag::NoAssertIfMissing);
     m_pScratchPos = new ControlProxy(
-            m_group, "scratch_position", this);
+            m_group, "scratch_position", this, ControlFlag::NoAssertIfMissing);
 
     m_pSlipEnabled = new ControlProxy(
-            m_group, "slip_enabled", this);
+            m_group, "slip_enabled", this, ControlFlag::NoAssertIfMissing);
     m_pSlipEnabled->connectValueChanged(this, &WSpinny::updateSlipEnabled);
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlProxy(
-            m_group, "vinylcontrol_speed_type", this);
+            m_group, "vinylcontrol_speed_type", this, ControlFlag::NoAssertIfMissing);
     // Initialize the rotational speed.
     updateVinylControlSpeed(m_pVinylControlSpeedType->get());
 
     m_pVinylControlEnabled = new ControlProxy(
-            m_group, "vinylcontrol_enabled", this);
+            m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
     m_pVinylControlEnabled->connectValueChanged(this,
             &WSpinny::updateVinylControlEnabled);
 
     m_pSignalEnabled = new ControlProxy(
-            m_group, "vinylcontrol_signal_enabled", this);
+            m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
     m_pSignalEnabled->connectValueChanged(this,
             &WSpinny::updateVinylControlSignalEnabled);
 
@@ -264,20 +267,21 @@ void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
 void WSpinny::slotTrackCoverArtUpdated() {
     if (m_loadedTrack) {
-        CoverArtCache::requestCover(*m_loadedTrack, this);
+        CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
 }
 
-void WSpinny::slotCoverFound(const QObject* pRequestor,
-                             const CoverInfoRelative& info, QPixmap pixmap,
-                             bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
-
-    if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getCoverHash() == info.hash) {
-        qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
-                 << pixmap.size();
+void WSpinny::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        mixxx::cache_key_t requestedCacheKey,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedCacheKey);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor == this &&
+            m_loadedTrack &&
+            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
@@ -292,12 +296,10 @@ void WSpinny::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
 }
 
 void WSpinny::slotReloadCoverArt() {
-    if (m_loadedTrack != nullptr) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache) {
-            pCache->requestGuessCover(m_loadedTrack);
-        }
+    if (!m_loadedTrack) {
+        return;
     }
+    guessTrackCoverInfoConcurrently(m_loadedTrack);
 }
 
 void WSpinny::paintEvent(QPaintEvent *e) {

@@ -4,17 +4,15 @@
 
 namespace Color {
 
-const PredefinedColorsSet kPredefinedColorsSet = PredefinedColorsSet();
-
 // algorithm by http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
 // NOTE(Swiftb0y): please suggest if I should you use other methods
 // (like the W3C algorithm) or if this approach is to to performance hungry
 // NOTE: the author did not take alpha transparency into account!
 int brightness(int red, int green, int blue) {
     return static_cast<int>(sqrtf(
-            red * red * .241 +
-            green * green * .691 +
-            blue * blue * .068));
+            red * red * 0.241f +
+            green * green * 0.691f +
+            blue * blue * 0.068f));
 };
 
 // If the baseColor is darker than the global threshold,

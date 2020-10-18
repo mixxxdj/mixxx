@@ -1,5 +1,4 @@
-#ifndef CONTROLLERINPUTMAPPINGTABLEMODEL_H
-#define CONTROLLERINPUTMAPPINGTABLEMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QVariant>
@@ -9,6 +8,9 @@
 #include "controllers/controllermappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
 
+/// Table Model for the "Inputs" table view in the preferences dialog.
+///
+/// This allows editing the input mappings for a MIDI preset.
 class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
@@ -64,5 +66,3 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
 
     QList<MidiInputMapping> m_midiInputMappings;
 };
-
-#endif /* CONTROLLERINPUTMAPPINGTABLEMODEL_H */

@@ -66,6 +66,7 @@ class WSliderComposed : public WWidget  {
     void mouseReleaseEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
+    void drawBar(QPainter* pPainter);
     void wheelEvent(QWheelEvent* e) override;
     void resizeEvent(QResizeEvent* pEvent) override;
 
@@ -81,6 +82,18 @@ class WSliderComposed : public WWidget  {
     double m_dSliderLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
+    // Properties to draw the level bar
+    double m_dBarWidth;
+    double m_dBarBgWidth;
+    double m_dBarStart;
+    double m_dBarEnd;
+    double m_dBarBgStart;
+    double m_dBarBgEnd;
+    double m_dBarAxisPos;
+    bool m_bBarUnipolar;
+    QColor m_barColor;
+    QColor m_barBgColor;
+    Qt::PenCapStyle m_barPenCap;
     // Pointer to pixmap of the slider
     PaintablePointer m_pSlider;
     // Pointer to pixmap of the handle

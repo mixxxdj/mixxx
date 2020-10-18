@@ -13,7 +13,7 @@ protobuf_generate_cpp(
 add_library(mixxx-proto STATIC ${PROTO_SOURCES} ${PROTO_HEADERS})
 
 # Use uppercase PROTOBUF_ prefix for backwards compatibility for CMake < 3.6.0
-target_include_directories(mixxx-proto PUBLIC ${PROTOBUF_INCLUDE_DIR})
+target_include_directories(mixxx-proto SYSTEM PUBLIC ${PROTOBUF_INCLUDE_DIR})
 if(PROTOBUF_INCLUDE_DIR AND PROTOBUF_LIBRARIES)
   target_link_libraries(mixxx-proto PUBLIC ${PROTOBUF_LIBRARIES})
 elseif(PROTOBUF_INCLUDE_DIR AND PROTOBUF_LITE_LIBRARY)

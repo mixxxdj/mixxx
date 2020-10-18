@@ -4,13 +4,13 @@
 #ifndef WLIBRARYTABLEVIEW_H
 #define WLIBRARYTABLEVIEW_H
 
+#include <QFont>
 #include <QString>
 #include <QTableView>
-#include <QFont>
 
-#include "preferences/usersettings.h"
 #include "library/libraryview.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class TrackModel;
 
@@ -52,6 +52,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void setSelectedClick(bool enable);
 
   protected:
+    void focusInEvent(QFocusEvent* event) override;
+
     void saveNoSearchVScrollBarPos();
     void restoreNoSearchVScrollBarPos();
 
@@ -59,10 +61,11 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
 
+    const UserSettingsPointer m_pConfig;
+    const ConfigKey m_vScrollBarPosKey;
+
     QMap<TrackModel*, int> m_vScrollBarPosValues;
 
-    UserSettingsPointer m_pConfig;
-    ConfigKey m_vScrollBarPosKey;
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed
     int m_noSearchVScrollBarPos;

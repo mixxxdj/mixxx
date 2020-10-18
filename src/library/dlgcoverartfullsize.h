@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QDialog>
-#include <QTimer>
 #include <QPoint>
+#include <QTimer>
 
-#include "library/ui_dlgcoverartfullsize.h"
 #include "library/coverart.h"
+#include "library/ui_dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
-#include "track/track.h"
-#include "widget/wcoverartmenu.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
+#include "widget/wcoverartmenu.h"
 
 class DlgCoverArtFullSize
         : public QDialog,
@@ -28,8 +28,12 @@ class DlgCoverArtFullSize
 
   public slots:
     void slotLoadTrack(TrackPointer);
-    void slotCoverFound(const QObject* pRequestor,
-            const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            mixxx::cache_key_t requestedCacheKey,
+            bool coverInfoUpdated);
     void slotTrackCoverArtUpdated();
 
     // slots that handle signals from WCoverArtMenu

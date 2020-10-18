@@ -8,7 +8,8 @@
 #include <QUrl>
 
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
 #include "widget/trackdroptarget.h"
 
 class DragAndDropHelper final {

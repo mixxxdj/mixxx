@@ -1,0 +1,54 @@
+<Template>
+
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <MaximumSize>,208</MaximumSize>
+    <Children>
+
+      <Template src="skin:/decks/deck_singletons.xml">
+        <SetVariable name="Type">deck</SetVariable>
+        <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <Connection>
+          <ConfigKey>[LateNight],show_mini_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Connection>
+          <ConfigKey>[LateNight],show_compact_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Compact</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Connection>
+          <ConfigKey>[LateNight],show_full_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

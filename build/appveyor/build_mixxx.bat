@@ -86,7 +86,7 @@ if "%4" == "skipinstaller" (
     if "%5" == "skipinstaller" (
        set PARAM_INSTALLER=
     ) else (
-       set PARAM_INSTALLER=makerelease 
+       set PARAM_INSTALLER=makerelease
     )
 )
 set WINLIB_DIR=%3
@@ -94,9 +94,13 @@ set WINLIB_DIR=%3
 SET BIN_DIR=%WINLIB_DIR%\bin
 SET LIB_DIR=%WINLIB_DIR%\lib
 SET INCLUDE_DIR=%WINLIB_DIR%\include
-REM TODO(rryan): Remove hard-coding of Qt version.
-set QT_VERSION=5.12.0
-SET QTDIR=%WINLIB_DIR%\Qt-%QT_VERSION%
+FOR /D %%G IN (%WINLIB_DIR%\Qt-*) DO SET QTDIR=%%G
+IF "!QTDIR!" EQU "" (
+echo QT not found on %WINLIB_DIR%
+exit /b 1
+)
+
+
 
 if NOT EXIST "%BIN_DIR%\scons.py" (
 echo.
@@ -179,6 +183,6 @@ FOR /F %%G IN ('dir "%BUILDTOOLS_PATH%\Tools\MSVC\%PARAM_VCVARSVER%*" /b /ad-h /
   set "LOCAL_64_CL=%BUILDTOOLS_PATH%\Tools\MSVC\%%G\bin\Hostx64\x64\cl.exe"
   if EXIST "!LOCAL_64_CL!" (
     EXIT /B 0
-  ) 
+  )
 )
 EXIT /B 1

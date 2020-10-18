@@ -4,7 +4,7 @@
         <name>Numark MixTrack (Pro) II</name>
         <author>SNOWY, Armen Rizal, ninomp, special thanks to Thomas Preston and Ricecows (rj@ricecows.net)</author>
         <description>Version v2.0</description>
-        <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_ii</wiki>
+        <manual>numark_mixtrack_pro_ii</manual>
     </info>
     <controller id="MixTrack">
         <scriptfiles>

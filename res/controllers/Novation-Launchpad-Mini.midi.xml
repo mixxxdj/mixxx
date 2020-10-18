@@ -4,7 +4,8 @@
         <name>Novation Launchpad Mini</name>
         <author>marczis</author>
         <description>Multi page mapping for the Novation Launchpad Mini</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=6335</forums>
+        <forums>https://mixxx.discourse.group/t/novation-launchpad-mini-mapping-official-forum/14299</forums>
+        <manual>novation_launchpad_mini</manual>
     </info>
     <controller id="Novation Launchpad Mini">
         <scriptfiles>

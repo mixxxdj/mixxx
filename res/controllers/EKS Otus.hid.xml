@@ -4,6 +4,7 @@
         <name>EKS Otus HID</name>
         <author>Ilkka Tuohela</author>
         <description>HID mapping for EKS Otus controllers</description>
+        <manual>eks_otus</manual>
         <devices>
             <product protocol="hid" vendor_id="0x1157" product_id="0x300" usage_page="0xffa0" usage="0x1" interface_number="0x3" />
         </devices>

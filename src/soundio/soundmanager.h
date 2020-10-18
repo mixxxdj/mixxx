@@ -1,37 +1,19 @@
-/**
- * @file soundmanager.h
- * @author Albert Santoni <gamegod at users dot sf dot net>
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20070815
- */
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDMANAGER_H
-#define SOUNDMANAGER_H
-
+#include <QHash>
+#include <QList>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
 #include <memory>
 
-#include <QObject>
-#include <QString>
-#include <QList>
-#include <QHash>
-#include <QSharedPointer>
-
-#include "preferences/usersettings.h"
+#include "audio/types.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "soundio/soundmanagerconfig.h"
+#include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
-#include "util/types.h"
+#include "soundio/soundmanagerconfig.h"
 #include "util/cmdlineargs.h"
-
+#include "util/types.h"
 
 class EngineMaster;
 class AudioOutput;
@@ -58,7 +40,7 @@ class SoundManager : public QObject {
     Q_OBJECT
   public:
     SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
-    virtual ~SoundManager();
+    ~SoundManager() override;
 
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
@@ -148,7 +130,7 @@ class SoundManager : public QObject {
     EngineMaster *m_pMaster;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
-    unsigned int m_jackSampleRate;
+    mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
@@ -156,7 +138,7 @@ class SoundManager : public QObject {
     SoundManagerConfig m_config;
     SoundDevicePointer m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
-    QHash<AudioInput, AudioDestination*> m_registeredDestinations;
+    QMultiHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
 
@@ -167,5 +149,3 @@ class SoundManager : public QObject {
     ControlProxy* m_pMasterAudioLatencyOverloadCount;
     ControlProxy* m_pMasterAudioLatencyOverload;
 };
-
-#endif

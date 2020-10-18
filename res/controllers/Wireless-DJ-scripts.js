@@ -5,22 +5,22 @@ WirelessDJ.init = function(id) {
     WirelessDJ.playPositionSensibility = 3.5;
     WirelessDJ.jogSensibility = -30;
     WirelessDJ.fineTempoTuningSensibility = 1;
-    
-    // internals below. don't touch. 
+
+    // internals below. don't touch.
 	WirelessDJ.magicStripeMode = [0, 0];
-    
+
     WirelessDJ.magicCurMSB = [0, 0];
     WirelessDJ.prevMagicValue = [undefined, undefined];
-    
+
     WirelessDJ.leds = [0,0,0,0];
     WirelessDJ.ledTimers = [0,0,0,0];
-    
+
     // LEDs
     engine.connectControl("[Channel1]", "VuMeter", "WirelessDJ.meter");
     engine.connectControl("[Channel2]", "VuMeter", "WirelessDJ.meter");
     engine.connectControl("[Master]", "VuMeterL", "WirelessDJ.meter");
     engine.connectControl("[Master]", "VuMeterR", "WirelessDJ.meter");
-    
+
     // sliders feedback
     engine.connectControl("[Channel1]", "rate", "WirelessDJ.controlFeedback");
     engine.connectControl("[Channel1]", "volume", "WirelessDJ.controlFeedback");
@@ -37,7 +37,7 @@ WirelessDJ.init = function(id) {
     engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback");
-    
+
     // outputs in script instead xml mapping
     engine.connectControl("[Channel1]", "play", "WirelessDJ.buttonOutput");
     engine.connectControl("[Channel2]", "play", "WirelessDJ.buttonOutput");
@@ -52,23 +52,23 @@ WirelessDJ.shutdown = function(id) {
     engine.connectControl("[Channel2]", "VuMeter", "WirelessDJ.meter", true);
     engine.connectControl("[Master]", "VuMeterL", "WirelessDJ.meter", true);
     engine.connectControl("[Master]", "VuMeterR", "WirelessDJ.meter", true);
-    
+
     engine.connectControl("[Channel1]", "rate", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel1]", "volume", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel1]", "filterHigh", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel1]", "filterMid", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Channel1]", "filterLow", "WirelessDJ.controlFeedback", true);  
+    engine.connectControl("[Channel1]", "filterLow", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "rate", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "volume", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "filterHigh", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "filterMid", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback", true); 
+    engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Master]", "crossfader", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Master]", "headMix", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback", true);  
-    
+    engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback", true);
+
     engine.connectControl("[Channel1]", "play", "WirelessDJ.buttonOutput", true);
     engine.connectControl("[Channel2]", "play", "WirelessDJ.buttonOutput", true);
     engine.connectControl("[Channel1]", "pfl", "WirelessDJ.buttonOutput", true);
@@ -79,7 +79,7 @@ WirelessDJ.shutdown = function(id) {
 
 WirelessDJ.groupToDeck = function(group) {
     var the_char = group.charAt(8);
-    
+
 	if (the_char == '1') {
 		return 0;
 	} else if (the_char == '2') {
@@ -93,21 +93,21 @@ WirelessDJ.groupToDeck = function(group) {
 WirelessDJ.sendLED = function(index, value) {
     var date = new Date();
     var curTime = date.getTime();
-    
+
     if (WirelessDJ.leds[index] != value || (curTime - WirelessDJ.ledTimers[index]) > 900) {
         WirelessDJ.leds[index] = value;
         midi.sendShortMsg(0x90, 0x0a + index, value);
-        
+
         WirelessDJ.ledTimers[index] = curTime;
 //        script.debug("", "", "", "", curTime);
     }
 }
 
-WirelessDJ.meter = function(value, group, key) { 
+WirelessDJ.meter = function(value, group, key) {
     var deck = WirelessDJ.groupToDeck(group);
     // there is 11 leds in WirelessDJ volume meter.
 
-    var val = Math.round(parseFloat(value) * 11) * 128.0/11.0;     
+    var val = Math.round(parseFloat(value) * 11) * 128.0/11.0;
 
     if (deck == 0) {
         WirelessDJ.sendLED(0, val);
@@ -122,7 +122,7 @@ WirelessDJ.meter = function(value, group, key) {
     }
 }
 
-WirelessDJ.controlFeedback = function(value, group, key) { 
+WirelessDJ.controlFeedback = function(value, group, key) {
     var deck = WirelessDJ.groupToDeck(group);
 
     if (key == "rate") {
@@ -163,7 +163,7 @@ WirelessDJ.controlFeedback = function(value, group, key) {
 
 WirelessDJ.buttonOutput = function(value, group, key) {
     var deck = WirelessDJ.groupToDeck(group);
-    
+
     if (key == "play") {
         midi.sendShortMsg(0x90 + deck, 0x01, value*127);
     } else if (key == "pfl") {
@@ -175,7 +175,7 @@ WirelessDJ.buttonOutput = function(value, group, key) {
 
 WirelessDJ.seek_on = function(channel, control, value, status, group) {
     var deck = WirelessDJ.groupToDeck(group);
-    
+
     if (status == 0x90) {
         WirelessDJ.magicStripeMode[deck] |= 0x1;
     } else {
@@ -185,7 +185,7 @@ WirelessDJ.seek_on = function(channel, control, value, status, group) {
 
 WirelessDJ.jog_on = function(channel, control, value, status, group) {
     var deck = WirelessDJ.groupToDeck(group);
-    
+
     if (status == 0x90) {
         WirelessDJ.magicStripeMode[deck] |= 0x2;
     } else {
@@ -199,7 +199,7 @@ WirelessDJ.jog_on = function(channel, control, value, status, group) {
 
 WirelessDJ.tempo_tuning = function(channel, control, value, status, group) {
     var deck = WirelessDJ.groupToDeck(group);
-    
+
     if (status == 0x90) {
         WirelessDJ.magicStripeMode[deck] |= 0x4;
      //           engine.setValue(group, "rate", 1);
@@ -211,7 +211,7 @@ WirelessDJ.tempo_tuning = function(channel, control, value, status, group) {
 
 WirelessDJ.magic_stripe_msb = function(channel, control, value, status, group) {
     var deck = WirelessDJ.groupToDeck(group);
-    
+
     WirelessDJ.magicCurMSB[deck] = value;
 };
 
@@ -220,9 +220,9 @@ WirelessDJ.magic_stripe_lsb = function(channel, control, value, status, group) {
 
     if (WirelessDJ.magicCurMSB[deck] == undefined)
         return;
-    
+
     var firstValue = (WirelessDJ.prevMagicValue[deck] == undefined);
-        
+
     var adjustedValue = (WirelessDJ.magicCurMSB[deck] * 128 + value) / 16384.0;
     var diff = WirelessDJ.prevMagicValue[deck] - adjustedValue;
     if (diff > 0.9)
@@ -230,36 +230,36 @@ WirelessDJ.magic_stripe_lsb = function(channel, control, value, status, group) {
     if (diff < -0.9)
         diff += 1;
     WirelessDJ.prevMagicValue[deck] = adjustedValue;
-    
+
     if (firstValue)
         return;
-    
+
     if (WirelessDJ.magicStripeMode[deck] & 0x1) {
         var position = engine.getValue(group, "playposition") + diff * WirelessDJ.playPositionSensibility;
-        
+
         if (position < 0) {
             position = 0;
         } else if (position > 1) {
             position = 1;
         }
-        
+
         engine.setValue(group, "playposition", position);
     } else if (WirelessDJ.magicStripeMode[deck] & 0x4) {
         var position = engine.getValue(group, "rate") + diff * WirelessDJ.fineTempoTuningSensibility;
-        
+
         if (position < -1) {
             position = -1;
         } else if (position > 1) {
             position = 1;
         }
-        
+
         engine.setValue(group, "rate", position);
-        
+
         script.debug("pos", "", "", "", position );
         script.debug("diff", "", "", "", diff );
     } else {
         //        script.debug(WirelessDJ.prevMagicValue[deck], adjustedValue, "", "", diff );
-        
+
         engine.setValue(group, "wheel", diff * WirelessDJ.jogSensibility);
     }
 };

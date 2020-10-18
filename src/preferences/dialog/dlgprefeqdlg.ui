@@ -410,6 +410,21 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>CheckBoxEqOnly</tabstop>
+  <tabstop>CheckBoxSingleEqEffect</tabstop>
+  <!-- TODO(ronso0)
+      Dynamically add Eq / Quick Effect comboboxes -->
+  <tabstop>SliderHiEQ</tabstop>
+  <tabstop>SliderLoEQ</tabstop>
+  <tabstop>comboBoxMasterEq</tabstop>
+  <tabstop>pbResetMasterEq</tabstop>
+  <!-- TODO(ronso0)
+      Dynamically add Master EQ sliders -->
+  <tabstop>CheckBoxEqAutoReset</tabstop>
+  <tabstop>CheckBoxGainAutoReset</tabstop>
+  <tabstop>CheckBoxBypass</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

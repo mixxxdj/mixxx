@@ -24,9 +24,9 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void slotSetRGAnalyzerChanged();
     void slotSetReanalyze();
 
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
   signals:
     void apply(const QString &);

@@ -4,6 +4,7 @@
     <name>Evolution X-Session</name>
     <author>Amias Channer</author>
     <description>MIDI Mapping for Evolution X-Session</description>
+    <manual>evolution_x_session</manual>
   </info>
   <controller id="Evolution Xsession" port="Port">
     <controls>

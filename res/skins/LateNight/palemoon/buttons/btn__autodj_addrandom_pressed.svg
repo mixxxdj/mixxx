@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg23"
+   version="1.1"
+   height="20"
+   width="32">
+  <metadata
+     id="metadata27">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9">
+    <linearGradient
+       id="d">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-color="#888" />
+      <stop
+         id="stop4"
+         offset="1"
+         stop-color="#bfbfbe" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#d"
+       gradientUnits="userSpaceOnUse"
+       y2="1"
+       y1="19"
+       x2="1.5855784"
+       x1="1.5855784"
+       id="e" />
+    <linearGradient
+       xlink:href="#d"
+       gradientUnits="userSpaceOnUse"
+       y2="5.2124801"
+       y1="24.412479"
+       x2="8.1985474"
+       x1="8.1985474"
+       id="f" />
+  </defs>
+  <g
+     style="fill:#000001;fill-opacity:1"
+     id="g21"
+     fill="url(#e)">
+    <g
+       style="fill:#000001;fill-opacity:1"
+       id="g13"
+       aria-label="?"
+       transform="matrix(.68451 0 0 .68268 12.431277 -.032504)">
+      <path
+         style="fill:#000001;fill-opacity:1"
+         id="path11"
+         stroke-width="1.46290004"
+         fill="url(#e)"
+         d="m17.145 12.382q0 .59245-.20964 1.0846-.20052.49219-.59245.92969-.38281.42838-1.7682 1.431-1.2122.875-1.2578 1.8411h-2.4336q.05469-.9388.53776-1.6771.48307-.7474 1.3672-1.3581 1.0299-.70182 1.4036-1.1484.3737-.45573.3737-.99349 0-.70182-.55599-1.1211-.55599-.42838-1.4583-.42838-.92057 0-1.5495.53776-.61979.53776-.72917 1.4219l-2.5977-.10938q.24609-1.8503 1.5221-2.8802 1.276-1.0299 3.3177-1.0299 2.1146 0 3.3724.94792t1.2578 2.5521zm-6.3346 8.987v-2.4609h2.6341v2.4609z" />
+    </g>
+    <path
+       id="path15"
+       style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000001;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal;fill:#000001;fill-opacity:1"
+       solid-color="#000001"
+       shape-rendering="auto"
+       image-rendering="auto"
+       dominant-baseline="auto"
+       color-rendering="auto"
+       color="#000001"
+       d="m16.746277 3c-.01174.000237-.02347.0008874-.03516.00195-.0052.0005679-.01043.00122-.01563.00195-.0046.0005871-.0091.00124-.01367.00195-.0065.00117-.01305.00248-.01953.00391-.0052.00122-.01044.00252-.01563.00391-.01584.00379-.03148.00835-.04687.013672-.01389.00461-.02758.00982-.04102.015625-.0072.00309-.0144.00634-.02148.00977-.0073.00373-.01442.00764-.02148.011719-.0026.00128-.0052.00258-.0078.00391-.01.00616-.01977.012679-.0293.019531-.006.00443-.01182.00898-.01758.013672-.01142.008-.02249.016468-.0332.025391-.0067.00633-.0132.012842-.01953.019531l-4.2618 4.25c-.01168.011811-.02276.024196-.0332.037109-.02089.025475-.03921.052953-.05469.082031-.0079.014608-.01508.0296-.02149.044922-.006.015998-.01126.032295-.01563.048828-.0047.015427-.0086.03107-.01172.046875v.00195c-.0061.030231-.0094.060961-.0098.091797-1.1e-5.00195-1.1e-5.00391 0 .00586l-6.7e-5 8.7441c2.8e-5.27613.22387.49997.5.5h17c.27613-2.8e-5.49997-.22387.5-.5l-6.7e-5-13c-2.8e-5-.27613-.22387-.49997-.5-.5h-12.74c-.0046-6.23e-5-.0091-6.23e-5-.01367 0zm.51367 1h11.74l6.7e-5 12h-16l6.7e-5-7.75h3.7599c.27613-2.76e-5.49997-.22387.5-.5zm-1 .70508.000134 2.5449h-2.5509z" />
+    <g
+       style="fill:#000001;fill-opacity:1"
+       id="g19"
+       aria-label="+"
+       transform="matrix(.94002 0 0 .9375 -5.8999281 -3.8867)">
+      <path
+         style="fill:#000001;fill-opacity:1"
+         id="path17"
+         stroke-width="1.06519997"
+         fill="url(#f)"
+         d="m13.723 15.879v3.2h-2.1276v-3.2h-3.1914v-2.1333h3.1914v-3.2h2.1276v3.2h3.1914v2.1333z" />
+    </g>
+  </g>
+</svg>

@@ -5,6 +5,7 @@
         <author>Seb Dooris, Fayaaz Ahmed, Lee Arromba</author>
         <description>Controller mapping for the Korg KAOSS DJ Controller.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8479</forums>
+        <manual>korg_kaoss_dj</manual>
     </info>
     <controller id="KAOSS">
         <scriptfiles>

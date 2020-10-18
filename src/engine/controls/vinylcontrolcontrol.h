@@ -1,12 +1,12 @@
 #ifndef VINYLCONTROLCONTROL_H
 #define VINYLCONTROLCONTROL_H
 
-#include "engine/controls/enginecontrol.h"
-#include "track/track.h"
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "engine/controls/enginecontrol.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class VinylControlControl : public EngineControl {
     Q_OBJECT

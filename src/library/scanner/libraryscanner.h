@@ -1,28 +1,28 @@
 #ifndef MIXXX_LIBRARYSCANNER_H
 #define MIXXX_LIBRARYSCANNER_H
 
-#include <QThread>
-#include <QThreadPool>
+#include <gtest/gtest.h>
+
+#include <QScopedPointer>
+#include <QSemaphore>
 #include <QString>
 #include <QStringList>
-#include <QSemaphore>
-#include <QScopedPointer>
+#include <QThread>
+#include <QThreadPool>
 
+#include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
-#include "library/dao/libraryhashdao.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
-#include "library/dao/analysisdao.h"
 #include "library/scanner/scannerglobal.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
-
-#include <gtest/gtest.h>
 
 class ScannerTask;
 class LibraryScannerDlg;
-class TrackCollection;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
@@ -30,7 +30,6 @@ class LibraryScanner : public QThread {
   public:
     LibraryScanner(
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            TrackCollection* pTrackCollection,
             const UserSettingsPointer& pConfig);
     ~LibraryScanner() override;
 
@@ -69,7 +68,7 @@ class LibraryScanner : public QThread {
 
     // ScannerTask signal handlers.
     void slotDirectoryHashedAndScanned(const QString& directoryPath,
-                                   bool newDirectory, int hash);
+                                   bool newDirectory, mixxx::cache_key_t hash);
     void slotDirectoryUnchanged(const QString& directoryPath);
     void slotTrackExists(const QString& trackPath);
     void slotAddNewTrack(const QString& trackPath);
@@ -99,10 +98,6 @@ class LibraryScanner : public QThread {
     void cleanUpScan();
 
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
-
-    // The library trackcollection. Do not touch this from the library scanner
-    // thread.
-    TrackCollection* m_pTrackCollection;
 
     // The pool of threads used for worker tasks.
     QThreadPool m_pool;

@@ -15,7 +15,7 @@
 class EncoderVorbisSettings : public EncoderRecordingSettings {
     public:
     EncoderVorbisSettings(UserSettingsPointer pConfig);
-    virtual ~EncoderVorbisSettings();
+    ~EncoderVorbisSettings() override = default;
 
     // Indicates that it uses the quality slider section of the preferences
     bool usesQualitySlider() const override {

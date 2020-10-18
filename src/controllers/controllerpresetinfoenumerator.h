@@ -15,12 +15,11 @@
 
 class PresetInfoEnumerator {
   public:
+    PresetInfoEnumerator(const QString& searchPath);
     PresetInfoEnumerator(const QStringList& searchPaths);
 
     // Return cached list of presets for this extension
     QList<PresetInfo> getPresetsByExtension(const QString& extension);
-
-  protected:
     void loadSupportedPresets();
 
   private:

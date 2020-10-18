@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg13"
+   version="1.1"
+   height="22"
+   width="48">
+  <metadata
+     id="metadata17">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0,0.95652174,-0.95652174,0,0.56521739,21.434811)"
+       y2="-13"
+       y1="-13"
+       x2="-1.5000305"
+       x1="-24.500031"
+       id="a">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-opacity=".39215687" />
+      <stop
+         id="stop4"
+         offset=".50727087"
+         stop-opacity="0" />
+      <stop
+         id="stop6"
+         offset="1"
+         stop-opacity=".0047619" />
+    </linearGradient>
+  </defs>
+  <path
+     id="rect11"
+     d="m 46,2.5 v 17 C 46,19.777 45.777,20 45.5,20 H 2.5 C 2.223,20 2,19.777 2,19.5 V 2.5 C 2,2.223 2.223,2 2.5,2 h 43 C 45.777,2 46,2.223 46,2.5 Z"
+     style="color:#000000;fill:url(#a)" />
+</svg>

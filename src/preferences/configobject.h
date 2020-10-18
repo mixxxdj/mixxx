@@ -24,12 +24,8 @@ class ConfigKey final {
 
     static ConfigKey parseCommaSeparated(const QString& key);
 
-    bool isEmpty() const {
-        return group.isEmpty() && item.isEmpty();
-    }
-
-    bool isNull() const {
-        return group.isNull() && item.isNull();
+    bool isValid() const {
+        return !group.isEmpty() && !item.isEmpty();
     }
 
     QString group;
@@ -64,8 +60,11 @@ inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
 }
 
 // QHash hash function for ConfigKey objects.
-inline uint qHash(const ConfigKey& key) {
-    return qHash(key.group) ^ qHash(key.item);
+inline uint qHash(
+        const ConfigKey& key,
+        uint seed = 0) {
+    return qHash(key.group, seed) ^
+            qHash(key.item, seed);
 }
 
 // The value corresponding to a key. The basic value is a string, but can be
@@ -97,8 +96,10 @@ inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
     return !(lhs == rhs);
 }
 
-inline uint qHash(const ConfigValue& key) {
-    return qHash(key.value.toUpper());
+inline uint qHash(
+        const ConfigValue& key,
+        uint seed = 0) {
+    return qHash(key.value.toUpper(), seed);
 }
 
 class ConfigValueKbd : public ConfigValue {
@@ -186,6 +187,9 @@ template <class ValueType> class ConfigObject {
     QString getSettingsPath() const {
         return m_settingsPath;
     }
+
+    QSet<QString> getGroups();
+    QList<ConfigKey> getKeysWithGroup(QString group) const;
 
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg

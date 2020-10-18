@@ -38,7 +38,7 @@ const QString kNetworkDeviceInternalName = "Network stream";
 class SoundDevice {
   public:
     SoundDevice(UserSettingsPointer config, SoundManager* sm);
-    virtual ~SoundDevice();
+    virtual ~SoundDevice() = default;
 
     inline const SoundDeviceId& getDeviceId() const {
         return m_deviceId;

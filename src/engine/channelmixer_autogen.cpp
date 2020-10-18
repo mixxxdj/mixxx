@@ -3,7 +3,7 @@
 #include "util/timer.h"
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
-// SEE scripts/generate_sample_functions.py           //
+// SEE tools/generate_sample_functions.py             //
 ////////////////////////////////////////////////////////
 
 // static

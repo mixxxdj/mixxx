@@ -6,6 +6,7 @@
 #include "util/parented_ptr.h"
 
 class ControlObject;
+class ControlProxy;
 class ControlPotmeter;
 class ControlPushButton;
 

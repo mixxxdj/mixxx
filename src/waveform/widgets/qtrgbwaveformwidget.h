@@ -24,7 +24,7 @@ class QtRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     virtual mixxx::Duration render();
 
   private:
-    QtRGBWaveformWidget(const char* group, QWidget* parent);
+    QtRGBWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
 

@@ -1,7 +1,9 @@
+#include "track/beatgrid.h"
+
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "track/beatgrid.h"
+#include "track/track.h"
 #include "util/math.h"
 
 static const int kFrameSize = 2;
@@ -10,6 +12,8 @@ struct BeatGridData {
     double bpm;
     double firstBeat;
 };
+
+namespace mixxx {
 
 class BeatGridIterator : public BeatIterator {
   public:
@@ -312,13 +316,6 @@ void BeatGrid::removeBeat(double dBeatSample) {
     return;
 }
 
-void BeatGrid::moveBeat(double dBeatSample, double dNewBeatSample) {
-    Q_UNUSED(dBeatSample);
-    Q_UNUSED(dNewBeatSample);
-    //QMutexLocker locker(&m_mutex);
-    return;
-}
-
 void BeatGrid::translate(double dNumSamples) {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
@@ -369,3 +366,5 @@ void BeatGrid::setBpm(double dBpm) {
     locker.unlock();
     emit updated();
 }
+
+} // namespace mixxx

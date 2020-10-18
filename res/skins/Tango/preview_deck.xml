@@ -16,9 +16,6 @@ Variables:
     <Layout>stacked</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <!-- index 0 due to bug -->
-      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
       <!-- Greyed out if no headphone device is configured -->
       <WidgetGroup>
         <ObjectName>GuiCover</ObjectName>

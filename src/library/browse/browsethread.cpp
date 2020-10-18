@@ -2,16 +2,16 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
-#include <QtDebug>
-#include <QStringList>
 #include <QDateTime>
 #include <QDirIterator>
+#include <QStringList>
+#include <QtDebug>
 
 #include "library/browse/browsetablemodel.h"
-
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
+#include "util/datetime.h"
 #include "util/trace.h"
-
 
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;
@@ -248,16 +248,20 @@ void BrowseThread::populateModel() {
             item->setData(location, Qt::UserRole);
             row_data.insert(COLUMN_NATIVELOCATION, item);
 
-            QDateTime modifiedTime = pTrack->getFileInfo().fileLastModified().toLocalTime();
-            item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
+            const auto fileLastModified =
+                    pTrack->getFileInfo().fileLastModified();
+            item = new QStandardItem(
+                    mixxx::displayLocalDateTime(fileLastModified));
             item->setToolTip(item->text());
-            item->setData(modifiedTime, Qt::UserRole);
+            item->setData(fileLastModified, Qt::UserRole);
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-            QDateTime creationTime = pTrack->getFileInfo().fileCreated().toLocalTime();
-            item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
+            const auto fileCreated =
+                    pTrack->getFileInfo().fileCreated();
+            item = new QStandardItem(
+                    mixxx::displayLocalDateTime(fileCreated));
             item->setToolTip(item->text());
-            item->setData(creationTime, Qt::UserRole);
+            item->setData(fileCreated, Qt::UserRole);
             row_data.insert(COLUMN_FILE_CREATION_TIME, item);
 
             const mixxx::ReplayGain replayGain(pTrack->getReplayGain());

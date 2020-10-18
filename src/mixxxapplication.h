@@ -9,7 +9,7 @@ class MixxxApplication : public QApplication {
     Q_OBJECT
   public:
     MixxxApplication(int& argc, char** argv);
-    ~MixxxApplication() override;
+    ~MixxxApplication() override = default;
 
   private:
     bool touchIsRightButton();

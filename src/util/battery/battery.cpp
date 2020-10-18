@@ -26,9 +26,6 @@ Battery::Battery(QObject* parent)
     m_timer.start(mixxx::Duration::fromMillis(kiUpdateInterval));
 }
 
-Battery::~Battery() {
-}
-
 Battery* Battery::getBattery(QObject* parent) {
 #ifdef __BATTERY__
 #if defined(Q_OS_WIN)

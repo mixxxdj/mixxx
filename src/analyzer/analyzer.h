@@ -11,7 +11,7 @@
  *   -- Adam
  */
 
-#include "track/track.h"
+#include "track/track_decl.h"
 
 class Analyzer {
   public:

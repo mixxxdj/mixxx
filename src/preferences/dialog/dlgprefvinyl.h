@@ -18,12 +18,13 @@
 #ifndef DLGPREFVINYL_H
 #define DLGPREFVINYL_H
 
+#include <QSpinBox>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
+#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
-#include "preferences/dlgpreferencepage.h"
 
 class ControlProxy;
 class VinylControlManager;
@@ -34,13 +35,15 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, UserSettingsPointer _config);
     virtual ~DlgPrefVinyl();
 
-  public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    QUrl helpUrl() const override;
 
-    void slotHide();
-    void slotShow();
+  public slots:
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
+
+    void slotHide() override;
+    void slotShow() override;
     void VinylTypeSlotApply();
     void slotVinylGainApply();
     void slotUpdateVinylGain();
@@ -58,7 +61,7 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     void setDeck2WidgetsVisible(bool visible);
     void setDeck3WidgetsVisible(bool visible);
     void setDeck4WidgetsVisible(bool visible);
-    void verifyAndSaveLeadInTime(QLineEdit* widget, QString group, QString vinyl_type);
+    void verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QString vinyl_type);
     int getDefaultLeadIn(QString vinyl_type) const;
 
 

@@ -5,6 +5,7 @@
         <author>zestoi</author>
         <description>Select midi channel 1 or 2 on the CDJ-101 to select which deck to control in Mixxx. Hold down the push encoder for additional controls.</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
+        <manual>dj_tech_cdj_101</manual>
     </info>
     <controller id="DJ-Tech CDJ-101">
         <scriptfiles>

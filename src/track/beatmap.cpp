@@ -5,13 +5,15 @@
  *      Author: vittorio
  */
 
-#include <algorithm>
+#include "track/beatmap.h"
+
+#include <QMutexLocker>
 #include <QtDebug>
 #include <QtGlobal>
-#include <QMutexLocker>
+#include <algorithm>
 
-#include "track/beatmap.h"
 #include "track/beatutils.h"
+#include "track/track.h"
 #include "util/math.h"
 
 using mixxx::track::io::Beat;
@@ -29,6 +31,8 @@ inline double framesToSamples(const int frames) {
 bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
+
+namespace mixxx {
 
 class BeatMapIterator : public BeatIterator {
   public:
@@ -463,8 +467,9 @@ void BeatMap::addBeat(double dBeatSample) {
 
     // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
     // consider a beat identical to another.
-    if (it->frame_position() == beat.frame_position())
+    if (it != m_beats.end() && it->frame_position() == beat.frame_position()) {
         return;
+    }
 
     m_beats.insert(it, beat);
     onBeatlistChanged();
@@ -484,36 +489,6 @@ void BeatMap::removeBeat(double dBeatSample) {
     // TODO(XXX) determine what epsilon to consider a beat identical to another
     while (it->frame_position() == beat.frame_position()) {
         it = m_beats.erase(it);
-    }
-    onBeatlistChanged();
-    locker.unlock();
-    emit updated();
-}
-
-void BeatMap::moveBeat(double dBeatSample, double dNewBeatSample) {
-    QMutexLocker locker(&m_mutex);
-    Beat beat, newBeat;
-    beat.set_frame_position(samplesToFrames(dBeatSample));
-    newBeat.set_frame_position(samplesToFrames(dNewBeatSample));
-
-    BeatList::iterator it = std::lower_bound(
-        m_beats.begin(), m_beats.end(), beat, BeatLessThan);
-
-    // In case there are duplicates, remove every instance of dBeatSample
-    // TODO(XXX) add invariant checks against this
-    // TODO(XXX) determine what epsilon to consider a beat identical to another
-    while (it->frame_position() == beat.frame_position()) {
-        if (newBeat.enabled() != it->enabled()) {
-            newBeat.set_enabled(it->enabled());
-        }
-        it = m_beats.erase(it);
-    }
-
-    // Now add a beat to dNewBeatSample
-    it = std::lower_bound(m_beats.begin(), m_beats.end(), newBeat, BeatLessThan);
-    // TODO(XXX) beat epsilon
-    if (it->frame_position() != newBeat.frame_position()) {
-        m_beats.insert(it, newBeat);
     }
     onBeatlistChanged();
     locker.unlock();
@@ -752,3 +727,5 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
+
+} // namespace mixxx

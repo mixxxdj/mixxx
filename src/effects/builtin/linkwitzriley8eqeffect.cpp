@@ -93,13 +93,13 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
     if (!m_pKillLow->toBool()) {
-        fLow = m_pPotLow->value();
+        fLow = static_cast<float>(m_pPotLow->value());
     }
     if (!m_pKillMid->toBool()) {
-        fMid = m_pPotMid->value();
+        fMid = static_cast<float>(m_pPotMid->value());
     }
     if (!m_pKillHigh->toBool()) {
-        fHigh = m_pPotHigh->value();
+        fHigh = static_cast<float>(m_pPotHigh->value());
     }
 
     if (pState->m_oldSampleRate != bufferParameters.sampleRate() ||
@@ -116,11 +116,14 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
 
     if (fMid != pState->old_mid || fHigh != pState->old_high) {
         SampleUtil::applyRampingGain(pState->m_pHighBuf,
-                                     pState->old_high, fHigh,
-                                     bufferParameters.samplesPerBuffer());
+                static_cast<CSAMPLE_GAIN>(pState->old_high),
+                fHigh,
+                bufferParameters.samplesPerBuffer());
         SampleUtil::addWithRampingGain(pState->m_pHighBuf,
-                                       pState->m_pLowBuf, pState->old_mid, fMid,
-                                       bufferParameters.samplesPerBuffer());
+                pState->m_pLowBuf,
+                static_cast<CSAMPLE_GAIN>(pState->old_mid),
+                fMid,
+                bufferParameters.samplesPerBuffer());
     } else {
         SampleUtil::applyGain(pState->m_pHighBuf, fHigh, bufferParameters.samplesPerBuffer());
         SampleUtil::addWithGain(pState->m_pHighBuf,
@@ -133,8 +136,12 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
 
     if (fLow != pState->old_low) {
         SampleUtil::copy2WithRampingGain(pOutput,
-                pState->m_pLowBuf, pState->old_low, fLow,
-                pState->m_pMidBuf, 1, 1,
+                pState->m_pLowBuf,
+                static_cast<CSAMPLE_GAIN>(pState->old_low),
+                fLow,
+                pState->m_pMidBuf,
+                1,
+                1,
                 bufferParameters.samplesPerBuffer());
     } else {
         SampleUtil::copy2WithGain(pOutput,

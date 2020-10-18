@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginedeck.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEDECK_H
-#define ENGINEDECK_H
+#pragma once
 
 #include <QScopedPointer>
 
@@ -40,9 +22,13 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const ChannelHandleAndGroup& handle_group, UserSettingsPointer pConfig,
-               EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
-               EngineChannel::ChannelOrientation defaultOrientation = CENTER);
+    EngineDeck(
+            const ChannelHandleAndGroup& handleGroup,
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            bool primaryDeck);
     virtual ~EngineDeck();
 
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
@@ -73,8 +59,12 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;
 
+  signals:
+    void noPassthroughInputConfigured();
+
   public slots:
     void slotPassingToggle(double v);
+    void slotPassthroughChangeRequest(double v);
 
   private:
     UserSettingsPointer m_pConfig;
@@ -88,5 +78,3 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     bool m_bPassthroughWasActive;
     bool m_wasActive;
 };
-
-#endif

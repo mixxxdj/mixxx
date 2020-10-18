@@ -9,21 +9,21 @@
 #ifndef TRACKEXPORT_H
 #define TRACKEXPORT_H
 
-#include <QString>
 #include <QScopedPointer>
+#include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/export/trackexportdlg.h"
 #include "library/export/trackexportworker.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 // A controller class for creating the export worker and UI.
 class TrackExportWizard : public QObject {
   Q_OBJECT
   public:
-    TrackExportWizard(QWidget *parent, UserSettingsPointer pConfig,
-                      QList<TrackPointer> tracks)
-            : m_parent(parent), m_pConfig(pConfig), m_tracks(tracks) { }
+    TrackExportWizard(QWidget* parent, UserSettingsPointer pConfig, TrackPointerList tracks)
+            : m_parent(parent), m_pConfig(pConfig), m_tracks(tracks) {
+    }
     virtual ~TrackExportWizard() { }
 
     // Displays a dialog requesting destination directory, then performs
@@ -35,7 +35,7 @@ class TrackExportWizard : public QObject {
 
     QWidget* m_parent;
     UserSettingsPointer m_pConfig;
-    QList<TrackPointer> m_tracks;
+    TrackPointerList m_tracks;
     QScopedPointer<TrackExportDlg> m_dialog;
     QScopedPointer<TrackExportWorker> m_worker;
 };

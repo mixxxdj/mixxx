@@ -69,9 +69,12 @@ int main(int argc, char * argv[]) {
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
     // This needs to be set before initializing the QApplication.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    // workaround for https://bugreports.qt.io/browse/QTBUG-84363
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)
+    qputenv("QV4_FORCE_INTERPRETER", QByteArrayLiteral("1"));
 #endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation

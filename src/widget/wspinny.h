@@ -2,16 +2,16 @@
 #ifndef _WSPINNY_H
 #define _WSPINNY_H
 
-#include <QGLWidget>
-#include <QShowEvent>
-#include <QHideEvent>
 #include <QEvent>
+#include <QGLWidget>
+#include <QHideEvent>
+#include <QShowEvent>
 
 #include "library/dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
@@ -50,8 +50,12 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void swap();
 
   protected slots:
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            mixxx::cache_key_t requestedCacheKey,
+            bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
@@ -78,7 +82,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     std::shared_ptr<QImage> m_pBgImage;
     std::shared_ptr<QImage> m_pMaskImage;

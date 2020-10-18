@@ -22,7 +22,7 @@ RADIUS2000.currentDeck2 = function (group) {
         return "[Channel1]";
     else if (group == "[Channel2]")
         return "[Channel2]";
-    
+
     print("Invalid group : " + group);
     return -1; // error
 }
@@ -124,7 +124,7 @@ RADIUS2000.cue = function (channel, control, value, status, group) {
 }
 
 RADIUS2000.keylock = function (channel, control, value, status, group) {
-    var keylockStat = engine.getValue(RADIUS2000.currentDeck2(group),"keylock"); 
+    var keylockStat = engine.getValue(RADIUS2000.currentDeck2(group),"keylock");
     if (value == 0x7F & keylockStat == 1) {
         engine.setValue(RADIUS2000.currentDeck2(group),"keylock",0);
         midi.sendShortMsg(0x90,0x06,0x00);

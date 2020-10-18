@@ -25,7 +25,7 @@ VestaxVCI100.addButton = function(buttonName, button, eventHandler) {
       }
       button.handler = handler;
    }
-   this.Buttons[buttonName] = button; 
+   this.Buttons[buttonName] = button;
 };
 
 VestaxVCI100.key1Handler = function(value) {
@@ -135,12 +135,12 @@ VestaxVCI100.init = function (id) {
    midi.sendShortMsg(0xB0,0x62,0x7F);
    midi.sendShortMsg(0xB0,0x63,0x7F);
    midi.sendShortMsg(0xB0,0x64,0x7F);
-   
+
    midi.sendShortMsg(0x90,0x65,0x7F);
    midi.sendShortMsg(0x90,0x66,0x7F);
    midi.sendShortMsg(0x90,0x67,0x7F);
    midi.sendShortMsg(0x90,0x68,0x7F);
-   
+
    midi.sendShortMsg(0xB0,0x64,0x00);
    midi.sendShortMsg(0x90,0x67,0x00);
    midi.sendShortMsg(0x80,0x68,0x00);
@@ -171,14 +171,14 @@ VestaxVCI100.jog_touch = function (channel, control, value, status, group) {
 }
 
 VestaxVCI100.jog_wheel = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    VestaxVCI100.GetDeck(group).jogMove(jogValue);
 }
 
 VestaxVCI100.jog_wheel_scratch = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    VestaxVCI100.GetDeck(group).scratchMove(jogValue);

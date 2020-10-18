@@ -1,31 +1,11 @@
-/***************************************************************************
-                           starrating.h
-                              -------------------
-     copyright            : (C) 2010 Tobias Rafreider
-     copyright            : (C) 2009 Nokia Corporation
-
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-
-#ifndef STARRATING_H
-#define STARRATING_H
+#pragma once
 
 #include <QMetaType>
-#include <QPointF>
-#include <QVector>
 #include <QPolygonF>
+#include <QSize>
 
-class QPainter;
-
+QT_FORWARD_DECLARE_CLASS(QPainter);
+QT_FORWARD_DECLARE_CLASS(QRect);
 
 /*
  * The StarRating class represents a rating as a number of stars.
@@ -56,5 +36,3 @@ class StarRating {
 };
 
 Q_DECLARE_METATYPE(StarRating)
-
-#endif

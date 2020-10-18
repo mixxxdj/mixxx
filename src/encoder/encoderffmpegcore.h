@@ -30,14 +30,13 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
-#include <QByteArray>
 #include <QBuffer>
-
+#include <QByteArray>
 #include <QLibrary>
 
-#include "util/types.h"
 #include "encoder/encoder.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/types.h"
 
 class EncoderCallback;
 

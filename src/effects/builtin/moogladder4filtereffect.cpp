@@ -120,17 +120,17 @@ void MoogLadder4FilterEffect::processChannel(
     if (pState->m_loFreq != lpf ||
             pState->m_resonance != resonance ||
             pState->m_samplerate != bufferParameters.sampleRate()) {
-        pState->m_pLowFilter->setParameter(
-                bufferParameters.sampleRate(), lpf * bufferParameters.sampleRate(),
-                resonance);
+        pState->m_pLowFilter->setParameter(bufferParameters.sampleRate(),
+                static_cast<float>(lpf * bufferParameters.sampleRate()),
+                static_cast<float>(resonance));
     }
 
     if (pState->m_hiFreq != hpf ||
             pState->m_resonance != resonance ||
             pState->m_samplerate != bufferParameters.sampleRate()) {
-        pState->m_pHighFilter->setParameter(
-                bufferParameters.sampleRate(), hpf * bufferParameters.sampleRate(),
-                resonance);
+        pState->m_pHighFilter->setParameter(bufferParameters.sampleRate(),
+                static_cast<float>(hpf * bufferParameters.sampleRate()),
+                static_cast<float>(resonance));
     }
 
     const CSAMPLE* pLpfInput = pState->m_pBuf;

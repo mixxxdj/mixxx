@@ -3,12 +3,15 @@
 
 #include <QMutex>
 
-#include "track/track.h"
-#include "track/beats.h"
 #include "proto/beats.pb.h"
+#include "track/beats.h"
 
 #define BEAT_GRID_1_VERSION "BeatGrid-1.0"
 #define BEAT_GRID_2_VERSION "BeatGrid-2.0"
+
+class Track;
+
+namespace mixxx {
 
 // BeatGrid is an implementation of the Beats interface that implements an
 // infinite grid of beats, aligned to a song simply by a starting offset of the
@@ -66,10 +69,13 @@ class BeatGrid final : public Beats {
 
     void addBeat(double dBeatSample) override;
     void removeBeat(double dBeatSample) override;
-    virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     void translate(double dNumSamples) override;
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;
+
+    SINT getSampleRate() const override {
+        return m_iSampleRate;
+    }
 
   private:
     BeatGrid(const BeatGrid& other);
@@ -91,5 +97,6 @@ class BeatGrid final : public Beats {
     double m_dBeatLength;
 };
 
+} // namespace mixxx
 
 #endif /* BEATGRID_H */

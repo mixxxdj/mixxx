@@ -10,6 +10,7 @@
 #include "track/playcounter.h"
 
 #include "library/coverart.h"
+#include "util/color/rgbcolor.h"
 
 
 namespace mixxx {
@@ -18,11 +19,11 @@ namespace mixxx {
 class TrackRecord final {
     // Properties that parsed from and (optionally) written back to their
     // source, i.e. the corresponding file
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackMetadata,  metadata,       Metadata)
+    MIXXX_DECL_PROPERTY(TrackMetadata, metadata, Metadata)
 
     // The unique ID of track. This value is only set once after the track
     // has been inserted or is loaded from the library DB.
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackId,        id,             Id)
+    MIXXX_DECL_PROPERTY(TrackId, id, Id)
 
     // TODO(uklotz): Change data type from bool to QDateTime
     //
@@ -36,19 +37,20 @@ class TrackRecord final {
     // Requires a database update! We could reuse the 'header_parsed' column.
     // During migration the boolean value will be substituted with either a
     // default time stamp 1970-01-01 00:00:00.000 or NULL respectively.
-    PROPERTY_SET_BYVAL_GET_BYREF(bool /*QDateTime*/, metadataSynchronized, MetadataSynchronized)
+    MIXXX_DECL_PROPERTY(bool /*QDateTime*/, metadataSynchronized, MetadataSynchronized)
 
-    PROPERTY_SET_BYVAL_GET_BYREF(CoverInfoRelative,  coverInfo,            CoverInfo)
+    MIXXX_DECL_PROPERTY(CoverInfoRelative, coverInfo, CoverInfo)
 
-    PROPERTY_SET_BYVAL_GET_BYREF(QDateTime,   dateAdded,      DateAdded)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,     fileType,       FileType)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,     url,            Url)
-    PROPERTY_SET_BYVAL_GET_BYREF(PlayCounter, playCounter,    PlayCounter)
-    PROPERTY_SET_BYVAL_GET_BYREF(CuePosition, cuePoint,       CuePoint)
-    PROPERTY_SET_BYVAL_GET_BYREF(int,         rating,         Rating)
-    PROPERTY_SET_BYVAL_GET_BYREF(bool,        bpmLocked,      BpmLocked)
+    MIXXX_DECL_PROPERTY(QDateTime, dateAdded, DateAdded)
+    MIXXX_DECL_PROPERTY(QString, fileType, FileType)
+    MIXXX_DECL_PROPERTY(QString, url, Url)
+    MIXXX_DECL_PROPERTY(PlayCounter, playCounter, PlayCounter)
+    MIXXX_DECL_PROPERTY(RgbColor::optional_t, color, Color)
+    MIXXX_DECL_PROPERTY(CuePosition, cuePoint, CuePoint)
+    MIXXX_DECL_PROPERTY(int, rating, Rating)
+    MIXXX_DECL_PROPERTY(bool, bpmLocked, BpmLocked)
 
-public:
+  public:
     // Data migration: Reload track total from file tags if not initialized
     // yet. The added column "tracktotal" has been initialized with the
     // default value "//".
@@ -94,10 +96,15 @@ public:
             const QString& keyText,
             track::io::key::Source keySource);
 
-    // Merge the current metadata from the file with the subset of metadata
-    // that is stored in the library. This is required to NOT delete any tags
-    // from the file that are not (yet) stored in the library database!
-    void mergeImportedMetadata(
+    // Merge the current metadata with new and additional properties
+    // imported from the file. Since these properties are not (yet)
+    // stored in the library or have been added later all existing
+    // data must be preserved and never be overwritten! This allows
+    // a gradual migration by selectively reimporting the required
+    // data when needed.
+    //
+    // Returns true if any property has been modified or false otherwise.
+    bool mergeImportedMetadata(
             const TrackMetadata& importedMetadata);
 
 private:

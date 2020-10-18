@@ -1,8 +1,9 @@
 #pragma once
 
-#include "track/track.h"
-
 #include "sources/soundsourceproviderregistry.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "util/sandbox.h"
 
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not shareable between multiple threads!
@@ -88,11 +89,12 @@ class SoundSourceProxy {
     // properly. The application log will contain warning messages for a detailed
     // analysis in case unexpected behavior has been reported.
     void updateTrackFromSource(
-            ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default) const;
+            ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default);
 
     // Parse only the metadata from the file without modifying
     // the referenced track.
-    mixxx::MetadataSource::ImportResult importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
+    mixxx::MetadataSource::ImportResult importTrackMetadata(
+            mixxx::TrackMetadata* pTrackMetadata) const;
 
     // Opening the audio source through the proxy will update the
     // audio properties of the corresponding track object. Returns

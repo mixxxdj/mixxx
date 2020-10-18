@@ -1,10 +1,13 @@
-#include "glwaveformrendererrgb.h"
-#include "waveformwidgetrenderer.h"
+#include "waveform/renderers/glwaveformrendererrgb.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+#include "track/track.h"
+#include "util/math.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "widget/wwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "util/math.h"
+#include "widget/wwidget.h"
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -192,3 +195,5 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

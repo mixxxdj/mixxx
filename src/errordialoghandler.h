@@ -68,8 +68,9 @@ class ErrorDialogProperties {
     }
 
     /** Set detailed text (causes "Show Details" button to appear.) */
-    inline void setDetails(const QString& text) {
+    inline void setDetails(const QString& text, bool bUseMonospaceFont = false) {
         m_details = text;
+        m_detailsUseMonospaceFont = bUseMonospaceFont;
     }
 
     /** Set whether the box is modal (blocks the GUI) or not */
@@ -112,6 +113,7 @@ class ErrorDialogProperties {
     QString m_text;
     QString m_infoText;
     QString m_details;
+    bool m_detailsUseMonospaceFont;
     bool m_modal;
     bool m_shouldQuit;
     DialogType m_type;
@@ -141,7 +143,7 @@ class ErrorDialogHandler : public QObject {
     }
     static void setEnabled(bool enabled);
 
-    virtual ~ErrorDialogHandler();
+    ~ErrorDialogHandler() override;
     // Call this to get a new instance of ErrorDialogProperties to populate with
     // data
     ErrorDialogProperties* newDialogProperties();

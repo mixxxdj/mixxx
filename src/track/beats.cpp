@@ -1,7 +1,7 @@
 
 #include "track/beats.h"
 
-
+namespace mixxx {
 
 int Beats::numBeatsInRange(double dStartSample, double dEndSample) {
     double dLastCountedBeat = 0.0;
@@ -53,3 +53,4 @@ double Beats::findNBeatsFromSample(double fromSample, double beats) const {
     return nthBeat;
 };
 
+} // namespace mixxx

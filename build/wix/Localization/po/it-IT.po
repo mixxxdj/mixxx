@@ -1,7 +1,8 @@
-# 
+#
 # Translators:
 # Damtux, 2016
-# Edoardo Codeglia <edocod@linuxmail.org>, 2016
+# da66b1496cff6f8c09de27090160b16b_bdb5d2a <1e358f8ec157acea8eff85e60e2ae5b4_94956>, 2016
+# marcobra <marcobra.ubuntu@gmail.com>, 2020
 # Roberto Ekesi <r_ekesi@yahoo.com>, 2017
 # S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
@@ -10,8 +11,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2018-12-16 20:44+0000\n"
-"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
+"PO-Revision-Date: 2020-07-16 19:48+0000\n"
+"Last-Translator: marcobra <marcobra.ubuntu@gmail.com>\n"
 "Language-Team: Italian (Italy) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/it_IT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,7 +35,7 @@ msgstr "Il Team Sviluppo di Mixxx"
 
 msgctxt "ProductDescription"
 msgid "Open-source Digital DJ software"
-msgstr "Software per DJing Open-Source"
+msgstr "Software per DJ digitali open-source"
 
 msgctxt "Comments"
 msgid "Installs Mixxx"
@@ -44,7 +45,7 @@ msgstr "Installa Mixxx"
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows 7 or above."
-msgstr "Questo prodotto richiede Windows 7 o superiori."
+msgstr "Questo prodotto richiede Windows 7 o successivo."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
@@ -71,7 +72,7 @@ msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr "Stai per installare Mixxx su un sistema operativo vecchio. Alcune funzioni potrebbero non funzionare bene o completamente. Raccomandiamo di aggiornare il tuo sistema operativo."
+msgstr "Stai per installare Mixxx su un sistema operativo sorpassato. Alcune funzioni potrebbero non funzionare bene o completamente. Raccomandiamo di aggiornare il tuo sistema operativo."
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -111,7 +112,7 @@ msgstr "{\\WixUI_Font_Title}Attenzione"
 #.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
-msgstr "Avvia Mixxx quando l'installazione esce."
+msgstr "Avvia Mixxx quando l'installazione termina."
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
@@ -175,7 +176,7 @@ msgstr "[WixBundleName]"
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr "È sicuro/a di voler annullare?"
+msgstr "Sei sicuro/a di voler annullare?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
@@ -197,11 +198,11 @@ msgid ""
 " /norestart - suppress any attempts to restart. By default user interface will prompt before restart.\n"
 "\n"
 " /log log.txt - logs to a specific file. By default a log file is created in %TEMP%."
-msgstr ""
+msgstr "/install | /repair | /uninstall | /layout [directory] - installa, ripara, disinstalla o\n    crea una copia locale completa della cartella bundle.\n    Installa è l'opzione predefinita.\n\n /passive | /quiet - mostra una interfaccia utente minimale senza richieste e senza mostrare nessuna interfaccia utente\n    e nessuna richiesta. In modo predefinito viene mostrata interfaccia utente e tutte le richieste vengono mostrate.\n\n /norestart - sopprime ogni tentativo di riavvio. In modo predefinito una interfaccia utente viene mostrata prima di riavviare.\n\n /log log.txt - scrive log su un file specifico. In modo predefinito un file log viene creato in %TEMP%."
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Chiudi"
 
 msgctxt "InstallHeader"
 msgid "Welcome"
@@ -212,7 +213,7 @@ msgid ""
 "Setup will install Mixxx on your computer.\n"
 "It will first install required third party libraries, then Mixxx itself.\n"
 "Click Install to continue or Close to exit."
-msgstr ""
+msgstr "Il Setup installerà Mixxx sul tuo computer.\nPrima installerà le librerie di terze parti richieste, poi Mixxx vero e proprio.\nClicca Installa per continuare o Chiudi per uscire."
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
@@ -220,15 +221,15 @@ msgstr "Versione [WixBundleVersion]"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
-msgstr ""
+msgstr "&Opzioni"
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
-msgstr ""
+msgstr "&Installa"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Chiudi"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
@@ -236,139 +237,139 @@ msgstr "Opzioni di installazione"
 
 msgctxt "OptionsLocationLabel"
 msgid "Install location:"
-msgstr ""
+msgstr "Posizione di installazione:"
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&Sfoglia"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Annulla"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
-msgstr ""
+msgstr "Files In Uso"
 
 msgctxt "FilesInUseLabel"
 msgid "The following applications are using files that need to be updated:"
-msgstr ""
+msgstr "Le seguenti applicazioni stanno usando files che devono essere aggiornati:"
 
 msgctxt "FilesInUseCloseRadioButton"
 msgid "Close the &applications and attempt to restart them."
-msgstr ""
+msgstr "Chiudi le &applicazioni e prova a farle ripartire."
 
 msgctxt "FilesInUseDontCloseRadioButton"
 msgid "&Do not close applications. A reboot will be required."
-msgstr ""
+msgstr "Non chiu&dere le applicazioni. Sarà necessario un riavvio."
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Annulla"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
-msgstr ""
+msgstr "Progresso Setup"
 
 msgctxt "ProgressLabel"
 msgid "Processing:"
-msgstr ""
+msgstr "Elaborazione:"
 
 msgctxt "OverallProgressPackageText"
 msgid "Initializing..."
-msgstr ""
+msgstr "Inizializzazione..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Annulla"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
-msgstr ""
+msgstr "Modifica Installazione"
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&Ripara"
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
-msgstr ""
+msgstr "&Disinstalla"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Chiudi"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
-msgstr ""
+msgstr "Installazione Riuscita"
 
 msgctxt "SuccessInstallHeader"
 msgid "Mixxx installation has been successful"
-msgstr ""
+msgstr "Mixxx e' stato installato con successo"
 
 msgctxt "SuccessRepairHeader"
 msgid "Mixxx repair has been successful"
-msgstr ""
+msgstr "Mixxx e' stato riparato con successo"
 
 msgctxt "SuccessUninstallHeader"
 msgid "Mixxx uninstall has been successful"
-msgstr ""
+msgstr "Mixxx e' stato disinstallato con successo"
 
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
-msgstr ""
+msgstr "&Avvia"
 
 msgctxt "SuccessRestartText"
 msgid "You must restart your computer before you can use the software."
-msgstr ""
+msgstr "Devi riavviare il tuo computer prima di poter usare il software."
 
 msgctxt "SuccessRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Riavvia"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Chiudi"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
-msgstr ""
+msgstr "Impostazione fallita"
 
 msgctxt "FailureInstallHeader"
 msgid "Mixxx installation failed"
-msgstr ""
+msgstr "Installazione Mixxx fallita"
 
 msgctxt "FailureRepairHeader"
 msgid "Mixxx repair failed"
-msgstr ""
+msgstr "Riparazione Mixxx fallita"
 
 msgctxt "FailureUninstallHeader"
 msgid "Mixxx uninstall failed"
-msgstr ""
+msgstr "Disinstallazione Mixxx fallita"
 
 msgctxt "FailureHyperlinkLogText"
 msgid ""
 "One or more issues caused the setup to fail. Please fix the issues and then "
 "retry setup. For more information see the <a href=\"#\">log file</a>."
-msgstr ""
+msgstr "Uno o più problemi hanno causato il fallimento dell'installazione. Aggiustare questi problemi e riprovare l'installazione. Per maggiori informazioni vedi il <a href=\"#\">file log</a>."
 
 msgctxt "FailureRestartText"
 msgid ""
 "You must restart your computer to complete the rollback of the software."
-msgstr ""
+msgstr "Devi riavviare il computer per completare l'annullamento del software."
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Riavvia"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Chiudi"

@@ -4,6 +4,7 @@
       <author>Joachim</author>
       <description>Advanced preset for BCD3000. See forums for more information.</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4013</forums>
+      <manual>behringer_b_control_deejay_bcd3000</manual>
     </info>
     <controller id="BCD3000 MIDI 1">
         <scriptfiles>

@@ -1,16 +1,15 @@
-#ifndef RECURSIVESCANDIRECTORYTASK_H
-#define RECURSIVESCANDIRECTORYTASK_H
+#pragma once
 
 #include <QDir>
 
 #include "library/scanner/scannertask.h"
 #include "util/sandbox.h"
 
-// Recursively scan a music library. Doesn't import tracks for any directories
-// that have already been scanned and have not changed. Changes are tracked by
-// performing a hash of the directory's file list, and those hashes are stored
-// in the database. Successful if the scan completed without being
-// cancelled. False if the scan was cancelled part-way through.
+/// Recursively scan a music library. Doesn't import tracks for any directories
+/// that have already been scanned and have not changed. Changes are tracked by
+/// performing a hash of the directory's file list, and those hashes are stored
+/// in the database. Successful if the scan completed without being
+/// cancelled. False if the scan was cancelled part-way through.
 class RecursiveScanDirectoryTask : public ScannerTask {
     Q_OBJECT
   public:
@@ -29,5 +28,3 @@ class RecursiveScanDirectoryTask : public ScannerTask {
     SecurityTokenPointer m_pToken;
     bool m_scanUnhashed;
 };
-
-#endif /* RECURSIVESCANDIRECTORYTASK_H */

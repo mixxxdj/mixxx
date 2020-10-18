@@ -150,7 +150,7 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
         //    need to decode more than  2 * kNumberOfPrefetchFrames frames
         //    while skipping
         SINT skipFramesCountMax =
-                samples2frames(m_sampleBuffer.readableLength()) +
+                getSignalInfo().samples2frames(m_sampleBuffer.readableLength()) +
                 2 * kNumberOfPrefetchFrames;
         if (skipFrames.length() <= skipFramesCountMax) {
             if (skipFrames != readSampleFramesClamped(WritableSampleFrames(skipFrames)).frameIndexRange()) {
@@ -279,8 +279,8 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
     while (numberOfFramesRemaining > 0) {
         SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.shrinkForReading(
-                        frames2samples(numberOfFramesRemaining)));
-        DEBUG_ASSERT(readableSlice.length() <= frames2samples(numberOfFramesRemaining));
+                        getSignalInfo().frames2samples(numberOfFramesRemaining)));
+        DEBUG_ASSERT(readableSlice.length() <= getSignalInfo().frames2samples(numberOfFramesRemaining));
         if (readableSlice.length() > 0) {
             DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
             DEBUG_ASSERT(m_currentFrameIndex < frameIndexMax());
@@ -291,8 +291,8 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
                         readableSlice.length());
                 pSampleBuffer += readableSlice.length();
             }
-            m_currentFrameIndex += samples2frames(readableSlice.length());
-            numberOfFramesRemaining -= samples2frames(readableSlice.length());
+            m_currentFrameIndex += getSignalInfo().samples2frames(readableSlice.length());
+            numberOfFramesRemaining -= getSignalInfo().samples2frames(readableSlice.length());
         }
         if (numberOfFramesRemaining == 0) {
             break; // finished reading
@@ -365,7 +365,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             VERIFY_OR_DEBUG_ASSERT(m_currentFrameIndex == readerFrameIndex) {
                 kLogger.debug()
                         << "streamPos [100 ns] =" << streamPos
-                        << ", sampleRate [Hz] =" << sampleRate();
+                        << ", sampleRate =" << getSignalInfo().getSampleRate();
                 kLogger.warning()
                         << "Stream position (in sample frames) while reading is inaccurate:"
                         << "expected =" << m_currentFrameIndex
@@ -445,7 +445,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             SINT lockedSampleBufferCount =
                     lockedSampleBufferLengthInBytes / sizeof(pLockedSampleBuffer[0]);
             SINT copySamplesCount = std::min(
-                    frames2samples(numberOfFramesRemaining),
+                    getSignalInfo().frames2samples(numberOfFramesRemaining),
                     lockedSampleBufferCount);
             if (copySamplesCount > 0) {
                 // Copy samples directly into output buffer if possible
@@ -458,8 +458,8 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
                 }
                 pLockedSampleBuffer += copySamplesCount;
                 lockedSampleBufferCount -= copySamplesCount;
-                m_currentFrameIndex += samples2frames(copySamplesCount);
-                numberOfFramesRemaining -= samples2frames(copySamplesCount);
+                m_currentFrameIndex += getSignalInfo().samples2frames(copySamplesCount);
+                numberOfFramesRemaining -= getSignalInfo().samples2frames(copySamplesCount);
             }
             // Buffer the remaining samples
             SampleBuffer::WritableSlice writableSlice(
@@ -498,7 +498,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
+                    std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
 }
 
 namespace {
@@ -595,8 +595,8 @@ bool configureMediaType(
         return false;
     }
     kLogger.debug() << "Number of channels in input stream" << numChannels;
-    if (params.channelCount().valid()) {
-        numChannels = params.channelCount();
+    if (params.getSignalInfo().getChannelCount().isValid()) {
+        numChannels = params.getSignalInfo().getChannelCount();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {
@@ -619,8 +619,8 @@ bool configureMediaType(
         return false;
     }
     kLogger.debug() << "Samples per second in input stream" << samplesPerSecond;
-    if (params.sampleRate().valid()) {
-        samplesPerSecond = params.sampleRate();
+    if (params.getSignalInfo().getSampleRate().isValid()) {
+        samplesPerSecond = params.getSignalInfo().getSampleRate();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
         if (FAILED(hr)) {
@@ -724,7 +724,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& openPara
         safeRelease(&pAudioType);
         return false;
     }
-    setChannelCount(numChannels);
+    initChannelCountOnce(numChannels);
 
     UINT32 samplesPerSecond;
     hr = pAudioType->GetUINT32(
@@ -735,7 +735,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& openPara
         safeRelease(&pAudioType);
         return false;
     }
-    setSampleRate(samplesPerSecond);
+    initSampleRateOnce(samplesPerSecond);
 
     UINT32 leftoverBufferSizeInBytes = 0;
     hr = pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &leftoverBufferSizeInBytes);

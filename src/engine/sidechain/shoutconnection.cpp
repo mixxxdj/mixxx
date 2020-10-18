@@ -362,9 +362,9 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    m_format_is_mp3 = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_MP3);
-    m_format_is_ov = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OV);
-    m_format_is_opus = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OPUS);
+    m_format_is_mp3 = !qstrcmp(baFormat.constData(), ENCODING_MP3);
+    m_format_is_ov = !qstrcmp(baFormat.constData(), ENCODING_OGG);
+    m_format_is_opus = !qstrcmp(baFormat.constData(), ENCODING_OPUS);
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
     } else if (m_format_is_ov || m_format_is_opus) {

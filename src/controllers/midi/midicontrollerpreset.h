@@ -1,47 +1,42 @@
-/**
- * @file midicontrollerpreset.h
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Mon 9 Apr 2012
- * @brief MIDI Controller preset
- *
- * This class represents a MIDI controller preset, containing the data elements
- *   that make it up.
- *
- */
+#pragma once
+/// @file midicontrollerpreset.h
+/// @author Sean Pappalardo spappalardo@mixxx.org
+/// @date Mon 9 Apr 2012
+/// @brief MIDI Controller preset
 
-#ifndef MIDICONTROLLERPRESET_H
-#define MIDICONTROLLERPRESET_H
-
-#include <QHash>
+#include <QMultiHash>
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/midi/midimessage.h"
 
+/// This class represents a MIDI controller preset, containing the data elements
+///   that make it up.
 class MidiControllerPreset : public ControllerPreset {
   public:
-    MidiControllerPreset() {}
-    virtual ~MidiControllerPreset() {}
+    MidiControllerPreset(){};
+    virtual ~MidiControllerPreset(){};
 
-    virtual void accept(ControllerPresetVisitor* visitor) {
-        if (visitor) {
-            visitor->visit(this);
-        }
-    }
+    bool savePreset(const QString& fileName) const override;
 
-    virtual void accept(ConstControllerPresetVisitor* visitor) const {
-        if (visitor) {
-            visitor->visit(this);
-        }
-    }
+    virtual void accept(ControllerPresetVisitor* visitor) override;
+    virtual void accept(ConstControllerPresetVisitor* visitor) const override;
+    virtual bool isMappable() const override;
 
-    virtual bool isMappable() const {
-        return true;
-    }
+    // Input mappings
+    void addInputMapping(uint16_t key, MidiInputMapping mapping);
+    void removeInputMapping(uint16_t key);
+    const QMultiHash<uint16_t, MidiInputMapping>& getInputMappings() const;
+    void setInputMappings(const QMultiHash<uint16_t, MidiInputMapping>& mappings);
 
+    // Output mappings
+    void addOutputMapping(ConfigKey key, MidiOutputMapping mapping);
+    void removeOutputMapping(ConfigKey key);
+    const QMultiHash<ConfigKey, MidiOutputMapping>& getOutputMappings() const;
+    void setOutputMappings(const QMultiHash<ConfigKey, MidiOutputMapping>& mappings);
+
+  private:
     // MIDI input and output mappings.
-    QHash<uint16_t, MidiInputMapping> inputMappings;
-    QHash<ConfigKey, MidiOutputMapping> outputMappings;
+    QMultiHash<uint16_t, MidiInputMapping> m_inputMappings;
+    QMultiHash<ConfigKey, MidiOutputMapping> m_outputMappings;
 };
-
-#endif

@@ -15,14 +15,14 @@
 class EncoderWaveSettings : public EncoderRecordingSettings {
   public:
     EncoderWaveSettings(UserSettingsPointer pConfig, QString format);
-    virtual ~EncoderWaveSettings();
+    ~EncoderWaveSettings() override = default;
 
     // Returns the list of radio options to show to the user
     QList<OptionsGroup> getOptionGroups() const override;
-    // Selects the option by its index. If it is a single-element option, 
+    // Selects the option by its index. If it is a single-element option,
     // index 0 means disabled and 1 enabled.
     void setGroupOption(QString groupCode, int optionIndex) override;
-    // Return the selected option of the group. If it is a single-element option, 
+    // Return the selected option of the group. If it is a single-element option,
     // 0 means disabled and 1 enabled.
     int getSelectedOption(QString groupCode) const override;
 
@@ -30,7 +30,7 @@ class EncoderWaveSettings : public EncoderRecordingSettings {
     QString getFormat() const override{
         return m_format;
     }
-    
+
     static const QString BITS_GROUP;
   private:
     QList<OptionsGroup> m_radioList;

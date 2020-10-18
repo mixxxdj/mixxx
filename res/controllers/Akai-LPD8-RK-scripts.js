@@ -251,7 +251,7 @@ LPD8RK.init = function (id, debug) { // called when the device is opened & set u
     engine.softTakeover("[Sampler1]","rate",true);
     engine.softTakeover("[Sampler2]","volume",true);
     engine.softTakeover("[Sampler2]","rate",true);
-    
+
     //set LED timer
     LPD8RK.ledTimer = engine.beginTimer(LPD8RK.LEDinterval, "LPD8RK.setLeds()");
 };
@@ -282,11 +282,11 @@ LPD8RK.setLeds = function () {
             var state = engine.getValue(LPD8RK.hotcues[id][LPD8RK.hotcueBank][0], "hotcue_"+LPD8RK.hotcues[id][LPD8RK.hotcueBank][1]+"_enabled");
 
             //if (LPD8RK.debug){print("midi.sendShortMsg("+status+", "+ctrl+", "+state+")")};
-            
+
             LPD8RK.lightLED(status, ctrl, state);
             };
         };
-    
+
     //loops
     for (var id in LPD8RK.loops){
         //iterate through hotcues, set hotcue leds
@@ -295,15 +295,15 @@ LPD8RK.setLeds = function () {
         var state = engine.getValue(LPD8RK.loops[id][0], "beatloop_"+LPD8RK.loops[id][1]+"_enabled");
 
         //if (LPD8RK.debug){print("midi.sendShortMsg("+status+", "+ctrl+", "+state+")")};
-    
+
         LPD8RK.lightLED(status, ctrl, state);
         };
-    
+
     //reloop buttons
-    LPD8RK.lightLED(0xb0, 0x01, engine.getValue("[Channel1]", "loop_enabled"));    
-    LPD8RK.lightLED(0xb1, 0x01, engine.getValue("[Channel2]", "loop_enabled"));    
-    LPD8RK.lightLED(0xb2, 0x01, engine.getValue("[Sampler1]", "loop_enabled"));    
-    LPD8RK.lightLED(0xb3, 0x01, engine.getValue("[Sampler2]", "loop_enabled"));    
+    LPD8RK.lightLED(0xb0, 0x01, engine.getValue("[Channel1]", "loop_enabled"));
+    LPD8RK.lightLED(0xb1, 0x01, engine.getValue("[Channel2]", "loop_enabled"));
+    LPD8RK.lightLED(0xb2, 0x01, engine.getValue("[Sampler1]", "loop_enabled"));
+    LPD8RK.lightLED(0xb3, 0x01, engine.getValue("[Sampler2]", "loop_enabled"));
     };
 
 LPD8RK.lightLED = function (status, ctrl, state){
@@ -316,8 +316,8 @@ LPD8RK.lightLED = function (status, ctrl, state){
         if (state > 0 || state === true){state=1;}//make sure state is valid
         midi.sendShortMsg(status, ctrl, state);
         }
-    };    
-    
+    };
+
 LPD8RK.clear = function (){//enables hotcue clearing
     if (LPD8RK.debug){print("###hotcueclear##############")};
     LPD8RK.hotcueClear=true;
@@ -371,7 +371,7 @@ LPD8RK.loopButton = function (channel, control, value, status, group) {
 LPD8RK.reloopButton = function (channel, control, value, status, group) {
     if (LPD8RK.debug){print(LPD8RK.looplen+"len");}
     if (LPD8RK.debug){print(LPD8RK.looptype+"type");}
-    
+
     if (value>0){//button was pressed
         engine.stopTimer(LPD8RK.reloopTimer);
         LPD8RK.loopbuttonDown=true;
@@ -405,7 +405,7 @@ LPD8RK.resetOldBank = function () {
 
 LPD8RK.hotcueBankDial = function (channel, control, value, status, group) {
     //sets which hotcue bank to display (separate this out on dedicated controller)
-    
+
     //pause LED resets, so bank indicator lights will be visible
     engine.stopTimer(LPD8RK.ledTimer);
 
@@ -437,31 +437,31 @@ LPD8RK.hotcueBankDial = function (channel, control, value, status, group) {
     LPD8RK.oldHotcueBank=LPD8RK.hotcueBank;
     //set timer to clear old bank number after 500 msec, so bank indicator light will light up
     engine.stopTimer(LPD8RK.oldbanktimer);
-    LPD8RK.oldbanktimer = engine.beginTimer(500, "LPD8RK.resetOldBank()", true);    
+    LPD8RK.oldbanktimer = engine.beginTimer(500, "LPD8RK.resetOldBank()", true);
 
     //set timer to restart LED updates in 500 msec
     engine.stopTimer(LPD8RK.LEDPauseTimer);
-    LPD8RK.LEDPauseTimer = engine.beginTimer(LPD8RK.LEDinterval, "LPD8RK.resetLEDTimer()", true);    
+    LPD8RK.LEDPauseTimer = engine.beginTimer(LPD8RK.LEDinterval, "LPD8RK.resetLEDTimer()", true);
     };
 
 LPD8RK.looplenDial = function (channel, control, value, status, group) {
     //activates variable length loop depending on dial position
     LPD8RK.looplen=value;
 
-    if (LPD8RK.loopbuttonDown !== true){return false;}//exit if no loop button down 
-    else if (LPD8RK.looplen<=0x12){engine.setValue(group, LPD8RK.looptype+"_0.0625_activate", .0625);return true;} else 
-    if (LPD8RK.looplen<=0x25){engine.setValue(group, LPD8RK.looptype+"_0.125_activate", .125);return true;} else 
-    if (LPD8RK.looplen<=0x37){engine.setValue(group, LPD8RK.looptype+"_0.25_activate", .25);return true;} else 
-    if (LPD8RK.looplen<=0x49){engine.setValue(group, LPD8RK.looptype+"_0.5_activate", .5);return true;} else 
-    if (LPD8RK.looplen<=0x5b){engine.setValue(group, LPD8RK.looptype+"_1_activate", 1);return true;} else 
-    if (LPD8RK.looplen<=0x6d){engine.setValue(group, LPD8RK.looptype+"_2_activate", 2);return true;} else 
-    if (LPD8RK.looplen<=0x70){engine.setValue(group, LPD8RK.looptype+"_4_activate", 4);return true;} else    
-    if (LPD8RK.looplen<=0x7f){engine.setValue(group, LPD8RK.looptype+"_8_activate", 8);return true;};    
+    if (LPD8RK.loopbuttonDown !== true){return false;}//exit if no loop button down
+    else if (LPD8RK.looplen<=0x12){engine.setValue(group, LPD8RK.looptype+"_0.0625_activate", .0625);return true;} else
+    if (LPD8RK.looplen<=0x25){engine.setValue(group, LPD8RK.looptype+"_0.125_activate", .125);return true;} else
+    if (LPD8RK.looplen<=0x37){engine.setValue(group, LPD8RK.looptype+"_0.25_activate", .25);return true;} else
+    if (LPD8RK.looplen<=0x49){engine.setValue(group, LPD8RK.looptype+"_0.5_activate", .5);return true;} else
+    if (LPD8RK.looplen<=0x5b){engine.setValue(group, LPD8RK.looptype+"_1_activate", 1);return true;} else
+    if (LPD8RK.looplen<=0x6d){engine.setValue(group, LPD8RK.looptype+"_2_activate", 2);return true;} else
+    if (LPD8RK.looplen<=0x70){engine.setValue(group, LPD8RK.looptype+"_4_activate", 4);return true;} else
+    if (LPD8RK.looplen<=0x7f){engine.setValue(group, LPD8RK.looptype+"_8_activate", 8);return true;};
     };
 
 LPD8RK.loopminus = function (channel, control, value, status, group) {
     //shrinks loop or moves loop back
-    if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_halve", 1);engine.setValue(group, "loop_halve", 0); return false;}//shrink loop if no loop button down 
+    if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_halve", 1);engine.setValue(group, "loop_halve", 0); return false;}//shrink loop if no loop button down
     else if (engine.getValue(group, "loop_start_position")>=0 && engine.getValue(group, "loop_end_position")>=0 ){
         //move loop
         var interval =    LPD8RK.loopmove*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
@@ -475,7 +475,7 @@ LPD8RK.loopminus = function (channel, control, value, status, group) {
 
 LPD8RK.loopplus = function (channel, control, value, status, group) {
     //grows loop or moves loop forward
-    if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_double", 1); engine.setValue(group, "loop_double", 0); return false;}//shrink loop if no loop button down 
+    if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_double", 1); engine.setValue(group, "loop_double", 0); return false;}//shrink loop if no loop button down
     else if (engine.getValue(group, "loop_start_position")>=0 && engine.getValue(group, "loop_end_position")>=0 ){
         //move loop
         var interval =    LPD8RK.loopmove*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
@@ -494,26 +494,26 @@ LPD8RK.beatjump = function (channel, control, value, status, group) {
     var backseconds = numbeats*(1/(engine.getValue(group, "bpm")/60));
     var backsamples = backseconds*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
     var newpos = curpos-(backsamples+engine.getValue("Master", "latency"));
-    
+
     if (LPD8RK.debug){print("backseconds: "+backseconds);}
     if (LPD8RK.debug){print("backsamples: "+backsamples);}
     if (LPD8RK.debug){print("curpos: "+curpos);}
     if (LPD8RK.debug){print("newpos: "+newpos);}
     if (LPD8RK.debug){print("numbeats: "+numbeats);}
-    
+
     engine.setValue(group, "playposition", newpos/engine.getValue(group, "track_samples"));
     };
 
 LPD8RK.beatjumpDial = function (channel, control, value, status, group) {
     //activates variable length loop depending on dial position
     if(value>=0 && value <=127){
-        if (value<=1){LPD8RK.beatjumpstep=.25; return true;} else 
-        if (value<=31){LPD8RK.beatjumpstep=.5; return true;} else     
-        if (value<=63){LPD8RK.beatjumpstep=1; return true;} else     
-        if (value<=94){LPD8RK.beatjumpstep=2; return true;} else     
-        if (value<=125){LPD8RK.beatjumpstep=4; return true;} else     
+        if (value<=1){LPD8RK.beatjumpstep=.25; return true;} else
+        if (value<=31){LPD8RK.beatjumpstep=.5; return true;} else
+        if (value<=63){LPD8RK.beatjumpstep=1; return true;} else
+        if (value<=94){LPD8RK.beatjumpstep=2; return true;} else
+        if (value<=125){LPD8RK.beatjumpstep=4; return true;} else
         if (value<=127){LPD8RK.beatjumpstep=8; return true;};
-        };    
+        };
     };
 
 LPD8RK.mute = function (group) {
@@ -528,19 +528,19 @@ LPD8RK.mute = function (group) {
         LPD8RK.vol[group]=curvol;
         };
     engine.softTakeover(group,"volume",true);
-    
+
     if (LPD8RK.debug){print("MUTE");}
     };
 
 LPD8RK.progChng = function (channel, control, value, status, group) {
     if (LPD8RK.debug){print("###PROG CHANGE###");}
     //workaround because prog chng buttons don't seem to like to work unless they're linked to scripts
-    if (control==0x07){LPD8RK.toggleplay(group, engine.getValue(group, "play")); return true;} else 
-    if (control==0x03){engine.setValue(group, "cue_default", true); engine.setValue(group, "cue_default", false); return true;} else 
-    if (control==0x06){engine.setValue(group, "beatsync", true); engine.setValue(group, "beatsync", false); return true;} else 
-    if (control==0x02){LPD8RK.togglepfl(group, engine.getValue(group, "pfl")); return true;} else 
-    if (control==0x05){LPD8RK.togglereverse(group, engine.getValue(group, "reverse")); return true;} else 
-    if (control==0x04){LPD8RK.toggleback(group, engine.getValue(group, "back")); return true;} else 
+    if (control==0x07){LPD8RK.toggleplay(group, engine.getValue(group, "play")); return true;} else
+    if (control==0x03){engine.setValue(group, "cue_default", true); engine.setValue(group, "cue_default", false); return true;} else
+    if (control==0x06){engine.setValue(group, "beatsync", true); engine.setValue(group, "beatsync", false); return true;} else
+    if (control==0x02){LPD8RK.togglepfl(group, engine.getValue(group, "pfl")); return true;} else
+    if (control==0x05){LPD8RK.togglereverse(group, engine.getValue(group, "reverse")); return true;} else
+    if (control==0x04){LPD8RK.toggleback(group, engine.getValue(group, "back")); return true;} else
     if (control==0x00){LPD8RK.togglefwd(group, engine.getValue(group, "fwd")); return true;}
     if (control==0x01){LPD8RK.mute(group); return true;}
     };
@@ -554,15 +554,15 @@ LPD8RK.togglepfl = function (group, state) {
     };
 
 LPD8RK.togglereverse = function (group, state) {
-    if (state==true){engine.setValue(group, "reverse", false);} else {engine.setValue(group, "reverse", true);};    
+    if (state==true){engine.setValue(group, "reverse", false);} else {engine.setValue(group, "reverse", true);};
     };
 
 LPD8RK.toggleback = function (group, state) {
-    if (state==true){engine.setValue(group, "back", false);} else {engine.setValue(group, "back", true);};    
+    if (state==true){engine.setValue(group, "back", false);} else {engine.setValue(group, "back", true);};
     };
 
 LPD8RK.togglefwd = function (group, state) {
-    if (state==true){engine.setValue(group, "fwd", false);} else {engine.setValue(group, "fwd", true);};    
+    if (state==true){engine.setValue(group, "fwd", false);} else {engine.setValue(group, "fwd", true);};
     };
 
 LPD8RK.softXfade = function (channel, control, value, status, group) {

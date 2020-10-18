@@ -42,6 +42,7 @@ void BatteryLinux::read() {
                  "time-to-empty", &timeToEmpty,
                  "time-to-full", &timeToFull,
                  NULL);
+    g_clear_object(&device);
 
     if (!isPresent || kind != UP_DEVICE_KIND_BATTERY) {
         return;

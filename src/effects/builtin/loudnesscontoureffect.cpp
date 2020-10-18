@@ -68,11 +68,10 @@ LoudnessContourEffectGroupState::LoudnessContourEffectGroupState(
         : EffectState(bufferParameters),
           m_oldGainKnob(1.0),
           m_oldLoudness(0.0),
-          m_oldGain(1.0),
+          m_oldGain(1.0f),
           m_oldFilterGainDb(0),
           m_oldUseGain(false),
           m_oldSampleRate(bufferParameters.sampleRate()) {
-
     m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
 
     // Initialize the filters with default parameters
@@ -115,7 +114,7 @@ void LoudnessContourEffect::processChannel(
     Q_UNUSED(groupFeatures);
 
     double filterGainDb = pState->m_oldFilterGainDb;
-    double gain = pState->m_oldGain;
+    auto gain = static_cast<CSAMPLE_GAIN>(pState->m_oldGain);
 
     if (enableState != EffectEnableState::Disabling) {
 
@@ -144,7 +143,7 @@ void LoudnessContourEffect::processChannel(
             else {
                 filterGainDb = -loudness;
                 // compensate filter boost to avoid clipping
-                gain = db2ratio(-filterGainDb);
+                gain = static_cast<CSAMPLE_GAIN>(db2ratio(-filterGainDb));
             }
             pState->setFilters(bufferParameters.sampleRate(), filterGainDb);
         }

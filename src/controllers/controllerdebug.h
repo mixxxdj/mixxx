@@ -14,9 +14,14 @@ class ControllerDebug {
 
     static bool enabled();
 
-    // Override the command-line argument (for testing)
+    /// Override the command-line argument (for testing)
     static void enable() {
         s_enabled = true;
+    }
+
+    /// Override the command-line argument (for testing)
+    static void disable() {
+        s_enabled = false;
     }
 
   private:

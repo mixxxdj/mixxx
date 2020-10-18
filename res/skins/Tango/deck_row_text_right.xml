@@ -50,7 +50,7 @@ Variables:
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
                 <ObjectName>TrackTitle</ObjectName>
-                <Property>title</Property>
+                <Property>titleInfo</Property>
                 <Alignment>right</Alignment>
                 <Elide>right</Elide>
                 <Size>1me,22f</Size>

@@ -62,6 +62,14 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
         m_playedOverlayColor = Qt::transparent;
     }
 
+    // This color is used to draw an overlay over the entire overview-waveforms
+    // if vinyl passthrough is enabled
+    m_passthroughOverlayColor = context.selectColor(node, "PassthroughOverlayColor");
+    m_passthroughOverlayColor = WSkinColor::getCorrectColor(m_passthroughOverlayColor).toRgb();
+    if (!m_passthroughOverlayColor.isValid()) {
+        m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(187, 0, 0, 0)).toRgb();
+    }
+
     m_bgColor = context.selectColor(node, "BgColor");
     if (!m_bgColor.isValid()) {
         m_bgColor = Qt::transparent;
@@ -133,8 +141,8 @@ void WaveformSignalColors::fallBackFromSignalColor() {
 }
 
 void WaveformSignalColors::fallBackDefaultColor() {
-    qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
-                  "skin do not provide valid signal colors ! Default colors is use ...";
+    qWarning() << "WaveformSignalColors::fallBackDefaultColor - "
+                  "Skin does not provide valid signal colors, using default color...";
 
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();

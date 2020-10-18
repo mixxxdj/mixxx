@@ -27,6 +27,10 @@ class WaveformMarkLabel {
         return m_areaRect;
     };
 
+    void setAreaRect(QRectF areaRect) {
+        m_areaRect = areaRect;
+    }
+
     bool intersects(const QRectF& other) const {
         return m_areaRect.intersects(other);
     }

@@ -9,7 +9,7 @@
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/memory.h"
 
 class AnalyzerKey : public Analyzer {
@@ -18,6 +18,7 @@ class AnalyzerKey : public Analyzer {
     ~AnalyzerKey() override = default;
 
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
+    static mixxx::AnalyzerPluginInfo defaultPlugin();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;

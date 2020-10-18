@@ -6,12 +6,12 @@
 #include <QList>
 #include <memory>
 
-#include "util/color/rgbcolor.h"
+#include "track/cueinfo.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
 
 namespace mixxx {
 
-// Forward declaration
 class SeratoMarkersEntry;
 typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
@@ -41,8 +41,11 @@ class SeratoMarkersEntry {
     }
     ~SeratoMarkersEntry() = default;
 
-    QByteArray dump() const;
-    static SeratoMarkersEntryPointer parse(const QByteArray& data);
+    QByteArray dumpID3() const;
+    QByteArray dumpMP4() const;
+
+    static SeratoMarkersEntryPointer parseID3(const QByteArray& data);
+    static SeratoMarkersEntryPointer parseMP4(const QByteArray& data);
 
     int type() const {
         return m_type;
@@ -92,14 +95,13 @@ class SeratoMarkersEntry {
     bool m_hasEndPosition;
     ;
     bool m_isLocked;
-    bool m_isSet;
     quint32 m_startPosition;
     quint32 m_endPosition;
     int m_type;
 };
 
 inline bool operator==(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
-    return (lhs.dump() == rhs.dump());
+    return (lhs.dumpID3() == rhs.dumpID3());
 }
 
 inline bool operator!=(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
@@ -118,25 +120,30 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
                << "isLocked =" << arg.isLocked();
 }
 
-// DTO for storing information from the SeratoMarkers_ tags used by the Serato
-// DJ Pro software.
-//
-// Parsing & Formatting
-// --------------------
-// This class includes functions for formatting and parsing SeratoMarkers_
-// metadata according to the specification:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md
-//
+/// DTO for storing information from the SeratoMarkers_ tags used by the Serato
+/// DJ Pro software.
+///
+/// This class includes functions for formatting and parsing SeratoMarkers_
+/// metadata according to the specification:
+/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md
 class SeratoMarkers final {
   public:
     SeratoMarkers() = default;
-    explicit SeratoMarkers(QList<SeratoMarkersEntryPointer> entries)
-            : m_entries(std::move(entries)) {
-    }
 
-    static bool parse(SeratoMarkers* seratoMarkers, const QByteArray& data);
+    /// Parse a binary Serato representation of the "Markers_" data from a
+    /// `QByteArray` and write the results to the `SeratoMarkers` instance.
+    /// The `fileType` parameter determines the exact format of the data being
+    /// used.
+    static bool parse(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& data,
+            taglib::FileType fileType);
 
-    QByteArray dump() const;
+    /// Create a binary Serato representation of the "Markers_" data suitable
+    /// for `fileType` and dump it into a `QByteArray`. The content of that
+    /// byte array can be used for round-trip tests or written to the
+    /// appropriate tag to make it accessible to Serato.
+    QByteArray dump(taglib::FileType fileType) const;
 
     bool isEmpty() const {
         return m_entries.isEmpty() && !m_trackColor;
@@ -156,7 +163,19 @@ class SeratoMarkers final {
         m_trackColor = color;
     }
 
+    QList<CueInfo> getCues() const;
+
   private:
+    static bool parseID3(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& data);
+    static bool parseMP4(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& base64EncodedData);
+
+    QByteArray dumpID3() const;
+    QByteArray dumpMP4() const;
+
     QList<SeratoMarkersEntryPointer> m_entries;
     RgbColor::optional_t m_trackColor;
 };

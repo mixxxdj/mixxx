@@ -4,8 +4,8 @@
         <name>Behringer CMD STUDIO 4a</name>
         <author>Craig Easton</author>
         <description>Controller mapping for the Behringer CMD STUDIO 4a. V 1.4 Created Jan 2016 for Mixxx 2.0.0</description>
-        <wiki>http://www.mixxx.org/wiki/doku.php/behringer_cmd_studio_4a</wiki>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=7868</forums>
+        <manual>behringer_cmd_studio_4a</manual>
     </info>
     <controller id="Behringer CMD STUDIO 4a">
         <scriptfiles>

@@ -118,11 +118,17 @@
             <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_intro_outro_cues</SetVariable>
           </Template>
-          
+
           <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="text">Vinyl Control Options</SetVariable>
             <SetVariable name="skinsetting">[VinylControl],show_vinylcontrol</SetVariable>
+          </Template>
+
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_coverart</SetVariable>
+            <SetVariable name="text">Hotcue Shift Buttons</SetVariable>
+            <SetVariable name="skinsetting">[Skin],timing_shift_buttons</SetVariable>
           </Template>
 
         </Children>
@@ -373,4 +379,3 @@
     </Connection>
   </WidgetGroup>
 </Template>
-

@@ -111,6 +111,16 @@ void DlgPrefLV2::slotDisplayParameters() {
     lv2_vertical_layout_params->addStretch();
 }
 
+void DlgPrefLV2::slotUpdate() {
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
+}
+
+void DlgPrefLV2::slotResetToDefaults() {
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
+}
+
 void DlgPrefLV2::slotApply() {
     EffectManifestPointer pCurrentEffectManifest =
             m_pLV2Backend->getManifest(m_currentEffectId);

@@ -16,9 +16,9 @@
 #include "control/controlproxy.h"
 #include "util/math.h"
 
-WNumberRate::WNumberRate(const char * group, QWidget * parent)
+WNumberRate::WNumberRate(const QString& group, QWidget* parent)
         : WNumber(parent) {
-    m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
+    m_pRateRatio = new ControlProxy(group, "rate_ratio", this, ControlFlag::NoAssertIfMissing);
     m_pRateRatio->connectValueChanged(this, &WNumberRate::setValue);
 }
 

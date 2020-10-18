@@ -120,7 +120,7 @@ CSAMPLE ReplayGain::peakFromString(QString strPeak, bool* pValid) {
         return kPeakUndefined;
     }
     isValid = false;
-    const CSAMPLE peak = normalizedPeak.toDouble(&isValid);
+    const CSAMPLE peak = normalizedPeak.toFloat(&isValid);
     if (isValid) {
         if (isValidPeak(peak)) {
             if (pValid) {
@@ -156,4 +156,4 @@ CSAMPLE ReplayGain::normalizePeak(CSAMPLE peak) {
     }
 }
 
-} //namespace mixxx
+} // namespace mixxx

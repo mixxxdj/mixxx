@@ -6,10 +6,8 @@
 #include "preferences/upgrade.h"
 #include "util/assert.h"
 
-SettingsManager::SettingsManager(QObject* pParent,
-                                 const QString& settingsPath)
-        : QObject(pParent),
-          m_bShouldRescanLibrary(false) {
+SettingsManager::SettingsManager(const QString& settingsPath)
+        : m_bShouldRescanLibrary(false) {
     // First make sure the settings path exists. If we don't then other parts of
     // Mixxx (such as the library) will produce confusing errors.
     if (!QDir(settingsPath).exists()) {

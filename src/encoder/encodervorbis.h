@@ -13,18 +13,20 @@
 // this also includes vorbis/codec.h
 #include <vorbis/vorbisenc.h>
 
-#include "util/types.h"
+#include <QFile>
+
 #include "encoder/encoder.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/types.h"
 
 class EncoderCallback;
 
 class EncoderVorbis : public Encoder {
   public:
     static const int MONO_BITRATE_THRESHOLD;
-  
-    EncoderVorbis(EncoderCallback* pCallback=nullptr);
-    virtual ~EncoderVorbis();
+
+    EncoderVorbis(EncoderCallback* pCallback = nullptr);
+    ~EncoderVorbis() override;
 
     int initEncoder(int samplerate, QString errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;

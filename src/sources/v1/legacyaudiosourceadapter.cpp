@@ -52,8 +52,8 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
                 writableSampleFrames = WritableSampleFrames(
                         remainingFrameIndexRange,
                         SampleBuffer::WritableSlice(
-                                writableSampleFrames.writableData(m_pOwner->frames2samples(unreadableFrameOffset)),
-                                m_pOwner->frames2samples(remainingFrameIndexRange.length())));
+                                writableSampleFrames.writableData(m_pOwner->getSignalInfo().frames2samples(unreadableFrameOffset)),
+                                m_pOwner->getSignalInfo().frames2samples(remainingFrameIndexRange.length())));
             } else {
                 writableSampleFrames = WritableSampleFrames(remainingFrameIndexRange);
             }
@@ -72,7 +72,7 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
             resultFrameIndexRange,
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    m_pOwner->frames2samples(resultFrameIndexRange.length())));
+                    m_pOwner->getSignalInfo().frames2samples(resultFrameIndexRange.length())));
 }
 
 } // namespace mixxx

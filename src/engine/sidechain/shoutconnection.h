@@ -5,25 +5,26 @@
 #define ENGINE_SIDECHAIN_SHOUTCONNECTION_H
 
 #include <engine/sidechain/networkoutputstreamworker.h>
+
 #include <QMessageBox>
 #include <QMutex>
-#include <QWaitCondition>
 #include <QObject>
 #include <QSemaphore>
+#include <QSharedPointer>
 #include <QTextCodec>
 #include <QThread>
 #include <QVector>
-#include <QSharedPointer>
+#include <QWaitCondition>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "encoder/encodercallback.h"
 #include "encoder/encoder.h"
+#include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
-#include "preferences/usersettings.h"
-#include "track/track.h"
-#include "util/fifo.h"
 #include "preferences/broadcastprofile.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "util/fifo.h"
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -37,7 +38,7 @@ class ShoutConnection
     Q_OBJECT
   public:
     ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig);
-    virtual ~ShoutConnection();
+    ~ShoutConnection() override;
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
@@ -167,4 +168,3 @@ class ShoutConnection
 typedef QSharedPointer<ShoutConnection> ShoutConnectionPtr;
 
 #endif // ENGINE_SIDECHAIN_SHOUTCONNECTION_H
-

@@ -15,9 +15,9 @@
 
 #include "util/performancetimer.h"
 
-GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
-    : QGLWidget(parent, SharedGLContext::getWidget()),
-      WaveformWidgetAbstract(group) {
+GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
+        : QGLWidget(parent, SharedGLContext::getWidget()),
+          WaveformWidgetAbstract(group) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
@@ -26,12 +26,16 @@ GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
     }
 
     addRenderer<WaveformRenderBackground>(); // 172 µs
-//    addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
-//    addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
-//    addRenderer<WaveformRenderMarkRange>(); // 793 µs
+//  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
+//  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
+//  addRenderer<WaveformRenderMarkRange>(); // 793 µs
+
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<GLVSyncTestRenderer>(); // 841 µs // 2271 µs
-//    addRenderer<WaveformRenderMark>(); // 711 µs
-//    addRenderer<WaveformRenderBeat>(); // 1183 µs
+#endif                                  // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2
+
+    // addRenderer<WaveformRenderMark>(); // 711 µs
+    // addRenderer<WaveformRenderBeat>(); // 1183 µs
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -43,9 +47,6 @@ GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
 }
 
 GLVSyncTestWidget::~GLVSyncTestWidget() {
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 }
 
 void GLVSyncTestWidget::castToQWidget() {

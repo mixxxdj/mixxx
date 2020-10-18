@@ -63,8 +63,8 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
         }
     }
 
-    setChannelCount(sfInfo.channels);
-    setSampleRate(sfInfo.samplerate);
+    initChannelCountOnce(sfInfo.channels);
+    initSampleRateOnce(sfInfo.samplerate);
     initFrameIndexRangeOnce(IndexRange::forward(0, sfInfo.frames));
 
     m_curFrameIndex = frameIndexMin();
@@ -115,7 +115,7 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
                 resultRange,
                 SampleBuffer::ReadableSlice(
                         writableSampleFrames.writableData(),
-                        frames2samples(readCount)));
+                        getSignalInfo().frames2samples(readCount)));
     } else {
         kLogger.warning() << "Failed to read from libsnd file:"
                           << readCount

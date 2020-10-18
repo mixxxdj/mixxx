@@ -1,0 +1,69 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect unit widget hosting all effect controls for both collapsed
+    and expanded state ([FxUnitN],show_parameters)
+  Variables:
+    group: The group for the controls.
+    FxRack
+    FxUnit
+    FxNum
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit_FxNum"><Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/></SetVariable>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
+
+<!-- Wrapper that allows to set an indirect top/bottom padding within the Fx unit
+    so the Fx unit controls layout is independent. -->
+  <WidgetGroup>
+    <ObjectName>FxSlotContainer</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>FxSlotControls</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>p,min</SizePolicy>
+        <MaximumSize>173,</MaximumSize>
+        <Children>
+
+          <Template src="skin:/controls/button_2state.xml">
+            <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+            <SetVariable name="ObjectName">FxToggleButton</SetVariable>
+            <SetVariable name="BtnSize">square</SetVariable>
+            <SetVariable name="Size">26f,26f</SetVariable>
+            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit_FxNum"/>],enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:/fx/meta_knob.xml">
+            <SetVariable name="Group">[<Variable name="FxRack_FxUnit_FxNum"/>]</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+            <SetVariable name="Control">meta</SetVariable>
+          </Template>
+
+          <EffectSelector>
+            <MinimumSize>65,24</MinimumSize>
+            <MaximumSize>120,24</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <EffectRack>1</EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <!-- Style the effect selector when the effect is enabled -->
+            <!-- <Connection>
+              <ConfigKey>[<Variable name="FxRack_FxUnit_FxNum"/>],enabled</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection> -->
+          </EffectSelector>
+
+          <WidgetGroup><Size>2min,0min</Size></WidgetGroup>
+
+          <Template src="skin:/fx/focus_button.xml"/>
+
+        </Children>
+      </WidgetGroup><!-- FxSlotControls -->
+
+    </Children>
+  </WidgetGroup><!-- FxSlotContainer -->
+</Template>

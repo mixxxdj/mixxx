@@ -1,6 +1,5 @@
 #include <QStringList>
 #include <QTime>
-#include <QTimer>
 #include <QWidget>
 #include <QtDebug>
 #include <QGLFormat>
@@ -95,7 +94,11 @@ WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidge
 ///////////////////////////////////////////
 
 WaveformWidgetFactory::WaveformWidgetFactory()
-        : m_type(WaveformWidgetType::Count_WaveformwidgetType),
+        // Set an empty waveform initially. We will set the correct one when skin load finishes.
+        // Concretely, we want to set a non-GL waveform when loading the skin so that the window
+        // loads correctly.
+        : m_type(WaveformWidgetType::EmptyWaveform),
+          m_configType(WaveformWidgetType::EmptyWaveform),
           m_config(0),
           m_skipRender(false),
           m_frameRate(30),
@@ -236,10 +239,12 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             m_openGLVersion = QString::number(majorGlVersion) + "."
                     + QString::number(minorGlVersion);
 
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
             if (majorGlVersion * 100 + minorGlVersion >= 201) {
                 // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
                 m_openGlAvailable = true;
             }
+#endif
         } else {
             if (majorGlesVersion * 100 + minorGlesVersion >= 200) {
                 // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
@@ -309,8 +314,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
-    if (!ok || !setWidgetType(type)) {
-        setWidgetType(autoChooseWidgetType());
+    // Store the widget type on m_configType for later initialization.
+    // We will initialize the objects later because of a problem with GL on QT 5.14.2 on Windows
+    if (!ok || !setWidgetType(type, &m_configType)) {
+        setWidgetType(autoChooseWidgetType(), &m_configType);
     }
 
     for (int i = 0; i < FilterCount; i++) {
@@ -340,9 +347,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 }
 
 void WaveformWidgetFactory::destroyWidgets() {
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        WaveformWidgetAbstract* pWidget = m_waveformWidgetHolders[i].m_waveformWidget;;
-        m_waveformWidgetHolders[i].m_waveformWidget = NULL;
+    for (auto& holder : m_waveformWidgetHolders) {
+        WaveformWidgetAbstract* pWidget = holder.m_waveformWidget;
+        holder.m_waveformWidget = NULL;
         delete pWidget;
     }
     m_waveformWidgetHolders.clear();
@@ -355,6 +362,18 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
     connect(this, SIGNAL(waveformUpdateTick()),
             pWidget, SLOT(maybeUpdate()),
             Qt::DirectConnection);
+}
+
+
+void WaveformWidgetFactory::slotSkinLoaded() {
+    setWidgetTypeFromConfig();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined __WINDOWS__
+    // This regenerates the waveforms twice because of a bug found on Windows
+    // where the first one fails.
+    // The problem is that the window of the widget thinks that it is not exposed.
+    // (https://doc.qt.io/qt-5/qwindow.html#exposeEvent )
+    setWidgetTypeFromConfig();
+#endif
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
@@ -388,6 +407,8 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
     viewer->setPlayMarkerPosition(m_playMarkerPosition);
+    waveformWidget->resize(viewer->width(), viewer->height());
+    waveformWidget->getWidget()->show();
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -428,32 +449,50 @@ int WaveformWidgetFactory::getVSyncType() {
 }
 
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
-    if (type == m_type)
+    return setWidgetType(type, &m_type);
+}
+
+bool WaveformWidgetFactory::setWidgetType(
+        WaveformWidgetType::Type type,
+        WaveformWidgetType::Type* pCurrentType) {
+    if (type == *pCurrentType) {
         return true;
+    }
 
     // check if type is acceptable
-    for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
-        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
-        if (handle.m_type == type) {
-            // type is acceptable
-            m_type = type;
-            if (m_config) {
-                m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
-            }
-            return true;
+    int index = findHandleIndexFromType(type);
+    if (index > -1) {
+        // type is acceptable
+        *pCurrentType = type;
+        if (m_config) {
+            m_config->setValue(
+                    ConfigKey("[Waveform]", "WaveformType"),
+                    static_cast<int>(*pCurrentType));
         }
+        return true;
     }
 
     // fallback
-    m_type = WaveformWidgetType::EmptyWaveform;
+    *pCurrentType = WaveformWidgetType::EmptyWaveform;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
+        m_config->setValue(
+                ConfigKey("[Waveform]", "WaveformType"),
+                static_cast<int>(*pCurrentType));
     }
     return false;
 }
 
-bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
-    if (handleIndex < 0 || handleIndex >= (int)m_waveformWidgetHandles.size()) {
+bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
+    int empty = findHandleIndexFromType(WaveformWidgetType::EmptyWaveform);
+    int desired = findHandleIndexFromType(m_configType);
+    if (desired == -1) {
+        desired = empty;
+    }
+    return setWidgetTypeFromHandle(desired, true);
+}
+
+bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force) {
+    if (handleIndex < 0 || handleIndex >= m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);
@@ -461,7 +500,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     }
 
     WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[handleIndex];
-    if (handle.m_type == m_type) {
+    if (handle.m_type == m_type && !force) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - type already in use";
         return true;
     }
@@ -473,13 +512,13 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     //qDebug() << "recreate start";
 
     //re-create/setup all waveform widgets
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
+    for (auto& holder : m_waveformWidgetHolders) {
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
         double previousZoom = previousWidget->getZoomFactor();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
+        double previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -488,6 +527,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
         viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
+        viewer->setDisplayBeatGridAlpha(previousbeatgridAlpha);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
@@ -509,8 +549,8 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(m_defaultZoom);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformViewer->setZoom(m_defaultZoom);
     }
 }
 
@@ -525,8 +565,8 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 
     double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
-    for (std::size_t i = 1; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformViewer->setZoom(refZoom);
     }
 }
 
@@ -536,10 +576,9 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
         return;
     }
 
-    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
-
 }
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
@@ -660,8 +699,8 @@ void WaveformWidgetFactory::swap() {
         if (m_type) {   // no regular updates for an empty waveform
             // Show rendered buffer from last render() run
             //qDebug() << "swap() start" << m_vsyncThread->elapsed();
-            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
-                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+            for (const auto& holder : m_waveformWidgetHolders) {
+                WaveformWidgetAbstract* pWaveformWidget = holder.m_waveformWidget;
 
                 // Don't swap invalid / invisible widgets or widgets with an
                 // unexposed window. Prevents continuous log spew of
@@ -970,4 +1009,23 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
     m_vsyncThread->getAvailableVSyncTypes(pList);
+}
+
+WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int index) {
+    WaveformWidgetType::Type type = WaveformWidgetType::Count_WaveformwidgetType;
+    if (index >= 0 && index < m_waveformWidgetHandles.size()) {
+        type = m_waveformWidgetHandles[index].m_type;
+    }
+    return type;
+}
+
+int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type) {
+    int index = -1;
+    for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
+        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
+        if (handle.m_type == type) {
+            index = i;
+        }
+    }
+    return index;
 }

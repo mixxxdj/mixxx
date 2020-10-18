@@ -35,6 +35,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
     EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+    pChainSlot->registerInputChannel(m_master);
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);

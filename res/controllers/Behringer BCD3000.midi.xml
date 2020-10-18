@@ -3,7 +3,7 @@
         <name>Behringer BCD3000</name>
         <author>Aposto</author>
         <description>MIDI Mapping for Behringer BCD3000</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=3&amp;t=845</forums>
+        <forums>https://mixxx.discourse.group/t/behringer-bcd3000/10194</forums>
     </info>
     <controller id="BCD3000 MIDI 1">
         <scriptfiles>

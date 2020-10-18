@@ -1,12 +1,14 @@
-#include <QMessageBox>
-
 #include "library/autodj/dlgautodj.h"
+
+#include <QMessageBox>
 
 #include "library/playlisttablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
+#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 
 namespace {
@@ -15,19 +17,20 @@ const char* kRepeatPlaylistPreference = "Requeue";
 } // anonymous namespace
 
 DlgAutoDJ::DlgAutoDJ(
-        QWidget* parent,
+        WLibrary* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
         AutoDJProcessor* pProcessor,
-        KeyboardEventFilter* pKeyboard,
-        bool showButtonText)
+        KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pConfig(pConfig),
           m_pAutoDJProcessor(pProcessor),
           m_pTrackTableView(new WTrackTableView(this, m_pConfig,
-                                                pLibrary->trackCollections(), /*no sorting*/ false)),
-          m_bShowButtonText(showButtonText),
+                                                pLibrary->trackCollections(),
+                                                parent->getTrackTableBackgroundColorOpacity(),
+                                                /*no sorting*/ false)),
+          m_bShowButtonText(parent->getShowButtonText()),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);
 
@@ -80,7 +83,10 @@ DlgAutoDJ::DlgAutoDJ(
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    connect(pushButtonAutoDJ, &QPushButton::toggled, this, &DlgAutoDJ::toggleAutoDJButton);
+    connect(pushButtonAutoDJ,
+            &QPushButton::clicked,
+            this,
+            &DlgAutoDJ::toggleAutoDJButton);
 
     setupActionButton(pushButtonFadeNow, &DlgAutoDJ::fadeNowButton, tr("Fade"));
     setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
@@ -171,7 +177,7 @@ DlgAutoDJ::DlgAutoDJ(
             &DlgAutoDJ::slotTransitionModeChanged);
 
     connect(pushButtonRepeatPlaylist,
-            &QPushButton::toggled,
+            &QPushButton::clicked,
             this,
             &DlgAutoDJ::slotRepeatPlaylistChanged);
     if (m_bShowButtonText) {
@@ -185,11 +191,12 @@ DlgAutoDJ::DlgAutoDJ(
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
     // skin changes, etc.).
-    spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
+    spinBoxTransition->setValue(static_cast<int>(m_pAutoDJProcessor->getTransitionTime()));
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::transitionTimeChanged,
             this,
             &DlgAutoDJ::transitionTimeChanged);
+
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::autoDJStateChanged,
             this,
@@ -356,5 +363,5 @@ void DlgAutoDJ::updateSelectionInfo() {
 }
 
 bool DlgAutoDJ::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }

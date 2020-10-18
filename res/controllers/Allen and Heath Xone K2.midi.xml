@@ -3,7 +3,7 @@
     <info>
         <name>Allen&amp;Heath Xone K2/K1</name>
         <author>Be</author>
-        <wiki>https://mixxx.org/wiki/doku.php/allen_heath_xone_k2</wiki>
+        <manual>allen_heath_xone_k2_k1</manual>
         <description>This mapping can used with one or multiple Xone K2s/K1s. Multiple Xone K2s/K1s can be connected to each other via X-Link with one of them connected to the computer via USB. Alternatively, when using 2 K2s/K1s, they can both be connected with their own USB cable and this same mapping can be loaded for each.
 
 The layout of the mapping depends on the configured MIDI channel of the controller. Change the MIDI channel of the controller by pressing the bottom right encoder (labeled "Power On Setup/Scroll/Set") while plugging in the controller. Scroll with the encoder to select a MIDI channel. The letter in parentheses corresponds to the last lit button when selecting the channel:

@@ -11,6 +11,8 @@ void LocationDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
+    paintItemBackground(painter, option, index);
+
     QString elidedText = option.fontMetrics.elidedText(
             index.data().toString(),
             Qt::ElideLeft,

@@ -128,6 +128,12 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
             auto pStackedLayout = new QStackedLayout();
             pStackedLayout->setStackingMode(QStackedLayout::StackAll);
             pLayout = pStackedLayout;
+            // Adding a zero-size dummy widget as index 0 here before
+            // any child is added in the xml template works around
+            // https://bugs.launchpad.net/mixxx/+bug/1627859
+            QWidget *dummyWidget = new QWidget();
+            dummyWidget->setFixedSize(0, 0);
+            pLayout->addWidget(dummyWidget);
         }
 
         // Set common layout parameters.
@@ -219,6 +225,9 @@ int WWidgetGroup::getHighlight() const {
 }
 
 void WWidgetGroup::setHighlight(int highlight) {
+    if (m_highlight == highlight) {
+        return;
+    }
     m_highlight = highlight;
     style()->unpolish(this);
     style()->polish(this);

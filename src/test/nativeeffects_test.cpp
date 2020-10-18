@@ -73,7 +73,7 @@ TEST_F(EffectsBenchmarkTest, BM_BuiltInEffects_DefaultParameters_##EffectName) {
         ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);     \
     hiEqFrequency.setDefaultValue(2500.0);                             \
     mixxx::EngineParameters bufferParameters(                          \
-        mixxx::AudioSignal::SampleRate(44100),                         \
+        mixxx::audio::SampleRate(44100),                         \
         state.range_x());                                              \
     benchmarkBuiltInEffectDefaultParameters<EffectName>(                \
         bufferParameters, &state, m_pEffectsManager);                                     \
@@ -94,4 +94,3 @@ DECLARE_EFFECT_BENCHMARK(ReverbEffect)
 
 }  // namespace
 #endif
-

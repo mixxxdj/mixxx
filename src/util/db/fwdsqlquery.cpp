@@ -94,35 +94,39 @@ DbFieldIndex FwdSqlQuery::fieldIndex(const QString& fieldName) const {
 }
 
 namespace {
-    // NOTE(uklotzde): This conversion has been wrapped into a separate
-    // function, because the conversion is completely independent of the
-    // query, the current record and how values for individual fields are
-    // retrieved. For separation of concerns and to improve readability.
-    // Please do not try to unwrap the code! It is already declared "inline" ;)
-    //
-    // Recommended reading: "Refactoring" by Martin Fowler
-    inline
-    bool toBoolean(const QVariant& variant) {
-        bool ok = false;
-        int value = variant.toInt(&ok);
-        VERIFY_OR_DEBUG_ASSERT(ok) {
-            kLogger.critical()
-                    << "Invalid boolean value in database:"
-                    << variant;
-        }
-        VERIFY_OR_DEBUG_ASSERT(
-                (value == FwdSqlQuery::BOOLEAN_FALSE) ||
-                (value == FwdSqlQuery::BOOLEAN_TRUE)) {
-            kLogger.critical()
-                    << "Invalid boolean value in database:"
-                    << value;
-        }
-        // C-style conversion from int to bool
-        DEBUG_ASSERT(FwdSqlQuery::BOOLEAN_FALSE == 0);
-        return value != FwdSqlQuery::BOOLEAN_FALSE;
+
+constexpr int kBooleanFalse = 0;
+constexpr int kBooleanTrue = 1;
+
+// NOTE(uklotzde): This conversion has been wrapped into a separate
+// function, because the conversion is completely independent of the
+// query, the current record and how values for individual fields are
+// retrieved. For separation of concerns and to improve readability.
+// Please do not try to unwrap the code! It is already declared "inline" ;)
+//
+// Recommended reading: "Refactoring" by Martin Fowler
+inline bool boolFromQVariantInt(const QVariant& variant) {
+    bool ok = false;
+    int value = variant.toInt(&ok);
+    VERIFY_OR_DEBUG_ASSERT(ok) {
+        kLogger.critical()
+                << "Invalid boolean value in database:"
+                << variant;
     }
+    VERIFY_OR_DEBUG_ASSERT(
+            (value == kBooleanFalse) ||
+            (value == kBooleanTrue)) {
+        kLogger.critical()
+                << "Invalid boolean value in database:"
+                << value;
+    }
+    // C-style conversion from int to bool
+    DEBUG_ASSERT(kBooleanFalse == 0);
+    return value != kBooleanFalse;
+}
+
 } // anonymous namespace
 
 bool FwdSqlQuery::fieldValueBoolean(DbFieldIndex fieldIndex) const {
-    return toBoolean(fieldValue(fieldIndex));
+    return boolFromQVariantInt(fieldValue(fieldIndex));
 }

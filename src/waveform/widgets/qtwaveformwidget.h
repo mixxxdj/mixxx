@@ -8,7 +8,7 @@
 class QtWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    QtWaveformWidget(const char* group, QWidget* parent);
+    QtWaveformWidget(const QString& group, QWidget* parent);
     virtual ~QtWaveformWidget();
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtWaveform; }

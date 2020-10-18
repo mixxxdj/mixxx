@@ -12,7 +12,7 @@
 
 class MockMidiController : public MidiController {
   public:
-    MockMidiController() { }
+    explicit MockMidiController(): MidiController() {}
     ~MockMidiController() override { }
 
     MOCK_METHOD0(open, int());
@@ -20,7 +20,7 @@ class MockMidiController : public MidiController {
     MOCK_METHOD3(sendShortMsg, void(unsigned char status,
                                     unsigned char byte1,
                                     unsigned char byte2));
-    MOCK_METHOD1(send, void(QByteArray data));
+    MOCK_METHOD1(sendBytes, void(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
 };
 
@@ -31,7 +31,7 @@ class MidiControllerTest : public MixxxTest {
     }
 
     void addMapping(MidiInputMapping mapping) {
-        m_preset.inputMappings.insertMulti(mapping.key.key, mapping);
+        m_preset.addInputMapping(mapping.key.key, mapping);
     }
 
     void loadPreset(const MidiControllerPreset& preset) {

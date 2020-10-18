@@ -9,11 +9,8 @@
 #include <QStandardPaths>
 #include <QtDebug>
 
-#include "engine/engine.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -25,16 +22,13 @@
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/file.h"
-#include "util/sandbox.h"
-#include "waveform/waveform.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
 // Serato Database Field IDs
-// The "magic" value is the short 4 byte ascii code intepreted as quint32, so
+// The "magic" value is the short 4 byte ascii code interpreted as quint32, so
 // that we can use the value in a switch statement instead of going through
 // a strcmp if/else ladder.
 enum class FieldId : quint32 {
@@ -450,9 +444,24 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     databaseRootDir.cdUp();
 
 #if defined(__WINDOWS__)
-    // Find drive letter (paths are relative to drive root on Windows)
+    // On Windows, all paths are relative to drive root of the database (e.g.
+    // "C:\"). Qt doesn't seem to provide a way to find it for a specific path,
+    // so we just call cdUp() until it stops working.
     while (databaseRootDir.cdUp()) {
         // Nothing to do here
+    }
+#else
+    // If the file is on an external drive, the database path are relative to
+    // its mountpoint, i.e. the parent directory of the _Serato_
+    // directory. This means we can just use the path as-is.
+    //
+    // If the file is not on an external drive, the paths are all relative to
+    // the file system's root directory ("/").
+    //
+    // Serato does not exist on Linux, if it did, it would probably just mirror
+    // the way paths are handled on OSX.
+    if (databaseRootDir.canonicalPath().startsWith(QDir::homePath())) {
+        databaseRootDir = QDir::root();
     }
 #endif
 

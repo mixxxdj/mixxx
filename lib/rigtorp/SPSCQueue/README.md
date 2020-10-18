@@ -1,6 +1,7 @@
 # SPSCQueue.h
 
 [![Build Status](https://travis-ci.org/rigtorp/SPSCQueue.svg?branch=master)](https://travis-ci.org/rigtorp/SPSCQueue)
+[![C/C++ CI](https://github.com/rigtorp/SPSCQueue/workflows/C/C++%20CI/badge.svg)](https://github.com/rigtorp/SPSCQueue/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/rigtorp/SPSCQueue/master/LICENSE)
 
 A single producer single consumer wait-free and lock-free fixed size
@@ -18,6 +19,8 @@ auto t = std::thread([&] {
 q.push(1);
 t.join();
 ```
+
+See `src/SPSCQueueExample.cpp` for the full example.
 
 ## Usage
 
@@ -70,6 +73,54 @@ Only a single writer thread can perform enqueue operations and only a
 single reader thread can perform dequeue operations. Any other usage
 is invalid.
 
+## Huge page support
+
+In addition to supporting custom allocation through the [standard custom
+allocator interface](https://en.cppreference.com/w/cpp/named_req/Allocator) this
+library also supports standard proposal [P0401R3 Providing size feedback in the
+Allocator
+interface](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p0401r3.html).
+This allows convenient use of [huge
+pages](https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html)
+without wasting any allocated space. Using size feedback is only supported when
+C++17 is enabled.
+
+The library currently doesn't include a huge page allocator since the APIs for
+allocating huge pages are platform dependent and handling of huge page size and
+NUMA awareness is application specific. 
+
+Below is an example huge page allocator for Linux:
+```cpp
+#include <sys/mman.h>
+
+template <typename T> struct Allocator {
+  using value_type = T;
+
+  struct AllocationResult {
+    T *ptr;
+    size_t count;
+  };
+
+  size_t roundup(size_t n) { return (((n - 1) >> 21) + 1) << 21; }
+
+  AllocationResult allocate_at_least(size_t n) {
+    size_t count = roundup(sizeof(T) * n);
+    auto p = static_cast<T *>(mmap(nullptr, count, PROT_READ | PROT_WRITE,
+                                   MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB,
+                                   -1, 0));
+    if (p == MAP_FAILED) {
+      throw std::bad_alloc();
+    }
+    return {p, count / sizeof(T)};
+  }
+
+  void deallocate(T *p, size_t n) { munmap(p, roundup(sizeof(T) * n)); }
+};
+```
+
+See `src/SPSCQueueExampleHugepages.cpp` for the full example on how to use huge
+pages on Linux.
+
 ## Implementation
 
 ![Memory layout](https://github.com/rigtorp/SPSCQueue/blob/master/spsc.png)
@@ -80,7 +131,7 @@ The underlying implementation is a
 Care has been taken to make sure to avoid any issues with
 [false sharing](https://en.wikipedia.org/wiki/False_sharing). The head
 and tail pointers are aligned and padded to the false sharing range
-(currently hard coded to 128 bytes). The slots buffer is padded with
+(cache line size). The slots buffer is padded with
 the false sharing range at the beginning and end.
 
 References:

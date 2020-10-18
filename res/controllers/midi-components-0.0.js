@@ -123,7 +123,7 @@
                 undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === "function") {
-                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         },
         disconnect: function() {
@@ -193,7 +193,7 @@
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }, true);
+                    }.bind(this), true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -294,11 +294,8 @@
             print("ERROR: No hotcue number specified for new HotcueButton.");
             return;
         }
-        if (options.colors !== undefined || options.sendRGB !== undefined) {
-            this.colorIdKey = "hotcue_" + options.number + "_color_id";
-            if (options.colors === undefined) {
-                options.colors = color.predefinedColorsList();
-            }
+        if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
+            this.colorKey = "hotcue_" + options.number + "_color";
         }
         this.number = options.number;
         this.outKey = "hotcue_" + this.number + "_enabled";
@@ -311,49 +308,52 @@
         shift: function() {
             this.inKey = "hotcue_" + this.number + "_clear";
         },
-        getColor: function() {
-            if (this.colorIdKey !== undefined) {
-                return color.predefinedColorFromId(engine.getValue(this.group, this.colorIdKey));
-            } else {
-                return null;
-            }
-        },
         output: function(value) {
             var outval = this.outValueScale(value);
-            // WARNING: outputColor only handles hotcueColors
+            // NOTE: outputColor only handles hotcueColors
             // and there is no hotcueColor for turning the LED
             // off. So the `send()` function is responsible for turning the
             // actual LED off.
-            if (this.colorIdKey !== undefined && outval !== this.off) {
-                this.outputColor(engine.getValue(this.group, this.colorIdKey));
+            if (this.colorKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorKey));
             } else {
                 this.send(outval);
             }
         },
-        outputColor: function(id) {
-            var color = this.colors[id];
-            if (color instanceof Array) {
-                if (color.length !== 3) {
-                    print("ERROR: invalid color array for id: " + id);
-                    return;
-                }
-                if (this.sendRGB === undefined) {
-                    print("ERROR: no function defined for sending RGB colors");
-                    return;
-                }
-                this.sendRGB(color);
-            } else if (typeof color === "number") {
-                this.send(color);
+        outputColor: function(colorCode) {
+            // Sends the color from the colorCode to the controller. This
+            // method will not be called if no colorKey has been specified.
+            if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
+                print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
+                return;
             }
+
+            if (this.colorMapper !== undefined) {
+                // This HotcueButton holds a reference to a ColorMapper. This means
+                // that the controller only supports a fixed set of colors, so we
+                // get the MIDI value for the nearest supported color and send it.
+                var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
+                this.send(nearestColorValue);
+            } else {
+                // Since outputColor has been called but no ColorMapper is
+                // available, we can assume that controller supports arbitrary
+                // RGB color output.
+                this.sendRGB(colorCodeToObject(colorCode));
+            }
+        },
+        sendRGB: function(_colorObject) {
+            // This method needs to be overridden in controller mappings,
+            // because the procedure is controller-dependent.
+            throw Error("sendRGB(colorObject) not implemented - unable to send RGB colors!");
         },
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
-            if (undefined !== this.group && this.colorIdKey !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function(id) {
+            if (undefined !== this.group && this.colorKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
-                        this.outputColor(id);
+                        this.outputColor(color);
                     }
-                });
+                }.bind(this));
             }
         },
     });
@@ -422,12 +422,12 @@
             }
         },
         connect: function() {
-            this.connections[0] = engine.makeConnection(this.group, "track_loaded", this.output);
+            this.connections[0] = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
             if (this.playing !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, "play", this.output);
+                this.connections[1] = engine.makeConnection(this.group, "play", this.output.bind(this));
             }
             if (this.looping !== undefined) {
-                this.connections[2] = engine.connectControl(this.group, "repeat", this.output);
+                this.connections[2] = engine.makeConnection(this.group, "repeat", this.output.bind(this));
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
@@ -664,22 +664,19 @@
     };
 
     var Deck = function(deckNumbers) {
-        if (deckNumbers !== undefined) {
-            if (Array.isArray(deckNumbers)) {
-                // These must be unique to each instance,
-                // so they cannot be in the prototype.
-                this.currentDeck = "[Channel" + deckNumbers[0] + "]";
-                this.deckNumbers = deckNumbers;
-            } else if (typeof deckNumbers === "number" &&
-                      Math.floor(deckNumbers) === deckNumbers &&
-                      isFinite(deckNumbers)) {
-                this.currentDeck = "[Channel" + deckNumbers + "]";
-                this.deckNumbers = [deckNumbers];
-            }
+        if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
+            // These must be unique to each instance,
+            // so they cannot be in the prototype.
+            this.deckNumbers = deckNumbers;
+        } else if (deckNumbers !== undefined && typeof deckNumbers === "number" &&
+                Math.floor(deckNumbers) === deckNumbers &&
+                isFinite(deckNumbers)) {
+            this.deckNumbers = [deckNumbers];
         } else {
             print("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
+        this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
     };
     Deck.prototype = new ComponentContainer({
         setCurrentDeck: function(newGroup) {
@@ -732,14 +729,14 @@
                 if (engine.getValue(eu.group, "show_focus") > 0) {
                     engine.setValue(eu.group, "show_focus", 0);
                     eu.previouslyFocusedEffect = engine.getValue(eu.group,
-                                                                  "focused_effect");
+                        "focused_effect");
                     engine.setValue(eu.group, "focused_effect", 0);
                 }
             } else {
                 engine.setValue(eu.group, "show_focus", 1);
                 if (eu.previouslyFocusedEffect !== undefined) {
                     engine.setValue(eu.group, "focused_effect",
-                                    eu.previouslyFocusedEffect);
+                        eu.previouslyFocusedEffect);
                 }
             }
             if (eu.enableButtons !== undefined) {
@@ -759,6 +756,7 @@
                 }
                 delete this.previouslyFocusedEffect;
             }
+            engine.setValue(this.group, "controller_input_active", 0);
 
             this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
 
@@ -770,10 +768,11 @@
                 // show_focus is always in the correct state, even if the user
                 // presses the skin button for show_parameters.
                 this.showParametersConnection = engine.makeConnection(this.group,
-                                                    "show_parameters",
-                                                    this.onShowParametersChange);
+                    "show_parameters",
+                    this.onShowParametersChange.bind(this));
                 this.showParametersConnection.trigger();
             }
+            engine.setValue(this.group, "controller_input_active", 1);
 
             // Do not enable soft takeover upon EffectUnit construction
             // so initial values can be loaded from knobs.
@@ -816,20 +815,19 @@
             this.setCurrentUnit(this.unitNumbers[index]);
         };
 
-        if (unitNumbers !== undefined) {
-            if (Array.isArray(unitNumbers)) {
-                this.unitNumbers = unitNumbers;
-                this.setCurrentUnit(unitNumbers[0]);
-            } else if (typeof unitNumbers === "number" &&
-                      Math.floor(unitNumbers) === unitNumbers &&
-                      isFinite(unitNumbers)) {
-                this.unitNumbers = [unitNumbers];
-                this.setCurrentUnit(unitNumbers);
-            }
+        if (unitNumbers !== undefined && Array.isArray(unitNumbers)) {
+            this.unitNumbers = unitNumbers;
+        } else if (unitNumbers !== undefined && typeof unitNumbers === "number" &&
+                  Math.floor(unitNumbers) === unitNumbers &&
+                  isFinite(unitNumbers)) {
+            this.unitNumbers = [unitNumbers];
         } else {
             print("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
+
+        this.group = "[EffectRack1_EffectUnit" + this.unitNumbers[0] + "]";
+        this.setCurrentUnit(this.unitNumbers[0]);
 
         this.dryWetKnob = new Pot({
             group: this.group,
@@ -916,7 +914,7 @@
             outKey: "focused_effect",
             connect: function() {
                 this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                            this.onFocusChange);
+                    this.onFocusChange.bind(this));
             },
             disconnect: function() {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
@@ -979,11 +977,11 @@
 
                 this.connect = function() {
                     this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                                this.onFocusChange);
+                        this.onFocusChange.bind(this));
                     // this.onFocusChange sets this.group and this.outKey, so trigger it
                     // before making the connection for LED output
                     this.connections[0].trigger();
-                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output);
+                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
                 };
 
                 this.unshift = function() {
@@ -1026,8 +1024,8 @@
                     // of assigning to this.connections[0] to avoid
                     // Component.prototype.trigger() triggering the disconnected connection.
                     this.connections = [engine.makeConnection(eu.group,
-                                                              "focused_effect",
-                                                              this.output)];
+                        "focused_effect",
+                        this.output.bind(this))];
                 };
             },
         });
@@ -1069,8 +1067,8 @@
                     var showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                                                      this.startEffectFocusChooseMode,
-                                                      true);
+                            this.startEffectFocusChooseMode.bind(this),
+                            true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
                                 engine.setValue(this.group, "show_parameters", 1);
@@ -1093,11 +1091,11 @@
                             eu.focusChooseModeActive = false;
                         } else {
                             if (!showParameters && allowFocusWhenParametersHidden) {
-                                  engine.setValue(this.group, "show_parameters", 1);
+                                engine.setValue(this.group, "show_parameters", 1);
                             } else if (showParameters && !this.pressedWhenParametersHidden) {
-                                  engine.setValue(this.group, "show_parameters", 0);
-                                  // eu.onShowParametersChange will save the focused effect,
-                                  // unfocus, and hide focus buttons in skin
+                                engine.setValue(this.group, "show_parameters", 0);
+                                // eu.onShowParametersChange will save the focused effect,
+                                // unfocus, and hide focus buttons in skin
                             }
                         }
                         this.pressedWhenParametersHidden = false;

@@ -7,6 +7,7 @@
 #include "library/parserpls.h"
 #include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/sandbox.h"
 
 namespace {

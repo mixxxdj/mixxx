@@ -15,7 +15,7 @@
 #include "waveform/sharedglcontext.h"
 #include "util/performancetimer.h"
 
-GLWaveformWidget::GLWaveformWidget(const char* group, QWidget* parent)
+GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
     qDebug() << "Created QGLWidget. Context"
@@ -29,7 +29,9 @@ GLWaveformWidget::GLWaveformWidget(const char* group, QWidget* parent)
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<GLWaveformRendererFilteredSignal>();
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 

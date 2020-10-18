@@ -5,10 +5,12 @@
 #include <QVBoxLayout>
 
 #include "engine/engine.h"
+#include "track/track.h"
 #include "util/color/color.h"
 
-WCueMenuPopup::WCueMenuPopup(QWidget* parent)
-        : QWidget(parent) {
+WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
+        : QWidget(parent),
+          m_colorPaletteSettings(ColorPaletteSettings(pConfig)) {
     QWidget::hide();
     setWindowFlags(Qt::Popup);
     setAttribute(Qt::WA_StyledBackground);
@@ -27,10 +29,11 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     m_pEditLabel = new QLineEdit(this);
     m_pEditLabel->setToolTip(tr("Edit cue label"));
     m_pEditLabel->setObjectName("CueLabelEdit");
+    m_pEditLabel->setPlaceholderText(tr("Label..."));
     connect(m_pEditLabel, &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
     connect(m_pEditLabel, &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
-    m_pColorPicker = new WColorPicker(this);
+    m_pColorPicker = new WColorPicker(WColorPicker::Option::NoOptions, m_colorPaletteSettings.getHotcueColorPalette(), this);
     m_pColorPicker->setObjectName("CueColorPicker");
     connect(m_pColorPicker, &WColorPicker::colorPicked, this, &WCueMenuPopup::slotChangeCueColor);
 
@@ -97,7 +100,7 @@ void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
         m_pCueNumber->setText(QString(""));
         m_pCuePosition->setText(QString(""));
         m_pEditLabel->setText(QString(""));
-        m_pColorPicker->setSelectedColor();
+        m_pColorPicker->setSelectedColor(std::nullopt);
     }
 }
 
@@ -108,15 +111,15 @@ void WCueMenuPopup::slotEditLabel() {
     m_pCue->setLabel(m_pEditLabel->text());
 }
 
-void WCueMenuPopup::slotChangeCueColor(PredefinedColorPointer pColor) {
+void WCueMenuPopup::slotChangeCueColor(mixxx::RgbColor::optional_t color) {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(pColor != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(color) {
         return;
     }
-    m_pCue->setColor(pColor);
-    m_pColorPicker->setSelectedColor(pColor);
+    m_pCue->setColor(*color);
+    m_pColorPicker->setSelectedColor(color);
     hide();
 }
 
@@ -129,4 +132,9 @@ void WCueMenuPopup::slotDeleteCue() {
     }
     m_pTrack->removeCue(m_pCue);
     hide();
+}
+
+void WCueMenuPopup::closeEvent(QCloseEvent* event) {
+    emit aboutToHide();
+    QWidget::closeEvent(event);
 }

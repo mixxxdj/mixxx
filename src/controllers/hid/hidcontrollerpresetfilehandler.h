@@ -9,12 +9,12 @@ class HidControllerPresetFileHandler : public ControllerPresetFileHandler {
     HidControllerPresetFileHandler() {};
     virtual ~HidControllerPresetFileHandler() {};
 
-    bool save(const HidControllerPreset& preset,
-              const QString deviceName, const QString fileName) const;
+    bool save(const HidControllerPreset& preset, const QString& fileName) const;
 
   private:
-    virtual ControllerPresetPointer load(const QDomElement root,
-                                         const QString deviceName);
+    virtual ControllerPresetPointer load(const QDomElement& root,
+            const QString& filePath,
+            const QDir& systemPresetsPath);
 };
 
 #endif /* HIDCONTROLLERPRESETFILEHANDLER_H */

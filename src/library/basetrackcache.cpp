@@ -3,13 +3,14 @@
 
 #include "library/basetrackcache.h"
 
-#include "library/trackcollection.h"
-#include "library/searchqueryparser.h"
 #include "library/queryutil.h"
-#include "track/keyutils.h"
+#include "library/searchqueryparser.h"
+#include "library/trackcollection.h"
 #include "track/globaltrackcache.h"
-#include "util/performancetimer.h"
+#include "track/keyutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
+#include "util/performancetimer.h"
 
 namespace {
 
@@ -49,60 +50,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     }
 }
 
-void BaseTrackCache::connectTrackDAO(TrackDAO* pTrackDAO) {
-    connect(pTrackDAO,
-            &TrackDAO::trackDirty,
-            this,
-            &BaseTrackCache::slotTrackDirty);
-    connect(pTrackDAO,
-            &TrackDAO::trackClean,
-            this,
-            &BaseTrackCache::slotTrackClean);
-    connect(pTrackDAO,
-            &TrackDAO::trackChanged,
-            this,
-            &BaseTrackCache::slotTrackChanged);
-    connect(pTrackDAO,
-            &TrackDAO::tracksAdded,
-            this,
-            &BaseTrackCache::slotTracksAdded);
-    connect(pTrackDAO,
-            &TrackDAO::tracksRemoved,
-            this,
-            &BaseTrackCache::slotTracksRemoved);
-    connect(pTrackDAO,
-            &TrackDAO::dbTrackAdded,
-            this,
-            &BaseTrackCache::slotDbTrackAdded);
-}
-
-void BaseTrackCache::disconnectTrackDAO(TrackDAO* pTrackDAO) {
-    disconnect(pTrackDAO,
-            &TrackDAO::trackDirty,
-            this,
-            &BaseTrackCache::slotTrackDirty);
-    disconnect(pTrackDAO,
-            &TrackDAO::trackClean,
-            this,
-            &BaseTrackCache::slotTrackClean);
-    disconnect(pTrackDAO,
-            &TrackDAO::trackChanged,
-            this,
-            &BaseTrackCache::slotTrackChanged);
-    disconnect(pTrackDAO,
-            &TrackDAO::tracksAdded,
-            this,
-            &BaseTrackCache::slotTracksAdded);
-    disconnect(pTrackDAO,
-            &TrackDAO::tracksRemoved,
-            this,
-            &BaseTrackCache::slotTracksRemoved);
-    disconnect(pTrackDAO,
-            &TrackDAO::dbTrackAdded,
-            this,
-            &BaseTrackCache::slotDbTrackAdded);
-}
-
 BaseTrackCache::~BaseTrackCache() {
     // Required to allow forward declarations of (managed pointer) members
     // in header file
@@ -128,22 +75,18 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
     return m_columnCache.columnSortForFieldIndex(index);
 }
 
-void BaseTrackCache::slotTracksAdded(QSet<TrackId> trackIds) {
+void BaseTrackCache::slotTracksAddedOrChanged(QSet<TrackId> trackIds) {
     if (sDebug) {
-        qDebug() << this << "slotTracksAdded" << trackIds.size();
+        qDebug() << this << "slotTracksAddedOrChanged" << trackIds.size();
     }
-    QSet<TrackId> updateTrackIds;
-    for (const auto& trackId: qAsConst(trackIds)) {
-        updateTrackIds.insert(trackId);
-    }
-    updateTracksInIndex(updateTrackIds);
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
+void BaseTrackCache::slotScanTrackAdded(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << this << "slotDbTrackAdded";
+        qDebug() << this << "slotScanTrackAdded";
     }
-    updateIndexWithTrackpointer(pTrack);
+    updateTrackInIndex(pTrack);
 }
 
 void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
@@ -163,20 +106,12 @@ void BaseTrackCache::slotTrackDirty(TrackId trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
-void BaseTrackCache::slotTrackChanged(TrackId trackId) {
-    if (sDebug) {
-        qDebug() << this << "slotTrackChanged" << trackId;
-    }
-    QSet<TrackId> trackIds;
-    trackIds.insert(trackId);
-    emit tracksChanged(trackIds);
-}
-
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    // The track might have been reloaded from the database
     updateTrackInIndex(trackId);
 }
 
@@ -273,13 +208,13 @@ void BaseTrackCache::resetRecentTrack() const {
     m_recentTrackPtr.reset();
 }
 
-bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
-    if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFileInfo();
-    }
-
-    if (!pTrack) {
+bool BaseTrackCache::updateTrackInIndex(
+        const TrackPointer& pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return false;
+    }
+    if (sDebug) {
+        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
     }
 
     int numColumns = columnCount();
@@ -469,13 +404,20 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->isBpmLocked());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
-               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+    } else if (
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column ||
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
-        // the cover hash.
-        trackValue.setValue(pTrack->getCoverHash());
+        // the cover digest.
+        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) == column) {
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color));
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) == column) {
+        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {

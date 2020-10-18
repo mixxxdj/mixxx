@@ -1,0 +1,127 @@
+<!DOCTYPE template>
+<Template>
+  <SetVariable name="QuickEffectGroup">[QuickEffectRack1_<Variable name="Group"/>]</SetVariable>
+  <SetVariable name="QuickEffect">[QuickEffectRack1_<Variable name="Group"/>_Effect1]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>AlignRight</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>ChannelMixer_KnobContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Enable button  + knob -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <WidgetGroup><!-- Enable button / placeholder -->
+                <ObjectName>EQKillButtonBox</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>0min,34f</Size>
+                <Children>
+
+                  <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
+
+                  <PushButton>
+                    <TooltipId>QuickEffectRack_enabled</TooltipId>
+                    <ObjectName>QuickEffectButton</ObjectName>
+                    <Size>18f,18f</Size>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </PushButton>
+
+                  <WidgetGroup><Size>18f,0f</Size></WidgetGroup>
+
+                </Children>
+              </WidgetGroup><!-- Enable button / placeholder -->
+
+              <WidgetGroup><!-- QuickEffect Meta knob + status dot -->
+                <Size>40f,34f</Size>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>QuickEffectRack_super1</TooltipId>
+                    <Pos>0,0</Pos>
+                    <Size>40f,34f</Size>
+                    <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColorQuickEffect"/>.svg</Knob>
+                    <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
+                    <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
+                    <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
+                    <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
+                    <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+                    <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+                    <KnobCenterYOffset>1.998</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey><Variable name="QuickEffectGroup"/>,super1</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+
+                  <PushButton>
+                    <TooltipId>QuickEffectRack_enabled</TooltipId>
+                    <ObjectName>QuickEffectDot</ObjectName>
+                    <Pos>0,27</Pos>
+                    <Size><Variable name="EqKillDotSize"/></Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>false</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- QuickEffect Meta knob + status dot -->
+
+              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Kill button + knob -->
+
+        </Children>
+      </WidgetGroup><!-- ChannelMixer_KnobContainer -->
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

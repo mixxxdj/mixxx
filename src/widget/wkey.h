@@ -9,7 +9,7 @@
 class WKey : public WLabel  {
     Q_OBJECT
   public:
-    explicit WKey(const char* group, QWidget* pParent=nullptr);
+    explicit WKey(const QString& group, QWidget* pParent = nullptr);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void setup(const QDomNode& node, const SkinContext& context) override;

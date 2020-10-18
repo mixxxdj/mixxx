@@ -54,7 +54,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, QString group)
           m_iPosition(-1),
           m_bAtRecordEnd(false),
           m_bForceResync(false),
-          m_iVCMode(mode->get()),
+          m_iVCMode(static_cast<int>(mode->get())),
           m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
           m_dOldFilePos(0.0),
           m_dOldDuration(0.0),
@@ -305,7 +305,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // Get the playback position in the file in seconds.
     double filePosition = playPos->get() * m_dOldDuration;
 
-    int reportedMode = mode->get();
+    int reportedMode = static_cast<int>(mode->get());
     bool reportedPlayButton = playButton->get();
 
     if (m_iVCMode != reportedMode) {
@@ -791,7 +791,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is) {
         if (!was) {
             m_dOldFilePos = 0.0;
         }
-        m_iVCMode = mode->get();
+        m_iVCMode = static_cast<int>(mode->get());
         m_bAtRecordEnd = false;
     }
 

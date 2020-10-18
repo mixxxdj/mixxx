@@ -8,7 +8,6 @@
 #include "preferences/usersettings.h"
 #include "preferences/broadcastsettingsmodel.h"
 #include "preferences/broadcastprofile.h"
-#include "track/track.h"
 
 class BroadcastSettings : public QObject {
   Q_OBJECT

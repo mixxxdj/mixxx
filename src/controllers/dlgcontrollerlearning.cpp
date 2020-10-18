@@ -188,7 +188,7 @@ void DlgControllerLearning::startListening() {
 }
 
 void DlgControllerLearning::slotStartLearningPressed() {
-    if (m_currentControl.isNull()) {
+    if (!m_currentControl.isValid()) {
         return;
     }
     m_firstMessageTimer.start();
@@ -209,7 +209,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
                                                 unsigned char control,
                                                 unsigned char value) {
     // Ignore message since we don't have a control yet.
-    if (m_currentControl.isNull()) {
+    if (!m_currentControl.isValid()) {
         return;
     }
 
@@ -481,7 +481,7 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
 void DlgControllerLearning::comboboxIndexChanged(int index) {
     ConfigKey control =
             comboBoxChosenControl->itemData(index).value<ConfigKey>();
-    if (control.isNull()) {
+    if (!control.isValid()) {
         labelDescription->setText(tr(""));
         pushButtonStartLearn->setDisabled(true);
         return;

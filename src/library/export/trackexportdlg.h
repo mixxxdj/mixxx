@@ -1,16 +1,15 @@
 #ifndef DLGTRACKEXPORT_H
 #define DLGTRACKEXPORT_H
 
+#include <QDialog>
+#include <QScopedPointer>
+#include <QString>
 #include <future>
 
-#include <QDialog>
-#include <QString>
-#include <QScopedPointer>
-
-#include "preferences/usersettings.h"
 #include "library/export/trackexportworker.h"
 #include "library/export/ui_dlgtrackexport.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.
@@ -48,7 +47,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     void finish();
 
     UserSettingsPointer m_pConfig;
-    QList<TrackPointer> m_tracks;
+    TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
 };
 

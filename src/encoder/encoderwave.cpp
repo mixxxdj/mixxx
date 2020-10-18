@@ -14,7 +14,7 @@
 #include "recording/defs_recording.h"
 
 
-// The virtual file contex must return the length of the virtual file in bytes.
+// The virtual file context must return the length of the virtual file in bytes.
 static sf_count_t  sf_f_get_filelen (void *user_data)
 {
     EncoderCallback* pCallback = static_cast<EncoderCallback*>(user_data);

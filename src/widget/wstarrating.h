@@ -5,13 +5,12 @@
 #include <QMouseEvent>
 #include <QStylePainter>
 
-#include "skin/skincontext.h"
-#include "track/track.h"
-
-#include "library/starrating.h"
-#include "widget/wwidget.h"
-
 #include "control/controlpushbutton.h"
+#include "library/starrating.h"
+#include "skin/skincontext.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "widget/wwidget.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -28,7 +27,7 @@ class WStarRating : public WWidget {
     void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
 
   private slots:
-    void updateRating(Track*);
+    void slotTrackChanged(TrackId);
     void slotStarsUp(double v);
     void slotStarsDown(double v);
 
@@ -40,16 +39,16 @@ class WStarRating : public WWidget {
     void fillDebugTooltip(QStringList* debug) override;
 
     StarRating m_starRating;
-    QString m_pGroup;
+    const QString m_group;
     TrackPointer m_pCurrentTrack;
     bool m_focused;
     mutable QRect m_contentRect;
 
-    private:
-        void updateRating();
-        int starAtPosition(int x);
-        std::unique_ptr<ControlPushButton> m_pStarsUp;
-        std::unique_ptr<ControlPushButton> m_pStarsDown;
+  private:
+    void updateRating();
+    int starAtPosition(int x);
+    std::unique_ptr<ControlPushButton> m_pStarsUp;
+    std::unique_ptr<ControlPushButton> m_pStarsDown;
 };
 
 #endif /* WSTARRATING_H */

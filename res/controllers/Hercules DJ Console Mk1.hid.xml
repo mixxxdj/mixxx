@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxControllerPreset schemaVersion="1">
     <info>
-        <name>Hercules DJ Console Mk1 HID</name>
+        <name>Hercules DJ Console MK1</name>
         <author>zestoi changes for mk1 by ewanuno</author>
-        <description>Native high-resolution HID script for the Hercules DJ Console Mk1 controller.</description>
+        <description>Native high-resolution HID script for the Hercules DJ Console MK1 controller.</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4081</forums>
+        <manual>hercules_dj_console_mk1</manual>
     </info>
     <controller id="Hercules DJ Console Mk1 HID">
         <scriptfiles>

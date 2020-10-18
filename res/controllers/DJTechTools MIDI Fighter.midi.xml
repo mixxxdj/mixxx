@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0+">
   <info>
-    <name>DJTechTools MIDIFighter</name>
+    <name>DJ TechTools MIDI Fighter</name>
     <author>RJ Ryan</author>
-    <description>Mapping for DJTechTools MIDIFighter Controller</description>
+    <description>Mapping for DJ TechTools MIDI Fighter Classic Controller</description>
+    <manual>dj_techtools_midi_figher_classic</manual>
   </info>
   <controller id="DJTechTools MIDIFighter" port="">
     <scriptfiles>

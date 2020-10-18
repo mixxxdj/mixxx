@@ -15,7 +15,7 @@ class SamplerBank : public QObject {
     Q_OBJECT
   public:
     SamplerBank(PlayerManager* pPlayerManager);
-    virtual ~SamplerBank();
+    ~SamplerBank() override;
 
     bool saveSamplerBankToPath(const QString& samplerBankPath);
     bool loadSamplerBankFromPath(const QString& samplerBankPath);

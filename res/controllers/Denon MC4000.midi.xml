@@ -4,7 +4,8 @@
         <name>Denon MC4000</name>
         <author>Tim Rae</author>
         <description>2-deck mapping for Denon MC4000 controller</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7443</forums>
+        <forums>https://mixxx.discourse.group/t/denon-mc4000-mapping/15311</forums>
+        <manual>denon_mc4000</manual>
     </info>
     <controller id="MC4000">
         <scriptfiles>

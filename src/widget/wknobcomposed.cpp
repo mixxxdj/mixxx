@@ -13,6 +13,12 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
           m_dKnobCenterYOffset(0),
+          m_dArcRadius(0),
+          m_dArcThickness(0),
+          m_dArcBgThickness(0),
+          m_arcUnipolar(true),
+          m_arcReversed(false),
+          m_arcPenCap(Qt::FlatCap),
           m_renderTimer(mixxx::Duration::fromMillis(20),
                         mixxx::Duration::fromSeconds(1)) {
     connect(&m_renderTimer, SIGNAL(update()),
@@ -46,16 +52,31 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     context.hasNodeSelectDouble(node, "MaxAngle", &m_dMaxAngle);
     context.hasNodeSelectDouble(node, "KnobCenterXOffset", &m_dKnobCenterXOffset);
     context.hasNodeSelectDouble(node, "KnobCenterYOffset", &m_dKnobCenterYOffset);
-    m_dArcThickness = context.selectDouble(node, "ArcThickness");
+    context.hasNodeSelectDouble(node, "ArcRadius", &m_dArcRadius);
 
-    if (m_dArcThickness > 0.0) {
-        m_arcColor = WSkinColor::getCorrectColor(context.selectColor(node, "ArcColor"));
+    if (m_dArcRadius > 0.0) {
+        context.hasNodeSelectDouble(node, "ArcThickness", &m_dArcThickness);
+        context.hasNodeSelectDouble(node, "ArcBgThickness", &m_dArcBgThickness);
+        if (m_dArcThickness > 0.0) {
+            m_dArcThickness *= scaleFactor;
+            m_arcColor = WSkinColor::getCorrectColor(context.selectColor(node, "ArcColor"));
+        }
+        if (m_dArcBgThickness > 0.0) {
+            m_dArcBgThickness *= scaleFactor;
+            m_arcBgColor = WSkinColor::getCorrectColor(context.selectColor(node, "ArcBgColor"));
+        }
+        if (context.selectBool(node, "ArcRoundCaps", false)) {
+            m_arcPenCap = Qt::RoundCap;
+        }
+        // ToDo: Make these properties configurable by the connected control.
+        // Example: Meta knobs that are fully dry when centered, or parameters
+        // that work reversed, like microphone ducking or BitCrusher parameters.
         m_arcUnipolar = context.selectBool(node, "ArcUnipolar", false);
+        m_arcReversed = context.selectBool(node, "ArcReversed", false);
     }
 
     m_dKnobCenterXOffset *= scaleFactor;
     m_dKnobCenterYOffset *= scaleFactor;
-    m_dArcThickness *= scaleFactor;
 
     setFocusPolicy(Qt::NoFocus);
 }
@@ -111,14 +132,14 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
     }
 
-    if ((!m_pKnob.isNull() && !m_pKnob->isNull()) || m_dArcThickness > 0.0) {
+    if ((!m_pKnob.isNull() && !m_pKnob->isNull()) || m_dArcRadius > 0.1) {
         // We update m_dCurrentAngle since onConnectedControlChanged uses it for
         // no-op detection.
         m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
     }
 
-    if (m_dArcThickness > 0.0) {
-        drawArc(rect(), &p);
+    if (m_dArcRadius > 0.1) {
+        drawArc(&p);
     }
 
     QTransform transform;
@@ -137,17 +158,41 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     }
 }
 
-void WKnobComposed::drawArc(const QRectF& targetRect, QPainter* pPainter) {
-    QMargins margins = QMargins();
-    margins += m_dArcThickness / 2.0;
-    QRectF rect = targetRect.marginsRemoved(margins);
-    QPen pen = QPen(m_arcColor);
-    pen.setWidth(m_dArcThickness);
-    pen.setCapStyle(Qt::FlatCap);
-    pPainter->setPen(pen);
+void WKnobComposed::drawArc(QPainter* pPainter) {
+    // In order to always draw the arcs undistorted we set up
+    // a quadratic target rectangle regardless of the widget's
+    // width-to-height ratio.
+    qreal centerX = width() / 2.0 + m_dKnobCenterXOffset;
+    qreal centerY = height() / 2.0 + m_dKnobCenterYOffset;
+    QPointF topLeft = QPointF((centerX - m_dArcRadius), (centerY - m_dArcRadius));
+    QPointF bottomRight = QPointF((centerX + m_dArcRadius), (centerY + m_dArcRadius));
+    QRectF rect = QRectF(topLeft, bottomRight);
+
+    // draw background arc
+    if (m_dArcBgThickness > 0.0) {
+        QPen arcBgPen = QPen(m_arcBgColor);
+        arcBgPen.setWidth(m_dArcBgThickness);
+        arcBgPen.setCapStyle(m_arcPenCap);
+        pPainter->setPen(arcBgPen);
+        pPainter->drawArc(rect, (90 - m_dMinAngle) * 16, (m_dMinAngle - m_dMaxAngle) * 16);
+    }
+
+    // draw foreground arc
+    QPen arcPen = QPen(m_arcColor);
+    arcPen.setWidth(m_dArcThickness);
+    arcPen.setCapStyle(m_arcPenCap);
+
+    pPainter->setPen(arcPen);
     if (m_arcUnipolar) {
-        pPainter->drawArc(rect, 90 * 16 - m_dMinAngle * 16, (m_dCurrentAngle - m_dMinAngle) * -16);
+        if (m_arcReversed) {
+           // draw arc from maxAngle to current position
+           pPainter->drawArc(rect, (90 - m_dCurrentAngle) * 16, (m_dMaxAngle - m_dCurrentAngle) * -16);
+        } else {
+            // draw arc from minAngle to current position
+            pPainter->drawArc(rect, (90 - m_dMinAngle) * 16, (m_dCurrentAngle - m_dMinAngle) * -16);
+        }
     } else {
+        // draw arc from center to current position
         pPainter->drawArc(rect, 90 * 16, m_dCurrentAngle * -16);
     }
 }

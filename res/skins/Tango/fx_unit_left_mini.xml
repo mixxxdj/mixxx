@@ -181,12 +181,8 @@ Variables:
                 <SizePolicy>max,max</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-        
                   <!-- Greyed out if no headphone device is configured -->
                   <Template src="skin:pfl_cover.xml"/>
-        
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>

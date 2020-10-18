@@ -6,18 +6,14 @@
 #include <QList>
 #include <memory>
 
-#include "util/color/rgbcolor.h"
+#include "track/cueinfo.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
-
-namespace {
-constexpr mixxx::RgbColor kDefaultTrackColor = mixxx::RgbColor(0xFF9999);
-constexpr mixxx::RgbColor kDefaultCueColor = mixxx::RgbColor(0xCC0000);
-} // namespace
 
 namespace mixxx {
 
-// Enum values need to appear in the same order as the corresponding entries
-// are written to the tag by Serato.
+/// Enum values need to appear in the same order as the corresponding entries
+/// are written to the tag by Serato.
 class SeratoMarkers2Entry {
   public:
     enum class TypeId {
@@ -25,7 +21,7 @@ class SeratoMarkers2Entry {
         Color,
         Cue,
         Loop,
-        Bpmlock,
+        BpmLock,
     };
 
     virtual ~SeratoMarkers2Entry() = default;
@@ -61,6 +57,7 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
             : m_type(std::move(type)),
               m_data(std::move(data)) {
     }
+    SeratoMarkers2UnknownEntry() = delete;
     ~SeratoMarkers2UnknownEntry() override = default;
 
     QString type() const override {
@@ -84,15 +81,12 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
     QByteArray m_data;
 };
 
-class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
+class SeratoMarkers2BpmLockEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2BpmlockEntry(bool locked)
+    SeratoMarkers2BpmLockEntry(bool locked)
             : m_locked(locked) {
     }
-
-    SeratoMarkers2BpmlockEntry()
-            : m_locked(false) {
-    }
+    SeratoMarkers2BpmLockEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -101,7 +95,7 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
     }
 
     SeratoMarkers2Entry::TypeId typeId() const override {
-        return SeratoMarkers2Entry::TypeId::Bpmlock;
+        return SeratoMarkers2Entry::TypeId::BpmLock;
     }
 
     QByteArray dump() const override;
@@ -120,17 +114,17 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
     bool m_locked;
 };
 
-inline bool operator==(const SeratoMarkers2BpmlockEntry& lhs,
-        const SeratoMarkers2BpmlockEntry& rhs) {
+inline bool operator==(const SeratoMarkers2BpmLockEntry& lhs,
+        const SeratoMarkers2BpmLockEntry& rhs) {
     return (lhs.isLocked() == rhs.isLocked());
 }
 
-inline bool operator!=(const SeratoMarkers2BpmlockEntry& lhs,
-        const SeratoMarkers2BpmlockEntry& rhs) {
+inline bool operator!=(const SeratoMarkers2BpmLockEntry& lhs,
+        const SeratoMarkers2BpmLockEntry& rhs) {
     return !(lhs == rhs);
 }
 
-inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmLockEntry& arg) {
     return dbg << "locked =" << arg.isLocked();
 }
 
@@ -139,10 +133,7 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
     SeratoMarkers2ColorEntry(RgbColor color)
             : m_color(color) {
     }
-
-    SeratoMarkers2ColorEntry()
-            : m_color(kDefaultTrackColor) {
-    }
+    SeratoMarkers2ColorEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -192,13 +183,7 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
               m_color(color),
               m_label(label) {
     }
-
-    SeratoMarkers2CueEntry()
-            : m_index(0),
-              m_position(0),
-              m_color(kDefaultCueColor),
-              m_label(QString("")) {
-    }
+    SeratoMarkers2CueEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -275,21 +260,20 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
 
 class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2LoopEntry(quint8 index, quint32 startposition, quint32 endposition, bool locked, QString label)
+    SeratoMarkers2LoopEntry(quint8 index,
+            quint32 startposition,
+            quint32 endposition,
+            RgbColor color,
+            bool locked,
+            QString label)
             : m_index(index),
               m_startposition(startposition),
               m_endposition(endposition),
+              m_color(color),
               m_locked(locked),
               m_label(label) {
     }
-
-    SeratoMarkers2LoopEntry()
-            : m_index(0),
-              m_startposition(0),
-              m_endposition(0),
-              m_locked(false),
-              m_label(QString("")) {
-    }
+    SeratoMarkers2LoopEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -327,6 +311,14 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
         m_endposition = endposition;
     }
 
+    RgbColor getColor() const {
+        return m_color;
+    }
+
+    void setColor(RgbColor color) {
+        m_color = color;
+    }
+
     bool isLocked() const {
         return m_locked;
     }
@@ -349,6 +341,7 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
     quint8 m_index;
     quint32 m_startposition;
     quint32 m_endposition;
+    RgbColor m_color;
     bool m_locked;
     QString m_label;
 };
@@ -375,29 +368,33 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
                << "label =" << arg.getLabel();
 }
 
-// DTO for storing information from the SeratoMarkers2 tags used by the Serato
-// DJ Pro software.
-//
-// Parsing & Formatting
-// --------------------
-// This class includes functions for formatting and parsing SeratoMarkers2
-// metadata according to the specification:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers2.md
-//
+/// DTO for storing information from the SeratoMarkers2 tags used by the Serato
+/// DJ Pro software.
+///
+/// This class includes functions for formatting and parsing SeratoMarkers2
+/// metadata according to the specification:
+/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers2.md
 class SeratoMarkers2 final {
   public:
-    SeratoMarkers2() = default;
-    explicit SeratoMarkers2(
-            QList<std::shared_ptr<SeratoMarkers2Entry>> entries)
+    SeratoMarkers2()
             : m_allocatedSize(0),
-              m_entries(std::move(entries)) {
+              m_lastBase64ByteFLAC('A') {
     }
 
-    // Parsing and formatting of gain values according to the
-    // SeratoMarkers2 1.0/2.0 specification.
-    static bool parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData);
+    /// Parse a binary Serato repesentation of the "Markers2" data from a
+    /// `QByteArray` and write the results to the `SeratoMarkers2` instance.
+    /// The `fileType` parameter determines the exact format of the data being
+    /// used.
+    static bool parse(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& outerData,
+            taglib::FileType fileType);
 
-    QByteArray dump() const;
+    /// Create a binary Serato repesentation of the "Markers2" data suitable
+    /// for `fileType` and dump it into a `QByteArray`. The content of that
+    /// byte array can be used for round-trip tests or written to the
+    /// appropriate tag to make it accessible to Serato.
+    QByteArray dump(taglib::FileType fileType) const;
 
     int getAllocatedSize() const {
         return m_allocatedSize;
@@ -406,6 +403,17 @@ class SeratoMarkers2 final {
     void setAllocatedSize(int size) {
         DEBUG_ASSERT(size >= 0);
         m_allocatedSize = size;
+    }
+
+    /// The last byte of the FLAC tag data.The value is seemingly random and does
+    /// not influence the decoded data at all. We need to keep track of this to be
+    /// able to roundtrip losslessly.
+    char lastBase64ByteFLAC() const {
+        return m_lastBase64ByteFLAC;
+    }
+
+    void setLastBase64ByteFLAC(char value) {
+        m_lastBase64ByteFLAC = value;
     }
 
     bool isEmpty() const {
@@ -419,8 +427,49 @@ class SeratoMarkers2 final {
         m_entries = std::move(entries);
     }
 
+    QList<CueInfo> getCues() const;
+
+    RgbColor::optional_t getTrackColor() const;
+    void setTrackColor(RgbColor color);
+
+    bool isBpmLocked() const;
+    void setBpmLocked(bool bpmLocked);
+
   private:
+    static bool parseCommon(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& data);
+    static bool parseID3(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& outerData);
+    /// The Base64 encoded format is used for MP4 tags and (except for a single
+    /// byte) for FLAC tags.
+    static bool parseBase64Encoded(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& base64EncodedData);
+    /// The FLAC format is basically identical to MP4, but Serato seems to
+    /// randomly modify the last byte of the base64 encoding. This will store
+    /// that byte so that we can roundtrip losslessly.
+    static bool parseFLAC(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& base64EncodedData);
+
+    QByteArray dumpCommon() const;
+    QByteArray dumpID3() const;
+    /// The Base64 encoded format is used for MP4 tags and (except for a single
+    /// byte) for FLAC tags.
+    QByteArray dumpBase64Encoded() const;
+    /// The FLAC format is basically identical to MP4, but Serato seems to
+    /// randomly modify the last byte of the base64 encoding. This creates the
+    /// regular base64 encoding that is also used for MP4 tags and then simply
+    /// overwrites the last byte with the value stored in
+    /// `m_lastBase64ByteFLAC`.
+    QByteArray dumpFLAC() const;
+
+    int countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const;
+
     int m_allocatedSize;
+    char m_lastBase64ByteFLAC;
     QList<std::shared_ptr<SeratoMarkers2Entry>> m_entries;
 };
 

@@ -4,6 +4,7 @@
         <name>Hercules DJ Control MP3 e2 / MP3 LE / Glow</name>
         <author>Neale Pickett</author>
         <description>Hercules DJ Control MP3 e2 / MP3 LE / Glow mapping. These three controllers have identical controls and share the same mapping.</description>
+        <manual>hercules_djcontrol_mp3_e2</manual>
         <devices>
             <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03" />
             <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b120" in_epaddr="0x82" out_epaddr="0x03" />

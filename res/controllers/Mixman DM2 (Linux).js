@@ -1,4 +1,4 @@
-// This is the companion script file for the 
+// This is the companion script file for the
 // Mixman DM2 mapping (Linux driver, dm2linux.sourceforge.net)
 
 function DM2() {}

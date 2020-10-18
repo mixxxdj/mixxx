@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "track/trackmetadatataglib.h"
+#include "track/taglib/trackmetadata.h"
 #include "util/memory.h"
 
 #include <taglib/tstring.h>
@@ -32,7 +32,7 @@ class MetadataTest : public testing::Test {
         // that should already be normalized.
         EXPECT_EQ(normalizedValue, mixxx::Bpm::normalizeValue(normalizedValue));
     }
-    
+
     void readBPMFromId3(const char* inputValue, double expectedValue) {
         TagLib::ID3v2::Tag tag;
         tag.header()->setMajorVersion(3);
@@ -46,7 +46,7 @@ class MetadataTest : public testing::Test {
         pFrame.release();
 
         mixxx::TrackMetadata trackMetadata;
-        mixxx::taglib::importTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
+        mixxx::taglib::id3v2::importTrackMetadataFromTag(&trackMetadata, tag);
 
         EXPECT_DOUBLE_EQ(expectedValue, trackMetadata.getTrackInfo().getBpm().getValue());
     }
@@ -125,10 +125,10 @@ TEST_F(MetadataTest, ID3v2Year) {
             {
                 mixxx::TrackMetadata trackMetadata;
                 trackMetadata.refTrackInfo().setYear(year);
-                mixxx::taglib::exportTrackMetadataIntoID3v2Tag(&tag, trackMetadata);
+                mixxx::taglib::id3v2::exportTrackMetadataIntoTag(&tag, trackMetadata);
             }
             mixxx::TrackMetadata trackMetadata;
-            mixxx::taglib::importTrackMetadataFromID3v2Tag(&trackMetadata, tag);
+            mixxx::taglib::id3v2::importTrackMetadataFromTag(&trackMetadata, tag);
             if (4 > majorVersion) {
                 // ID3v2.3.0: parsed + formatted
                 const QString actualYear(trackMetadata.getTrackInfo().getYear());

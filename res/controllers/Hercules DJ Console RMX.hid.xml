@@ -1,10 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="1.11+" schemaVersion="1">
     <info>
-        <name>Hercules DJ Console RMX  HID</name>
+        <name>Hercules DJ Console RMX HID</name>
         <author>richterskala</author>
         <description>Native HID script for the Hercules DJ Console RMX controller.</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=6134</forums>
+        <manual>hercules_dj_console_rmx</manual>
     </info>
     <controller id="Hercules">
         <scriptfiles>

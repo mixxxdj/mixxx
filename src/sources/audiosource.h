@@ -1,8 +1,8 @@
 #pragma once
 
+#include "audio/streaminfo.h"
+#include "engine/engine.h"
 #include "sources/urlresource.h"
-
-#include "util/audiosignal.h"
 #include "util/indexrange.h"
 #include "util/memory.h"
 #include "util/samplebuffer.h"
@@ -138,9 +138,9 @@ class IAudioSourceReader {
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource : public UrlResource, public AudioSignal, public virtual /*implements*/ IAudioSourceReader {
+class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSourceReader {
   public:
-    virtual ~AudioSource() = default;
+    ~AudioSource() override = default;
 
     // All sources are required to produce a signal of frames
     // where each frame contains samples from all channels that are
@@ -149,49 +149,86 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
     // A frame for a mono signal contains a single sample. A frame
     // for a stereo signal contains a pair of samples, one for the
     // left and right channel respectively.
-    static constexpr SampleLayout kSampleLayout = SampleLayout::Interleaved;
+    static constexpr audio::SampleLayout kSampleLayout = mixxx::kEngineSampleLayout;
 
+    /// Defines how thoroughly the stream properties should be verified
+    /// when opening an audio stream.
     enum class OpenMode {
-        // In Strict mode the opening operation should be aborted
-        // as soon as any inconsistencies are detected.
+        /// In Strict mode the opening operation should be aborted
+        /// as soon as any inconsistencies of the stream properties
+        /// are detected when setting up the decoding.
         Strict,
-        // Opening in Permissive mode is used only after opening
-        // in Strict mode has been aborted by all available
-        // SoundSource implementations.
+
+        /// Opening in Permissive mode is used only after opening
+        /// in Strict mode has been aborted by all available
+        /// SoundSource implementations.
+        ///
+        /// Example: Assume safe default values if mandatory stream
+        /// properties could not be determined when setting up the
+        /// decoding.
         Permissive,
     };
 
+    /// Result of opening an audio stream.
     enum class OpenResult {
+        /// The file has been opened successfully and should be readable.
         Succeeded,
-        // If a SoundSource is not able to open a file because of
-        // internal errors of if the format of the content is not
-        // supported it should return Aborted. This gives SoundSources
-        // with a lower priority the chance to open the same file.
-        // Example: A SoundSourceProvider has been registered for
-        // files with a certain extension, but the corresponding
-        // SoundSource does only support a subset of all possible
-        // data formats that might be stored in files with this
-        // extension.
+
+        /// If a SoundSource is not able to open a file because of
+        /// internal errors of if the format of the content is not
+        /// supported it should return Aborted.
+        ///
+        /// Returing this error result gives other decoders with a
+        /// lower priority the chance to open the same file.
+        /// Example: A SoundSourceProvider has been registered for
+        /// files with a certain extension, but the corresponding
+        /// SoundSource does only support a subset of all possible
+        /// data formats that might be stored in files with this
+        /// extension.
+
         Aborted,
-        // If a SoundSource return Failed while opening a file
-        // the entire operation will fail immediately. No other
-        // sources with lower priority will be given the chance
-        // to open the same file.
+        /// If a SoundSource return Failed while opening a file the
+        /// file itself is supposed to be corrupt.
+        ///
+        /// If this happens during OpenMode::Strict then other decoders
+        /// with a lower priority are still given a chance to try
+        /// opening the file. In OpenMode::Permissive the first
+        /// SoundSource that returns Failed will declare this file
+        /// corrupt.
         Failed,
     };
 
     // Parameters for opening audio sources
-    class OpenParams : public AudioSignal {
+    class OpenParams {
       public:
         OpenParams()
-                : AudioSignal(kSampleLayout) {
+                : m_signalInfo(kSampleLayout) {
         }
-        OpenParams(ChannelCount channelCount, SampleRate sampleRate)
-                : AudioSignal(kSampleLayout, channelCount, sampleRate) {
+        OpenParams(
+                audio::ChannelCount channelCount,
+                audio::SampleRate sampleRate)
+                : m_signalInfo(
+                          channelCount,
+                          sampleRate,
+                          kSampleLayout) {
         }
 
-        using AudioSignal::setChannelCount;
-        using AudioSignal::setSampleRate;
+        const audio::SignalInfo& getSignalInfo() const {
+            return m_signalInfo;
+        }
+
+        void setChannelCount(
+                audio::ChannelCount channelCount) {
+            m_signalInfo.setChannelCount(channelCount);
+        }
+
+        void setSampleRate(
+                audio::SampleRate sampleRate) {
+            m_signalInfo.setSampleRate(sampleRate);
+        }
+
+      private:
+        audio::SignalInfo m_signalInfo;
     };
 
     // Opens the AudioSource for reading audio data.
@@ -212,6 +249,21 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
     // Might be called even if the AudioSource has never been
     // opened, has already been closed, or if opening has failed.
     virtual void close() = 0;
+
+    const audio::SignalInfo& getSignalInfo() const {
+        return m_signalInfo;
+    }
+
+    const audio::Bitrate getBitrate() const {
+        return m_bitrate;
+    }
+
+    audio::StreamInfo getStreamInfo() const {
+        return audio::StreamInfo(
+                getSignalInfo(),
+                getBitrate(),
+                Duration::fromSeconds(getDuration()));
+    }
 
     // The total length of audio data is bounded and measured in frames.
     IndexRange frameIndexRange() const {
@@ -245,54 +297,39 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
     // The actual duration in seconds.
     // Well defined only for valid files!
     inline bool hasDuration() const {
-        return sampleRate().valid();
+        return getSignalInfo().getSampleRate().isValid();
     }
     inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return double(frameLength()) / double(sampleRate());
+        return getSignalInfo().frames2secs(frameLength());
     }
 
-    // The bitrate is optional and measured in kbit/s (kbps).
-    // It depends on the metadata and decoder if a value for the
-    // bitrate is available.
-    class Bitrate {
-      private:
-        static constexpr SINT kValueDefault = 0;
-
-      public:
-        static constexpr const char* unit() {
-            return "kbps";
-        }
-
-        explicit constexpr Bitrate(SINT value = kValueDefault)
-                : m_value(value) {
-        }
-
-        bool valid() const {
-            return m_value > kValueDefault;
-        }
-
-        /*implicit*/ operator SINT() const {
-            DEBUG_ASSERT(m_value >= kValueDefault); // unsigned value
-            return m_value;
-        }
-
-      private:
-        SINT m_value;
-    };
-
-    Bitrate bitrate() const {
-        return m_bitrate;
-    }
-
-    bool verifyReadable() const override;
+    /// Verifies various properties to ensure that the audio data is
+    /// actually readable. Warning messages are logged for properties
+    /// with invalid values for diagnostic purposes. Also performs a
+    /// basic read test.
+    bool verifyReadable();
 
     ReadableSampleFrames readSampleFrames(
             WritableSampleFrames sampleFrames);
 
   protected:
     explicit AudioSource(QUrl url);
-    AudioSource(const AudioSource&) = default;
+
+    bool initChannelCountOnce(audio::ChannelCount channelCount);
+    bool initChannelCountOnce(SINT channelCount) {
+        return initChannelCountOnce(audio::ChannelCount(channelCount));
+    }
+
+    bool initSampleRateOnce(audio::SampleRate sampleRate);
+    bool initSampleRateOnce(SINT sampleRate) {
+        return initSampleRateOnce(audio::SampleRate(sampleRate));
+    }
+
+    bool initBitrateOnce(audio::Bitrate bitrate);
+    bool initBitrateOnce(SINT bitrate) {
+        return initBitrateOnce(audio::Bitrate(bitrate));
+    }
 
     bool initFrameIndexRangeOnce(
             IndexRange frameIndexRange);
@@ -307,11 +344,6 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
             AudioSource& that,
             IndexRange frameIndexRange) {
         that.adjustFrameIndexRange(frameIndexRange);
-    }
-
-    bool initBitrateOnce(Bitrate bitrate);
-    bool initBitrateOnce(SINT bitrate) {
-        return initBitrateOnce(Bitrate(bitrate));
     }
 
     // Tries to open the AudioSource for reading audio data according
@@ -340,9 +372,17 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
     }
 
   private:
+    AudioSource(const AudioSource&) = delete;
     AudioSource(AudioSource&&) = delete;
     AudioSource& operator=(const AudioSource&) = delete;
     AudioSource& operator=(AudioSource&&) = delete;
+
+    // Ugly workaround for AudioSourceProxy to wrap
+    // an existing AudioSource.
+    friend class AudioSourceProxy;
+    AudioSource(
+            const AudioSource& inner,
+            const audio::SignalInfo& signalInfo);
 
     WritableSampleFrames clampWritableSampleFrames(
             WritableSampleFrames sampleFrames) const;
@@ -351,9 +391,11 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
         return intersect(frameIndexRange, this->frameIndexRange());
     }
 
-    IndexRange m_frameIndexRange;
+    audio::SignalInfo m_signalInfo;
 
-    Bitrate m_bitrate;
+    audio::Bitrate m_bitrate;
+
+    IndexRange m_frameIndexRange;
 };
 
 typedef std::shared_ptr<AudioSource> AudioSourcePointer;

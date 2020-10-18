@@ -1,17 +1,11 @@
-#ifndef PREFERENCES_SETTINGSMANAGER_H
-#define PREFERENCES_SETTINGSMANAGER_H
-
-#include <QObject>
-#include <QSharedPointer>
-#include <QString>
+#pragma once
 
 #include "preferences/broadcastsettings.h"
 #include "preferences/usersettings.h"
 
-class SettingsManager : public QObject {
-    Q_OBJECT
+class SettingsManager {
   public:
-    SettingsManager(QObject* pParent, const QString& settingsPath);
+    explicit SettingsManager(const QString& settingsPath);
     virtual ~SettingsManager();
 
     UserSettingsPointer settings() const {
@@ -37,5 +31,3 @@ class SettingsManager : public QObject {
     bool m_bShouldRescanLibrary;
     BroadcastSettingsPointer m_pBroadcastSettings;
 };
-
-#endif /* PREFERENCES_SETTINGSMANAGER_H */

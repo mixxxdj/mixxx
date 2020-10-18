@@ -11,9 +11,6 @@ BatteryWindows::BatteryWindows(QObject* pParent)
         : Battery(pParent) {
 }
 
-BatteryWindows::~BatteryWindows() {
-}
-
 void BatteryWindows::read() {
     m_iMinutesLeft = Battery::TIME_UNKNOWN;
     m_dPercentage = 0.0;

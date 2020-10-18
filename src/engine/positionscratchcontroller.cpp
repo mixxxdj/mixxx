@@ -111,7 +111,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
     // have 0 ... 3 samples. The remaining jitter is ironed by the following IIR
     // lowpass filter
     const double m_dMouseSampeIntervall = 0.016;
-    const int callsPerDt = ceil(m_dMouseSampeIntervall/dt);
+    const auto callsPerDt = static_cast<int>(ceil(m_dMouseSampeIntervall / dt));
     double scratchPosition = 0;
     m_dMouseSampeTime += dt;
     if (m_dMouseSampeTime >= m_dMouseSampeIntervall || !m_bScratching) {

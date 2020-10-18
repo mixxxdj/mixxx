@@ -43,7 +43,10 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
 class Hss1394Controller : public MidiController {
     Q_OBJECT
   public:
-    Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
+    Hss1394Controller(
+            const hss1394::TNodeInfo& deviceInfo,
+            int deviceIndex,
+            UserSettingsPointer pConfig);
     ~Hss1394Controller() override;
 
   private slots:
@@ -57,7 +60,7 @@ class Hss1394Controller : public MidiController {
   private:
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void send(QByteArray data) override;
+    void sendBytes(const QByteArray& data) override;
 
     hss1394::TNodeInfo m_deviceInfo;
     int m_iDeviceIndex;

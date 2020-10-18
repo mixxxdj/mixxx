@@ -25,7 +25,7 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
 }
 
 SkinLoader::~SkinLoader() {
-    LegacySkinParser::freeChannelStrings();
+    LegacySkinParser::clearSharedGroupStrings();
 }
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
@@ -59,7 +59,6 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
 }
 
 QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
-    qDebug() << "schemeName =" << schemeName;
     QPixmap preview;
     if (!schemeName.isEmpty()) {
         QString schemeNameUnformatted = schemeName;
@@ -103,17 +102,18 @@ QString SkinLoader::getConfiguredSkinPath() const {
 }
 
 QString SkinLoader::getDefaultSkinName() const {
-    return "Deere";
+    return "LateNight";
 }
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
-                                        KeyboardEventFilter* pKeyboard,
-                                        PlayerManager* pPlayerManager,
-                                        ControllerManager* pControllerManager,
-                                        Library* pLibrary,
-                                        VinylControlManager* pVCMan,
-                                        EffectsManager* pEffectsManager,
-                                        RecordingManager* pRecordingManager) {
+        QSet<ControlObject*>* pSkinCreatedControls,
+        KeyboardEventFilter* pKeyboard,
+        PlayerManager* pPlayerManager,
+        ControllerManager* pControllerManager,
+        Library* pLibrary,
+        VinylControlManager* pVCMan,
+        EffectsManager* pEffectsManager,
+        RecordingManager* pRecordingManager) {
     ScopedTimer timer("SkinLoader::loadConfiguredSkin");
     QString skinPath = getConfiguredSkinPath();
 
@@ -122,9 +122,15 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         return NULL;
     }
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
-                            pControllerManager, pLibrary, pVCMan,
-                            pEffectsManager, pRecordingManager);
+    LegacySkinParser legacy(m_pConfig,
+            pSkinCreatedControls,
+            pKeyboard,
+            pPlayerManager,
+            pControllerManager,
+            pLibrary,
+            pVCMan,
+            pEffectsManager,
+            pRecordingManager);
     return legacy.parseSkin(skinPath, pParent);
 }
 

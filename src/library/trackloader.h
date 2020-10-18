@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QPointer>
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "track/trackref.h"
 
 class TrackCollectionManager;

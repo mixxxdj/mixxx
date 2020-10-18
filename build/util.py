@@ -71,7 +71,7 @@ def export_source(source, dest):
 
 
 def get_git_revision():
-    return len(os.popen("git log --pretty=oneline --first-parent").read().splitlines())
+    return os.popen("git rev-list HEAD --first-parent --count").read().strip()
 
 
 def get_git_modified():

@@ -14,10 +14,10 @@
 #include "control/controlobject.h"
 
 MidiOutputHandler::MidiOutputHandler(MidiController* controller,
-                                     const MidiOutputMapping& mapping)
+        const MidiOutputMapping& mapping)
         : m_pController(controller),
           m_mapping(mapping),
-          m_cos(mapping.controlKey, this),
+          m_cos(mapping.controlKey, this, ControlFlag::NoAssertIfMissing),
           m_lastVal(-1) { // -1 = virgin
     m_cos.connectValueChanged(this, &MidiOutputHandler::controlChanged);
 }

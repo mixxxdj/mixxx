@@ -64,8 +64,10 @@ void DeviceChannelListener::Reconnected() {
     qDebug() << "HSS1394 device" << m_sName << "re-connected";
 }
 
-Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
-                                     int deviceIndex)
+Hss1394Controller::Hss1394Controller(
+        const hss1394::TNodeInfo& deviceInfo,
+        int deviceIndex,
+        UserSettingsPointer pConfig)
         : MidiController(),
           m_deviceInfo(deviceInfo),
           m_iDeviceIndex(deviceIndex) {
@@ -185,7 +187,7 @@ void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
     //}
 }
 
-void Hss1394Controller::send(QByteArray data) {
+void Hss1394Controller::sendBytes(const QByteArray& data) {
     int bytesSent = m_pChannel->SendChannelBytes(
         (unsigned char*)data.constData(), data.size());
 

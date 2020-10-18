@@ -21,7 +21,7 @@ MIXER1.shutdown = function shutdown() {
     };
 
 MIXER1.volumeLEDs = function volumeLEDs(value, group, control){
-        
+
     value=(value*127);
     if (group=="[Master]" && control=="VuMeterL"){ch=0xB5;midino=0x1f;midi.sendShortMsg(ch, midino, value);ch=0xB7;midino=0x1f;midi.sendShortMsg(ch, midino, value);}
     if (group=="[Master]" && control=="VuMeterR"){ch=0xB5;midino=0x20;midi.sendShortMsg(ch, midino, value);ch=0xB7;midino=0x20;midi.sendShortMsg(ch, midino, value);}
@@ -33,7 +33,7 @@ MIXER1.volumeLEDs = function volumeLEDs(value, group, control){
 
 MIXER1.clearVolumeLEDs = function clearVolumeLEDs(){
     //send zeros to all volumeLED channels
-    
+
     value=0;
     ch=0xB5;midino=0x1f;midi.sendShortMsg(ch, midino, value);
     ch=0xB7;midino=0x1f;midi.sendShortMsg(ch, midino, value);
@@ -55,7 +55,7 @@ MIXER1.mute = function mute(channel, control, value){
         midi.sendShortMsg(0x95, 0x05, 127);//light Inverse LED
         }else{
         //button was released
-        engine.setValue("[Master]", "volume", MIXER1.mutestoredvol);        
+        engine.setValue("[Master]", "volume", MIXER1.mutestoredvol);
         midi.sendShortMsg(0x97, 0x05, 0);//turn off Inverse LED
         midi.sendShortMsg(0x95, 0x05, 0);//turn off Inverse LED
         }

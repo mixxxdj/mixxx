@@ -95,6 +95,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 DlgPrefKey::~DlgPrefKey() {
 }
 
+QUrl DlgPrefKey::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_KEY_URL);
+}
+
 void DlgPrefKey::loadSettings() {
     m_selectedAnalyzerId = m_keySettings.getKeyPluginId();
     qDebug() << "Key plugin ID:" << m_selectedAnalyzerId;
@@ -266,6 +270,7 @@ void DlgPrefKey::slotUpdate() {
             const auto& info = m_availablePlugins.at(i);
             if (info.id == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
+                found = true;
                 break;
             }
         }

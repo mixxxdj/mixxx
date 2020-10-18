@@ -13,8 +13,10 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "util/sample.h"
 
-EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager),
+EngineAux::EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* pEffectsManager)
+        : EngineChannel(handleGroup, EngineChannel::CENTER, pEffectsManager,
+                  /*isTalkoverChannel*/ false,
+                  /*isPrimaryDeck*/ false),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_wasActive(false) {
@@ -23,9 +25,10 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
-    // by default Aux is enabled on the master and disabled on PFL. User
+    // by default Aux is disabled on the master and disabled on PFL. User
     // can over-ride by setting the "pfl" or "master" controls.
-    setMaster(true);
+    // Skins can change that during initialisation, if the master control is not provided.
+    setMaster(false);
 }
 
 EngineAux::~EngineAux() {
@@ -72,14 +75,15 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 
 void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
-    double pregain = m_pPregain->get();
+    CSAMPLE_GAIN pregain = static_cast<CSAMPLE_GAIN>(m_pPregain->get());
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
             pEngineEffectsManager->processPreFaderInPlace(
-                m_group.handle(), m_pEffectsManager->getMasterHandle(),
-                pOut, iBufferSize, m_pSampleRate->get());
+                    m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
+                    // TODO(jholthuis): Use mixxx::audio::SampleRate instead
+                    static_cast<unsigned int>(m_pSampleRate->get()));
         }
         m_sampleBuffer = NULL;
     } else {

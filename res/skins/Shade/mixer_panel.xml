@@ -64,13 +64,31 @@
               Button- Play
               ****************************************
               -->
+              <!-- Play deck 1 -->
+              <PushButton>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>skin:/btn/btn_play_deck.png</Pressed>
+                  <Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_play_deck_over.png</Pressed>
+                  <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
+                </State>
+                <Pos>11,200</Pos>
+                <Connection>
+                  <ConfigKey>[Channel1],play_indicator</ConfigKey>
+                </Connection>
+              </PushButton>
               <PushButton>
                 <TooltipId>play_cue_set</TooltipId>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
                   <Pressed>skin:/btn/btn_play_deck_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
+                  <Unpressed></Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
@@ -86,8 +104,23 @@
                   <ConfigKey>[Channel1],cue_set</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
+              </PushButton>
+              <!-- Play deck 2 -->
+              <PushButton>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>skin:/btn/btn_play_deck.png</Pressed>
+                  <Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_play_deck_over.png</Pressed>
+                  <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
+                </State>
+                <Pos>203,200</Pos>
                 <Connection>
-                  <ConfigKey>[Channel1],play_indicator</ConfigKey>
+                  <ConfigKey>[Channel2],play_indicator</ConfigKey>
                 </Connection>
               </PushButton>
               <PushButton>
@@ -96,7 +129,7 @@
                 <State>
                   <Number>0</Number>
                   <Pressed>skin:/btn/btn_play_deck_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
+                  <Unpressed></Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
@@ -111,9 +144,6 @@
                 <Connection>
                   <ConfigKey>[Channel2],cue_set</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey>[Channel2],play_indicator</ConfigKey>
                 </Connection>
               </PushButton>
 

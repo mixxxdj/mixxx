@@ -1,8 +1,8 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
-#include "vinylcontrol/vinylcontrol.h"
-#include "track/cue.h"
+#include "track/track.h"
 #include "util/math.h"
+#include "vinylcontrol/vinylcontrol.h"
 
 VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
@@ -117,17 +117,17 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         }
 
         double shortest_distance = 0;
-        int nearest_playpos = -1;
+        double nearest_playpos = -1;
 
         const QList<CuePointer> cuePoints(pTrack->getCuePoints());
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() != Cue::Type::HotCue || pCue->getHotCue() == -1) {
+            if (pCue->getType() != mixxx::CueType::HotCue || pCue->getHotCue() == -1) {
                 continue;
             }
 
-            int cue_position = pCue->getPosition();
+            double cue_position = pCue->getPosition();
             // pick cues closest to new_playpos
             if ((nearest_playpos == -1) ||
                 (fabs(new_playpos - cue_position) < shortest_distance)) {

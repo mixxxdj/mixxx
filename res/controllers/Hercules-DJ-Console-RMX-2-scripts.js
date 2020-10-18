@@ -56,7 +56,7 @@ DJCRMX2.Deck.prototype.wheelPress = function (value) {
         if (inertiaTime < 100) {
             // Just do it now.
             this.finishWheelPress();
-        } else {         
+        } else {
             this.scratchTimer = engine.beginTimer(
                     100, "DJCRMX2.decks[" + this.number + "].finishWheelPress()", true);
         }
@@ -98,12 +98,12 @@ DJCRMX2.Deck.prototype.wheelTurn = function (value) {
     } else {
         newValue = value;
     }
-    
+
     if (engine.isScratching(this.number)) {
         engine.scratchTick(this.number, newValue);
     } else {
         engine.setValue(this.group, "jog", newValue);
-    }   
+    }
 }
 
 /*  [ Function wheelPress ]
@@ -111,30 +111,30 @@ DJCRMX2.Deck.prototype.wheelTurn = function (value) {
  * variable on and off accordingly.
  */
 DJCRMX2.wheelPress = function (channel, control, value, status, group) {
-    var deck = 0;     
+    var deck = 0;
     if (group == "[Channel1]") {
         deck = 1;
     } else  if (group == "[Channel2]") {
         deck = 2;
     } else {
-        return; 
+        return;
     }
     DJCRMX2.decks[deck].wheelPress(value);
 }
 
- 
+
 /* [ Function wheelTurn ]
  * Pays attention to the current deck, checks scratching, affects the
  * song accordingly.
  */
 DJCRMX2.wheelTurn = function (channel, control, value, status, group) {
-    var deck = 0;     
+    var deck = 0;
     if (group == "[Channel1]") {
         deck = 1;
     } else  if (group == "[Channel2]") {
         deck = 2;
     } else {
-        return; 
+        return;
     }
     DJCRMX2.decks[deck].wheelTurn(value);
 }

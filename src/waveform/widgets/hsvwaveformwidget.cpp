@@ -11,9 +11,9 @@
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 
-HSVWaveformWidget::HSVWaveformWidget(const char* group, QWidget* parent)
-    : QWidget(parent),
-      WaveformWidgetAbstract(group) {
+HSVWaveformWidget::HSVWaveformWidget(const QString& group, QWidget* parent)
+        : QWidget(parent),
+          WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

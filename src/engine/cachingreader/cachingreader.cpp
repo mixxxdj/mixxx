@@ -136,10 +136,12 @@ void CachingReader::freeAllChunks() {
 }
 
 CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
-    if (m_freeChunks.isEmpty()) {
+    if (m_freeChunks.empty()) {
         return nullptr;
     }
-    CachingReaderChunkForOwner* pChunk = m_freeChunks.takeFirst();
+    CachingReaderChunkForOwner* pChunk = m_freeChunks.front();
+    m_freeChunks.pop_front();
+
     pChunk->init(chunkIndex);
 
     m_allocatedCachingReaderChunks.insert(chunkIndex, pChunk);
@@ -528,8 +530,8 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
             }
         }
 
-        VERIFY_OR_DEBUG_ASSERT(hintFrameCount > 0) {
-            kLogger.warning() << "ERROR: Negative hint length. Ignoring.";
+        VERIFY_OR_DEBUG_ASSERT(hintFrameCount >= 0) {
+            kLogger.warning() << "CachingReader: Ignoring negative hint length.";
             continue;
         }
 

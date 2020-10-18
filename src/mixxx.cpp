@@ -1,84 +1,67 @@
-/***************************************************************************
-                          mixxx.cpp  -  description
-                             -------------------
-    begin                : Mon Feb 18 09:48:17 CET 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "mixxx.h"
 
 #include <QDesktopServices>
-#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
-#include <QGLWidget>
-#include <QUrl>
-#include <QtDebug>
-#include <QLocale>
+#include <QGLFormat>
 #include <QGuiApplication>
 #include <QInputMethod>
-#include <QGLFormat>
+#include <QLocale>
 #include <QScreen>
+#include <QStandardPaths>
+#include <QUrl>
+#include <QtDebug>
 
 #include "dialog/dlgabout.h"
-#include "preferences/dialog/dlgpreferences.h"
-#include "preferences/dialog/dlgprefeq.h"
-#include "preferences/constants.h"
 #include "dialog/dlgdevelopertools.h"
-#include "engine/enginemaster.h"
-#include "effects/effectsmanager.h"
 #include "effects/builtin/builtinbackend.h"
+#include "effects/effectsmanager.h"
+#include "engine/enginemaster.h"
+#include "preferences/constants.h"
+#include "preferences/dialog/dlgprefeq.h"
+#include "preferences/dialog/dlgpreferences.h"
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
+#include "broadcast/broadcastmanager.h"
+#include "control/controlpushbutton.h"
+#include "controllers/controllermanager.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "database/mixxxdb.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
-#include "broadcast/broadcastmanager.h"
+#include "skin/launchimage.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/visualsmanager.h"
-#include "waveform/sharedglcontext.h"
-#include "database/mixxxdb.h"
+#include "util/compatibility.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
-#include "util/statsmanager.h"
-#include "util/timer.h"
-#include "util/time.h"
-#include "util/version.h"
-#include "control/controlpushbutton.h"
-#include "util/sandbox.h"
-#include "mixer/playerinfo.h"
-#include "waveform/guitick.h"
-#include "util/math.h"
 #include "util/experiment.h"
 #include "util/font.h"
-#include "util/translations.h"
-#include "skin/launchimage.h"
-#include "preferences/settingsmanager.h"
-#include "widget/wmainmenubar.h"
-#include "util/compatibility.h"
-#include "util/screensaver.h"
 #include "util/logger.h"
-#include "util/db/dbconnectionpooled.h"
+#include "util/math.h"
+#include "util/sandbox.h"
+#include "util/screensaver.h"
+#include "util/statsmanager.h"
+#include "util/time.h"
+#include "util/timer.h"
+#include "util/translations.h"
+#include "util/version.h"
+#include "waveform/guitick.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -89,9 +72,10 @@
 #endif
 
 #if defined(Q_OS_LINUX)
-#include <QtX11Extras/QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
+
+#include <QtX11Extras/QX11Info>
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max
@@ -139,9 +123,8 @@ const int MixxxMainWindow::kMicrophoneCount = 4;
 const int MixxxMainWindow::kAuxiliaryCount = 4;
 
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
-        : m_pWidgetParent(nullptr),
+        : m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
-          m_pSettingsManager(nullptr),
           m_pEffectsManager(nullptr),
           m_pEngine(nullptr),
           m_pSkinLoader(nullptr),
@@ -158,7 +141,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
           m_pKeyboard(nullptr),
           m_pLibrary(nullptr),
-          m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_pKbdConfig(nullptr),
@@ -177,7 +159,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
+    m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
 
     initializeKeyboard();
 
@@ -192,8 +174,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // First load launch image to show a the user a quick responds
     m_pSkinLoader = new SkinLoader(m_pSettingsManager->settings());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
-    m_pWidgetParent = (QWidget*)m_pLaunchImage;
-    setCentralWidget(m_pWidgetParent);
+    m_pCentralWidget = (QWidget*)m_pLaunchImage;
+    setCentralWidget(m_pCentralWidget);
 
     show();
     pApp->processEvents();
@@ -202,6 +184,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
+    finalize();
     // SkinLoader depends on Config;
     delete m_pSkinLoader;
 }
@@ -236,8 +219,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
-    m_pChannelHandleFactory = new ChannelHandleFactory();
-
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
         // TODO(XXX) something a little more elegant
@@ -250,12 +231,18 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         exit(-1);
     }
 
+    auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
+
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
+    m_pEffectsManager = new EffectsManager(this, pConfig, pChannelHandleFactory);
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
-                                 m_pChannelHandleFactory, true);
+    m_pEngine = new EngineMaster(
+            pConfig,
+            "[Master]",
+            m_pEffectsManager,
+            pChannelHandleFactory,
+            true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
@@ -280,10 +267,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
-
 #ifdef __BROADCAST__
-    m_pBroadcastManager = new BroadcastManager(m_pSettingsManager,
-                                               m_pSoundManager);
+    m_pBroadcastManager = new BroadcastManager(
+            m_pSettingsManager.get(),
+            m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -306,6 +293,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             this,
             &MixxxMainWindow::slotNoMicrophoneInputConfigured);
     connect(m_pPlayerManager,
+            &PlayerManager::noAuxiliaryInputConfigured,
+            this,
+            &MixxxMainWindow::slotNoAuxiliaryInputConfigured);
+    connect(m_pPlayerManager,
             &PlayerManager::noDeckPassthroughInputConfigured,
             this,
             &MixxxMainWindow::slotNoDeckPassthroughInputConfigured);
@@ -313,6 +304,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             &PlayerManager::noVinylControlInputConfigured,
             this,
             &MixxxMainWindow::slotNoVinylControlInputConfigured);
+    PlayerInfo::create();
 
     for (int i = 0; i < kMicrophoneCount; ++i) {
         m_pPlayerManager->addMicrophone();
@@ -441,9 +433,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(52);
 
     connect(this,
-            &MixxxMainWindow::newSkinLoaded,
+            &MixxxMainWindow::skinLoaded,
             m_pLibrary,
             &Library::onSkinLoadFinished);
+
+    connect(this,
+            &MixxxMainWindow::skinLoaded,
+            WaveformWidgetFactory::instance(),
+            &WaveformWidgetFactory::slotSkinLoaded);
 
     // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
     int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
@@ -457,9 +454,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
-                                    m_pSettingsManager, m_pLibrary);
+    m_pPrefDlg = new DlgPreferences(
+            this,
+            m_pSkinLoader,
+            m_pSoundManager,
+            m_pPlayerManager,
+            m_pControllerManager,
+            m_pVCManager,
+            pLV2Backend,
+            m_pEffectsManager,
+            m_pSettingsManager.get(),
+            m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
@@ -471,7 +476,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(63);
 
-    QWidget* oldWidget = m_pWidgetParent;
+    QWidget* oldWidget = m_pCentralWidget;
 
     // Load default styles that can be overridden by skins
     QFile file(":/skins/default.qss");
@@ -484,19 +489,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         qWarning() << "Failed to load default skin styles!";
     }
 
-    // Load skin to a QWidget that we set as the central widget. Assignment
-    // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
-                                                              m_pPlayerManager,
-                                                              m_pControllerManager,
-                                                              m_pLibrary,
-                                                              m_pVCManager,
-                                                              m_pEffectsManager,
-                                                              m_pRecordingManager))) {
+    if (!loadConfiguredSkin()) {
         reportCriticalErrorAndQuit(
-                "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
-
-        m_pWidgetParent = oldWidget;
+                "default skin cannot be loaded - see <b>mixxx</b> trace for more information");
+        m_pCentralWidget = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
     }
 
@@ -523,7 +519,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
-    emit newSkinLoaded();
+    emit skinLoaded();
 
 
     // Wait until all other ControlObjects are set up before initializing
@@ -534,9 +530,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     bool rescan = pConfig->getValue<bool>(
             ConfigKey("[Library]","RescanOnStartup"));
     // rescan the library if we get a new plugin
-    QList<QString> prev_plugins_list = pConfig->getValueString(
-        ConfigKey("[Library]", "SupportedFileExtensions")).split(
-        ",", QString::SkipEmptyParts);
+    QList<QString> prev_plugins_list =
+            pConfig->getValueString(
+                           ConfigKey("[Library]", "SupportedFileExtensions"))
+                    .split(',',
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+                            Qt::SkipEmptyParts);
+#else
+                            QString::SkipEmptyParts);
+#endif
 
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
@@ -628,7 +630,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
-    setCentralWidget(m_pWidgetParent);
+    setCentralWidget(m_pCentralWidget);
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
     m_pLaunchImage = nullptr;
@@ -660,7 +662,7 @@ void MixxxMainWindow::finalize() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
-    m_pWidgetParent = nullptr;
+    m_pCentralWidget = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);
     if (!pSkin.isNull()) {
@@ -671,14 +673,24 @@ void MixxxMainWindow::finalize() {
         qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
     }
 
-    // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
+    // Delete Controls created by skins
+    qDeleteAll(m_skinCreatedControls);
+    m_skinCreatedControls.clear();
+
+    // TODO() Verify if this comment still applies:
+    // WMainMenuBar holds references to controls so we need to delete it
     // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
     // setMenuBar() but we need to delete it now so we can ask for
     // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
     // outside of MixxxMainWindow the parent relationship will directly destroy
     // the WMainMenuBar and this will no longer be a problem.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
-    QPointer<QWidget> pMenuBar(menuBar());
+
+    QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
+    DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
+    // We need to reset the parented pointer here that it does not become a
+    // dangling pinter after the object has been deleted.
+    m_pMenuBar = nullptr;
     setMenuBar(nullptr);
     if (!pMenuBar.isNull()) {
         QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
@@ -751,42 +763,6 @@ void MixxxMainWindow::finalize() {
     delete m_pGuiTick;
     delete m_pVisualsManager;
 
-    // Check for leaked ControlObjects and give warnings.
-    QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
-    QList<ConfigKey> leakedConfigKeys;
-
-    ControlDoublePrivate::getControls(&leakedControls);
-
-    if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size()
-                 << "controls were leaked:";
-        foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
-            if (pCDP.isNull()) {
-                continue;
-            }
-            ConfigKey key = pCDP->getKey();
-            qDebug() << key.group << key.item << pCDP->getCreatorCO();
-            leakedConfigKeys.append(key);
-        }
-
-        // Deleting leaked objects helps to satisfy valgrind.
-        // These delete calls could cause crashes if a destructor for a control
-        // we thought was leaked is triggered after this one exits.
-        // So, only delete so if developer mode is on.
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            foreach (ConfigKey key, leakedConfigKeys) {
-                // A deletion early in the list may trigger a destructor
-                // for a control later in the list, so we check for a null
-                // pointer each time.
-                ControlObject* pCo = ControlObject::getControl(key, false);
-                if (pCo) {
-                    delete pCo;
-                }
-            }
-        }
-        leakedControls.clear();
-    }
-
     // Delete the track collections after all internal track pointers
     // in other components have been released by deleting those components
     // beforehand!
@@ -803,9 +779,35 @@ void MixxxMainWindow::finalize() {
     // at exit.
     m_pSettingsManager->save();
 
+    // Check for leaked ControlObjects and give warnings.
+    {
+        QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+                ControlDoublePrivate::takeAllInstances();
+        if (!leakedControls.isEmpty()) {
+            qWarning()
+                    << "The following"
+                    << leakedControls.size()
+                    << "controls were leaked:";
+            for (auto pCDP : leakedControls) {
+                ConfigKey key = pCDP->getKey();
+                qWarning() << key.group << key.item << pCDP->getCreatorCO();
+                // Deleting leaked objects helps to satisfy valgrind.
+                // These delete calls could cause crashes if a destructor for a control
+                // we thought was leaked is triggered after this one exits.
+                // So, only delete so if developer mode is on.
+                if (CmdlineArgs::Instance().getDeveloper()) {
+                    pCDP->deleteCreatorCO();
+                }
+            }
+            DEBUG_ASSERT(!"Controls were leaked!");
+        }
+        // Finally drop all shared pointers by exiting this scope
+    }
+
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
+    m_pSettingsManager.reset();
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
@@ -814,7 +816,10 @@ void MixxxMainWindow::finalize() {
     t.elapsed(true);
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
-    StatsManager::destroy();
+
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::destroy();
+    }
 }
 
 bool MixxxMainWindow::initializeDatabase() {
@@ -836,7 +841,7 @@ bool MixxxMainWindow::initializeDatabase() {
 
 void MixxxMainWindow::initializeWindow() {
     // be sure createMenuBar() is called first
-    DEBUG_ASSERT(m_pMenuBar != nullptr);
+    DEBUG_ASSERT(m_pMenuBar);
 
     QPalette Pal(palette());
     // safe default QMenuBar background
@@ -1080,15 +1085,14 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(),
-                                  m_pKbdConfig);
+    m_pMenuBar = make_parented<WMainMenuBar>(this, m_pSettingsManager->settings(), m_pKbdConfig);
     setMenuBar(m_pMenuBar);
 }
 
 void MixxxMainWindow::connectMenuBar() {
     ScopedTimer t("MixxxMainWindow::connectMenuBar");
     connect(this,
-            &MixxxMainWindow::newSkinLoaded,
+            &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
             &WMainMenuBar::onNewSkinLoaded);
 
@@ -1354,11 +1358,24 @@ void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::question(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this microphone.\n"
-           "Please select an input device in the sound hardware preferences first."),
+           "Do you want to select an input device?"),
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
+}
+
+void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
+    QMessageBox::StandardButton btn = QMessageBox::question(
+        this,
+        Version::applicationName(),
+        tr("There is no input device selected for this auxiliary.\n"
+           "Do you want to select an input device?"),
         QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
@@ -1408,11 +1425,11 @@ void MixxxMainWindow::rebootMixxxView() {
     // supports since the controls from the previous skin will be left over.
     m_pMenuBar->onNewSkinAboutToLoad();
 
-    if (m_pWidgetParent) {
-        m_pWidgetParent->hide();
+    if (m_pCentralWidget) {
+        m_pCentralWidget->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
-        delete m_pWidgetParent;
-        m_pWidgetParent = NULL;
+        delete m_pCentralWidget;
+        m_pCentralWidget = nullptr;
     }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1422,17 +1439,7 @@ void MixxxMainWindow::rebootMixxxView() {
     bool wasFullScreen = isFullScreen();
     slotViewFullScreen(false);
 
-    // Load skin to a QWidget that we set as the central widget. Assignment
-    // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this,
-                                                              m_pKeyboard,
-                                                              m_pPlayerManager,
-                                                              m_pControllerManager,
-                                                              m_pLibrary,
-                                                              m_pVCManager,
-                                                              m_pEffectsManager,
-                                                              m_pRecordingManager))) {
-
+    if (!loadConfiguredSkin()) {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
@@ -1440,28 +1447,52 @@ void MixxxMainWindow::rebootMixxxView() {
         return;
     }
 
-    setCentralWidget(m_pWidgetParent);
+    setCentralWidget(m_pCentralWidget);
+#ifdef __LINUX__
+    // don't adjustSize() on Linux as this wouldn't use the entire available area
+    // to paint the new skin with X11
+    // https://bugs.launchpad.net/mixxx/+bug/1773587
+#else
     adjustSize();
+#endif
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
     } else if (!initSize.isEmpty()) {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
-        int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
-        int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
+        int newX = initPosition.x() + (initSize.width() - m_pCentralWidget->width()) / 2;
+        int newY = initPosition.y() + (initSize.height() - m_pCentralWidget->height()) / 2;
 
         const QScreen* primaryScreen = getPrimaryScreen();
         if (primaryScreen) {
-            newX = std::max(0, std::min(newX, primaryScreen->geometry().width() - m_pWidgetParent->width()));
-            newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pWidgetParent->height()));
-            move(newX,newY);
+            newX = std::max(0,
+                    std::min(newX,
+                            primaryScreen->geometry().width() -
+                                    m_pCentralWidget->width()));
+            newY = std::max(0,
+                    std::min(newY,
+                            primaryScreen->geometry().height() - m_pCentralWidget->height()));
+            move(newX, newY);
         } else {
             qWarning() << "Unable to move window inside screen borders.";
         }
     }
 
     qDebug() << "rebootMixxxView DONE";
-    emit newSkinLoaded();
+    emit skinLoaded();
+}
+
+bool MixxxMainWindow::loadConfiguredSkin() {
+    m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
+            &m_skinCreatedControls,
+            m_pKeyboard,
+            m_pPlayerManager,
+            m_pControllerManager,
+            m_pLibrary,
+            m_pVCManager,
+            m_pEffectsManager,
+            m_pRecordingManager);
+    return m_pCentralWidget != nullptr;
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
@@ -1511,7 +1542,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
         event->ignore();
         return;
     }
-    finalize();
     QMainWindow::closeEvent(event);
 }
 

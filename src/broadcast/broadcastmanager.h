@@ -24,7 +24,7 @@ class BroadcastManager : public QObject {
 
     BroadcastManager(SettingsManager* pSettingsManager,
                      SoundManager* pSoundManager);
-    virtual ~BroadcastManager();
+    ~BroadcastManager() override;
 
     // Returns true if the broadcast connection is enabled. Note this only
     // indicates whether the connection is enabled, not whether it is connected.

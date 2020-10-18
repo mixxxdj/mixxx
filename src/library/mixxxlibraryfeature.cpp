@@ -1,26 +1,26 @@
 // mixxxlibraryfeature.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
-
 #include "library/mixxxlibraryfeature.h"
 
-#include "library/parser.h"
-#include "library/library.h"
+#include <QtDebug>
+
 #include "library/basetrackcache.h"
-#include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
-#include "library/hiddentablemodel.h"
-#include "library/queryutil.h"
 #include "library/dao/trackschema.h"
-#include "library/trackcollection.h"
-#include "library/trackcollectionmanager.h"
-#include "treeitem.h"
-#include "sources/soundsourceproxy.h"
-#include "widget/wlibrary.h"
-#include "util/dnd.h"
 #include "library/dlghidden.h"
 #include "library/dlgmissing.h"
+#include "library/hiddentablemodel.h"
+#include "library/library.h"
+#include "library/librarytablemodel.h"
+#include "library/missingtablemodel.h"
+#include "library/parser.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
+#include "widget/wlibrary.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          UserSettingsPointer pConfig)
@@ -33,6 +33,10 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns;
+    // Do not reorder the following columns!! Otherwise all
+    // user customizations for the visible columns are mixed
+    // up.
+    // See also: https://mixxx.zulipchat.com/#narrow/stream/109695-_support/topic/Library.20brocken.20after.20update
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
@@ -60,9 +64,12 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "library." + LIBRARYTABLE_COLOR
             << "library." + LIBRARYTABLE_COVERART_SOURCE
             << "library." + LIBRARYTABLE_COVERART_TYPE
             << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_COLOR
+            << "library." + LIBRARYTABLE_COVERART_DIGEST
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
     QSqlQuery query(m_pTrackCollection->database());

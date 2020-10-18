@@ -1,15 +1,12 @@
 #include "util/version.h"
 
+#include <soundtouch/SoundTouch.h>
+
 #include <QCoreApplication>
 #include <QStandardPaths>
 #include <QStringList>
 #include <QtDebug>
 #include <QtGlobal>
-
-// Fixes redefinition warnings from SoundTouch.
-#undef TRUE
-#undef FALSE
-#include <SoundTouch.h>
 
 // shout.h checks for WIN32 to see if we are on Windows.
 #ifdef WIN64

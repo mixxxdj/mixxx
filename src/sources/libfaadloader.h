@@ -1,8 +1,11 @@
 #pragma once
 
 #include <QLibrary>
+#include <QtDebug>
 
 #include "util/memory.h"
+
+namespace faad2 {
 
 // object types for AAC
 constexpr unsigned char MAIN = 1;
@@ -16,122 +19,158 @@ constexpr unsigned char LD = 23;
 constexpr unsigned char DRM_ER_LC = 27; // special object type for DRM
 
 // library output formats
-constexpr unsigned char FAAD_FMT_16BIT = 1;
-constexpr unsigned char FAAD_FMT_24BIT = 2;
-constexpr unsigned char FAAD_FMT_32BIT = 3;
-constexpr unsigned char FAAD_FMT_FLOAT = 4;
-constexpr unsigned char FAAD_FMT_FIXED = FAAD_FMT_FLOAT;
-constexpr unsigned char FAAD_FMT_DOUBLE = 5;
+constexpr unsigned char FMT_16BIT = 1;
+constexpr unsigned char FMT_24BIT = 2;
+constexpr unsigned char FMT_32BIT = 3;
+constexpr unsigned char FMT_FLOAT = 4;
+constexpr unsigned char FMT_FIXED = FMT_FLOAT;
+constexpr unsigned char FMT_DOUBLE = 5;
 
-class LibFaadLoader {
+enum class FrameError : unsigned char {
+    InvalidNumberOfChannels = 12,
+    InvalidChannelConfiguration = 21,
+};
+
+typedef void* DecoderHandle;
+
+extern "C" {
+
+typedef struct
+{
+    unsigned char defObjectType;
+    unsigned long defSampleRate;
+    unsigned char outputFormat;
+    unsigned char downMatrix;
+    unsigned char useOldADTSFormat;
+    unsigned char dontUpSampleImplicitSBR;
+} Configuration;
+
+typedef struct
+{
+    unsigned long bytesconsumed;
+    unsigned long samples;
+    unsigned char channels;
+    unsigned char error;
+    unsigned long samplerate;
+
+    // SBR: 0: off, 1: on; upsample, 2: on; downsampled, 3: off; upsampled
+    unsigned char sbr;
+
+    // MPEG-4 ObjectType
+    unsigned char object_type;
+
+    // AAC header type; MP4 will be signalled as RAW also
+    unsigned char header_type;
+
+    // multichannel configuration
+    unsigned char num_front_channels;
+    unsigned char num_side_channels;
+    unsigned char num_back_channels;
+    unsigned char num_lfe_channels;
+    unsigned char channel_position[64];
+
+    // PS: 0: off, 1: on
+    unsigned char ps;
+} FrameInfo;
+
+} // extern "C"
+
+class LibLoader {
   public:
-    typedef void* Handle;
+    static LibLoader* Instance();
 
-    typedef struct
-    {
-        unsigned char defObjectType;
-        unsigned long defSampleRate;
-        unsigned char outputFormat;
-        unsigned char downMatrix;
-        unsigned char useOldADTSFormat;
-        unsigned char dontUpSampleImplicitSBR;
-    } Configuration;
+    bool isLoaded() const;
 
-    typedef struct
-    {
-        unsigned long bytesconsumed;
-        unsigned long samples;
-        unsigned char channels;
-        unsigned char error;
-        unsigned long samplerate;
-
-        // SBR: 0: off, 1: on; upsample, 2: on; downsampled, 3: off; upsampled
-        unsigned char sbr;
-
-        // MPEG-4 ObjectType
-        unsigned char object_type;
-
-        // AAC header type; MP4 will be signalled as RAW also
-        unsigned char header_type;
-
-        // multichannel configuration
-        unsigned char num_front_channels;
-        unsigned char num_side_channels;
-        unsigned char num_back_channels;
-        unsigned char num_lfe_channels;
-        unsigned char channel_position[64];
-
-        // PS: 0: off, 1: on
-        unsigned char ps;
-    } FrameInfo;
-
-    static LibFaadLoader* Instance();
-
-    bool isLoaded();
-
-    Handle Open();
+    DecoderHandle Open() const;
 
     Configuration* GetCurrentConfiguration(
-            Handle hDecoder);
+            DecoderHandle hDecoder) const;
 
     unsigned char SetConfiguration(
-            Handle hDecoder, Configuration* config);
+            DecoderHandle hDecoder, Configuration* config) const;
 
-    // Init the library using a DecoderSpecificInfo
-    char Init2(
-            Handle hDecoder,
+    // Init the decoder using the AAC stream (ADTS/ADIF)
+    long Init(
+            DecoderHandle hDecoder,
             unsigned char* pBuffer,
-            unsigned long SizeOfDecoderSpecificInfo,
-            unsigned long* pSamplerate,
-            unsigned char* pChannels);
+            unsigned long sizeofBuffer,
+            unsigned long* pSampleRate,
+            unsigned char* pChannels) const;
 
-    void Close(Handle hDecoder);
+    // Init the decoder using a DecoderSpecificInfo
+    char Init2(
+            DecoderHandle hDecoder,
+            unsigned char* pBuffer,
+            unsigned long sizeofBuffer,
+            unsigned long* pSampleRate,
+            unsigned char* pChannels) const;
 
-    void PostSeekReset(Handle hDecoder, long frame);
+    void Close(DecoderHandle hDecoder) const;
+
+    void PostSeekReset(DecoderHandle hDecoder, long frame) const;
 
     void* Decode2(
-            Handle hDecoder,
+            DecoderHandle hDecoder,
             FrameInfo* pInfo,
             unsigned char* pBuffer,
             unsigned long bufferSize,
             void** ppSampleBuffer,
-            unsigned long sampleBufferSize);
+            unsigned long sampleBufferSize) const;
 
-    char* GetErrorMessage(unsigned char errcode);
+    char* GetErrorMessage(unsigned char errcode) const;
+
+    int GetVersion(
+            char** faad2_id_string,
+            char** faad2_copyright_string) const;
 
   private:
-    LibFaadLoader();
+    LibLoader();
 
-    LibFaadLoader(const LibFaadLoader&) = delete;
-    LibFaadLoader& operator=(const LibFaadLoader&) = delete;
+    LibLoader(const LibLoader&) = delete;
+    LibLoader& operator=(const LibLoader&) = delete;
 
     // QLibrary is not copy-able
     std::unique_ptr<QLibrary> m_pLibrary;
 
-    typedef Handle (*NeAACDecOpen_t)();
+    typedef DecoderHandle (*NeAACDecOpen_t)();
     NeAACDecOpen_t m_neAACDecOpen;
 
-    typedef Configuration* (*NeAACDecGetCurrentConfiguration_t)(Handle);
+    typedef Configuration* (*NeAACDecGetCurrentConfiguration_t)(DecoderHandle);
     NeAACDecGetCurrentConfiguration_t m_neAACDecGetCurrentConfiguration;
 
     typedef unsigned char (*NeAACDecSetConfiguration_t)(
-            Handle, Configuration*);
+            DecoderHandle, Configuration*);
     NeAACDecSetConfiguration_t m_neAACDecSetConfiguration;
 
+    typedef long (*NeAACDecInit_t)(
+            DecoderHandle, unsigned char*, unsigned long, unsigned long*, unsigned char*);
+    NeAACDecInit_t m_neAACDecInit;
+
     typedef char (*NeAACDecInit2_t)(
-            Handle, unsigned char*, unsigned long, unsigned long*, unsigned char*);
+            DecoderHandle, unsigned char*, unsigned long, unsigned long*, unsigned char*);
     NeAACDecInit2_t m_neAACDecInit2;
 
-    typedef void (*NeAACDecClose_t)(Handle);
+    typedef void (*NeAACDecClose_t)(DecoderHandle);
     NeAACDecClose_t m_neAACDecClose;
 
-    typedef void (*NeAACDecPostSeekReset_t)(Handle, long);
+    typedef void (*NeAACDecPostSeekReset_t)(DecoderHandle, long);
     NeAACDecPostSeekReset_t m_neAACDecPostSeekReset;
 
     typedef void* (*NeAACDecDecode2_t)(
-            Handle, FrameInfo*, unsigned char*, unsigned long, void**, unsigned long);
+            DecoderHandle, FrameInfo*, unsigned char*, unsigned long, void**, unsigned long);
     NeAACDecDecode2_t m_neAACDecDecode2;
 
     typedef char* (*NeAACDecGetErrorMessage_t)(unsigned char);
     NeAACDecGetErrorMessage_t m_neAACDecGetErrorMessage;
+
+    typedef int (*NeAACDecGetVersion_t)(
+            char** faad2_id_string,
+            char** faad2_copyright_string);
+    NeAACDecGetVersion_t m_neAACDecGetVersion;
 };
+
+} // namespace faad2
+
+QDebug operator<<(
+        QDebug dbg,
+        const faad2::Configuration& cfg);

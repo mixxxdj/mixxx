@@ -7,7 +7,6 @@
 
 #include "library/searchquery.h"
 #include "library/trackcollection.h"
-#include "track/track.h"
 #include "util/class.h"
 
 class SearchQueryParser {

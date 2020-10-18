@@ -1,4 +1,6 @@
 #include "preferences/broadcastsettings.h"
+#include "broadcast/defs_broadcast.h"
+#include "recording/defs_recording.h"
 
 namespace {
 const char* kConfigKey = "[Shoutcast]";
@@ -124,9 +126,14 @@ void BroadcastSettings::loadLegacySettings(BroadcastProfilePtr profile) {
                              ConfigKey(kConfigKey, kChannels),
                              profile->getChannels()));
 
-    profile->setFormat(m_pConfig->getValue(
-                           ConfigKey(kConfigKey, kFormat),
-                           profile->getFormat()));
+    QString m_format = m_pConfig->getValue(
+            ConfigKey(kConfigKey, kFormat),
+            profile->getFormat());
+    if (m_format == BROADCAST_FORMAT_OV_LEGACY) {
+        // Upgrade to have the same codec name than the recording define.
+        m_format = ENCODING_OGG;
+    }
+    profile->setFormat(m_format);
 
     profile->setNoDelayFirstReconnect(
                 m_pConfig->getValue(

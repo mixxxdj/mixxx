@@ -74,6 +74,10 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                    ConfigKey(m_group, "show_focus"));
     m_pControlChainShowFocus->setButtonMode(ControlPushButton::TOGGLE);
 
+    m_pControlChainHasControllerFocus = new ControlPushButton(
+                                   ConfigKey(m_group, "controller_input_active"));
+    m_pControlChainHasControllerFocus->setButtonMode(ControlPushButton::TOGGLE);
+
     m_pControlChainShowParameters = new ControlPushButton(
                                         ConfigKey(m_group, "show_parameters"),
                                         true);
@@ -100,6 +104,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainNextPreset;
     delete m_pControlChainSelector;
     delete m_pControlChainShowFocus;
+    delete m_pControlChainHasControllerFocus;
     delete m_pControlChainShowParameters;
     delete m_pControlChainFocusedEffect;
 
@@ -237,9 +242,9 @@ void EffectChainSlot::updateRoutingSwitches() {
     }
     for (const ChannelInfo* pChannelInfo : m_channelInfoByName) {
         if (pChannelInfo->pEnabled->toBool()) {
-            m_pEffectChain->enableForInputChannel(pChannelInfo->handle_group);
+            m_pEffectChain->enableForInputChannel(pChannelInfo->handleGroup);
         } else {
-            m_pEffectChain->disableForInputChannel(pChannelInfo->handle_group);
+            m_pEffectChain->disableForInputChannel(pChannelInfo->handleGroup);
         }
     }
 }
@@ -303,33 +308,32 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
-    int numEffectSlots = m_pControlNumEffectSlots->get() + 1;
+    int numEffectSlots = static_cast<int>(m_pControlNumEffectSlots->get()) + 1;
     m_pControlNumEffectSlots->forceSet(numEffectSlots);
     m_pControlChainFocusedEffect->setStates(numEffectSlots);
     return pSlot;
 }
 
-void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
-    VERIFY_OR_DEBUG_ASSERT(!m_channelInfoByName.contains(handle_group.name())) {
+void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
+    VERIFY_OR_DEBUG_ASSERT(!m_channelInfoByName.contains(handleGroup.name())) {
         return;
     }
 
     double initialValue = 0.0;
     int deckNumber;
-    if (PlayerManager::isDeckGroup(handle_group.name(), &deckNumber) &&
-        (m_iChainSlotNumber + 1) == (unsigned) deckNumber) {
+    if (PlayerManager::isDeckGroup(handleGroup.name(), &deckNumber) &&
+            (m_iChainSlotNumber + 1) == (unsigned)deckNumber) {
         initialValue = 1.0;
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())),
-            true, initialValue);
+            ConfigKey(m_group, QString("group_%1_enable").arg(handleGroup.name())),
+            true,
+            initialValue);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
-    m_channelInfoByName[handle_group.name()] = pInfo;
-    connect(pEnableControl, &ControlPushButton::valueChanged,
-            this, [this, handle_group] { slotChannelStatusChanged(handle_group.name()); });
-
+    ChannelInfo* pInfo = new ChannelInfo(handleGroup, pEnableControl);
+    m_channelInfoByName[handleGroup.name()] = pInfo;
+    connect(pEnableControl, &ControlPushButton::valueChanged, this, [this, handleGroup] { slotChannelStatusChanged(handleGroup.name()); });
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
@@ -428,12 +432,12 @@ void EffectChainSlot::slotControlChainPrevPreset(double v) {
 void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
     if (m_pEffectChain) {
         ChannelInfo* pChannelInfo = m_channelInfoByName.value(group, NULL);
-        if (pChannelInfo != NULL && pChannelInfo->pEnabled != NULL) {
+        if (pChannelInfo != nullptr && pChannelInfo->pEnabled != nullptr) {
             bool bEnable = pChannelInfo->pEnabled->toBool();
             if (bEnable) {
-                m_pEffectChain->enableForInputChannel(pChannelInfo->handle_group);
+                m_pEffectChain->enableForInputChannel(pChannelInfo->handleGroup);
             } else {
-                m_pEffectChain->disableForInputChannel(pChannelInfo->handle_group);
+                m_pEffectChain->disableForInputChannel(pChannelInfo->handleGroup);
             }
         }
     }

@@ -36,7 +36,6 @@ class WBattery : public WWidget {
     PaintablePointer m_pCurrentPixmap;
 
     PaintablePointer m_pPixmapBack;
-    PaintablePointer m_pPixmapUnknown;
     PaintablePointer m_pPixmapCharged;
     QVector<PaintablePointer> m_dischargingPixmaps;
     QVector<PaintablePointer> m_chargingPixmaps;
