@@ -2,7 +2,7 @@
 
 /************** font settings *************************************************/
 #Mixxx, WWidget,
-WEffect,
+WEffectName,
 WEffectSelector,
 WKey,
 WLabel, WLibrary QLabel,
