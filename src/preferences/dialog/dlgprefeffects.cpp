@@ -62,6 +62,7 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
     pListView->setModel(pModel);
     pListView->setDropIndicatorShown(true);
     pListView->setDragDropMode(QAbstractItemView::DragDrop);
+    pListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     //TODO: prevent drops of duplicate items
     pListView->setDefaultDropAction(Qt::CopyAction);
     connect(pListView,
@@ -204,9 +205,10 @@ void DlgPrefEffects::slotExportPreset() {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
-    QModelIndex index = m_pFocusedChainList->selectionModel()->selectedIndexes().at(0);
-    const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
-    m_pChainPresetManager->exportPreset(selectedPresetName);
+    for (const auto& index : m_pFocusedChainList->selectionModel()->selectedIndexes()) {
+        const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
+        m_pChainPresetManager->exportPreset(selectedPresetName);
+    }
 }
 
 void DlgPrefEffects::slotRenamePreset() {
@@ -214,23 +216,24 @@ void DlgPrefEffects::slotRenamePreset() {
         return;
     }
     saveChainPresetLists();
-    QModelIndex index = m_pFocusedChainList->selectionModel()->selectedIndexes().at(0);
-    const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
-    m_pChainPresetManager->renamePreset(selectedPresetName);
+    for (const auto& index : m_pFocusedChainList->selectionModel()->selectedIndexes()) {
+        const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
+        m_pChainPresetManager->renamePreset(selectedPresetName);
+    }
     loadChainPresetLists();
 }
 
 void DlgPrefEffects::slotDeletePreset() {
-    VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
-        return;
-    }
     // If the preset is in the focused list and the unfocused list, only remove
     // it from the focused list, but do not actually delete it so it remains in
     // the unfocused list. Only delete it if it is in one list but not the other.
-    QModelIndex index =
-            m_pFocusedChainList->selectionModel()->selectedIndexes().at(0);
-    const QString& selectedPresetName =
-            m_pFocusedChainList->model()->data(index).toString();
+    VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
+        return;
+    }
+    auto pFocusedModel = dynamic_cast<EffectChainPresetListModel*>(
+            m_pFocusedChainList->model());
+    QStringList focusedChainStringList = pFocusedModel->stringList();
+
     QListView* pUnfocusedChainList = unfocusedChainList();
     VERIFY_OR_DEBUG_ASSERT(pUnfocusedChainList) {
         return;
@@ -238,16 +241,18 @@ void DlgPrefEffects::slotDeletePreset() {
     auto pUnfocusedModel = dynamic_cast<EffectChainPresetListModel*>(
             pUnfocusedChainList->model());
     auto unfocusedChainStringList = pUnfocusedModel->stringList();
-    if (unfocusedChainStringList.contains(selectedPresetName)) {
-        auto pFocusedModel = dynamic_cast<EffectChainPresetListModel*>(
-                m_pFocusedChainList->model());
-        QStringList focusedChainStringList = pFocusedModel->stringList();
+
+    for (const auto& index : m_pFocusedChainList->selectionModel()->selectedIndexes()) {
+        QString selectedPresetName =
+                m_pFocusedChainList->model()->data(index).toString();
         focusedChainStringList.removeAll(selectedPresetName);
-        pFocusedModel->setStringList(focusedChainStringList);
-    } else {
-        m_pChainPresetManager->deletePreset(selectedPresetName);
-        loadChainPresetLists();
+        if (!unfocusedChainStringList.contains(selectedPresetName)) {
+            m_pChainPresetManager->deletePreset(selectedPresetName);
+        }
     }
+
+    pFocusedModel->setStringList(focusedChainStringList);
+    saveChainPresetLists();
 }
 
 bool DlgPrefEffects::eventFilter(QObject* pChainList, QEvent* event) {
