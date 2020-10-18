@@ -58,9 +58,7 @@ MPKmini.flashLed = function() {
     MPKmini.currentFlash = !MPKmini.currentFlash;
 };
 
-/*
- * Control mapping
- */
+// Control mapping
 MPKmini.setValue = function(group, key, newValue) {
     var withEffect = false;
 
