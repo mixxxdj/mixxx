@@ -21,6 +21,7 @@ class Library;
 class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
+class WSearchRelatedTracksMenu;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
@@ -198,7 +199,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
-    parented_ptr<QMenu> m_pSearchRelatedMenu;
+    parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
 
     // Reload Track Metadata Action:
     QAction* m_pImportMetadataFromFileAct{};

@@ -980,6 +980,7 @@ class MixxxCore(Feature):
                    "src/widget/wspinny.cpp",
                    "src/widget/wskincolor.cpp",
                    "src/widget/wsearchlineedit.cpp",
+                   "src/widget/wsearchrelatedtracksmenu.cpp",
                    "src/widget/wpixmapstore.cpp",
                    "src/widget/paintable.cpp",
                    "src/widget/wimagestore.cpp",
