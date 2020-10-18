@@ -68,17 +68,19 @@ DlgPrefLV2::~DlgPrefLV2() {
 }
 
 void DlgPrefLV2::slotDisplayParameters() {
-    // Set the number of checked parameters to 0 because new parameters are
-    // displayed
-
-    // Clear the right vertical layout
+    // New parameters will be displayed.
+    // Reset the number of checked parameters to 0 and clear the layout.
     foreach (QCheckBox* box, m_pluginParameters) {
         delete box;
     }
     m_pluginParameters.clear();
 
-    QLayoutItem* item;
-    while ((item = lv2EffectParametersList->takeAt(0)) != 0) {
+    // isEmpty() doesn't consider spacers but count() does.
+    while (lv2EffectParametersList->count() > 0) {
+        QLayoutItem* item = lv2EffectParametersList->takeAt(0);
+        VERIFY_OR_DEBUG_ASSERT(item) {
+            continue;
+        }
         delete item;
     }
 
