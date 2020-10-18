@@ -62,9 +62,16 @@ WaveformMarkRange::WaveformMarkRange(
     }
 
     if (!m_disabledColor.isValid()) {
-        m_disabledColor = signalColors.getSignalColor();
-        qDebug() << "Didn't get DisabledColor for mark range" << rangeName
-                << "- usingusing parent's SignalColor:" << m_disabledColor;
+        if (enabledControl.isEmpty()) {
+            m_disabledColor = QColor(Qt::transparent);
+        } else {
+            // Show warning only when there's no EnabledControl,
+            // like for intro & outro ranges.
+            int gray = qGray(m_activeColor.rgb());
+            m_disabledColor = QColor(gray, gray, gray);
+            qDebug() << "Didn't get DisabledColor for mark range" << rangeName
+                    << "- using desaturated Color:" << m_disabledColor;
+        }
     }
 }
 
