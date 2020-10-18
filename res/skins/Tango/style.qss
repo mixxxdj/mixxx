@@ -1682,6 +1682,7 @@ decks, samplers, mic, aux, fx */
       #fadeModeCombobox::drop-down {
         margin: 0px 0px 0px 0px;
       }
+    WEffectChainPresetButton,
     WEffectSelector::down-arrow,
     WEffectChainPresetSelector::down-arrow,
     #fadeModeCombobox::down-arrow {
@@ -1692,6 +1693,7 @@ decks, samplers, mic, aux, fx */
       height: 20px; */
       image: url(skin:/buttons/btn_menu_arrow.svg) no-repeat center center;
       }
+      WEffectChainPresetButton:hover,
       WEffectSelector::down-arrow:hover,
       WEffectChainPresetSelector::down-arrow:hover,
       #fadeModeCombobox::down-arrow:hover {
@@ -2101,6 +2103,7 @@ WCueMenuPopup QMenu::item,
 WCoverArtMenu::item,
 #LibraryContainer QMenu QCheckBox,
 #SkinSettings,
+WEffectChainPresetButton,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector, WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
