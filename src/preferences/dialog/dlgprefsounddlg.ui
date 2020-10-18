@@ -355,7 +355,7 @@
       <item row="4" column="0" colspan="2">
        <widget class="QLabel" name="hardwareGuide">
         <property name="text">
-         <string>The &lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</string>
+         <string>The &lt;a href=&quot;https://github.com/mixxxdj/mixxx/wiki/Hardware%20compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
