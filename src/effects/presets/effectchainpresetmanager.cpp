@@ -172,8 +172,6 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
         return;
     }
 
-    // TODO: replace with QFileDialog::saveFileDialog when
-    // https://bugreports.qt.io/browse/QTBUG-27186 is fixed.
     QFileDialog saveFileDialog(
             nullptr,
             tr("Save effect chain preset"),
@@ -182,6 +180,7 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
                     kXmlFileExtension + QStringLiteral(")"));
     saveFileDialog.setDefaultSuffix(kXmlFileExtension);
     saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    saveFileDialog.selectFile(mixxx::filename::sanitize(pPreset->name()) + kXmlFileExtension);
     QString fileName;
     if (saveFileDialog.exec()) {
         fileName = saveFileDialog.selectedFiles().at(0);
