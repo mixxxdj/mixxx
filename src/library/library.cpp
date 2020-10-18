@@ -360,6 +360,10 @@ void Library::bindLibraryWidget(
             &WTrackTableView::trackSelected,
             this,
             &Library::trackSelected);
+    connect(pTrackTableView,
+            &WTrackTableView::trackSelection,
+            this,
+            &Library::trackSelection);
 
     connect(this,
             &Library::setTrackTableFont,
@@ -425,6 +429,10 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::trackSelected,
             this,
             &Library::trackSelected);
+    connect(feature,
+            &LibraryFeature::trackSelection,
+            this,
+            &Library::trackSelection);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(

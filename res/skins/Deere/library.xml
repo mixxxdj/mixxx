@@ -69,10 +69,22 @@
                 </Children>
               </WidgetGroup>
 
-              <Library>
-                <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
-              </Library>
+              <Splitter>
+                <ObjectName>InfobarSplitter</ObjectName>
+                <Orientation>vertical</Orientation>
+                <SizePolicy>me,me</SizePolicy>
+                <SplitSizesConfigKey>[Skin],libraryInfobar_splitsize</SplitSizesConfigKey>
+                <SplitSizes>8,1</SplitSizes>
+                <Children>
+                  <Library>
+                    <ShowButtonText>false</ShowButtonText>
+                    <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                  </Library>
+                  <Infobar>
+                    <Group>[Library]</Group>
+                  </Infobar>
+                </Children>
+              </Splitter>
 
             </Children>
             <!--Connection>

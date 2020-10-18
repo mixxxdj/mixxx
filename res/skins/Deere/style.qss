@@ -2239,3 +2239,57 @@ WRateRange {
 #RateDisplayBottomRate {
     qproperty-alignment: 'AlignRight | AlignBottom';
 }
+
+#InfobarSplitter {
+  background-color: #222222;
+}
+
+#infobarContainer {
+  background-color: #ff00ff;
+}
+
+#infobarCrates {
+  border: 1px solid #ffff00;
+  border-width: 0px 1px 0px 1px;
+  background-color: #006f00;
+  border-radius: 2px;
+  margin: 0;
+  padding: 0 3px 0 3px;
+  Text-align:left;
+}
+
+WInfoBarItem {
+  background-color: #F0fff0;
+  margin: 0;
+  padding: 0;
+  Text-align:left;
+}
+
+WInfoBarCrateItem {
+  background-color: #F00ff0;
+}
+
+#infobarCratesContainer {
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+}
+
+
+#infobarPlaylists {
+  border: 1px solid #ffff00;
+  border-width: 0px 1px 0px 1px;
+  background-color: #00fff0;
+  border-radius: 2px;
+  margin: 0;
+  padding: 0 3px 0 3px;
+}
+
+#infobarHistory {
+  border: 1px solid #ffff00;
+  border-width: 0px 1px 0px 1px;
+  background-color: #f03f00;
+  border-radius: 2px;
+  margin: 0;
+  padding: 0 3px 0 3px;
+}

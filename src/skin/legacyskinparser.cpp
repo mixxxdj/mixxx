@@ -47,6 +47,7 @@
 #include "widget/weffectpushbutton.h"
 #include "widget/weffectselector.h"
 #include "widget/whotcuebutton.h"
+#include "widget/winfobar.h"
 #include "widget/wkey.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
@@ -521,6 +522,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseText(node));
     } else if (nodeName == "TrackProperty") {
         result = wrapWidget(parseTrackProperty(node));
+    } else if (nodeName == "Infobar") {
+        result = wrapWidget(parseInfobar(node));
     } else if (nodeName == "StarRating") {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
@@ -1302,6 +1305,54 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     }
 
     return pCoverArt;
+}
+
+QWidget* LegacySkinParser::parseInfobar(const QDomElement& node) {
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = nullptr;
+    if (!group.isEmpty()) {
+        pPlayer = m_pPlayerManager->getPlayer(group);
+    }
+
+    if (!pPlayer && group.compare("[Library]", Qt::CaseInsensitive) != 0) {
+        SKIN_WARNING(node, *m_pContext)
+                << "Infobar widget requires a Deck or Library group";
+        return NULL;
+    }
+
+    WInfoBar* p = new WInfoBar(group, m_pConfig, m_pLibrary, m_pParent);
+
+    commonWidgetSetup(node, p);
+    p->setup(node, *m_pContext);
+
+    if (pPlayer) {
+        connect(pPlayer,
+                SIGNAL(newTrackLoaded(TrackPointer)),
+                p,
+                SLOT(slotTrackLoaded(TrackPointer)));
+        connect(pPlayer,
+                SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                p,
+                SLOT(slotTrackLoaded(TrackPointer)));
+
+        // load if there is already a track in the deck
+        TrackPointer pTrack = pPlayer->getLoadedTrack();
+        if (pTrack) {
+            p->slotTrackLoaded(pTrack);
+        }
+    } else {
+        // hookup to library
+        // FIXME(poelzi) signals
+        connect(m_pLibrary,
+                &Library::switchToView,
+                p,
+                &WInfoBar::slotClear);
+        connect(m_pLibrary,
+                &Library::trackSelection,
+                p,
+                &WInfoBar::slotTrackSelection);
+    }
+    return p;
 }
 
 void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {

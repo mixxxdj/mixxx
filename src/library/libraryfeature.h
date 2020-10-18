@@ -123,6 +123,7 @@ class LibraryFeature : public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+    void trackSelection(QList<TrackPointer>);
 
   protected:
     // TODO: Move common crate/playlist functions into

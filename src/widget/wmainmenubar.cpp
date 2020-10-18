@@ -270,6 +270,19 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
     pViewMenu->addAction(pViewShowCoverArt);
 
+    QString showCratesTitle = tr("Show Crates List");
+    QString showCratesText = tr("Show a list with crates the selection is in") +
+            " " + mayNotBeSupported;
+    auto pViewShowCrates = new QAction(showCratesTitle, this);
+    pViewShowCrates->setCheckable(true);
+    pViewShowCrates->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowCrates"),
+                    tr("Ctrl+7", "Menubar|View|Show Crates Section"))));
+    pViewShowCrates->setStatusTip(showCratesText);
+    pViewShowCrates->setWhatsThis(buildWhatsThis(showCratesTitle, showCratesText));
+    createVisibilityControl(pViewShowCrates, ConfigKey("[Library]", "show_crates"));
+    pViewMenu->addAction(pViewShowCrates);
 
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +

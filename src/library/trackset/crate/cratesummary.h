@@ -37,3 +37,5 @@ class CrateSummary : public Crate {
     uint m_trackCount;
     double m_trackDuration;
 };
+
+Q_DECLARE_METATYPE(CrateSummary);
