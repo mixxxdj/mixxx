@@ -19,16 +19,16 @@ MPKmini.shutdown = function() {
 };
 
 MPKmini.getCurrentGroup = function(withEffect, withUnit) {
-    var grp = "";
+    var group = "";
     if (withEffect) {
-        grp =  "[EffectRack1_EffectUnit" + MPKmini.currentUnitNum + "_Effect" + MPKmini.currentEffectNum + "]";
+        group =  "[EffectRack1_EffectUnit" + MPKmini.currentUnitNum + "_Effect" + MPKmini.currentEffectNum + "]";
     } else if (withUnit) {
-        grp =  "[EffectRack1_EffectUnit" + MPKmini.currentUnitNum + "]";
+        group =  "[EffectRack1_EffectUnit" + MPKmini.currentUnitNum + "]";
     } else {
-        grp =  "[EffectRack1]";
+        group =  "[EffectRack1]";
     }
-    print("get group: "+grp);
-    return grp;
+    print("get group: "+group);
+    return group;
 };
 
 MPKmini.resetLed = function() {
