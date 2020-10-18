@@ -17,22 +17,6 @@ WaveformMarkRange::WaveformMarkRange(
           m_enabledOpacity(context.selectDouble(node, "Opacity", 0.5)),
           m_disabledOpacity(context.selectDouble(node, "DisabledOpacity", 0.5)),
           m_durationTextColor(context.selectString(node, "DurationTextColor")) {
-    if (!m_activeColor.isValid()) {
-        //vRince kind of legacy fallback ...
-        // As a fallback, grab the mark color from the parent's MarkerColor
-        m_activeColor = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" << m_activeColor;
-    } else {
-        m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
-    }
-
-    if (!m_disabledColor.isValid()) {
-        //vRince kind of legacy fallback ...
-        // Read the text color, otherwise use the parent's SignalColor.
-        m_disabledColor = signalColors.getSignalColor();
-        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" << m_disabledColor;
-    }
-
     QString startControl = context.selectString(node, "StartControl");
     if (!startControl.isEmpty()) {
         DEBUG_ASSERT(!m_markStartPointControl); // has not been created yet
@@ -43,6 +27,11 @@ WaveformMarkRange::WaveformMarkRange(
         DEBUG_ASSERT(!m_markEndPointControl); // has not been created yet
         m_markEndPointControl = std::make_unique<ControlProxy>(group, endControl);
     }
+    QString rangeName = startControl;
+    if (startControl.contains(QStringLiteral("_start_position"))) {
+        rangeName = startControl.remove(QStringLiteral("_start_position"));
+    }
+
     QString enabledControl = context.selectString(node, "EnabledControl");
     if (!enabledControl.isEmpty()) {
         DEBUG_ASSERT(!m_markEnabledControl); // has not been created yet
@@ -60,6 +49,22 @@ WaveformMarkRange::WaveformMarkRange(
         m_durationTextLocation = DurationTextLocation::Before;
     } else {
         m_durationTextLocation = DurationTextLocation::After;
+    }
+
+    if (!m_activeColor.isValid()) {
+        //vRince kind of legacy fallback ...
+        // As a fallback, grab the mark color from the parent's MarkerColor
+        m_activeColor = signalColors.getAxesColor();
+        qDebug() << "Didn't get Color for mark range" << rangeName
+                << "- using parent's AxesColor:" << m_activeColor;
+    } else {
+        m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
+    }
+
+    if (!m_disabledColor.isValid()) {
+        m_disabledColor = signalColors.getSignalColor();
+        qDebug() << "Didn't get DisabledColor for mark range" << rangeName
+                << "- usingusing parent's SignalColor:" << m_disabledColor;
     }
 }
 
