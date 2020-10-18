@@ -154,12 +154,12 @@ MPKmini.effectSelectEnable = function(group, value, unit, effect) {
 MPKmini.samplerPlay = function(channel, control, value, status, group) {
     group = "[Sampler" + (control - 0x30 + 1) + "]";
 
-    var pg = value / 127.0;
-    engine.setValue(group, "pregain", pg);
+    var pregain = value / 127.0;
+    engine.setValue(group, "pregain", pregain);
     engine.setValue(group, "reverse", 0);
     engine.setValue(group, "start_play", true);
 
-    print("Start Play "+group+" pregain "+pg);
+    print("Start Play " + group + " pregain " + pregain);
 };
 
 MPKmini.selectUnitEffect = function(unitNum, effectNum) {
