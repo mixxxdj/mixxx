@@ -7,6 +7,10 @@ const QString kMimeTextDelimiter = QStringLiteral("\n");
 const QStringList kAcceptedMimeTypes = {QLatin1String("text/plain")};
 } // anonymous namespace
 
+EffectChainPresetListModel::EffectChainPresetListModel(QObject* parent)
+        : QStringListModel(parent) {
+}
+
 QMimeData* EffectChainPresetListModel::mimeData(const QModelIndexList& indexes) const {
     QMimeData* mimeData = new QMimeData();
     QStringList chainNameList;
