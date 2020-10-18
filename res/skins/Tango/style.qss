@@ -22,6 +22,7 @@ WLabel,
 WNumber,
 WBeatSpinBox,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector, WEffectChainPresetSelector QAbstractScrollArea,
 WPushButton,
 #LibraryContainer QPushButton,
 #LibraryContainer QLabel,
@@ -1660,11 +1661,13 @@ decks, samplers, mic, aux, fx */
     }
 
   WEffectSelector,
+  WEffectChainPresetSelector,
   #fadeModeCombobox {
     font-size: 13px/13px;
     /* On Linux this is applied to both effect name and effect list. */
     }
-    WEffectSelector {
+    WEffectSelector,
+    WEffectChainPresetSelector {
       /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
       margin: 0px;
       /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
@@ -1674,6 +1677,7 @@ decks, samplers, mic, aux, fx */
       border: 0px solid transparent;
       border-radius: 3px;
     }
+    WEffectChainPresetSelector,
     #fadeModeCombobox {
       border: 1px solid #666;
       margin: 0px 0px 2px 1px;
@@ -1681,22 +1685,27 @@ decks, samplers, mic, aux, fx */
       border-radius: 2px;
       height: 20px;
     }
-  WEffectSelector:hover {
+  WEffectSelector:hover,
+  WEffectChainPresetSelector:hover {
     background-color: #0f0f0f;
     }
     WEffectSelector::drop-down,
+    WEffectChainPresetSelector::drop-down,
     #fadeModeCombobox::drop-down {
       border: 0px;
       padding: 0px;
       }
-      WEffectSelector::drop-down {
+      WEffectSelector::drop-down,
+      WEffectChainPresetSelector::drop-down {
         margin: 0px -2px 0px 0px;
       }
       WEffectSelector::drop-down,
+      WEffectChainPresetSelector::drop-down,
       #fadeModeCombobox::drop-down {
         margin: 0px 0px 0px 0px;
       }
     WEffectSelector::down-arrow,
+    WEffectChainPresetSelector::down-arrow,
     #fadeModeCombobox::down-arrow {
       /* When the skin is scaled, bg-color would be applied
       to the (not scaled) button image only:
@@ -1706,16 +1715,19 @@ decks, samplers, mic, aux, fx */
       image: url(skin:/buttons/btn_fx_selector_list.svg) no-repeat center center;
       }
       WEffectSelector::down-arrow:hover,
+      WEffectChainPresetSelector::down-arrow:hover,
       #fadeModeCombobox::down-arrow:hover {
         image: url(skin:/buttons/btn_fx_selector_list_hover.svg) no-repeat center center;
       }
 
     WEffectSelector QAbstractScrollArea,
+    WEffectChainPresetSelector QAbstractScrollArea,
     #fadeModeCombobox QAbstractScrollArea {
       border-radius: 2px;
       margin: 0px;
     }
-    WEffectSelector QAbstractScrollArea{
+    WEffectSelector QAbstractScrollArea,
+    WEffectChainPresetSelector QAbstractScrollArea {
       min-width: 140px;
     }
     #fadeModeCombobox QAbstractScrollArea {
@@ -1723,6 +1735,7 @@ decks, samplers, mic, aux, fx */
     }
     /* selected item */
     WEffectSelector::checked,
+    WEffectChainPresetSelector::checked,
     #fadeModeCombobox::checked {
       /* not applied
       padding-left: 5px;
@@ -1733,6 +1746,7 @@ decks, samplers, mic, aux, fx */
     }
     /* tick mark frame */
     WEffectSelector::indicator:checked,
+    WEffectChainPresetSelector::indicator:checked,
     #fadeModeCombobox::indicator:checked {
     /* This is sufficient to completely hide the tick mark,
       but this alone would show an empty, shadowed box instead of tick mark:  */
@@ -1751,6 +1765,7 @@ decks, samplers, mic, aux, fx */
       image: url(skin:/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
     }
     WEffectSelector::indicator:!checked,
+    WEffectChainPresetSelector::indicator:!checked,
     #fadeModeCombobox::indicator:!checked {
       image: url(skin:/buttons/btn_.svg) no-repeat center center;
     }
@@ -2121,6 +2136,7 @@ WTrackMenu QCheckBox,
 WTrackMenu QMenu QCheckBox,
 #SkinSettings,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector, WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea::item {
   background-color: #1a1a1a;
@@ -2136,6 +2152,7 @@ WTrackMenu,
 WTrackMenu QMenu,
 #SkinSettings,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   border: 1px solid #888;
@@ -2222,6 +2239,7 @@ WEffectSelector QAbstractScrollArea,
   #SkinSettingsButton:hover,
   #SkinSettingsCategoryButton:hover,
   WEffectSelector::item:selected,
+  WEffectChainPresetSelector::item:selected,
   #fadeModeCombobox:item:selected {
     background-color: #555;
     color: #fff;
@@ -2597,11 +2615,13 @@ WTrackMenu QMenu::right-arrow {
 /* Scroll bars */
 #LibraryContainer QScrollBar,
 WEffectSelector QAbstractScrollArea QScrollBar,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
 #fadeModeCombobox QAbstractScrollArea QScrollBar {
   padding: 1px;
 }
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   min-width: 12px;
   height: 10px;
@@ -2610,6 +2630,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   }
   #LibraryContainer QScrollBar:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 10px;
@@ -2621,6 +2642,8 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   #LibraryContainer QScrollBar::sub-page,
   WEffectSelector QAbstractScrollArea QScrollBar::add-page,
   WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-page,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
     min-width: 15px;
@@ -2629,6 +2652,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
     }
   #LibraryContainer QScrollBar::handle:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
     min-width: 25px;
     background: #595959;
@@ -2636,11 +2660,13 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
     }
     #LibraryContainer QScrollBar::handle:horizontal:hover,
     WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
+    WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
     #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover {
       background: #888;
     }
   #LibraryContainer QScrollBar::handle:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
     min-height: 25px;
     background: #595959;
@@ -2648,6 +2674,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
     }
     #LibraryContainer QScrollBar::handle:vertical:hover,
     WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
+    WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
     #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
       background: #888;
     }
@@ -2656,6 +2683,8 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   #LibraryContainer QScrollBar::add-line:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical {
     width: 0px;
@@ -2665,6 +2694,8 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   #LibraryContainer QScrollBar::sub-line:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
   #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
     width: 0px;
@@ -2673,6 +2704,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   /* Corner in between two scrollbars */
   #LibraryContainer QAbstractScrollArea::corner,
   WEffectSelector QAbstractScrollArea::corner,
+  WEffectChainPresetSelector QAbstractScrollArea::corner,
   #fadeModeCombobox QAbstractScrollArea::corner {
     background-color: #0f0f0f;
     border: 0px;
@@ -2740,6 +2772,7 @@ WLibrary QPushButton {
     color: #888;
     }
   WLibrary QPushButton:hover,
+  WEffectChainPresetSelector:hover,
   #fadeModeCombobox:hover {
     border: 1px solid #888;
     }
@@ -2773,6 +2806,7 @@ WLibrary QPushButton {
     border: 1px solid #ca0000;
   }
   WLibrary QPushButton:focus,
+  WEffectChainPresetSelector:focus,
   #fadeModeCombobox:focus {
     border: 1px solid #bbb;
     outline: none;
