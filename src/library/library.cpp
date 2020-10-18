@@ -153,12 +153,10 @@ Library::Library(
             addFeature(new BansheeFeature(this, m_pConfig));
         }
     }
-    if (m_pConfig->getValue(
-                ConfigKey(kConfigGroup, "ShowClementineLibrary"), true)) {
-        ClementineFeature::prepareDbPath(m_pConfig);
-        if (ClementineFeature::isSupported()) {
-            addFeature(new ClementineFeature(this, m_pConfig));
-        }
+    if (ClementineFeature::isSupported() &&
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowClementineLibrary"), true)) {
+        addFeature(new ClementineFeature(this, m_pConfig));
     }
     if (ITunesFeature::isSupported() &&
             m_pConfig->getValue(

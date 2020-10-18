@@ -3,8 +3,9 @@
 #include <QSqlDatabase>
 #include <QUrl>
 
-#include "library/trackcollectionmanager.h"
-#include "library/trackmodel.h"
+//#include "library/trackmodel.h"
+//Forward declare
+class TrackCollectionManager;
 
 class ClementineDbConnection {
   public:
@@ -35,7 +36,7 @@ class ClementineDbConnection {
     };
 
     ClementineDbConnection();
-    virtual ~ClementineDbConnection();
+    ~ClementineDbConnection();
     void setTrackCollection(TrackCollectionManager* pTrackCollection);
 
     static QString getDatabaseFile();

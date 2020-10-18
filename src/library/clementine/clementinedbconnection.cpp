@@ -6,6 +6,7 @@
 #include <QSqlError>
 
 #include "library/queryutil.h"
+#include "library/trackcollectionmanager.h"
 #include "track/track.h"
 #include "util/performancetimer.h"
 
@@ -134,10 +135,10 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
                         "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
                 entry.title = location.split(QDir::separator()).last();
             }
-            if (entry.bpm == -1) {
+            if (entry.bpm == -1) { // clementine saves undefined bpm as -1
                 entry.bpm = 0;
             }
-            if (duration == -1) {
+            if (duration == -1) { // clementine saves undefined duration as -1
                 entry.duration = 0;
             } else {
                 entry.duration = int(duration / 1000000000);

@@ -1,11 +1,11 @@
-#include "library/clementine/clementineplaylistmodel.h"
-
 #include <QtDebug>
 
-#include "library/clementine/clementinedbconnection.h"
+#include "library/clementine/clementineplaylistmodel.h"
+#include "library/trackcollectionmanager.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
-#include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
+#include "library/dao/playlistdao.h"
 #include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
@@ -39,9 +39,6 @@ ClementinePlaylistModel::ClementinePlaylistModel(QObject* pParent,
                   "mixxx.db.model.Clementine_playlist"),
           m_pConnection(pConnection),
           m_playlistId(-1) {
-}
-
-ClementinePlaylistModel::~ClementinePlaylistModel() {
 }
 
 void ClementinePlaylistModel::setTableModel(int playlistId) {
@@ -209,19 +206,19 @@ TrackPointer ClementinePlaylistModel::getTrack(const QModelIndex& index) const {
     QString location = getTrackLocation(index);
 
     if (location.isEmpty()) {
-        // Track is lost
+        qDebug() << "Track is lost";
         return TrackPointer();
     }
 
-    bool track_already_in_library = false;
+    bool trackAlreadyInLibrary = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
             TrackRef::fromFileInfo(location),
-            &track_already_in_library);
+            &trackAlreadyInLibrary);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from Clementine. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
-    if (pTrack && !track_already_in_library) {
+    if (pTrack && !trackAlreadyInLibrary) {
         pTrack->setArtist(getFieldString(index, CLM_ARTIST));
         pTrack->setTitle(getFieldString(index, CLM_TITLE));
         pTrack->setDuration(getFieldString(index, CLM_DURATION).toDouble());
@@ -258,7 +255,7 @@ TrackId ClementinePlaylistModel::getTrackId(const QModelIndex& index) const {
 // Gets the on-disk location of the track at the given location.
 QString ClementinePlaylistModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
-        return "";
+        return QString();
     }
     QUrl url(getFieldString(index, CLM_URI));
 
@@ -293,7 +290,7 @@ QString ClementinePlaylistModel::getTrackLocation(const QModelIndex& index) cons
 }
 
 bool ClementinePlaylistModel::isColumnInternal(int column) {
-    return (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+    return column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)));
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW));
 }

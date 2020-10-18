@@ -9,10 +9,7 @@
 #include "library/clementine/clementineplaylistmodel.h"
 #include "library/dao/settingsdao.h"
 #include "library/library.h"
-#include "library/trackcollectionmanager.h"
 
-const QString ClementineFeature::Clementine_MOUNT_KEY = "mixxx.ClementineFeature.mount";
-QString ClementineFeature::m_databaseFile;
 
 ClementineFeature::ClementineFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
@@ -35,22 +32,11 @@ ClementineFeature::~ClementineFeature() {
         m_future.waitForFinished();
         qDebug() << "m_future finished";
     }
-
-    delete m_pClementinePlaylistModel;
 }
 
 // static
 bool ClementineFeature::isSupported() {
-    return !m_databaseFile.isEmpty();
-}
-
-// static
-void ClementineFeature::prepareDbPath(UserSettingsPointer pConfig) {
-    m_databaseFile = pConfig->getValueString(ConfigKey("[Clementine]", "Database"));
-    if (!QFile::exists(m_databaseFile)) {
-        // Fall back to default
-        m_databaseFile = ClementineDbConnection::getDatabaseFile();
-    }
+    return !ClementineDbConnection::getDatabaseFile().isEmpty();
 }
 
 QVariant ClementineFeature::title() {
@@ -60,10 +46,6 @@ QVariant ClementineFeature::title() {
 QIcon ClementineFeature::getIcon() {
     return m_icon;
 }
-
-//QString ClementineFeature::getSettingsName() const {
-//    return "ClementineFeature";
-//}
 
 void ClementineFeature::activate() {
     qDebug("ClementineFeature::activate()");
@@ -141,11 +123,10 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
         TreeItem* item = static_cast<TreeItem*>(lastRightClickedIndex().internalPointer());
         *pPlaylist = item->getLabel();
         int playlistID = item->getData().toInt();
-        qDebug() << "ClementineFeature::appendTrackIdsFromRightClickIndex "
-                 << *pPlaylist << " " << playlistID;
         if (playlistID > 0) {
-            ClementinePlaylistModel* pPlaylistModelToAdd =
-                    new ClementinePlaylistModel(this,
+            std::unique_ptr<ClementinePlaylistModel> pPlaylistModelToAdd = 
+            std::make_unique<ClementinePlaylistModel>(
+                            this,
                             m_pLibrary->trackCollections(),
                             &m_connection);
             pPlaylistModelToAdd->setTableModel(playlistID);
@@ -161,7 +142,7 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
                     trackIds->append(track->getId());
                 }
             }
-            delete pPlaylistModelToAdd;
+            //delete pPlaylistModelToAdd;
         }
     }
 }

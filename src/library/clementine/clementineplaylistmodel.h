@@ -5,8 +5,7 @@
 
 #include "library/basesqltablemodel.h"
 #include "library/clementine/clementinedbconnection.h"
-#include "library/trackcollection.h"
-#include "library/trackmodel.h"
+
 
 class ClementinePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
@@ -14,7 +13,7 @@ class ClementinePlaylistModel : public BaseSqlTableModel {
     ClementinePlaylistModel(QObject* pParent,
             TrackCollectionManager* pTrackCollectionManager,
             ClementineDbConnection* pConnection);
-    ~ClementinePlaylistModel() final;
+    ~ClementinePlaylistModel() = default;
 
     void setTableModel(int playlistId);
 

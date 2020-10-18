@@ -8,31 +8,31 @@
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/clementine/clementinedbconnection.h"
-#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 
+//Forward declare
 class ClementinePlaylistModel;
+
 
 class ClementineFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
     ClementineFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~ClementineFeature();
+    ~ClementineFeature() override;
     static bool isSupported();
-    static void prepareDbPath(UserSettingsPointer pConfig);
 
-    virtual QVariant title();
-    virtual QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    virtual TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    virtual void activate();
-    virtual void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   private:
-    virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
+    void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) override;
 
     ClementinePlaylistModel* m_pClementinePlaylistModel;
     TreeItemModel m_childModel;
@@ -51,7 +51,5 @@ class ClementineFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
     QIcon m_icon;
 
-    static QString m_databaseFile;
-
-    static const QString Clementine_MOUNT_KEY;
+    QString m_databaseFile;
 };
