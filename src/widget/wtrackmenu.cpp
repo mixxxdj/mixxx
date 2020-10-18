@@ -181,6 +181,19 @@ void WTrackMenu::createMenus() {
                                             genre + QChar('"'));
                                 });
                     }
+                    const auto title = pTrack->getTitle();
+                    if (!title.isEmpty()) {
+                        const auto titleText =
+                                mixxx::escapeTextPropertyWithoutShortcuts(title);
+                        m_pSearchRelatedMenu->addAction(
+                                tr("Title \"%1\"")
+                                        .arg(titleText),
+                                [this, title]() {
+                                    m_pLibrary->searchTracksInCollection(
+                                            QStringLiteral("title:\"") +
+                                            title + QChar('"'));
+                                });
+                    }
                     auto primaryArtist = pTrack->getArtist();
                     auto secondaryArtist = pTrack->getAlbumArtist();
                     if (primaryArtist.isEmpty()) {
