@@ -76,7 +76,7 @@ void EffectChainPresetManager::importPreset() {
     QStringList fileNames = QFileDialog::getOpenFileNames(nullptr,
             tr("Import effect chain preset"),
             QString(),
-            tr("Mixxx Effect Chain Presets") + QStringLiteral(" (") +
+            tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
                     kXmlFileExtension + QStringLiteral(")"));
 
     QString importFailed = tr("Error importing effect chain preset");
@@ -172,11 +172,22 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
         return;
     }
 
-    QString fileName = QFileDialog::getSaveFileName(nullptr,
+    // TODO: replace with QFileDialog::saveFileDialog when
+    // https://bugreports.qt.io/browse/QTBUG-27186 is fixed.
+    QFileDialog saveFileDialog(
+            nullptr,
             tr("Save effect chain preset"),
             QString(),
-            tr("Mixxx Effect Chain Presets") + QStringLiteral(" (") +
+            tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
                     kXmlFileExtension + QStringLiteral(")"));
+    saveFileDialog.setDefaultSuffix(kXmlFileExtension);
+    saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    QString fileName;
+    if (saveFileDialog.exec()) {
+        fileName = saveFileDialog.selectedFiles().at(0);
+    } else {
+        return;
+    }
 
     QFile file(fileName);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
