@@ -161,7 +161,6 @@ void MixxxLibraryFeature::searchAndActivate(const QString& query) {
 }
 
 void MixxxLibraryFeature::activate() {
-    qDebug() << "MixxxLibraryFeature::activate()";
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
 }
