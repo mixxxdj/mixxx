@@ -9,7 +9,8 @@
 #include "widget/wtrackmenu.h"
 
 namespace {
-const WTrackMenu::Features kTrackMenuFeatures =
+constexpr WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::SearchRelated |
         WTrackMenu::Feature::Playlist |
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
