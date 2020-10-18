@@ -4,6 +4,7 @@
 
 * Cover art: Prevent wrong cover art display due to hash conflicts
 * Cover art: Add background color for quick cover art preview
+* Add support for saving loops as hotcues #2194 lp:1367159
 
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (Unreleased)
 ### Hotcues ###
