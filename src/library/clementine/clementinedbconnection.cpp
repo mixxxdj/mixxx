@@ -44,7 +44,7 @@ QList<struct ClementineDbConnection::Playlist> ClementineDbConnection::getPlayli
     struct ClementineDbConnection::Playlist playlist;
 
     QSqlQuery query(m_database);
-    query.prepare("SELECT ROWID, playlists.name FROM playlists ORDER By playlists.name");
+    query.prepare("SELECT ROWID, playlists.name FROM playlists ORDER BY playlists.name");
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
