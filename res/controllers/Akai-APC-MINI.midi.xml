@@ -3,7 +3,9 @@
     <info>
         <name>Akai APC Mini</name>
         <author>Valerio Vitali</author>
-        <description>MIDI-input and MIDI-output for light control</description>
+        <description>Mobile USB controller with 64 pads and 9 faders.</description>
+        <forum><!-- forum thread URL goes here --></forum>
+        <manual>akai_apc_mini</manual>
     </info>
     <controller id="APC">
         <scriptfiles>
