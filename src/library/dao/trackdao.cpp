@@ -84,6 +84,7 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
     connect(&m_playlistDao,
             &PlaylistDAO::tracksRemovedFromPlayedHistory,
+            this,
             [this](const QSet<TrackId>& playedTrackIds) {
                 VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromPlayedHistory(playedTrackIds)) {
                     return;
