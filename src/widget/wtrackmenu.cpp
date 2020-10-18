@@ -160,6 +160,7 @@ void WTrackMenu::createMenus() {
                 });
         connect(m_pSearchRelatedMenu,
                 &WSearchRelatedTracksMenu::triggerSearch,
+                this,
                 [this](const QString& searchQuery) {
                     m_pLibrary->searchTracksInCollection(searchQuery);
                 });
