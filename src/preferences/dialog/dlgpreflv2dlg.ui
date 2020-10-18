@@ -18,9 +18,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
 
      <item>
-      <layout class="QVBoxLayout" name="vertical_layout_left">
+      <layout class="QVBoxLayout" name="vLayoutLeft">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="discoveredEffectsLabel">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -46,14 +46,14 @@
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-          <widget class="QWidget" name="verticalLayoutWidget1">
+          <widget class="QWidget" name="vLayoutWidgetEffects">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <layout class="QVBoxLayout" name="lv2_VLayout_effects"/>
+           <layout class="QVBoxLayout" name="lv2EffectsList"/>
           </widget>
         </widget>
        </item>
@@ -61,7 +61,7 @@
      </item>
 
      <item>
-      <layout class="QVBoxLayout" name="vertical_layout_center">
+      <layout class="QVBoxLayout" name="vLayoutCenter">
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -82,9 +82,9 @@
      </item>
 
      <item>
-      <layout class="QVBoxLayout" name="vertical_layout_right">
+      <layout class="QVBoxLayout" name="vLayoutRight">
        <item>
-        <widget class="QLabel" name="effect_name_label">
+        <widget class="QLabel" name="effectNameLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -120,26 +120,10 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <layout class="QVBoxLayout" name="lv2_VLayout_parameters"/>
+           <layout class="QVBoxLayout" name="lv2EffectParametersList"/>
           </widget>
         </widget>
        </item>
-<!--        <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>10</width>
-           <height>10000</height>
-          </size>
-         </property>
-        </spacer>
-       </item> -->
       </layout>
      </item>
 

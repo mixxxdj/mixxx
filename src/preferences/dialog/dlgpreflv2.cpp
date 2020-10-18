@@ -57,11 +57,11 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
             button->setDisabled(false);
         }
 
-        lv2_VLayout_effects->addWidget(button);
+        lv2EffectsList->addWidget(button);
         button->setProperty("id", QVariant(pEffectManifest->id()));
         connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
     }
-    effect_name_label->setText(QStringLiteral(""));
+    effectNameLabel->setText(QStringLiteral(""));
 }
 
 DlgPrefLV2::~DlgPrefLV2() {
@@ -78,7 +78,7 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_pluginParameters.clear();
 
     QLayoutItem* item;
-    while ((item = lv2_VLayout_parameters->takeAt(0)) != 0) {
+    while ((item = lv2EffectParametersList->takeAt(0)) != 0) {
         delete item;
     }
 
@@ -89,8 +89,8 @@ void DlgPrefLV2::slotDisplayParameters() {
     EffectManifestPointer pCurrentEffectManifest = m_pLV2Backend->getManifest(pluginId);
     if (pCurrentEffectManifest) {
         // Show the effect name above the parameter list
-        effect_name_label->setText(QObject::tr("Parameters for %1")
-                                           .arg(pCurrentEffectManifest->name()));
+        effectNameLabel->setText(QObject::tr("Parameters of %1")
+                                         .arg(pCurrentEffectManifest->name()));
         // Populate the parameters list
         const QList<EffectManifestParameterPointer>& parameterList =
                 pCurrentEffectManifest->parameters();
@@ -103,7 +103,7 @@ void DlgPrefLV2::slotDisplayParameters() {
                 entry->setChecked(false);
                 entry->setEnabled(false);
             }
-            lv2_VLayout_parameters->addWidget(entry);
+            lv2EffectParametersList->addWidget(entry);
             m_pluginParameters.append(entry);
             connect(entry, SIGNAL(stateChanged(int)),
                     this, SLOT(slotUpdateOnParameterCheck(int)));
@@ -113,7 +113,7 @@ void DlgPrefLV2::slotDisplayParameters() {
     } else {
         m_iCheckedParameters = 0;
     }
-    lv2_VLayout_parameters->addStretch();
+    lv2EffectParametersList->addStretch();
 }
 
 void DlgPrefLV2::slotUpdate() {
