@@ -142,7 +142,6 @@ void WTrackMenu::createMenus() {
     }
 
     if (featureIsEnabled(Feature::SearchRelated)) {
-        // TODO: Create a new subclass of QMenu?
         DEBUG_ASSERT(!m_pSearchRelatedMenu);
         m_pSearchRelatedMenu =
                 make_parented<WSearchRelatedTracksMenu>(this);
