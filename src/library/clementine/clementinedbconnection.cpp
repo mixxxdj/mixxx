@@ -46,14 +46,14 @@ QList<struct ClementineDbConnection::Playlist> ClementineDbConnection::getPlayli
     QSqlQuery query(m_database);
     query.prepare("SELECT ROWID, playlists.name FROM playlists ORDER By playlists.name");
 
-    if (query.exec()) {
-        while (query.next()) {
-            playlist.playlistId = query.value(0).toString();
-            playlist.name = query.value(1).toString();
-            list.append(playlist);
-        }
-    } else {
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        return {};
+    }
+    while (query.next()) {
+        playlist.playlistId = query.value(0).toString();
+        playlist.name = query.value(1).toString();
+        list.append(playlist);
     }
     return list;
 }
@@ -97,63 +97,63 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
                           .arg(playlistId);
 
     query.prepare(queryString);
-    if (query.exec()) {
-        while (query.next()) {
-            QString type = query.value(16).toString();
-            if (type != "File")
-                continue;
-
-            //Search for track in mixxx lib to provide bpm information
-            QString location = QUrl::fromEncoded(
-                    query.value(2).toByteArray(), QUrl::StrictMode)
-                                       .toLocalFile();
-            bool track_already_in_library = false;
-            TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-                    TrackRef::fromFileInfo(location),
-                    &track_already_in_library);
-
-            entry.artist = query.value(4).toString();
-            entry.title = query.value(1).toString();
-            entry.trackId = query.value(0).toInt();
-            long long duration = query.value(3).toLongLong();
-            entry.year = query.value(5).toInt();
-            entry.album = query.value(6).toString();
-            entry.albumartist = query.value(17).toString();
-            entry.uri = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode);
-            entry.rating = query.value(7).toInt();
-            entry.genre = query.value(8).toString();
-            entry.grouping = query.value(15).toString();
-            entry.tracknumber = query.value(9).toInt();
-            entry.bpm = query.value(10).toInt();
-            entry.bitrate = query.value(11).toInt();
-            entry.comment = query.value(12).toString();
-            entry.playcount = query.value(13).toInt();
-            entry.composer = query.value(14).toString();
-
-            if (entry.artist == "" && entry.title == "") {
-                entry.artist =
-                        "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
-                entry.title = location.split(QDir::separator()).last();
-            }
-            if (entry.bpm == -1) { // clementine saves undefined bpm as -1
-                entry.bpm = 0;
-            }
-            if (duration == -1) { // clementine saves undefined duration as -1
-                entry.duration = 0;
-            } else {
-                entry.duration = int(duration / 1000000000);
-            }
-
-            //If found in mixxx lib overwrite information
-            if (track_already_in_library) {
-                entry.bpm = pTrack->getBpm();
-                entry.duration = pTrack->getDurationInt();
-            }
-
-            list.append(entry);
-        }
-    } else {
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        return {};
+    }
+    while (query.next()) {
+        QString type = query.value(16).toString();
+        if (type != "File")
+            continue;
+
+        //Search for track in mixxx lib to provide bpm information
+        QString location = QUrl::fromEncoded(
+                query.value(2).toByteArray(), QUrl::StrictMode)
+                                   .toLocalFile();
+        bool track_already_in_library = false;
+        TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFileInfo(location),
+                &track_already_in_library);
+
+        entry.artist = query.value(4).toString();
+        entry.title = query.value(1).toString();
+        entry.trackId = query.value(0).toInt();
+        long long duration = query.value(3).toLongLong();
+        entry.year = query.value(5).toInt();
+        entry.album = query.value(6).toString();
+        entry.albumartist = query.value(17).toString();
+        entry.uri = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode);
+        entry.rating = query.value(7).toInt();
+        entry.genre = query.value(8).toString();
+        entry.grouping = query.value(15).toString();
+        entry.tracknumber = query.value(9).toInt();
+        entry.bpm = query.value(10).toInt();
+        entry.bitrate = query.value(11).toInt();
+        entry.comment = query.value(12).toString();
+        entry.playcount = query.value(13).toInt();
+        entry.composer = query.value(14).toString();
+
+        if (entry.artist == "" && entry.title == "") {
+            entry.artist =
+                    "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
+            entry.title = location.split(QDir::separator()).last();
+        }
+        if (entry.bpm == -1) { // clementine saves undefined bpm as -1
+            entry.bpm = 0;
+        }
+        if (duration == -1) { // clementine saves undefined duration as -1
+            entry.duration = 0;
+        } else {
+            entry.duration = int(duration / 1000000000);
+        }
+
+        //If found in mixxx lib overwrite information
+        if (track_already_in_library) {
+            entry.bpm = pTrack->getBpm();
+            entry.duration = pTrack->getDurationInt();
+        }
+
+        list.append(entry);
     }
 
     qDebug() << "ClementineDbConnection::getPlaylistEntries(), took"
@@ -173,7 +173,7 @@ QString ClementineDbConnection::getDatabaseFile() {
         return dbfile;
     }
 
-    // Legacy Banshee Application Data Path
+    // Legacy clementine Application Data Path
     dbfile = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     dbfile += "/.gnome2/Clementine/clementine.db";
     if (QFile::exists(dbfile)) {
