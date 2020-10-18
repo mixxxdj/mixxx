@@ -930,7 +930,7 @@
                 <minimum>0.5</minimum>
             </output>
 
-            
+
             <output>
                 <group>[Channel1]</group>
                 <key>hotcue_1_enabled</key>
