@@ -9,7 +9,7 @@
 #include "library/clementine/clementineplaylistmodel.h"
 #include "library/dao/settingsdao.h"
 #include "library/library.h"
-
+#include "track/track.h"
 
 ClementineFeature::ClementineFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
@@ -137,12 +137,10 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
             for (int i = 0; i < rows; ++i) {
                 QModelIndex index = pPlaylistModelToAdd->index(i, 0);
                 if (index.isValid()) {
-                    //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
                     TrackPointer track = pPlaylistModelToAdd->getTrack(index);
                     trackIds->append(track->getId());
                 }
             }
-            //delete pPlaylistModelToAdd;
         }
     }
 }

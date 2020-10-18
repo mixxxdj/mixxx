@@ -8,11 +8,9 @@
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/clementine/clementinedbconnection.h"
+#include "library/clementine/clementineplaylistmodel.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
-
-//Forward declare
-class ClementinePlaylistModel;
 
 
 class ClementineFeature : public BaseExternalLibraryFeature {

@@ -9,6 +9,7 @@
 #include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "track/track.h"
 
 #define Clementine_TABLE "Clementine"
 #define CLM_VIEW_ORDER "position"
