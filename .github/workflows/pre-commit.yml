@@ -1,0 +1,19 @@
+name: pre-commit
+
+on:
+  push:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - name: Install clang-format
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10
+    - uses: pre-commit/action@v2.0.0
+      # There are too many files in the repo that have formatting issues. We'll
+      # disable these checks for now when pushing directly (but still run these
+      # on Pull Requests!).
+      env:
+        SKIP: end-of-file-fixer,trailing-whitespace,clang-format,eslint
