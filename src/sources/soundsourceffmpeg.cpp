@@ -203,6 +203,9 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
 // need to be converted to QString/UTF-16.
 inline std::string formatErrorString(int errnum) {
     char errbuf[AV_ERROR_MAX_STRING_SIZE];
+    // The result value if av_strerror() does not need to be handled:
+    // "Even in case of failure av_strerror() will print a generic error
+    // message indicating the errnum provided to errbuf."
     av_strerror(errnum, errbuf, sizeof(errbuf) / sizeof(errbuf[0]));
     return std::string(errbuf);
 }
