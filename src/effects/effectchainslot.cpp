@@ -224,7 +224,7 @@ void EffectChainSlot::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
     pRequest->pTargetChain = m_pEngineEffectChain;
-    pRequest->SetEffectChainParameters.enabled = m_pControlChainEnabled->get();
+    pRequest->SetEffectChainParameters.enabled = m_pControlChainEnabled->toBool();
     pRequest->SetEffectChainParameters.mix_mode = mixMode();
     pRequest->SetEffectChainParameters.mix = m_pControlChainMix->get();
     m_pMessenger->writeRequest(pRequest);
@@ -266,7 +266,7 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
             m_pEngineEffectChain));
 
     m_effectSlots.append(pEffectSlot);
-    int numEffectSlots = m_pControlNumEffectSlots->get() + 1;
+    int numEffectSlots = static_cast<int>(m_pControlNumEffectSlots->get()) + 1;
     m_pControlNumEffectSlots->forceSet(numEffectSlots);
     m_pControlChainFocusedEffect->setStates(numEffectSlots);
     return pEffectSlot;
@@ -336,7 +336,7 @@ void EffectChainSlot::slotControlChainSelector(double value) {
 
 void EffectChainSlot::slotControlLoadChainPreset(double value) {
     // subtract 1 to make the ControlObject 1-indexed like other ControlObjects
-    loadChainPreset(presetAtIndex(value - 1));
+    loadChainPreset(presetAtIndex(static_cast<int>(value) - 1));
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double value) {
