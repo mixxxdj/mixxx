@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QtSql>
 
+#include "library/coverart.h"
 #include "library/dao/settingsdao.h"
 #include "track/track.h"
 #include "track/trackref.h"
