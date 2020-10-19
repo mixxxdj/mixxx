@@ -13,16 +13,28 @@
 
       <MainMenuButton>
         <ObjectName>MainMenuButton</ObjectName>
-        <Size>20,40</Size>
+        <Size>40f,24f</Size>
         <SizePolicy>f,f</SizePolicy>
         <Connection>
-          <ConfigKey>[Master],show_menubar</ConfigKey>
+          <ConfigKey>[Skin],show_menubar</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
           </Transform>
         </Connection>
       </MainMenuButton>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarSeparator</ObjectName>
+        <Size>4f,0min</Size>
+        <Connection>
+          <ConfigKey>[Skin],show_menubar</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
 
       <Battery>
         <ObjectName>Battery</ObjectName>

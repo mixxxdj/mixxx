@@ -2245,10 +2245,11 @@ WEffectSelector {
 }
 
 WMainMenuBarButton {
-  color: #D2D2D2;
+  color: rgba(151,151,151,0);;
   background-color: #5a5a5a;
-  border: 3px solid #006596;
+  border: 3px solid #4B4B4B;
   border-radius: 3px;
+  image: url(skin:/icon/ic_mainmenu.svg);
 }
 
 WMainMenuBarButton::menu-indicator, WMainMenuBarButton::menu-indicator:pressed, WMainMenuBarButton::menu-indicator:open {
