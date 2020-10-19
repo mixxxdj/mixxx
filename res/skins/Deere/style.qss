@@ -1574,6 +1574,18 @@ WPushButton[value="2"]:hover,
     border: 1px solid #0080BE;
 }
 
+#MenubarToggle {
+  font-size: 14px;
+  font-weight: bold;
+  color: #888;
+  margin-top: 2px;
+  background-color: transparent;
+  border: none;
+  }
+  #MenubarToggle[hover="true"] {
+    color: #aaa;
+  }
+
 #HotcueButton {
   border: none;
 }

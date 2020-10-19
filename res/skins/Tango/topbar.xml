@@ -32,6 +32,18 @@ Description:
 
               <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
+
+              <!-- If [Controls],show_menubar is not available on macOS,
+                hide this with "max-width: 0px;" in style-mac.qss -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">FIXME</SetVariable>
+                <SetVariable name="ObjectName">MenubarToggle</SetVariable>
+                <SetVariable name="Size">70f,22f</SetVariable>
+                <SetVariable name="state_0_text">&#x2630; MENU</SetVariable>
+                <SetVariable name="state_1_text">&#x2630; MENU</SetVariable>
+                <SetVariable name="ConfigKey">[Controls],show_menubar</SetVariable>
+              </Template>
+
               <PushButton>
                 <Size>102f,24f</Size>
                 <NumberStates>2</NumberStates>

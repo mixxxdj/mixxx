@@ -11,6 +11,19 @@
     <SizePolicy>min,f</SizePolicy>
     <Children>
 
+      <!-- If [Controls],show_menubar is not available on macOS,
+        hide this with "max-width: 0px;" in style-mac.qss -->
+      <Template src="skin:left_2state_button.xml">
+        <SetVariable name="TooltipId">FIXME</SetVariable>
+        <SetVariable name="ObjectName">MenubarToggle</SetVariable>
+        <SetVariable name="MinimumSize">70,22</SetVariable>
+        <SetVariable name="MaximumSize">70,22</SetVariable>
+        <SetVariable name="SizePolicy">f,f</SetVariable>
+        <SetVariable name="state_0_text">&#x2630; MENU</SetVariable>
+        <SetVariable name="state_1_text">&#x2630; MENU</SetVariable>
+        <SetVariable name="left_connection_control">[Controls],show_menubar</SetVariable>
+      </Template>
+
       <Battery>
         <ObjectName>Battery</ObjectName>
         <Size>24,24</Size>

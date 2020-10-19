@@ -291,6 +291,16 @@ WWidgetGroup {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 
+#MenubarToggle {
+  font-size: 14px;
+  font-weight: bold;
+  color: #888;
+  margin-top: 2px;
+  }
+  #MenubarToggle[hover="true"] {
+    color: #aaa;
+  }
+
 #GuiToggleButton,
 #GuiToggleButton2,
 #RecordingButton {

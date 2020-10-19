@@ -61,6 +61,7 @@
       <attribute config_key="[Master],num_decks">2</attribute>
       <attribute config_key="[Master],num_samplers">8</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute config_key="[Controls],show_menubar">1</attribute>
       <!--Optionally, make elements visible on skin load-->
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>

@@ -151,7 +151,8 @@ WEffectSelector QAbstractScrollArea,
 #PreviewLabel,
 WBeatSpinBox,
 #spinBoxTransition,
-WTime {
+WTime,
+#MenubarToggle {
   font-size: 14px;
   text-align: left;
 }

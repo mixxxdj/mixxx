@@ -5,6 +5,22 @@
     <SizePolicy>e,min</SizePolicy>
     <Children>
 
+      <!-- If [Controls],show_menubar is not available on macOS,
+        hide those two items with stylesheet with "max-width: 0px;" -->
+      <Template src="skin:/controls/button_2state.xml">
+        <SetVariable name="TooltipId">FIXME</SetVariable>
+        <SetVariable name="ObjectName">MenubarToggle</SetVariable>
+        <SetVariable name="Size">70f,20f</SetVariable>
+        <SetVariable name="state_0_text">&#x2630; MENU</SetVariable>
+        <SetVariable name="state_1_text">&#x2630; MENU</SetVariable>
+        <SetVariable name="ConfigKey">[Controls],show_menubar</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <ObjectName>MenubarToggleSeparator</ObjectName>
+        <Size>12f,9min</Size>
+      </WidgetGroup>
+
       <Template src="skin:/controls/button_2state.xml">
         <SetVariable name="TooltipId">maximize_library</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
