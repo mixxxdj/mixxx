@@ -31,7 +31,7 @@ class WaveformSignalColors {
     void fallBackFromSignalColor();
     void fallBackDefaultColor();
 
-    float stableHue(float hue) const;
+    double stableHue(double hue) const;
 
   private:
     QColor m_signalColor;

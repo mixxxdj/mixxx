@@ -1,14 +1,14 @@
-#include <QtDebug>
-
 #include "library/searchquery.h"
 
+#include <QtDebug>
+
+#include "library/crate/crateschema.h"
+#include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "track/keyutils.h"
-#include "library/dao/trackschema.h"
-#include "library/crate/crateschema.h"
-#include "util/db/sqllikewildcards.h"
+#include "track/track.h"
 #include "util/db/dbconnection.h"
-
+#include "util/db/sqllikewildcards.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {

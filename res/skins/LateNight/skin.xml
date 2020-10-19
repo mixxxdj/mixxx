@@ -38,7 +38,7 @@
     <attributes>
     <!-- Set skin defaults -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
+      <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <attribute config_key="[Master],skin_settings">0</attribute>
@@ -46,13 +46,14 @@
     <!-- Decks -->
       <!-- general -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
-      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <!-- Deck variant that is shown as soon as the mixer is hidden, see deck.xm
           and /helpers/skin_helper_deck_size.xml
           0=mini 1=compact (default) 2=full deck -->
@@ -81,9 +82,11 @@
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
     <!-- Samplers -->
-      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
-      <attribute persist="true" config_key="[Skin],8_samplers">1</attribute>
-      <attribute persist="true" config_key="[Skin],expand_samplers">0</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[LateNight],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_1-4">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_1-8">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
     <!-- Library -->

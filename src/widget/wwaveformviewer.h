@@ -9,7 +9,7 @@
 #include <QMutex>
 
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"

@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg14"
-   version="1.1"
+   width="24"
    height="24"
-   width="24">
+   version="1.1"
+   id="svg14">
   <metadata
      id="metadata20">
     <rdf:RDF>
@@ -23,24 +23,27 @@
   </metadata>
   <defs
      id="defs18" />
-  <path
-     d="m 14,10 h 2 v 3 L 23,9 16,5 v 3 h -2 z"
-     id="path6"
-     style="fill:#000001;fill-opacity:1" />
   <g
-     style="fill:#000001;fill-opacity:1"
-     id="g834">
+     id="g834-6"
+     style="fill:#000000;fill-opacity:1"
+     transform="translate(2)">
     <path
-       style="fill:#000001;fill-opacity:1"
-       id="path4"
-       d="M 5,21 H 3 V 3 h 2 z" />
-    <path
-       style="fill:#000001;fill-opacity:1"
-       id="path8"
-       d="M 15,21 H 13 V 11 h 2 z" />
-    <path
-       style="fill:#000001;fill-opacity:1"
-       id="path10"
-       d="M 15,7 H 13 V 3 h 2 z" />
+       d="M 5,21 H 3 V 3 h 2 z"
+       id="path4-7"
+       style="fill:#000000;fill-opacity:1" />
   </g>
+  <path
+     d="m 17,21 h 2 V 3 h -2 z"
+     id="path4-6"
+     style="fill:#000000;fill-opacity:1" />
+  <path
+     d="M 14,13 21,9 14,5 Z"
+     fill="#928476"
+     id="path2-6"
+     style="fill:#000000;fill-opacity:1" />
+  <path
+     d="M 10,13 3,9 10,5 Z"
+     fill="#928476"
+     id="path2-6-6"
+     style="fill:#000000;fill-opacity:1" />
 </svg>

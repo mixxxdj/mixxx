@@ -1,9 +1,11 @@
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QSize>
-#include <QApplication>
-
 #include "widget/wstarrating.h"
+
+#include <QApplication>
+#include <QSize>
+#include <QStyleOption>
+#include <QStylePainter>
+
+#include "track/track.h"
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
         : WWidget(pParent),

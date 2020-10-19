@@ -24,15 +24,11 @@
   <defs
      id="defs18" />
   <path
-     style="fill:#bfbfbe"
+     style="fill:#f2f2f2;fill-opacity:1"
      id="path6"
-     d="m 12,16 h -2 v 3 l -7,-4 7,-4 v 3 h 2 z" />
+     d="m 15,20 7,-4 -7,-4 z" />
   <path
-     style="fill:#888888;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     d="m 20,3 h -8 v 7 h 6 v 11 h 2 z M 19,9 H 13 V 4 h 6 z"
+     style="fill:#888886;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 14,3 H 6 v 7 h 6 v 11 h 2 z"
      id="path833" />
-  <path
-     id="rect835"
-     d="m 13,4 h 6 v 5 h -6 z"
-     style="opacity:1;fill:#555555;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
 </svg>

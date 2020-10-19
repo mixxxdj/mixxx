@@ -57,7 +57,7 @@ Waveform::Waveform(int audioSampleRate, int audioSamples,
             }
         }
         m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
-        numberOfVisualSamples = (audioSamples / m_audioVisualRatio) + 1;
+        numberOfVisualSamples = static_cast<int>(audioSamples / m_audioVisualRatio) + 1;
         numberOfVisualSamples += numberOfVisualSamples%2;
     }
     assign(numberOfVisualSamples, 0);

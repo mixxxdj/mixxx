@@ -25,38 +25,6 @@ env:
 
 jobs:
   include:
-    - name: pre-commit
-      if: type != pull_request
-      language: python
-      python: 3.7
-      # There are too many files in the repo that have formatting issues. We'll
-      # disable these checks for now when pushing directly (but still run these
-      # on Pull Requests!).
-      env: SKIP=end-of-file-fixer,trailing-whitespace,clang-format,eslint
-      cache:
-        directories:
-          - $HOME/.cache/pre-commit
-      before_install:
-        - pip install pre-commit==2.5.1
-      script:
-        - pre-commit run --all-files
-      addons: []
-
-    - name: pre-commit-pr
-      if: type == pull_request
-      language: python
-      python: 3.7
-      cache:
-        directories:
-          - $HOME/.cache/pre-commit
-      before_install:
-        - pip install pre-commit==2.5.1
-      script:
-        # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
-        # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
-        - pre-commit run --from-ref HEAD^1 --to-ref HEAD --show-diff-on-failure
-      addons: []
-
     - name: Ubuntu/gcc/SCons build
       compiler: gcc
       # Ubuntu Bionic build prerequisites

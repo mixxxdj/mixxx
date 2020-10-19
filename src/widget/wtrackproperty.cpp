@@ -1,10 +1,12 @@
+#include "widget/wtrackproperty.h"
+
 #include <QDebug>
 #include <QUrl>
 
 #include "control/controlobject.h"
-#include "widget/wtrackmenu.h"
-#include "widget/wtrackproperty.h"
+#include "track/track.h"
 #include "util/dnd.h"
+#include "widget/wtrackmenu.h"
 
 namespace {
 const WTrackMenu::Features kTrackMenuFeatures =

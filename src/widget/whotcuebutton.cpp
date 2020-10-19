@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "mixer/playerinfo.h"
+#include "track/track.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
@@ -122,7 +123,7 @@ void WHotcueButton::slotColorChanged(double color) {
     VERIFY_OR_DEBUG_ASSERT(color >= 0 && color <= 0xFFFFFF) {
         return;
     }
-    QColor cueColor = QColor::fromRgb(color);
+    QColor cueColor = QColor::fromRgb(static_cast<QRgb>(color));
     m_bCueColorDimmed = Color::isDimColorCustom(cueColor, m_cueColorDimThreshold);
 
     QString style =

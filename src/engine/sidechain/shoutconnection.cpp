@@ -383,8 +383,13 @@ void ShoutConnection::updateFromPreferences() {
         qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
-    int iMasterSamplerate = m_pMasterSamplerate->get();
-    if (m_format_is_ov && iMasterSamplerate == 96000) {
+    auto masterSamplerate = mixxx::audio::SampleRate::fromDouble(m_pMasterSamplerate->get());
+    VERIFY_OR_DEBUG_ASSERT(masterSamplerate.isValid()) {
+        qWarning() << "Invalid sample rate!" << masterSamplerate;
+        return;
+    }
+
+    if (m_format_is_ov && masterSamplerate == 96000) {
         errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
                        "supported. Please try a different sample rate or switch "
                        "to a different encoding."),
@@ -394,7 +399,7 @@ void ShoutConnection::updateFromPreferences() {
     }
 
 #ifdef __OPUS__
-    if(m_format_is_opus && iMasterSamplerate != EncoderOpus::getMasterSamplerate()) {
+    if (m_format_is_opus && masterSamplerate != EncoderOpus::getMasterSamplerate()) {
         errorDialog(
             EncoderOpus::getInvalidSamplerateMessage(),
             tr("Unsupported sample rate")
@@ -443,7 +448,8 @@ void ShoutConnection::updateFromPreferences() {
                     pBroadcastSettings, this);
 
     QString errorMsg;
-    if(m_encoder->initEncoder(iMasterSamplerate, errorMsg) < 0) {
+    // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
+    if (m_encoder->initEncoder(static_cast<int>(masterSamplerate), errorMsg) < 0) {
         // e.g., if lame is not found
         // init m_encoder itself will display a message box
         kLogger.warning() << "**** Encoder init failed";
@@ -906,7 +912,7 @@ bool ShoutConnection::waitForRetry() {
 
     if (delay > 0) {
         m_enabledMutex.lock();
-        m_waitEnabled.wait(&m_enabledMutex, delay * 1000);
+        m_waitEnabled.wait(&m_enabledMutex, static_cast<unsigned long>(delay * 1000));
         m_enabledMutex.unlock();
         if (!m_pProfile->getEnabled()) {
             return false;

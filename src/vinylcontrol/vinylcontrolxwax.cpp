@@ -38,6 +38,10 @@
 
  ********************/
 
+namespace {
+constexpr int kChannels = 2;
+}
+
 // Sample threshold below which we consider there to be no signal.
 const double kMinSignal = 75.0 / SAMPLE_MAX;
 
@@ -54,7 +58,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, QString group)
           m_iPosition(-1),
           m_bAtRecordEnd(false),
           m_bForceResync(false),
-          m_iVCMode(mode->get()),
+          m_iVCMode(static_cast<int>(mode->get())),
           m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
           m_dOldFilePos(0.0),
           m_dOldDuration(0.0),
@@ -211,8 +215,7 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 
 void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     ScopedTimer t("VinylControlXwax::analyzeSamples");
-    CSAMPLE gain = m_pVinylControlInputGain->get();
-    const int kChannels = 2;
+    auto gain = static_cast<CSAMPLE_GAIN>(m_pVinylControlInputGain->get());
 
     // We only support amplifying with the VC pre-amp.
     if (gain < 1.0f) {
@@ -305,7 +308,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // Get the playback position in the file in seconds.
     double filePosition = playPos->get() * m_dOldDuration;
 
-    int reportedMode = mode->get();
+    int reportedMode = static_cast<int>(mode->get());
     bool reportedPlayButton = playButton->get();
 
     if (m_iVCMode != reportedMode) {
@@ -791,7 +794,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is) {
         if (!was) {
             m_dOldFilePos = 0.0;
         }
-        m_iVCMode = mode->get();
+        m_iVCMode = static_cast<int>(mode->get());
         m_bAtRecordEnd = false;
     }
 
@@ -836,7 +839,7 @@ float VinylControlXwax::getAngle() {
         return -1.0;
     }
 
-    float rps = timecoder_revs_per_sec(&timecoder);
+    const auto rps = static_cast<float>(timecoder_revs_per_sec(&timecoder));
     // Invert angle to make vinyl spin direction correct.
-    return 360 - (static_cast<int>(pos / 1000.0 * 360.0 * rps) % 360);
+    return 360 - (static_cast<int>(pos / 1000.0f * 360.0f * rps) % 360);
 }

@@ -7,7 +7,7 @@
 #include "library/trackmodel.h"
 #include "library/ui_dlgtagfetcher.h"
 #include "musicbrainz/tagfetcher.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 /// A dialog box to fetch track metadata from MusicBrainz.
 /// Use TrackPointer to load a track into the dialog or
