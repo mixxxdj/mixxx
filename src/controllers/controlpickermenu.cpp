@@ -1086,6 +1086,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Mixer Show/Hide"),
             tr("Show or hide the mixer."),
             guiMenu);
+    addControl("[Skin]",
+            "show_menubar",
+            tr("Show Menubar"),
+            tr("Show the Menubar on top of Main Window or a Menu Button "
+               "instead"),
+            guiMenu);
     addControl("[Library]",
             "show_coverart",
             tr("Cover Art Show/Hide (Library)"),

@@ -259,7 +259,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
                     tr("Ctrl+7", "Menubar|View|Show Menu Bar"))));
     pViewShowMenuBar->setStatusTip(showMenubarText);
     pViewShowMenuBar->setWhatsThis(buildWhatsThis(showMenubarTitle, showMenubarText));
-    createVisibilityControl(pViewShowMenuBar, ConfigKey("[Master]", "show_menubar"));
+    createVisibilityControl(pViewShowMenuBar, ConfigKey("[Skin]", "show_menubar"));
     pViewMenu->addAction(pViewShowMenuBar);
     connect(pViewShowMenuBar,
             &QAction::triggered,
@@ -633,6 +633,13 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     }
 }
 
+void WMainMenuBar::setVisible(bool visible) {
+    // never hide the menubar in safe mode
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        QMenuBar::setVisible(visible);
+    }
+}
+
 void WMainMenuBar::onLibraryScanStarted() {
     emit internalLibraryScanActive(true);
 }
@@ -642,6 +649,13 @@ void WMainMenuBar::onLibraryScanFinished() {
 }
 
 void WMainMenuBar::onNewSkinLoaded() {
+    auto pControl = ControlProxy("[Skin]", "show_menubar", nullptr, ControlFlag::NoAssertIfMissing);
+    // if the newly loaded skin does not have a menubar or safemode is active
+    if (!pControl.valid()) {
+        setVisible(true);
+    } else {
+        setVisible(pControl.toBool());
+    }
     emit internalOnNewSkinLoaded();
 }
 
