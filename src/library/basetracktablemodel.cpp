@@ -26,7 +26,7 @@ const mixxx::Logger kLogger("BaseTrackTableModel");
 
 const QString kEmptyString = QStringLiteral("");
 
-constexpr float kRelHeightOfCoverartTooltip =
+constexpr double kRelHeightOfCoverartTooltip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
 const QStringList kDefaultTableColumns = {
