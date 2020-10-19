@@ -15,6 +15,31 @@ inline int bpmUpperBound(double bpm) {
     return static_cast<int>(std::ceil((1 + kRelativeBpmRange) * bpm));
 }
 
+QString extractCalendarYearNumberFromReleaseDate(
+        const QString& releaseDate) {
+    // TODO: Improve this poor calendar year number parser
+    // and extract the code
+    int skippedLeadingZeros = 0;
+    int countedLeadingDigits = 0;
+    const auto trimmed = releaseDate.trimmed();
+    // Count leading digits
+    for (int i = 0; i < trimmed.size(); ++i) {
+        if (!trimmed[i].isDigit()) {
+            break;
+        }
+        // Skip leading zeros
+        if (countedLeadingDigits == 0 && trimmed[i] == QChar('0')) {
+            ++skippedLeadingZeros;
+            continue;
+        }
+        // Count leading digits
+        ++countedLeadingDigits;
+    }
+    // Interpret the leading digits as the calendar year
+    // without any further validation
+    return trimmed.mid(skippedLeadingZeros, countedLeadingDigits);
+}
+
 } // namespace
 
 WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
@@ -216,6 +241,35 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     searchQuery);
         }
     }
+    {
+        const auto grouping = track.getGrouping();
+        if (!grouping.isEmpty()) {
+            const auto actionText =
+                    tr("Grouping \"%1\"").arg(grouping);
+            const QString searchQuery =
+                    QStringLiteral("grouping:\"") +
+                    grouping +
+                    QChar('"');
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
+        }
+    }
+    {
+        const auto releaseYearNumber =
+                extractCalendarYearNumberFromReleaseDate(track.getYear());
+        if (!releaseYearNumber.isEmpty()) {
+            const auto actionText =
+                    tr("Release year %1").arg(releaseYearNumber);
+            const QString searchQuery =
+                    QStringLiteral("year:") +
+                    releaseYearNumber;
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
+        }
     }
 
     // File system actions
