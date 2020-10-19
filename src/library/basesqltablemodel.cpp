@@ -724,6 +724,20 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     return QDir::fromNativeSeparators(nativeLocation);
 }
 
+CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
+    CoverInfo coverInfo;
+    coverInfo.hash = index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)).data().toUInt();
+    coverInfo.type = static_cast<CoverInfo::Type>(
+            index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE)).data().toInt());
+    coverInfo.source = static_cast<CoverInfo::Source>(
+            index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE)).data().toInt());
+    coverInfo.coverLocation =
+            index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE)).data().toString();
+    coverInfo.trackLocation =
+            index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)).data().toString();
+    return coverInfo;
+}
+
 void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();

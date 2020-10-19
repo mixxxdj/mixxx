@@ -99,6 +99,8 @@ class TrackModel {
     // Gets the track ID of the track at the given QModelIndex
     virtual TrackId getTrackId(const QModelIndex& index) const = 0;
 
+    virtual CoverInfo getCoverInfo(const QModelIndex& index) const { return CoverInfo(); }
+
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;

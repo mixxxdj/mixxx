@@ -30,14 +30,6 @@ CoverArtDelegate::CoverArtDelegate(
 CoverInfo CoverArtDelegate::coverInfoForIndex(
         const QModelIndex& index) const {
     CoverInfo coverInfo;
-    coverInfo.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toUInt();
-    coverInfo.type = static_cast<CoverInfo::Type>(
-            index.sibling(index.row(), m_iCoverTypeColumn).data().toInt());
-    coverInfo.source = static_cast<CoverInfo::Source>(
-            index.sibling(index.row(), m_iCoverSourceColumn).data().toInt());
-    coverInfo.coverLocation =
-            index.sibling(index.row(), m_iCoverLocationColumn).data().toString();
-    coverInfo.trackLocation =
-            index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
+    coverInfo = m_pTrackModel->getCoverInfo(index);
     return coverInfo;
 }

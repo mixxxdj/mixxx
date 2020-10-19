@@ -478,10 +478,6 @@ QVariant BaseTrackTableModel::roleValue(
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-            TrackPointer pTrack = getTrack(index);
-            if (!pTrack) {
-                return kEmptyString;
-            }
             // Determine height of the cover art image depending on the screen size
             unsigned int absHeightOfCoverartTooltip;
             const QScreen* primaryScreen = getPrimaryScreen();
@@ -498,7 +494,7 @@ QVariant BaseTrackTableModel::roleValue(
             QPixmap pixmap = QPixmap(absHeightOfCoverartTooltip,
                     absHeightOfCoverartTooltip); // Height also used as default for the width, in assumption that covers are squares
             pixmap = pCache->tryLoadCover(this,
-                    pTrack->getCoverInfoWithLocation(),
+                    getCoverInfo(index),
                     absHeightOfCoverartTooltip,
                     CoverArtCache::Loading::NoSignal);
             if (pixmap.isNull()) {
