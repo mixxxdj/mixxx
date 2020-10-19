@@ -59,10 +59,13 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     }
 
     // When the user picks a preset, load it.
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)), this, SLOT(slotPresetSelected(int)));
+    connect(m_ui.comboBoxPreset,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefController::slotPresetSelected);
 
     // When the user toggles the Enabled checkbox, mark as dirty
-    connect(m_ui.chkEnabledDevice, &QCheckBox::clicked, [this] { setDirty(true); });
+    connect(m_ui.chkEnabledDevice, &QCheckBox::clicked, this, [this] { setDirty(true); });
 
     // Connect our signals to controller manager.
     connect(this,
