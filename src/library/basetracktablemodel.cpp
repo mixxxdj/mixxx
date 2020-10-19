@@ -482,9 +482,9 @@ QVariant BaseTrackTableModel::roleValue(
             unsigned int absHeightOfCoverartTooltip;
             const QScreen* primaryScreen = getPrimaryScreen();
             if (primaryScreen) {
-                absHeightOfCoverartTooltip =
+                absHeightOfCoverartTooltip = static_cast<int>(
                         primaryScreen->availableGeometry().height() *
-                        kRelHeightOfCoverartTooltip;
+                        kRelHeightOfCoverartTooltip);
             } else {
                 qWarning() << "Assuming screen height of 800px.";
                 absHeightOfCoverartTooltip = 800 * kRelHeightOfCoverartTooltip;
