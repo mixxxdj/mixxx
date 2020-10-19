@@ -1,13 +1,13 @@
 #ifndef WEFFECTCHAIN_H
 #define WEFFECTCHAIN_H
 
-#include <QWidget>
-#include <QLabel>
 #include <QDomNode>
+#include <QLabel>
+#include <QWidget>
 
 #include "effects/effectchain.h"
-#include "widget/wlabel.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
 
 class EffectsManager;
 
@@ -19,7 +19,7 @@ class WEffectChain : public WLabel {
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
-    void chainUpdated();
+    void presetNameChanged(const QString& newName);
 
   private:
     // Set the EffectChain that should be monitored by this WEffectChain
