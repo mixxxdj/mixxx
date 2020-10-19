@@ -58,11 +58,15 @@ class LVMixEQEffectGroupState : public EffectState {
         m_groupDelay = delayLow1 * 2;
     }
 
-    void processChannel(const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const int numSamples,
-                        const unsigned int sampleRate,
-                        double fLow, double fMid, double fHigh,
-                        double loFreq, double hiFreq) {
+    void processChannel(const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const int numSamples,
+            const unsigned int sampleRate,
+            double dLow,
+            double dMid,
+            double dHigh,
+            double loFreq,
+            double hiFreq) {
         if (m_oldSampleRate != sampleRate ||
                 (m_loFreq != loFreq) ||
                 (m_hiFreq != hiFreq)) {
@@ -76,8 +80,9 @@ class LVMixEQEffectGroupState : public EffectState {
         // we can subtract or add the filtered signal to the dry signal if we compensate this delay
         // The dry signal represents the high gain
         // Then the higher low pass is added and at least the lower low pass result.
-        fLow = fLow - fMid;
-        fMid = fMid - fHigh;
+        auto fLow = static_cast<CSAMPLE>(dLow - dMid);
+        auto fMid = static_cast<CSAMPLE>(dMid - dHigh);
+        auto fHigh = static_cast<CSAMPLE>(dHigh);
 
         // Note: We do not call pauseFilter() here because this will introduce a
         // buffer size-dependent start delay. During such start delay some unwanted
@@ -241,9 +246,9 @@ class LVMixEQEffectGroupState : public EffectState {
     EngineFilterDelay<kMaxDelay>* m_delay2;
     EngineFilterDelay<kMaxDelay>* m_delay3;
 
-    double m_oldLow;
-    double m_oldMid;
-    double m_oldHigh;
+    CSAMPLE_GAIN m_oldLow;
+    CSAMPLE_GAIN m_oldMid;
+    CSAMPLE_GAIN m_oldHigh;
 
     int m_rampHoldOff;
     int m_groupDelay;

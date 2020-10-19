@@ -3,6 +3,7 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "track/track.h"
 #include "track/tracknumbers.h"
 
 namespace {

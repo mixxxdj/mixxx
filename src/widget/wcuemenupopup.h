@@ -6,7 +6,7 @@
 
 #include "preferences/colorpalettesettings.h"
 #include "track/cue.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/widgethelper.h"
 #include "widget/wcolorpicker.h"
 

@@ -9,7 +9,6 @@
 
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
 #include "library/coverartcache.h"
 #include "skin/skincontext.h"
 #include "widget/trackdroptarget.h"

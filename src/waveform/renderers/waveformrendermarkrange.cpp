@@ -59,8 +59,8 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
 
         // Active mark ranges by definition have starts/ends that are not
         // disabled so no need to check.
-        int startSample = markRange.start();
-        int endSample = markRange.end();
+        double startSample = markRange.start();
+        double endSample = markRange.end();
 
         double startPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(startSample);
         double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
@@ -75,7 +75,7 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
 
         // draw the corresponding portion of the selected image
         // this shouldn't involve *any* scaling it should be fast even in software mode
-        QRect rect;
+        QRectF rect;
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
             rect.setRect(startPosition, 0, endPosition - startPosition, m_waveformRenderer->getHeight());
         } else {

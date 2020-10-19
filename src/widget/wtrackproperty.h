@@ -6,7 +6,8 @@
 
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"

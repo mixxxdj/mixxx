@@ -1,12 +1,14 @@
+#include "library/dlgcoverartfullsize.h"
+
 #include <QDesktopWidget>
 #include <QRect>
 #include <QScreen>
 #include <QStyle>
 #include <QWheelEvent>
 
-#include "library/dlgcoverartfullsize.h"
-#include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
@@ -247,8 +249,8 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // Scale the image size
     int oldWidth = width();
     int oldHeight = height();
-    int newWidth = oldWidth + (0.2 * event->angleDelta().y());
-    int newHeight = oldHeight + (0.2 * event->angleDelta().y());
+    auto newWidth = static_cast<int>(oldWidth + (0.2 * event->angleDelta().y()));
+    auto newHeight = static_cast<int>(oldHeight + (0.2 * event->angleDelta().y()));
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
 
@@ -261,8 +263,10 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     QPoint oldPointUnderCursor = event->pos();
 #endif
 
-    int newPointX = (double) oldPointUnderCursor.x() / oldWidth * newSize.width();
-    int newPointY = (double) oldPointUnderCursor.y() / oldHeight * newSize.height();
+    const auto newPointX = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.x()) / oldWidth * newSize.width());
+    const auto newPointY = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.y()) / oldHeight * newSize.height());
     QPoint newOrigin = QPoint(
         oldOrigin.x() + (oldPointUnderCursor.x() - newPointX),
         oldOrigin.y() + (oldPointUnderCursor.y() - newPointY));

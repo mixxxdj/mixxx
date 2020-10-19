@@ -9,9 +9,6 @@
 #include <QPair>
 #include <QTemporaryDir>
 
-#include "track/track.h"
-
-
 class FakeOverwriteAnswerer : public QObject {
     Q_OBJECT
   public:

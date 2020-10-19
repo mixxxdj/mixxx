@@ -1,12 +1,17 @@
 #include "waveform/renderers/glwaveformrendererrgb.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveformwidgetrenderer.h"
+#include "track/track.h"
+#include "util/math.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "widget/wwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "util/math.h"
+#include "widget/wwidget.h"
+
+namespace {
+const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
+}
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -41,14 +46,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
-    const double lineWidth = (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.5;
+    auto firstVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getFirstDisplayedPosition() * dataSize);
+    auto lastVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getLastDisplayedPosition() * dataSize);
+    const auto lineWidth = static_cast<GLfloat>(
+            (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.5);
 
-    const int firstIndex = int(firstVisualIndex + 0.5);
+    const auto firstIndex = static_cast<int>(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex % 2;
 
-    const int lastIndex = int(lastVisualIndex + 0.5);
+    const auto lastIndex = static_cast<int>(lastVisualIndex + 0.5);
     lastVisualIndex = lastIndex + lastIndex % 2;
 
     // Reset device for native painting
@@ -60,8 +68,6 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
-
-    const float kHeightScaleFactor = 255.0 / sqrtf(255 * 255 * 3);
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
@@ -79,12 +85,15 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         glScalef(1.0f, allGain, 1.0f);
 
-        glLineWidth(1.2);
+        glLineWidth(1.2f);
         glDisable(GL_LINE_SMOOTH);
 
         // Draw reference line
         glBegin(GL_LINES); {
-            glColor4f(m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a);
+            glColor4f(static_cast<GLfloat>(m_axesColor_r),
+                    static_cast<GLfloat>(m_axesColor_g),
+                    static_cast<GLfloat>(m_axesColor_b),
+                    static_cast<GLfloat>(m_axesColor_a));
             glVertex2f(firstVisualIndex, 0);
             glVertex2f(lastVisualIndex,  0);
         }
@@ -101,14 +110,26 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
-
-                float left_low    = lowGain  * (float) data[visualIndex].filtered.low;
-                float left_mid    = midGain  * (float) data[visualIndex].filtered.mid;
-                float left_high   = highGain * (float) data[visualIndex].filtered.high;
-                float left_all    = sqrtf(left_low * left_low + left_mid * left_mid + left_high * left_high) * kHeightScaleFactor;
-                float left_red    = left_low  * m_rgbLowColor_r + left_mid  * m_rgbMidColor_r + left_high  * m_rgbHighColor_r;
-                float left_green  = left_low  * m_rgbLowColor_g + left_mid  * m_rgbMidColor_g + left_high  * m_rgbHighColor_g;
-                float left_blue   = left_low  * m_rgbLowColor_b + left_mid  * m_rgbMidColor_b + left_high  * m_rgbHighColor_b;
+                const float left_low = lowGain * static_cast<float>(data[visualIndex].filtered.low);
+                const float left_mid = midGain * static_cast<float>(data[visualIndex].filtered.mid);
+                const float left_high = highGain *
+                        static_cast<float>(data[visualIndex].filtered.high);
+                const float left_all =
+                        sqrtf(left_low * left_low + left_mid * left_mid +
+                                left_high * left_high) *
+                        kHeightScaleFactor;
+                float left_red =
+                        left_low * static_cast<float>(m_rgbLowColor_r) +
+                        left_mid * static_cast<float>(m_rgbMidColor_r) +
+                        left_high * static_cast<float>(m_rgbHighColor_r);
+                float left_green =
+                        left_low * static_cast<float>(m_rgbLowColor_g) +
+                        left_mid * static_cast<float>(m_rgbMidColor_g) +
+                        left_high * static_cast<float>(m_rgbHighColor_g);
+                float left_blue =
+                        left_low * static_cast<float>(m_rgbLowColor_b) +
+                        left_mid * static_cast<float>(m_rgbMidColor_b) +
+                        left_high * static_cast<float>(m_rgbHighColor_b);
                 float left_max    = math_max3(left_red, left_green, left_blue);
                 if (left_max > 0.0f) {  // Prevent division by zero
                     glColor4f(left_red / left_max, left_green / left_max, left_blue / left_max, 0.8f);
@@ -116,13 +137,23 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                     glVertex2f(visualIndex, left_all);
                 }
 
-                float right_low   = lowGain  * (float) data[visualIndex+1].filtered.low;
-                float right_mid   = midGain  * (float) data[visualIndex+1].filtered.mid;
-                float right_high  = highGain * (float) data[visualIndex+1].filtered.high;
+                float right_low = lowGain * static_cast<float>(data[visualIndex + 1].filtered.low);
+                float right_mid = midGain * static_cast<float>(data[visualIndex + 1].filtered.mid);
+                float right_high = highGain *
+                        static_cast<float>(data[visualIndex + 1].filtered.high);
                 float right_all   = sqrtf(right_low * right_low + right_mid * right_mid + right_high * right_high) * kHeightScaleFactor;
-                float right_red   = right_low * m_rgbLowColor_r + right_mid * m_rgbMidColor_r + right_high * m_rgbHighColor_r;
-                float right_green = right_low * m_rgbLowColor_g + right_mid * m_rgbMidColor_g + right_high * m_rgbHighColor_g;
-                float right_blue  = right_low * m_rgbLowColor_b + right_mid * m_rgbMidColor_b + right_high * m_rgbHighColor_b;
+                float right_red =
+                        right_low * static_cast<float>(m_rgbLowColor_r) +
+                        right_mid * static_cast<float>(m_rgbMidColor_r) +
+                        right_high * static_cast<float>(m_rgbHighColor_r);
+                float right_green =
+                        right_low * static_cast<float>(m_rgbLowColor_g) +
+                        right_mid * static_cast<float>(m_rgbMidColor_g) +
+                        right_high * static_cast<float>(m_rgbHighColor_g);
+                float right_blue =
+                        right_low * static_cast<float>(m_rgbLowColor_b) +
+                        right_mid * static_cast<float>(m_rgbMidColor_b) +
+                        right_high * static_cast<float>(m_rgbHighColor_b);
                 float right_max   = math_max3(right_red, right_green, right_blue);
                 if (right_max > 0.0f) {  // Prevent division by zero
                     glColor4f(right_red / right_max, right_green / right_max, right_blue / right_max, 0.8f);
@@ -165,16 +196,30 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
-
-                float low  = lowGain  * (float) math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
-                float mid  = midGain  * (float) math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);
-                float high = highGain * (float) math_max(data[visualIndex].filtered.high, data[visualIndex+1].filtered.high);
+                float low = lowGain *
+                        static_cast<float>(
+                                math_max(data[visualIndex].filtered.low,
+                                        data[visualIndex + 1].filtered.low));
+                float mid = midGain *
+                        static_cast<float>(
+                                math_max(data[visualIndex].filtered.mid,
+                                        data[visualIndex + 1].filtered.mid));
+                float high = highGain *
+                        static_cast<float>(
+                                math_max(data[visualIndex].filtered.high,
+                                        data[visualIndex + 1].filtered.high));
 
                 float all = sqrtf(low * low + mid * mid + high * high) * kHeightScaleFactor;
 
-                float red   = low * m_rgbLowColor_r + mid * m_rgbMidColor_r + high * m_rgbHighColor_r;
-                float green = low * m_rgbLowColor_g + mid * m_rgbMidColor_g + high * m_rgbHighColor_g;
-                float blue  = low * m_rgbLowColor_b + mid * m_rgbMidColor_b + high * m_rgbHighColor_b;
+                float red = low * static_cast<float>(m_rgbLowColor_r) +
+                        mid * static_cast<float>(m_rgbMidColor_r) +
+                        high * static_cast<float>(m_rgbHighColor_r);
+                float green = low * static_cast<float>(m_rgbLowColor_g) +
+                        mid * static_cast<float>(m_rgbMidColor_g) +
+                        high * static_cast<float>(m_rgbHighColor_g);
+                float blue = low * static_cast<float>(m_rgbLowColor_b) +
+                        mid * static_cast<float>(m_rgbMidColor_b) +
+                        high * static_cast<float>(m_rgbHighColor_b);
 
                 float max = math_max3(red, green, blue);
                 if (max > 0.0f) {  // Prevent division by zero
