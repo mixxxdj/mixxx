@@ -22,188 +22,217 @@ WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
         : QMenu(tr("Search related Tracks"), parent) {
 }
 
+bool WSearchRelatedTracksMenu::addTriggerSearchAction(
+        bool addSeparatorBeforeAction,
+        const QString& actionText,
+        QString /*!by-value-because-captured-by-lambda!*/ searchQuery) {
+    if (addSeparatorBeforeAction) {
+        addSeparator();
+    }
+    addAction(
+            mixxx::escapeTextPropertyWithoutShortcuts(actionText),
+            [this, searchQuery]() {
+                emit triggerSearch(searchQuery);
+            });
+    return false;
+}
+
 void WSearchRelatedTracksMenu::addActionsForTrack(
         const Track& track) {
-    bool addSeparator = false;
+    bool addSeparatorBeforeAction = false;
+
+    // NOTE: We have to explicitly use `QString` instead of `auto`
+    // when composing search queries using `QStringBuilder`. Otherwise
+    // string concatenation will fail at runtime!
 
     // Musical property actions
-    const auto bpm = track.getBpm();
-    if (bpm > 0) {
-        auto minBpmNumber = QString::number(bpmLowerBound(bpm));
-        auto maxBpmNumber = QString::number(bpmUpperBound(bpm));
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Tempo between %1 and %2 bpm")
-                        .arg(minBpmNumber, maxBpmNumber),
-                [this, minBpmNumber, maxBpmNumber]() {
-                    emit triggerSearch(
-                            QStringLiteral("bpm:>=") +
-                            minBpmNumber +
-                            QStringLiteral(" bpm:<=") +
-                            maxBpmNumber);
-                });
+    {
+        const auto bpm = track.getBpm();
+        if (bpm > 0) {
+            const auto minBpmNumber = QString::number(bpmLowerBound(bpm));
+            const auto maxBpmNumber = QString::number(bpmUpperBound(bpm));
+            const auto actionText =
+                    tr("Tempo between %1 and %2 bpm").arg(minBpmNumber, maxBpmNumber);
+            const QString searchQuery =
+                    QStringLiteral("bpm:>=") +
+                    minBpmNumber +
+                    QStringLiteral(" bpm:<=") +
+                    maxBpmNumber;
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
+        }
     }
-    const auto keyText = track.getKeyText();
-    if (!keyText.isEmpty()) {
-        const auto keyTextDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(keyText);
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Harmonic keys for \"%1\"")
-                        .arg(keyTextDisplay),
-                [this, keyText]() {
-                    emit triggerSearch(
-                            QStringLiteral("~key:\"") +
-                            keyText + QChar('"'));
-                });
+    {
+        const auto keyText = track.getKeyText();
+        if (!keyText.isEmpty()) {
+            const auto actionText =
+                    tr("Harmonic keys for \"%1\"").arg(keyText);
+            const QString searchQuery =
+                    QStringLiteral("~key:\"") +
+                    keyText +
+                    QChar('"');
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
+        }
     }
-    const auto genre = track.getGenre();
-    if (!genre.isEmpty()) {
-        const auto genreDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(genre);
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Genre \"%1\"")
-                        .arg(genreDisplay),
-                [this, genre]() {
-                    emit triggerSearch(
-                            QStringLiteral("genre:\"") +
-                            genre + QChar('"'));
-                });
+    {
+        const auto genre = track.getGenre();
+        if (!genre.isEmpty()) {
+            const auto actionText =
+                    tr("Genre \"%1\"").arg(genre);
+            const QString searchQuery =
+                    QStringLiteral("genre:\"") +
+                    genre +
+                    QChar('"');
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
+        }
     }
 
     // Artist actions
-    addSeparator = true;
-    auto primaryArtist = track.getArtist();
-    auto secondaryArtist = track.getAlbumArtist();
-    if (primaryArtist.isEmpty()) {
-        primaryArtist = secondaryArtist;
-        secondaryArtist = QString();
-    } else {
-        if (!secondaryArtist.isEmpty() &&
-                primaryArtist.contains(secondaryArtist)) {
-            // Use the shorter string as primary artist and the
-            // longer string as secondary artist
-            if (primaryArtist == secondaryArtist) {
-                secondaryArtist = QString();
-            } else {
-                std::swap(primaryArtist, secondaryArtist);
+    addSeparatorBeforeAction = true;
+    {
+        auto primaryArtist = track.getArtist();
+        auto secondaryArtist = track.getAlbumArtist();
+        if (primaryArtist.isEmpty()) {
+            primaryArtist = secondaryArtist;
+            secondaryArtist = QString();
+        } else {
+            if (!secondaryArtist.isEmpty() &&
+                    primaryArtist.contains(secondaryArtist)) {
+                // Use the shorter string as primary artist and the
+                // longer string as secondary artist
+                if (primaryArtist == secondaryArtist) {
+                    secondaryArtist = QString();
+                } else {
+                    std::swap(primaryArtist, secondaryArtist);
+                }
+            }
+        }
+        DEBUG_ASSERT(!primaryArtist.isEmpty() || secondaryArtist.isEmpty());
+        if (!primaryArtist.isEmpty()) {
+            // Search tracks with similar artist(s)
+            {
+                const auto actionText =
+                        tr("Artist \"%1\"").arg(primaryArtist);
+                const QString searchQuery =
+                        QStringLiteral("artist:\"") +
+                        primaryArtist +
+                        QChar('"');
+                addSeparatorBeforeAction = addTriggerSearchAction(
+                        addSeparatorBeforeAction,
+                        actionText,
+                        searchQuery);
+            }
+            if (!secondaryArtist.isEmpty()) {
+                const auto actionText =
+                        tr("Artist \"%1\"").arg(secondaryArtist);
+                const QString searchQuery =
+                        QStringLiteral("artist:\"") +
+                        secondaryArtist +
+                        QChar('"');
+                addSeparatorBeforeAction = addTriggerSearchAction(
+                        addSeparatorBeforeAction,
+                        actionText,
+                        searchQuery);
+            }
+            {
+                const auto actionText =
+                        tr("Album artist \"%1\"").arg(primaryArtist);
+                const QString searchQuery =
+                        QStringLiteral("album_artist:\"") +
+                        primaryArtist +
+                        QChar('"');
+                addSeparatorBeforeAction = addTriggerSearchAction(
+                        addSeparatorBeforeAction,
+                        actionText,
+                        searchQuery);
+            }
+            if (!secondaryArtist.isEmpty()) {
+                const auto actionText =
+                        tr("Album artist \"%1\"").arg(secondaryArtist);
+                const QString searchQuery =
+                        QStringLiteral("album_artist:\"") +
+                        secondaryArtist +
+                        QChar('"');
+                addSeparatorBeforeAction = addTriggerSearchAction(
+                        addSeparatorBeforeAction,
+                        actionText,
+                        searchQuery);
             }
         }
     }
-    DEBUG_ASSERT(!primaryArtist.isEmpty() || secondaryArtist.isEmpty());
-    if (!primaryArtist.isEmpty()) {
-        const auto primaryArtistDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(primaryArtist);
-        const auto secondaryArtistDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(secondaryArtist);
-        // Search tracks with similar artist(s)
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Artist \"%1\"")
-                        .arg(primaryArtistDisplay),
-                [this, primaryArtist]() {
-                    emit triggerSearch(
-                            QStringLiteral("artist:\"") +
-                            primaryArtist + QChar('"'));
-                });
-        if (!secondaryArtist.isEmpty()) {
-            addSeparator = addSeparatorBeforeAction(addSeparator);
-            addAction(
-                    tr("Artist \"%1\"")
-                            .arg(secondaryArtistDisplay),
-                    [this, secondaryArtist]() {
-                        emit triggerSearch(
-                                QStringLiteral("artist:\"") +
-                                secondaryArtist + QChar('"'));
-                    });
+    {
+        const auto composer = track.getComposer();
+        if (!composer.isEmpty()) {
+            const auto actionText =
+                    tr("Composer \"%1\"").arg(composer);
+            const QString searchQuery =
+                    QStringLiteral("composer:\"") +
+                    composer +
+                    QChar('"');
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
         }
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Album artist \"%1\"")
-                        .arg(primaryArtistDisplay),
-                [this, primaryArtist]() {
-                    emit triggerSearch(
-                            QStringLiteral("album_artist:\"") +
-                            primaryArtist + QChar('"'));
-                });
-        if (!secondaryArtist.isEmpty()) {
-            addSeparator = addSeparatorBeforeAction(addSeparator);
-            addAction(
-                    tr("Album artist \"%1\"")
-                            .arg(secondaryArtistDisplay),
-                    [this, secondaryArtist]() {
-                        emit triggerSearch(
-                                QStringLiteral(
-                                        "album_artist:\"") +
-                                secondaryArtist + QChar('"'));
-                    });
-        }
-    }
-    const auto composer = track.getComposer();
-    if (!composer.isEmpty()) {
-        const auto composerDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(composer);
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Composer \"%1\"")
-                        .arg(composerDisplay),
-                [this, composer]() {
-                    emit triggerSearch(
-                            QStringLiteral("composer:\"") +
-                            composer + QChar('"'));
-                });
     }
 
     // Release actions
-    addSeparator = true;
-    const auto title = track.getTitle();
-    if (!title.isEmpty()) {
-        const auto titleDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(title);
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Title \"%1\"")
-                        .arg(titleDisplay),
-                [this, title]() {
-                    emit triggerSearch(
-                            QStringLiteral("title:\"") +
-                            title + QChar('"'));
-                });
+    addSeparatorBeforeAction = true;
+    {
+        const auto title = track.getTitle();
+        if (!title.isEmpty()) {
+            const auto actionText =
+                    tr("Title \"%1\"").arg(title);
+            const QString searchQuery =
+                    QStringLiteral("title:\"") +
+                    title +
+                    QChar('"');
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
+        }
     }
-    const auto album = track.getAlbum();
-    if (!album.isEmpty()) {
-        const auto albumDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(album);
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Album \"%1\"")
-                        .arg(albumDisplay),
-                [this, album]() {
-                    emit triggerSearch(
-                            QStringLiteral("album:\"") +
-                            album + QChar('"'));
-                });
+    {
+        const auto album = track.getAlbum();
+        if (!album.isEmpty()) {
+            const auto actionText =
+                    tr("Album \"%1\"").arg(album);
+            const QString searchQuery =
+                    QStringLiteral("album:\"") +
+                    album +
+                    QChar('"');
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
+        }
+    }
     }
 
     // File system actions
-    addSeparator = true;
-    const auto locationPath = track.getFileInfo().directory();
-    if (!locationPath.isEmpty()) {
-        const auto locationPathDisplay =
-                mixxx::escapeTextPropertyWithoutShortcuts(locationPath);
-        if (addSeparator) {
-            this->addSeparator();
-            addSeparator = false;
+    addSeparatorBeforeAction = true;
+    {
+        const auto locationPath = track.getFileInfo().directory();
+        if (!locationPath.isEmpty()) {
+            const auto actionText =
+                    tr("Folder \"%1\"").arg(locationPath);
+            const QString searchQuery =
+                    QStringLiteral("location:\"") +
+                    locationPath +
+                    QChar('"');
+            addSeparatorBeforeAction = addTriggerSearchAction(
+                    addSeparatorBeforeAction,
+                    actionText,
+                    searchQuery);
         }
-        addSeparator = addSeparatorBeforeAction(addSeparator);
-        addAction(
-                tr("Folder \"%1\"")
-                        .arg(locationPathDisplay),
-                [this, locationPath]() {
-                    emit triggerSearch(
-                            QStringLiteral("location:\"") +
-                            locationPath + QChar('"'));
-                });
     }
 }
