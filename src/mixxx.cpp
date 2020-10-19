@@ -1497,7 +1497,8 @@ bool MixxxMainWindow::loadConfiguredSkin() {
             m_pLibrary,
             m_pVCManager,
             m_pEffectsManager,
-            m_pRecordingManager);
+            m_pRecordingManager,
+            m_pMenuBar);
     return m_pCentralWidget != nullptr;
 }
 

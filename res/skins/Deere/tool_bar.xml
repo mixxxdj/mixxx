@@ -11,6 +11,13 @@
     <SizePolicy>min,f</SizePolicy>
     <Children>
 
+      <MainMenuButton>
+        <ObjectName>MainMenuButton</ObjectName>
+        <Size>20,40</Size>
+        <SizePolicy>f,f</SizePolicy>
+      </MainMenuButton>
+
+
       <Battery>
         <ObjectName>Battery</ObjectName>
         <Size>24,24</Size>

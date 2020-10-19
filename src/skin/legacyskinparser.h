@@ -26,6 +26,7 @@ class WLabel;
 class ControlObject;
 class LaunchImage;
 class WWidgetGroup;
+class WMainMenuBar;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
@@ -39,7 +40,8 @@ class LegacySkinParser : public QObject, public SkinParser {
             Library* pLibrary,
             VinylControlManager* pVCMan,
             EffectsManager* pEffectsManager,
-            RecordingManager* pRecordingManager);
+            RecordingManager* pRecordingManager,
+            WMainMenuBar* pMenuBar);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -79,6 +81,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseText(const QDomElement& node);
     QWidget* parseTrackProperty(const QDomElement& node);
     QWidget* parseStarRating(const QDomElement& node);
+    QWidget* parseMainMenuButton(const QDomElement& node);
     QWidget* parseNumberRate(const QDomElement& node);
     QWidget* parseNumberPos(const QDomElement& node);
     QWidget* parseEngineKey(const QDomElement& node);
@@ -154,6 +157,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
     RecordingManager* m_pRecordingManager;
+    WMainMenuBar* m_pMainMenuBar;
     QWidget* m_pParent;
     std::unique_ptr<SkinContext> m_pContext;
     QString m_style;

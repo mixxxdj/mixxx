@@ -53,6 +53,7 @@
 #include "widget/wlabel.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wmainmenubarbutton.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
@@ -161,6 +162,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pVCManager(nullptr),
           m_pEffectsManager(nullptr),
           m_pRecordingManager(nullptr),
+          m_pMainMenuBar(nullptr),
           m_pParent(nullptr) {
 }
 
@@ -172,7 +174,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         Library* pLibrary,
         VinylControlManager* pVCMan,
         EffectsManager* pEffectsManager,
-        RecordingManager* pRecordingManager)
+        RecordingManager* pRecordingManager,
+        WMainMenuBar* pMenuBar)
         : m_pConfig(pConfig),
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
@@ -182,6 +185,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pRecordingManager(pRecordingManager),
+          m_pMainMenuBar(pMenuBar),
           m_pParent(NULL) {
     DEBUG_ASSERT(m_pSkinCreatedControls);
 }
@@ -531,6 +535,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WDisplay>(node));
     } else if (nodeName == "BeatSpinBox") {
         result = wrapWidget(parseBeatSpinBox(node));
+    } else if (nodeName == "MainMenuButton") {
+        result = wrapWidget(parseMainMenuButton(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
@@ -1117,6 +1123,14 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     }
 
     return pStarRating;
+}
+
+QWidget* LegacySkinParser::parseMainMenuButton(const QDomElement& node) {
+    WMainMenuBarButton* pMainmenu = new WMainMenuBarButton(m_pParent, m_pMainMenuBar);
+    commonWidgetSetup(node, pMainmenu);
+    pMainmenu->setup(node, *m_pContext);
+
+    return pMainmenu;
 }
 
 QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {

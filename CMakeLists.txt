@@ -898,6 +898,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
+  src/widget/wmainmenubarbutton.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp

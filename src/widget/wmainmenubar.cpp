@@ -62,6 +62,11 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
 }
 
 void WMainMenuBar::initialize() {
+    WMainMenuBar* target = this;
+    createMenu([target](QMenu* x) { target->addMenu(x); });
+}
+
+void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"), this);
 
@@ -108,7 +113,7 @@ void WMainMenuBar::initialize() {
     connect(pFileQuit, &QAction::triggered, this, &WMainMenuBar::quit);
     pFileMenu->addAction(pFileQuit);
 
-    addMenu(pFileMenu);
+    pAddMenu(pFileMenu);
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
@@ -152,7 +157,7 @@ void WMainMenuBar::initialize() {
     connect(pLibraryCreateCrate, &QAction::triggered, this, &WMainMenuBar::createCrate);
     pLibraryMenu->addAction(pLibraryCreateCrate);
 
-    addMenu(pLibraryMenu);
+    pAddMenu(pLibraryMenu);
 
 #if defined(__APPLE__)
     // Note: On macOS 10.11 ff. we have to deal with "automagic" menu items,
@@ -294,7 +299,7 @@ void WMainMenuBar::initialize() {
             &QAction::setChecked);
     pViewMenu->addAction(pViewFullScreen);
 
-    addMenu(pViewMenu);
+    pAddMenu(pViewMenu);
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
@@ -412,7 +417,7 @@ void WMainMenuBar::initialize() {
     connect(pOptionsPreferences, &QAction::triggered, this, &WMainMenuBar::showPreferences);
     pOptionsMenu->addAction(pOptionsPreferences);
 
-    addMenu(pOptionsMenu);
+    pAddMenu(pOptionsMenu);
 
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
@@ -511,7 +516,7 @@ void WMainMenuBar::initialize() {
                 &WMainMenuBar::slotDeveloperDebugger);
         pDeveloperMenu->addAction(pDeveloperDebugger);
 
-        addMenu(pDeveloperMenu);
+        pAddMenu(pDeveloperMenu);
     }
 
     addSeparator();
@@ -600,7 +605,7 @@ void WMainMenuBar::initialize() {
     connect(pHelpAboutApp, &QAction::triggered, this, &WMainMenuBar::showAbout);
 
     pHelpMenu->addAction(pHelpAboutApp);
-    addMenu(pHelpMenu);
+    pAddMenu(pHelpMenu);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {

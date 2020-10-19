@@ -2243,3 +2243,15 @@ WEffectSelector {
 #CueDeleteButton:hover {
   background-color: #4B4B4B;
 }
+
+WMainMenuBarButton {
+  color: #D2D2D2;
+  background-color: #5a5a5a;
+  border: 3px solid #006596;
+  border-radius: 3px;
+}
+
+/* WMainMenuBarButton::menu-indicator {
+  width: 0;
+  height: 0;
+} */

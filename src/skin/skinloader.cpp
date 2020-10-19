@@ -110,7 +110,8 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         Library* pLibrary,
         VinylControlManager* pVCMan,
         EffectsManager* pEffectsManager,
-        RecordingManager* pRecordingManager) {
+        RecordingManager* pRecordingManager,
+        WMainMenuBar* pMenuBar) {
     ScopedTimer timer("SkinLoader::loadConfiguredSkin");
     QString skinPath = getConfiguredSkinPath();
 
@@ -127,7 +128,8 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
             pLibrary,
             pVCMan,
             pEffectsManager,
-            pRecordingManager);
+            pRecordingManager,
+            pMenuBar);
     return legacy.parseSkin(skinPath, pParent);
 }
 

@@ -2,6 +2,7 @@
 
 #include <QAction>
 #include <QList>
+#include <QMenu>
 #include <QMenuBar>
 #include <QObject>
 #include <QScopedPointer>
@@ -35,7 +36,7 @@ class WMainMenuBar : public QMenuBar {
   public:
     WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
-
+    void createMenu(std::function<void(QMenu*)>);
   public slots:
     void onLibraryScanStarted();
     void onLibraryScanFinished();
