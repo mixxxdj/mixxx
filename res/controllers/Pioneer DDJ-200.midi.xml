@@ -2,8 +2,10 @@
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.0.0+">
     <info>
         <name>Pioneer DDJ-200</name>
-        <author>Dan Giddins, Frank Breitling</author>
-        <description>Pioneer DDJ-200 configuration for 2 decks.</description>
+        <author>Dan Giddins, Frank.Breitling at gmx.de</author>
+        <description>2-deck USB & Bluetooth MIDI controller</description>
+        <forum>https://mixxx.discourse.group/t/pioneer-ddj-200-mapping/18259</forum>
+        <manual>pioneer_ddj_200</manual>
     </info>
     <controller id="DDJ-200">
         <scriptfiles>
