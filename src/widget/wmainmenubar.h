@@ -8,8 +8,11 @@
 #include <QScopedPointer>
 
 #include "control/controlproxy.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+#include "util/memory.h"
 
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
@@ -36,6 +39,7 @@ class WMainMenuBar : public QMenuBar {
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
 
   public slots:
+    void showHideMenuBar(double v);
     void onLibraryScanStarted();
     void onLibraryScanFinished();
     void onRecordingStateChange(bool recording);
@@ -83,6 +87,7 @@ class WMainMenuBar : public QMenuBar {
     void initialize();
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
+    std::unique_ptr<ControlPushButton> m_bShowMenuBar;
     UserSettingsPointer m_pConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;

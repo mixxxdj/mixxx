@@ -60,6 +60,14 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
 }
 
 void WMainMenuBar::initialize() {
+    // Allow hiding the menu bar
+    m_bShowMenuBar = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "show_menubar"), false, 1.0);
+    m_bShowMenuBar->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_bShowMenuBar.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &WMainMenuBar::showHideMenuBar);
+
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"));
 
@@ -597,6 +605,17 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+}
+
+void WMainMenuBar::showHideMenuBar(double v) {
+    if (v > 0) {
+        int minHeight = sizeHint().height();
+        if (minHeight > 0) {
+            setFixedHeight(minHeight);
+        }
+    } else {
+        setFixedHeight(0);
+    }
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
