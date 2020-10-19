@@ -7,7 +7,6 @@
 WEffectChain::WEffectChain(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
           m_pEffectsManager(pEffectsManager) {
-    chainUpdated();
 }
 
 void WEffectChain::setup(const QDomNode& node, const SkinContext& context) {
@@ -26,17 +25,14 @@ void WEffectChain::setup(const QDomNode& node, const SkinContext& context) {
 void WEffectChain::setEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
-        connect(pEffectChain.data(), SIGNAL(updated()),
-                this, SLOT(chainUpdated()));
-        chainUpdated();
+        connect(pEffectChain.data(),
+                &EffectChain::nameChanged,
+                this,
+                &WEffectChain::presetNameChanged);
+        presetNameChanged(m_pEffectChain->presetName());
     }
 }
 
-void WEffectChain::chainUpdated() {
-    // qDebug() << "chainUpdated()";
-    QString name = tr("None");
-    if (m_pEffectChain) {
-        name = m_pEffectChain->presetName();
-    }
-    setText(name);
+void WEffectChain::presetNameChanged(const QString& newName) {
+    setText(newName);
 }
