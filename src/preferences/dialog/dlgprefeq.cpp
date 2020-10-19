@@ -28,7 +28,7 @@
 #include "control/controlproxy.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
-#include "effects/specialeffectchainslots.h"
+#include "effects/specialeffectchains.h"
 
 namespace {
 const QString kConfigKey = "[Mixer Profile]";
@@ -364,7 +364,7 @@ void DlgPrefEQ::applySelectionsToDecks() {
             needLoad = (box->currentIndex() != m_eqIndiciesOnUpdate[deck]);
         }
         if (needLoad) {
-            auto pChainSlot = m_pEffectsManager->getEqualizerEffectChainSlot(group);
+            auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(group);
             auto pEffectSlot = pChainSlot->getEffectSlot(0);
             pEffectSlot->loadEffectWithDefaults(pManifest);
             if (pManifest && pManifest->isMixingEQ()) {
@@ -594,7 +594,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         pbResetMasterEq->show();
     }
 
-    auto pChainSlot = m_pEffectsManager->getOutputEffectChainSlot();
+    auto pChainSlot = m_pEffectsManager->getOutputEffectChain();
     if (pChainSlot) {
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
         if (pEffectSlot) {
@@ -680,7 +680,7 @@ void DlgPrefEQ::validate_levels() {
 }
 
 QString DlgPrefEQ::getEQEffectGroupForDeck(int deck) const {
-    return EqualizerEffectChainSlot::formatEffectSlotGroup(
+    return EqualizerEffectChain::formatEffectSlotGroup(
             PlayerManager::groupForDeck(deck));
 }
 

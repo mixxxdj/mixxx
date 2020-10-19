@@ -14,7 +14,7 @@ WEffectName::WEffectName(QWidget* pParent, EffectsManager* pEffectsManager)
 void WEffectName::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.
-    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+    EffectChainPointer pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, pChainSlot);

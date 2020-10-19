@@ -1,48 +1,48 @@
 #pragma once
 
-#include "effects/effectchainslot.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectslot.h"
 #include "effects/defs.h"
+#include "effects/effectchain.h"
+#include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "util/memory.h"
 
-class StandardEffectChainSlot : public EffectChainSlot {
+class StandardEffectChain : public EffectChain {
   public:
-    StandardEffectChainSlot(unsigned int iChainNumber,
+    StandardEffectChain(unsigned int iChainNumber,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
-    static QString formatEffectChainSlotGroup(const int iChainNumber);
+    static QString formatEffectChainGroup(const int iChainNumber);
     static QString formatEffectSlotGroup(const int iChainSlotNumber,
-                                         const int iEffectSlotNumber);
+            const int iEffectSlotNumber);
 };
 
-class OutputEffectChainSlot : public EffectChainSlot {
+class OutputEffectChain : public EffectChain {
   public:
-    OutputEffectChainSlot(EffectsManager* pEffectsManager,
+    OutputEffectChain(EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 
   private:
-    static QString formatEffectChainSlotGroup(const QString& group);
+    static QString formatEffectChainGroup(const QString& group);
 };
 
-class PerGroupEffectChainSlot : public EffectChainSlot {
+class PerGroupEffectChain : public EffectChain {
   public:
-    PerGroupEffectChainSlot(const QString& group,
+    PerGroupEffectChain(const QString& group,
             const QString& chainSlotGroup,
             SignalProcessingStage stage,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 };
 
-class QuickEffectChainSlot : public PerGroupEffectChainSlot {
+class QuickEffectChain : public PerGroupEffectChain {
   public:
-    QuickEffectChainSlot(const QString& group,
+    QuickEffectChain(const QString& group,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 
-    static QString formatEffectChainSlotGroup(const QString& group);
+    static QString formatEffectChainGroup(const QString& group);
     static QString formatEffectSlotGroup(const QString& group,
-                                         const int iEffectSlotNumber = 0);
+            const int iEffectSlotNumber = 0);
 
     int presetIndex() const override;
     EffectChainPresetPointer presetAtIndex(int index) const override;
@@ -51,15 +51,15 @@ class QuickEffectChainSlot : public PerGroupEffectChainSlot {
     int numPresets() const override;
 };
 
-class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {
+class EqualizerEffectChain : public PerGroupEffectChain {
   public:
-    EqualizerEffectChainSlot(const QString& group,
+    EqualizerEffectChain(const QString& group,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 
     void setFilterWaveform(bool state);
 
-    static QString formatEffectChainSlotGroup(const QString& group);
+    static QString formatEffectChainGroup(const QString& group);
     static QString formatEffectSlotGroup(const QString& group);
 
   private:

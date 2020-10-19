@@ -1,4 +1,4 @@
-#include "effects/effectchainslot.h"
+#include "effects/effectchain.h"
 
 #include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
@@ -15,7 +15,7 @@
 #include "util/sample.h"
 #include "util/xml.h"
 
-EffectChainSlot::EffectChainSlot(const QString& group,
+EffectChain::EffectChain(const QString& group,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger,
         SignalProcessingStage stage)
@@ -28,13 +28,13 @@ EffectChainSlot::EffectChainSlot(const QString& group,
           m_group(group),
           m_signalProcessingStage(stage),
           m_pEngineEffectChain(nullptr) {
-    // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
+    // qDebug() << "EffectChain::EffectChain " << group << ' ' << iChainNumber;
 
     m_pControlClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "clear"));
     connect(m_pControlClear.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::slotControlClear);
+            &EffectChain::slotControlClear);
 
     m_pControlNumEffectSlots = std::make_unique<ControlObject>(
             ConfigKey(m_group, "num_effectslots"));
@@ -47,7 +47,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pChainPresetManager.get(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
-            &EffectChainSlot::slotPresetListUpdated);
+            &EffectChain::slotPresetListUpdated);
 
     m_pControlChainLoaded =
             std::make_unique<ControlObject>(ConfigKey(m_group, "loaded"));
@@ -65,7 +65,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainEnabled.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::sendParameterUpdate);
+            &EffectChain::sendParameterUpdate);
 
     m_pControlChainMix = std::make_unique<ControlPotmeter>(
             ConfigKey(m_group, "mix"), 0.0, 1.0, false, true, false, true, 1.0);
@@ -73,7 +73,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainMix.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::sendParameterUpdate);
+            &EffectChain::sendParameterUpdate);
 
     m_pControlChainSuperParameter = std::make_unique<ControlPotmeter>(
             ConfigKey(m_group, "super1"), 0.0, 1.0);
@@ -95,14 +95,14 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainMixMode.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::sendParameterUpdate);
+            &EffectChain::sendParameterUpdate);
 
     m_pControlLoadPreset = std::make_unique<ControlObject>(
             ConfigKey(m_group, "load_preset"), false);
     connect(m_pControlLoadPreset.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::slotControlLoadChainPreset);
+            &EffectChain::slotControlLoadChainPreset);
 
     m_pControlLoadedPreset = std::make_unique<ControlObject>(
             ConfigKey(m_group, "loaded_preset"));
@@ -113,14 +113,14 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainNextPreset.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::slotControlChainNextPreset);
+            &EffectChain::slotControlChainNextPreset);
 
     m_pControlChainPrevPreset = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "prev_chain"));
     connect(m_pControlChainPrevPreset.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::slotControlChainPrevPreset);
+            &EffectChain::slotControlChainPrevPreset);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlChainSelector = std::make_unique<ControlEncoder>(
@@ -128,7 +128,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainSelector.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChainSlot::slotControlChainSelector);
+            &EffectChain::slotControlChainSelector);
 
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
@@ -149,12 +149,12 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     addToEngine();
 }
 
-EffectChainSlot::~EffectChainSlot() {
+EffectChain::~EffectChain() {
     m_effectSlots.clear();
     removeFromEngine();
 }
 
-void EffectChainSlot::addToEngine() {
+void EffectChain::addToEngine() {
     m_pEngineEffectChain = new EngineEffectChain(
             m_group,
             m_pEffectsManager->registeredInputChannels(),
@@ -168,7 +168,7 @@ void EffectChainSlot::addToEngine() {
     sendParameterUpdate();
 }
 
-void EffectChainSlot::removeFromEngine() {
+void EffectChain::removeFromEngine() {
     VERIFY_OR_DEBUG_ASSERT(m_effectSlots.isEmpty()) {
         m_effectSlots.clear();
     }
@@ -182,16 +182,16 @@ void EffectChainSlot::removeFromEngine() {
     m_pEngineEffectChain = nullptr;
 }
 
-const QString& EffectChainSlot::presetName() const {
+const QString& EffectChain::presetName() const {
     return m_presetName;
 }
 
-void EffectChainSlot::setPresetName(const QString& name) {
+void EffectChain::setPresetName(const QString& name) {
     m_presetName = name;
     emit nameChanged(name);
 }
 
-void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
+void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     VERIFY_OR_DEBUG_ASSERT(pPreset) {
         return;
     }
@@ -216,7 +216,7 @@ void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
     m_pControlLoadedPreset->setAndConfirm(presetIndex());
 }
 
-void EffectChainSlot::sendParameterUpdate() {
+void EffectChain::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
     pRequest->pTargetChain = m_pEngineEffectChain;
@@ -226,31 +226,31 @@ void EffectChainSlot::sendParameterUpdate() {
     m_pMessenger->writeRequest(pRequest);
 }
 
-QString EffectChainSlot::group() const {
+QString EffectChain::group() const {
     return m_group;
 }
 
-double EffectChainSlot::getSuperParameter() const {
+double EffectChain::getSuperParameter() const {
     return m_pControlChainSuperParameter->get();
 }
 
-void EffectChainSlot::setSuperParameter(double value, bool force) {
+void EffectChain::setSuperParameter(double value, bool force) {
     m_pControlChainSuperParameter->set(value);
     slotControlChainSuperParameter(value, force);
 }
 
-EffectChainMixMode EffectChainSlot::mixMode() const {
+EffectChainMixMode EffectChain::mixMode() const {
     return static_cast<EffectChainMixMode>(
             static_cast<int>(
                     m_pControlChainMixMode->get()));
 }
 
-void EffectChainSlot::setMixMode(EffectChainMixMode mixMode) {
+void EffectChain::setMixMode(EffectChainMixMode mixMode) {
     m_pControlChainMixMode->set(static_cast<int>(mixMode));
     sendParameterUpdate();
 }
 
-EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
+EffectSlotPointer EffectChain::addEffectSlot(const QString& group) {
     if (kEffectDebugOutput) {
         qDebug() << debugString() << "addEffectSlot" << group;
     }
@@ -268,14 +268,14 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     return pEffectSlot;
 }
 
-int EffectChainSlot::numPresets() const {
+int EffectChain::numPresets() const {
     VERIFY_OR_DEBUG_ASSERT(m_pChainPresetManager) {
         return 0;
     }
     return m_pChainPresetManager->numPresets();
 }
 
-void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handleGroup,
+void EffectChain::registerInputChannel(const ChannelHandleAndGroup& handleGroup,
         const double initialValue) {
     VERIFY_OR_DEBUG_ASSERT(!m_channelEnableButtons.contains(handleGroup)) {
         return;
@@ -297,7 +297,7 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handleGr
             [this, handleGroup](double value) { slotChannelStatusChanged(value, handleGroup); });
 }
 
-EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
+EffectSlotPointer EffectChain::getEffectSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectSlot" << slotNumber;
     VERIFY_OR_DEBUG_ASSERT(slotNumber <= static_cast<unsigned int>(m_effectSlots.size())) {
         return EffectSlotPointer();
@@ -305,13 +305,13 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     return m_effectSlots[slotNumber];
 }
 
-void EffectChainSlot::slotControlClear(double v) {
+void EffectChain::slotControlClear(double v) {
     for (EffectSlotPointer pEffectSlot : m_effectSlots) {
         pEffectSlot->slotClear(v);
     }
 }
 
-void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
+void EffectChain::slotControlChainSuperParameter(double v, bool force) {
     // qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
     m_pControlChainSuperParameter->set(v);
@@ -320,7 +320,7 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
     }
 }
 
-void EffectChainSlot::slotControlChainSelector(double value) {
+void EffectChain::slotControlChainSelector(double value) {
     int index = presetIndex();
     if (value > 0) {
         index++;
@@ -330,24 +330,24 @@ void EffectChainSlot::slotControlChainSelector(double value) {
     loadChainPreset(presetAtIndex(index));
 }
 
-void EffectChainSlot::slotControlLoadChainPreset(double value) {
+void EffectChain::slotControlLoadChainPreset(double value) {
     // subtract 1 to make the ControlObject 1-indexed like other ControlObjects
     loadChainPreset(presetAtIndex(static_cast<int>(value) - 1));
 }
 
-void EffectChainSlot::slotControlChainNextPreset(double value) {
+void EffectChain::slotControlChainNextPreset(double value) {
     if (value > 0) {
         loadChainPreset(presetAtIndex(presetIndex() + 1));
     }
 }
 
-void EffectChainSlot::slotControlChainPrevPreset(double value) {
+void EffectChain::slotControlChainPrevPreset(double value) {
     if (value > 0) {
         loadChainPreset(presetAtIndex(presetIndex() - 1));
     }
 }
 
-void EffectChainSlot::slotChannelStatusChanged(
+void EffectChain::slotChannelStatusChanged(
         double value, const ChannelHandleAndGroup& handleGroup) {
     if (value > 0) {
         enableForInputChannel(handleGroup);
@@ -356,11 +356,11 @@ void EffectChainSlot::slotChannelStatusChanged(
     }
 }
 
-void EffectChainSlot::slotPresetListUpdated() {
+void EffectChain::slotPresetListUpdated() {
     m_pControlNumPresetsAvailable->forceSet(numPresets());
 }
 
-void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
+void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
     if (m_enabledInputChannels.contains(handleGroup)) {
         return;
     }
@@ -394,7 +394,7 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handleG
     m_enabledInputChannels.insert(handleGroup);
 }
 
-void EffectChainSlot::disableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
+void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
     if (!m_enabledInputChannels.remove(handleGroup)) {
         return;
     }
@@ -406,10 +406,10 @@ void EffectChainSlot::disableForInputChannel(const ChannelHandleAndGroup& handle
     m_pMessenger->writeRequest(request);
 }
 
-int EffectChainSlot::presetIndex() const {
+int EffectChain::presetIndex() const {
     return m_pChainPresetManager->presetIndex(m_presetName);
 }
 
-EffectChainPresetPointer EffectChainSlot::presetAtIndex(int index) const {
+EffectChainPresetPointer EffectChain::presetAtIndex(int index) const {
     return m_pChainPresetManager->presetAtIndex(index);
 }

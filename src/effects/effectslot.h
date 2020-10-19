@@ -64,7 +64,7 @@ class EffectSlot : public QObject {
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger,
             const unsigned int iEffectNumber,
-            EffectChainSlot* pChainSlot,
+            EffectChain* pChainSlot,
             EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
@@ -175,7 +175,7 @@ class EffectSlot : public QObject {
     EffectsMessengerPointer m_pMessenger;
     VisibleEffectsListPointer m_pVisibleEffects;
     EffectManifestPointer m_pManifest;
-    EffectChainSlot* m_pChainSlot;
+    EffectChain* m_pChainSlot;
     EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;
     ParameterMap m_allParameters;

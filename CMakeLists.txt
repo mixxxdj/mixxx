@@ -252,7 +252,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/builtin/threebandbiquadeqeffect.cpp
   src/effects/builtin/tremoloeffect.cpp
   src/effects/effectbuttonparameterslot.cpp
-  src/effects/effectchainslot.cpp
+  src/effects/effectchain.cpp
   src/effects/effectmanifest.cpp
   src/effects/effectmanifestparameter.cpp
   src/effects/effectparameter.cpp
@@ -261,7 +261,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/effectslot.cpp
   src/effects/effectsmanager.cpp
   src/effects/effectsmessenger.cpp
-  src/effects/specialeffectchainslots.cpp
+  src/effects/specialeffectchains.cpp
   src/effects/visibleeffectslist.cpp
   src/effects/backends/effectsbackend.cpp
   src/effects/backends/effectsbackendmanager.cpp

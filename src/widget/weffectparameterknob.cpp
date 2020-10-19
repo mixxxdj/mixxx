@@ -3,7 +3,7 @@
 
 void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& context) {
     WKnob::setup(node, context);
-    auto pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+    auto pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     auto pEffectSlot =
             EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);

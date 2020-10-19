@@ -15,33 +15,33 @@
 
 class ControlPushButton;
 class ControlEncoder;
-class EffectChainSlot;
+class EffectChain;
 class EffectsManager;
 class EffectProcessor;
 class EngineEffectChain;
 
-/// EffectChainSlot is the main thread representation of an effect chain.
-/// EffectChainSlot owns the ControlObjects for the routing switches that assign
+/// EffectChain is the main thread representation of an effect chain.
+/// EffectChain owns the ControlObjects for the routing switches that assign
 /// chains to process audio inputs (decks, microphones, auxiliary inputs,
-/// master mix). EffectChainSlot also owns the ControlObject for the superknob
-/// which manipulates the metaknob of each effect in the chain.
+/// master mix). EffectChain also owns the ControlObject for the superknob
+/// which manipulates the metaknob of each EffectSlot in the chain.
 ///
-/// EffectChainSlots are created and destroyed by EffectsManager during Mixxx
-/// startup and shutdown. EffectChainSlot adds exactly one EngineEffectChain to
-/// the audio engine which is removed from the engine in the EffectChainSlot
+/// EffectChains are created and destroyed by EffectsManager during Mixxx
+/// startup and shutdown. EffectChain adds exactly one EngineEffectChain to
+/// the audio engine which is removed from the engine in the EffectChain
 /// destructor. This is in contrast to EffectSlot, which loads/unloads
 /// EngineEffects at the user's request.
 ///
-/// The state of an EffectChainSlot can be saved to and loaded from an
+/// The state of an EffectChain can be saved to and loaded from an
 /// EffectChainPreset, which can serialize/deserialize that state to/from XML.
-class EffectChainSlot : public QObject {
+class EffectChain : public QObject {
     Q_OBJECT
   public:
-    EffectChainSlot(const QString& group,
+    EffectChain(const QString& group,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger,
             SignalProcessingStage stage = SignalProcessingStage::Postfader);
-    virtual ~EffectChainSlot();
+    virtual ~EffectChain();
 
     QString group() const;
 
@@ -74,12 +74,12 @@ class EffectChainSlot : public QObject {
 
     static QString mixModeToString(EffectChainMixMode type) {
         switch (type) {
-            case EffectChainMixMode::DrySlashWet:
-                return "DRY/WET";
-            case EffectChainMixMode::DryPlusWet:
-                return "DRY+WET";
-            default:
-                return "UNKNOWN";
+        case EffectChainMixMode::DrySlashWet:
+            return "DRY/WET";
+        case EffectChainMixMode::DryPlusWet:
+            return "DRY+WET";
+        default:
+            return "UNKNOWN";
         }
     }
     static EffectChainMixMode mixModeFromString(const QString& typeStr) {
@@ -117,7 +117,7 @@ class EffectChainSlot : public QObject {
     void enableForInputChannel(const ChannelHandleAndGroup& handleGroup);
     void disableForInputChannel(const ChannelHandleAndGroup& handleGroup);
 
-    // Protected so QuickEffectChainSlot can use the separate QuickEffect
+    // Protected so QuickEffectChain can use the separate QuickEffect
     // chain preset list.
     QString m_presetName;
     virtual int presetIndex() const;
@@ -143,7 +143,7 @@ class EffectChainSlot : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectChainSlot(%1)").arg(m_group);
+        return QString("EffectChain(%1)").arg(m_group);
     }
 
     void addToEngine();
@@ -177,5 +177,5 @@ class EffectChainSlot : public QObject {
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     EngineEffectChain* m_pEngineEffectChain;
 
-    DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
+    DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };

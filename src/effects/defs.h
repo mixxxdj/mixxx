@@ -89,8 +89,8 @@ typedef QSharedPointer<EffectManifest> EffectManifestPointer;
 class EffectParameterSlotBase;
 typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
 
-class EffectChainSlot;
-typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
+class EffectChain;
+typedef QSharedPointer<EffectChain> EffectChainPointer;
 
 class EffectChainPreset;
 typedef QSharedPointer<EffectChainPreset> EffectChainPresetPointer;
@@ -98,14 +98,14 @@ typedef QSharedPointer<EffectChainPreset> EffectChainPresetPointer;
 class EffectPreset;
 typedef QSharedPointer<EffectPreset> EffectPresetPointer;
 
-class StandardEffectChainSlot;
-typedef QSharedPointer<StandardEffectChainSlot> StandardEffectChainSlotPointer;
+class StandardEffectChain;
+typedef QSharedPointer<StandardEffectChain> StandardEffectChainPointer;
 
-class EqualizerEffectChainSlot;
-typedef QSharedPointer<EqualizerEffectChainSlot> EqualizerEffectChainSlotPointer;
+class EqualizerEffectChain;
+typedef QSharedPointer<EqualizerEffectChain> EqualizerEffectChainPointer;
 
-class OutputEffectChainSlot;
-typedef QSharedPointer<OutputEffectChainSlot> OutputEffectChainSlotPointer;
+class OutputEffectChain;
+typedef QSharedPointer<OutputEffectChain> OutputEffectChainPointer;
 
-class QuickEffectChainSlot;
-typedef QSharedPointer<QuickEffectChainSlot> QuickEffectChainSlotPointer;
+class QuickEffectChain;
+typedef QSharedPointer<QuickEffectChain> QuickEffectChainPointer;

@@ -18,18 +18,18 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
 }
 
 void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& context) {
-    m_pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+    m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
 
-    VERIFY_OR_DEBUG_ASSERT(m_pChainSlot != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pChain != nullptr) {
         SKIN_WARNING(node, context)
-                << "EffectChainPresetSelector node could not attach to EffectChainSlot";
+                << "EffectChainPresetSelector node could not attach to EffectChain";
         return;
     }
 
     auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
-    auto pQuickEffectChainSlot = dynamic_cast<QuickEffectChainSlot*>(m_pChainSlot.get());
-    if (pQuickEffectChainSlot) {
+    auto pQuickEffectChain = dynamic_cast<QuickEffectChain*>(m_pChain.get());
+    if (pQuickEffectChain) {
         chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
         m_bQuickEffectChain = true;
     }
@@ -37,8 +37,8 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
             chainPresetListUpdateSignal,
             this,
             &WEffectChainPresetSelector::populate);
-    connect(m_pChainSlot.data(),
-            &EffectChainSlot::nameChanged,
+    connect(m_pChain.data(),
+            &EffectChain::nameChanged,
             this,
             &WEffectChainPresetSelector::slotEffectChainNameChanged);
     connect(this,
@@ -68,13 +68,13 @@ void WEffectChainPresetSelector::populate() {
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
     }
 
-    slotEffectChainNameChanged(m_pChainSlot->presetName());
+    slotEffectChainNameChanged(m_pChain->presetName());
     blockSignals(false);
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     Q_UNUSED(index);
-    m_pChainSlot->loadChainPreset(
+    m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
 }
 

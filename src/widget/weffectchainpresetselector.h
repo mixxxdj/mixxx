@@ -3,7 +3,7 @@
 #include <QComboBox>
 #include <QDomNode>
 
-#include "effects/effectchainslot.h"
+#include "effects/effectchain.h"
 #include "skin/skincontext.h"
 
 class EffectsManager;
@@ -24,5 +24,5 @@ class WEffectChainPresetSelector : public QComboBox, public WBaseWidget {
     bool m_bQuickEffectChain;
     EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsManager* m_pEffectsManager;
-    EffectChainSlotPointer m_pChainSlot;
+    EffectChainPointer m_pChain;
 };

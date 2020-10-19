@@ -25,9 +25,9 @@ WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManag
 
 void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& context) {
     m_iChainNumber = EffectWidgetUtils::getEffectUnitNumberFromNode(node, context);
-    m_pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+    m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
-    for (const auto& pEffectSlot : m_pChainSlot->getEffectSlots()) {
+    for (const auto& pEffectSlot : m_pChain->getEffectSlots()) {
         connect(pEffectSlot.get(),
                 &EffectSlot::effectChanged,
                 this,
@@ -47,19 +47,19 @@ void WEffectChainPresetButton::populateMenu() {
     // Chain preset items
     for (const auto pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         m_pMenu->addAction(pChainPreset->name(), [=]() {
-            m_pChainSlot->loadChainPreset(pChainPreset);
+            m_pChain->loadChainPreset(pChainPreset);
         });
     }
     m_pMenu->addSeparator();
     m_pMenu->addAction(tr("Save preset"), this, [this]() {
-        m_pChainPresetManager->savePreset(m_pChainSlot);
+        m_pChainPresetManager->savePreset(m_pChain);
     });
 
     m_pMenu->addSeparator();
 
     // Effect parameter hiding/showing and saving snapshots
     int effectSlotIndex = 0;
-    for (const auto pEffectSlot : m_pChainSlot->getEffectSlots()) {
+    for (const auto pEffectSlot : m_pChain->getEffectSlots()) {
         const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
         const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
 

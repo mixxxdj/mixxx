@@ -7,7 +7,7 @@
 #include "control/controlpotmeter.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
-#include "effects/specialeffectchainslots.h"
+#include "effects/specialeffectchains.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
@@ -15,8 +15,8 @@
 class EngineEffectsManager;
 
 /// EffectsManager initializes and shuts down the effects system. It creates and
-/// destroys a fixed set of StandardEffectChainSlots on Mixxx startup/shutdown
-/// and creates a QuickEffectChainSlot and EqualizerEffectChainSlot when
+/// destroys a fixed set of StandardEffectChains on Mixxx startup/shutdown
+/// and creates a QuickEffectChain and EqualizerEffectChain when
 /// PlayerManager creates decks.
 class EffectsManager {
   public:
@@ -27,13 +27,13 @@ class EffectsManager {
     void setup();
     void addDeck(const QString& deckGroupName);
 
-    EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
-    EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(
+    EffectChainPointer getEffectChain(const QString& group) const;
+    EqualizerEffectChainPointer getEqualizerEffectChain(
             const QString& deckGroupName) const {
-        return m_equalizerEffectChainSlots.value(deckGroupName);
+        return m_equalizerEffectChains.value(deckGroupName);
     }
-    EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
-    EffectChainSlotPointer getOutputEffectChainSlot() const;
+    EffectChainPointer getStandardEffectChain(int unitNumber) const;
+    EffectChainPointer getOutputEffectChain() const;
 
     EngineEffectsManager* getEngineEffectsManager() const {
         return m_pEngineEffectsManager;
@@ -72,11 +72,11 @@ class EffectsManager {
     bool isAdoptMetaknobValueEnabled() const;
 
   private:
-    void addStandardEffectChainSlots();
-    void addOutputEffectChainSlot();
+    void addStandardEffectChains();
+    void addOutputEffectChain();
 
-    void addEqualizerEffectChainSlot(const QString& deckGroupName);
-    void addQuickEffectChainSlot(const QString& deckGroupName);
+    void addEqualizerEffectChain(const QString& deckGroupName);
+    void addQuickEffectChain(const QString& deckGroupName);
 
     void readEffectsXml();
     void saveEffectsXml();
@@ -84,12 +84,12 @@ class EffectsManager {
     QSet<ChannelHandleAndGroup> m_registeredInputChannels;
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     UserSettingsPointer m_pConfig;
-    QHash<QString, EffectChainSlotPointer> m_effectChainSlotsByGroup;
+    QHash<QString, EffectChainPointer> m_effectChainSlotsByGroup;
 
-    QList<StandardEffectChainSlotPointer> m_standardEffectChainSlots;
-    OutputEffectChainSlotPointer m_outputEffectChainSlot;
-    QHash<QString, EqualizerEffectChainSlotPointer> m_equalizerEffectChainSlots;
-    QHash<QString, QuickEffectChainSlotPointer> m_quickEffectChainSlots;
+    QList<StandardEffectChainPointer> m_standardEffectChains;
+    OutputEffectChainPointer m_outputEffectChain;
+    QHash<QString, EqualizerEffectChainPointer> m_equalizerEffectChains;
+    QHash<QString, QuickEffectChainPointer> m_quickEffectChains;
 
     EffectsBackendManagerPointer m_pBackendManager;
     ChannelHandleFactory* m_pChannelHandleFactory;

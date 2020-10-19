@@ -19,7 +19,7 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
 
 void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
     // EffectWidgetUtils propagates NULLs so this is all safe.
-    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+    EffectChainPointer pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, pChainSlot);
