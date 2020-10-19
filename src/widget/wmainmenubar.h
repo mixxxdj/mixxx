@@ -89,4 +89,6 @@ class WMainMenuBar : public QMenuBar {
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
+
+    unsigned int m_lastNumPlayers;
 };

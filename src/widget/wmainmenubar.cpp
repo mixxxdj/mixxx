@@ -52,11 +52,13 @@ QString showPreferencesKeyBinding() {
 
 }  // namespace
 
-WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                           ConfigObject<ConfigValueKbd>* pKbdConfig)
+WMainMenuBar::WMainMenuBar(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig)
         : QMenuBar(pParent),
           m_pConfig(pConfig),
-          m_pKbdConfig(pKbdConfig) {
+          m_pKbdConfig(pKbdConfig),
+          m_lastNumPlayers(0) {
     setObjectName(QStringLiteral("MainMenu"));
     initialize();
 }
@@ -77,6 +79,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
         QString playerLoadStatusText = loadTrackStatusText.arg(QString::number(deck + 1));
         QAction* pFileLoadSongToPlayer = new QAction(
             loadTrackText.arg(QString::number(deck + 1)), this);
+        pFileLoadSongToPlayer->setData(deck + 1);
 
         QString binding = m_pKbdConfig->getValue(
                 ConfigKey("[KeyboardShortcuts]", QString("FileMenu_LoadDeck%1").arg(deck + 1)),
@@ -90,7 +93,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
             buildWhatsThis(openText, playerLoadStatusText));
         // Visibility of load to deck actions is set in
         // WMainMenuBar::onNumberOfDecksChanged.
-        pFileLoadSongToPlayer->setVisible(false);
+        pFileLoadSongToPlayer->setVisible(deck + 1 <= m_lastNumPlayers);
         connect(pFileLoadSongToPlayer, &QAction::triggered,
                 this, [this, deck] { emit loadTrackToDeck(deck + 1); });
 
@@ -246,6 +249,22 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
     pViewMenu->addAction(pViewShowCoverArt);
 
+    QString showMenubarTitle = tr("Show Menu Bar");
+    QString showMenubarText = tr("Show traditional menu bar in Mixxx interface");
+    auto pViewShowMenuBar = new QAction(showMenubarTitle, this);
+    pViewShowMenuBar->setCheckable(true);
+    pViewShowMenuBar->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMenuBar"),
+                    tr("Ctrl+7", "Menubar|View|Show Menu Bar"))));
+    pViewShowMenuBar->setStatusTip(showMenubarText);
+    pViewShowMenuBar->setWhatsThis(buildWhatsThis(showMenubarTitle, showMenubarText));
+    createVisibilityControl(pViewShowMenuBar, ConfigKey("[Master]", "show_menubar"));
+    pViewMenu->addAction(pViewShowMenuBar);
+    connect(pViewShowMenuBar,
+            &QAction::triggered,
+            this,
+            &WMainMenuBar::setVisible);
 
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
@@ -309,9 +328,10 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     QString vinylControlText = tr(
             "Use timecoded vinyls on external turntables to control Mixxx");
 
-    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+    for (unsigned int i = 0; i < kMaximumVinylControlInputs; ++i) {
         QString vinylControlTitle = tr("Enable Vinyl Control &%1").arg(i + 1);
         auto vc_checkbox = new QAction(vinylControlTitle, this);
+        vc_checkbox->setData(i + 1);
         m_vinylControlEnabledActions.push_back(vc_checkbox);
 
         QString binding = m_pKbdConfig->getValue(
@@ -329,7 +349,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
         vc_checkbox->setChecked(false);
         // The visibility of these actions is set in
         // WMainMenuBar::onNumberOfDecksChanged.
-        vc_checkbox->setVisible(false);
+        vc_checkbox->setVisible(i + 1 <= m_lastNumPlayers);
         vc_checkbox->setStatusTip(vinylControlText);
         vc_checkbox->setWhatsThis(buildWhatsThis(vinylControlTitle,
                                                  vinylControlText));
@@ -606,6 +626,11 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
 
     pHelpMenu->addAction(pHelpAboutApp);
     pAddMenu(pHelpMenu);
+
+    // we already know the num
+    if (m_lastNumPlayers) {
+        onNumberOfDecksChanged(m_lastNumPlayers);
+    }
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
@@ -691,13 +716,12 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
 }
 
 void WMainMenuBar::onNumberOfDecksChanged(int decks) {
-    int deck = 0;
+    m_lastNumPlayers = decks;
     for (QAction* pVinylControlEnabled : qAsConst(m_vinylControlEnabledActions)) {
-        pVinylControlEnabled->setVisible(deck++ < decks);
+        pVinylControlEnabled->setVisible(pVinylControlEnabled->data() <= m_lastNumPlayers);
     }
-    deck = 0;
     for (QAction* pLoadToDeck : qAsConst(m_loadToDeckActions)) {
-        pLoadToDeck->setVisible(deck++ < decks);
+        pLoadToDeck->setVisible(pLoadToDeck->data() <= m_lastNumPlayers);
     }
 }
 

@@ -2251,7 +2251,10 @@ WMainMenuBarButton {
   border-radius: 3px;
 }
 
-/* WMainMenuBarButton::menu-indicator {
+WMainMenuBarButton::menu-indicator, WMainMenuBarButton::menu-indicator:pressed, WMainMenuBarButton::menu-indicator:open {
   width: 0;
   height: 0;
+}
+/* WMainMenuBarButton::menu-indicator {
+
 } */

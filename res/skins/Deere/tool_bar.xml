@@ -15,8 +15,14 @@
         <ObjectName>MainMenuButton</ObjectName>
         <Size>20,40</Size>
         <SizePolicy>f,f</SizePolicy>
+        <Connection>
+          <ConfigKey>[Master],show_menubar</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
       </MainMenuButton>
-
 
       <Battery>
         <ObjectName>Battery</ObjectName>
