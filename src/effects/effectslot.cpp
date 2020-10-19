@@ -175,7 +175,7 @@ void EffectSlot::updateEngineState() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_PARAMETERS;
     pRequest->pTargetEffect = m_pEngineEffect;
-    pRequest->SetEffectParameters.enabled = m_pControlEnabled->get();
+    pRequest->SetEffectParameters.enabled = m_pControlEnabled->toBool();
     m_pMessenger->writeRequest(pRequest);
 
     for (const auto& parameterList : m_allParameters) {
@@ -498,7 +498,7 @@ void EffectSlot::slotNextEffect(double v) {
 
 void EffectSlot::slotLoadEffectAtListIndex(double value) {
     // ControlObjects are 1-indexed
-    loadEffectWithDefaults(m_pVisibleEffects->at(value - 1));
+    loadEffectWithDefaults(m_pVisibleEffects->at(static_cast<int>(value) - 1));
 }
 
 void EffectSlot::slotEffectSelector(double v) {
