@@ -27,10 +27,6 @@ WaveformMarkRange::WaveformMarkRange(
         DEBUG_ASSERT(!m_markEndPointControl); // has not been created yet
         m_markEndPointControl = std::make_unique<ControlProxy>(group, endControl);
     }
-    QString rangeName = startControl;
-    if (startControl.contains(QStringLiteral("_start_position"))) {
-        rangeName = startControl.remove(QStringLiteral("_start_position"));
-    }
 
     QString enabledControl = context.selectString(node, "EnabledControl");
     if (!enabledControl.isEmpty()) {
@@ -54,6 +50,8 @@ WaveformMarkRange::WaveformMarkRange(
     if (!m_activeColor.isValid()) {
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
+        QString rangeSuffix = QStringLiteral("_start_position");
+        QString rangeName = startControl.remove(rangeSuffix);
         m_activeColor = signalColors.getAxesColor();
         qDebug() << "Didn't get Color for mark range" << rangeName
                 << "- using parent's AxesColor:" << m_activeColor;
@@ -67,6 +65,8 @@ WaveformMarkRange::WaveformMarkRange(
         } else {
             // Show warning only when there's no EnabledControl,
             // like for intro & outro ranges.
+            QString rangeSuffix = QStringLiteral("_start_position");
+            QString rangeName = startControl.remove(rangeSuffix);
             int gray = qGray(m_activeColor.rgb());
             m_disabledColor = QColor(gray, gray, gray);
             qDebug() << "Didn't get DisabledColor for mark range" << rangeName
