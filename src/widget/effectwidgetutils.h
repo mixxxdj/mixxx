@@ -20,12 +20,12 @@ class EffectWidgetUtils {
         return 0;
     }
 
-    static EffectChainSlotPointer getEffectChainSlotFromNode(
+    static EffectChainPointer getEffectChainFromNode(
             const QDomNode& node,
             const SkinContext& context,
             EffectsManager* pEffectsManager) {
         if (pEffectsManager == nullptr) {
-            return EffectChainSlotPointer();
+            return EffectChainPointer();
         }
 
         bool unitNumberOk = false;
@@ -33,15 +33,15 @@ class EffectWidgetUtils {
                                            &unitNumberOk);
         if (unitNumberOk) {
             // XML effect nodes are 1-indexed.
-            return pEffectsManager->getStandardEffectChainSlot(unitNumber - 1);
+            return pEffectsManager->getStandardEffectChain(unitNumber - 1);
         }
 
         QString unitGroup;
         if (!context.hasNodeSelectString(node, "EffectUnitGroup", &unitGroup)) {
-            return EffectChainSlotPointer();
+            return EffectChainPointer();
         }
 
-        return pEffectsManager->getEffectChainSlot(unitGroup);
+        return pEffectsManager->getEffectChain(unitGroup);
     }
 
     static int getEffectSlotIndexFromNode(
@@ -59,7 +59,7 @@ class EffectWidgetUtils {
     static EffectSlotPointer getEffectSlotFromNode(
             const QDomNode& node,
             const SkinContext& context,
-            EffectChainSlotPointer pChainSlot) {
+            EffectChainPointer pChainSlot) {
         if (pChainSlot.isNull()) {
             return EffectSlotPointer();
         }

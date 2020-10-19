@@ -55,14 +55,14 @@ EffectsManager::~EffectsManager() {
 
     saveEffectsXml();
 
-    // The EffectChainSlots must be deleted before the EffectsBackends in case
+    // The EffectChains must be deleted before the EffectsBackends in case
     // there is an LV2 effect currently loaded.
     // ~LV2GroupState calls lilv_instance_free, which will segfault if called
     // after ~LV2Backend calls lilv_world_free.
-    m_equalizerEffectChainSlots.clear();
-    m_quickEffectChainSlots.clear();
-    m_standardEffectChainSlots.clear();
-    m_outputEffectChainSlot.clear();
+    m_equalizerEffectChains.clear();
+    m_quickEffectChains.clear();
+    m_standardEffectChains.clear();
+    m_outputEffectChain.clear();
     m_effectChainSlotsByGroup.clear();
 
     m_pMessenger->processEffectsResponses();
@@ -70,8 +70,8 @@ EffectsManager::~EffectsManager() {
 
 void EffectsManager::setup() {
     // Add postfader effect chain slots
-    addStandardEffectChainSlots();
-    addOutputEffectChainSlot();
+    addStandardEffectChains();
+    addOutputEffectChain();
     // EQ and QuickEffect chain slots are initialized when PlayerManager creates decks.
     readEffectsXml();
 }
@@ -82,10 +82,10 @@ void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_gr
     }
     m_registeredInputChannels.insert(handle_group);
 
-    // EqualizerEffectChainSlots, QuickEffectChainSlots, and OutputEffectChainSlots
+    // EqualizerEffectChains, QuickEffectChains, and OutputEffectChains
     // only process one input channel, so they do not need to have new input
     // channels registered.
-    for (EffectChainSlotPointer pChainSlot : m_standardEffectChainSlots) {
+    for (EffectChainPointer pChainSlot : m_standardEffectChains) {
         pChainSlot->registerInputChannel(handle_group);
     }
 }
@@ -97,70 +97,70 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
-void EffectsManager::addStandardEffectChainSlots() {
+void EffectsManager::addStandardEffectChains() {
     for (int i = 0; i < kNumStandardEffectUnits; ++i) {
         VERIFY_OR_DEBUG_ASSERT(!m_effectChainSlotsByGroup.contains(
-                StandardEffectChainSlot::formatEffectChainSlotGroup(i))) {
+                StandardEffectChain::formatEffectChainGroup(i))) {
             continue;
         }
 
-        auto pChainSlot = StandardEffectChainSlotPointer(
-                new StandardEffectChainSlot(i, this, m_pMessenger));
+        auto pChainSlot = StandardEffectChainPointer(
+                new StandardEffectChain(i, this, m_pMessenger));
 
-        m_standardEffectChainSlots.append(pChainSlot);
+        m_standardEffectChains.append(pChainSlot);
         m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
     }
 }
 
-void EffectsManager::addOutputEffectChainSlot() {
-    m_outputEffectChainSlot = OutputEffectChainSlotPointer(
-            new OutputEffectChainSlot(this, m_pMessenger));
-    m_effectChainSlotsByGroup.insert(m_outputEffectChainSlot->group(), m_outputEffectChainSlot);
+void EffectsManager::addOutputEffectChain() {
+    m_outputEffectChain = OutputEffectChainPointer(
+            new OutputEffectChain(this, m_pMessenger));
+    m_effectChainSlotsByGroup.insert(m_outputEffectChain->group(), m_outputEffectChain);
 }
 
-EffectChainSlotPointer EffectsManager::getOutputEffectChainSlot() const {
-    return m_outputEffectChainSlot;
+EffectChainPointer EffectsManager::getOutputEffectChain() const {
+    return m_outputEffectChain;
 }
 
-EffectChainSlotPointer EffectsManager::getStandardEffectChainSlot(int unitNumber) const {
-    VERIFY_OR_DEBUG_ASSERT(0 <= unitNumber || unitNumber < m_standardEffectChainSlots.size()) {
-        return EffectChainSlotPointer();
+EffectChainPointer EffectsManager::getStandardEffectChain(int unitNumber) const {
+    VERIFY_OR_DEBUG_ASSERT(0 <= unitNumber || unitNumber < m_standardEffectChains.size()) {
+        return EffectChainPointer();
     }
-    return m_standardEffectChainSlots.at(unitNumber);
+    return m_standardEffectChains.at(unitNumber);
 }
 
 void EffectsManager::addDeck(const QString& deckGroupName) {
-    addEqualizerEffectChainSlot(deckGroupName);
-    addQuickEffectChainSlot(deckGroupName);
+    addEqualizerEffectChain(deckGroupName);
+    addQuickEffectChain(deckGroupName);
 }
 
-void EffectsManager::addEqualizerEffectChainSlot(const QString& deckGroupName) {
-    VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChainSlots.contains(
-            EqualizerEffectChainSlot::formatEffectChainSlotGroup(deckGroupName))) {
+void EffectsManager::addEqualizerEffectChain(const QString& deckGroupName) {
+    VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChains.contains(
+            EqualizerEffectChain::formatEffectChainGroup(deckGroupName))) {
         return;
     }
 
-    auto pChainSlot = EqualizerEffectChainSlotPointer(
-            new EqualizerEffectChainSlot(deckGroupName, this, m_pMessenger));
+    auto pChainSlot = EqualizerEffectChainPointer(
+            new EqualizerEffectChain(deckGroupName, this, m_pMessenger));
 
-    m_equalizerEffectChainSlots.insert(deckGroupName, pChainSlot);
+    m_equalizerEffectChains.insert(deckGroupName, pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
-void EffectsManager::addQuickEffectChainSlot(const QString& deckGroupName) {
-    VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChainSlots.contains(
-            QuickEffectChainSlot::formatEffectChainSlotGroup(deckGroupName))) {
+void EffectsManager::addQuickEffectChain(const QString& deckGroupName) {
+    VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChains.contains(
+            QuickEffectChain::formatEffectChainGroup(deckGroupName))) {
         return;
     }
 
-    auto pChainSlot = QuickEffectChainSlotPointer(
-            new QuickEffectChainSlot(deckGroupName, this, m_pMessenger));
+    auto pChainSlot = QuickEffectChainPointer(
+            new QuickEffectChain(deckGroupName, this, m_pMessenger));
 
-    m_quickEffectChainSlots.insert(deckGroupName, pChainSlot);
+    m_quickEffectChains.insert(deckGroupName, pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
-EffectChainSlotPointer EffectsManager::getEffectChainSlot(
+EffectChainPointer EffectsManager::getEffectChain(
         const QString& group) const {
     return m_effectChainSlotsByGroup.value(group);
 }
@@ -180,19 +180,19 @@ void EffectsManager::readEffectsXml() {
     file.close();
 
     QStringList deckStrings;
-    for (auto it = m_quickEffectChainSlots.begin(); it != m_quickEffectChainSlots.end(); it++) {
+    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
         deckStrings << it.key();
     }
     EffectsXmlData data = m_pChainPresetManager->readEffectsXml(doc, deckStrings);
 
     for (int i = 0; i < data.standardEffectChainPresets.size(); i++) {
-        m_standardEffectChainSlots.value(i)->loadChainPreset(data.standardEffectChainPresets.at(i));
+        m_standardEffectChains.value(i)->loadChainPreset(data.standardEffectChainPresets.at(i));
     }
 
     for (auto it = data.quickEffectChainPresets.begin();
             it != data.quickEffectChainPresets.end();
             it++) {
-        auto pChainSlot = m_quickEffectChainSlots.value(it.key());
+        auto pChainSlot = m_quickEffectChains.value(it.key());
         if (pChainSlot) {
             pChainSlot->loadChainPreset(it.value());
         }
@@ -210,13 +210,13 @@ void EffectsManager::saveEffectsXml() {
     doc.appendChild(rootElement);
 
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
-    for (auto it = m_quickEffectChainSlots.begin(); it != m_quickEffectChainSlots.end(); it++) {
+    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
         auto pPreset = EffectChainPresetPointer(new EffectChainPreset(it.value().get()));
         quickEffectChainPresets.insert(it.key(), pPreset);
     }
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
-    for (const auto& pChainSlot : m_standardEffectChainSlots) {
+    for (const auto& pChainSlot : m_standardEffectChains) {
         auto pPreset = EffectChainPresetPointer(new EffectChainPreset(pChainSlot.get()));
         standardEffectChainPresets.append(pPreset);
     }

@@ -1,6 +1,6 @@
 #include "effects/presets/effectchainpreset.h"
 
-#include "effects/effectchainslot.h"
+#include "effects/effectchain.h"
 #include "effects/presets/effectxmlelements.h"
 #include "util/xml.h"
 
@@ -20,7 +20,7 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     m_name = XmlParse::selectNodeQString(chainElement, EffectXml::ChainName);
 
     QString mixModeStr = XmlParse::selectNodeQString(chainElement, EffectXml::ChainMixMode);
-    m_mixMode = EffectChainSlot::mixModeFromString(mixModeStr);
+    m_mixMode = EffectChain::mixModeFromString(mixModeStr);
 
     m_dSuper = XmlParse::selectNodeDouble(chainElement, EffectXml::ChainSuperParameter);
 
@@ -37,7 +37,7 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     }
 }
 
-EffectChainPreset::EffectChainPreset(const EffectChainSlot* chain) {
+EffectChainPreset::EffectChainPreset(const EffectChain* chain) {
     m_name = chain->presetName();
     m_mixMode = chain->mixMode();
     m_dSuper = chain->getSuperParameter();
@@ -70,7 +70,7 @@ const QDomElement EffectChainPreset::toXml(QDomDocument* doc) const {
     XmlParse::addElement(*doc,
             chainElement,
             EffectXml::ChainMixMode,
-            EffectChainSlot::mixModeToString(m_mixMode));
+            EffectChain::mixModeToString(m_mixMode));
     XmlParse::addElement(*doc,
             chainElement,
             EffectXml::ChainSuperParameter,

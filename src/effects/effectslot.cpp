@@ -20,7 +20,7 @@ EffectSlot::EffectSlot(const QString& group,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger,
         const unsigned int iEffectnumber,
-        EffectChainSlot* pChainSlot,
+        EffectChain* pChainSlot,
         EngineEffectChain* pEngineEffectChain)
         : m_iEffectNumber(iEffectnumber),
           m_group(group),

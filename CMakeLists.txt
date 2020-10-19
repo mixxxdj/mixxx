@@ -407,14 +407,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
   src/effects/effectbuttonparameterslot.cpp
-  src/effects/effectchainslot.cpp
+  src/effects/effectchain.cpp
   src/effects/effectparameter.cpp
   src/effects/effectknobparameterslot.cpp
   src/effects/effectparameterslotbase.cpp
   src/effects/effectslot.cpp
   src/effects/effectsmanager.cpp
   src/effects/effectsmessenger.cpp
-  src/effects/specialeffectchainslots.cpp
+  src/effects/specialeffectchains.cpp
   src/effects/visibleeffectslist.cpp
   src/effects/backends/effectsbackend.cpp
   src/effects/backends/effectmanifest.cpp

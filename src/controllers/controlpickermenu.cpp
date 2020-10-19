@@ -7,7 +7,6 @@
 #include "effects/defs.h"
 #include "effects/effectslot.h"
 #include "effects/effectknobparameterslot.h"
-#include "effects/specialeffectchainslots.h"
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
@@ -162,7 +161,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         for (int deck = 1; deck <= iNumDecks; ++deck) {
             QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
             for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
-                const QString group = EqualizerEffectChainSlot::formatEffectChainSlotGroup(
+                const QString group = EqualizerEffectChain::formatEffectChainGroup(
                         QString("[Channel%1]").arg(deck));
                 QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
                 QString control = "parameter%1";
@@ -469,7 +468,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         for (int iEffectUnitNumber = 1; iEffectUnitNumber <= kNumStandardEffectUnits;
                 ++iEffectUnitNumber) {
             const QString effectUnitGroup =
-                    StandardEffectChainSlot::formatEffectChainSlotGroup(
+                    StandardEffectChain::formatEffectChainGroup(
                         iEffectUnitNumber - 1);
 
             descriptionPrefix = QString("%1, %2").arg(m_effectRackStr.arg(iRackNumber),
@@ -591,7 +590,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
                      ++iEffectSlotNumber) {
                 const QString effectSlotGroup =
-                        StandardEffectChainSlot::formatEffectSlotGroup(
+                        StandardEffectChain::formatEffectSlotGroup(
                             iEffectUnitNumber - 1, iEffectSlotNumber - 1);
 
                 QMenu* effectSlotMenu = addSubmenu(m_effectStr.arg(iEffectSlotNumber),
@@ -628,7 +627,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                     // The parameter slot group is the same as the effect slot
                     // group on a standard effect rack.
                     const QString parameterSlotGroup =
-                            StandardEffectChainSlot::formatEffectSlotGroup(
+                            StandardEffectChain::formatEffectSlotGroup(
                                 iEffectUnitNumber - 1, iEffectSlotNumber - 1);
                     const QString parameterSlotItemPrefix = EffectKnobParameterSlot::formatItemPrefix(
                             iParameterSlotNumber - 1);

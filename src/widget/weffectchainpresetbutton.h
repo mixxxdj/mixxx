@@ -21,7 +21,7 @@ class WEffectChainPresetButton : public QPushButton, public WBaseWidget {
 
   private:
     int m_iChainNumber;
-    EffectChainSlotPointer m_pChainSlot;
+    EffectChainPointer m_pChain;
 
     EffectsManager* m_pEffectsManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;

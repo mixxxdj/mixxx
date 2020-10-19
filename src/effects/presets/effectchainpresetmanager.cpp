@@ -325,7 +325,7 @@ void EffectChainPresetManager::setQuickEffectPresetOrder(
     emit quickEffectChainPresetListUpdated();
 }
 
-void EffectChainPresetManager::savePreset(EffectChainSlotPointer pChainSlot) {
+void EffectChainPresetManager::savePreset(EffectChainPointer pChainSlot) {
     EffectChainPresetPointer pPreset(new EffectChainPreset(pChainSlot.get()));
     savePreset(pPreset);
 }

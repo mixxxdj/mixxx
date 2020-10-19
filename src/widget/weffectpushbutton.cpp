@@ -15,7 +15,7 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     // Setup parent class.
     WPushButton::setup(node, context);
 
-    auto pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+    auto pChainSlot = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     auto pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);
     m_pEffectParameterSlot = EffectWidgetUtils::getButtonParameterSlotFromNode(

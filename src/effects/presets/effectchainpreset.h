@@ -4,7 +4,7 @@
 #include "effects/defs.h"
 #include "effects/presets/effectpreset.h"
 
-class EffectChainSlot;
+class EffectChain;
 
 /// EffectChainPreset is a read-only snapshot of the state of an effect chain
 /// that can be serialized to/deserialized from XML. It is used by EffectsManager
@@ -14,7 +14,7 @@ class EffectChainPreset {
   public:
     EffectChainPreset();
     EffectChainPreset(const QDomElement& chainElement);
-    EffectChainPreset(const EffectChainSlot* pChain);
+    EffectChainPreset(const EffectChain* pChain);
     /// make a chain preset with just one effect
     EffectChainPreset(EffectManifestPointer pManifest);
     EffectChainPreset(EffectPresetPointer pEffectPreset);
