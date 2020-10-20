@@ -16,7 +16,8 @@
 #include "util/memory.h"
 
 namespace {
-constexpr double kMaxFloatingPointError = 0.005;
+constexpr double kMaxFloatingPointErrorLowPrecision = 0.005;
+constexpr double kMaxFloatingPointErrorHighPrecision = 0.0000000000000005;
 }
 
 /// Tests for Master Sync.
@@ -629,7 +630,7 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     // Follower should immediately set its slider.
     EXPECT_NEAR(getRateSliderValue(1.3333333333),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_DOUBLE_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
@@ -739,7 +740,7 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     EXPECT_NEAR(getRateSliderValue(1.16666667),
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
@@ -1295,7 +1296,7 @@ TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {
 
     EXPECT_NEAR(0.0023219956,
             m_pChannel1->getEngineBuffer()->getVisualPlayPos(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 }
 
 TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
@@ -1425,7 +1426,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
         EXPECT_NEAR(
                 m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
                 m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
-                kMaxFloatingPointError);
+                kMaxFloatingPointErrorLowPrecision);
     }
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
@@ -1554,10 +1555,10 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
 
     ProcessBuffer();
 
-    EXPECT_DOUBLE_EQ(
-            (m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
-            (m_pChannel2->getEngineBuffer()
-                            ->m_pSyncControl->getBeatDistance()));
+    EXPECT_NEAR(
+            m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+            m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+            kMaxFloatingPointErrorHighPrecision);
 
     ProcessBuffer();
     ProcessBuffer();
@@ -1565,18 +1566,19 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     EXPECT_DOUBLE_EQ(87.5,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
-    EXPECT_DOUBLE_EQ(
-            (m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
-            (m_pChannel2->getEngineBuffer()
-                            ->m_pSyncControl->getBeatDistance()));
-
-    ProcessBuffer();
-    ProcessBuffer();
-    ProcessBuffer();
-
-    EXPECT_DOUBLE_EQ(
+    EXPECT_NEAR(
             m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
-            m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
+            m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+            kMaxFloatingPointErrorHighPrecision);
+
+    ProcessBuffer();
+    ProcessBuffer();
+    ProcessBuffer();
+
+    EXPECT_NEAR(
+            m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+            m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+            kMaxFloatingPointErrorHighPrecision);
 }
 
 TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
@@ -1689,14 +1691,14 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     EXPECT_NEAR(0.019349962,
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 
     // The internal clock must also have been advanced to the same fraction of a beat.
     EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_NEAR(0.019349962,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
 
@@ -1706,10 +1708,10 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // with the same rate
     EXPECT_NEAR(0.019349962,
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_NEAR(0.019349962,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 
     // Now make the second deck playing and see if it works.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -1733,13 +1735,13 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     EXPECT_NEAR(
             0.019349962,
             ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_NEAR(
             0.038699925,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     pButtonSyncEnabled1->set(0.0);
@@ -1868,10 +1870,10 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
 
     EXPECT_NEAR(0.024806201,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_NEAR(0.0023219956,
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 
     ControlObject::set(ConfigKey(m_sGroup2, "playposition"), 0.2);
     ProcessBuffer();
@@ -1883,17 +1885,17 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
     // different bpms.
     EXPECT_NEAR(0.19417687,
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_NEAR(0.19148479,
             ControlObject::get(ConfigKey(m_sGroup2, "playposition")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     // The beat distances are identical though.
     EXPECT_NEAR(0.074418604,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_NEAR(0.074418604,
             ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 
     // Apply user tweak offset.
     m_pChannel1->getEngineBuffer()
@@ -1909,16 +1911,16 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
     // to be the same because beat distance CO hides the user offset.
     EXPECT_NEAR(0.2269025,
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_NEAR(0.1960644,
             ControlObject::get(ConfigKey(m_sGroup2, "playposition")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_NEAR(0.12403101,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
     EXPECT_NEAR(0.12403101,
             ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
-            kMaxFloatingPointError);
+            kMaxFloatingPointErrorLowPrecision);
 }
 
 TEST_F(EngineSyncTest, MasterBpmNeverZero) {
