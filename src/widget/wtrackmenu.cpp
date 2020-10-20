@@ -952,9 +952,9 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         return;
     }
     m_pPlaylistMenu->clear();
-    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
-                                       ->internalCollection()
-                                       ->getPlaylistDAO();
+    const PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                             ->internalCollection()
+                                             ->getPlaylistDAO();
     QMap<QString, int> playlists;
     int numPlaylists = playlistDao.playlistCount();
     for (int i = 0; i < numPlaylists; ++i) {
