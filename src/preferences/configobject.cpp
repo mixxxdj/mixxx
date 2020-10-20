@@ -186,15 +186,19 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(const QString& f
     }
 }
 
-template <class ValueType> void ConfigObject<ValueType>::save() {
+/// Save the ConfigObject to disk.
+/// Returns true on success
+template<class ValueType>
+bool ConfigObject<ValueType>::save() {
     QReadLocker lock(&m_valuesLock); // we only read the m_values here.
-    QFile file(m_filename);
+    QString tmpFilename(m_filename + ".tmp");
+    QFile file(tmpFilename);
     if (!QDir(QFileInfo(file).absolutePath()).exists()) {
         QDir().mkpath(QFileInfo(file).absolutePath());
     }
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Could not write file" << m_filename << ", don't worry.";
-        return;
+        qWarning() << "Could not write file" << m_filename << ", don't worry.";
+        return false;
     } else {
         QTextStream stream(&file);
         stream.setCodec("UTF-8");
@@ -211,9 +215,19 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
         }
         file.close();
         if (file.error()!=QFile::NoError) { //could be better... should actually say what the error was..
-            qDebug() << "Error while writing configuration file:" << file.errorString();
+            qWarning() << "Error while writing configuration file:" << file.errorString();
+        } else {
+            QFile oldConfig(m_filename);
+            if (!oldConfig.remove()) {
+                qWarning() << "Could not remove old config file:" << oldConfig.errorString();
+                return false;
+            } else {
+                file.rename(m_filename);
+                return true;
+            }
         }
     }
+    return false;
 }
 
 template<class ValueType>
