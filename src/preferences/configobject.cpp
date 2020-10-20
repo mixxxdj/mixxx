@@ -197,7 +197,7 @@ bool ConfigObject<ValueType>::save() {
         QDir().mkpath(QFileInfo(file).absolutePath());
     }
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "Could not write file" << m_filename << ", don't worry.";
+        qWarning() << "Could not write config file: " << m_filename;
         return false;
     } else {
         QTextStream stream(&file);
@@ -215,15 +215,17 @@ bool ConfigObject<ValueType>::save() {
         }
         file.close();
         if (file.error()!=QFile::NoError) { //could be better... should actually say what the error was..
-            qWarning() << "Error while writing configuration file:" << file.errorString();
+            qWarning() << "Error while writing configuration file: " << file.errorString();
         } else {
             QFile oldConfig(m_filename);
             if (!oldConfig.remove()) {
-                qWarning() << "Could not remove old config file:" << oldConfig.errorString();
+                qWarning() << "Could not remove old config file: " << oldConfig.errorString();
                 return false;
-            } else {
-                file.rename(m_filename);
+            }
+            if (file.rename(m_filename)) {
                 return true;
+            } else {
+                qWarning() << "Could not rename tmp file to config file: " << file.errorString();
             }
         }
     }
