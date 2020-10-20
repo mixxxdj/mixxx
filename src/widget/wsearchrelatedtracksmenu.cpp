@@ -104,38 +104,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         }
     }
 
-    // Artist/Title actions
+    // Artist actions
     addSeparatorBeforeNextAction = !isEmpty();
-    {
-        const auto title = track.getTitle();
-        if (!title.isEmpty()) {
-            const auto actionText =
-                    tr("Title: \"%1\"").arg(title);
-            const QString searchQuery =
-                    QStringLiteral("title:\"") +
-                    title +
-                    QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
-        }
-    }
-    {
-        const auto album = track.getAlbum();
-        if (!album.isEmpty()) {
-            const auto actionText =
-                    tr("Album: \"%1\"").arg(album);
-            const QString searchQuery =
-                    QStringLiteral("album:\"") +
-                    album +
-                    QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
-        }
-    }
     {
         auto primaryArtist = track.getArtist();
         auto secondaryArtist = track.getAlbumArtist();
@@ -215,6 +185,39 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             const QString searchQuery =
                     QStringLiteral("composer:\"") +
                     composer +
+                    QChar('"');
+            addSeparatorBeforeNextAction = addTriggerSearchAction(
+                    addSeparatorBeforeNextAction,
+                    actionText,
+                    searchQuery);
+        }
+    }
+
+    // Title and grouping actions
+    addSeparatorBeforeNextAction = !isEmpty();
+    {
+        const auto title = track.getTitle();
+        if (!title.isEmpty()) {
+            const auto actionText =
+                    tr("Title: \"%1\"").arg(title);
+            const QString searchQuery =
+                    QStringLiteral("title:\"") +
+                    title +
+                    QChar('"');
+            addSeparatorBeforeNextAction = addTriggerSearchAction(
+                    addSeparatorBeforeNextAction,
+                    actionText,
+                    searchQuery);
+        }
+    }
+    {
+        const auto album = track.getAlbum();
+        if (!album.isEmpty()) {
+            const auto actionText =
+                    tr("Album: \"%1\"").arg(album);
+            const QString searchQuery =
+                    QStringLiteral("album:\"") +
+                    album +
                     QChar('"');
             addSeparatorBeforeNextAction = addTriggerSearchAction(
                     addSeparatorBeforeNextAction,
