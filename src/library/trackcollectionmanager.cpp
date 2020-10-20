@@ -82,18 +82,28 @@ TrackCollectionManager::TrackCollectionManager(
                 /*signal-to-signal*/ Qt::DirectConnection);
 
         // Handle signals
+        // NOTE: The receiver's thread context `this` is required to enforce
+        // establishing connections with Qt::AutoConnection and ensure that
+        // signals are handled within the receiver's and NOT the sender's
+        // event loop thread!!!
         connect(m_pScanner.get(),
                 &LibraryScanner::trackAdded,
-                this,
-                &TrackCollectionManager::slotScanTrackAdded);
+                /*receiver thread context*/ this,
+                [this](const TrackPointer& pTrack) {
+                    afterTrackAdded(pTrack);
+                });
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksChanged,
-                this,
-                &TrackCollectionManager::slotScanTracksUpdated);
+                /*receiver thread context*/ this,
+                [this](const QSet<TrackId>& updatedTrackIds) {
+                    afterTracksUpdated(updatedTrackIds);
+                });
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksRelocated,
-                this,
-                &TrackCollectionManager::slotScanTracksRelocated);
+                /*receiver thread context*/ this,
+                [this](const QList<RelocatedTrack>& relocatedTracks) {
+                    afterTracksRelocated(relocatedTracks);
+                });
 
         // Force the GUI thread's Track cache to be cleared when a library
         // scan is finished, because we might have modified the database directly
@@ -274,19 +284,19 @@ void TrackCollectionManager::exportTrackMetadata(
     }
 }
 
-bool TrackCollectionManager::addDirectory(const QString& dir) {
+bool TrackCollectionManager::addDirectory(const QString& dir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->addDirectory(dir);
 }
 
-bool TrackCollectionManager::removeDirectory(const QString& dir) {
+bool TrackCollectionManager::removeDirectory(const QString& dir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->removeDirectory(dir);
 }
 
-void TrackCollectionManager::relocateDirectory(QString oldDir, QString newDir) {
+void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.debug()
@@ -311,25 +321,25 @@ void TrackCollectionManager::relocateDirectory(QString oldDir, QString newDir) {
     }
 }
 
-bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) {
+bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->hideTracks(trackIds);
 }
 
-bool TrackCollectionManager::unhideTracks(const QList<TrackId>& trackIds) {
+bool TrackCollectionManager::unhideTracks(const QList<TrackId>& trackIds) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->unhideTracks(trackIds);
 }
 
-void TrackCollectionManager::hideAllTracks(const QDir& rootDir) {
+void TrackCollectionManager::hideAllTracks(const QDir& rootDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     m_pInternalCollection->hideAllTracks(rootDir);
 }
 
-void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
+void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     if (trackRefs.isEmpty()) {
@@ -372,7 +382,7 @@ void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
     }
 }
 
-void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) {
+void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.debug()
@@ -400,7 +410,7 @@ void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) {
 
 TrackPointer TrackCollectionManager::getOrAddTrack(
         const TrackRef& trackRef,
-        bool* pAlreadyInLibrary) {
+        bool* pAlreadyInLibrary) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     bool alreadyInLibrary;
@@ -414,12 +424,12 @@ TrackPointer TrackCollectionManager::getOrAddTrack(
     }
     if (pTrack && !alreadyInLibrary) {
         // Add to external libraries
-        slotScanTrackAdded(pTrack);
+        afterTrackAdded(pTrack);
     }
     return pTrack;
 }
 
-void TrackCollectionManager::slotScanTrackAdded(TrackPointer pTrack) {
+void TrackCollectionManager::afterTrackAdded(const TrackPointer& pTrack) const {
     DEBUG_ASSERT(pTrack);
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
@@ -438,7 +448,7 @@ void TrackCollectionManager::slotScanTrackAdded(TrackPointer pTrack) {
     }
 }
 
-void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds) {
+void TrackCollectionManager::afterTracksUpdated(const QSet<TrackId>& updatedTrackIds) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Already updated in m_pInternalCollection
@@ -479,8 +489,8 @@ void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds
     }
 }
 
-void TrackCollectionManager::slotScanTracksRelocated(
-        QList<RelocatedTrack> relocatedTracks) {
+void TrackCollectionManager::afterTracksRelocated(
+        const QList<RelocatedTrack>& relocatedTracks) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Already replaced in m_pInternalCollection
