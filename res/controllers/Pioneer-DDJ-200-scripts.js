@@ -187,7 +187,7 @@ DDJ200.syncEnabled = function(channel, control, value, status, group) {
 
 DDJ200.rateMSB = function(channel, control, value, status, group) {
     // store most significant byte value of rate
-    vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
+    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
     DDJ200.vDeck[vDeckNo]["rateMSB"] = value;
 };
 
@@ -202,7 +202,7 @@ DDJ200.rateLSB = function(channel, control, value, status, group) {
 
 DDJ200.volumeMSB = function(channel, control, value, status, group) {
     // store most significant byte value of volume
-    vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
+    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
     DDJ200.vDeck[vDeckNo]["volMSB"] = value;
 };
 
@@ -304,7 +304,7 @@ DDJ200.pfl = function(channel, control, value, status, group) {
 DDJ200.switchLEDs = function(vDeckNo) {
     // set LEDs of controller deck according to virtual deck
     var c = 1; if (vDeckNo % 2) c = 0;
-    vgroup = "[Channel" + vDeckNo +"]";
+    var vgroup = "[Channel" + vDeckNo +"]";
     midi.sendShortMsg(0x90 + c, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
     midi.sendShortMsg(0x90 + c, 0x0C, 0x7F *
                       (engine.getValue(vgroup, "cue_point") !== -1));
