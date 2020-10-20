@@ -887,3 +887,8 @@ WLibrary QRadioButton {
 #Border58 {
   border: 1px solid #585858;
 }
+
+WMainMenuBarButton::menu-indicator, WMainMenuBarButton::menu-indicator:pressed, WMainMenuBarButton::menu-indicator:open {
+  width: 0;
+  height: 0;
+}

@@ -5,6 +5,31 @@
     <SizePolicy>e,min</SizePolicy>
     <Children>
 
+      <MainMenuButton>
+        <ObjectName>MainMenuButton</ObjectName>
+        <Size>60f,20f</Size>
+        <SizePolicy>f,f</SizePolicy>
+        <Connection>
+          <ConfigKey>[Skin],show_menubar</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </MainMenuButton>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarSeparator</ObjectName>
+        <Size>4f,0min</Size>
+        <Connection>
+          <ConfigKey>[Skin],show_menubar</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
       <Template src="skin:/controls/button_2state.xml">
         <SetVariable name="TooltipId">maximize_library</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
