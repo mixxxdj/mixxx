@@ -48,12 +48,7 @@ MPKmini.updateLed = function() {
 };
 
 MPKmini.flashLed = function() {
-    var start;
-    if (MPKmini.currentUnitNum === 1) {
-        start = 12;
-    } else {
-        start = 8;
-    }
+    var start = (MPKmini.currentUnitNum === 1) ? 12 : 8;
     midi.sendShortMsg(0x90, start + MPKmini.currentEffectNum, MPKmini.currentFlash ? 127 : 0);
     MPKmini.currentFlash = !MPKmini.currentFlash;
 };
