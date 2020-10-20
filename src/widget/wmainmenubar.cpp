@@ -59,16 +59,17 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent,
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig),
           m_lastNumPlayers(0) {
+<<<<<<< HEAD
     setObjectName(QStringLiteral("MainMenu"));
     initialize();
+||||||| parent of b40bbda059 (Remove unesarry functions, cleanup)
+    initialize();
+=======
+    createMenu([this](QMenu* x) { addMenu(x); });
+>>>>>>> b40bbda059 (Remove unesarry functions, cleanup)
 }
 
-void WMainMenuBar::initialize() {
-    WMainMenuBar* target = this;
-    createMenu([target](QMenu* x) { target->addMenu(x); });
-}
-
-void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
+void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"), this);
 
@@ -116,7 +117,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     connect(pFileQuit, &QAction::triggered, this, &WMainMenuBar::quit);
     pFileMenu->addAction(pFileQuit);
 
-    pAddMenu(pFileMenu);
+    fnAddMenu(pFileMenu);
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
@@ -160,7 +161,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     connect(pLibraryCreateCrate, &QAction::triggered, this, &WMainMenuBar::createCrate);
     pLibraryMenu->addAction(pLibraryCreateCrate);
 
-    pAddMenu(pLibraryMenu);
+    fnAddMenu(pLibraryMenu);
 
 #if defined(__APPLE__)
     // Note: On macOS 10.11 ff. we have to deal with "automagic" menu items,
@@ -318,7 +319,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
             &QAction::setChecked);
     pViewMenu->addAction(pViewFullScreen);
 
-    pAddMenu(pViewMenu);
+    fnAddMenu(pViewMenu);
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
@@ -437,7 +438,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     connect(pOptionsPreferences, &QAction::triggered, this, &WMainMenuBar::showPreferences);
     pOptionsMenu->addAction(pOptionsPreferences);
 
-    pAddMenu(pOptionsMenu);
+    fnAddMenu(pOptionsMenu);
 
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
@@ -536,7 +537,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
                 &WMainMenuBar::slotDeveloperDebugger);
         pDeveloperMenu->addAction(pDeveloperDebugger);
 
-        pAddMenu(pDeveloperMenu);
+        fnAddMenu(pDeveloperMenu);
     }
 
     addSeparator();
@@ -625,7 +626,7 @@ void WMainMenuBar::createMenu(std::function<void(QMenu*)> pAddMenu) {
     connect(pHelpAboutApp, &QAction::triggered, this, &WMainMenuBar::showAbout);
 
     pHelpMenu->addAction(pHelpAboutApp);
-    pAddMenu(pHelpMenu);
+    fnAddMenu(pHelpMenu);
 
     // we already know the num
     if (m_lastNumPlayers) {

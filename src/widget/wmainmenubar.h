@@ -11,6 +11,10 @@
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
+namespace {
+typedef std::function<void(QMenu*)> FnAddMenu;
+}
+
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
   public:
@@ -36,7 +40,7 @@ class WMainMenuBar : public QMenuBar {
   public:
     WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
-    void createMenu(std::function<void(QMenu*)>);
+    void createMenu(FnAddMenu fnAddMenu);
     void setVisible(bool visible) override;
   public slots:
     void onLibraryScanStarted();

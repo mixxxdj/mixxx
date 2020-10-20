@@ -12,6 +12,7 @@
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
+#include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
 class WMainMenuBar;
@@ -20,11 +21,10 @@ class WMainMenuBarButton : public QPushButton, public WBaseWidget {
     Q_OBJECT
   public:
     WMainMenuBarButton(QWidget* pParent, WMainMenuBar* pMainMenu);
-    void setup(const QDomNode& node, const SkinContext& context);
 
   private:
     void initialize(WMainMenuBar* pMainMenu);
 
-    UserSettingsPointer m_pConfig;
-    QMenu* m_pMenu;
+    const UserSettingsPointer m_pConfig;
+    const parented_ptr<QMenu> m_pMenu;
 };
