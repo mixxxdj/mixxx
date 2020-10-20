@@ -74,10 +74,11 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto keyText = track.getKeyText();
         if (!keyText.isEmpty()) {
             const auto actionText =
-                    tr("Key: Harmonic with %1").arg(keyText);
+                    tr("Key: Harmonic with \"%1\"").arg(keyText);
             const QString searchQuery =
-                    QStringLiteral("~key:") +
-                    keyText;
+                    QStringLiteral("~key:\"") +
+                    keyText +
+                    QChar('"');
             addSeparatorBeforeNextAction = addTriggerSearchAction(
                     addSeparatorBeforeNextAction,
                     actionText,
