@@ -198,6 +198,9 @@ void DlgPrefLibrary::slotUpdate() {
     case ADD_TO_AUTODJ_TOP:
             radioButton_dbclick_top->setChecked(true);
             break;
+    case DO_NOTHING:
+            radioButton_dbclick_ignore->setChecked(true);
+            break;
     default:
             radioButton_dbclick_deck->setChecked(true);
             break;
@@ -334,8 +337,10 @@ void DlgPrefLibrary::slotApply() {
             dbclick_status = ADD_TO_AUTODJ_BOTTOM;
     } else if (radioButton_dbclick_top->isChecked()) {
             dbclick_status = ADD_TO_AUTODJ_TOP;
-    } else {
+    } else if (radioButton_dbclick_deck->isChecked()){
             dbclick_status = LOAD_TO_DECK;
+    } else { // radioButton_dbclick_ignore
+            dbclick_status = DO_NOTHING;
     }
     m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));

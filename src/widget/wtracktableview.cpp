@@ -340,6 +340,10 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
             static_cast<DlgPrefLibrary::TrackDoubleClickAction>(
                     doubleClickActionConfigValue);
 
+    if (doubleClickAction == DlgPrefLibrary::DO_NOTHING) {
+        return;
+    }
+
     auto trackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;

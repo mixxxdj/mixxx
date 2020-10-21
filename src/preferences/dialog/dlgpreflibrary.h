@@ -22,7 +22,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     enum TrackDoubleClickAction {
         LOAD_TO_DECK,
         ADD_TO_AUTODJ_BOTTOM,
-        ADD_TO_AUTODJ_TOP
+        ADD_TO_AUTODJ_TOP,
+        DO_NOTHING
     };
 
     DlgPrefLibrary(
