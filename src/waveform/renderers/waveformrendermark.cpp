@@ -57,11 +57,11 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             generateMarkImage(pMark);
         }
 
-        double samplePosition = pMark->getSamplePosition();
+        const double samplePosition = pMark->getSamplePosition();
         if (samplePosition != Cue::kNoPosition) {
-            double currentMarkPoint =
+            const double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
-            double sampleEndPosition = pMark->getSampleEndPosition();
+            const double sampleEndPosition = pMark->getSampleEndPosition();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
                 // external image should respect that ...
@@ -80,7 +80,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 // Check if the range needs to be displayed.
                 if (sampleEndPosition != Cue::kNoPosition) {
                     DEBUG_ASSERT(samplePosition < sampleEndPosition);
-                    double currentMarkEndPoint =
+                    const double currentMarkEndPoint =
                             m_waveformRenderer->transformSamplePositionInRendererWorld(
                                     sampleEndPosition);
                     if (visible || currentMarkEndPoint > 0) {
