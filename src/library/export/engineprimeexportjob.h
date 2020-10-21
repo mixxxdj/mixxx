@@ -49,9 +49,6 @@ class EnginePrimeExportJob : public QThread {
     void loadCrate(CrateId crateId);
 
   private:
-    QMutex m_mainThreadLoadMutex;
-    QWaitCondition m_waitForMainThreadLoad;
-
     QList<TrackRef> m_trackRefs;
     QList<CrateId> m_crateIds;
     TrackPointer m_pLastLoadedTrack;

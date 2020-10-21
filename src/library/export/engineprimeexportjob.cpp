@@ -306,7 +306,6 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
     // Note: this slot exists to ensure the track collection is never accessed
     // from outside its own thread.
     DEBUG_ASSERT(thread() == m_pTrackCollectionManager->thread());
-    QMutexLocker lock{&m_mainThreadLoadMutex};
 
     if (crateIds.isEmpty()) {
         // No explicit crate ids specified, meaning we want to export the
@@ -372,16 +371,12 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
             }
         }
     }
-
-    // Inform the worker thread that some main-thread loading has completed.
-    m_waitForMainThreadLoad.wakeAll();
 }
 
 void EnginePrimeExportJob::loadTrack(TrackRef trackRef) {
     // Note: this slot exists to ensure the track collection is never accessed
     // from outside its own thread.
     DEBUG_ASSERT(thread() == m_pTrackCollectionManager->thread());
-    QMutexLocker lock{&m_mainThreadLoadMutex};
 
     // Load the track.
     m_pLastLoadedTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
@@ -395,16 +390,12 @@ void EnginePrimeExportJob::loadTrack(TrackRef trackRef) {
         m_pLastLoadedWaveform.reset(
                 WaveformFactory::loadWaveformFromAnalysis(waveformAnalysis));
     }
-
-    // Inform the worker thread that some main-thread loading has completed.
-    m_waitForMainThreadLoad.wakeAll();
 }
 
 void EnginePrimeExportJob::loadCrate(CrateId crateId) {
     // Note: this slot exists to ensure the track collection is never accessed
     // from outside its own thread.
     DEBUG_ASSERT(thread() == m_pTrackCollectionManager->thread());
-    QMutexLocker lock{&m_mainThreadLoadMutex};
 
     // Load crate details.
     m_pTrackCollectionManager->internalCollection()->crates().readCrateById(
@@ -418,9 +409,6 @@ void EnginePrimeExportJob::loadCrate(CrateId crateId) {
     while (result.next()) {
         m_lastLoadedCrateTrackIds.append(result.trackId());
     }
-
-    // Inform the worker thread that some main-thread loading has completed.
-    m_waitForMainThreadLoad.wakeAll();
 }
 
 void EnginePrimeExportJob::run() {
@@ -430,16 +418,11 @@ void EnginePrimeExportJob::run() {
     // Load ids of tracks and crates to export.
     // Note that loading must happen on the same thread as the track collection
     // manager, which is not the same as this method's worker thread.
-    {
-        QMutexLocker lock{&m_mainThreadLoadMutex};
-        QMetaObject::invokeMethod(
-                this,
-                "loadIds",
-                Q_ARG(QSet<CrateId>, m_request.crateIdsToExport));
-
-        // We expect the `loadIds()` method to fire the below wait condition.
-        m_waitForMainThreadLoad.wait(&m_mainThreadLoadMutex);
-    }
+    QMetaObject::invokeMethod(
+            this,
+            "loadIds",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(QSet<CrateId>, m_request.crateIdsToExport));
 
     // Measure progress as one 'count' for each track, each crate, plus some
     // additional counts for various other operations.
@@ -464,16 +447,11 @@ void EnginePrimeExportJob::run() {
         // Load each track.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
-        {
-            QMutexLocker lock{&m_mainThreadLoadMutex};
-            QMetaObject::invokeMethod(
-                    this,
-                    "loadTrack",
-                    Q_ARG(TrackRef, trackRef));
-
-            // We expect the `loadTrack()` method to fire the below wait condition.
-            m_waitForMainThreadLoad.wait(&m_mainThreadLoadMutex);
-        }
+        QMetaObject::invokeMethod(
+                this,
+                "loadTrack",
+                Qt::BlockingQueuedConnection,
+                Q_ARG(TrackRef, trackRef));
 
         if (m_cancellationRequested.loadAcquire() != 0) {
             qInfo() << "Cancelling export";
@@ -523,16 +501,11 @@ void EnginePrimeExportJob::run() {
         // Load the current crate.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
-        {
-            QMutexLocker lock{&m_mainThreadLoadMutex};
-            QMetaObject::invokeMethod(
-                    this,
-                    "loadCrate",
-                    Q_ARG(CrateId, crateId));
-
-            // We expect the `loadCrate()` method to fire the below wait condition.
-            m_waitForMainThreadLoad.wait(&m_mainThreadLoadMutex);
-        }
+        QMetaObject::invokeMethod(
+                this,
+                "loadCrate",
+                Qt::BlockingQueuedConnection,
+                Q_ARG(CrateId, crateId));
 
         if (m_cancellationRequested.loadAcquire() != 0) {
             qInfo() << "Cancelling export";
