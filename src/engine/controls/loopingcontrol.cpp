@@ -795,8 +795,9 @@ void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
     if (value) {
         // Requested to set loop_enabled to 1
         if (m_bLoopingEnabled) {
-            DEBUG_ASSERT(m_pCOLoopEnabled->get());
-            m_pCOLoopEnabled->setAndConfirm(1.0);
+            VERIFY_OR_DEBUG_ASSERT(m_pCOLoopEnabled->get()) {
+                m_pCOLoopEnabled->setAndConfirm(1.0);
+            }
         } else {
             // Looping is currently disabled, try to enable the loop. In
             // contrast to the reloop_toggle CO, we do not jump in any case.
@@ -820,8 +821,9 @@ void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
             // setAndConfirm is called by setLoopingEnabled
             setLoopingEnabled(false);
         } else {
-            DEBUG_ASSERT(!m_pCOLoopEnabled->get());
-            m_pCOLoopEnabled->setAndConfirm(0.0);
+            VERIFY_OR_DEBUG_ASSERT(!m_pCOLoopEnabled->get()) {
+                m_pCOLoopEnabled->setAndConfirm(0.0);
+            }
         }
     }
 }
