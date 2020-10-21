@@ -1495,6 +1495,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
             m_pTrackModel);
     connect(m_pDlgTrackInfo.get(),
             &QDialog::finished,
+            this,
             [this]() {
                 if (m_pDlgTrackInfo.get() == sender()) {
                     m_pDlgTrackInfo.release()->deleteLater();
@@ -1518,6 +1519,7 @@ void WTrackMenu::slotShowDlgTagFetcher() {
             m_pTrackModel);
     connect(m_pDlgTagFetcher.get(),
             &QDialog::finished,
+            this,
             [this]() {
                 if (m_pDlgTagFetcher.get() == sender()) {
                     m_pDlgTagFetcher.release()->deleteLater();
