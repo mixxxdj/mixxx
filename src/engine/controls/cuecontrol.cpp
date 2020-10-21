@@ -940,6 +940,8 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
         m_bypassCueSetByPlay = true;
         m_pPlay->set(1.0);
     }
+
+    m_pHotcueFocus->set(pControl->getHotcueNumber());
 }
 
 void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
@@ -984,8 +986,10 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         break;
     }
     default:
-        break;
+        return;
     }
+
+    m_pHotcueFocus->set(pControl->getHotcueNumber());
 }
 
 void CueControl::hotcueActivate(
