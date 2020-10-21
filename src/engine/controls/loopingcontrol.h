@@ -187,8 +187,6 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopMove;
     QList<LoopMoveControl*> m_loopMoves;
 
-    CuePointer m_pCue;
-
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     mixxx::BeatsPointer m_pBeats;
