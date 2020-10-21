@@ -2226,8 +2226,12 @@ HotcueControl::HotcueControl(QString group, int i)
             Qt::DirectConnection);
     m_hotcueEndPosition->set(Cue::kNoPosition);
 
-    m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
-    m_hotcueEnabled->setReadOnly();
+    m_pHotcueStatus = new ControlObject(keyForControl(i, "status"));
+    m_pHotcueStatus->setReadOnly();
+
+    // Add an alias for the legacy hotcue_X_enabled CO
+    ControlDoublePrivate::insertAlias(keyForControl(i, "enabled"),
+            keyForControl(i, "status"));
 
     m_hotcueType = new ControlObject(keyForControl(i, "type"));
     m_hotcueType->setReadOnly();
@@ -2327,7 +2331,7 @@ HotcueControl::HotcueControl(QString group, int i)
 HotcueControl::~HotcueControl() {
     delete m_hotcuePosition;
     delete m_hotcueEndPosition;
-    delete m_hotcueEnabled;
+    delete m_pHotcueStatus;
     delete m_hotcueType;
     delete m_hotcueColor;
     delete m_hotcueSet;
@@ -2398,7 +2402,7 @@ void HotcueControl::slotHotcueClear(double v) {
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
-    m_hotcueEnabled->forceSet(newPosition == Cue::kNoPosition ? 0.0 : 1.0);
+    m_pHotcueStatus->forceSet(newPosition == Cue::kNoPosition ? 0.0 : 1.0);
     emit hotcuePositionChanged(this, newPosition);
 }
 
@@ -2477,13 +2481,10 @@ void HotcueControl::setType(mixxx::CueType type) {
     m_hotcueType->forceSet(static_cast<double>(type));
 }
 
-// Starting with Mixxx 2.4, the `hotcue_X_enabled` CO is an enum instead of a
-// boolean value. Refer to the definition of the HotcueControl::Status enum for
-// details.
 void HotcueControl::setStatus(HotcueControl::Status status) {
-    m_hotcueEnabled->forceSet(static_cast<double>(status));
+    m_pHotcueStatus->forceSet(static_cast<double>(status));
 }
 
 HotcueControl::Status HotcueControl::getStatus() const {
-    return static_cast<Status>(m_hotcueEnabled->get());
+    return static_cast<Status>(m_pHotcueStatus->get());
 }
