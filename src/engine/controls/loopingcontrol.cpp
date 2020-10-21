@@ -393,7 +393,6 @@ double LoopingControl::nextTrigger(bool reverse,
         if (loopSamples.start != m_oldLoopSamples.start ||
                 loopSamples.end != m_oldLoopSamples.end) {
             // bool seek is only valid after the loop has changed
-            bool movedOut;
             switch (loopSamples.seekMode) {
             case LoopSeekMode::Changed:
                 // here the loop has changed and the play position
@@ -403,8 +402,8 @@ double LoopingControl::nextTrigger(bool reverse,
                         loopSamples.start,
                         loopSamples.end);
                 break;
-            case LoopSeekMode::MovedOut:
-                movedOut = false;
+            case LoopSeekMode::MovedOut: {
+                bool movedOut = false;
                 // Check if we have moved out of the loop, before we could enable it
                 if (reverse) {
                     if (loopSamples.start > currentSample) {
@@ -422,6 +421,7 @@ double LoopingControl::nextTrigger(bool reverse,
                             loopSamples.end);
                 }
                 break;
+            }
             case LoopSeekMode::None:
                 // Nothing to do here
                 break;
