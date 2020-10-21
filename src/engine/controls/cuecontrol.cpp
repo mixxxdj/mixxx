@@ -922,11 +922,11 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
     }
 
     if (pCue->getType() == mixxx::CueType::Loop) {
-        hotcueGoto(pControl, v);
+        seekAbs(startPosition);
         setCurrentSavedLoopControl(pControl);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
-        hotcueGoto(pControl, v);
-        setBeatLoop(pCue->getPosition(), true);
+        seekAbs(startPosition);
+        setBeatLoop(startPosition, true);
     } else {
         return;
     }
