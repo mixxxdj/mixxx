@@ -2473,6 +2473,9 @@ void HotcueControl::setType(mixxx::CueType type) {
     m_hotcueType->forceSet(static_cast<double>(type));
 }
 
+// Starting with Mixxx 2.4, the `hotcue_X_enabled` CO is an enum instead of a
+// boolean value. Refer to the definition of the HotcueControl::Status enum for
+// details.
 void HotcueControl::setStatus(HotcueControl::Status status) {
     m_hotcueEnabled->forceSet(static_cast<double>(status));
 }
