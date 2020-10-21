@@ -778,7 +778,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     pCue->setStartPosition(cueStartPosition);
     pCue->setEndPosition(cueEndPosition);
     pCue->setHotCue(hotcue);
-    pCue->setLabel("");
+    pCue->setLabel(QString());
     pCue->setType(cueType);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
