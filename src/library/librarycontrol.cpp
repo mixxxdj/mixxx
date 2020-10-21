@@ -643,6 +643,13 @@ void LibraryControl::slotGoToItem(double v) {
     // Clear the search if the searchbox has focus
     emit clearSearchIfClearButtonHasFocus();
 
+    // If the focused window is a dialog, press Enter
+    auto focusWindow = QApplication::focusWindow();
+    if (focusWindow && (focusWindow->type() & (Qt::Dialog | Qt::Popup))) {
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+        QApplication::sendEvent(focusWindow, &event);
+    }
+
     // TODO(xxx) instead of remote control the widgets individual, we should
     // translate this into Alt+Return and handle it at each library widget
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
