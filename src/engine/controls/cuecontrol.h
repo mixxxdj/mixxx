@@ -70,31 +70,41 @@ class HotcueControl : public QObject {
     HotcueControl(QString group, int hotcueNumber);
     ~HotcueControl() override;
 
-    inline int getHotcueNumber() { return m_iHotcueNumber; }
-    inline CuePointer getCue() { return m_pCue; }
-    double getPosition() const;
-    double getEndPosition() const;
+    int getHotcueNumber() const {
+        return m_iHotcueNumber;
+    }
+
+    CuePointer getCue() const {
+        return m_pCue;
+    }
     void setCue(CuePointer pCue);
     void resetCue();
+
+    double getPosition() const;
     void setPosition(double position);
+
+    double getEndPosition() const;
     void setEndPosition(double endPosition);
+
     void setType(mixxx::CueType type);
+
     void setStatus(HotcueControl::Status status);
-    HotcueControl::Status getStatus();
+    HotcueControl::Status getStatus() const;
+
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
     // Used for caching the preview state of this hotcue control.
-    inline mixxx::CueType getPreviewingType() {
+    mixxx::CueType getPreviewingType() const {
         return m_previewingType;
     }
-    inline void setPreviewingType(mixxx::CueType type) {
+    void setPreviewingType(mixxx::CueType type) {
         m_previewingType = type;
     }
-    inline double getPreviewingPosition() {
+    double getPreviewingPosition() const {
         return m_previewingPosition;
     }
-    inline void setPreviewingPosition(double position) {
+    void setPreviewingPosition(double position) {
         m_previewingPosition = position;
     }
 

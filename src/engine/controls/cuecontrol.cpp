@@ -2469,6 +2469,6 @@ void HotcueControl::setStatus(HotcueControl::Status status) {
     m_hotcueEnabled->forceSet(static_cast<double>(status));
 }
 
-HotcueControl::Status HotcueControl::getStatus() {
+HotcueControl::Status HotcueControl::getStatus() const {
     return static_cast<Status>(m_hotcueEnabled->get());
 }
