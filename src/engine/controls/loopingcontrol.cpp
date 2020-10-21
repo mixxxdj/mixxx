@@ -537,6 +537,9 @@ void LoopingControl::setBeatLoop(double startPosition, bool enabled) {
     }
 
     double beatloopSize = m_pCOBeatLoopSize->get();
+
+    // TODO(XXX): This is not realtime safe. See this Zulip discussion for details:
+    // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/getting.20locks.20out.20of.20Beats
     double endPosition = pBeats->findNBeatsFromSample(startPosition, beatloopSize);
 
     setLoop(startPosition, endPosition, enabled);
