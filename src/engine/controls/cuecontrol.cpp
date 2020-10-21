@@ -963,6 +963,9 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
 
     switch (pCue->getType()) {
     case mixxx::CueType::Loop: {
+        // The hotcue_X_loop_toggle CO was invoked for a saved loop, set it as
+        // active the first time this happens and toggle the loop_enabled state
+        // on subsequent invocations.
         if (m_pCurrentSavedLoopControl != pControl) {
             setCurrentSavedLoopControl(pControl);
         } else {
@@ -971,6 +974,9 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         }
     } break;
     case mixxx::CueType::HotCue: {
+        // The hotcue_X_loop_toggle CO was invoked for a hotcue. In that case,
+        // create a beatloop starting at the hotcue position. This is useful for
+        // mapping the CUE LOOP mode labeled on some controllers.
         setCurrentSavedLoopControl(nullptr);
         double startPosition = pCue->getPosition();
         bool loopActive = m_pLoopEnabled->get() && (startPosition == m_pLoopStartPosition->get());
@@ -2275,6 +2281,8 @@ HotcueControl::HotcueControl(QString group, int i)
             &HotcueControl::slotHotcueGotoAndLoop,
             Qt::DirectConnection);
 
+    // Enable/disable the loop associated with this hotcue (either a saved loop
+    // or a beatloop from the hotcue position if this is a regular hotcue).
     m_hotcueLoopToggle = new ControlPushButton(keyForControl(i, "loop_toggle"));
     connect(m_hotcueLoopToggle,
             &ControlObject::valueChanged,
