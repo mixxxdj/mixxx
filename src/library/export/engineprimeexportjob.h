@@ -31,13 +31,18 @@ class EnginePrimeExportJob : public QThread {
             TrackCollectionManager* pTrackCollectionManager,
             EnginePrimeExportRequest request);
 
+    /// Run the export job.
     void run() override;
 
   signals:
+    /// Informs of the maximum number that will be emitted to convey progress.
     void jobMaximum(int maximum);
+
+    /// Informs of progress through the job, up to the pre-signalled maximum.
     void jobProgress(int progress);
 
   public slots:
+    /// Request cancellation of any running export job.
     void cancel();
 
   private slots:

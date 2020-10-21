@@ -127,7 +127,7 @@ DlgLibraryExport::DlgLibraryExport(
     pLayout->addLayout(pButtonBarLayout, 3, 0, 1, 2);
 
     setLayout(pLayout);
-    setWindowTitle(tr("Export Library"));
+    setWindowTitle(tr("Export Library to Engine Prime"));
 
     show();
     raise();
@@ -158,7 +158,7 @@ void DlgLibraryExport::browseExportDirectory() {
             m_pConfig->getValue(ConfigKey("[Library]", "LastLibraryExportDirectory"),
                     QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
     auto baseDirectory =
-            QFileDialog::getExistingDirectory(NULL, tr("Export Library To"), lastExportDirectory);
+            QFileDialog::getExistingDirectory(nullptr, tr("Export Library To"), lastExportDirectory);
     if (baseDirectory.isEmpty()) {
         return;
     }

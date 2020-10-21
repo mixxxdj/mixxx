@@ -110,7 +110,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_childModel.setRootItem(std::move(pRootItem));
 
 #ifdef __ENGINEPRIME__
-    m_pExportLibraryAction = make_parented<QAction>(tr("Export to External Library"), this);
+    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
     connect(m_pExportLibraryAction.get(),
             &QAction::triggered,
             this,

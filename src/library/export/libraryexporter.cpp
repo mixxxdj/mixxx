@@ -21,10 +21,7 @@ void LibraryExporter::requestExportWithOptionalInitialCrate(
     if (!m_pDialog) {
         m_pDialog = make_parented<DlgLibraryExport>(
                 this, m_pConfig, m_pTrackCollectionManager);
-        connect(m_pDialog.get(),
-                SIGNAL(startEnginePrimeExport(EnginePrimeExportRequest)),
-                this,
-                SLOT(beginEnginePrimeExport(EnginePrimeExportRequest)));
+        connect(m_pDialog.get(), &DlgLibraryExport::startEnginePrimeExport, this, &LibraryExporter::beginEnginePrimeExport);
     } else {
         m_pDialog->show();
         m_pDialog->raise();

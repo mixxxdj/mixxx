@@ -118,12 +118,12 @@ void CrateFeature::initActions() {
             this,
             &CrateFeature::slotExportTrackFiles);
 #ifdef __ENGINEPRIME__
-    m_pExportAllCratesAction = make_parented<QAction>(tr("Export to External Library"), this);
+    m_pExportAllCratesAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
     connect(m_pExportAllCratesAction.get(),
             &QAction::triggered,
             this,
             &CrateFeature::slotExportAllCrates);
-    m_pExportCrateAction = make_parented<QAction>(tr("Export to External Library"), this);
+    m_pExportCrateAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
     connect(m_pExportCrateAction.get(),
             &QAction::triggered,
             this,

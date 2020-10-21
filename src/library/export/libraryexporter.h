@@ -29,6 +29,8 @@ class LibraryExporter : public QWidget {
     void requestExport() {
         requestExportWithOptionalInitialCrate(std::nullopt);
     }
+
+    /// Begin the process of a library export, with an initial crate set.
     void requestExportWithInitialCrate(CrateId initialSelectedCrate) {
         requestExportWithOptionalInitialCrate(
                 std::make_optional(initialSelectedCrate));

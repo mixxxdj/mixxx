@@ -91,7 +91,7 @@ std::string exportFile(const EnginePrimeExportRequest& request,
 }
 
 djinterop::track getTrackByRelativePath(
-        djinterop::database database, const std::string& relativePath) {
+        djinterop::database& database, const std::string& relativePath) {
     auto trackCandidates = database.tracks_by_relative_path(relativePath);
     switch (trackCandidates.size()) {
     case 0:
@@ -281,8 +281,7 @@ void exportCrate(
     auto extCrate = extRootCrate.create_sub_crate(crate.getName().toStdString());
 
     // Loop through all track ids in this crate and add.
-    for (auto iter = trackIds.cbegin(); iter != trackIds.cend(); ++iter) {
-        auto trackId = *iter;
+    for (auto trackId : trackIds) {
         auto extTrackId = mixxxToEnginePrimeTrackIdMap[trackId];
         extCrate.add_track(extTrackId);
     }
@@ -426,8 +425,8 @@ void EnginePrimeExportJob::run() {
 
     // Measure progress as one 'count' for each track, each crate, plus some
     // additional counts for various other operations.
-    double maxProgress = m_trackRefs.size() + m_crateIds.size() + 2;
-    double currProgress = 0;
+    int maxProgress = m_trackRefs.size() + m_crateIds.size() + 2;
+    int currProgress = 0;
     emit jobMaximum(maxProgress);
     emit jobProgress(currProgress);
 

@@ -36,7 +36,7 @@ class DlgLibraryExport : public QDialog {
 
     /// Set the specified crate to be selected for export on the dialog.  If no
     /// crate is provided (i.e. `std::nullopt`), then the dialog will be ready
-    //  to export the whole library.  If an unknown crate is provided, then no
+    /// to export the whole library.  If an unknown crate is provided, then no
     /// action is taken.
     void setSelectedCrate(std::optional<CrateId> crateId);
 
