@@ -759,9 +759,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
         return;
     }
 
-    // Abort if no position has been found. This can happen if a loop cue is
-    // requested while no loop is set and the track has no beatgrid, so we
-    // can't debug assert here.
+    // Abort if no position has been found.
     VERIFY_OR_DEBUG_ASSERT(cueStartPosition != Cue::kNoPosition &&
             (cueType != mixxx::CueType::Loop ||
                     cueEndPosition != Cue::kNoPosition)) {
