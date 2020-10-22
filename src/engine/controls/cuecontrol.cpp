@@ -1120,7 +1120,9 @@ void CueControl::hotcuePositionChanged(
         if (newPosition == Cue::kNoPosition) {
             detachCue(pControl);
         } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
-            //TODO: Handle Loops
+            if (pCue->getType() == mixxx::CueType::Loop && newPosition >= pCue->getEndPosition()) {
+                return;
+            }
             pCue->setStartPosition(newPosition);
         }
     }
