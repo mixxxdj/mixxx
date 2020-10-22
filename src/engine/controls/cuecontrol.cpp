@@ -2099,15 +2099,11 @@ void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
         return;
     }
 
-    QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
         return;
     }
 
     CuePointer pCue(pControl->getCue());
-
-    // Need to unlock before emitting any signals to prevent deadlock.
-    lock.unlock();
 
     VERIFY_OR_DEBUG_ASSERT(pCue &&
             pCue->getType() == mixxx::CueType::Loop &&
@@ -2152,7 +2148,6 @@ void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
         return;
     }
 
-    QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
         return;
     }
@@ -2163,9 +2158,6 @@ void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
     }
 
     CuePointer pCue(m_pCurrentSavedLoopControl->getCue());
-
-    // Need to unlock before emitting any signals to prevent deadlock.
-    lock.unlock();
 
     VERIFY_OR_DEBUG_ASSERT(pCue->getType() == mixxx::CueType::Loop) {
         setCurrentSavedLoopControl(nullptr);
