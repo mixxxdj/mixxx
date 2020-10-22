@@ -423,7 +423,9 @@ double LoopingControl::nextTrigger(bool reverse,
                 break;
             }
             case LoopSeekMode::None:
-                // Nothing to do here
+                // Nothing to do here. This is used for enabling saved loops
+                // which we want to do without jumping to the loop start
+                // position.
                 break;
             }
             m_oldLoopSamples = loopSamples;
