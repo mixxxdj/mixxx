@@ -70,9 +70,7 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
         proc.check_returncode()
     except subprocess.CalledProcessError:
         logger.error(
-            "Error while executing command %s: %s",
-            cmd,
-            proc.stderr,
+            "Error while executing command %s: %s", cmd, proc.stderr,
         )
         raise
 
