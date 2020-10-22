@@ -148,9 +148,10 @@ DlgAutoDJ::DlgAutoDJ(
             "last sound.");
     QString transitionUnitToolTip = tr(
             "Sets the units to use when specifying how long a transition should last.\n");
-    QString calcTransitionPeriodToolTip = tr(
-            "When using beats for the transition time, if the tracks do not have the same BPM, this specifies\n"
-            "before/from which point to calculate the transition period.");
+    QString calcTransitionPeriodToolTip =
+            tr("When using beats for the transition time, if the tracks do not "
+               "have the same BPM, this specifies\n"
+               "before/from which point to calculate the transition period.");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
@@ -406,11 +407,14 @@ bool DlgAutoDJ::hasFocus() const {
 }
 
 void DlgAutoDJ::slotSetAutoDJTransitionUnit(int transitionUnit) {
-    m_pAutoDJProcessor->setAutoDJTransitionUnit(static_cast<AutoDJProcessor::TransitionUnit>(transitionUnit));
+    m_pAutoDJProcessor->setAutoDJTransitionUnit(
+            static_cast<AutoDJProcessor::TransitionUnit>(transitionUnit));
     ComboBoxAutoDjCalcTransitionPeriod->setEnabled((bool)(transitionUnit));
     updateTransitionAppendixLabel();
 }
 
 void DlgAutoDJ::slotSetAutoDJCalcTransitionPeriod(int calcTransitionPeriod) {
-    m_pAutoDJProcessor->setAutoDJCalcTransitionPeriod(static_cast<AutoDJProcessor::CalcTransitionPeriod>(calcTransitionPeriod));
+    m_pAutoDJProcessor->setAutoDJCalcTransitionPeriod(
+            static_cast<AutoDJProcessor::CalcTransitionPeriod>(
+                    calcTransitionPeriod));
 }
