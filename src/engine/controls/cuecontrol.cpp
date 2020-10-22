@@ -940,15 +940,11 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         return;
     }
 
-    QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
         return;
     }
 
     CuePointer pCue = pControl->getCue();
-
-    // Need to unlock before emitting any signals to prevent deadlock.
-    lock.unlock();
 
     if (!pCue || pCue->getPosition() == Cue::kNoPosition) {
         return;
