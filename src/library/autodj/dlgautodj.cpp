@@ -212,7 +212,8 @@ DlgAutoDJ::DlgAutoDJ(
     updateTransitionAppendixLabel();
 
     ComboBoxAutoDjTransitionUnit->addItem(tr("Seconds"));
-    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats"));
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats (Outgoing track)"));
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats (Incoming track)"));
     ComboBoxAutoDjTransitionUnit->setToolTip(transitionUnitToolTip);
     ComboBoxAutoDjTransitionUnit->setCurrentIndex(
             static_cast<int>(m_pAutoDJProcessor->getTransitionUnit()));
