@@ -1220,10 +1220,12 @@ TEST_F(HotcueControlTest, SavedLoopUnloadTrackWhileActive) {
     // Set a beatloop
     m_pBeatloopActivate->slotSet(1);
     m_pBeatloopActivate->slotSet(0);
+    ProcessBuffer();
 
     // Save currently active loop to hotcue slot 1
     m_pHotcue1SetLoop->slotSet(1);
     m_pHotcue1SetLoop->slotSet(0);
+    ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -1231,6 +1233,7 @@ TEST_F(HotcueControlTest, SavedLoopUnloadTrackWhileActive) {
     // Setup fake track with 120 bpm and calculate loop size
     qWarning() << "Loading second track";
     loadTestTrackWithBpm(130.0);
+    ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
