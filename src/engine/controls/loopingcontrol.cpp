@@ -653,8 +653,15 @@ void LoopingControl::slotLoopIn(double pressed) {
         } else {
             setLoopInToCurrentPosition();
             m_bAdjustingLoopIn = false;
+            LoopSamples loopSamples = m_loopSamples.getValue();
+            if (loopSamples.start < loopSamples.end) {
+                emit loopUpdated(loopSamples.start, loopSamples.end);
+            } else {
+                emit loopReset();
+            }
         }
     } else {
+        emit loopReset();
         if (pressed > 0.0) {
             setLoopInToCurrentPosition();
         }
@@ -758,12 +765,19 @@ void LoopingControl::slotLoopOut(double pressed) {
             // loop out point when the button is released.
             if (!m_bLoopOutPressedWhileLoopDisabled) {
                 setLoopOutToCurrentPosition();
+                LoopSamples loopSamples = m_loopSamples.getValue();
+                if (loopSamples.start < loopSamples.end) {
+                    emit loopUpdated(loopSamples.start, loopSamples.end);
+                } else {
+                    emit loopReset();
+                }
                 m_bAdjustingLoopOut = false;
             } else {
                 m_bLoopOutPressedWhileLoopDisabled = false;
             }
         }
     } else {
+        emit loopReset();
         if (pressed > 0.0) {
             setLoopOutToCurrentPosition();
             m_bLoopOutPressedWhileLoopDisabled = true;
@@ -953,6 +967,10 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
+    if (m_bLoopingEnabled == enabled) {
+        return;
+    }
+
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->setAndConfirm(enabled ? 1.0 : 0.0);
     BeatLoopingControl* pActiveBeatLoop = atomicLoadRelaxed(m_pActiveBeatLoop);
