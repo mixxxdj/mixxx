@@ -169,8 +169,8 @@ class AutoDJProcessor : public QObject {
     };
 
     enum class TransitionUnit {
-        SECONDS,
-        BEATS
+        Seconds,
+        Beats
     };
 
     enum class CalcTransitionPeriod {
