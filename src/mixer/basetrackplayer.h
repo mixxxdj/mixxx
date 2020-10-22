@@ -9,7 +9,9 @@
 #include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/replaygain.h"
+#include "track/track_decl.h"
+#include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
 
@@ -58,7 +60,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const QString& group,
+            const ChannelHandleAndGroup& handleGroup,
             bool defaultMaster,
             bool defaultHeadphones,
             bool primaryDeck);

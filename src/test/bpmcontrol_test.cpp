@@ -7,7 +7,6 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
-#include "track/beats.h"
 #include "track/beatfactory.h"
 #include "track/beatgrid.h"
 #include "track/beatmap.h"

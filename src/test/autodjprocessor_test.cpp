@@ -1,19 +1,21 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-#include <QString>
-#include <QScopedPointer>
-
-#include "test/librarytest.h"
 #include "library/autodj/autodjprocessor.h"
-#include "control/controlpushbutton.h"
-#include "control/controlpotmeter.h"
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <QScopedPointer>
+#include <QString>
+
 #include "control/controllinpotmeter.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "engine/engine.h"
-#include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
-#include "track/track.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
+#include "test/librarytest.h"
+#include "track/track.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -51,6 +53,8 @@ class FakeDeck : public BaseTrackPlayer {
               outroEndPos(ConfigKey(group, "outro_end_position")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
+        outroStartPos.set(Cue::kNoPosition);
+        outroEndPos.set(Cue::kNoPosition);
     }
 
     void fakeTrackLoadedEvent(TrackPointer pTrack) {
@@ -117,7 +121,8 @@ class MockPlayerManager : public PlayerManagerInterface {
     virtual ~MockPlayerManager() {
     }
 
-    MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(QString));
+    MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const QString&));
+    MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const ChannelHandle&));
     MOCK_CONST_METHOD1(getDeck, Deck*(unsigned int));
     MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(unsigned int));
     MOCK_CONST_METHOD1(getSampler, Sampler*(unsigned int));
@@ -185,6 +190,7 @@ class AutoDJProcessorTest : public LibraryTest {
         }
 
         pPlayerManager.reset(new MockPlayerManager());
+        PlayerInfo::create();
 
         // Setup 4 fake decks.
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
@@ -208,6 +214,7 @@ class AutoDJProcessorTest : public LibraryTest {
     }
 
     virtual ~AutoDJProcessorTest() {
+        PlayerInfo::destroy();
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {

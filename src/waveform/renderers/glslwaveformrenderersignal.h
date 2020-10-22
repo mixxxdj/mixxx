@@ -7,7 +7,7 @@
 #include <QGLShaderProgram>
 #include <QtOpenGL>
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/memory.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 

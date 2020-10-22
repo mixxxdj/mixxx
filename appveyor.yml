@@ -64,6 +64,7 @@ for:
       libavutil-dev
       libchromaprint-dev
       libebur128-dev
+      libfftw3-dev
       libflac-dev
       libid3tag0-dev
       liblilv-dev
@@ -115,6 +116,7 @@ for:
       -DBATTERY=ON
       -DBROADCAST=ON
       -DBULK=ON
+      -DENGINEPRIME=ON
       -DFFMPEG=ON
       -DHID=ON
       -DLILV=ON
@@ -132,7 +134,7 @@ for:
   test_script:
     - export CTEST_OUTPUT_ON_FAILURE=1
     - export QT_QPA_PLATFORM=offscreen
-    - ctest -T test --no-compress-output
+    - ctest -T test --no-compress-output --timeout 45
     - cmake --build . --target benchmark
 
   after_test:
@@ -165,7 +167,13 @@ for:
     ENVIRONMENTS_PATH: C:\mixxx-buildserver
     MSVC_PATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community"
     PATH: 'C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%'
-
+    CODESIGN_CERTIFICATE_PATH: build\certificates\windows_sectigo_codesign_certificate.pfx
+    CODESIGN_CERTIFICATE_SECURE_FILE_SECRET:
+      secure: 1xzNVbLop/5/ySSgZxPzyOz5cm8nVMLEIEW4x0XOJjI=
+    CODESIGN_CERTIFICATE_SECURE_FILE_SALT:
+      secure: tw+bg3qfia7+WQdBdXtC301Z9Dv7yQ6SwpWcFJav9YC4zwyyGztev6pAbGE93sln4VO0WRCJ+4/KTviBMPXvXQ==
+    CODESIGN_CERTIFICATE_PASSWORD:
+      secure: EiAsLAgrsS+N3rr71AAkXPCrxIe2vLvlOvCipnTw6pg=
 
   install:
     - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
@@ -183,6 +191,14 @@ for:
       )
     - choco install ninja
     - python -m pip install git+https://github.com/frerich/clcache.git
+    # Decrypt the code signing certificate.
+    - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
+        appveyor-tools\secure-file -decrypt %CODESIGN_CERTIFICATE_PATH%.enc -secret %CODESIGN_CERTIFICATE_SECURE_FILE_SECRET% -salt %CODESIGN_CERTIFICATE_SECURE_FILE_SALT%
+      ) else (
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
+      )
 
   before_build:
     - FOR /D %%G IN (%WINLIB_PATH%\Qt-*) DO SET QT_PATH=%%G
@@ -222,8 +238,10 @@ for:
       -DBATTERY=ON
       -DBROADCAST=ON
       -DBULK=ON
+      -DENGINEPRIME=ON
       -DHID=ON
       -DHSS1394=ON
+      -DKEYFINDER=OFF
       -DLOCALECOMPARE=ON
       -DMAD=ON
       -DMEDIAFOUNDATION=ON
@@ -235,14 +253,26 @@ for:
       ..
     - cmake --build .
     - cmake --build . --target install
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
+        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.exe
+      ) else (
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
+      )
     # Generate WIX installer
     - cpack -G "WIX"
+    - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
+      If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
+        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi
+      ) else (
+        echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
+      )
 
   test_script:
     # Calling mixxx-test under bash to have standard output and use stdbuf to
     # unbuffer standard & error output
     - set CTEST_OUTPUT_ON_FAILURE=1
-    - ctest -C "Release" -T test --no-compress-output
+    - ctest -C "Release" -T test --no-compress-output --timeout 45
     - cmake --build . --target benchmark
 
   after_test:
@@ -291,7 +321,5 @@ notifications:
     headers:
       Authorization:
         secure: 95cbVBcC4rogjE5VNdhuYm8cnjPF8+7SeQXySqcxAqrFZxK+/Kcn3Q2hRb2iZfUEKZ+EdCYwx7EbpZdSiZc5goAuJT+/QXXT/Ls+fzc+eSy4Sz1Ic5t2BjLhmYZLdnBL3uIVceNSb8GzYPQx0+xy7g==
-    on_build_success: true
-    on_build_failure: true
     on_build_status_changed: true
-    body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#isPullRequest}} (PR #{{pullRequestId}}) {{/isPullRequest}}{{#failed}} :cross_mark:{{/failed}}{{#passed}} :check_mark:{{/passed}} {{buildUrl}}"
+    body: "type=stream&to=appveyor&subject={{^isPullRequest}}{{branch}}&content={{#failed}}:cross_mark:{{/failed}}{{#passed}}:check_mark:{{/passed}} {{status}} {{buildUrl}}\n{{commitId}} {{commitAuthor}}\n{{commitMessage}}\n{{commitMessageExtended}}{{/isPullRequest}}"

@@ -7,10 +7,10 @@
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
+#include "track/track_decl.h"
 
 class BaseCoverArtDelegate;
 class TrackCollectionManager;
-class WLibraryTableView;
 
 class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT
@@ -187,9 +187,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     // TODO: TrackId should only be used for tracks from
     // the internal database.
     virtual TrackId doGetTrackId(
-            const TrackPointer& pTrack) const {
-        return pTrack ? pTrack->getId() : TrackId();
-    }
+            const TrackPointer& pTrack) const;
     virtual BaseCoverArtDelegate* doCreateCoverArtDelegate(
             QTableView* pTableView) const = 0;
 

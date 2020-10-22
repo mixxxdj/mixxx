@@ -13,9 +13,9 @@ namespace audio {
 // that is known upfront!
 class StreamInfo final {
     // Properties
-    PROPERTY_SET_BYVAL_GET_BYREF(SignalInfo, signalInfo, SignalInfo)
-    PROPERTY_SET_BYVAL_GET_BYREF(Bitrate, bitrate, Bitrate)
-    PROPERTY_SET_BYVAL_GET_BYREF(Duration, duration, Duration)
+    MIXXX_DECL_PROPERTY(SignalInfo, signalInfo, SignalInfo)
+    MIXXX_DECL_PROPERTY(Bitrate, bitrate, Bitrate)
+    MIXXX_DECL_PROPERTY(Duration, duration, Duration)
 
   public:
     constexpr StreamInfo() = default;

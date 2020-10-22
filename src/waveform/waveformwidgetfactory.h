@@ -1,21 +1,18 @@
 #pragma once
 
+#include <QObject>
+#include <QVector>
 #include <vector>
 
-#include <QObject>
-#include <QTime>
-#include <QVector>
-
-#include "util/singleton.h"
 #include "preferences/usersettings.h"
-#include "waveform/widgets/waveformwidgettype.h"
-#include "waveform/waveform.h"
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
+#include "util/singleton.h"
+#include "waveform/waveform.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class QTimer;
 class VSyncThread;
 class GuiTick;
 class VisualsManager;
@@ -108,7 +105,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int isZoomSync() const { return m_zoomSync;}
 
     void setDisplayBeatGridAlpha(int alpha);
-    int beatGridAlpha() const { return m_beatGridAlpha; }
+    int getBeatGridAlpha() const { return m_beatGridAlpha; }
 
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;

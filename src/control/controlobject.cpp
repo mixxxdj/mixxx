@@ -31,8 +31,8 @@ ControlObject::ControlObject() {
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
                              bool bPersist, double defaultValue)
         : m_key(key) {
-    // Don't bother looking up the control if key is NULL. Prevents log spew.
-    if (!m_key.isNull()) {
+    // Don't bother looking up the control if key is invalid. Prevents log spew.
+    if (m_key.isValid()) {
         m_pControl = ControlDoublePrivate::getControl(m_key,
                 ControlFlag::None,
                 this,
@@ -54,7 +54,9 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
 
 ControlObject::~ControlObject() {
     if (m_pControl) {
-        m_pControl->removeCreatorCO();
+        const bool success = m_pControl->resetCreatorCO(this);
+        Q_UNUSED(success);
+        DEBUG_ASSERT(success);
     }
 }
 

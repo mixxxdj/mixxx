@@ -1,26 +1,27 @@
-#ifndef ENGINEBACKENDTEST_H_
-#define ENGINEBACKENDTEST_H_
+#pragma once
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QTest>
+#include <QtDebug>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "mixer/deck.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginebuffer.h"
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
+#include "mixer/deck.h"
+#include "mixer/playerinfo.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "track/track.h"
 #include "util/defs.h"
 #include "util/memory.h"
 #include "util/sample.h"
@@ -60,25 +61,47 @@ class BaseSignalPathTest : public MixxxTest {
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
+        m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
         m_pVisualsManager = new VisualsManager();
-        m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
-                                               m_pEffectsManager, m_pChannelHandleFactory,
-                                               false);
+        m_pEngineMaster = new TestEngineMaster(m_pConfig,
+                m_sMasterGroup,
+                m_pEffectsManager,
+                m_pChannelHandleFactory,
+                false);
 
-        m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup1);
-        m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup2);
-        m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sGroup3);
+        m_pMixerDeck1 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup1));
+        m_pMixerDeck2 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup2));
+        m_pMixerDeck3 = new Deck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sGroup3));
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
-                m_pVisualsManager, EngineChannel::CENTER, m_sPreviewGroup);
+        m_pPreview1 = new PreviewDeck(nullptr,
+                m_pConfig,
+                m_pEngineMaster,
+                m_pEffectsManager,
+                m_pVisualsManager,
+                EngineChannel::CENTER,
+                m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
@@ -93,7 +116,9 @@ class BaseSignalPathTest : public MixxxTest {
         addDeck(m_pChannel3);
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
-        ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
+        ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
+
+        PlayerInfo::create();
     }
 
     ~BaseSignalPathTest() override {
@@ -111,6 +136,7 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pEffectsManager;
         delete m_pVisualsManager;
         delete m_pNumDecks;
+        PlayerInfo::destroy();
     }
 
     void addDeck(EngineDeck* pDeck) {
@@ -210,11 +236,11 @@ class BaseSignalPathTest : public MixxxTest {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
+    static const QString m_sMasterGroup;
+    static const QString m_sInternalClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
     static const QString m_sGroup3;
-    static const QString m_sMasterGroup;
-    static const QString m_sInternalClockGroup;
     static const QString m_sPreviewGroup;
     static const QString m_sSamplerGroup;
     static const double kDefaultRateRange;
@@ -234,5 +260,3 @@ class SignalPathTest : public BaseSignalPathTest {
         loadTrack(m_pMixerDeck3, pTrack);
     }
 };
-
-#endif /* ENGINEBACKENDTEST_H_ */

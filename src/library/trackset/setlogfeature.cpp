@@ -12,6 +12,7 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -227,7 +228,7 @@ void SetlogFeature::slotGetNewPlaylist() {
                  << set_log_name;
     }
 
-    slotPlaylistTableChanged(m_playlistId); // For moving selection
+    reloadChildModel(m_playlistId); // For moving selection
     emit showTrackModel(m_pPlaylistTableModel);
 }
 
@@ -279,8 +280,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 if (m_playlistDao.copyPlaylistTracks(
                             currentPlaylistId, previousPlaylistId)) {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
-                    slotPlaylistTableChanged(
-                            previousPlaylistId); // For moving selection
+                    reloadChildModel(previousPlaylistId); // For moving selection
                     emit showTrackModel(m_pPlaylistTableModel);
                 }
             }
@@ -356,7 +356,11 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 }
 
 void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    reloadChildModel(playlistId);
+}
+
+void SetlogFeature::reloadChildModel(int playlistId) {
+    //qDebug() << "updateChildModel() playlistId:" << playlistId;
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
             type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
@@ -378,7 +382,7 @@ void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
 
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId, QString newName) {
     Q_UNUSED(newName);
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
             type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
@@ -409,11 +413,9 @@ QString SetlogFeature::getRootViewHtml() const {
 
     QString html;
     html.append(QStringLiteral("<h2>%1</h2>").arg(playlistsTitle));
-    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary));
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary2));
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary3));
     html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary4));
-    html.append("</td></tr></table>");
     return html;
 }

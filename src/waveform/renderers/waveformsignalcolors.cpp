@@ -141,8 +141,8 @@ void WaveformSignalColors::fallBackFromSignalColor() {
 }
 
 void WaveformSignalColors::fallBackDefaultColor() {
-    qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
-                  "skin do not provide valid signal colors ! Default colors is use ...";
+    qWarning() << "WaveformSignalColors::fallBackDefaultColor - "
+                  "Skin does not provide valid signal colors, using default color...";
 
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();
@@ -150,6 +150,6 @@ void WaveformSignalColors::fallBackDefaultColor() {
 }
 
 //NOTE(vRince) this sabilise hue between -1.0 and 2.0 but not more !
-float WaveformSignalColors::stableHue(float hue) const {
+double WaveformSignalColors::stableHue(double hue) const {
     return hue < 0.0 ? hue + 1.0 : hue > 1.0 ? hue - 1.0 : hue;
 }

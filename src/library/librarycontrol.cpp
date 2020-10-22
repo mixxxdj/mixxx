@@ -156,6 +156,13 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotAutoDjAddBottom);
 
+    m_pAutoDjAddReplace = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "AutoDjAddReplace"));
+    connect(m_pAutoDjAddReplace.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotAutoDjAddReplace);
+
     // Sort controls
     m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
     m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
@@ -268,7 +275,7 @@ void LibraryControl::maybeCreateGroupController(const QString& group) {
 }
 
 void LibraryControl::slotNumDecksChanged(double v) {
-    int iNumDecks = v;
+    int iNumDecks = static_cast<int>(v);
 
     if (iNumDecks < 0) {
         return;
@@ -280,7 +287,7 @@ void LibraryControl::slotNumDecksChanged(double v) {
 }
 
 void LibraryControl::slotNumSamplersChanged(double v) {
-    int iNumSamplers = v;
+    int iNumSamplers = static_cast<int>(v);
 
     if (iNumSamplers < 0) {
         return;
@@ -293,7 +300,7 @@ void LibraryControl::slotNumSamplersChanged(double v) {
 
 
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
-    int iNumPreviewDecks = v;
+    int iNumPreviewDecks = static_cast<int>(v);
 
     if (iNumPreviewDecks < 0) {
         return;
@@ -406,6 +413,19 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
             return;
         }
         activeView->slotAddToAutoDJBottom();
+    }
+}
+
+void LibraryControl::slotAutoDjAddReplace(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+    if (v > 0) {
+        auto activeView = m_pLibraryWidget->getActiveView();
+        if (!activeView) {
+            return;
+        }
+        activeView->slotAddToAutoDJReplace();
     }
 }
 

@@ -18,9 +18,9 @@
 #endif
 #include <sndfile.h>
 
-#include "util/types.h"
 #include "encoder/encoder.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/types.h"
 
 class EncoderCallback;
 

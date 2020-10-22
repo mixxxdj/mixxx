@@ -36,28 +36,28 @@ var NovationLaunchpadMK2 = (function () {
     return obj;
   }
 
-  function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
-
-  function _typeof(obj) {
-    if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
-      _typeof = function _typeof(obj) {
-        return _typeof2(obj);
-      };
-    } else {
-      _typeof = function _typeof(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
-      };
-    }
-
-    return _typeof(obj);
-  }
-
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
 
     return self;
+  }
+
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function _typeof(obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function _typeof(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
   }
 
   function _possibleConstructorReturn(self, call) {
@@ -99,11 +99,49 @@ var NovationLaunchpadMK2 = (function () {
     if (superClass) _setPrototypeOf(subClass, superClass);
   }
 
+  function _classCallCheck$1(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties$1(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass$1(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties$1(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties$1(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _defineProperty$1(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
   function _arrayWithHoles(arr) {
     if (Array.isArray(arr)) return arr;
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -129,17 +167,37 @@ var NovationLaunchpadMK2 = (function () {
     return _arr;
   }
 
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   /* global engine, midi, script */
   var engine_1 = engine;
   var midi_1 = midi;
+  var script_1 = script;
 
   /** Detect free variable `global` from Node.js. */
   var freeGlobal = (typeof global === "undefined" ? "undefined" : _typeof(global)) == 'object' && global && global.Object === Object && global;
@@ -185,11 +243,12 @@ var NovationLaunchpadMK2 = (function () {
 
     try {
       value[symToStringTag] = undefined;
+      var unmasked = true;
     } catch (e) {}
 
     var result = nativeObjectToString.call(value);
 
-    {
+    if (unmasked) {
       if (isOwn) {
         value[symToStringTag] = tag;
       } else {
@@ -1586,18 +1645,16 @@ var NovationLaunchpadMK2 = (function () {
 
   var range = createRange();
 
-  var Control =
-  /*#__PURE__*/
-  function () {
+  var Control = /*#__PURE__*/function () {
     function Control(def) {
-      _classCallCheck(this, Control);
+      _classCallCheck$1(this, Control);
 
-      _defineProperty(this, "def", void 0);
+      _defineProperty$1(this, "def", void 0);
 
       this.def = def;
     }
 
-    _createClass(Control, [{
+    _createClass$1(Control, [{
       key: "setValue",
       value: function setValue(value) {
         engine_1.setValue(this.def.group, this.def.name, value);
@@ -1612,55 +1669,55 @@ var NovationLaunchpadMK2 = (function () {
     return Control;
   }();
   var playListControlDef = {
-    'LoadSelectedIntoFirstStopped': {
+    LoadSelectedIntoFirstStopped: {
       group: '[Playlist]',
       name: 'LoadSelectedIntoFirstStopped',
       type: 'binary',
       description: 'Loads the currently highlighted song into the first stopped deck'
     },
-    'SelectNextPlaylist': {
+    SelectNextPlaylist: {
       group: '[Playlist]',
       name: 'SelectNextPlaylist',
       type: 'binary',
       description: 'Switches to the next view (Library, Queue, etc.)'
     },
-    'SelectPrevPlaylist': {
+    SelectPrevPlaylist: {
       group: '[Playlist]',
       name: 'SelectPrevPlaylist',
       type: 'binary',
       description: 'Switches to the previous view (Library, Queue, etc.)'
     },
-    'ToggleSelectedSidebarItem': {
+    ToggleSelectedSidebarItem: {
       group: '[Playlist]',
       name: 'ToggleSelectedSidebarItem',
       type: 'binary',
       description: 'Toggles (expands/collapses) the currently selected sidebar item.'
     },
-    'SelectNextTrack': {
+    SelectNextTrack: {
       group: '[Playlist]',
       name: 'SelectNextTrack',
       type: 'binary',
       description: 'Scrolls to the next track in the track table.'
     },
-    'SelectPrevTrack': {
+    SelectPrevTrack: {
       group: '[Playlist]',
       name: 'SelectPrevTrack',
       type: 'binary',
       description: 'Scrolls to the previous track in the track table.'
     },
-    'SelectTrackKnob': {
+    SelectTrackKnob: {
       group: '[Playlist]',
       name: 'SelectTrackKnob',
       type: 'relative value',
       description: 'Scrolls the given number of tracks in the track table (can be negative for reverse direction).'
     },
-    'AutoDjAddBottom': {
+    AutoDjAddBottom: {
       group: '[Playlist]',
       name: 'AutoDjAddBottom',
       type: 'binary',
       description: 'Add selected track(s) to Auto DJ Queue (bottom).'
     },
-    'AutoDjAddTop': {
+    AutoDjAddTop: {
       group: '[Playlist]',
       name: 'AutoDjAddTop',
       type: 'binary',
@@ -1668,584 +1725,589 @@ var NovationLaunchpadMK2 = (function () {
     }
   };
   var playListControl = Object.keys(playListControlDef).reduce(function (obj, key) {
-    return assign(obj, _defineProperty({}, key, new Control(playListControlDef[key])));
+    return assign(obj, _defineProperty$1({}, key, new Control(playListControlDef[key])));
   }, {});
 
   var channelDef = function channelDef(type, i) {
     return {
-      'back': {
+      back: {
         group: "[".concat(type).concat(i, "]"),
         name: 'back',
         type: 'binary'
       },
-      'beat_active': {
+      beat_active: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beat_active',
         type: 'binary'
       },
-      'beatjump': {
+      beatjump: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beatjump',
         type: 'real number'
       },
-      'beatjumps': function beatjumps(x) {
+      beatjumps: function beatjumps(x) {
         return {
-          'forward': {
+          forward: {
             group: "[".concat(type).concat(i, "]"),
             name: "beatjump_".concat(x, "_forward"),
             type: 'binary'
           },
-          'backward': {
+          backward: {
             group: "[".concat(type).concat(i, "]"),
             name: "beatjump_".concat(x, "_backward"),
             type: 'binary'
           }
         };
       },
-      'beatloop': {
+      beatloop: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beatloop',
         type: 'positive real number'
       },
-      'beatloops': function beatloops(x) {
+      beatloops: function beatloops(x) {
         return {
-          'activate': {
+          activate: {
             group: "[".concat(type).concat(i, "]"),
             name: "beatloop_".concat(x, "_activate"),
             type: 'binary'
           },
-          'toggle': {
+          toggle: {
             group: "[".concat(type).concat(i, "]"),
             name: "beatloop_".concat(x, "_toggle"),
             type: 'binary'
           },
-          'enabled': {
+          enabled: {
             group: "[".concat(type).concat(i, "]"),
             name: "beatloop_".concat(x, "_enabled"),
             type: 'binary'
           }
         };
       },
-      'beats_adjust_faster': {
+      beats_adjust_faster: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beats_adjust_faster',
         type: 'binary'
       },
-      'beats_adjust_slower': {
+      beats_adjust_slower: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beats_adjust_slower',
         type: 'binary'
       },
-      'beats_translate_curpos': {
+      beats_translate_curpos: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beats_translate_curpos',
         type: 'binary'
       },
-      'beats_translate_match_alignment': {
+      beats_translate_match_alignment: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beats_translate_match_alignment',
         type: 'binary'
       },
-      'beats_translate_earlier': {
+      beats_translate_earlier: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beats_translate_earlier',
         type: 'binary'
       },
-      'beats_translate_later': {
+      beats_translate_later: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beats_translate_later',
         type: 'binary'
       },
-      'beatsync': {
+      beatsync: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beatsync',
         type: 'binary'
       },
-      'beatsync_phase': {
+      beatsync_phase: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beatsync_phase',
         type: 'binary'
       },
-      'beatsync_tempo': {
+      beatsync_tempo: {
         group: "[".concat(type).concat(i, "]"),
         name: 'beatsync_tempo',
         type: 'binary'
       },
-      'bpm': {
+      bpm: {
         group: "[".concat(type).concat(i, "]"),
         name: 'bpm',
         type: 'real-valued'
       },
-      'bpm_tap': {
+      bpm_tap: {
         group: "[".concat(type).concat(i, "]"),
         name: 'bpm_tap',
         type: 'binary'
       },
-      'cue_default': {
+      cue_default: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_default',
         type: 'binary'
       },
-      'cue_gotoandplay': {
+      cue_gotoandplay: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_gotoandplay',
         type: 'binary'
       },
-      'cue_gotoandstop': {
+      cue_gotoandstop: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_gotoandstop',
         type: 'binary'
       },
-      'cue_indicator': {
+      cue_indicator: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_indicator',
         type: 'binary'
       },
-      'cue_cdj': {
+      cue_cdj: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_cdj',
         type: 'binary'
       },
-      'cue_play': {
+      cue_play: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_play',
         type: 'binary'
       },
-      'cue_point': {
+      cue_point: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_point',
         type: 'absolute value'
       },
-      'cue_preview': {
+      cue_preview: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_preview',
         type: 'binary'
       },
-      'cue_set': {
+      cue_set: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_set',
         type: 'binary'
       },
-      'cue_simple': {
+      cue_simple: {
         group: "[".concat(type).concat(i, "]"),
         name: 'cue_simple',
         type: 'binary'
       },
-      'duration': {
+      duration: {
         group: "[".concat(type).concat(i, "]"),
         name: 'duration',
         type: 'absolute value'
       },
-      'eject': {
+      eject: {
         group: "[".concat(type).concat(i, "]"),
         name: 'eject',
         type: 'binary'
       },
-      'end': {
+      end: {
         group: "[".concat(type).concat(i, "]"),
         name: 'end',
         type: 'binary'
       },
-      'file_bpm': {
+      file_bpm: {
         group: "[".concat(type).concat(i, "]"),
         name: 'file_bpm',
         type: 'positive value'
       },
-      'file_key': {
+      file_key: {
         group: "[".concat(type).concat(i, "]"),
         name: 'file_key',
         type: '?'
       },
-      'fwd': {
+      fwd: {
         group: "[".concat(type).concat(i, "]"),
         name: 'fwd',
         type: 'binary'
       },
-      'hotcues': function hotcues(x) {
+      hotcues: function hotcues(x) {
         return {
-          'activate': {
+          activate: {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_activate"),
             type: 'binary'
           },
-          'clear': {
+          clear: {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_clear"),
             type: 'binary'
           },
-          'enabled': {
+          enabled: {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_enabled"),
             type: 'read-only, binary'
           },
-          'goto': {
+          "goto": {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_goto"),
             type: 'binary'
           },
-          'gotoandplay': {
+          gotoandplay: {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_gotoandplay"),
             type: 'binary'
           },
-          'gotoandstop': {
+          gotoandstop: {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_gotoandstop"),
             type: 'binary'
           },
-          'position': {
+          position: {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_position"),
             type: 'positive integer'
           },
-          'set': {
+          set: {
             group: "[".concat(type).concat(i, "]"),
             name: "hotcue_".concat(x, "_set"),
             type: 'binary'
           }
         };
       },
-      'key': {
+      key: {
         group: "[".concat(type).concat(i, "]"),
         name: 'key',
         type: 'real-valued'
       },
-      'keylock': {
+      keylock: {
         group: "[".concat(type).concat(i, "]"),
         name: 'keylock',
         type: 'binary'
       },
-      'LoadSelectedTrack': {
+      LoadSelectedTrack: {
         group: "[".concat(type).concat(i, "]"),
         name: 'LoadSelectedTrack',
         type: 'binary'
       },
-      'LoadSelectedTrackAndPlay': {
+      LoadSelectedTrackAndPlay: {
         group: "[".concat(type).concat(i, "]"),
         name: 'LoadSelectedTrackAndPlay',
         type: 'binary'
       },
-      'loop_double': {
+      loop_double: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_double',
         type: 'binary'
       },
-      'loop_enabled': {
+      loop_enabled: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_enabled',
         type: 'read-only, binary'
       },
-      'loop_end_position': {
+      loop_end_position: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_end_position',
         type: 'positive integer'
       },
-      'loop_halve': {
+      loop_halve: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_halve',
         type: 'binary'
       },
-      'loop_in': {
+      loop_in: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_in',
         type: 'binary'
       },
-      'loop_out': {
+      loop_out: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_out',
         type: 'binary'
       },
-      'loop_move': {
+      loop_move: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_move',
         type: 'real number'
       },
-      'loop_scale': {
+      loop_scale: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_scale',
         type: '0.0 - infinity'
       },
-      'loop_start_position': {
+      loop_start_position: {
         group: "[".concat(type).concat(i, "]"),
         name: 'loop_start_position',
         type: 'positive integer'
       },
-      'orientation': {
+      orientation: {
         group: "[".concat(type).concat(i, "]"),
         name: 'orientation',
         type: '0-2'
       },
-      'passthrough': {
+      passthrough: {
         group: "[".concat(type).concat(i, "]"),
         name: 'passthrough',
         type: 'binary'
       },
-      'PeakIndicator': {
+      PeakIndicator: {
         group: "[".concat(type).concat(i, "]"),
         name: 'PeakIndicator',
         type: 'binary'
       },
-      'pfl': {
+      pfl: {
         group: "[".concat(type).concat(i, "]"),
         name: 'pfl',
         type: 'binary'
       },
-      'pitch': {
+      pitch: {
         group: "[".concat(type).concat(i, "]"),
         name: 'pitch',
         type: '-6.0..6.0'
       },
-      'pitch_adjust': {
+      pitch_adjust: {
         group: "[".concat(type).concat(i, "]"),
         name: 'pitch_adjust',
         type: '-3.0..3.0'
       },
-      'play': {
+      play: {
         group: "[".concat(type).concat(i, "]"),
         name: 'play',
         type: 'binary'
       },
-      'play_indicator': {
+      play_indicator: {
         group: "[".concat(type).concat(i, "]"),
         name: 'play_indicator',
         type: 'binary'
       },
-      'play_stutter': {
+      play_stutter: {
         group: "[".concat(type).concat(i, "]"),
         name: 'play_stutter',
         type: 'binary'
       },
-      'playposition': {
+      playposition: {
         group: "[".concat(type).concat(i, "]"),
         name: 'playposition',
         type: 'default'
       },
-      'pregain': {
+      pregain: {
         group: "[".concat(type).concat(i, "]"),
         name: 'pregain',
         type: '0.0..1.0..4.0'
       },
-      'quantize': {
+      quantize: {
         group: "[".concat(type).concat(i, "]"),
         name: 'quantize',
         type: 'binary'
       },
-      'rate': {
+      rate: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate',
         type: '-1.0..1.0'
       },
-      'rate_dir': {
+      rate_dir: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_dir',
         type: '-1 or 1'
       },
-      'rate_perm_down': {
+      rate_perm_down: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_perm_down',
         type: 'binary'
       },
-      'rate_perm_down_small': {
+      rate_perm_down_small: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_perm_down_small',
         type: 'binary'
       },
-      'rate_perm_up': {
+      rate_perm_up: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_perm_up',
         type: 'binary'
       },
-      'rate_perm_up_small': {
+      rate_perm_up_small: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_perm_up_small',
         type: 'binary'
       },
-      'rate_temp_down': {
+      rate_temp_down: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_temp_down',
         type: 'binary'
       },
-      'rate_temp_down_small': {
+      rate_temp_down_small: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_temp_down_small',
         type: 'binary'
       },
-      'rate_temp_up': {
+      rate_temp_up: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_temp_up',
         type: 'binary'
       },
-      'rate_temp_up_small': {
+      rate_temp_up_small: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rate_temp_up_small',
         type: 'binary'
       },
-      'rateRange': {
+      rateRange: {
         group: "[".concat(type).concat(i, "]"),
         name: 'rateRange',
         type: '0.0..3.0'
       },
-      'reloop_exit': {
+      reloop_andstop: {
+        group: "[".concat(type).concat(i, "]"),
+        name: 'reloop_andstop',
+        type: 'binary'
+      },
+      reloop_exit: {
         group: "[".concat(type).concat(i, "]"),
         name: 'reloop_exit',
         type: 'binary'
       },
-      'repeat': {
+      repeat: {
         group: "[".concat(type).concat(i, "]"),
         name: 'repeat',
         type: 'binary'
       },
-      'reset_key': {
+      reset_key: {
         group: "[".concat(type).concat(i, "]"),
         name: 'reset_key',
         type: 'binary'
       },
-      'reverse': {
+      reverse: {
         group: "[".concat(type).concat(i, "]"),
         name: 'reverse',
         type: 'binary'
       },
-      'reverseroll': {
+      reverseroll: {
         group: "[".concat(type).concat(i, "]"),
         name: 'reverseroll',
         type: 'binary'
       },
-      'slip_enabled': {
+      slip_enabled: {
         group: "[".concat(type).concat(i, "]"),
         name: 'slip_enabled',
         type: 'binary'
       },
-      'start': {
+      start: {
         group: "[".concat(type).concat(i, "]"),
         name: 'start',
         type: 'binary'
       },
-      'start_play': {
+      start_play: {
         group: "[".concat(type).concat(i, "]"),
         name: 'start_play',
         type: 'binary'
       },
-      'start_stop': {
+      start_stop: {
         group: "[".concat(type).concat(i, "]"),
         name: 'start_stop',
         type: 'binary'
       },
-      'stop': {
+      stop: {
         group: "[".concat(type).concat(i, "]"),
         name: 'stop',
         type: 'binary'
       },
-      'sync_enabled': {
+      sync_enabled: {
         group: "[".concat(type).concat(i, "]"),
         name: 'sync_enabled',
         type: 'binary'
       },
-      'sync_master': {
+      sync_master: {
         group: "[".concat(type).concat(i, "]"),
         name: 'sync_master',
         type: 'binary'
       },
-      'sync_mode': {
+      sync_mode: {
         group: "[".concat(type).concat(i, "]"),
         name: 'sync_mode',
         type: 'binary'
       },
-      'sync_key': {
+      sync_key: {
         group: "[".concat(type).concat(i, "]"),
         name: 'sync_key',
         type: '?'
       },
-      'track_samplerate': {
+      track_samplerate: {
         group: "[".concat(type).concat(i, "]"),
         name: 'track_samplerate',
         type: 'absolute value'
       },
-      'track_samples': {
+      track_samples: {
         group: "[".concat(type).concat(i, "]"),
         name: 'track_samples',
         type: 'absolute value'
       },
-      'volume': {
+      volume: {
         group: "[".concat(type).concat(i, "]"),
         name: 'volume',
         type: 'default'
       },
-      'mute': {
+      mute: {
         group: "[".concat(type).concat(i, "]"),
         name: 'mute',
         type: 'binary'
       },
-      'vinylcontrol_enabled': {
+      vinylcontrol_enabled: {
         group: "[".concat(type).concat(i, "]"),
         name: 'vinylcontrol_enabled',
         type: 'binary'
       },
-      'vinylcontrol_cueing': {
+      vinylcontrol_cueing: {
         group: "[".concat(type).concat(i, "]"),
         name: 'vinylcontrol_cueing',
         type: '0.0-2.0'
       },
-      'vinylcontrol_mode': {
+      vinylcontrol_mode: {
         group: "[".concat(type).concat(i, "]"),
         name: 'vinylcontrol_mode',
         type: '0.0-2.0'
       },
-      'vinylcontrol_status': {
+      vinylcontrol_status: {
         group: "[".concat(type).concat(i, "]"),
         name: 'vinylcontrol_status',
         type: '0.0-3.0 (read-only)'
       },
-      'visual_bpm': {
+      visual_bpm: {
         group: "[".concat(type).concat(i, "]"),
         name: 'visual_bpm',
         type: '?'
       },
-      'visual_key': {
+      visual_key: {
         group: "[".concat(type).concat(i, "]"),
         name: 'visual_key',
         type: '?'
       },
-      'visual_key_distance': {
+      visual_key_distance: {
         group: "[".concat(type).concat(i, "]"),
         name: 'visual_key_distance',
         type: '-0.5..0.5'
       },
-      'VuMeter': {
+      VuMeter: {
         group: "[".concat(type).concat(i, "]"),
         name: 'VuMeter',
         type: 'default'
       },
-      'VuMeterL': {
+      VuMeterL: {
         group: "[".concat(type).concat(i, "]"),
         name: 'VuMeterL',
         type: 'default'
       },
-      'VuMeterR': {
+      VuMeterR: {
         group: "[".concat(type).concat(i, "]"),
         name: 'VuMeterR',
         type: 'default'
       },
-      'waveform_zoom': {
+      waveform_zoom: {
         group: "[".concat(type).concat(i, "]"),
         name: 'waveform_zoom',
         type: '1.0 - 6.0'
       },
-      'waveform_zoom_up': {
+      waveform_zoom_up: {
         group: "[".concat(type).concat(i, "]"),
         name: 'waveform_zoom_up',
         type: '?'
       },
-      'waveform_zoom_down': {
+      waveform_zoom_down: {
         group: "[".concat(type).concat(i, "]"),
         name: 'waveform_zoom_down',
         type: '?'
       },
-      'waveform_zoom_set_default': {
+      waveform_zoom_set_default: {
         group: "[".concat(type).concat(i, "]"),
         name: 'waveform_zoom_set_default',
         type: '?'
       },
-      'wheel': {
+      wheel: {
         group: "[".concat(type).concat(i, "]"),
         name: 'wheel',
         type: '-3.0..3.0'
@@ -2260,9 +2322,9 @@ var NovationLaunchpadMK2 = (function () {
     return array.reduce(function (arr, i) {
       var def = one(i);
       var control = Object.keys(def).reduce(function (obj, key) {
-        return assign(obj, _defineProperty({}, key, new Control(def[key])));
+        return assign(obj, _defineProperty$1({}, key, new Control(def[key])));
       }, {});
-      return assign(arr, _defineProperty({}, i, control));
+      return assign(arr, _defineProperty$1({}, i, control));
     }, {});
   };
 
@@ -2276,12 +2338,12 @@ var NovationLaunchpadMK2 = (function () {
     var channel = Object.keys(channelDefInstance).filter(function (key) {
       return key !== 'beatjumps' && key !== 'beatloops' && key !== 'hotcues';
     }).reduce(function (obj, key) {
-      return assign(obj, _defineProperty({}, key, new Control(channelDefInstance[key])));
+      return assign(obj, _defineProperty$1({}, key, new Control(channelDefInstance[key])));
     }, {});
     return assign(channel, {
-      'beatjumps': createEnumeratedControl(beatjumps, channelDefInstance.beatjumps),
-      'beatloops': createEnumeratedControl(beatloops, channelDefInstance.beatloops),
-      'hotcues': createEnumeratedControl(range(16).map(function (x) {
+      beatjumps: createEnumeratedControl(beatjumps, channelDefInstance.beatjumps),
+      beatloops: createEnumeratedControl(beatloops, channelDefInstance.beatloops),
+      hotcues: createEnumeratedControl(range(16).map(function (x) {
         return x + 1;
       }), channelDefInstance.hotcues)
     });
@@ -2296,10 +2358,8 @@ var NovationLaunchpadMK2 = (function () {
     return name.replace('.', '$dot$').replace('[', '$sbs$').replace(']', '$sbe$');
   };
 
-  var ControlBus =
-  /*#__PURE__*/
-  function () {
-    _createClass(ControlBus, null, [{
+  var ControlBus = /*#__PURE__*/function () {
+    _createClass$1(ControlBus, null, [{
       key: "create",
       value: function create(moduleName, registry) {
         return new ControlBus(moduleName, registry);
@@ -2307,20 +2367,20 @@ var NovationLaunchpadMK2 = (function () {
     }]);
 
     function ControlBus(registryName, registry) {
-      _classCallCheck(this, ControlBus);
+      _classCallCheck$1(this, ControlBus);
 
-      _defineProperty(this, "_registryName", void 0);
+      _defineProperty$1(this, "_registryName", void 0);
 
-      _defineProperty(this, "_registry", void 0);
+      _defineProperty$1(this, "_registry", void 0);
 
-      _defineProperty(this, "_callbackList", void 0);
+      _defineProperty$1(this, "_callbackList", void 0);
 
       this._registryName = registryName;
       this._registry = registry;
       this._callbackList = {};
     }
 
-    _createClass(ControlBus, [{
+    _createClass$1(ControlBus, [{
       key: "connect",
       value: function connect(id, control, cb) {
         var _this = this;
@@ -2382,19 +2442,17 @@ var NovationLaunchpadMK2 = (function () {
   }();
 
   var timerPrefix = '__timer';
-  var Timer =
-  /*#__PURE__*/
-  function () {
+  var Timer = /*#__PURE__*/function () {
     function Timer(registryName, registry, task) {
-      _classCallCheck(this, Timer);
+      _classCallCheck$1(this, Timer);
 
-      _defineProperty(this, "task", void 0);
+      _defineProperty$1(this, "task", void 0);
 
-      _defineProperty(this, "_state", void 0);
+      _defineProperty$1(this, "_state", void 0);
 
-      _defineProperty(this, "_registryName", void 0);
+      _defineProperty$1(this, "_registryName", void 0);
 
-      _defineProperty(this, "_registry", void 0);
+      _defineProperty$1(this, "_registry", void 0);
 
       this._registryName = registryName;
       this._registry = registry;
@@ -2402,7 +2460,7 @@ var NovationLaunchpadMK2 = (function () {
       this._state = undefined;
     }
 
-    _createClass(Timer, [{
+    _createClass$1(Timer, [{
       key: "start",
       value: function start(interval) {
         if (this._state == null) {
@@ -2451,31 +2509,6 @@ var NovationLaunchpadMK2 = (function () {
       return new Timer(moduleName, registry, task);
     };
   };
-
-  /**
-   * The base implementation of `_.clamp` which doesn't coerce arguments.
-   *
-   * @private
-   * @param {number} number The number to clamp.
-   * @param {number} [lower] The lower bound.
-   * @param {number} upper The upper bound.
-   * @returns {number} Returns the clamped number.
-   */
-
-  /**
-   * A specialized version of `_.map` for arrays without support for iteratee
-   * shorthands.
-   *
-   * @private
-   * @param {Array} [array] The array to iterate over.
-   * @param {Function} iteratee The function invoked per iteration.
-   * @returns {Array} Returns the new mapped array.
-   */
-
-  /** Used to convert symbols to primitives and strings. */
-
-  var symbolProto = _Symbol ? _Symbol.prototype : undefined,
-      symbolToString = symbolProto ? symbolProto.toString : undefined;
 
   function createCommonjsModule(fn, module) {
   	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -2859,6 +2892,9 @@ var NovationLaunchpadMK2 = (function () {
   }
   });
 
+  function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
   var callbackPrefix$1 = '__midi';
 
   var leftPad = function leftPad(str, padString, length) {
@@ -2875,12 +2911,12 @@ var NovationLaunchpadMK2 = (function () {
     return '0x' + leftPad(n.toString(16).toUpperCase(), '0', d);
   };
 
-  var MidiBus =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var MidiBus = /*#__PURE__*/function (_EventEmitter) {
     _inherits(MidiBus, _EventEmitter);
 
-    _createClass(MidiBus, null, [{
+    var _super = _createSuper(MidiBus);
+
+    _createClass$1(MidiBus, null, [{
       key: "create",
       value: function create(registry, device) {
         return new MidiBus(registry, device);
@@ -2890,13 +2926,13 @@ var NovationLaunchpadMK2 = (function () {
     function MidiBus(registry, device) {
       var _this;
 
-      _classCallCheck(this, MidiBus);
+      _classCallCheck$1(this, MidiBus);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(MidiBus).call(this));
+      _this = _super.call(this);
 
-      _defineProperty(_assertThisInitialized(_this), "registry", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "registry", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "device", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "device", void 0);
 
       _this.registry = registry;
       _this.device = device;
@@ -2949,28 +2985,32 @@ var NovationLaunchpadMK2 = (function () {
     return _get(target, property, receiver || target);
   }
 
-  var Component =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  function _createSuper$1(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$1()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+  var Component = /*#__PURE__*/function (_EventEmitter) {
     _inherits(Component, _EventEmitter);
 
-    function Component() {
-      _classCallCheck(this, Component);
+    var _super = _createSuper$1(Component);
 
-      return _possibleConstructorReturn(this, _getPrototypeOf(Component).apply(this, arguments));
+    function Component() {
+      _classCallCheck$1(this, Component);
+
+      return _super.apply(this, arguments);
     }
 
-    _createClass(Component, [{
+    _createClass$1(Component, [{
       key: "mount",
       value: function mount() {
         this.onMount();
-        this.emit("mount", this);
+        this.emit('mount', this);
       }
     }, {
       key: "unmount",
       value: function unmount() {
         this.onUnmount();
-        this.emit("unmount", this);
+        this.emit('unmount', this);
       }
     }, {
       key: "onMount",
@@ -2983,28 +3023,32 @@ var NovationLaunchpadMK2 = (function () {
     return Component;
   }(eventemitter3);
 
-  var MidiComponent =
-  /*#__PURE__*/
-  function (_Component) {
+  function _createSuper$2(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$2()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+  var MidiComponent = /*#__PURE__*/function (_Component) {
     _inherits(MidiComponent, _Component);
+
+    var _super = _createSuper$2(MidiComponent);
 
     function MidiComponent(midibus) {
       var _this;
 
-      _classCallCheck(this, MidiComponent);
+      _classCallCheck$1(this, MidiComponent);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(MidiComponent).call(this));
+      _this = _super.call(this);
 
-      _defineProperty(_assertThisInitialized(_this), "midibus", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "midibus", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "device", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "device", void 0);
 
       _this.midibus = midibus;
       _this.device = midibus.device;
       return _this;
     }
 
-    _createClass(MidiComponent, [{
+    _createClass$1(MidiComponent, [{
       key: "onMount",
       value: function onMount() {
         _get(_getPrototypeOf(MidiComponent.prototype), "onMount", this).call(this);
@@ -3019,21 +3063,25 @@ var NovationLaunchpadMK2 = (function () {
     return MidiComponent;
   }(Component);
 
-  var MidiButtonComponent =
-  /*#__PURE__*/
-  function (_MidiComponent) {
+  function _createSuper$3(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$3()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+  var MidiButtonComponent = /*#__PURE__*/function (_MidiComponent) {
     _inherits(MidiButtonComponent, _MidiComponent);
+
+    var _super = _createSuper$3(MidiButtonComponent);
 
     function MidiButtonComponent(midibus, button) {
       var _this;
 
-      _classCallCheck(this, MidiButtonComponent);
+      _classCallCheck$1(this, MidiButtonComponent);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(MidiButtonComponent).call(this, midibus));
+      _this = _super.call(this, midibus);
 
-      _defineProperty(_assertThisInitialized(_this), "button", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "button", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "_cb", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "_cb", void 0);
 
       _this.midibus = midibus;
       _this.button = button;
@@ -3052,7 +3100,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(MidiButtonComponent, [{
+    _createClass$1(MidiButtonComponent, [{
       key: "onMount",
       value: function onMount() {
         _get(_getPrototypeOf(MidiButtonComponent.prototype), "onMount", this).call(this);
@@ -3070,6 +3118,10 @@ var NovationLaunchpadMK2 = (function () {
 
     return MidiButtonComponent;
   }(MidiComponent);
+
+  function _createSuper$4(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$4()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
   var autoscrolled = function autoscrolled(binding) {
     return function (timerBuilder) {
@@ -3145,19 +3197,19 @@ var NovationLaunchpadMK2 = (function () {
     button.sendColor(device.colors.black);
   };
 
-  var PlaylistSidebar =
-  /*#__PURE__*/
-  function (_MidiComponent) {
+  var PlaylistSidebar = /*#__PURE__*/function (_MidiComponent) {
     _inherits(PlaylistSidebar, _MidiComponent);
+
+    var _super = _createSuper$4(PlaylistSidebar);
 
     function PlaylistSidebar(midibus, timerBuilder) {
       var _this;
 
-      _classCallCheck(this, PlaylistSidebar);
+      _classCallCheck$1(this, PlaylistSidebar);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(PlaylistSidebar).call(this, midibus));
+      _this = _super.call(this, midibus);
 
-      _defineProperty(_assertThisInitialized(_this), "buttons", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "buttons", void 0);
 
       var btns = [new MidiButtonComponent(midibus, _this.device.buttons.vol), new MidiButtonComponent(midibus, _this.device.buttons.pan), new MidiButtonComponent(midibus, _this.device.buttons.snda), new MidiButtonComponent(midibus, _this.device.buttons.sndb), new MidiButtonComponent(midibus, _this.device.buttons.stop)];
       var prevPlaylist = autoscrolled(btns[0])(timerBuilder);
@@ -3188,7 +3240,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(PlaylistSidebar, [{
+    _createClass$1(PlaylistSidebar, [{
       key: "onMount",
       value: function onMount() {
         this.buttons.forEach(function (button) {
@@ -3207,25 +3259,29 @@ var NovationLaunchpadMK2 = (function () {
     return PlaylistSidebar;
   }(MidiComponent);
 
-  var ModifierSidebar =
-  /*#__PURE__*/
-  function (_MidiComponent) {
+  function _createSuper$5(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$5()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+  var ModifierSidebar = /*#__PURE__*/function (_MidiComponent) {
     _inherits(ModifierSidebar, _MidiComponent);
+
+    var _super = _createSuper$5(ModifierSidebar);
 
     function ModifierSidebar(midibus) {
       var _this;
 
-      _classCallCheck(this, ModifierSidebar);
+      _classCallCheck$1(this, ModifierSidebar);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ModifierSidebar).call(this, midibus));
+      _this = _super.call(this, midibus);
 
-      _defineProperty(_assertThisInitialized(_this), "shift", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "shift", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "ctrl", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "ctrl", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "state", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "state", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "listener", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "listener", void 0);
 
       _this.shift = new MidiButtonComponent(_this.midibus, _this.device.buttons.solo);
       _this.ctrl = new MidiButtonComponent(_this.midibus, _this.device.buttons.arm);
@@ -3259,7 +3315,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(ModifierSidebar, [{
+    _createClass$1(ModifierSidebar, [{
       key: "onMount",
       value: function onMount() {
         this.shift.mount();
@@ -3314,25 +3370,19 @@ var NovationLaunchpadMK2 = (function () {
   };
 
   function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-        arr2[i] = arr[i];
-      }
-
-      return arr2;
-    }
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
   }
 
   function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
   }
 
   function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
 
   /** Detect free variable `global` from Node.js. */
@@ -3379,11 +3429,12 @@ var NovationLaunchpadMK2 = (function () {
 
     try {
       value[symToStringTag$2] = undefined;
+      var unmasked = true;
     } catch (e) {}
 
     var result = nativeObjectToString$2.call(value);
 
-    {
+    if (unmasked) {
       if (isOwn) {
         value[symToStringTag$2] = tag;
       } else {
@@ -4341,6 +4392,14 @@ var NovationLaunchpadMK2 = (function () {
 
   var nodeUtil$1 = function () {
     try {
+      // Use `util.types` for Node.js 10+.
+      var types = freeModule$3 && freeModule$3.require && freeModule$3.require('util').types;
+
+      if (types) {
+        return types;
+      } // Legacy `process.binding('util')` for Node.js < 10.
+
+
       return freeProcess$1 && freeProcess$1.binding && freeProcess$1.binding('util');
     } catch (e) {}
   }();
@@ -5312,8 +5371,8 @@ var NovationLaunchpadMK2 = (function () {
       dataViewTag$2 = '[object DataView]';
   /** Used to convert symbols to primitives and strings. */
 
-  var symbolProto$1 = _Symbol$1 ? _Symbol$1.prototype : undefined,
-      symbolValueOf = symbolProto$1 ? symbolProto$1.valueOf : undefined;
+  var symbolProto = _Symbol$1 ? _Symbol$1.prototype : undefined,
+      symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
   /**
    * A specialized version of `baseIsEqualDeep` for comparing objects of
    * the same `toStringTag`.
@@ -6108,7 +6167,7 @@ var NovationLaunchpadMK2 = (function () {
    * @param {Function} iteratee The function invoked per iteration.
    * @returns {Array} Returns the new mapped array.
    */
-  function arrayMap$1(array, iteratee) {
+  function arrayMap(array, iteratee) {
     var index = -1,
         length = array == null ? 0 : array.length,
         result = Array(length);
@@ -6122,11 +6181,11 @@ var NovationLaunchpadMK2 = (function () {
 
   /** Used as references for various `Number` constants. */
 
-  var INFINITY$2 = 1 / 0;
+  var INFINITY$1 = 1 / 0;
   /** Used to convert symbols to primitives and strings. */
 
-  var symbolProto$2 = _Symbol$1 ? _Symbol$1.prototype : undefined,
-      symbolToString$1 = symbolProto$2 ? symbolProto$2.toString : undefined;
+  var symbolProto$1 = _Symbol$1 ? _Symbol$1.prototype : undefined,
+      symbolToString = symbolProto$1 ? symbolProto$1.toString : undefined;
   /**
    * The base implementation of `_.toString` which doesn't convert nullish
    * values to empty strings.
@@ -6136,7 +6195,7 @@ var NovationLaunchpadMK2 = (function () {
    * @returns {string} Returns the string.
    */
 
-  function baseToString$1(value) {
+  function baseToString(value) {
     // Exit early for strings to avoid a performance hit in some environments.
     if (typeof value == 'string') {
       return value;
@@ -6144,15 +6203,15 @@ var NovationLaunchpadMK2 = (function () {
 
     if (isArray$1(value)) {
       // Recursively convert values (susceptible to call stack limits).
-      return arrayMap$1(value, baseToString$1) + '';
+      return arrayMap(value, baseToString) + '';
     }
 
     if (isSymbol$1(value)) {
-      return symbolToString$1 ? symbolToString$1.call(value) : '';
+      return symbolToString ? symbolToString.call(value) : '';
     }
 
     var result = value + '';
-    return result == '0' && 1 / value == -INFINITY$2 ? '-0' : result;
+    return result == '0' && 1 / value == -INFINITY$1 ? '-0' : result;
   }
 
   /**
@@ -6177,8 +6236,8 @@ var NovationLaunchpadMK2 = (function () {
    * // => '1,2,3'
    */
 
-  function toString$1(value) {
-    return value == null ? '' : baseToString$1(value);
+  function toString(value) {
+    return value == null ? '' : baseToString(value);
   }
 
   /**
@@ -6195,12 +6254,12 @@ var NovationLaunchpadMK2 = (function () {
       return value;
     }
 
-    return isKey(value, object) ? [value] : stringToPath(toString$1(value));
+    return isKey(value, object) ? [value] : stringToPath(toString(value));
   }
 
   /** Used as references for various `Number` constants. */
 
-  var INFINITY$3 = 1 / 0;
+  var INFINITY$2 = 1 / 0;
   /**
    * Converts `value` to a string key if it's not a string or symbol.
    *
@@ -6215,7 +6274,7 @@ var NovationLaunchpadMK2 = (function () {
     }
 
     var result = value + '';
-    return result == '0' && 1 / value == -INFINITY$3 ? '-0' : result;
+    return result == '0' && 1 / value == -INFINITY$2 ? '-0' : result;
   }
 
   /**
@@ -6518,7 +6577,7 @@ var NovationLaunchpadMK2 = (function () {
 
   /** Used as references for various `Number` constants. */
 
-  var INFINITY$4 = 1 / 0,
+  var INFINITY$3 = 1 / 0,
       MAX_INTEGER$1 = 1.7976931348623157e+308;
   /**
    * Converts `value` to a finite number.
@@ -6551,7 +6610,7 @@ var NovationLaunchpadMK2 = (function () {
 
     value = toNumber$1(value);
 
-    if (value === INFINITY$4 || value === -INFINITY$4) {
+    if (value === INFINITY$3 || value === -INFINITY$3) {
       var sign = value < 0 ? -1 : 1;
       return sign * MAX_INTEGER$1;
     }
@@ -6586,7 +6645,7 @@ var NovationLaunchpadMK2 = (function () {
    * // => 3
    */
 
-  function toInteger$1(value) {
+  function toInteger(value) {
     var result = toFinite$1(value),
         remainder = result % 1;
     return result === result ? remainder ? result - remainder : result : 0;
@@ -6638,13 +6697,13 @@ var NovationLaunchpadMK2 = (function () {
       return -1;
     }
 
-    var index = fromIndex == null ? 0 : toInteger$1(fromIndex);
+    var index = fromIndex == null ? 0 : toInteger(fromIndex);
 
     if (index < 0) {
       index = nativeMax$3(length + index, 0);
     }
 
-    return baseFindIndex(array, baseIteratee(predicate, 3), index);
+    return baseFindIndex(array, baseIteratee(predicate), index);
   }
 
   var play = (function (gridPosition) {
@@ -6898,23 +6957,27 @@ var NovationLaunchpadMK2 = (function () {
     };
   });
 
-  var Bpm =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  function _createSuper$6(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$6()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$6() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+  var Bpm = /*#__PURE__*/function (_EventEmitter) {
     _inherits(Bpm, _EventEmitter);
+
+    var _super = _createSuper$6(Bpm);
 
     function Bpm(max) {
       var _this;
 
-      _classCallCheck(this, Bpm);
+      _classCallCheck$1(this, Bpm);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Bpm).call(this));
+      _this = _super.call(this);
 
-      _defineProperty(_assertThisInitialized(_this), "tapTime", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "tapTime", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "taps", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "taps", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "max", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "max", void 0);
 
       if (max == null) {
         max = 8;
@@ -6926,7 +6989,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(Bpm, [{
+    _createClass$1(Bpm, [{
       key: "reset",
       value: function reset() {
         this.taps = [];
@@ -6974,7 +7037,9 @@ var NovationLaunchpadMK2 = (function () {
                 attack: function attack() {
                   modes(modifier.getState(), function () {
                     tempoBpm.tap();
-                  }, undefined, function () {
+                  }, function () {
+                    deck.bpm_tap.setValue(1);
+                  }, function () {
                     deck.beats_translate_curpos.setValue(1);
                   }, function () {
                     deck.beats_translate_match_alignment.setValue(1);
@@ -7688,8 +7753,8 @@ var NovationLaunchpadMK2 = (function () {
    */
 
   function map(collection, iteratee) {
-    var func = isArray$1(collection) ? arrayMap$1 : baseMap;
-    return func(collection, baseIteratee(iteratee, 3));
+    var func = isArray$1(collection) ? arrayMap : baseMap;
+    return func(collection, baseIteratee(iteratee));
   }
 
   /**
@@ -7804,8 +7869,7 @@ var NovationLaunchpadMK2 = (function () {
 
             var spec = flatMap(jumps, function (j, i) {
               return [[j, -1], [j, 1]];
-            }); // FIXME: flatMap is incorrectly typed see https://github.com/flow-typed/flow-typed/issues/2463
-
+            });
             spec.forEach(function (_ref4, i) {
               var _ref5 = _slicedToArray(_ref4, 2),
                   jump = _ref5[0],
@@ -8069,7 +8133,7 @@ var NovationLaunchpadMK2 = (function () {
                 mount: onMount('halve'),
                 attack: onAttack('halve')
               },
-              double: {
+              "double": {
                 type: 'button',
                 target: [gridPosition[0] + 1, gridPosition[1]],
                 mount: onMount('double'),
@@ -8094,6 +8158,8 @@ var NovationLaunchpadMK2 = (function () {
                 attack: function attack() {
                   modes(modifier.getState(), function () {
                     return deck.reloop_exit.setValue(1);
+                  }, function () {
+                    return deck.reloop_andstop.setValue(1);
                   });
                 }
               },
@@ -8118,23 +8184,39 @@ var NovationLaunchpadMK2 = (function () {
     };
   });
 
+  var SMALL_SAMPLES = 125;
   var loopIo = (function (gridPosition) {
     return function (deck) {
       return function (modifier) {
         return function (device) {
+          var loopName = {
+            "in": 'loop_in',
+            out: 'loop_out'
+          };
+          var loopPosName = {
+            "in": 'loop_start_position',
+            out: 'loop_end_position'
+          };
+
           var onMidi = function onMidi(dir) {
             return function (_ref, _ref2) {
               var value = _ref.value;
               var bindings = _ref2.bindings;
               modes(modifier.getState(), function () {
                 if (value) {
-                  // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
-                  deck["loop_".concat(dir)].setValue(1);
-                  bindings[dir].button.sendColor(device.colors.hi_green);
-                } else {
-                  // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
-                  deck["loop_".concat(dir)].setValue(0);
-                  bindings[dir].button.sendColor(device.colors.black);
+                  var ctrl = loopName[dir];
+                  deck[ctrl].setValue(1);
+                  deck[ctrl].setValue(0);
+                }
+              }, function () {
+                if (value) {
+                  var ctrl = loopPosName[dir];
+                  deck[ctrl].setValue(deck[ctrl].getValue() - SMALL_SAMPLES);
+                }
+              }, function () {
+                if (value) {
+                  var ctrl = loopPosName[dir];
+                  deck[ctrl].setValue(deck[ctrl].getValue() + SMALL_SAMPLES);
                 }
               });
             };
@@ -8299,6 +8381,9 @@ var NovationLaunchpadMK2 = (function () {
     beatjump: beatjump([[1, 16], [2, 32]])([0, 6])
   };
 
+  function _createSuper$7(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$7()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$7() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
   var makePresetFromPartialTemplate = function makePresetFromPartialTemplate(id, partialTemplate, offset) {
     return function (deck) {
       return function (controlComponentBuilder) {
@@ -8306,7 +8391,7 @@ var NovationLaunchpadMK2 = (function () {
           return function (modifier) {
             var template = {};
             Object.keys(partialTemplate).forEach(function (k) {
-              assign$1(template, _defineProperty({}, k, partialTemplate[k](deck)(modifier)(midibus.device)));
+              assign$1(template, _defineProperty$1({}, k, partialTemplate[k](deck)(modifier)(midibus.device)));
             });
             return new Preset(midibus, controlComponentBuilder, modifier, id, template, offset);
           };
@@ -8314,19 +8399,19 @@ var NovationLaunchpadMK2 = (function () {
       };
     };
   };
-  var Preset =
-  /*#__PURE__*/
-  function (_MidiComponent) {
+  var Preset = /*#__PURE__*/function (_MidiComponent) {
     _inherits(Preset, _MidiComponent);
+
+    var _super = _createSuper$7(Preset);
 
     function Preset(midibus, controlComponentBuilder, modifier, id, template, offset) {
       var _this;
 
-      _classCallCheck(this, Preset);
+      _classCallCheck$1(this, Preset);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Preset).call(this, midibus));
+      _this = _super.call(this, midibus);
 
-      _defineProperty(_assertThisInitialized(_this), "preset", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "preset", void 0);
 
       var controlBindings = {};
       var controlListeners = {};
@@ -8378,7 +8463,7 @@ var NovationLaunchpadMK2 = (function () {
                   }
                 });
 
-                if (typeof binding['unmount'] !== 'function') {
+                if (typeof binding.unmount !== 'function') {
                   appendListener('unmount', buttonListeners[_name], function (data) {
                     instance.bindings[bk].button.sendColor(this.device.colors.black);
                   });
@@ -8397,7 +8482,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(Preset, [{
+    _createClass$1(Preset, [{
       key: "onMount",
       value: function onMount() {
         var _this$preset = this.preset,
@@ -8487,6 +8572,9 @@ var NovationLaunchpadMK2 = (function () {
     });
   };
 
+  function _createSuper$8(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$8()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$8() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
   var initialChannels = [0, 1];
 
   var onMidi$1 = function onMidi(selectorBar, channel, modifier) {
@@ -8517,31 +8605,31 @@ var NovationLaunchpadMK2 = (function () {
     });
   };
 
-  var SelectorBar =
-  /*#__PURE__*/
-  function (_MidiComponent) {
+  var SelectorBar = /*#__PURE__*/function (_MidiComponent) {
     _inherits(SelectorBar, _MidiComponent);
+
+    var _super = _createSuper$8(SelectorBar);
 
     function SelectorBar(midibus, controlComponentBuilder, modifier, id) {
       var _this;
 
-      _classCallCheck(this, SelectorBar);
+      _classCallCheck$1(this, SelectorBar);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectorBar).call(this, midibus));
+      _this = _super.call(this, midibus);
 
-      _defineProperty(_assertThisInitialized(_this), "id", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "id", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "bindings", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "bindings", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "controlComponentBuilder", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "controlComponentBuilder", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "modifier", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "modifier", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "chord", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "chord", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "layout", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "layout", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "mountedPresets", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "mountedPresets", void 0);
 
       _this.id = id;
       _this.bindings = SelectorBar.buttons.map(function (v, i) {
@@ -8556,7 +8644,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(SelectorBar, [{
+    _createClass$1(SelectorBar, [{
       key: "getLayout",
       value: function getLayout() {
         var res = [];
@@ -8682,29 +8770,29 @@ var NovationLaunchpadMK2 = (function () {
     return SelectorBar;
   }(MidiComponent);
 
-  _defineProperty(SelectorBar, "buttons", ['up', 'down', 'left', 'right', 'session', 'user1', 'user2', 'mixer']);
+  _defineProperty$1(SelectorBar, "buttons", ['up', 'down', 'left', 'right', 'session', 'user1', 'user2', 'mixer']);
 
-  _defineProperty(SelectorBar, "channels", [0, 1, 2, 3, 4, 5, 6, 7]);
+  _defineProperty$1(SelectorBar, "channels", [0, 1, 2, 3, 4, 5, 6, 7]);
 
-  var Layout =
-  /*#__PURE__*/
-  function (_MidiComponent2) {
+  var Layout = /*#__PURE__*/function (_MidiComponent2) {
     _inherits(Layout, _MidiComponent2);
+
+    var _super2 = _createSuper$8(Layout);
 
     function Layout(midibus, controlComponentBuilder, modifier, id) {
       var _this4;
 
-      _classCallCheck(this, Layout);
+      _classCallCheck$1(this, Layout);
 
-      _this4 = _possibleConstructorReturn(this, _getPrototypeOf(Layout).call(this, midibus));
+      _this4 = _super2.call(this, midibus);
 
-      _defineProperty(_assertThisInitialized(_this4), "selectorBar", void 0);
+      _defineProperty$1(_assertThisInitialized(_this4), "selectorBar", void 0);
 
       _this4.selectorBar = new SelectorBar(midibus, controlComponentBuilder, modifier, "".concat(id, ".selectorBar"));
       return _this4;
     }
 
-    _createClass(Layout, [{
+    _createClass$1(Layout, [{
       key: "onMount",
       value: function onMount() {
         this.selectorBar.mount();
@@ -8726,12 +8814,12 @@ var NovationLaunchpadMK2 = (function () {
   var presets = {
     grande: [Grande],
     tall: [Tall, Juggler],
-    short: [Short, Sampler]
+    "short": [Short, Sampler]
   };
   var cycled = {
-    'grande': [].concat(_toConsumableArray(presets.grande), _toConsumableArray(presets.tall), _toConsumableArray(presets.short)),
-    'tall': [].concat(_toConsumableArray(presets.tall), _toConsumableArray(presets.short)),
-    'short': presets.short
+    grande: [].concat(_toConsumableArray(presets.grande), _toConsumableArray(presets.tall), _toConsumableArray(presets["short"])),
+    tall: [].concat(_toConsumableArray(presets.tall), _toConsumableArray(presets["short"])),
+    "short": presets["short"]
   };
 
   var blockEquals = function blockEquals(a, b) {
@@ -8844,23 +8932,27 @@ var NovationLaunchpadMK2 = (function () {
     })]];
   };
 
-  var Screen =
-  /*#__PURE__*/
-  function (_MidiComponent) {
+  function _createSuper$9(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$9()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$9() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+  var Screen = /*#__PURE__*/function (_MidiComponent) {
     _inherits(Screen, _MidiComponent);
+
+    var _super = _createSuper$9(Screen);
 
     function Screen(midibus, timerBuilder, controlComponentBuilder, id) {
       var _this;
 
-      _classCallCheck(this, Screen);
+      _classCallCheck$1(this, Screen);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Screen).call(this, midibus));
+      _this = _super.call(this, midibus);
 
-      _defineProperty(_assertThisInitialized(_this), "modifier", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "modifier", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "playListSidebar", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "playListSidebar", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "layout", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "layout", void 0);
 
       _this.modifier = new ModifierSidebar(midibus);
       _this.playListSidebar = new PlaylistSidebar(midibus, timerBuilder);
@@ -8868,7 +8960,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(Screen, [{
+    _createClass$1(Screen, [{
       key: "onMount",
       value: function onMount() {
         this.modifier.mount();
@@ -8887,6 +8979,9 @@ var NovationLaunchpadMK2 = (function () {
     return Screen;
   }(MidiComponent);
 
+  function _createSuper$a(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$a()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+  function _isNativeReflectConstruct$a() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
   var makeControlComponent = function makeControlComponent(controlBus) {
     return function (id) {
       return function (control) {
@@ -8895,27 +8990,27 @@ var NovationLaunchpadMK2 = (function () {
     };
   };
 
-  var ControlComponent =
-  /*#__PURE__*/
-  function (_Component) {
+  var ControlComponent = /*#__PURE__*/function (_Component) {
     _inherits(ControlComponent, _Component);
+
+    var _super = _createSuper$a(ControlComponent);
 
     function ControlComponent(controlBus, id, control) {
       var _this;
 
-      _classCallCheck(this, ControlComponent);
+      _classCallCheck$1(this, ControlComponent);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(ControlComponent).call(this));
+      _this = _super.call(this);
 
-      _defineProperty(_assertThisInitialized(_this), "value", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "value", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "id", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "id", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "controlBus", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "controlBus", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "control", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "control", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "_handle", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "_handle", void 0);
 
       _this.value = null;
       _this.id = id;
@@ -8925,7 +9020,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(ControlComponent, [{
+    _createClass$1(ControlComponent, [{
       key: "onMount",
       value: function onMount() {
         var _this2 = this;
@@ -8973,18 +9068,19 @@ var NovationLaunchpadMK2 = (function () {
     return ControlComponent;
   }(Component);
 
-  var LaunchpadMidiButton =
-  /*#__PURE__*/
-  function () {
-    function LaunchpadMidiButton(def) {
-      _classCallCheck(this, LaunchpadMidiButton);
+  function _createSuper$b(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct$b()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-      _defineProperty(this, "def", void 0);
+  function _isNativeReflectConstruct$b() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+  var LaunchpadMidiButton = /*#__PURE__*/function () {
+    function LaunchpadMidiButton(def) {
+      _classCallCheck$1(this, LaunchpadMidiButton);
+
+      _defineProperty$1(this, "def", void 0);
 
       this.def = def;
     }
 
-    _createClass(LaunchpadMidiButton, [{
+    _createClass$1(LaunchpadMidiButton, [{
       key: "sendColor",
       value: function sendColor(value) {
         midi_1.sendShortMsg(this.def.status, this.def.midino, value);
@@ -8994,27 +9090,27 @@ var NovationLaunchpadMK2 = (function () {
     return LaunchpadMidiButton;
   }();
 
-  var Global =
-  /*#__PURE__*/
-  function (_Component) {
+  var Global = /*#__PURE__*/function (_Component) {
     _inherits(Global, _Component);
+
+    var _super = _createSuper$b(Global);
 
     function Global(name, device) {
       var _this;
 
-      _classCallCheck(this, Global);
+      _classCallCheck$1(this, Global);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(Global).call(this));
+      _this = _super.call(this);
 
-      _defineProperty(_assertThisInitialized(_this), "screen", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "screen", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "device", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "device", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "name", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "name", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "init", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "init", void 0);
 
-      _defineProperty(_assertThisInitialized(_this), "shutdown", void 0);
+      _defineProperty$1(_assertThisInitialized(_this), "shutdown", void 0);
 
       _this.name = name;
       _this.device = device;
@@ -9034,7 +9130,7 @@ var NovationLaunchpadMK2 = (function () {
       return _this;
     }
 
-    _createClass(Global, [{
+    _createClass$1(Global, [{
       key: "onMount",
       value: function onMount() {
         this.device.init();
@@ -9055,12 +9151,28 @@ var NovationLaunchpadMK2 = (function () {
     return new Global(name, device);
   }
 
+  function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
+
+  function _typeof$1(obj) {
+    if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
+      _typeof$1 = function _typeof(obj) {
+        return _typeof2(obj);
+      };
+    } else {
+      _typeof$1 = function _typeof(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
+      };
+    }
+
+    return _typeof$1(obj);
+  }
+
   /** Detect free variable `global` from Node.js. */
-  var freeGlobal$2 = (typeof global === "undefined" ? "undefined" : _typeof(global)) == 'object' && global && global.Object === Object && global;
+  var freeGlobal$2 = (typeof global === "undefined" ? "undefined" : _typeof$1(global)) == 'object' && global && global.Object === Object && global;
 
   /** Detect free variable `self`. */
 
-  var freeSelf$2 = (typeof self === "undefined" ? "undefined" : _typeof(self)) == 'object' && self && self.Object === Object && self;
+  var freeSelf$2 = (typeof self === "undefined" ? "undefined" : _typeof$1(self)) == 'object' && self && self.Object === Object && self;
   /** Used as a reference to the global object. */
 
   var root$2 = freeGlobal$2 || freeSelf$2 || Function('return this')();
@@ -9099,11 +9211,12 @@ var NovationLaunchpadMK2 = (function () {
 
     try {
       value[symToStringTag$4] = undefined;
+      var unmasked = true;
     } catch (e) {}
 
     var result = nativeObjectToString$4.call(value);
 
-    {
+    if (unmasked) {
       if (isOwn) {
         value[symToStringTag$4] = tag;
       } else {
@@ -9184,7 +9297,7 @@ var NovationLaunchpadMK2 = (function () {
    * // => false
    */
   function isObject$2(value) {
-    var type = _typeof(value);
+    var type = _typeof$1(value);
 
     return value != null && (type == 'object' || type == 'function');
   }
@@ -9733,7 +9846,7 @@ var NovationLaunchpadMK2 = (function () {
    */
 
   function isIndex$2(value, length) {
-    var type = _typeof(value);
+    var type = _typeof$1(value);
 
     length = length == null ? MAX_SAFE_INTEGER$5 : length;
     return !!length && (type == 'number' || type != 'symbol' && reIsUint$2.test(value)) && value > -1 && value % 1 == 0 && value < length;
@@ -9755,7 +9868,7 @@ var NovationLaunchpadMK2 = (function () {
       return false;
     }
 
-    var type = _typeof(index);
+    var type = _typeof$1(index);
 
     if (type == 'number' ? isArrayLike$2(object) && isIndex$2(index, object.length) : type == 'string' && index in object) {
       return eq$2(object[index], value);
@@ -9860,7 +9973,7 @@ var NovationLaunchpadMK2 = (function () {
    * // => false
    */
   function isObjectLike$2(value) {
-    return value != null && _typeof(value) == 'object';
+    return value != null && _typeof$1(value) == 'object';
   }
 
   /** `Object#toString` result references. */
@@ -9956,10 +10069,10 @@ var NovationLaunchpadMK2 = (function () {
 
   /** Detect free variable `exports`. */
 
-  var freeExports$4 = (typeof exports === "undefined" ? "undefined" : _typeof(exports)) == 'object' && exports && !exports.nodeType && exports;
+  var freeExports$4 = (typeof exports === "undefined" ? "undefined" : _typeof$1(exports)) == 'object' && exports && !exports.nodeType && exports;
   /** Detect free variable `module`. */
 
-  var freeModule$4 = freeExports$4 && (typeof module === "undefined" ? "undefined" : _typeof(module)) == 'object' && module && !module.nodeType && module;
+  var freeModule$4 = freeExports$4 && (typeof module === "undefined" ? "undefined" : _typeof$1(module)) == 'object' && module && !module.nodeType && module;
   /** Detect the popular CommonJS extension `module.exports`. */
 
   var moduleExports$4 = freeModule$4 && freeModule$4.exports === freeExports$4;
@@ -10047,10 +10160,10 @@ var NovationLaunchpadMK2 = (function () {
 
   /** Detect free variable `exports`. */
 
-  var freeExports$5 = (typeof exports === "undefined" ? "undefined" : _typeof(exports)) == 'object' && exports && !exports.nodeType && exports;
+  var freeExports$5 = (typeof exports === "undefined" ? "undefined" : _typeof$1(exports)) == 'object' && exports && !exports.nodeType && exports;
   /** Detect free variable `module`. */
 
-  var freeModule$5 = freeExports$5 && (typeof module === "undefined" ? "undefined" : _typeof(module)) == 'object' && module && !module.nodeType && module;
+  var freeModule$5 = freeExports$5 && (typeof module === "undefined" ? "undefined" : _typeof$1(module)) == 'object' && module && !module.nodeType && module;
   /** Detect the popular CommonJS extension `module.exports`. */
 
   var moduleExports$5 = freeModule$5 && freeModule$5.exports === freeExports$5;
@@ -10273,7 +10386,7 @@ var NovationLaunchpadMK2 = (function () {
   var dependencies = {
   	"@babel/runtime": "^7.3.1",
   	"@mixxx-launchpad/app": "1.0.0",
-  	"lodash-es": "~4.17.4"
+  	"lodash-es": "~4.17.14"
   };
   var controller = {
   	device: "Launchpad MK2",
@@ -10307,82 +10420,82 @@ var NovationLaunchpadMK2 = (function () {
 
   var buttons = {
     /* eslint-disable key-spacing, no-multi-spaces */
-    'up': {
+    up: {
       status: 0xB0,
       midino: 0x68,
       name: 'up'
     },
-    'down': {
+    down: {
       status: 0xB0,
       midino: 0x69,
       name: 'down'
     },
-    'left': {
+    left: {
       status: 0xB0,
       midino: 0x6A,
       name: 'left'
     },
-    'right': {
+    right: {
       status: 0xB0,
       midino: 0x6B,
       name: 'right'
     },
-    'session': {
+    session: {
       status: 0xB0,
       midino: 0x6C,
       name: 'session'
     },
-    'user1': {
+    user1: {
       status: 0xB0,
       midino: 0x6D,
       name: 'user1'
     },
-    'user2': {
+    user2: {
       status: 0xB0,
       midino: 0x6E,
       name: 'user2'
     },
-    'mixer': {
+    mixer: {
       status: 0xB0,
       midino: 0x6F,
       name: 'mixer'
     },
-    'vol': {
+    vol: {
       status: 0x90,
       midino: 0x59,
       name: 'vol'
     },
-    'pan': {
+    pan: {
       status: 0x90,
       midino: 0x4F,
       name: 'pan'
     },
-    'snda': {
+    snda: {
       status: 0x90,
       midino: 0x45,
       name: 'snda'
     },
-    'sndb': {
+    sndb: {
       status: 0x90,
       midino: 0x3B,
       name: 'sndb'
     },
-    'stop': {
+    stop: {
       status: 0x90,
       midino: 0x31,
       name: 'stop'
     },
-    'trkon': {
+    trkon: {
       status: 0x90,
       midino: 0x27,
       name: 'trkon'
     },
-    'solo': {
+    solo: {
       status: 0x90,
       midino: 0x1D,
       name: 'solo'
     },
-    'arm': {
+    arm: {
       status: 0x90,
       midino: 0x13,
       name: 'arm'
@@ -10706,14 +10819,12 @@ var NovationLaunchpadMK2 = (function () {
       status: 0x90,
       midino: 0x12,
       name: '7,7'
-      /* eslint-enable key-spacing, no-multi-spaces */
-
     }
+    /* eslint-enable key-spacing, no-multi-spaces */
+
   };
 
-  var LaunchpadMK2Device =
-  /*#__PURE__*/
-  function () {
+  var LaunchpadMK2Device = /*#__PURE__*/function () {
     function LaunchpadMK2Device() {
       _classCallCheck(this, LaunchpadMK2Device);
 
@@ -10721,8 +10832,8 @@ var NovationLaunchpadMK2 = (function () {
 
       _defineProperty(this, "colors", void 0);
 
-      this.buttons = Object.keys(buttons).reduce(function (obj, name$$1) {
-        return assign$2(obj, _defineProperty({}, name$$1, new LaunchpadMidiButton(buttons[name$$1])));
+      this.buttons = Object.keys(buttons).reduce(function (obj, name) {
+        return assign$2(obj, _defineProperty({}, name, new LaunchpadMidiButton(buttons[name])));
       }, {});
       this.colors = colors;
     }

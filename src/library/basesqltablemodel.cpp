@@ -14,6 +14,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "track/keyutils.h"
+#include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/assert.h"
 #include "util/datetime.h"
@@ -614,17 +615,6 @@ QVariant BaseSqlTableModel::rawValue(
     return m_trackSource->data(trackId, trackSourceColumn);
 }
 
-QVariant BaseSqlTableModel::roleValue(
-        const QModelIndex& index,
-        QVariant&& rawValue,
-        int role) const {
-    if (role == Qt::DisplayRole &&
-            index.column() == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-        return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
-    }
-    return BaseTrackTableModel::roleValue(index, std::move(rawValue), role);
-}
-
 bool BaseSqlTableModel::setTrackValueForColumn(
         const TrackPointer& pTrack,
         int column,
@@ -741,17 +731,6 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
 BaseCoverArtDelegate* BaseSqlTableModel::doCreateCoverArtDelegate(
         QTableView* pTableView) const {
     return new CoverArtDelegate(pTableView);
-}
-
-void BaseSqlTableModel::slotRefreshCoverRows(QList<int> rows) {
-    if (rows.isEmpty()) {
-        return;
-    }
-    const int column = fieldIndex(LIBRARYTABLE_COVERART);
-    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
-        return;
-    }
-    emitDataChangedForMultipleRowsInColumn(rows, column);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {

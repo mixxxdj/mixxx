@@ -392,7 +392,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
 
     processTempRate(iSamplesPerBuffer);
 
-    double rate = (paused ? 0 : 1.0);
+    double rate;
     double searching = m_pRateSearch->get();
     if (searching) {
         // If searching is in progress, it overrides everything else
@@ -475,7 +475,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.
-            int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+            int vcmode = m_pVCMode ? static_cast<int>(m_pVCMode->get()) : MIXXX_VCMODE_ABSOLUTE;
             // TODO(owen): Instead of just ignoring reverse mode, should we
             // disable absolute mode instead?
             if (m_pReverseButton->get()

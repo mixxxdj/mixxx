@@ -27,6 +27,7 @@ QList<QString>& Tooltips::add(QString id) {
 void Tooltips::addStandardTooltips() {
     QString dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
     QString dragItem = tr("Drag this item to other decks/samplers, to crates and playlist or to external file manager.");
+    QString trackMenu = tr("Right-click to open the track context menu.");
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
@@ -70,6 +71,10 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -> Vinyl Control).");
 
+    add("big_spinny_coverart")
+            << tr("Big Spinny/Cover Art")
+            << tr("Show a big version of the Spinny or track cover art if enabled.");
+
     add("pregain")
             << tr("Gain")
             << tr("Adjusts the pre-fader gain of the track (to avoid clipping).")
@@ -92,18 +97,18 @@ void Tooltips::addStandardTooltips() {
             << clippingHelp;
 
     add("master_PeakIndicator")
-            << tr("Master Peak Indicator")
-            << tr("Indicates when the signal on the master output is clipping,")
+            << tr("Main Output Peak Indicator")
+            << tr("Indicates when the signal on the main output is clipping,")
             << clippingHelp;
 
     add("master_PeakIndicatorL")
-            << tr("Master L Peak Indicator")
-            << tr("Indicates when the left signal on the master output is clipping,")
+            << tr("Main Output L Peak Indicator")
+            << tr("Indicates when the left signal on the main output is clipping,")
             << clippingHelp;
 
     add("master_PeakIndicatorR")
-            << tr("Master R Peak Indicator")
-            << tr("Indicates when the right signal on the master output is clipping,")
+            << tr("Main Output R Peak Indicator")
+            << tr("Indicates when the right signal on the main output is clipping,")
             << clippingHelp;
 
     add("channel_VuMeter")
@@ -155,12 +160,12 @@ void Tooltips::addStandardTooltips() {
             << clippingHelp;
 
     add("master_VuMeterL")
-            << tr("Master Channel L Volume Meter")
-            << tr("Shows the current master volume for the left channel.");
+            << tr("Main Channel L Volume Meter")
+            << tr("Shows the current volume for the left channel of the main output.");
 
     add("master_VuMeterR")
             << tr("Master Channel R Volume Meter")
-            << tr("Shows the current master volume for the right channel.");
+            << tr("Shows the current volume for the right channel of the main output.");
 
     add("channel_volume")
             << tr("Volume Control")
@@ -169,13 +174,13 @@ void Tooltips::addStandardTooltips() {
 
     // Legacy control.
     add("master_volume")
-            << tr("Master Volume")
-            << tr("Adjusts the master output volume.")
+            << tr("Main Output Gain")
+            << tr("Adjusts the main output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("master_gain")
-            << tr("Master Gain")
-            << tr("Adjusts the master output gain.")
+            << tr("Main Output Gain")
+            << tr("Adjusts the main output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("booth_gain")
@@ -185,13 +190,13 @@ void Tooltips::addStandardTooltips() {
 
     add("crossfader")
             << tr("Crossfader")
-            << tr("Determines the master output by fading between the left and right channels.")
+            << tr("Determines the main output by fading between the left and right channels.")
             << QString("%1: %2").arg(rightClick, resetToDefault)
             << tr("Change the crossfader curve in Preferences -> Crossfader");
 
     add("balance")
             << tr("Balance")
-            << tr("Adjusts the left/right channel balance on the master output.")
+            << tr("Adjusts the left/right channel balance on the main output.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     // Legacy control.
@@ -207,12 +212,12 @@ void Tooltips::addStandardTooltips() {
 
     add("headMix")
             << tr("Headphone Mix")
-            << tr("Crossfades the headphone output between the master mix and cueing (PFL or Pre-Fader Listening) signal.")
+            << tr("Crossfades the headphone output between the main mix and cueing (PFL or Pre-Fader Listening) signal.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("headSplit")
             << tr("Headphone Split Cue")
-            << tr("If activated, the master signal plays in the right channel, while the cueing signal "
+            << tr("If activated, the main mix signal plays in the right channel, while the cueing signal "
                   "plays in the left channel.")
             << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
 
@@ -242,9 +247,19 @@ void Tooltips::addStandardTooltips() {
             << tr("Cover Art")
             << tr("Show/hide Cover Art.");
 
+    add("show_library_coverart")
+            << tr("Cover Art")
+            << tr("Show/hide Cover Art of the selected track in the library.");
+
     add("toggle_4decks")
             << tr("Toggle 4 Decks")
             << tr("Switches between showing 2 decks and 4 decks.");
+
+    add("show_waveforms")
+            << tr("Show/hide the scrolling waveforms");
+
+    add("show_beatgrid_controls")
+            << tr("Show/hide the beatgrid controls section");
 
     add("show_library")
             << tr("Show Library")
@@ -256,11 +271,15 @@ void Tooltips::addStandardTooltips() {
 
     add("maximize_library")
             << tr("Maximize Library")
-            << tr("Maximize the track library to take up all the available screen space.");
+            << tr("Hide all skin sections except the decks to have more screen space for the track library.");
 
     add("show_mixer")
             << tr("Toggle Mixer")
             << tr("Show or hide the mixer.");
+
+    add("show_vumeters")
+            << tr("Volume Meters")
+            << tr("Show/hide volume meters for channels and master output.");
 
     add("microphone_volume")
             << tr("Microphone Volume")
@@ -280,20 +299,22 @@ void Tooltips::addStandardTooltips() {
     add("microphone_talkover")
             << tr("Microphone Talk-Over")
             << tr("Hold-to-talk or short click for latching to")
-            << tr("mix microphone input into the master output.");
+            << tr("mix microphone input into the main output.");
 
     add("talkover_duck_mode")
             << tr("Microphone Talkover Mode")
             << tr("Off: Do not reduce music volume")
-            << tr("Auto: Automatically reduce music volume when microphones are in use. Adjust the amount the music volume is reduced with the Strength knob.")
-            << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.");
+            << tr("Auto: Automatically reduce music volume when microphone volume rises above threshold.")
+            << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.")
+            << tr("Adjust the amount the music volume is reduced with the Strength knob.");
 
     add("talkover_duck_strength")
             << tr("Microphone Talkover Ducking Strength")
+            << tr("Adjust the amount the music volume is reduced with the Strength knob.")
             << tr("Behavior depends on Microphone Talkover Mode:")
             << tr("Off: Does nothing")
-            << tr("Auto: Sets how much to reduce the music volume when microphones are in use.")
-            << tr("Manual: Sets how much to reduce the music volume, regardless of volume of microphone inputs.");
+            << tr("Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.")
+            << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
     add("rate_perm_up_rate_perm_up_small")
@@ -488,12 +509,12 @@ void Tooltips::addStandardTooltips() {
 
     add("mute")
             << tr("Mute")
-            << tr("Mutes the selected channel's audio in the master output.");
+            << tr("Mutes the selected channel's audio in the main output.");
 
     add("master_enable")
-            << tr("Master enable")
+            << tr("Main mix enable")
             << tr("Hold or short click for latching to "
-                  "mix this input into the master output.");
+                  "mix this input into the main output.");
 
     add("back_start")
             << tr("Fast Rewind")
@@ -715,7 +736,8 @@ void Tooltips::addStandardTooltips() {
     add("track_time")
             << tr("Track Time")
             << tr("Displays the elapsed and/or remaining time of the track loaded.")
-            << tr("Click to toggle between time elapsed/remaining time/both.");
+            << tr("Click to toggle between time elapsed/remaining time/both.")
+            << tr("Hint: Change the time format in Preferences -> Decks.");
 
     add("track_duration")
             << tr("Track Duration")
@@ -727,19 +749,24 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the artist of the loaded track.")
             << trackTags
             << dropTracksHere
-            << dragItem;
+            << dragItem
+            << trackMenu;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
             << trackTags
             << dropTracksHere
-            << dragItem;
+            << dragItem
+            << trackMenu;
 
     add("track_album")
             << tr("Track Album")
             << tr("Displays the album name of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere
+            << dragItem
+            << trackMenu;
 
     add("track_key")
             //: The musical key of a track
@@ -867,7 +894,7 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectUnit_master_enabled")
             << tr("Assign Effect Unit")
-            << tr("Route the master mix through this effect unit.")
+            << tr("Route the main mix through this effect unit.")
             << effectsWithinUnit;
 
     add("EffectUnit_BusLeft_enabled")

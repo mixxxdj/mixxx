@@ -6,7 +6,8 @@
 
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
@@ -31,17 +32,20 @@ signals:
     void cloneDeck(QString source_group, QString target_group) override;
 
   public slots:
-    void slotTrackLoaded(TrackPointer track);
+    void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+
+  protected:
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private slots:
     void slotTrackChanged(TrackId);
-    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
 
     void updateLabel();
 

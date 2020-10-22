@@ -12,6 +12,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
@@ -62,6 +63,7 @@ inline QSqlDatabase cloneDatabase(
     auto cloned = QSqlDatabase::cloneDatabase(
             prototype,
             connectionName);
+    DEBUG_ASSERT(cloned.isValid());
     if (prototype.isOpen() && !cloned.open()) {
         kLogger.warning()
                 << "Failed to open cloned database connection"
@@ -73,8 +75,10 @@ inline QSqlDatabase cloneDatabase(
 
 QSqlDatabase cloneDatabase(
         TrackCollectionManager* pTrackCollectionManager) {
-    DEBUG_ASSERT(pTrackCollectionManager);
-    DEBUG_ASSERT(pTrackCollectionManager->internalCollection());
+    VERIFY_OR_DEBUG_ASSERT(pTrackCollectionManager &&
+            pTrackCollectionManager->internalCollection()) {
+        return QSqlDatabase();
+    }
     const auto connectionName =
             uuidToStringWithoutBraces(QUuid::createUuid());
     return cloneDatabase(
@@ -495,9 +499,8 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return QString("(%1)").arg(rawValue.toInt());
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
-            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
-        } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+                column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
             return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
             bool ok;
@@ -592,7 +595,6 @@ QVariant BaseTrackTableModel::roleValue(
         break;
     }
     return std::move(rawValue);
-
 }
 
 bool BaseTrackTableModel::isBpmLocked(
@@ -791,4 +793,9 @@ void BaseTrackTableModel::emitDataChangedForMultipleRowsInColumn(
 TrackPointer BaseTrackTableModel::getTrackByRef(
         const TrackRef& trackRef) const {
     return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
+}
+
+TrackId BaseTrackTableModel::doGetTrackId(
+        const TrackPointer& pTrack) const {
+    return pTrack ? pTrack->getId() : TrackId();
 }

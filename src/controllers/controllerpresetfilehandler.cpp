@@ -99,6 +99,8 @@ void ControllerPresetFileHandler::parsePresetInfo(
     preset->setDescription(description.isNull() ? "" : description.text());
     QDomElement forums = info.firstChildElement("forums");
     preset->setForumLink(forums.isNull() ? "" : forums.text());
+    QDomElement manualPage = info.firstChildElement("manual");
+    preset->setManualPage(manualPage.isNull() ? "" : manualPage.text());
     QDomElement wiki = info.firstChildElement("wiki");
     preset->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }
@@ -144,6 +146,20 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
         preset->addScriptFile(filename, functionPrefix, file);
         scriptFile = scriptFile.nextSiblingElement("file");
     }
+
+    QString moduleFileName = controller.firstChildElement("module").text();
+
+    if (moduleFileName.isEmpty()) {
+        return;
+    }
+
+    QFileInfo moduleFileInfo(preset->dirPath().absoluteFilePath(moduleFileName));
+    if (!moduleFileInfo.isFile()) {
+        qWarning() << "Controller Module is not a file:" << moduleFileInfo.absoluteFilePath();
+        return;
+    }
+
+    preset->setModuleFileInfo(moduleFileInfo);
 }
 
 bool ControllerPresetFileHandler::writeDocument(

@@ -1,20 +1,3 @@
-/***************************************************************************
-                          enginedeck.cpp  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "engine/channels/enginedeck.h"
 
 #include "control/controlpushbutton.h"
@@ -26,13 +9,14 @@
 #include "util/sample.h"
 #include "waveform/waveformwidgetfactory.h"
 
-EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
+EngineDeck::EngineDeck(
+        const ChannelHandleAndGroup& handleGroup,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         bool primaryDeck)
-        : EngineChannel(handle_group, defaultOrientation, pEffectsManager,
+        : EngineChannel(handleGroup, defaultOrientation, pEffectsManager,
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),
@@ -90,9 +74,12 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
-        pEngineEffectsManager->processPreFaderInPlace(
-            m_group.handle(), m_pEffectsManager->getMasterHandle(),
-            pOut, iBufferSize, m_pSampleRate->get());
+        pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
+                m_pEffectsManager->getMasterHandle(),
+                pOut,
+                iBufferSize,
+                // TODO(jholthuis): Use mixxx::audio::SampleRate instead
+                static_cast<unsigned int>(m_pSampleRate->get()));
     }
 
     // Update VU meter

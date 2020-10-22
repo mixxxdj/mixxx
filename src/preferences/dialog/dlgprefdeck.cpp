@@ -34,22 +34,29 @@ constexpr int kDefaultRateRampSensitivity = 250;
 // to playermanager.cpp
 }
 
-DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
-                         PlayerManager* pPlayerManager,
-                         UserSettingsPointer  pConfig)
-        :  DlgPreferencePage(parent),
-           m_pConfig(pConfig),
-           m_mixxx(mixxx),
-           m_pPlayerManager(pPlayerManager),
-           m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0) {
+DlgPrefDeck::DlgPrefDeck(QWidget* parent,
+        MixxxMainWindow* mixxx,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig)
+        : DlgPreferencePage(parent),
+          m_mixxx(mixxx),
+          m_pPlayerManager(pPlayerManager),
+          m_pConfig(pConfig),
+          m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
+                  ConfigKey("[Controls]", "ShowDurationRemaining"))),
+          m_pControlTrackTimeFormat(std::make_unique<ControlObject>(
+                  ConfigKey("[Controls]", "TimeFormat"))),
+          m_pNumDecks(
+                  make_parented<ControlProxy>("[Master]", "num_decks", this)),
+          m_pNumSamplers(make_parented<ControlProxy>(
+                  "[Master]", "num_samplers", this)),
+          m_iNumConfiguredDecks(0),
+          m_iNumConfiguredSamplers(0) {
     setupUi(this);
 
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
     slotNumDecksChanged(m_pNumDecks->get(), true);
 
-    m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
     m_pNumSamplers->connectValueChanged(this, [=](double value){slotNumSamplersChanged(value);});
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
@@ -74,10 +81,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
     // Track time display configuration
-    m_pControlTrackTimeDisplay = new ControlObject(
-            ConfigKey("[Controls]", "ShowDurationRemaining"));
-    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetTrackTimeDisplay(double)));
+    connect(m_pControlTrackTimeDisplay.get(),
+            &ControlObject::valueChanged,
+            this,
+            QOverload<double>::of(&DlgPrefDeck::slotSetTrackTimeDisplay));
 
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
@@ -101,10 +108,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
 
     // display time format
-
-    m_pControlTrackTimeFormat = new ControlObject(
-            ConfigKey("[Controls]", "TimeFormat"));
-    connect(m_pControlTrackTimeFormat,
+    connect(m_pControlTrackTimeFormat.get(),
             &ControlObject::valueChanged,
             this,
             &DlgPrefDeck::slotTimeFormatChanged);
@@ -351,7 +355,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 }
 
 DlgPrefDeck::~DlgPrefDeck() {
-    delete m_pControlTrackTimeDisplay;
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
     qDeleteAll(m_cueControls);
@@ -373,7 +376,7 @@ void DlgPrefDeck::slotUpdate() {
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
     double deck1RateRange = m_rateRangeControls[0]->get();
-    int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
+    int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100.0));
     if (index == -1) {
         ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
                                    deck1RateRange * 100.);
@@ -705,7 +708,7 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
     }
 }
 
@@ -738,7 +741,7 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
     }
 }
 

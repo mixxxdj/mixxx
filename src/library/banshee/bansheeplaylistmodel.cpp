@@ -3,12 +3,14 @@
 #include <QtDebug>
 
 #include "library/banshee/bansheedbconnection.h"
+#include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "track/track.h"
 
 #define BANSHEE_TABLE "banshee"
 #define CLM_TRACK_ID "track_id"
@@ -216,10 +218,6 @@ TrackModel::Capabilities BansheePlaylistModel::getCapabilities() const {
 
 Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
-}
-
-void BansheePlaylistModel::tracksChanged(QSet<TrackId> trackIds) {
-    Q_UNUSED(trackIds);
 }
 
 TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {

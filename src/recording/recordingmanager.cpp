@@ -1,12 +1,9 @@
-// Created 03/26/2011 by Tobias Rafreider
+#include "recording/recordingmanager.h"
 
-#include <QMutex>
 #include <QDir>
-#include <QtDebug>
-#include <QDebug>
 #include <QMessageBox>
+#include <QMutex>
 #include <QStorageInfo>
-
 #include <climits>
 
 #include "control/controlproxy.h"
@@ -16,10 +13,8 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
 #include "recording/defs_recording.h"
-#include "recording/recordingmanager.h"
 
-// one gibibyte
-#define MIN_DISK_FREE 1024 * 1024 * 1024ll
+#define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
         : m_pConfig(pConfig),
@@ -45,7 +40,6 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
 
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
-
 
     // Register EngineRecord with the engine sidechain.
     EngineSideChain* pSidechain = pEngine->getSideChain();

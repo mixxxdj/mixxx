@@ -38,7 +38,7 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
 
     // NOTE(uklotzde): QTime() constructs a 'null' object, but
     // we need 'zero' here.
-    QTime t = QTime(0, 0).addMSecs(dSeconds * kMillisPerSecond);
+    QTime t = QTime(0, 0).addMSecs(static_cast<int>(dSeconds * kMillisPerSecond));
 
     QString formatString =
             (t.hour() > 0 && days < 1 ? QStringLiteral("hh:mm:ss") : QStringLiteral("mm:ss")) +

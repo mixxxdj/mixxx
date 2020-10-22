@@ -73,6 +73,14 @@ bool Controller::applyPreset(bool initializeScripts) {
     if (success && initializeScripts) {
         m_pEngine->initializeScripts(scriptFiles);
     }
+
+    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
+    // actually contains a reference, so we check if the filePath is empty as a
+    // workaround.
+    // See https://stackoverflow.com/a/45652741/1455128 for details.
+    if (initializeScripts && !pPreset->moduleFileInfo().filePath().isEmpty()) {
+        m_pEngine->loadModule(pPreset->moduleFileInfo());
+    }
     return success;
 }
 
@@ -98,7 +106,7 @@ void Controller::send(QList<int> data, unsigned int length) {
     for (unsigned int i = 0; i < length; ++i) {
         msg[i] = data.at(i);
     }
-    send(msg);
+    sendBytes(msg);
 }
 
 void Controller::triggerActivity()
@@ -143,4 +151,6 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
         QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
         m_pEngine->executeFunction(incomingDataFunction, data);
     }
+
+    m_pEngine->handleInput(data, timestamp);
 }

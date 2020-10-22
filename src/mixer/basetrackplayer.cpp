@@ -3,7 +3,6 @@
 #include <QMessageBox>
 
 #include "control/controlobject.h"
-#include "control/controlpotmeter.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
@@ -14,10 +13,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
-#include "track/beatgrid.h"
 #include "track/track.h"
-#include "util/compatibility.h"
-#include "util/platform.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -38,31 +34,35 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
         : BasePlayer(pParent, group) {
 }
 
-BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
+BaseTrackPlayerImpl::BaseTrackPlayerImpl(
+        QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
-        const QString& group,
+        const ChannelHandleAndGroup& handleGroup,
         bool defaultMaster,
         bool defaultHeadphones,
         bool primaryDeck)
-        : BaseTrackPlayer(pParent, group),
+        : BaseTrackPlayer(pParent, handleGroup.name()),
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
-    ChannelHandleAndGroup channelGroup =
-            pMixingEngine->registerChannelGroup(group);
-    m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine, pEffectsManager, defaultOrientation, primaryDeck);
+    m_pChannel = new EngineDeck(handleGroup,
+            pConfig,
+            pMixingEngine,
+            pEffectsManager,
+            defaultOrientation,
+            primaryDeck);
 
-    m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
+    m_pInputConfigured = make_parented<ControlProxy>(getGroup(), "input_configured", this);
 #ifdef __VINYLCONTROL__
-    m_pVinylControlEnabled = make_parented<ControlProxy>(group, "vinylcontrol_enabled", this);
+    m_pVinylControlEnabled = make_parented<ControlProxy>(getGroup(), "vinylcontrol_enabled", this);
     m_pVinylControlEnabled->connectValueChanged(this, &BaseTrackPlayerImpl::slotVinylControlEnabled);
-    m_pVinylControlStatus = make_parented<ControlProxy>(group, "vinylcontrol_status", this);
+    m_pVinylControlStatus = make_parented<ControlProxy>(getGroup(), "vinylcontrol_status", this);
 #endif
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
@@ -111,46 +111,46 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
     // do not work properly with this CO.
     m_pWaveformZoom =
-            std::make_unique<ControlObject>(ConfigKey(group, "waveform_zoom"));
+            std::make_unique<ControlObject>(ConfigKey(getGroup(), "waveform_zoom"));
     m_pWaveformZoom->connectValueChangeRequest(this,
             &BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest,
             Qt::DirectConnection);
     m_pWaveformZoom->set(1.0);
     m_pWaveformZoomUp = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "waveform_zoom_up"));
+            ConfigKey(getGroup(), "waveform_zoom_up"));
     connect(m_pWaveformZoomUp.get(),
             SIGNAL(valueChanged(double)),
             this,
             SLOT(slotWaveformZoomUp(double)));
     m_pWaveformZoomDown = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "waveform_zoom_down"));
+            ConfigKey(getGroup(), "waveform_zoom_down"));
     connect(m_pWaveformZoomDown.get(),
             SIGNAL(valueChanged(double)),
             this,
             SLOT(slotWaveformZoomDown(double)));
     m_pWaveformZoomSetDefault = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "waveform_zoom_set_default"));
+            ConfigKey(getGroup(), "waveform_zoom_set_default"));
     connect(m_pWaveformZoomSetDefault.get(),
             SIGNAL(valueChanged(double)),
             this,
             SLOT(slotWaveformZoomSetDefault(double)));
 
-    m_pPreGain = make_parented<ControlProxy>(group, "pregain", this);
+    m_pPreGain = make_parented<ControlProxy>(getGroup(), "pregain", this);
 
     m_pShiftCuesEarlier = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "shift_cues_earlier"));
+            ConfigKey(getGroup(), "shift_cues_earlier"));
     connect(m_pShiftCuesEarlier.get(),
             &ControlObject::valueChanged,
             this,
             [this](double value) { slotShiftCuesMillisButton(value, -kShiftCuesOffsetMillis); });
     m_pShiftCuesLater = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "shift_cues_later"));
+            ConfigKey(getGroup(), "shift_cues_later"));
     connect(m_pShiftCuesLater.get(),
             &ControlObject::valueChanged,
             this,
             [this](double value) { slotShiftCuesMillisButton(value, kShiftCuesOffsetMillis); });
     m_pShiftCuesEarlierSmall = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "shift_cues_earlier_small"));
+            ConfigKey(getGroup(), "shift_cues_earlier_small"));
     connect(m_pShiftCuesEarlierSmall.get(),
             &ControlObject::valueChanged,
             this,
@@ -158,7 +158,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                 slotShiftCuesMillisButton(value, -kShiftCuesOffsetSmallMillis);
             });
     m_pShiftCuesLaterSmall = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "shift_cues_later_small"));
+            ConfigKey(getGroup(), "shift_cues_later_small"));
     connect(m_pShiftCuesLaterSmall.get(),
             &ControlObject::valueChanged,
             this,
@@ -166,24 +166,24 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                 slotShiftCuesMillisButton(value, kShiftCuesOffsetSmallMillis);
             });
     m_pShiftCues = std::make_unique<ControlObject>(
-            ConfigKey(group, "shift_cues"));
+            ConfigKey(getGroup(), "shift_cues"));
     connect(m_pShiftCues.get(),
             &ControlObject::valueChanged,
             this,
             &BaseTrackPlayerImpl::slotShiftCuesMillis);
 
     // BPM of the current song
-    m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(group, "file_bpm"));
-    m_pKey = make_parented<ControlProxy>(group, "file_key", this);
+    m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(getGroup(), "file_bpm"));
+    m_pKey = make_parented<ControlProxy>(getGroup(), "file_key", this);
 
-    m_pReplayGain = make_parented<ControlProxy>(group, "replaygain", this);
-    m_pPlay = make_parented<ControlProxy>(group, "play", this);
+    m_pReplayGain = make_parented<ControlProxy>(getGroup(), "replaygain", this);
+    m_pPlay = make_parented<ControlProxy>(getGroup(), "play", this);
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
-    m_pRateRatio = make_parented<ControlProxy>(group, "rate_ratio", this);
-    m_pPitchAdjust = make_parented<ControlProxy>(group, "pitch_adjust", this);
+    m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
+    m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
 
-    pVisualsManager->addDeck(group);
+    pVisualsManager->addDeck(getGroup());
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -525,7 +525,9 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
 
 void BaseTrackPlayerImpl::slotCloneDeck() {
     Syncable* syncable = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
-    slotCloneChannel(syncable->getChannel());
+    if (syncable) {
+        slotCloneChannel(syncable->getChannel());
+    }
 }
 
 void BaseTrackPlayerImpl::slotCloneFromGroup(const QString& group) {

@@ -24,46 +24,45 @@
   <defs
      id="defs18" />
   <g
-     id="g996">
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="g834"
+     transform="translate(2)">
     <path
-       d="m 14,10 h 2 v 3 L 23,9 16,5 v 3 h -2 z"
-       id="path6"
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round" />
-    <g
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
-       id="g834">
-      <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
-         id="path4"
-         d="M 5,21 H 3 V 3 h 2 z" />
-      <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
-         id="path8"
-         d="M 15,21 H 13 V 11 h 2 z" />
-      <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
-         id="path10"
-         d="M 15,7 H 13 V 3 h 2 z" />
-    </g>
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4"
+       d="M 5,21 H 3 V 3 h 2 z" />
   </g>
-  <path
-     style="fill:#928476;fill-opacity:1"
-     id="path6-3"
-     d="m 14,10 h 2 v 3 L 23,9 16,5 v 3 h -2 z" />
   <g
      id="g834-6"
-     style="fill:#3f3d3d;fill-opacity:1">
+     style="fill:#3f3d3d;fill-opacity:1"
+     transform="translate(2)">
     <path
        d="M 5,21 H 3 V 3 h 2 z"
        id="path4-7"
        style="fill:#3f3d3d;fill-opacity:1" />
-    <path
-       d="M 15,21 H 13 V 11 h 2 z"
-       id="path8-5"
-       style="fill:#3f3d3d;fill-opacity:1" />
-    <path
-       d="M 15,7 H 13 V 3 h 2 z"
-       id="path10-3"
-       style="fill:#3f3d3d;fill-opacity:1" />
   </g>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path4-7-3"
+     d="m 17,21 h 2 V 3 h -2 z" />
+  <path
+     d="m 17,21 h 2 V 3 h -2 z"
+     id="path4-6"
+     style="fill:#3f3d3d" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path2-3-3"
+     d="M 14,13 21,9 14,5 Z" />
+  <path
+     d="M 14,13 21,9 14,5 Z"
+     fill="#928476"
+     id="path2-6" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path2-3-3-3"
+     d="M 10,13 3,9 10,5 Z" />
+  <path
+     d="M 10,13 3,9 10,5 Z"
+     fill="#928476"
+     id="path2-6-6" />
 </svg>

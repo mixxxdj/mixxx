@@ -9,15 +9,23 @@ namespace {
 
 mixxx::Logger kLogger("SeratoMarkers");
 
-const int kNumEntries = 14;
-const int kLoopEntryStartIndex = 5;
-const int kEntrySizeID3 = 22;
-const int kEntrySizeMP4 = 19;
-const quint16 kVersion = 0x0205;
+// The number of entries are fixed, the "SeratoMarkers_" tag always contains
+// the first 5 cues and 9 loops. Additional cues points can be stored in the
+// "SeratoMarkers2" tag.
+constexpr int kNumCueEntries = 5;
+constexpr int kNumLoopEntries = 9;
+constexpr int kNumEntries = kNumCueEntries + kNumLoopEntries;
 
-const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray(
-        "application/octet-stream\x00\x00Serato Markers_\x00",
-        24 + 2 + 15 + 1);
+constexpr int kEntrySizeID3 = 22;
+constexpr int kEntrySizeMP4 = 19;
+constexpr quint32 kNoPosition = 0x7F7F7F7F;
+constexpr quint16 kVersion = 0x0205;
+
+constexpr char kSeratoMarkersBase64EncodedPrefixStr[] =
+        "application/octet-stream\0\0Serato Markers_";
+const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray::fromRawData(
+        kSeratoMarkersBase64EncodedPrefixStr,
+        sizeof(kSeratoMarkersBase64EncodedPrefixStr));
 
 // These functions convert between a custom 4-byte format (that we'll call
 // "serato32" for brevity) and 3-byte plaintext (both quint32).
@@ -83,11 +91,11 @@ QByteArray SeratoMarkersEntry::dumpID3() const {
     stream << static_cast<quint8>((m_hasStartPosition ? 0x00 : 0x7F))
            << static_cast<quint32>(
                       (m_hasStartPosition ? serato32fromUint24(m_startPosition)
-                                          : 0x7F7F7F7F))
+                                          : kNoPosition))
            << static_cast<quint8>((m_hasEndPosition ? 0x00 : 0x7F))
            << static_cast<quint32>(
                       (m_hasEndPosition ? serato32fromUint24(m_endPosition)
-                                        : 0x7F7F7F7F));
+                                        : kNoPosition));
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
     stream << serato32fromUint24(static_cast<quint32>(m_color))
            << static_cast<quint8>(m_type) << static_cast<quint8>(m_isLocked);
@@ -144,12 +152,15 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     // Parse Start Position
     bool hasStartPosition = (startPositionStatus != 0x7F);
-    quint32 startPosition = 0x7F7F7F7F;
+    quint32 startPosition = kNoPosition;
     if (!hasStartPosition) {
         // Start position not set
-        if (startPositionSerato32 != 0x7F7F7F7F) {
+        if (startPositionSerato32 != kNoPosition) {
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                              << "startPosition != 0x7F7F7F7F";
+                              << "startPosition"
+                              << startPosition
+                              << "!="
+                              << QString::number(kNoPosition, 16);
 
             return nullptr;
         }
@@ -159,12 +170,15 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     // Parse End Position
     bool hasEndPosition = (endPositionStatus != 0x7F);
-    quint32 endPosition = 0x7F7F7F7F;
+    quint32 endPosition = kNoPosition;
     if (!hasEndPosition) {
         // End position not set
-        if (endPositionSerato32 != 0x7F7F7F7F) {
+        if (endPositionSerato32 != kNoPosition) {
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                              << "endPosition != 0x7F7F7F7F";
+                              << "endPosition"
+                              << endPositionSerato32
+                              << "!="
+                              << QString::number(kNoPosition, 16);
 
             return nullptr;
         }
@@ -175,7 +189,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\x7F\x7F\x7F\x7F\x7F", sizeof(buffer)) != 0) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected value at offset 10";
+                          << "Unexpected value at offset 10"
+                          << QByteArray::fromRawData(buffer, sizeof(buffer));
         return nullptr;
     }
 
@@ -187,7 +202,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -235,7 +251,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\xFF\xFF\xFF\xFF\x00", sizeof(buffer)) != 0) {
         kLogger.warning() << "Parsing SeratoMarkersEntry (MP4) failed:"
-                          << "Unexpected value at offset 8";
+                          << "Unexpected value at offset 8"
+                          << QByteArray::fromRawData(buffer, sizeof(buffer));
         return nullptr;
     }
 
@@ -247,7 +264,8 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return nullptr;
     }
 
@@ -324,14 +342,14 @@ bool SeratoMarkers::parseID3(
             return false;
         }
 
-        if (i < kLoopEntryStartIndex &&
+        if (i < kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
             kLogger.warning() << "Parsing SeratoMarkers_ failed:"
                               << "Expected cue entry but found type" << pEntry->type();
             return false;
         }
 
-        if (i >= kLoopEntryStartIndex &&
+        if (i >= kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
             kLogger.warning() << "Parsing SeratoMarkers_ failed:"
                               << "Expected loop entry but found type"
@@ -354,7 +372,8 @@ bool SeratoMarkers::parseID3(
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkers_ failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return false;
     }
     seratoMarkers->setEntries(std::move(entries));
@@ -370,7 +389,10 @@ bool SeratoMarkers::parseMP4(
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
     if (!decodedData.startsWith(kSeratoMarkersBase64EncodedPrefix)) {
         kLogger.warning() << "Decoding SeratoMarkers_ from base64 failed:"
-                          << "Unexpected prefix";
+                          << "Unexpected prefix"
+                          << decodedData.left(kSeratoMarkersBase64EncodedPrefix.size())
+                          << "!="
+                          << kSeratoMarkersBase64EncodedPrefix;
         return false;
     }
 
@@ -413,14 +435,14 @@ bool SeratoMarkers::parseMP4(
             return false;
         }
 
-        if (i < kLoopEntryStartIndex &&
+        if (i < kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
             kLogger.warning() << "Parsing SeratoMarkers_ (MP4) failed:"
                               << "Expected cue entry but found type" << pEntry->type();
             return false;
         }
 
-        if (i >= kLoopEntryStartIndex &&
+        if (i >= kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
             kLogger.warning() << "Parsing SeratoMarkers_ (MP4) failed:"
                               << "Expected loop entry but found type"
@@ -453,7 +475,8 @@ bool SeratoMarkers::parseMP4(
 
     if (!stream.atEnd()) {
         kLogger.warning() << "Parsing SeratoMarkers_ failed:"
-                          << "Unexpected trailing data";
+                          << "Unexpected trailing data"
+                          << stream.device()->readAll();
         return false;
     }
     seratoMarkers->setEntries(std::move(entries));
@@ -552,8 +575,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
     int loopIndex = 0;
-    for (const auto& pEntry : m_entries) {
-        DEBUG_ASSERT(pEntry);
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
         switch (pEntry->typeId()) {
         case SeratoMarkersEntry::TypeId::Cue: {
             if (pEntry->hasStartPosition()) {
@@ -562,7 +587,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         pEntry->getStartPosition(),
                         std::nullopt,
                         cueIndex,
-                        "",
+                        QString(),
                         pEntry->getColor());
                 cueInfos.append(cueInfo);
             }
@@ -571,12 +596,19 @@ QList<CueInfo> SeratoMarkers::getCues() const {
         }
         case SeratoMarkersEntry::TypeId::Loop: {
             if (pEntry->hasStartPosition()) {
+                if (!pEntry->hasEndPosition()) {
+                    // Usually this can't happen unless Serato is buggy or the
+                    // Metadata is broken. But we should never trust user data
+                    // and better be safe than sorry.
+                    qWarning() << "SeratoMarkers: Loop" << loopIndex << "has no end position!";
+                    continue;
+                }
                 CueInfo loopInfo = CueInfo(
                         CueType::Loop,
                         pEntry->getStartPosition(),
                         pEntry->getEndPosition(),
                         loopIndex,
-                        "",
+                        QString(),
                         std::nullopt);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute
@@ -590,6 +622,102 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     }
 
     return cueInfos;
+}
+
+void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
+    QMap<int, CueInfo> cueMap;
+    QMap<int, CueInfo> loopMap;
+
+    for (const CueInfo& cueInfo : cueInfos) {
+        // All of these check can be debug assertions, as the list should be
+        // pre-filtered by the seratoTags class.
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+            continue;
+        }
+        int hotcueNumber = *cueInfo.getHotCueNumber();
+
+        VERIFY_OR_DEBUG_ASSERT(hotcueNumber >= 0) {
+            continue;
+        }
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
+            continue;
+        }
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getStartPositionMillis()) {
+            continue;
+        }
+
+        switch (cueInfo.getType()) {
+        case CueType::HotCue:
+            cueMap.insert(hotcueNumber, cueInfo);
+            break;
+        case CueType::Loop:
+            VERIFY_OR_DEBUG_ASSERT(cueInfo.getEndPositionMillis()) {
+                continue;
+            }
+            loopMap.insert(hotcueNumber, cueInfo);
+            break;
+        default:
+            DEBUG_ASSERT(!"Invalid cue type");
+            continue;
+        }
+    }
+
+    QList<SeratoMarkersEntryPointer> entries;
+    for (int i = 0; i < kNumCueEntries; i++) {
+        const CueInfo cueInfo = cueMap.value(i);
+
+        SeratoMarkersEntryPointer pEntry;
+        if (cueInfo.getStartPositionMillis()) {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    true,
+                    static_cast<int>(*cueInfo.getStartPositionMillis()),
+                    false,
+                    0,
+                    *cueInfo.getColor(),
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Cue),
+                    false);
+        } else {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    false,
+                    0,
+                    false,
+                    0,
+                    RgbColor(0),
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Unknown),
+                    false);
+        }
+        entries.append(pEntry);
+    }
+
+    for (int i = 0; i < kNumLoopEntries; i++) {
+        const CueInfo cueInfo = loopMap.value(i);
+
+        SeratoMarkersEntryPointer pEntry;
+        if (cueInfo.getStartPositionMillis()) {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    true,
+                    static_cast<int>(*cueInfo.getStartPositionMillis()),
+                    true,
+                    static_cast<int>(*cueInfo.getEndPositionMillis()),
+                    *cueInfo.getColor(),
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
+                    false);
+        } else {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    false,
+                    0,
+                    false,
+                    0,
+                    RgbColor(0),
+                    // In contrast to cues, unset saved loop have the same type
+                    // ID as set ones.
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
+                    false);
+        }
+        entries.append(pEntry);
+    }
+
+    setEntries(std::move(entries));
 }
 
 } // namespace mixxx

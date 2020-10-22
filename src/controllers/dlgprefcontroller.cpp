@@ -75,10 +75,13 @@ DlgPrefController::DlgPrefController(
     m_ui.labelWarningIcon->setPixmap(icon.pixmap(50));
 
     // When the user picks a preset, load it.
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)), this, SLOT(slotPresetSelected(int)));
+    connect(m_ui.comboBoxPreset,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefController::slotPresetSelected);
 
     // When the user toggles the Enabled checkbox, mark as dirty
-    connect(m_ui.chkEnabledDevice, &QCheckBox::clicked, [this] { setDirty(true); });
+    connect(m_ui.chkEnabledDevice, &QCheckBox::clicked, this, [this] { setDirty(true); });
 
     // Connect our signals to controller manager.
     connect(this,
@@ -261,6 +264,18 @@ QString DlgPrefController::presetWikiLink(
         QString link = pPreset->wikilink();
         if (link.length() > 0)
             url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
+    }
+    return url;
+}
+
+QString DlgPrefController::presetManualLink(
+        const ControllerPresetPointer pPreset) const {
+    QString url;
+    if (pPreset) {
+        QString link = pPreset->manualLink();
+        if (!link.isEmpty()) {
+            url = "<a href=\"" + link + "\">Manual</a>";
+        }
     }
     return url;
 }
@@ -553,6 +568,11 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     QString forumLink = presetForumLink(preset);
     if (forumLink.length() > 0) {
         supportLinks << forumLink;
+    }
+
+    QString manualLink = presetManualLink(preset);
+    if (manualLink.length() > 0) {
+        supportLinks << manualLink;
     }
 
     QString wikiLink = presetWikiLink(preset);

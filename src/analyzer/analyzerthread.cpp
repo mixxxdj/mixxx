@@ -9,14 +9,11 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
-
-#include "library/dao/analysisdao.h"
-
 #include "engine/engine.h"
-
+#include "library/dao/analysisdao.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
-
+#include "track/track.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
@@ -78,7 +75,9 @@ AnalyzerThread::AnalyzerThread(
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         UserSettingsPointer pConfig,
         AnalyzerModeFlags modeFlags)
-        : WorkerThread(QString("AnalyzerThread %1").arg(id)),
+        : WorkerThread(
+            QString("AnalyzerThread %1").arg(id),
+            (modeFlags & AnalyzerModeFlags::LowPriority ? QThread::LowPriority : QThread::InheritPriority)),
           m_id(id),
           m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(pConfig),
@@ -312,11 +311,12 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
             const double frameProgress =
                     double(audioSource->frameLength() - remainingFrameRange.length()) /
                     double(audioSource->frameLength());
+            // math_min is required to compensate rounding errors
             const AnalyzerProgress progress =
-                    frameProgress *
-                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
+                    math_min(kAnalyzerProgressFinalizing,
+                            frameProgress *
+                                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone));
             DEBUG_ASSERT(progress > kAnalyzerProgressNone);
-            DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
             emitBusyProgress(progress);
         } else {
             // Unreadable audio source

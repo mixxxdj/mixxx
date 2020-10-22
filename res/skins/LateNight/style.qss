@@ -17,6 +17,7 @@ WBeatSpinBox,
 QSpinBox,
 QComboBox,
 WLibrary QHeaderView,
+WLibrary QHeaderView::item,
 QToolTip,
 WOverview #PassthroughLabel,
 #LibraryContainer QMenu,
@@ -58,7 +59,7 @@ WOverview #PassthroughLabel,
 #BroadcastButton,
 /* SKin settings & Library */
 #SkinSettingsToggle,
-#DeckSizeButton[value="1"],
+#SkinSettingsNumToggle[value="1"],
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
@@ -72,16 +73,11 @@ WEffectSelector,
 WOverview #PassthroughLabel {
   font-weight: bold;
 }
-WLibrary QHeaderView {
-  /* not applied: */;
-  font-weight: 500;
-}
 
 /* All capitals */
 #KnobLabel,
 #FxUnitLabel,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
-#LatencyLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
 /* ToolBar */
@@ -94,7 +90,7 @@ WLibrary QPushButton {
 }
 /* regular font weight */
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
 #SkinSettingsText,
 QToolTip,
@@ -152,7 +148,7 @@ WEffectSelector QAbstractScrollArea,
 #labelRecFilename,
 #labelRecStatistics,
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
 #SkinSettingsText  {
   font-size: 13px;
@@ -180,9 +176,9 @@ WTime {
 }
 
 #SkinSettingsLabelButton,
-#CategoryLabel  {
+#CategoryLabel,
+#SkinSettingsNumToggleHeader  {
   font-size: 17px;
-  text-align: left;
 }
 
 #ArtistText,
@@ -212,8 +208,10 @@ WBeatSpinBox, #spinBoxTransition {
 }
 
 
-#LibraryContainer QHeaderView {
-  /* use relative font size, adjusts with OS font size */
+#LibraryContainer QHeaderView::item {
+  /* not applied: */
+  /* BROKEN
+  use relative font size, adjusts with OS font size */
   font-size: 1em;
   line-height: 1.2em;
   border-bottom: 1px solid #000;
@@ -298,8 +296,11 @@ WOverview QLabel {
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
-  #PlayPositionGutter, #DurationGutter {
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+ #TrackColorFullCompact {
+    padding: 0px 3px 0px 5px;
+  }
+  #TrackColorMini {
+    padding: 0px 0px 0px 5px;
   }
 
 #DeckSettings {
@@ -395,8 +396,13 @@ WSpinny { /*
   padding: 1px;
 }
 #VuMeterBoxMaster {
-  /* gap in between Master lft/right Vu */
-  qproperty-layoutSpacing: 1;
+  /* gap in between Master lft/right Vu
+  qproperty-layoutSpacing: 1; */
+  }
+  #VuMeterBoxFull {
+    /* push all VU meters to the right to visullay center it
+      below Pfl buttons */
+    margin-left: 1px;
   }
   #VuMeterChannel_2Decks,
   #VuMeterChannel_4Decks,

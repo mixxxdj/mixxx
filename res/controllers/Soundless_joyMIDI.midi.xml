@@ -5,7 +5,7 @@
         <author>Ozzy Chiu</author>
         <description>Soundless Portable MIDI Controller</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=13166</forums>
-        <wiki>https://www.mixxx.org/wiki/doku.php/soundless_studio_joymidi</wiki>
+        <manual>soundless_studio_joymidi</manual>
     </info>
     <controller id="Soundless">
         <scriptfiles>
