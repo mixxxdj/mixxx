@@ -279,7 +279,7 @@ void AutoDJProcessor::fadeNow() {
 
     // If the user presses "Fade now", assume they want to fade *now*, not later.
     // So if the spinbox time is negative, do not insert silence.
-    double spinboxTime = fabs(getFadeTime());
+    const double spinboxTime = fabs(getFadeTime());
 
     double fadeTime;
     if (m_transitionMode == TransitionMode::FullIntroOutro ||
