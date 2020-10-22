@@ -142,24 +142,6 @@
       <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>BatteryBox</ObjectName>
-        <Layout>horizontal</Layout>
-        <Children>
-          <Battery>
-            <ObjectName>Battery</ObjectName>
-            <Size>24,24</Size>
-            <SizePolicy>f,f</SizePolicy>
-            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
-            <NumberStates>8</NumberStates>
-            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
-            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
-          </Battery>
-        </Children>
-      </WidgetGroup><!-- BatteryBox -->
-
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
-
-      <WidgetGroup>
         <ObjectName>LatencyBatteryContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
@@ -203,7 +185,25 @@
         </Children>
       </WidgetGroup><!-- LatencyBatteryContainer -->
 
-      <WidgetGroup><Size>12f,min</Size></WidgetGroup>
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>BatteryBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Battery>
+            <ObjectName>Battery</ObjectName>
+            <Size>24,24</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
+            <NumberStates>8</NumberStates>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+          </Battery>
+        </Children>
+      </WidgetGroup><!-- BatteryBox -->
+
+      <WidgetGroup><Size>9f,min</Size></WidgetGroup>
 
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>

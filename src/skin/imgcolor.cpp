@@ -19,7 +19,9 @@ QColor ImgHueRot::doColorCorrection(const QColor& c) const {
 QColor ImgScaleWhite::doColorCorrection(const QColor& c) const {
     int h, s, v, a;
     c.getHsv(&h, &s, &v, &a);
-    if (s < 50) { v *= m_amt; }
+    if (s < 50) {
+        v = static_cast<int>(v * m_amt);
+    }
     if (v > 255) { v = 255; }
     QColor ret;
     ret.setHsv(h, s, v, a);
@@ -65,9 +67,9 @@ QColor ImgHSVTweak::doColorCorrection(const QColor& c) const {
 
     if (h >= m_hmin && h <= m_hmax && s >= m_smin && s <= m_smax &&
         v >= m_vmin && v <= m_vmax) {
-        h *= m_hfact;
-        s *= m_sfact;
-        v *= m_vfact;
+        h = static_cast<int>(h * m_hfact);
+        s = static_cast<int>(s * m_sfact);
+        v = static_cast<int>(v * m_vfact);
         h += m_hconst;
         s += m_sconst;
         v += m_vconst;
@@ -85,4 +87,3 @@ QColor ImgHSVTweak::doColorCorrection(const QColor& c) const {
     }
     return c;
 }
-

@@ -8,13 +8,13 @@
 
 #include "engine/sidechain/enginerecord.h"
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encoder.h"
-
 #include "mixer/playerinfo.h"
+#include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
+#include "track/track.h"
 #include "util/event.h"
 
 const int kMetaDataLifeTimeout = 16;
@@ -29,7 +29,7 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
 
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
     m_pSamplerate = new ControlProxy("[Master]", "samplerate", this);
-    m_sampleRate = m_pSamplerate->get();
+    m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
 }
 
 EngineRecord::~EngineRecord() {
@@ -50,7 +50,7 @@ void EngineRecord::updateFromPreferences() {
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
-    m_sampleRate = m_pSamplerate->get();
+    m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
@@ -108,8 +108,7 @@ bool EngineRecord::metaDataHasChanged()
 }
 
 void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-
-    float recordingStatus = m_pRecReady->get();
+    const auto recordingStatus = static_cast<int>(m_pRecReady->get());
     static const QString tag("EngineRecord recording");
 
     if (recordingStatus == RECORD_OFF) {
@@ -138,7 +137,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
-            m_sampleRate = m_pSamplerate->get();
+            m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -170,7 +169,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
-            m_sampleRate = m_pSamplerate->get();
+            m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
             m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {

@@ -16,6 +16,7 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
           m_bDirty(false) {
     connect(this,
             &ColorPaletteEditorModel::rowsRemoved,
+            this,
             [this] {
                 if (rowCount() == 0) {
                     m_bEmpty = true;
@@ -25,6 +26,7 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
             });
     connect(this,
             &ColorPaletteEditorModel::rowsInserted,
+            this,
             [this] {
                 if (m_bEmpty && rowCount() != 0) {
                     m_bEmpty = false;
@@ -34,6 +36,7 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
             });
     connect(this,
             &ColorPaletteEditorModel::rowsMoved,
+            this,
             [this] {
                 setDirty(true);
             });

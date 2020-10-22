@@ -4,22 +4,22 @@
 #ifndef LIBRARYFEATURE_H
 #define LIBRARYFEATURE_H
 
-#include <QtDebug>
+#include <QAbstractItemModel>
+#include <QDesktopServices>
+#include <QFileDialog>
 #include <QIcon>
 #include <QList>
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
-#include <QVariant>
-#include <QAbstractItemModel>
 #include <QUrl>
-#include <QDesktopServices>
-#include <QFileDialog>
+#include <QVariant>
+#include <QtDebug>
 
-#include "track/track.h"
-#include "library/treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
+#include "library/treeitemmodel.h"
+#include "track/track_decl.h"
 
 class KeyboardEventFilter;
 class Library;

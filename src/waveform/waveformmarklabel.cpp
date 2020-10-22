@@ -15,7 +15,7 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
 
     QRectF pixmapRect;
     pixmapRect = fontMetrics.boundingRect(text);
-    int availableWidthForText;
+    float availableWidthForText;
     if (icon.isNull()) {
         pixmapRect.setWidth(padding + pixmapRect.width() + padding);
         availableWidthForText = widgetWidth - padding * 2;
@@ -25,7 +25,8 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
     }
     // Elide extremely long labels
     if (pixmapRect.width() > widgetWidth) {
-        text = fontMetrics.elidedText(text, Qt::ElideRight, availableWidthForText);
+        text = fontMetrics.elidedText(
+                text, Qt::ElideRight, static_cast<int>(availableWidthForText));
         pixmapRect.setWidth(widgetWidth);
     }
     pixmapRect.setHeight(math_max(fontMetrics.height(), icon.height()));
@@ -41,7 +42,8 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
         m_areaRect.setLeft(widgetWidth - m_areaRect.width());
     }
 
-    m_pixmap = QPixmap(pixmapRect.width() * scaleFactor, pixmapRect.height() * scaleFactor);
+    m_pixmap = QPixmap(static_cast<int>(pixmapRect.width() * scaleFactor),
+            static_cast<int>(pixmapRect.height() * scaleFactor));
     m_pixmap.setDevicePixelRatio(scaleFactor);
     m_pixmap.fill(Qt::transparent);
 
@@ -49,7 +51,7 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
 
     painter.setPen(QColor(Qt::transparent));
     painter.setBrush(QBrush(backgroundColor));
-    painter.drawRoundedRect(0, 0, pixmapRect.width(), pixmapRect.height(), 2.0, 2.0);
+    painter.drawRoundedRect(QRectF(0, 0, pixmapRect.width(), pixmapRect.height()), 2.0, 2.0);
 
     if (!icon.isNull()) {
         QPointF iconTopLeft = pixmapRect.topLeft();

@@ -3,7 +3,6 @@
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-
 #include "widget/wskincolor.h"
 #include "track/track.h"
 #include "widget/wwidget.h"
@@ -75,13 +74,13 @@ void WaveformRendererRGB::draw(QPainter* painter,
     pen.setWidthF(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
 
     const int breadth = m_waveformRenderer->getBreadth();
-    const float halfBreadth = (float)breadth / 2.0;
+    const float halfBreadth = static_cast<float>(breadth) / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / sqrtf(255 * 255 * 3);
 
     // Draw reference line
     painter->setPen(m_pColors->getAxesColor());
-    painter->drawLine(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth);
+    painter->drawLine(QLineF(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth));
 
     for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
         // Width of the x position in visual indices.
@@ -128,13 +127,13 @@ void WaveformRendererRGB::draw(QPainter* painter,
             maxLow  = math_max3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
             maxMid  = math_max3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
             maxHigh = math_max3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
-            float all = pow(waveformData.filtered.low * lowGain, 2) +
-                pow(waveformData.filtered.mid * midGain, 2) +
-                pow(waveformData.filtered.high * highGain, 2);
+            float all = static_cast<float>(pow(waveformData.filtered.low * lowGain, 2) +
+                    pow(waveformData.filtered.mid * midGain, 2) +
+                    pow(waveformData.filtered.high * highGain, 2));
             maxAll = math_max(maxAll, all);
-            float allNext = pow(waveformDataNext.filtered.low * lowGain, 2) +
-                pow(waveformDataNext.filtered.mid * midGain, 2) +
-                pow(waveformDataNext.filtered.high * highGain, 2);
+            float allNext = static_cast<float>(pow(waveformDataNext.filtered.low * lowGain, 2) +
+                    pow(waveformDataNext.filtered.mid * midGain, 2) +
+                    pow(waveformDataNext.filtered.high * highGain, 2));
             maxAllNext = math_max(maxAllNext, allNext);
         }
 

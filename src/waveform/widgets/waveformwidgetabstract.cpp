@@ -44,5 +44,5 @@ void WaveformWidgetAbstract::resize(int width, int height) {
         m_widget->resize(width, height);
         devicePixelRatio = getDevicePixelRatioF(m_widget);
     }
-    WaveformWidgetRenderer::resize(width, height, devicePixelRatio);
+    WaveformWidgetRenderer::resize(width, height, static_cast<float>(devicePixelRatio));
 }

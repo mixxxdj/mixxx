@@ -99,6 +99,8 @@ void ControllerPresetFileHandler::parsePresetInfo(
     preset->setDescription(description.isNull() ? "" : description.text());
     QDomElement forums = info.firstChildElement("forums");
     preset->setForumLink(forums.isNull() ? "" : forums.text());
+    QDomElement manualPage = info.firstChildElement("manual");
+    preset->setManualPage(manualPage.isNull() ? "" : manualPage.text());
     QDomElement wiki = info.firstChildElement("wiki");
     preset->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }

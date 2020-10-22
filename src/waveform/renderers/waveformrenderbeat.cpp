@@ -5,7 +5,6 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "control/controlobject.h"
-#include "track/beats.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
@@ -35,7 +34,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (!trackBeats)
         return;
 
-    int alpha = m_waveformRenderer->beatGridAlpha();
+    int alpha = m_waveformRenderer->getBeatGridAlpha();
     if (alpha == 0)
         return;
     m_beatColor.setAlphaF(alpha/100.0);

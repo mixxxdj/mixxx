@@ -121,7 +121,8 @@ void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
 }
 
 qint64 EngineNetworkStream::getInputStreamTimeFrames() {
-    return static_cast<double>(getInputStreamTimeUs()) * m_sampleRate / 1000000.0;
+    return static_cast<qint64>(static_cast<double>(getInputStreamTimeUs()) *
+            m_sampleRate / 1000000.0);
 }
 
 qint64 EngineNetworkStream::getInputStreamTimeUs() {

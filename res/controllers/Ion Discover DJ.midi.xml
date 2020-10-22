@@ -5,6 +5,7 @@
         <author>Rick Prokup</author>
         <description>This preset provides functionality for the Ion Discover DJ controller for Mixxx</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=939</forums>
+        <manual>ion_discover_dj</manual>
     </info>
     <controller id="Ion">
         <scriptfiles>

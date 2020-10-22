@@ -185,10 +185,13 @@ WSearchLineEdit,
   }
 
 #DeckRateSeparator,
+#DeckRateSeparatorCompact,
 #MasterMixerSeparator {
+  /* needs a background color to paint the borders */
+  background-color: transparent;
   min-width: 0px;
   max-width: 0px;
-}
+  }
 
 #FxSlotSeparatorV {
   min-width: 1px;
@@ -251,6 +254,7 @@ WLibrary,
 #DeckRow_5_Compact,
 #DeckSettingsContainer, #DeckSettingsContainerCompact,
 #DeckRateSeparator,
+#DeckRateSeparatorCompact,
 #ExpandingBottomBorder,
 #PreviewPlayBox,
 #SamplerTitle, #SamplerPlay, #SamplerSettings,
@@ -281,6 +285,11 @@ WLibrary,
 #CompactDecksCenterSpacer {
   min-width: 4px;
   max-width: 4px;
+}
+
+#DeckRateSpacer {
+  min-width: 2px;
+  max-width: 2px;
 }
 
 #Deck1, #DeckCompact1, #DeckMini1,
@@ -426,10 +435,10 @@ WLibrary,
     margin: 0px 2px 1px 0px;
   }
 #SpinnyCoverContainer_Big {
-  min-width: 115px;
-  max-width: 115px;
-  min-height: 115px;
-  max-height: 115px;
+  min-width: 114px;
+  max-width: 114px;
+  min-height: 114px;
+  max-height: 114px;
   margin: 1px 2px 1px 0px;
   }
   #SpinnyCoverContainer_BigCompact {
@@ -940,7 +949,7 @@ WPushButton#FxSuperLinkInvertButton {
   #DeckSizeToggleContainer {
     padding: 0px 0px 0px 0px;
     }
-    #DeckSizeButton {
+    #SkinSettingsNumToggle {
       margin-left: 1px;
     }
 
@@ -979,7 +988,9 @@ WPushButton#FxSuperLinkInvertButton {
 #MicAuxLabel,
 #SamplerTitle, #SamplerTitleMini, #SamplerBpm,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
-#CategoryLabel, #SkinSettingsLabelButton,
+#CategoryLabel,
+#SkinSettingsLabelButton,
+#SkinSettingsNumToggleHeader[displayValue="1"],
 WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
@@ -1011,6 +1022,9 @@ WTrackMenu QMenu QCheckBox,
   #LibraryContainer QTextBrowser,
   #LibraryContainer QTreeView {
     selection-color: #f0bb2b;
+  }
+  #SkinSettingsNumToggleHeader[displayValue="0"] {
+    color: #b9901f;
   }
 
 /* light blue */
@@ -1142,13 +1156,16 @@ WOverview #PassthroughLabel {
   color: #d09300;
 }
   #SkinSettingsButton,
-  #DeckSizeButton,
+  #SkinSettingsNumToggle,
   #SkinSettingsText {
     color: #d2d2d2;
   }
-  #DeckSizeButton[value="1"] {
-    background-color: #555;
+  #SkinSettingsNumToggle[value="1"] {
     color: #fff;
+  }
+  #SkinSettingsNumToggle[value="1"],
+  #SkinSettingsNumToggleHeader[displayValue="1"] {
+    text-decoration: underline;
   }
 
 
@@ -1177,6 +1194,15 @@ WOverview #PassthroughLabel {
   border-width: 2px 2px 2px 1px;
   border-image: url(skin:/classic/buttons/btn_embedded_grid.svg) 2 2 2 1;
   }
+  /* Active */
+  #VinylCueButton[displayValue="1"],
+  #VinylCueButton[displayValue="2"],
+  #PassthroughButton[displayValue="1"],
+  #FxAssignButtons WPushButton[displayValue="1"] {
+    outline: none;
+    border-width: 2px 2px 2px 1px;
+    border-image: url(skin:/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+  }
 WPushButton#FxAssignButton1[displayValue="0"],
 #VinylButton[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
@@ -1193,15 +1219,6 @@ WEffectSelector,
 WEffectSelector:on {
   border-width: 2px;
   border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  }
-/* Active */
-#VinylCueButton[displayValue="1"],
-#VinylCueButton[displayValue="2"],
-#PassthroughButton[displayValue="1"],
-#FxAssignButtons WPushButton[displayValue="1"] {
-  outline: none;
-  border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 WPushButton#VinylButton[displayValue="1"],
 WPushButton#FxAssignButton1[displayValue="1"],
@@ -1576,10 +1593,10 @@ WPushButton#SamplerExpand[displayValue="0"],
 }
 
 #JumpForward {
-  image: url(skin:/classic/buttons/btn__jump_right.svg) no-repeat center center;
+  image: url(skin:/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
 }
 #JumpBack {
-  image: url(skin:/classic/buttons/btn__jump_left.svg) no-repeat center center;
+  image: url(skin:/classic/buttons/btn__beatjump_left.svg) no-repeat center center;
 }
 
 /* Key buttons */
@@ -1773,10 +1790,10 @@ WPushButton#SamplerExpand[displayValue="0"],
       image: url(skin:/classic/buttons/btn__beats_faster.svg) no-repeat center center;
     }
     #HotcuesEarlier {
-      image: url(skin:/classic/buttons/btn__hotcues_earlier.svg) no-repeat center center;
+      image: url(skin:/classic/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
     }
     #HotcuesLater {
-      image: url(skin:/classic/buttons/btn__hotcues_later.svg) no-repeat center center;
+      image: url(skin:/classic/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
     }
 
 #MicTalk {
@@ -2090,7 +2107,7 @@ WCueMenuPopup QPushButton:focus {
       image: url(skin:/classic/buttons/btn__lib_sort_up.svg);
       }
     #LibraryContainer QHeaderView::down-arrow {
-      image: url(skin:/classic/style/btn__lib_sort_down.svg);
+      image: url(skin:/classic/buttons/btn__lib_sort_down.svg);
     }
 
 
@@ -2366,10 +2383,11 @@ WEffectSelector, #fadeModeCombobox {
   WTrackMenu QMenu QCheckBox:selected,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
-  #SkinSettingsButton:hover,
-  #DeckSizeButton:hover,
+  #SkinSettingsButton[hover="true"],
+  #SkinSettingsNumToggle[hover="true"],
+  #SkinSettingsNumToggleHeader[hover="true"],
   #SkinSettingsMixerToggle[hover="true"],
-  #SkinSettingsLabelButton:hover {
+  #SkinSettingsLabelButton[hover="true"] {
     background-color: #5E4507;
     color: white;
     /* remove OS focus indicator */

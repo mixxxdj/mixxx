@@ -2,8 +2,9 @@
 
 #include <QSqlDatabase>
 
-#include "track/track.h"
 #include "library/dao/dao.h"
+#include "track/cue.h"
+#include "track/trackid.h"
 
 #define CUE_TABLE "cues"
 

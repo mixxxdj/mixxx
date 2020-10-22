@@ -18,16 +18,17 @@
 #ifndef ENGINEBUFFER_H
 #define ENGINEBUFFER_H
 
-#include <QMutex>
-#include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "engine/cachingreader/cachingreader.h"
-#include "preferences/usersettings.h"
+#include <QAtomicInt>
+#include <QMutex>
+
 #include "control/controlvalue.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
 
@@ -313,7 +314,7 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    int m_trackSamplesOld;
+    double m_trackSamplesOld;
 
     // Copy of file sample rate
     double m_trackSampleRateOld;
