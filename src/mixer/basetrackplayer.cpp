@@ -549,18 +549,18 @@ void BaseTrackPlayerImpl::slotCloneFromGroup(const QString& group) {
 }
 
 void BaseTrackPlayerImpl::slotCloneFromDeck(double d) {
-    int deck = std::lround(d);
+    int deck = static_cast<int>(d);
     if (deck < 1) {
         slotCloneDeck();
     } else {
-        slotCloneFromGroup(PlayerManager::groupForDeck(deck-1));
+        slotCloneFromGroup(PlayerManager::groupForDeck(deck - 1));
     }
 }
 
 void BaseTrackPlayerImpl::slotCloneFromSampler(double d) {
-    int sampler = std::lround(d);
+    int sampler = static_cast<int>(d);
     if (sampler >= 1) {
-        slotCloneFromGroup(PlayerManager::groupForSampler(sampler-1));
+        slotCloneFromGroup(PlayerManager::groupForSampler(sampler - 1));
     }
 }
 
