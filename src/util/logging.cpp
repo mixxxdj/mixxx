@@ -50,13 +50,13 @@ inline void writeToLog(
     DEBUG_ASSERT(!message.isEmpty());
     DEBUG_ASSERT(flags & (WriteFlag::StdErr | WriteFlag::File));
     if (flags & WriteFlag::StdErr) {
-        const int written = fwrite(
+        const size_t written = fwrite(
                 message.constData(), sizeof(char), message.size(), stderr);
         Q_UNUSED(written);
-        DEBUG_ASSERT(written == message.size());
+        DEBUG_ASSERT(written == static_cast<size_t>(message.size()));
         if (flags & WriteFlag::Flush) {
             // Flushing stderr might not be necessary, because message
-            // should end with a newline character. Flushing occcurs
+            // should end with a newline character. Flushing occurs
             // only infrequently (log level >= Critical), so better safe
             // than sorry.
             const int ret = fflush(stderr);
@@ -93,7 +93,6 @@ void handleMessage(
         QtMsgType type,
         const QMessageLogContext& context,
         const QString& input) {
-    int baSize = 2 + 3 + 1; // all separators + newline (see below)
     const char* levelName = nullptr;
     WriteFlags writeFlags = WriteFlag::None;
     bool isDebugAssert = false;
@@ -101,7 +100,6 @@ void handleMessage(
     switch (type) {
     case QtDebugMsg:
         levelName = "Debug";
-        baSize += strlen(levelName);
         isControllerDebug =
                 input.startsWith(QLatin1String(
                         ControllerDebug::kLogMessagePrefix));
@@ -121,7 +119,6 @@ void handleMessage(
         break;
     case QtInfoMsg:
         levelName = "Info";
-        baSize += strlen(levelName);
         if (Logging::enabled(LogLevel::Info)) {
             writeFlags |= WriteFlag::StdErr;
         }
@@ -133,7 +130,6 @@ void handleMessage(
         break;
     case QtWarningMsg:
         levelName = "Warning";
-        baSize += strlen(levelName);
         if (Logging::enabled(LogLevel::Warning)) {
             writeFlags |= WriteFlag::StdErr;
         }
@@ -145,13 +141,11 @@ void handleMessage(
         break;
     case QtCriticalMsg:
         levelName = "Critical";
-        baSize += strlen(levelName);
         writeFlags = WriteFlag::All;
         isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
         break;
     case QtFatalMsg:
         levelName = "Fatal";
-        baSize += strlen(levelName);
         writeFlags = WriteFlag::All;
         break;
     }
@@ -163,60 +157,16 @@ void handleMessage(
         return;
     }
 
-    QByteArray threadName =
-            QThread::currentThread()->objectName().toLocal8Bit();
+    QString threadName = QThread::currentThread()->objectName();
     if (threadName.isEmpty()) {
-        QTextStream textStream(&threadName);
-        textStream << QThread::currentThread();
+        threadName = QStringLiteral("%{qthreadptr}");
     }
-    baSize += threadName.size();
-
-    QByteArray input8Bit;
-    if (isControllerDebug) {
-        input8Bit = input.mid(strlen(ControllerDebug::kLogMessagePrefix) + 1).toLocal8Bit();
-    } else {
-        input8Bit = input.toLocal8Bit();
-    }
-    baSize += input8Bit.size();
-
-    const char* categoryName = context.category;
-    int categoryName_len = 0;
-    if (categoryName) {
-        categoryName_len = strlen(categoryName);
-        if (categoryName_len > 0) {
-            if (strcmp(categoryName, kDefaultLoggingCategory.categoryName()) != 0) {
-                baSize += 1; // additional separator (see below)
-                baSize += categoryName_len;
-            } else {
-                // Suppress default category name
-                categoryName = nullptr;
-                categoryName_len = 0;
-            }
-        }
-    }
-
-    QByteArray ba;
-    ba.reserve(baSize);
-
-    ba.append(levelName);
-    ba.append(" [");
-    ba.append(threadName, threadName.size());
-    if (categoryName) {
-        ba.append("] ");
-        ba.append(categoryName, categoryName_len);
-        ba.append(": ");
-    } else {
-        ba.append("]: ");
-    }
-    ba.append(input8Bit, input8Bit.size());
-    ba.append('\n');
-
-    // Verify that the reserved size matches the actual size
-    DEBUG_ASSERT(ba.size() == baSize);
+    QString logMessage = qFormatLogMessage(type, context, input) + QChar('\n');
+    const QByteArray array = logMessage.replace("{{threadname}}", threadName).toLocal8Bit();
 
     if (isDebugAssert) {
         if (s_debugAssertBreak) {
-            writeToLog(ba, WriteFlag::All);
+            writeToLog(array, WriteFlag::All);
             raise(SIGINT);
             // When the debugger returns, continue normally.
             return;
@@ -226,12 +176,12 @@ void handleMessage(
 #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
         // re-send as fatal.
         // The "%s" is intentional. See -Werror=format-security.
-        qFatal("%s", input8Bit.constData());
+        qFatal("%s", array.constData());
         return;
 #endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
 
-    writeToLog(ba, writeFlags);
+    writeToLog(array, writeFlags);
 }
 
 } // anonymous namespace
@@ -290,6 +240,12 @@ void Logging::initialize(
     }
 
     s_debugAssertBreak = debugAssertBreak;
+
+    // Set the default message pattern if the QT_MESSAGE_PATTERN variable is
+    // not set.
+    if (qgetenv("QT_MESSAGE_PATTERN").isEmpty()) {
+        qSetMessagePattern("%{type} [{{threadname}}] %{message}");
+    }
 
     // Install the Qt message handler.
     qInstallMessageHandler(handleMessage);
