@@ -69,3 +69,7 @@ compile_commands.json
 
 # Exclude buildenv directory from our helper scripts
 /buildenv/
+
+# Ignore nix-build result links
+result*
+cbuild/
