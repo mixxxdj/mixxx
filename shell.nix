@@ -159,7 +159,7 @@ in stdenv.mkDerivation rec {
     (nix-gitignore.gitignoreSource ''
       /cbuild
       /.envrc
-      /result
+      /result*
       /shell.nix
       /venv
     '' ./.)
