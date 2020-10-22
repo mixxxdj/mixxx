@@ -177,6 +177,41 @@ jobs:
         # does not take 5min every build
         # Source: https://discourse.brew.sh/t/best-practice-for-homebrew-on-travis-brew-update-is-5min-to-build-time/5215/12
         - find /usr/local/Homebrew \! -regex ".+\.git.+" -delete
+    - name: Nix derivate build
+      language: shell
+      install: &nixinstall
+        - curl -Ls https://github.com/nix-community/nix-travis-ci/raw/main/install.sh > /tmp/bootstrap_nix
+        - source /tmp/bootstrap_nix
+        - nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
+        - nix-channel --update
+      cache: &nixcache
+        directories:
+        - $HOME/nix.store
+        - $HOME/.ccache
+      before_install: &nix_before_install
+        # workaround: heredoc that ends on blank line
+        - |
+          cat << '' > extra.conf
+          sandbox = true
+          substituters = https://cache.nixos.org/ file://$HOME/nix.store
+          require-sigs = false
+      env:  &nix_env
+        - EXTRA_NIX_CONFIG: extra.conf
+      before_cache: &nix_before_cache
+        - mkdir -p $HOME/nix.store
+        - nix copy --to file://$HOME/nix.store -f shell.nix buildInputs
+      script:
+        - nix-build shell.nix --arg releaseMode true --arg defaultLv2Plugins true
+    - name: Nix development shell build
+      install: *nixinstall
+      cache: *nixcache
+      before_cache: *nix_before_cache
+      before_install: *nix_before_install
+      env: *nix_env
+      script:
+        - nix-shell --arg enableKeyfinder true --arg defaultLv2Plugins true --command "configure; build;"
+        - test -e cbuild/mixxx -a -e cbuild/.mixxx-wrapped
+        - cd cbuild && ./mixxx --help && cd ..
 
 git:
   depth: 1
