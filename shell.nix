@@ -1,40 +1,31 @@
-{ nixroot  ? (import <nixpkgs> {})
-, defaultLv2Plugins ? false
-, lv2Plugins ? []
-, releaseMode ? false
-}:
-let inherit (nixroot) stdenv pkgs lib
-    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv
-    libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
-    rubberband sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
-    libGLU x11 lame lv2 makeWrapper pcre utillinux libselinux libsepol
-    libsForQt5
-    clang-tools
-    cmake
-    fetchurl
-    ffmpeg
-    gdb
-    libmodplug
-    mp4v2
-    nix-gitignore
-    python3 python37Packages
-    wavpack;
+{ nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
+, releaseMode ? false, enableKeyfinder ? true, buildType ? "auto" }:
+let
+  inherit (nixroot)
+    stdenv pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
+    nix-gitignore python3 python37Packages;
+
+  cmakeBuildType = if buildType == "auto" then
+    (if releaseMode then "RelWithDebInfo" else "Debug")
+  else
+    buildType;
+
+  cFlags = [
+    ("-DKEYFINDER=" + (if enableKeyfinder then "ON" else "OFF"))
+    ("-DCMAKE_BUILD_TYPE=" + cmakeBuildType)
+  ];
 
   git-clang-format = stdenv.mkDerivation {
     name = "git-clang-format";
     version = "2019-06-21";
     src = fetchurl {
-      url = "https://raw.githubusercontent.com/llvm-mirror/clang/2bb8e0fe002e8ffaa9ce5fa58034453c94c7e208/tools/clang-format/git-clang-format";
+      url =
+        "https://raw.githubusercontent.com/llvm-mirror/clang/2bb8e0fe002e8ffaa9ce5fa58034453c94c7e208/tools/clang-format/git-clang-format";
       sha256 = "1kby36i80js6rwi11v3ny4bqsi6i44b9yzs23pdcn9wswffx1nlf";
       executable = true;
     };
-    nativeBuildInputs = [
-      makeWrapper
-    ];
-    buildInputs = [
-      clang-tools
-      python3
-    ];
+    nativeBuildInputs = [ makeWrapper ];
+    buildInputs = [ clang-tools python3 ];
     unpackPhase = ":";
     installPhase = ''
       mkdir -p $out/opt $out/bin
@@ -45,10 +36,34 @@ let inherit (nixroot) stdenv pkgs lib
     '';
   };
 
+  libkeyfinder = if builtins.hasAttr "libkeyfinder" pkgs then
+    pkgs.libkeyfinder
+  else
+    stdenv.mkDerivation {
+      name = "libkeyfinder";
+      version = "2.2.1-dev";
+
+      src = fetchgit {
+        url = "https://github.com/ibsh/libKeyFinder.git";
+        rev = "9b4440d66789b06483fe5273e06368a381d22707";
+        sha256 = "008xg6v4mpr8hqqkn8r5y5vnigggnqjjcrhv5r6q41xg6cfz0k72";
+      };
+
+      nativeBuildInputs = [ cmake ];
+      buildInputs = with pkgs; [ fftw pkgconfig ];
+
+      buildPhase = ''
+        make VERBOSE=1 keyfinder
+      '';
+      installPhase = ''
+        make install/fast
+      '';
+    };
+
   shell-configure = nixroot.writeShellScriptBin "configure" ''
     mkdir -p cbuild
     cd cbuild
-    cmake .. "$@"
+    cmake .. ${lib.escapeShellArgs cFlags} "$@"
     cd ..
     if [ ! -e venv/bin/pre-commit ]; then
       virtualenv -p python3 venv
@@ -57,15 +72,28 @@ let inherit (nixroot) stdenv pkgs lib
     fi
   '';
 
+  wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs then
+    "source ${pkgs.wrapQtAppsHook}/nix-support/setup-hook"
+  else
+    "source ${pkgs.makeWrapper}/nix-support/setup-hook");
+
+  wrapperCmd = (if builtins.hasAttr "wrapQtAppsHook" pkgs then
+    "wrapQtApp"
+  else
+    "wrapProgram");
+
   shell-build = nixroot.writeShellScriptBin "build" ''
     if [ ! -d "cbuild" ]; then
       >&2 echo "First you have to run configure."
       exit 1
     fi
     cd cbuild
+    rm -f .mixxx-wrapped mixxx
     cmake --build . --parallel $NIX_BUILD_CORES "$@"
-    source ${pkgs.makeWrapper}/nix-support/setup-hook
-    wrapProgram mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
+    ${wrapper}
+    ${wrapperCmd} mixxx --prefix LV2_PATH : ${
+      lib.makeSearchPath "lib/lv2" allLv2Plugins
+    }
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
@@ -83,24 +111,41 @@ let inherit (nixroot) stdenv pkgs lib
       exit 1
     fi
     cd cbuild
-    LV2_PATH=${lib.makeSearchPath "lib/lv2" allLv2Plugins} gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
+    LV2_PATH=${
+      lib.makeSearchPath "lib/lv2" allLv2Plugins
+    } gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
   '';
 
-  allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then [
-    nixroot.x42-plugins nixroot.zam-plugins nixroot.rkrlv2 nixroot.mod-distortion
-    nixroot.infamousPlugins nixroot.artyFX
-  ] else []);
+  allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then
+    (with pkgs; [
+      artyFX
+      infamousPlugins
+      libsepol
+      mod-distortion
+      mount
+      pcre
+      rkrlv2
+      utillinux
+      x42-plugins
+      zam-plugins
+    ])
+  else
+    [ ]);
 
 in stdenv.mkDerivation rec {
   name = "mixxx-${version}";
   # Reading the version from git output is very hard to do without wasting lots of diskspace and
   # runtime. Reading version file is easy.
-  version = lib.strings.removeSuffix "\"\n" (
-              lib.strings.removePrefix "#define MIXXX_VERSION \"" (
-                builtins.readFile ./src/_version.h ));
+  version = lib.strings.removeSuffix ''
+    "
+  '' (lib.strings.removePrefix ''#define MIXXX_VERSION "''
+    (builtins.readFile ./src/_version.h));
 
   # SOURCE_DATE_EPOCH helps with python and pre-commit hook
-  shellHook =  ''
+  shellHook = ''
+    if [ -z "$LOCALE_ARCHIVE" ]; then
+      export LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
+    fi
     export PYTHONPATH=venv/lib/python3.7/site-packages/:$PYTHONPATH
     export SOURCE_DATE_EPOCH=315532800
     echo -e "Mixxx development shell. Available commands:\n"
@@ -110,44 +155,103 @@ in stdenv.mkDerivation rec {
     echo " debug - runs Mixxx inside gdb"
       '';
 
-  src = if releaseMode then (nix-gitignore.gitignoreSource ''
-    /cbuild
-    /.envrc
-    /result
-    /shell.nix
-    /venv
-  '' ./.) else null;
+  src = if releaseMode then
+    (nix-gitignore.gitignoreSource ''
+      /cbuild
+      /.envrc
+      /result
+      /shell.nix
+      /venv
+    '' ./.)
+  else
+    null;
 
-  nativeBuildInputs = [
-    cmake
-  ] ++ (if !releaseMode then [
-    ccache
-    gdb
-    git-clang-format
-    clang-tools
-    # for pre-commit installation since nixpkg.pre-commit may be to old
-    python3 python37Packages.virtualenv python37Packages.pip python37Packages.setuptools
-    shell-configure shell-build shell-run shell-debug
-  ] else []);
+  nativeBuildInputs = [ pkgs.cmake ] ++ (if !releaseMode then
+    (with pkgs; [
+      ccache
+      clang-tools
+      gdb
+      git-clang-format
+      glibcLocales
+      # for pre-commit installation since nixpkg.pre-commit may be to old
+      python3
+      python37Packages.pip
+      python37Packages.setuptools
+      python37Packages.virtualenv
+      shell-build
+      shell-configure
+      shell-debug
+      shell-run
+    ])
+  else
+    [ ]);
 
-  buildInputs = [
-    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile
-    libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
-    rubberband sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
-    git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase pcre utillinux libselinux
-    libsepol libsForQt5.qtkeychain
+  cmakeFlags = cFlags;
+
+  buildInputs = (with pkgs; [
+    chromaprint
     ffmpeg
+    fftw
+    flac
+    git
+    glib
+    hidapi
+    lame
+    libebur128
+    libGLU
+    libid3tag
+    libmad
     libmodplug
+    libopus
+    libshout
+    libsecret
+    libselinux
+    libsepol
+    libsForQt5.qtkeychain
+    libsndfile
+    libusb1
+    libvorbis
+    lilv
+    lv2
+    makeWrapper
     mp4v2
+    opusfile
+    pcre
+    pkgconfig
+    portaudio
+    portmidi
+    protobuf
+    qt5.qtbase
+    qt5.qtdoc
+    qt5.qtscript
+    qt5.qtsvg
+    qt5.qtx11extras
+    rubberband
+    serd
+    sord
+    soundtouch
+    sqlite
+    taglib
+    upower
+    utillinux
+    vamp.vampSDK
     wavpack
-  ] ++ allLv2Plugins;
+    x11
+  ]) ++ allLv2Plugins ++ (if enableKeyfinder then [ libkeyfinder ] else [ ])
+    ++ (if builtins.hasAttr "wrapQtAppsHook" pkgs then
+      [ pkgs.wrapQtAppsHook ]
+    else
+      [ ]);
 
   postInstall = (if releaseMode then ''
-    wrapProgram $out/bin/mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
-  '' else "");
+    ${wrapperCmd} $out/bin/mixxx --prefix LV2_PATH : ${
+      lib.makeSearchPath "lib/lv2" allLv2Plugins
+    }
+  '' else
+    "");
 
   meta = with nixroot.stdenv.lib; {
-    homepage = https://mixxx.org;
+    homepage = "https://mixxx.org";
     description = "Digital DJ mixing software";
     license = licenses.gpl2Plus;
     maintainers = nixroot.pkgs.mixxx.meta.maintainers;
