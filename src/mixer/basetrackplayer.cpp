@@ -107,6 +107,15 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             this,
             &BaseTrackPlayerImpl::slotCloneFromDeck);
 
+    // Sampler cloning
+    m_pCloneFromSampler = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "CloneFromSampler"),
+            false);
+    connect(m_pCloneFromSampler.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotCloneFromSampler);
+
     // Waveform controls
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
     // do not work properly with this CO.
@@ -545,6 +554,13 @@ void BaseTrackPlayerImpl::slotCloneFromDeck(double d) {
         slotCloneDeck();
     } else {
         slotCloneFromGroup(PlayerManager::groupForDeck(deck-1));
+    }
+}
+
+void BaseTrackPlayerImpl::slotCloneFromSampler(double d) {
+    int sampler = std::lround(d);
+    if (sampler >= 1) {
+        slotCloneFromGroup(PlayerManager::groupForSampler(sampler-1));
     }
 }
 
