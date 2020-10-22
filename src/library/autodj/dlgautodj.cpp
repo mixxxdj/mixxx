@@ -253,7 +253,7 @@ void DlgAutoDJ::setupActionButton(QPushButton* pButton,
 
 void DlgAutoDJ::updateTransitionAppendixLabel() {
     QString transitionUnit;
-    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::SECONDS) {
+    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::Seconds) {
         transitionUnit = tr("sec.");
     } else {
         transitionUnit = tr("beats.");

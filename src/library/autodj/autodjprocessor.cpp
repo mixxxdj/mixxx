@@ -181,7 +181,7 @@ AutoDJProcessor::AutoDJProcessor(
     m_transitionUnit = static_cast<TransitionUnit>(
             m_pConfig->getValue(
                     ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
-                    static_cast<int>(TransitionUnit::SECONDS)));
+                    static_cast<int>(TransitionUnit::Seconds)));
 
     m_calcTransitionPeriod = static_cast<CalcTransitionPeriod>(
             m_pConfig->getValue(
@@ -1694,7 +1694,7 @@ double AutoDJProcessor::getFadeTime() {
         toBPM = rightBPM;
     }
 
-    if (m_transitionUnit == TransitionUnit::BEATS) {
+    if (m_transitionUnit == TransitionUnit::Beats) {
         if (leftBPM == rightBPM) {
             fadeTime = (transitionTime * 60) / leftBPM;
         } else {
