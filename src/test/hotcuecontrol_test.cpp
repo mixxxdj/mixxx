@@ -1207,3 +1207,32 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     // Check that enabling the loop didn't cause a jump
     EXPECT_NEAR(afterLoopPositionSamples, currentSamplePosition(), 2000);
 }
+
+TEST_F(HotcueControlTest, SavedLoopUnloadTrackWhileActive) {
+    // Setup fake track with 120 bpm and calculate loop size
+    qWarning() << "Loading first track";
+    loadTestTrackWithBpm(120.0);
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    // Set a beatloop
+    m_pBeatloopActivate->slotSet(1);
+    m_pBeatloopActivate->slotSet(0);
+
+    // Save currently active loop to hotcue slot 1
+    m_pHotcue1SetLoop->slotSet(1);
+    m_pHotcue1SetLoop->slotSet(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_NE(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    // Setup fake track with 120 bpm and calculate loop size
+    qWarning() << "Loading second track";
+    loadTestTrackWithBpm(130.0);
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Invalid), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+}
