@@ -1594,7 +1594,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
         },
 
         shift: function() {
-            this.inKey = "hotcue_" + this.number + "_loop_toggle";
+            this.inKey = "hotcue_" + this.number + "_gotoandloop";
             this.input = function(_channel, _control, value, _status, _group) {
                 this.inSetValue(value);
 
