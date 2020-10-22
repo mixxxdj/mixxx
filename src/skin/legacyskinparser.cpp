@@ -1126,7 +1126,8 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseMainMenuButton(const QDomElement& node) {
-    WMainMenuBarButton* pMainmenu = new WMainMenuBarButton(m_pParent, m_pMainMenuBar);
+    WMainMenuBarButton* pMainmenu = new WMainMenuBarButton(
+            m_pParent, m_pMainMenuBar, m_pKeyboard->getKeyboardConfig());
     commonWidgetSetup(node, pMainmenu);
 
     return pMainmenu;

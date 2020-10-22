@@ -20,7 +20,9 @@ class WMainMenuBar;
 class WMainMenuBarButton : public QPushButton, public WBaseWidget {
     Q_OBJECT
   public:
-    WMainMenuBarButton(QWidget* pParent, WMainMenuBar* pMainMenu);
+    WMainMenuBarButton(QWidget* pParent,
+            WMainMenuBar* pMainMenu,
+            ConfigObject<ConfigValueKbd>* pKbdConfig);
 
   private:
     void initialize(WMainMenuBar* pMainMenu);
