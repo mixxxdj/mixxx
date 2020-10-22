@@ -44,13 +44,6 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
     return mixxx::RgbColor::optional(colorCode);
 }
 
-inline HotcueControl::Status hotcueControlStatusFromCue(CuePointer pCue) {
-    if (pCue && pCue->getType() != mixxx::CueType::Invalid) {
-        return HotcueControl::Status::Valid;
-    }
-    return HotcueControl::Status::Invalid;
-}
-
 } // namespace
 
 CueControl::CueControl(QString group,
@@ -2444,7 +2437,9 @@ void HotcueControl::setCue(CuePointer pCue) {
     setPosition(pCue->getPosition());
     setEndPosition(pCue->getEndPosition());
     setColor(pCue->getColor());
-    setStatus(hotcueControlStatusFromCue(pCue));
+    setStatus((pCue->getType() == mixxx::CueType::Invalid)
+                    ? HotcueControl::Status::Invalid
+                    : HotcueControl::Status::Valid);
     setType(pCue->getType());
     // set pCue only if all other data is in place
     // because we have a null check for valid data else where in the code
