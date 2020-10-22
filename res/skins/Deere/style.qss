@@ -706,7 +706,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 }
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::handle:horizontal, 
+#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::handle:horizontal,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
@@ -717,7 +717,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 #ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::handle:vertical,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical, 
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
   background: #5F5F5F;
