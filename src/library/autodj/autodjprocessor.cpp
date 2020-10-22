@@ -1410,7 +1410,7 @@ void AutoDJProcessor::useFixedFadeTime(
         double fromDeckSecond,
         double fadeEndSecond,
         double toDeckStartSecond) {
-    double fadeTime = getFadeTime();
+    const double fadeTime = getFadeTime();
     if (fadeTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
