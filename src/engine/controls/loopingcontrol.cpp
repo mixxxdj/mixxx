@@ -803,7 +803,7 @@ void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
             }
         } else {
             // Looping is currently disabled, try to enable the loop. In
-            // contrast to the reloop_toggle CO, we do not jump in any case.
+            // contrast to the reloop_toggle CO, we jump in no case.
             LoopSamples loopSamples = m_loopSamples.getValue();
             if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
                     loopSamples.start <= loopSamples.end) {
