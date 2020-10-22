@@ -882,6 +882,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
     clearActiveBeatLoop();
 
     if (pos == kNoTrigger) {
+        emit loopReset();
         setLoopingEnabled(false);
     }
 
@@ -891,6 +892,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
     if (loopSamples.end != kNoTrigger &&
             loopSamples.end <= loopSamples.start) {
+        emit loopReset();
         loopSamples.end = kNoTrigger;
         m_pCOLoopEndPosition->set(kNoTrigger);
         setLoopingEnabled(false);
@@ -917,7 +919,8 @@ void LoopingControl::slotLoopEndPos(double pos) {
 
     clearActiveBeatLoop();
 
-    if (pos == -1.0) {
+    if (pos == kNoTrigger) {
+        emit loopReset();
         setLoopingEnabled(false);
     }
     loopSamples.end = pos;
