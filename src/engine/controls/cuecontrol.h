@@ -50,6 +50,10 @@ inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
     return static_cast<SeekOnLoadMode>(int(value));
 }
 
+/// A `HotcueControl` represents a hotcue slot. It can either be empty or have
+/// a (hot-)cue attached to it.
+///
+/// TODO(XXX): This class should be moved into a separate file.
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
