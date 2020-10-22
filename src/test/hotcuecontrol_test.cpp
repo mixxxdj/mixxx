@@ -1209,7 +1209,7 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
 }
 
 TEST_F(HotcueControlTest, SavedLoopUnloadTrackWhileActive) {
-    // Setup fake track with 120 bpm and calculate loop size
+    // Setup fake track with 120 bpm
     qWarning() << "Loading first track";
     loadTestTrackWithBpm(120.0);
 
@@ -1230,7 +1230,8 @@ TEST_F(HotcueControlTest, SavedLoopUnloadTrackWhileActive) {
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    // Setup fake track with 120 bpm and calculate loop size
+    // Setup another fake track with 130 bpm
+    unloadTrack();
     qWarning() << "Loading second track";
     loadTestTrackWithBpm(130.0);
     ProcessBuffer();
