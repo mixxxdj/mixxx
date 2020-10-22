@@ -1687,7 +1687,7 @@ double AutoDJProcessor::getFadeTime() {
     const double rightBPM = m_pRightBPM->get();
     double fromBPM, toBPM;
 
-    double transitionTime = m_transitionTime;
+    const double transitionTime = m_transitionTime;
     double fadeTime;
 
     double crossfader = getCrossfader();
