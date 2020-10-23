@@ -32,7 +32,8 @@ DDJ200.init = function() {
 
     // start with focus on library for selecting tracks (delay seems required)
     engine.beginTimer(500, function() {
-            engine.setValue("[Library]", "MoveFocus", 1); }, true);
+            engine.setValue("[Library]", "MoveFocus", 1);
+        }, true);
 };
 
 DDJ200.shutdown = function() { DDJ200.LEDsOff(); };
