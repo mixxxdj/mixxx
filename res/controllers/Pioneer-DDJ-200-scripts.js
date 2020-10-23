@@ -16,7 +16,6 @@ DDJ200.init = function() {
         rateMSB: 0,
         jogEnabled: true,
         };
-
         var vgroup = "[Channel" + i + "]";
 
         // run onTrackLoad after every track load to set LEDs accordingly
@@ -309,9 +308,8 @@ DDJ200.pfl = function(channel, control, value, status, group) {
 };
 
 DDJ200.switchLEDs = function(vDeckNo) {
-    // set LEDs of controller deck according to virtual deck
-    // 0 for left, 1 for right deck
-    var deckNo = (vDeckNo % 2) ? 0 : 1;
+    // set LEDs of controller deck 1 or 2 according to virtual deck
+    var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
     var vgroup = "[Channel" + vDeckNo +"]";
     midi.sendShortMsg(0x90 + d, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
     midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
