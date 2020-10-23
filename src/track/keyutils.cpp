@@ -530,15 +530,15 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
         return compatible;
     }
 
+    int openKeyNumber = KeyUtils::keyToOpenKeyNumber(key);
     // We know the key is in the set of valid values. Save whether or not the
     // value is minor.
     bool major = keyIsMajor(key);
-    int openKeyNumber = KeyUtils::keyToOpenKeyNumber(key);
 
     // The compatible keys of particular key are:
     // * The relative major/minor key.
-    // * The perfect 4th (sub-dominant) key.
-    // * The perfect 5th (dominant) key.
+    // * The perfect 4th (sub-dominant) major/minor key.
+    // * The perfect 5th (dominant) major/minor key.
     //
     // The Circle of Fifths is a handy tool that encodes this compatibility.
     // Keys on the same radial of the circle are compatible and adjacent keys on
@@ -550,14 +550,22 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
     // The key is compatible with tracks in the same key.
     compatible << key;
 
-    // The relative major/minor key is compatible.
-    compatible << openKeyNumberToKey(openKeyNumber, !major);
+    auto relativeKey = openKeyNumberToKey(openKeyNumber, !major);
+    int relativeOpenKeyNumber = KeyUtils::keyToOpenKeyNumber(relativeKey);
 
-    // The perfect 4th and perfect 5th are compatible.
+    // The relative major/minor key is compatible.
+    compatible << relativeKey;
+
+    // The perfect 4th and perfect 5th of BOTH major and minor key are compatible
+    // (as explained by Phil Morse: https://youtu.be/9eECvYYAwbg?t=2370)
     compatible << openKeyNumberToKey(
             openKeyNumber == 12 ? 1 : openKeyNumber + 1, major);
     compatible << openKeyNumberToKey(
+            relativeOpenKeyNumber == 12 ? 1 : relativeOpenKeyNumber + 1, !major);
+    compatible << openKeyNumberToKey(
             openKeyNumber == 1 ? 12 : openKeyNumber - 1, major);
+    compatible << openKeyNumberToKey(
+            relativeOpenKeyNumber == 1 ? 12 : relativeOpenKeyNumber - 1, !major);
     return compatible;
 }
 
