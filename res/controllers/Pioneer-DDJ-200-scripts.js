@@ -72,7 +72,7 @@ DDJ200.LoadSelectedTrack = function(channel, control, value, status, group) {
 };
 
 DDJ200.browseTracks = function(value) {
-    DDJ200.jogCounter += value-64;
+    DDJ200.jogCounter += value - 64;
     if (DDJ200.jogCounter > 9) {
         engine.setValue("[Library]", "MoveDown", true);
         DDJ200.jogCounter = 0;
