@@ -30,6 +30,8 @@ QFile s_logfile;
 // Whether to break on debug assertions.
 bool s_debugAssertBreak = false;
 
+const QString kThreadNamePattern = QStringLiteral("{{threadname}}");
+
 const QLoggingCategory kDefaultLoggingCategory = QLoggingCategory(nullptr);
 
 enum class WriteFlag {
@@ -111,7 +113,7 @@ inline void writeToStdErr(
         bool flush) {
     QString formattedMessageStr = qFormatLogMessage(type, context, message) + QChar('\n');
     const QByteArray formattedMessage =
-            formattedMessageStr.replace("{{threadname}}", threadName)
+            formattedMessageStr.replace(kThreadNamePattern, threadName)
                     .toLocal8Bit();
 
     QMutexLocker locked(&s_mutexStdErr);
@@ -141,7 +143,9 @@ inline void writeToLog(
 
     QString threadName = QThread::currentThread()->objectName();
     if (threadName.isEmpty()) {
-        threadName = QStringLiteral("%{qthreadptr}");
+        threadName = QStringLiteral("0x") +
+                QString::number(
+                        reinterpret_cast<size_t>(QThread::currentThread()), 16);
     }
 
     const bool flush = flags & WriteFlag::Flush;
@@ -309,7 +313,8 @@ void Logging::initialize(
     // Set the default message pattern if the QT_MESSAGE_PATTERN variable is
     // not set.
     if (qgetenv("QT_MESSAGE_PATTERN").isEmpty()) {
-        qSetMessagePattern("%{type} [{{threadname}}] %{message}");
+        qSetMessagePattern(QStringLiteral("%{type} [") + kThreadNamePattern +
+                QStringLiteral("] %{message}"));
     }
 
     // Install the Qt message handler.
