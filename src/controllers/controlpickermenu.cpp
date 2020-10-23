@@ -374,58 +374,112 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
-    addControl("[Library]", "MoveUp",
-               tr("Move up"),
-               tr("Equivalent to pressing the UP key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveDown",
-               tr("Move down"),
-               tr("Equivalent to pressing the DOWN key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveVertical",
-               tr("Move up/down"),
-               tr("Move vertically in either direction using a knob, as if pressing UP/DOWN keys"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "ScrollUp",
-               tr("Scroll Up"),
-               tr("Equivalent to pressing the PAGE UP key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "ScrollDown",
-               tr("Scroll Down"),
-               tr("Equivalent to pressing the PAGE DOWN key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "ScrollVertical",
-               tr("Scroll up/down"),
-               tr("Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveLeft",
-               tr("Move left"),
-               tr("Equivalent to pressing the LEFT key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveRight",
-               tr("Move right"),
-               tr("Equivalent to pressing the RIGHT key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveHorizontal",
-               tr("Move left/right"),
-               tr("Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveFocusForward",
-               tr("Move focus to right pane"),
-               tr("Equivalent to pressing the TAB key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveFocusBackward",
-               tr("Move focus to left pane"),
-               tr("Equivalent to pressing the SHIFT+TAB key on the keyboard"),
-               libraryMenu, false, m_libraryStr);
-    addControl("[Library]", "MoveFocus",
-               tr("Move focus to right/left pane"),
-               tr("Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys"),
-               libraryMenu, false, m_libraryStr);
+    QMenu* navigationMenu = addSubmenu(tr("Navigation"), libraryMenu);
+    addControl("[Library]",
+            "MoveUp",
+            tr("Move up"),
+            tr("Equivalent to pressing the UP key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "MoveDown",
+            tr("Move down"),
+            tr("Equivalent to pressing the DOWN key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "MoveVertical",
+            tr("Move up/down"),
+            tr("Move vertically in either direction using a knob, as if "
+               "pressing UP/DOWN keys"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "ScrollUp",
+            tr("Scroll Up"),
+            tr("Equivalent to pressing the PAGE UP key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "ScrollDown",
+            tr("Scroll Down"),
+            tr("Equivalent to pressing the PAGE DOWN key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "ScrollVertical",
+            tr("Scroll up/down"),
+            tr("Scroll vertically in either direction using a knob, as if "
+               "pressing PGUP/PGDOWN keys"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "MoveLeft",
+            tr("Move left"),
+            tr("Equivalent to pressing the LEFT key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "MoveRight",
+            tr("Move right"),
+            tr("Equivalent to pressing the RIGHT key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "MoveHorizontal",
+            tr("Move left/right"),
+            tr("Move horizontally in either direction using a knob, as if "
+               "pressing LEFT/RIGHT keys"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    navigationMenu->addSeparator();
+    addControl("[Library]",
+            "MoveFocusForward",
+            tr("Move focus to right pane"),
+            tr("Equivalent to pressing the TAB key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "MoveFocusBackward",
+            tr("Move focus to left pane"),
+            tr("Equivalent to pressing the SHIFT+TAB key on the keyboard"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "MoveFocus",
+            tr("Move focus to right/left pane"),
+            tr("Move focus one pane to right or left using a knob, as if "
+               "pressing TAB/SHIFT+TAB keys"),
+            navigationMenu,
+            false,
+            m_libraryStr);
+    libraryMenu->addSeparator();
     addControl("[Library]", "GoToItem",
                tr("Go to the currently selected item"),
                tr("Choose the currently selected item and advance forward one pane if appropriate"),
                libraryMenu, false, m_libraryStr);
+    // Load track (these can be loaded into any channel)
+    addDeckAndSamplerControl("LoadSelectedTrack",
+            tr("Load Track"),
+            tr("Load selected track"),
+            libraryMenu);
+    addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay",
+            tr("Load Track and Play"),
+            tr("Load selected track and play"),
+            libraryMenu);
+    libraryMenu->addSeparator();
+    // Auto DJ
     addControl("[Library]", "AutoDjAddBottom",
                tr("Add to Auto DJ Queue (bottom)"),
                tr("Append the selected track to the Auto DJ Queue"),
@@ -438,15 +492,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Add to Auto DJ Queue (replace)"),
                tr("Replace Auto DJ Queue with selected tracks"),
                libraryMenu, false, m_libraryStr);
-
-
-    // Load track (these can be loaded into any channel)
-    addDeckAndSamplerControl("LoadSelectedTrack",
-                             tr("Load Track"),
-                             tr("Load selected track"), libraryMenu);
-    addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Track Load and Play"),
-                                           tr("Load selected track and play"), libraryMenu);
-
+    libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
                tr("Record Mix"),
                tr("Toggle mix recording"),
