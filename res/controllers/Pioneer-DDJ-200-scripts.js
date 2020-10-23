@@ -14,7 +14,7 @@ DDJ200.init = function() {
         syncEnabled: false,
         volMSB: 0,
         rateMSB: 0,
-        jogDisabled: false,
+        jogEnabled: true,
         };
 
         var vgroup = "[Channel" + i + "]";
