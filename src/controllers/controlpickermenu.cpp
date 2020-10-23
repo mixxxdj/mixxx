@@ -44,6 +44,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("orientation_right", tr("Orient Right"),
                              tr("Set mix orientation to right"), mixerMenu);
 
+    addSeparator();
+
     // Transport
     QMenu* transportMenu = addSubmenu(tr("Transport"));
     addDeckAndSamplerAndPreviewDeckControl("play", tr("Play"), tr("Play button"), transportMenu);
@@ -367,6 +369,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        beatJumpBackwardTitle.arg(humanBeats),
                        beatJumpBackwardDescription.arg(humanBeats), beatJumpMenu);
     }
+
+    addSeparator();
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
@@ -693,6 +697,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Auxiliary on/off"),
                                microphoneMenu,
                                false, true);
+    microphoneMenu->addSeparator();
     addMicrophoneAndAuxControl("pregain",
                                tr("Gain"),
                                tr("Gain knob"), microphoneMenu,
@@ -713,6 +718,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Mute"),
                                tr("Mute button"), microphoneMenu,
                                true, true);
+    microphoneMenu->addSeparator();
     addMicrophoneAndAuxControl("orientation",
                                tr("Orientation"),
                                tr("Mix orientation (e.g. left, right, center)"),
@@ -774,6 +780,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Library Maximize/Restore"),
                tr("Maximize the track library to take up all the available screen space."), guiMenu);
 
+    guiMenu->addSeparator();
+
+    // TODO(ronso0) Add hint that this currently only affects the Shade skin
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");
     for (int i = 1; i <= iNumDecks; ++i) {
@@ -783,9 +792,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     }
 
+    guiMenu->addSeparator();
+
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
     addDeckControl("waveform_zoom_down", tr("Waveform Zoom In"), tr("Zoom waveform in"), guiMenu);
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
+
+    guiMenu->addSeparator();
 
     // Controls to change a deck's star rating
     addDeckAndPreviewDeckControl("stars_up", tr("Star Rating Up"),
