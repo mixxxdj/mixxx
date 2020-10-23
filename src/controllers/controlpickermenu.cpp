@@ -20,7 +20,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     m_auxStr = tr("Auxiliary %1");
     m_resetStr = tr("Reset to default");
     m_effectRackStr = tr("Effect Rack %1");
-    m_effectUnitStr = tr("Unit %1");
+    m_effectUnitStr = tr("Effect Unit %1");
     m_effectStr = tr("Slot %1");
     m_parameterStr = tr("Parameter %1");
     m_libraryStr = tr("Library");
@@ -647,16 +647,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     effectsMenu->addSeparator();
 
+    // When kNumEffectRacks is changed to >1 put effect unit actions into
+    // separate "Effect Rack N" submenus.
     const int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
         const QString rackGroup = StandardEffectRack::formatGroupString(
                 iRackNumber - 1);
-        QMenu* rackMenu = addSubmenu(m_effectRackStr.arg(iRackNumber), effectsMenu);
         QString descriptionPrefix = m_effectRackStr.arg(iRackNumber);
-
-        addControl(rackGroup, "clear",
-                   tr("Clear Effect Rack"), tr("Clear effect rack"),
-                   rackMenu, false, descriptionPrefix);
 
         const int numEffectUnits = static_cast<int>(ControlObject::get(
                 ConfigKey(rackGroup, "num_effectunits")));
@@ -666,11 +663,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                     StandardEffectRack::formatEffectChainSlotGroupString(
                         iRackNumber - 1, iEffectUnitNumber - 1);
 
-            descriptionPrefix = QString("%1, %2").arg(m_effectRackStr.arg(iRackNumber),
-                                                      m_effectUnitStr.arg(iEffectUnitNumber));
+            descriptionPrefix = QString("%1").arg(m_effectUnitStr.arg(iEffectUnitNumber));
 
             QMenu* effectUnitMenu = addSubmenu(m_effectUnitStr.arg(iEffectUnitNumber),
-                                               rackMenu);
+                    effectsMenu);
             addControl(effectUnitGroup, "clear",
                        tr("Clear Unit"),
                        tr("Clear effect unit"),
@@ -708,33 +704,39 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Show Effect Parameters"),
                        effectUnitMenu, false, descriptionPrefix);
 
-            QString enableOn = tr("Toggle Effect Unit");
-            QMenu* effectUnitGroups = addSubmenu(enableOn,
-                                                 effectUnitMenu);
+            QString assignMenuTitle = tr("Effect Unit Assignment");
+            QString assignString = tr("Assign ");
+            QMenu* effectUnitGroups = addSubmenu(assignMenuTitle,
+                    effectUnitMenu);
 
-            QString groupDescriptionPrefix = QString("%1, %2 %3").arg(
-                    m_effectRackStr.arg(iRackNumber),
-                    m_effectUnitStr.arg(iEffectUnitNumber),
-                    enableOn);
+            QString groupDescriptionPrefix = QString("%1").arg(
+                    m_effectUnitStr.arg(iEffectUnitNumber));
 
             addControl(effectUnitGroup, "group_[Master]_enable",
-                       m_effectMasterOutputStr,
-                       m_effectMasterOutputStr,
-                       effectUnitGroups, false, groupDescriptionPrefix);
-            addControl(effectUnitGroup, "group_[Headphone]_enable",
-                       m_effectHeadphoneOutputStr,
-                       m_effectHeadphoneOutputStr,
-                       effectUnitGroups, false, groupDescriptionPrefix);
+                    assignString + m_effectMasterOutputStr, // in ComboBox
+                    assignString + m_effectMasterOutputStr, // description below
+                    effectUnitGroups,
+                    false,
+                    groupDescriptionPrefix);
+            addControl(effectUnitGroup,
+                    "group_[Headphone]_enable",
+                    assignString + m_effectHeadphoneOutputStr,
+                    assignString + m_effectHeadphoneOutputStr,
+                    effectUnitGroups,
+                    false,
+                    groupDescriptionPrefix);
 
             for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addControl(effectUnitGroup,
-                           QString("group_%1_enable").arg(playerGroup),
-                           tr("Assign ") + m_deckStr.arg(iDeckNumber),
-                           tr("Assign ") + m_deckStr.arg(iDeckNumber),
-                           effectUnitGroups, false, groupDescriptionPrefix);
+                        QString("group_%1_enable").arg(playerGroup),
+                        assignString + m_deckStr.arg(iDeckNumber),
+                        assignString + m_deckStr.arg(iDeckNumber),
+                        effectUnitGroups,
+                        false,
+                        groupDescriptionPrefix);
             }
 
             const int iNumSamplers = static_cast<int>(ControlObject::get(
@@ -745,11 +747,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 QString playerGroup = PlayerManager::groupForSampler(iSamplerNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addControl(effectUnitGroup,
-                           QString("group_%1_enable").arg(playerGroup),
-                           tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
-                           tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
-                           effectUnitGroups, false, groupDescriptionPrefix);
-
+                        QString("group_%1_enable").arg(playerGroup),
+                        assignString + m_samplerStr.arg(iSamplerNumber),
+                        assignString + m_samplerStr.arg(iSamplerNumber),
+                        effectUnitGroups,
+                        false,
+                        groupDescriptionPrefix);
             }
 
             const int iNumMicrophones = static_cast<int>(ControlObject::get(
@@ -759,10 +762,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addControl(effectUnitGroup,
-                           QString("group_%1_enable").arg(micGroup),
-                           tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
-                           tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
-                           effectUnitGroups, false, groupDescriptionPrefix);
+                        QString("group_%1_enable").arg(micGroup),
+                        assignString + m_microphoneStr.arg(iMicrophoneNumber),
+                        assignString + m_microphoneStr.arg(iMicrophoneNumber),
+                        effectUnitGroups,
+                        false,
+                        groupDescriptionPrefix);
             }
 
             const int iNumAuxiliaries = static_cast<int>(ControlObject::get(
@@ -772,10 +777,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addControl(effectUnitGroup,
-                           QString("group_%1_enable").arg(auxGroup),
-                           tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
-                           tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
-                           effectUnitGroups, false, groupDescriptionPrefix);
+                        QString("group_%1_enable").arg(auxGroup),
+                        assignString + m_auxStr.arg(iAuxiliaryNumber),
+                        assignString + m_auxStr.arg(iAuxiliaryNumber),
+                        effectUnitGroups,
+                        false,
+                        groupDescriptionPrefix);
             }
 
             const int numEffectSlots = static_cast<int>(ControlObject::get(
@@ -850,10 +857,17 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Invert how linked effect parameters change when turning the Meta Knob."),
                                parameterSlotMenu, false,
                                parameterDescriptionPrefix);
-
                 }
             }
         }
+        // Clear Effect Rack
+        addControl(rackGroup,
+                "clear",
+                tr("Clear Effect Rack"),
+                tr("Clear effect rack"),
+                effectsMenu,
+                false,
+                descriptionPrefix);
     }
 
     // Microphone Controls
