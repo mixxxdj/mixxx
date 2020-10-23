@@ -228,7 +228,7 @@ DDJ200.volumeLSB = function(channel, control, value, status, group) {
 
 DDJ200.eq = function(channel, control, value, status, group) {
     var val = script.absoluteNonLin(value, 0, 1, 4);
-    var eq = 1; if (control === 0x0B) eq = 2;
+    var eq = (control === 0x0B) ? 2 : 1;
     else if (control === 0x07) eq = 3;
     var deckNo = group.substring(24, 25);
     // var deckNo = group.match("hannel.")[0].substring(6); // more general
