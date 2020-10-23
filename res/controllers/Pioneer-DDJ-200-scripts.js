@@ -312,8 +312,8 @@ DDJ200.pfl = function(channel, control, value, status, group) {
 
 DDJ200.switchLEDs = function(vDeckNo) {
     // set LEDs of controller deck according to virtual deck
-    var d = 1;  // d = deckNo (0 for left, 1 for right deck)
-    if (vDeckNo % 2) { d = 0; }
+    // 0 for left, 1 for right deck
+    var deckNo = (vDeckNo % 2) ? 0 : 1;
     var vgroup = "[Channel" + vDeckNo +"]";
     midi.sendShortMsg(0x90 + d, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
     midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
