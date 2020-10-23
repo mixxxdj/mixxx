@@ -384,16 +384,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString beatloopActivateDescription = tr("Create a beat loop of selected beat size");
     QString beatloopRollActivateTitle = tr("Loop Roll Selected Beats");
     QString beatloopRollActivateDescription = tr("Create a rolling beat loop of selected beat size");
-
-    addDeckControl("loop_in", tr("Loop In"), tr("Loop In button"), loopMenu);
-    addDeckControl("loop_out", tr("Loop Out"), tr("Loop Out button"), loopMenu);
-    addDeckControl("loop_exit", tr("Loop Exit"), tr("Loop Exit button"), loopMenu);
-    addDeckControl("reloop_toggle", tr("Reloop/Exit Loop"), tr("Toggle loop on/off and jump to Loop In point if loop is behind play position"), loopMenu);
-    addDeckControl("reloop_andstop", tr("Reloop And Stop"), tr("Enable loop, jump to Loop In point, and stop"), loopMenu);
-    addDeckControl("loop_halve", tr("Loop Halve"), tr("Halve the loop length"), loopMenu);
-    addDeckControl("loop_double", tr("Loop Double"), tr("Double the loop length"), loopMenu);
-    addDeckControl("beatloop_activate", beatloopActivateTitle, beatloopActivateDescription, loopMenu);
-    addDeckControl("beatlooproll_activate", beatloopRollActivateTitle, beatloopRollActivateDescription, loopMenu);
+    QString beatLoopTitle = tr("Loop %1 Beats");
+    QString beatLoopRollTitle = tr("Loop Roll %1 Beats");
+    QString beatLoopDescription = tr("Create %1-beat loop");
+    QString beatLoopRollDescription = tr("Create temporary %1-beat loop roll");
 
     QList<double> beatSizes = LoopingControl::getBeatSizes();
 
@@ -411,50 +405,51 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     humanBeatSizes[32] = tr("32");
     humanBeatSizes[64] = tr("64");
 
-    // Loop moving
-    QString loopMoveForwardTitle = tr("Move Loop +%1 Beats");
-    QString loopMoveBackwardTitle = tr("Move Loop -%1 Beats");
-    QString loopMoveForwardDescription = tr("Move loop forward by %1 beats");
-    QString loopMoveBackwardDescription = tr("Move loop backward by %1 beats");
-
-    foreach (double beats, beatSizes) {
-        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
-        addDeckControl(QString("loop_move_%1_forward").arg(beats),
-                       loopMoveForwardTitle.arg(humanBeats),
-                       loopMoveForwardDescription.arg(humanBeats), loopMenu);
-    }
-
-    foreach (double beats, beatSizes) {
-        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
-        addDeckControl(QString("loop_move_%1_backward").arg(beats),
-                       loopMoveBackwardTitle.arg(humanBeats),
-                       loopMoveBackwardDescription.arg(humanBeats), loopMenu);
-    }
-
     // Beatloops
-    QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
-    QString beatLoopTitle = tr("Loop %1 Beats");
-    QString beatLoopRollTitle = tr("Loop Roll %1 Beats");
-    QString beatLoopDescription = tr("Create %1-beat loop");
-    QString beatLoopRollDescription = tr("Create temporary %1-beat loop roll");
-
-    addDeckControl("beatloop_activate", beatloopActivateTitle, beatloopActivateDescription, beatLoopMenu);
-    addDeckControl("beatlooproll_activate", beatloopRollActivateTitle, beatloopRollActivateDescription, beatLoopMenu);
+    addDeckControl("beatloop_activate",
+            beatloopActivateTitle,
+            beatloopActivateDescription,
+            loopMenu);
+    QMenu* loopActivateMenu = addSubmenu(tr("Loop Beats"), loopMenu);
     foreach (double beats, beatSizes) {
         QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
         addDeckControl(QString("beatloop_%1_toggle").arg(beats),
-                       beatLoopTitle.arg(humanBeats),
-                       beatLoopDescription.arg(humanBeats), beatLoopMenu);
+                beatLoopTitle.arg(humanBeats),
+                beatLoopDescription.arg(humanBeats),
+                loopActivateMenu);
     }
+    loopMenu->addSeparator();
 
+    addDeckControl("beatlooproll_activate",
+            beatloopRollActivateTitle,
+            beatloopRollActivateDescription,
+            loopMenu);
+    QMenu* looprollActivateMenu = addSubmenu(tr("Loop Roll Beats"), loopMenu);
     foreach (double beats, beatSizes) {
         QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
         addDeckControl(QString("beatlooproll_%1_activate").arg(beats),
-                       beatLoopRollTitle.arg(humanBeats),
-                       beatLoopRollDescription.arg(humanBeats), beatLoopMenu);
+                beatLoopRollTitle.arg(humanBeats),
+                beatLoopRollDescription.arg(humanBeats),
+                looprollActivateMenu);
     }
+    loopMenu->addSeparator();
 
-    // Beat jumping
+    addDeckControl("loop_in", tr("Loop In"), tr("Loop In button"), loopMenu);
+    addDeckControl("loop_out", tr("Loop Out"), tr("Loop Out button"), loopMenu);
+    addDeckControl("loop_exit", tr("Loop Exit"), tr("Loop Exit button"), loopMenu);
+    addDeckControl("reloop_toggle",
+            tr("Reloop/Exit Loop"),
+            tr("Toggle loop on/off and jump to Loop In point if loop is behind "
+               "play position"),
+            loopMenu);
+    addDeckControl("reloop_andstop",
+            tr("Reloop And Stop"),
+            tr("Enable loop, jump to Loop In point, and stop"),
+            loopMenu);
+    addDeckControl("loop_halve", tr("Loop Halve"), tr("Halve the loop length"), loopMenu);
+    addDeckControl("loop_double", tr("Loop Double"), tr("Double the loop length"), loopMenu);
+
+    // Beat Jump / Loop Move
     QMenu* beatJumpMenu = addSubmenu(tr("Beat Jump / Loop Move"));
     QString beatJumpForwardTitle = tr("Jump / Move Loop Forward %1 Beats");
     QString beatJumpBackwardTitle = tr("Jump / Move Loop Backward %1 Beats");
@@ -462,19 +457,48 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString beatJumpBackwardDescription = tr("Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats");
     addDeckControl("beatjump_forward", tr("Beat Jump / Loop Move Forward Selected Beats"), tr("Jump forward by the selected number of beats, or if a loop is enabled, move the loop forward by the selected number of beats"), beatJumpMenu);
     addDeckControl("beatjump_backward", tr("Beat Jump / Loop Move Backward Selected Beats"), tr("Jump backward by the selected number of beats, or if a loop is enabled, move the loop backward by the selected number of beats"), beatJumpMenu);
+    beatJumpMenu->addSeparator();
 
+    QMenu* beatjumpFwdSubmenu = addSubmenu(tr("Beat Jump / Loop Move Forward"), beatJumpMenu);
     foreach (double beats, beatSizes) {
         QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
         addDeckControl(QString("beatjump_%1_forward").arg(beats),
-                       beatJumpForwardTitle.arg(humanBeats),
-                       beatJumpForwardDescription.arg(humanBeats), beatJumpMenu);
+                beatJumpForwardTitle.arg(humanBeats),
+                beatJumpForwardDescription.arg(humanBeats),
+                beatjumpFwdSubmenu);
     }
 
+    QMenu* beatjumpBwdSubmenu = addSubmenu(tr("Beat Jump / Loop Move Backward"), beatJumpMenu);
     foreach (double beats, beatSizes) {
         QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
         addDeckControl(QString("beatjump_%1_backward").arg(beats),
-                       beatJumpBackwardTitle.arg(humanBeats),
-                       beatJumpBackwardDescription.arg(humanBeats), beatJumpMenu);
+                beatJumpBackwardTitle.arg(humanBeats),
+                beatJumpBackwardDescription.arg(humanBeats),
+                beatjumpBwdSubmenu);
+    }
+
+    // Loop moving
+    QString loopMoveForwardTitle = tr("Move Loop +%1 Beats");
+    QString loopMoveBackwardTitle = tr("Move Loop -%1 Beats");
+    QString loopMoveForwardDescription = tr("Move loop forward by %1 beats");
+    QString loopMoveBackwardDescription = tr("Move loop backward by %1 beats");
+
+    QMenu* loopmoveFwdSubmenu = addSubmenu(tr("Loop Move Forward"), beatJumpMenu);
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("loop_move_%1_forward").arg(beats),
+                loopMoveForwardTitle.arg(humanBeats),
+                loopMoveForwardDescription.arg(humanBeats),
+                loopmoveFwdSubmenu);
+    }
+
+    QMenu* loopmoveBwdSubmenu = addSubmenu(tr("Loop Move Backward"), beatJumpMenu);
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("loop_move_%1_backward").arg(beats),
+                loopMoveBackwardTitle.arg(humanBeats),
+                loopMoveBackwardDescription.arg(humanBeats),
+                loopmoveBwdSubmenu);
     }
 
     addSeparator();
@@ -620,6 +644,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Quick Effect Enable Button"),
                    quickEffectMenu, false, tr("Quick Effect"));
     }
+
+    effectsMenu->addSeparator();
 
     const int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
