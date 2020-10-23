@@ -21,6 +21,7 @@ namespace {
 
 // Mutex guarding s_logfile.
 QMutex s_mutexLogfile;
+QMutex s_mutexStdErr;
 
 // The file handle for Mixxx's log file.
 QFile s_logfile;
@@ -112,6 +113,8 @@ inline void writeToStdErr(
     const QByteArray formattedMessage =
             formattedMessageStr.replace("{{threadname}}", threadName)
                     .toLocal8Bit();
+
+    QMutexLocker locked(&s_mutexStdErr);
     const size_t written = fwrite(
             formattedMessage.constData(), sizeof(char), formattedMessage.size(), stderr);
     Q_UNUSED(written);
