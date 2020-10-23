@@ -14,7 +14,6 @@ namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 const char* kTransitionUnitPreferenceName = "TransitionUnit";
-const char* kCalcTransitionPeriodPreferenceName = "CalcTransitionPeriod";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
 
@@ -182,11 +181,6 @@ AutoDJProcessor::AutoDJProcessor(
             m_pConfig->getValue(
                     ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
                     static_cast<int>(TransitionUnit::Seconds)));
-
-    m_calcTransitionPeriod = static_cast<CalcTransitionPeriod>(
-            m_pConfig->getValue(
-                    ConfigKey(kConfigKey, kCalcTransitionPeriodPreferenceName),
-                    static_cast<int>(CalcTransitionPeriod::BeforeTrackEnd)));
 
     m_pLeftBPM = make_parented<ControlProxy>(ConfigKey("[Channel1]", "bpm"), this);
     m_pRightBPM = make_parented<ControlProxy>(ConfigKey("[Channel2]", "bpm"), this);
@@ -1694,25 +1688,22 @@ double AutoDJProcessor::getFadeTime() {
         toBPM = rightBPM;
     }
 
-    if (m_transitionUnit == TransitionUnit::Beats) {
+    if (m_transitionUnit == TransitionUnit::Seconds) {
+        // The transition time is in seconds, no conversion needed
+        fadeTime = transitionTime;
+    } else {
         if (leftBPM == rightBPM) {
             fadeTime = (transitionTime * 60) / leftBPM;
         } else {
             // Get the user's preference on which track's bpm to use
-            CalcTransitionPeriod calcTransitionPeriod =
-                    static_cast<CalcTransitionPeriod>(m_pConfig->getValue(
-                            ConfigKey("[Auto DJ]", kCalcTransitionPeriodPreferenceName), 0));
-            switch (calcTransitionPeriod) {
-            case CalcTransitionPeriod::FromNextTrackStart:
+            switch (m_transitionUnit) {
+            case TransitionUnit::Beats_IncomingTrack:
                 fadeTime = (transitionTime * 60) / toBPM;
                 break;
             default:
                 fadeTime = (transitionTime * 60) / fromBPM;
             }
         }
-    } else {
-        // The transition time is in seconds, no conversion needed
-        fadeTime = transitionTime;
     }
 
     return fadeTime;
@@ -1722,12 +1713,5 @@ void AutoDJProcessor::setAutoDJTransitionUnit(TransitionUnit transitionUnit) {
     m_transitionUnit = transitionUnit;
     m_pConfig->setValue(ConfigKey("[Auto DJ]", kTransitionUnitPreferenceName),
             static_cast<int>(transitionUnit));
-    calculateFadeThresholds();
-}
-
-void AutoDJProcessor::setAutoDJCalcTransitionPeriod(CalcTransitionPeriod calcTransitionPeriod) {
-    m_calcTransitionPeriod = calcTransitionPeriod;
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", kCalcTransitionPeriodPreferenceName),
-            static_cast<int>(calcTransitionPeriod));
     calculateFadeThresholds();
 }
