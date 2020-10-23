@@ -14,7 +14,7 @@ DDJ200.init = function() {
         syncEnabled: false,
         volMSB: 0,
         rateMSB: 0,
-        jogDisabled: false,
+        jogEnabled: true,
         };
 
         var vgroup = "[Channel" + i + "]";
@@ -56,7 +56,7 @@ DDJ200.onTrackLoad = function(channel, vgroup) {
     // set LEDs (hotcues, etc.) for the loaded deck
     // if controller is switched to this deck
     var vDeckNo = script.deckFromGroup(vgroup);
-    var deckNo = 2; if (vDeckNo % 2) deckNo = 1;
+    var deckNo = (vDeckNo % 2) ? 1 : 2;
     if (vDeckNo === DDJ200.vDeckNo[deckNo]) {
         DDJ200.switchLEDs(vDeckNo);
     }
@@ -72,7 +72,7 @@ DDJ200.LoadSelectedTrack = function(channel, control, value, status, group) {
 };
 
 DDJ200.browseTracks = function(value) {
-    DDJ200.jogCounter += value-64;
+    DDJ200.jogCounter += value - 64;
     if (DDJ200.jogCounter > 9) {
         engine.setValue("[Library]", "MoveDown", true);
         DDJ200.jogCounter = 0;
@@ -96,9 +96,11 @@ DDJ200.jog = function(channel, control, value, status, group) {
     // For a control that centers on 0x40 (64):
     // Convert value down to +1/-1
     // Register the movement
-    if (DDJ200.shiftPressed["left"] === true) { DDJ200.browseTracks(value); } else {
+    if (DDJ200.shiftPressed["left"]) {
+        DDJ200.browseTracks(value);
+    } else {
         var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        if (! DDJ200.vDeck[vDeckNo]["jogDisabled"]) {
+        if (!DDJ200.vDeck[vDeckNo]["jogDisabled"]) {
             var vgroup = "[Channel" + vDeckNo +"]";
             engine.setValue(vgroup, "jog", value - 64);
         }
@@ -155,7 +157,7 @@ DDJ200.headmix = function(channel, control, value) {
 
 DDJ200.toggleFourDeckMode = function(channel, control, value) {
     if (value) { // only if button pressed, not releases, i.e. value === 0
-        DDJ200.fourDeckMode = ! DDJ200.fourDeckMode;
+        DDJ200.fourDeckMode = !DDJ200.fourDeckMode;
         if (DDJ200.fourDeckMode) {
             midi.sendShortMsg(0x90, 0x54, 0x00);
             midi.sendShortMsg(0x91, 0x54, 0x00);
@@ -226,7 +228,7 @@ DDJ200.volumeLSB = function(channel, control, value, status, group) {
 
 DDJ200.eq = function(channel, control, value, status, group) {
     var val = script.absoluteNonLin(value, 0, 1, 4);
-    var eq = 1; if (control === 0x0B) eq = 2;
+    var eq = (control === 0x0B) ? 2 : 1;
     else if (control === 0x07) eq = 3;
     var deckNo = group.substring(24, 25);
     // var deckNo = group.match("hannel.")[0].substring(6); // more general
@@ -310,8 +312,8 @@ DDJ200.pfl = function(channel, control, value, status, group) {
 
 DDJ200.switchLEDs = function(vDeckNo) {
     // set LEDs of controller deck according to virtual deck
-    var d = 1;  // d = deckNo (0 for left, 1 for right deck)
-    if (vDeckNo % 2) { d = 0; }
+    // 0 for left, 1 for right deck
+    var deckNo = (vDeckNo % 2) ? 0 : 1;
     var vgroup = "[Channel" + vDeckNo +"]";
     midi.sendShortMsg(0x90 + d, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
     midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
@@ -336,20 +338,24 @@ DDJ200.toggleDeck = function(channel, control, value, status, group) {
             DDJ200.LoadSelectedTrack(channel, control, value, status, group);
         } else if (DDJ200.fourDeckMode) { //right shift + pfl 1/2 toggles
             var deckNo = script.deckFromGroup(group);
-            var vDeckNo = 0;
-            var LED = 0x7F;
+            var vDeckNo;
+            var led = 0x7F;
             if (deckNo === 1) {
                 // toggle virtual deck of controller deck 1
                 DDJ200.vDeckNo[1] = 4 - DDJ200.vDeckNo[1];
-                if (DDJ200.vDeckNo[1] === 1) { LED = 0; }
+                if (DDJ200.vDeckNo[1] === 1) {
+                    led = 0;
+                }
                 vDeckNo = DDJ200.vDeckNo[1];
             } else { // deckNo === 2
                 // toggle virtual deck of controller deck 2
                 DDJ200.vDeckNo[2] = 6 - DDJ200.vDeckNo[2];
-                if (DDJ200.vDeckNo[2] === 2) { LED = 0; }
+                if (DDJ200.vDeckNo[2] === 2) {
+                    led = 0;
+                }
                 vDeckNo = DDJ200.vDeckNo[2];
             }
-            midi.sendShortMsg(status, 0x54, LED); // toggle virtual deck LED
+            midi.sendShortMsg(status, 0x54, led); // toggle virtual deck LED
             DDJ200.switchLEDs(vDeckNo); // set LEDs of controller deck
         }
     }
