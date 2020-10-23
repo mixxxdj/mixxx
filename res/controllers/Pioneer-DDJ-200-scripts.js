@@ -339,19 +339,23 @@ DDJ200.toggleDeck = function(channel, control, value, status, group) {
         } else if (DDJ200.fourDeckMode) { //right shift + pfl 1/2 toggles
             var deckNo = script.deckFromGroup(group);
             var vDeckNo;
-            var LED = 0x7F;
+            var led = 0x7F;
             if (deckNo === 1) {
                 // toggle virtual deck of controller deck 1
                 DDJ200.vDeckNo[1] = 4 - DDJ200.vDeckNo[1];
-                if (DDJ200.vDeckNo[1] === 1) { LED = 0; }
+                if (DDJ200.vDeckNo[1] === 1) {
+                    led = 0;
+                }
                 vDeckNo = DDJ200.vDeckNo[1];
             } else { // deckNo === 2
                 // toggle virtual deck of controller deck 2
                 DDJ200.vDeckNo[2] = 6 - DDJ200.vDeckNo[2];
-                if (DDJ200.vDeckNo[2] === 2) { LED = 0; }
+                if (DDJ200.vDeckNo[2] === 2) {
+                    led = 0;
+                }
                 vDeckNo = DDJ200.vDeckNo[2];
             }
-            midi.sendShortMsg(status, 0x54, LED); // toggle virtual deck LED
+            midi.sendShortMsg(status, 0x54, led); // toggle virtual deck LED
             DDJ200.switchLEDs(vDeckNo); // set LEDs of controller deck
         }
     }
