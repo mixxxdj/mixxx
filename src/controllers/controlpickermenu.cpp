@@ -951,18 +951,37 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
         }
     }
 
-    for (int i = 1; samplerControls && i <= iNumSamplers; ++i) {
-        // PlayerManager::groupForSampler is 0-indexed.
-        QString prefix = m_samplerStr.arg(i);
-        QString group = PlayerManager::groupForSampler(i - 1);
-        addSingleControl(group, control, controlTitle, controlDescription,
-                         controlMenu, prefix, prefix);
-
+    if (samplerControls) {
+        parented_ptr<QMenu> samplerControlMenu = make_parented<QMenu>(tr("Samplers"), controlMenu);
+        controlMenu->addMenu(samplerControlMenu);
+        parented_ptr<QMenu> samplerResetControlMenu = nullptr;
         if (resetControlMenu) {
-            QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-            QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-            addSingleControl(group, resetControl, resetTitle, resetDescription,
-                    resetControlMenu, prefix, prefix);
+            samplerResetControlMenu = make_parented<QMenu>(tr("Samplers"), resetControlMenu);
+            resetControlMenu->addMenu(samplerResetControlMenu);
+        }
+        for (int i = 1; i <= iNumSamplers; ++i) {
+            // PlayerManager::groupForSampler is 0-indexed.
+            QString prefix = m_samplerStr.arg(i);
+            QString group = PlayerManager::groupForSampler(i - 1);
+            addSingleControl(group,
+                    control,
+                    controlTitle,
+                    controlDescription,
+                    samplerControlMenu,
+                    prefix,
+                    prefix);
+
+            if (resetControlMenu) {
+                QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+                QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+                addSingleControl(group,
+                        resetControl,
+                        resetTitle,
+                        resetDescription,
+                        samplerResetControlMenu,
+                        prefix,
+                        prefix);
+            }
         }
     }
 }
