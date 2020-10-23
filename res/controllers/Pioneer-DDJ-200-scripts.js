@@ -56,7 +56,7 @@ DDJ200.onTrackLoad = function(channel, vgroup) {
     // set LEDs (hotcues, etc.) for the loaded deck
     // if controller is switched to this deck
     var vDeckNo = script.deckFromGroup(vgroup);
-    var deckNo = 2; if (vDeckNo % 2) deckNo = 1;
+    var deckNo = (vDeckNo % 2) ? 1 : 2;
     if (vDeckNo === DDJ200.vDeckNo[deckNo]) {
         DDJ200.switchLEDs(vDeckNo);
     }
