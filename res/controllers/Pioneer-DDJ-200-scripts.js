@@ -96,7 +96,9 @@ DDJ200.jog = function(channel, control, value, status, group) {
     // For a control that centers on 0x40 (64):
     // Convert value down to +1/-1
     // Register the movement
-    if (DDJ200.shiftPressed["left"] === true) { DDJ200.browseTracks(value); } else {
+    if (DDJ200.shiftPressed["left"]) {
+        DDJ200.browseTracks(value);
+    } else {
         var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
         if (! DDJ200.vDeck[vDeckNo]["jogDisabled"]) {
             var vgroup = "[Channel" + vDeckNo +"]";
