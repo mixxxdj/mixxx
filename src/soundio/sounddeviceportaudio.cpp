@@ -6,6 +6,8 @@
 #include <QThread>
 #include <QtDebug>
 
+
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "soundio/sounddevice.h"
@@ -21,12 +23,8 @@
 #include "waveform/visualplayposition.h"
 
 #ifdef __LINUX__
-extern "C" {
-
-// Declare the following function to enable real-time priority callback
-// thread from ALSA/PortAudio. This is not part of the generic interface.
-extern void PaAlsa_EnableRealtimeScheduling(PaStream* s, int enable);
-}
+// for PaAlsa_EnableRealtimeScheduling
+#include <pa_linux_alsa.h>
 #endif
 
 namespace {
