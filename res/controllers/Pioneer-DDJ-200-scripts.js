@@ -7,21 +7,23 @@ var DDJ200 = {
 };
 
 DDJ200.init = function() {
-    // creating associative arrays for 4 virtual decks
     for (var i = 1; i <= 4; i++) {
+                                  
+       // create associative arrays for 4 virtual decks
         this.vDeck[i] = {
         syncEnabled: false,
         volMSB: 0,
         rateMSB: 0,
         jogDisabled: false,
-        }
-    }
-    
-    for (var i = 1; i <= 4; i++) {
+        };
+
         var vgroup = "[Channel" + i + "]";
-        // run onTrackLoad after every track load to e.g. set LEDs accordingly
+
+        // run onTrackLoad after every track load to set LEDs accordingly
         engine.makeConnection(vgroup, "track_loaded", function(ch, vgroup) {
-                DDJ200.onTrackLoad(ch, vgroup); } );
+                DDJ200.onTrackLoad(ch, vgroup);
+            });
+
         // set Pioneer CDJ cue mode for all decks
          engine.setValue(vgroup, "cue_cdj", true);
     }
@@ -121,7 +123,8 @@ DDJ200.touch = function(channel, control, value, status, group) {
     } else {
         // enable jog after 900 ms again
         engine.beginTimer(900, function() {
-                DDJ200.vDeck[vDeckNo]["jogDisabled"] = false; }, true);
+                DDJ200.vDeck[vDeckNo]["jogDisabled"] = false;
+            }, true);
         // disable scratch
         engine.scratchDisable(vDeckNo);
     }
@@ -338,7 +341,7 @@ DDJ200.toggleDeck = function(channel, control, value, status, group) {
                 // toggle virtual deck of controller deck 1
                 DDJ200.vDeckNo[1] = 4 - DDJ200.vDeckNo[1];
                 if (DDJ200.vDeckNo[1] === 1) { LED = 0; }
-                vDeckNo = DDJ200.vDeckNo[1]; 
+                vDeckNo = DDJ200.vDeckNo[1];
             } else { // deckNo === 2
                 // toggle virtual deck of controller deck 2
                 DDJ200.vDeckNo[2] = 6 - DDJ200.vDeckNo[2];
