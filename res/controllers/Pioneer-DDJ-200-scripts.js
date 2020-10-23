@@ -157,7 +157,7 @@ DDJ200.headmix = function(channel, control, value) {
 
 DDJ200.toggleFourDeckMode = function(channel, control, value) {
     if (value) { // only if button pressed, not releases, i.e. value === 0
-        DDJ200.fourDeckMode = ! DDJ200.fourDeckMode;
+        DDJ200.fourDeckMode = !DDJ200.fourDeckMode;
         if (DDJ200.fourDeckMode) {
             midi.sendShortMsg(0x90, 0x54, 0x00);
             midi.sendShortMsg(0x91, 0x54, 0x00);
