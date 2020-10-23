@@ -6,7 +6,8 @@
 * Fix caching of duplicate tracks that reference the same file #3027
 * Fix loss of precision when dealing with floating-point sample
   positions while setting loop out position and seeking using vinyl control #3126 #3127
-* prevent moving a loop beyond track end #3117 lp:1799574
+* Prevent moving a loop beyond track end #3117 lp:1799574
+* Use 6 instead of only 4 compatible musical keys (major/minor) #3205
 * Fix possible memory corruption using JACK on Linux
 
 ==== 2.2.4 2020-05-10 ====
@@ -141,7 +142,7 @@ Miscellaneous
 * Improve search bar timing. lp:1635087
 * Fix quoted search sentence. lp:1784141
 * Fix loading a track formerly not existing. lp:1800395
-* Fix imporing m3u files with blank lines. lp:1806271
+* Fix importing m3u files with blank lines. lp:1806271
 * Fix position in sampler overview waveforms. lp:1744170
 * Don't reset rate slider, syncing a track without a beatgrid. lp:1783020
 * Clean up iTunes track context menu. lp:1800335
@@ -182,7 +183,7 @@ Here is a quick summary of what is new in Mixxx 2.1.2:
 * Fix artifacts using more than 32 samplers lp1779559
 * store No EQ and Filter persistently lp1780479
 * Pad unreadable samples with silence on cache miss lp1777480
-* Fixing painting of preview coloumn for Qt5 builds lp1776555
+* Fix painting of preview column for Qt5 builds lp1776555
 * LateNight: Fix play button right click lp1781829
 * LateNight: Added missing sort up/down buttons
 * Fix sampler play button tooltips lp1779468
