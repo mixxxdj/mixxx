@@ -43,41 +43,110 @@ Q_DECLARE_FLAGS(WriteFlags, WriteFlag)
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WriteFlags)
 
-// Handles actually writing to stderr and the log file.
+/// Format message for writing into log file (ignores QT_MESSAGE_PATTERN,
+/// because out logfiles should have a fixed format).
+inline QString formatLogFileMessage(
+        QtMsgType type,
+        const QMessageLogContext& context,
+        const QString& message,
+        const QString& threadName) {
+    Q_UNUSED(context);
+
+    QString levelName;
+    switch (type) {
+    case QtDebugMsg:
+        levelName = QStringLiteral("Debug");
+        break;
+    case QtInfoMsg:
+        levelName = QStringLiteral("Info");
+        break;
+    case QtWarningMsg:
+        levelName = QStringLiteral("Warning");
+        break;
+    case QtCriticalMsg:
+        levelName = QStringLiteral("Critical");
+        break;
+    case QtFatalMsg:
+        levelName = QStringLiteral("Fatal");
+        break;
+    }
+
+    return levelName + QStringLiteral(" [") + threadName + QStringLiteral("] ") + message;
+}
+
+/// Actually write a log message to a file.
+inline void writeToFile(
+        QtMsgType type,
+        const QMessageLogContext& context,
+        const QString& message,
+        const QString& threadName,
+        bool flush) {
+    QString formattedMessageStr =
+            formatLogFileMessage(type, context, message, threadName) +
+            QChar('\n');
+    QByteArray formattedMessage = formattedMessageStr.toLocal8Bit();
+
+    QMutexLocker locked(&s_mutexLogfile);
+    // Writing to a closed QFile could cause an infinite recursive loop
+    // by logging to qWarning!
+    if (s_logfile.isOpen()) {
+        const int written = s_logfile.write(formattedMessage);
+        Q_UNUSED(written);
+        DEBUG_ASSERT(written == formattedMessage.size());
+        if (flush) {
+            const bool flushed = s_logfile.flush();
+            Q_UNUSED(flushed);
+            DEBUG_ASSERT(flushed);
+        }
+    }
+}
+
+/// Actually write a log message to stderr.
+inline void writeToStdErr(
+        QtMsgType type,
+        const QMessageLogContext& context,
+        const QString& message,
+        const QString& threadName,
+        bool flush) {
+    QString formattedMessageStr = qFormatLogMessage(type, context, message) + QChar('\n');
+    const QByteArray formattedMessage =
+            formattedMessageStr.replace("{{threadname}}", threadName)
+                    .toLocal8Bit();
+    const size_t written = fwrite(
+            formattedMessage.constData(), sizeof(char), formattedMessage.size(), stderr);
+    Q_UNUSED(written);
+    DEBUG_ASSERT(written == static_cast<size_t>(formattedMessage.size()));
+    if (flush) {
+        // Flushing stderr might not be necessary, because message
+        // should end with a newline character. Flushing occurs
+        // only infrequently (log level >= Critical), so better safe
+        // than sorry.
+        const int ret = fflush(stderr);
+        Q_UNUSED(ret);
+        DEBUG_ASSERT(ret == 0);
+    }
+}
+
+/// Handles writing to stderr and the log file.
 inline void writeToLog(
-        const QByteArray& message,
+        QtMsgType type,
+        const QMessageLogContext& context,
+        const QString& message,
         WriteFlags flags) {
     DEBUG_ASSERT(!message.isEmpty());
     DEBUG_ASSERT(flags & (WriteFlag::StdErr | WriteFlag::File));
+
+    QString threadName = QThread::currentThread()->objectName();
+    if (threadName.isEmpty()) {
+        threadName = QStringLiteral("%{qthreadptr}");
+    }
+
+    const bool flush = flags & WriteFlag::Flush;
     if (flags & WriteFlag::StdErr) {
-        const size_t written = fwrite(
-                message.constData(), sizeof(char), message.size(), stderr);
-        Q_UNUSED(written);
-        DEBUG_ASSERT(written == static_cast<size_t>(message.size()));
-        if (flags & WriteFlag::Flush) {
-            // Flushing stderr might not be necessary, because message
-            // should end with a newline character. Flushing occurs
-            // only infrequently (log level >= Critical), so better safe
-            // than sorry.
-            const int ret = fflush(stderr);
-            Q_UNUSED(ret);
-            DEBUG_ASSERT(ret == 0);
-        }
+        writeToStdErr(type, context, message, threadName, flush);
     }
     if (flags & WriteFlag::File) {
-        QMutexLocker locked(&s_mutexLogfile);
-        // Writing to a closed QFile could cause an infinite recursive loop
-        // by logging to qWarning!
-        if (s_logfile.isOpen()) {
-            const int written = s_logfile.write(message);
-            Q_UNUSED(written);
-            DEBUG_ASSERT(written == message.size());
-            if (flags & WriteFlag::Flush) {
-                const bool flushed = s_logfile.flush();
-                Q_UNUSED(flushed);
-                DEBUG_ASSERT(flushed);
-            }
-        }
+        writeToFile(type, context, message, threadName, flush);
     }
 }
 
@@ -157,16 +226,9 @@ void handleMessage(
         return;
     }
 
-    QString threadName = QThread::currentThread()->objectName();
-    if (threadName.isEmpty()) {
-        threadName = QStringLiteral("%{qthreadptr}");
-    }
-    QString logMessage = qFormatLogMessage(type, context, input) + QChar('\n');
-    const QByteArray array = logMessage.replace("{{threadname}}", threadName).toLocal8Bit();
-
     if (isDebugAssert) {
         if (s_debugAssertBreak) {
-            writeToLog(array, WriteFlag::All);
+            writeToLog(type, context, input, WriteFlag::All);
             raise(SIGINT);
             // When the debugger returns, continue normally.
             return;
@@ -176,12 +238,12 @@ void handleMessage(
 #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
         // re-send as fatal.
         // The "%s" is intentional. See -Werror=format-security.
-        qFatal("%s", array.constData());
+        qFatal("%s", input.toLocal8Bit().constData());
         return;
 #endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
 
-    writeToLog(array, writeFlags);
+    writeToLog(type, context, input, writeFlags);
 }
 
 } // anonymous namespace
