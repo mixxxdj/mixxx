@@ -19,8 +19,10 @@
 
 namespace {
 
-// Mutex guarding s_logfile.
+/// Mutex guarding s_logfile.
 QMutex s_mutexLogfile;
+
+/// Mutex guarding stderr.
 QMutex s_mutexStdErr;
 
 // The file handle for Mixxx's log file.
@@ -47,13 +49,11 @@ Q_DECLARE_FLAGS(WriteFlags, WriteFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(WriteFlags)
 
 /// Format message for writing into log file (ignores QT_MESSAGE_PATTERN,
-/// because out logfiles should have a fixed format).
+/// because logfiles should have a fixed format).
 inline QString formatLogFileMessage(
         QtMsgType type,
-        const QMessageLogContext& context,
         const QString& message,
         const QString& threadName) {
-    Q_UNUSED(context);
 
     QString levelName;
     switch (type) {
@@ -80,12 +80,11 @@ inline QString formatLogFileMessage(
 /// Actually write a log message to a file.
 inline void writeToFile(
         QtMsgType type,
-        const QMessageLogContext& context,
         const QString& message,
         const QString& threadName,
         bool flush) {
     QString formattedMessageStr =
-            formatLogFileMessage(type, context, message, threadName) +
+            formatLogFileMessage(type, message, threadName) +
             QChar('\n');
     QByteArray formattedMessage = formattedMessageStr.toLocal8Bit();
 
@@ -143,9 +142,8 @@ inline void writeToLog(
 
     QString threadName = QThread::currentThread()->objectName();
     if (threadName.isEmpty()) {
-        threadName = QStringLiteral("0x") +
-                QString::number(
-                        reinterpret_cast<size_t>(QThread::currentThread()), 16);
+        QTextStream textStream(&threadName);
+        textStream << QThread::currentThread();
     }
 
     const bool flush = flags & WriteFlag::Flush;
@@ -153,7 +151,7 @@ inline void writeToLog(
         writeToStdErr(type, context, message, threadName, flush);
     }
     if (flags & WriteFlag::File) {
-        writeToFile(type, context, message, threadName, flush);
+        writeToFile(type, message, threadName, flush);
     }
 }
 
