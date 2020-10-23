@@ -122,9 +122,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="ComboBoxAutoDjCalcTransitionPeriod"/>
-     </item>
-     <item>
       <widget class="QSpinBox" name="spinBoxTransition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
