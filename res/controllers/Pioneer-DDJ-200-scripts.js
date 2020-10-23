@@ -1,24 +1,27 @@
 var DDJ200 = {
     fourDeckMode: false,
     vDeckNo: [0, 1, 2],
-    vDeck1: {
-        syncEnabled: false, volMSB: 0, rateMSB: 0, jogDisabled: false
-    },
+    vDeck: {},
     shiftPressed: {left: false, right: false},
     jogCounter: 0
 };
 
 DDJ200.init = function() {
-    // creating associative arrays for the virtual decks
-    this.vDeck = {
-        1: this.vDeck1, 2: _.clone(this.vDeck1),
-        3: _.clone(this.vDeck1), 4: _.clone(this.vDeck1)
-    };
-
+    // creating associative arrays for 4 virtual decks
+    for (var i = 1; i <= 4; i++) {
+        this.vDeck[i] = {
+        syncEnabled: false,
+        volMSB: 0,
+        rateMSB: 0,
+        jogDisabled: false,
+        }
+    }
+    
     for (var i = 1; i <= 4; i++) {
         var vgroup = "[Channel" + i + "]";
         // run onTrackLoad after every track load to e.g. set LEDs accordingly
-        engine.connectControl(vgroup, "track_loaded", "DDJ200.onTrackLoad");
+        engine.makeConnection(vgroup, "track_loaded", function(ch, vgroup) {
+                DDJ200.onTrackLoad(ch, vgroup); } );
         // set Pioneer CDJ cue mode for all decks
          engine.setValue(vgroup, "cue_cdj", true);
     }
@@ -26,8 +29,8 @@ DDJ200.init = function() {
     DDJ200.LEDsOff();
 
     // start with focus on library for selecting tracks (delay seems required)
-    engine.beginTimer(500, "engine.setValue(\"[Library]\", " +
-                      "\"MoveFocus\", 1);", true);
+    engine.beginTimer(500, function() {
+            engine.setValue("[Library]", "MoveFocus", 1); }, true);
 };
 
 DDJ200.shutdown = function() { DDJ200.LEDsOff(); };
@@ -61,7 +64,7 @@ DDJ200.LoadSelectedTrack = function(channel, control, value, status, group) {
         var deckNo = script.deckFromGroup(group);
         var vDeckNo = DDJ200.vDeckNo[deckNo];
         var vgroup = "[Channel" + vDeckNo +"]";
-        engine.setValue(vgroup, "LoadSelectedTrack", true);
+        script.triggerControl(vgroup, "LoadSelectedTrack", true);
     }
 };
 
@@ -117,8 +120,8 @@ DDJ200.touch = function(channel, control, value, status, group) {
         DDJ200.vDeck[vDeckNo]["jogDisabled"] = true;
     } else {
         // enable jog after 900 ms again
-        engine.beginTimer(900, "DDJ200.vDeck[" + vDeckNo +
-                          "][\"jogDisabled\"] = false;", true);
+        engine.beginTimer(900, function() {
+                DDJ200.vDeck[vDeckNo]["jogDisabled"] = false; }, true);
         // disable scratch
         engine.scratchDisable(vDeckNo);
     }
@@ -295,7 +298,7 @@ DDJ200.pfl = function(channel, control, value, status, group) {
         var vgroup = "[Channel" + vDeckNo +"]";
         var pfl = ! engine.getValue(vgroup, "pfl");
         engine.setValue(vgroup, "pfl", pfl);
-        if (DDJ200.fourDeckMode === false) {
+        if (! DDJ200.fourDeckMode) {
             midi.sendShortMsg(status, 0x54, 0x7F * pfl);  // switch pfl LED
         }
     }
@@ -303,21 +306,21 @@ DDJ200.pfl = function(channel, control, value, status, group) {
 
 DDJ200.switchLEDs = function(vDeckNo) {
     // set LEDs of controller deck according to virtual deck
-    var c = 1; if (vDeckNo % 2) c = 0;
+    var d = 1;  // d = deckNo (0 for left, 1 for right deck)
+    if (vDeckNo % 2) { d = 0; }
     var vgroup = "[Channel" + vDeckNo +"]";
-    midi.sendShortMsg(0x90 + c, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
-    midi.sendShortMsg(0x90 + c, 0x0C, 0x7F *
+    midi.sendShortMsg(0x90 + d, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
+    midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
                       (engine.getValue(vgroup, "cue_point") !== -1));
-    midi.sendShortMsg(0x90 + c, 0x58, 0x7F * engine.getValue(vgroup,
+    midi.sendShortMsg(0x90 + d, 0x58, 0x7F * engine.getValue(vgroup,
         "sync_enabled"));
-    if (DDJ200.fourDeckMode === false) {
-        midi.sendShortMsg(0x90 + c, 0x54,
+    if (! DDJ200.fourDeckMode) {
+        midi.sendShortMsg(0x90 + d, 0x54,
             0x7F * engine.getValue(vgroup, "pfl"));
     }
 
-    if (vDeckNo % 2) c = 7; else c = 9;
     for (var i = 1; i <= 8; i++) {
-        midi.sendShortMsg(0x90 + c, i - 1, 0x7F * engine.getValue(
+        midi.sendShortMsg(0x97 + 2 * d, i - 1, 0x7F * engine.getValue(
             vgroup, "hotcue_" + i + "_enabled"));
     }
 };
@@ -334,12 +337,12 @@ DDJ200.toggleDeck = function(channel, control, value, status, group) {
             if (deckNo === 1) {
                 // toggle virtual deck of controller deck 1
                 DDJ200.vDeckNo[1] = 4 - DDJ200.vDeckNo[1];
-                if (DDJ200.vDeckNo[1] === 1) LED = 0;
-                vDeckNo = DDJ200.vDeckNo[1];
+                if (DDJ200.vDeckNo[1] === 1) { LED = 0; }
+                vDeckNo = DDJ200.vDeckNo[1]; 
             } else { // deckNo === 2
                 // toggle virtual deck of controller deck 2
                 DDJ200.vDeckNo[2] = 6 - DDJ200.vDeckNo[2];
-                if (DDJ200.vDeckNo[2] === 2) LED = 0;
+                if (DDJ200.vDeckNo[2] === 2) { LED = 0; }
                 vDeckNo = DDJ200.vDeckNo[2];
             }
             midi.sendShortMsg(status, 0x54, LED); // toggle virtual deck LED

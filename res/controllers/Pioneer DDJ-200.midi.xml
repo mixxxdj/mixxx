@@ -9,7 +9,6 @@
     </info>
     <controller id="DDJ-200">
         <scriptfiles>
-            <file filename="lodash.mixxx.js"/>
             <file functionprefix="DDJ200" filename="Pioneer-DDJ-200-scripts.js"/>
         </scriptfiles>
         <controls>
