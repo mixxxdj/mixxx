@@ -978,6 +978,7 @@ class MixxxCore(Feature):
                    "src/widget/woverviewhsv.cpp",
                    "src/widget/woverviewrgb.cpp",
                    "src/widget/wspinny.cpp",
+                   "src/widget/wstrobe.cpp",
                    "src/widget/wskincolor.cpp",
                    "src/widget/wsearchlineedit.cpp",
                    "src/widget/wpixmapstore.cpp",

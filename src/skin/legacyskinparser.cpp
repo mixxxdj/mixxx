@@ -73,6 +73,7 @@
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
+#include "widget/wstrobe.h"
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wtracktext.h"
@@ -575,6 +576,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectButtonParameterName(node));
     } else if (nodeName == "Spinny") {
         result = wrapWidget(parseSpinny(node));
+    } else if (nodeName == "Strobe") {
+        result = wrapWidget(parseStrobe(node));
     } else if (nodeName == "Time") {
         result = wrapWidget(parseLabelWidget<WTime>(node));
     } else if (nodeName == "RecordingDuration") {
@@ -1222,6 +1225,40 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     spinny->Init();
     return spinny;
+}
+
+QWidget* LegacySkinParser::parseStrobe(const QDomElement& node) {
+    QString channelStr = lookupNodeGroup(node);
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
+
+    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
+
+    if (!waveformWidgetFactory->isOpenGlAvailable() &&
+            !waveformWidgetFactory->isOpenGlesAvailable()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Spinny can not be displayed. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
+
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
+    WStrobe* strobe = new WStrobe(m_pParent, channelStr, m_pConfig, pPlayer);
+    commonWidgetSetup(node, strobe);
+
+    connect(waveformWidgetFactory, SIGNAL(renderSpinnies(VSyncThread*)), strobe, SLOT(render(VSyncThread*)));
+    connect(waveformWidgetFactory, SIGNAL(swapSpinnies()), strobe, SLOT(swap()));
+    connect(strobe, SIGNAL(trackDropped(QString, QString)), m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
+    strobe->setup(node, *m_pContext);
+    strobe->installEventFilter(m_pKeyboard);
+    strobe->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    strobe->Init();
+    return strobe;
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
