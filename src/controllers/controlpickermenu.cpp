@@ -25,31 +25,145 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     m_parameterStr = tr("Parameter %1");
     m_libraryStr = tr("Library");
 
-    // Master Controls
+    // Mixer Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
-    addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master crossfader"), mixerMenu, true);
-    addControl("[Master]", "gain", tr("Master Gain"), tr("Master gain"), mixerMenu, true);
-    addControl("[Master]", "balance", tr("Master Balance"), tr("Master balance"), mixerMenu, true);
-    addControl("[Master]", "delay", tr("Master Delay"), tr("Master delay"), mixerMenu, true);
-    addControl("[Master]", "headGain", tr("Headphone Gain"), tr("Headphone gain"), mixerMenu, true);
-    addControl("[Master]", "headMix", tr("Headphone Mix"), tr("Headphone mix (pre/main)"), mixerMenu, true);
-    addControl("[Master]", "headSplit", tr("Headphone Split Cue"), tr("Toggle headphone split cueing"), mixerMenu);
-    addControl("[Master]", "headDelay", tr("Headphone Delay"), tr("Headphone delay"), mixerMenu, true);
-    addDeckAndSamplerControl("orientation", tr("Orientation"),
-                             tr("Mix orientation (e.g. left, right, center)"), mixerMenu);
-    addDeckAndSamplerControl("orientation_left", tr("Orient Left"),
-                             tr("Set mix orientation to left"), mixerMenu);
-    addDeckAndSamplerControl("orientation_center", tr("Orient Center"),
-                             tr("Set mix orientation to center"), mixerMenu);
-    addDeckAndSamplerControl("orientation_right", tr("Orient Right"),
-                             tr("Set mix orientation to right"), mixerMenu);
+    // Crossfader / Orientation
+    QMenu* crossfaderMenu = addSubmenu(tr("Crossfader / Orientation"), mixerMenu);
+    addControl("[Master]",
+            "crossfader",
+            tr("Crossfader"),
+            tr("Master crossfader"),
+            crossfaderMenu,
+            true);
+    addDeckAndSamplerControl("orientation",
+            tr("Orientation"),
+            tr("Mix orientation (e.g. left, right, center)"),
+            crossfaderMenu);
+    addDeckAndSamplerControl("orientation_left",
+            tr("Orient Left"),
+            tr("Set mix orientation to left"),
+            crossfaderMenu);
+    addDeckAndSamplerControl("orientation_center",
+            tr("Orient Center"),
+            tr("Set mix orientation to center"),
+            crossfaderMenu);
+    addDeckAndSamplerControl("orientation_right",
+            tr("Orient Right"),
+            tr("Set mix orientation to right"),
+            crossfaderMenu);
+    // Main Output
+    QMenu* mainOutputMenu = addSubmenu(tr("Main Output"), mixerMenu);
+    addControl("[Master]",
+            "gain",
+            tr("Main Output Gain"),
+            tr("Main Output gain"),
+            mainOutputMenu,
+            true);
+    addControl("[Master]",
+            "balance",
+            tr("Main Output Balance"),
+            tr("Main Output balance"),
+            mainOutputMenu,
+            true);
+    addControl("[Master]",
+            "delay",
+            tr("Main Output Delay"),
+            tr("Main Output delay"),
+            mainOutputMenu,
+            true);
+    // Headphone
+    QMenu* headphoneMenu = addSubmenu(tr("Headphone"), mixerMenu);
+    addControl("[Master]",
+            "headGain",
+            tr("Headphone Gain"),
+            tr("Headphone gain"),
+            headphoneMenu,
+            true);
+    addControl("[Master]",
+            "headMix",
+            tr("Headphone Mix"),
+            tr("Headphone mix (pre/main)"),
+            headphoneMenu,
+            true);
+    addControl("[Master]",
+            "headSplit",
+            tr("Headphone Split Cue"),
+            tr("Toggle headphone split cueing"),
+            headphoneMenu);
+    addControl("[Master]",
+            "headDelay",
+            tr("Headphone Delay"),
+            tr("Headphone delay"),
+            headphoneMenu,
+            true);
+    mixerMenu->addSeparator();
+    // EQs
+    QMenu* eqMenu = addSubmenu(tr("Equalizers"), mixerMenu);
+    constexpr int kNumEqRacks = 1;
+    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
+    for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
+        // TODO: Although there is a mode with 4-band EQs, it's not feasible
+        // right now to add support for learning both it and regular 3-band eqs.
+        // Since 3-band is by far the most common, stick with that.
+        const int kMaxEqs = 3;
+        QList<QString> eqNames;
+        eqNames.append(tr("Low EQ"));
+        eqNames.append(tr("Mid EQ"));
+        eqNames.append(tr("High EQ"));
+        for (int deck = 1; deck <= iNumDecks; ++deck) {
+            QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
+            for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
+                const QString group = EqualizerRack::formatEffectSlotGroupString(
+                        iRackNumber, 0, QString("[Channel%1]").arg(deck));
+                QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
+                QString control = "parameter%1";
+                addControl(group,
+                        control.arg(effect + 1),
+                        tr("Adjust %1").arg(eqNames[effect]),
+                        tr("Adjust %1").arg(eqNames[effect]),
+                        bandMenu,
+                        true,
+                        tr("Deck %1").arg(deck));
+
+                control = "button_parameter%1";
+                addControl(group,
+                        control.arg(effect + 1),
+                        tr("Kill %1").arg(eqNames[effect]),
+                        tr("Kill %1").arg(eqNames[effect]),
+                        bandMenu,
+                        false,
+                        tr("Deck %1").arg(deck));
+            }
+        }
+    }
+    mixerMenu->addSeparator();
+    // Volume / Pfl controls
+    addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), mixerMenu, true);
+    addDeckAndSamplerControl("volume_set_one",
+            tr("Full Volume"),
+            tr("Set to full volume"),
+            mixerMenu);
+    addDeckAndSamplerControl("volume_set_zero",
+            tr("Zero Volume"),
+            tr("Set to zero volume"),
+            mixerMenu);
+    addDeckAndSamplerAndPreviewDeckControl("pregain",
+            tr("Track Gain"),
+            tr("Track Gain knob"),
+            mixerMenu,
+            true);
+    addDeckAndSamplerControl("mute", tr("Mute"), tr("Mute button"), mixerMenu);
+    mixerMenu->addSeparator();
+    addDeckAndSamplerControl("pfl",
+            tr("Headphone Listen"),
+            tr("Headphone listen (pfl) button"),
+            mixerMenu);
 
     addSeparator();
 
     // Transport
     QMenu* transportMenu = addSubmenu(tr("Transport"));
     addDeckAndSamplerAndPreviewDeckControl("play", tr("Play"), tr("Play button"), transportMenu);
-    // Preview deck does not go to master so volume does not matter.
     addDeckAndSamplerAndPreviewDeckControl("back", tr("Fast Rewind"), tr("Fast Rewind button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("fwd", tr("Fast Forward"), tr("Fast Forward button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("playposition", tr("Strip Search"),
@@ -64,13 +178,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerAndPreviewDeckControl("start_stop", tr("Stop And Jump To Start"),
                                            tr("Stop playback and jump to start of track"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump To End"), tr("Jump to end of track"), transportMenu);
-    addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), transportMenu, true);
-    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Set to full volume"), transportMenu);
-    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Set to zero volume"), transportMenu);
-    addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Track Gain"), tr("Track Gain knob"), transportMenu, true);
-    addDeckAndSamplerControl("mute", tr("Mute"), tr("Mute button"), transportMenu);
+    transportMenu->addSeparator();
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject"), tr("Eject track"), transportMenu);
-    addDeckAndSamplerControl("pfl", tr("Headphone Listen"), tr("Headphone listen (pfl) button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Repeat Mode"), tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerControl("slip_enabled", tr("Slip Mode"), tr("Toggle slip mode"), transportMenu);
 
@@ -155,40 +264,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Temporarily decrease speed (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_temp_down_small", tr("Temporarily Decrease Speed (Fine)"),
                              tr("Temporarily decrease speed (fine)"), speedMenu);
-
-    // EQs
-    QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    constexpr int kNumEqRacks = 1;
-    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
-    for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
-        // TODO: Although there is a mode with 4-band EQs, it's not feasible
-        // right now to add support for learning both it and regular 3-band eqs.
-        // Since 3-band is by far the most common, stick with that.
-        const int kMaxEqs = 3;
-        QList<QString> eqNames;
-        eqNames.append(tr("Low EQ"));
-        eqNames.append(tr("Mid EQ"));
-        eqNames.append(tr("High EQ"));
-        for (int deck = 1; deck <= iNumDecks; ++deck) {
-            QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
-            for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
-                const QString group = EqualizerRack::formatEffectSlotGroupString(
-                        iRackNumber, 0, QString("[Channel%1]").arg(deck));
-                QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
-                QString control = "parameter%1";
-                addControl(group, control.arg(effect+1),
-                           tr("Adjust %1").arg(eqNames[effect]),
-                           tr("Adjust %1").arg(eqNames[effect]),
-                           bandMenu, true, tr("Deck %1").arg(deck));
-
-                control = "button_parameter%1";
-                addControl(group, control.arg(effect+1),
-                           tr("Kill %1").arg(eqNames[effect]),
-                           tr("Kill %1").arg(eqNames[effect]),
-                           bandMenu, false, tr("Deck %1").arg(deck));
-            }
-        }
-    }
 
     // Vinyl Control
     QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
