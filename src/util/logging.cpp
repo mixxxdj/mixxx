@@ -56,7 +56,6 @@ inline QString formatLogFileMessage(
         QtMsgType type,
         const QString& message,
         const QString& threadName) {
-
     QString levelName;
     switch (type) {
     case QtDebugMsg:
