@@ -100,7 +100,7 @@ DDJ200.jog = function(channel, control, value, status, group) {
         DDJ200.browseTracks(value);
     } else {
         var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        if (!DDJ200.vDeck[vDeckNo]["jogDisabled"]) {
+        if (DDJ200.vDeck[vDeckNo]["jogEnabled"]) {
             var vgroup = "[Channel" + vDeckNo +"]";
             engine.setValue(vgroup, "jog", value - 64);
         }
@@ -122,11 +122,11 @@ DDJ200.touch = function(channel, control, value, status, group) {
         var alpha = 1.0 / 8;
         engine.scratchEnable(vDeckNo, 128, 33 + 1 / 3, alpha, alpha / 32);
         // disable jog not to prevent track alignment
-        DDJ200.vDeck[vDeckNo]["jogDisabled"] = true;
+        DDJ200.vDeck[vDeckNo]["jogEnabled"] = false;
     } else {
         // enable jog after 900 ms again
         engine.beginTimer(900, function() {
-                DDJ200.vDeck[vDeckNo]["jogDisabled"] = false;
+                DDJ200.vDeck[vDeckNo]["jogEnabled"] = true;
             }, true);
         // disable scratch
         engine.scratchDisable(vDeckNo);
@@ -229,7 +229,7 @@ DDJ200.volumeLSB = function(channel, control, value, status, group) {
 DDJ200.eq = function(channel, control, value, status, group) {
     var val = script.absoluteNonLin(value, 0, 1, 4);
     var eq = (control === 0x0B) ? 2 : 1;
-    else if (control === 0x07) eq = 3;
+    if (control === 0x07) eq = 3;
     var deckNo = group.substring(24, 25);
     // var deckNo = group.match("hannel.")[0].substring(6); // more general
     // var deckNo = script.deckFromGroup(group); // working after fix
@@ -254,17 +254,15 @@ DDJ200.cueDefault = function(channel, control, value, status, group) {
     if (value) { // only if button pressed, not releases, i.e. value === 0
         var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
         var vgroup = "[Channel" + vDeckNo +"]";
-        if (DDJ200.vDeck[vDeckNo]["jogDisabled"]) {
+        if (!DDJ200.vDeck[vDeckNo]["jogEnabled"]) {  // if jog top is touched
             engine.setValue(vgroup, "cue_set", true);
-            print("true");
         } else {
             engine.setValue(vgroup, "cue_gotoandplay", true);
         }
-        var deckNo = script.deckFromGroup(group);
-        midi.sendShortMsg(0x90 + deckNo - 1, 0x0C, 0x7F *    // set cue LED
-                          (engine.getValue(vgroup, "cue_point") !== -1));
-        // set play LED
-        midi.sendShortMsg(status, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
+        var cueSet = (engine.getValue(vgroup, "cue_point") !== -1);
+        midi.sendShortMsg(status, 0x0C, 0x7F * cueSet);      // set cue LED
+        midi.sendShortMsg(status, 0x0B, 0x7F *               // set play LED
+                          engine.getValue(vgroup, "play"));
     }
 };
 
