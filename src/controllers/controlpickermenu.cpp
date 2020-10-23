@@ -183,14 +183,15 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("repeat", tr("Repeat Mode"), tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerControl("slip_enabled", tr("Slip Mode"), tr("Toggle slip mode"), transportMenu);
 
-    // BPM & Sync
-    QMenu* bpmMenu = addSubmenu(tr("BPM"));
+    // BPM / Beatgrid
+    QMenu* bpmMenu = addSubmenu(tr("BPM / Beatgrid"));
     addDeckAndSamplerControl("bpm", tr("BPM"), tr("BPM"), bpmMenu, true);
     addDeckAndSamplerControl("bpm_up", tr("BPM +1"), tr("Increase BPM by 1"), bpmMenu);
     addDeckAndSamplerControl("bpm_down", tr("BPM -1"), tr("Decrease BPM by 1"), bpmMenu);
     addDeckAndSamplerControl("bpm_up_small", tr("BPM +0.1"), tr("Increase BPM by 0.1"), bpmMenu);
     addDeckAndSamplerControl("bpm_down_small", tr("BPM -0.1"), tr("Decrease BPM by 0.1"), bpmMenu);
     addDeckAndSamplerControl("bpm_tap", tr("BPM Tap"), tr("BPM tap button"), bpmMenu);
+    bpmMenu->addSeparator();
     addDeckAndSamplerControl("beats_adjust_faster", tr("Adjust Beatgrid Faster +.01"), tr("Increase track's average BPM by 0.01"), bpmMenu);
     addDeckAndSamplerControl("beats_adjust_slower", tr("Adjust Beatgrid Slower -.01"), tr("Decrease track's average BPM by 0.01"), bpmMenu);
     addDeckAndSamplerControl("beats_translate_earlier", tr("Move Beatgrid Earlier"), tr("Adjust the beatgrid to the left"), bpmMenu);
@@ -199,11 +200,28 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Align beatgrid to current position"), bpmMenu);
     addDeckControl("beats_translate_match_alignment", tr("Adjust Beatgrid - Match Alignment"),
                    tr("Adjust beatgrid to match another playing deck."), bpmMenu);
+    bpmMenu->addSeparator();
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), bpmMenu);
 
     QMenu* syncMenu = addSubmenu(tr("Sync"));
-    addDeckAndSamplerControl("sync_enabled", tr("Sync Mode"),
-                             tr("Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync"), syncMenu);
+    addDeckAndSamplerControl("sync_enabled",
+            tr("Sync / Sync Lock"),
+            tr("Tap to sync tempo (and phase with quantize enabled), hold to "
+               "enable permanent sync"),
+            syncMenu);
+    addDeckAndSamplerControl("beatsync",
+            tr("Beat Sync One-Shot"),
+            tr("One-time beat sync tempo (and phase with quantize enabled)"),
+            syncMenu);
+    addDeckAndSamplerControl("beatsync_tempo",
+            tr("Sync Tempo One-Shot"),
+            tr("One-time beat sync (tempo only)"),
+            syncMenu);
+    addDeckAndSamplerControl("beatsync_phase",
+            tr("Sync Phase One-Shot"),
+            tr("One-time beat sync (phase only)"),
+            syncMenu);
+    syncMenu->addSeparator();
     addControl("[InternalClock]", "sync_master", tr("Internal Sync Master"),
                tr("Toggle Internal Sync Master"), syncMenu);
     addControl("[InternalClock]", "bpm", tr("Internal Master BPM"),
@@ -218,36 +236,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Increase internal master BPM by 0.1"), syncMenu);
     addControl("[InternalClock]", "bpm_down_small", tr("Internal Master BPM -0.1"),
                tr("Decrease internal master BPM by 0.1"), syncMenu);
+    syncMenu->addSeparator();
     addDeckAndSamplerControl("sync_master", tr("Sync Master"), tr("Toggle sync master"), syncMenu);
     addDeckAndSamplerControl("sync_mode", tr("Sync Mode"),
                              tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), syncMenu);
-    addDeckAndSamplerControl("beatsync", tr("Beat Sync One-Shot"),
-                             tr("One-time beat sync tempo (and phase with quantize enabled)"), syncMenu);
-    addDeckAndSamplerControl("beatsync_tempo", tr("Sync Tempo One-Shot"),
-                             tr("One-time beat sync (tempo only)"), syncMenu);
-    addDeckAndSamplerControl("beatsync_phase", tr("Sync Phase One-Shot"),
-                             tr("One-time beat sync (phase only)"), syncMenu);
 
     // Speed
-    QMenu* speedMenu = addSubmenu(tr("Speed (Pitch/Tempo)"));
-    addDeckAndSamplerControl("keylock", tr("Keylock Mode"),
-                             tr("Toggle keylock mode"), speedMenu);
+    QMenu* speedMenu = addSubmenu(tr("Speed"));
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
-    addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
-                             tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
-    addDeckAndSamplerControl("pitch_up", tr("Increase Pitch"),
-                            tr("Increases the pitch by one semitone"), speedMenu);
-    addDeckAndSamplerControl("pitch_up_small", tr("Increase Pitch (Fine)"),
-                            tr("Increases the pitch by 10 cents"), speedMenu);
-    addDeckAndSamplerControl("pitch_down", tr("Decrease Pitch"),
-                            tr("Decreases the pitch by one semitone"), speedMenu);
-    addDeckAndSamplerControl("pitch_down_small", tr("Decrease Pitch (Fine)"),
-                            tr("Decreases the pitch by 10 cents"), speedMenu);
-    addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
-                             tr("Adjust pitch from speed slider pitch"), speedMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu);
-    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu);
+    speedMenu->addSeparator();
     addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
                              tr("Adjust speed faster (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
@@ -256,6 +254,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Adjust speed slower (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
                              tr("Adjust speed slower (fine)"), speedMenu);
+    speedMenu->addSeparator();
     addDeckAndSamplerControl("rate_temp_up", tr("Temporarily Increase Speed"),
                              tr("Temporarily increase speed (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_temp_up_small", tr("Temporarily Increase Speed (Fine)"),
@@ -264,6 +263,39 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Temporarily decrease speed (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_temp_down_small", tr("Temporarily Decrease Speed (Fine)"),
                              tr("Temporarily decrease speed (fine)"), speedMenu);
+    // Pitch (Musical Key)
+    QMenu* pitchMenu = addSubmenu(tr("Pitch (Musical Key)"));
+    addDeckAndSamplerControl("pitch",
+            tr("Pitch (Musical key)"),
+            tr("Pitch control (does not affect tempo), center is original "
+               "pitch"),
+            pitchMenu,
+            true);
+    addDeckAndSamplerControl("pitch_up",
+            tr("Increase Pitch"),
+            tr("Increases the pitch by one semitone"),
+            pitchMenu);
+    addDeckAndSamplerControl("pitch_up_small",
+            tr("Increase Pitch (Fine)"),
+            tr("Increases the pitch by 10 cents"),
+            pitchMenu);
+    addDeckAndSamplerControl("pitch_down",
+            tr("Decrease Pitch"),
+            tr("Decreases the pitch by one semitone"),
+            pitchMenu);
+    addDeckAndSamplerControl("pitch_down_small",
+            tr("Decrease Pitch (Fine)"),
+            tr("Decreases the pitch by 10 cents"),
+            pitchMenu);
+    addDeckAndSamplerControl("pitch_adjust",
+            tr("Pitch Adjust"),
+            tr("Adjust pitch from speed slider pitch"),
+            pitchMenu,
+            true);
+    pitchMenu->addSeparator();
+    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), pitchMenu);
+    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), pitchMenu);
+    addDeckAndSamplerControl("keylock", tr("Keylock"), tr("Toggle keylock mode"), pitchMenu);
 
     // Vinyl Control
     QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
