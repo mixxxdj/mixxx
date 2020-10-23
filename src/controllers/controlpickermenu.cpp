@@ -764,6 +764,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Mute"),
                                tr("Mute button"), microphoneMenu,
                                true, true);
+    addMicrophoneAndAuxControl("pfl",
+            tr("Headphone Listen"),
+            tr("Headphone listen button"),
+            microphoneMenu,
+            true,
+            true);
     microphoneMenu->addSeparator();
     addMicrophoneAndAuxControl("orientation",
                                tr("Orientation"),
@@ -781,10 +787,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addMicrophoneAndAuxControl("orientation_right",
                                tr("Orient Right"),
                                tr("Set mix orientation to right"), microphoneMenu,
-                               true, true);
-    addMicrophoneAndAuxControl("pfl",
-                               tr("Headphone Listen"),
-                               tr("Headphone listen button"), microphoneMenu,
                                true, true);
 
     // AutoDJ Controls
