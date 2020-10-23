@@ -338,7 +338,7 @@ DDJ200.toggleDeck = function(channel, control, value, status, group) {
             DDJ200.LoadSelectedTrack(channel, control, value, status, group);
         } else if (DDJ200.fourDeckMode) { //right shift + pfl 1/2 toggles
             var deckNo = script.deckFromGroup(group);
-            var vDeckNo = 0;
+            var vDeckNo;
             var LED = 0x7F;
             if (deckNo === 1) {
                 // toggle virtual deck of controller deck 1
