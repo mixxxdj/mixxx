@@ -33,6 +33,8 @@ QFile s_logfile;
 bool s_debugAssertBreak = false;
 
 const QString kThreadNamePattern = QStringLiteral("{{threadname}}");
+const QString kDefaultMessagePattern = QStringLiteral("%{type} [") +
+        kThreadNamePattern + QStringLiteral("] %{message}");
 
 const QLoggingCategory kDefaultLoggingCategory = QLoggingCategory(nullptr);
 
@@ -308,11 +310,8 @@ void Logging::initialize(
 
     s_debugAssertBreak = debugAssertBreak;
 
-    // Set the default message pattern if the QT_MESSAGE_PATTERN variable is
-    // not set.
     if (qgetenv("QT_MESSAGE_PATTERN").isEmpty()) {
-        qSetMessagePattern(QStringLiteral("%{type} [") + kThreadNamePattern +
-                QStringLiteral("] %{message}"));
+        qSetMessagePattern(kDefaultMessagePattern);
     }
 
     // Install the Qt message handler.
