@@ -11,10 +11,10 @@ DDJ200.init = function() {
                                   
        // create associative arrays for 4 virtual decks
         this.vDeck[i] = {
-        syncEnabled: false,
-        volMSB: 0,
-        rateMSB: 0,
-        jogEnabled: true,
+            syncEnabled: false,
+            volMSB: 0,
+            rateMSB: 0,
+            jogEnabled: true,
         };
         var vgroup = "[Channel" + i + "]";
 
