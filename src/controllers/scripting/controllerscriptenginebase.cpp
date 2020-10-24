@@ -23,10 +23,6 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(Controller* controller)
             &ControllerScriptEngineBase::reload);
 }
 
-ControllerScriptEngineBase::~ControllerScriptEngineBase() {
-    shutdown();
-}
-
 bool ControllerScriptEngineBase::initialize() {
     VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine) {
         return false;

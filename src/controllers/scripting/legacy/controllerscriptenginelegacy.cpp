@@ -12,6 +12,10 @@ ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(Controller* controlle
         : ControllerScriptEngineBase(controller) {
 }
 
+ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
+    shutdown();
+}
+
 bool ControllerScriptEngineLegacy::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
         const QString& function,
         QJSValueList args,

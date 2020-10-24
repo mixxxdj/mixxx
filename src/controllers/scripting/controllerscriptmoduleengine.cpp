@@ -1,5 +1,9 @@
 #include "controllers/scripting/controllerscriptmoduleengine.h"
 
+ControllerScriptModuleEngine::~ControllerScriptModuleEngine() {
+    shutdown();
+}
+
 bool ControllerScriptModuleEngine::initialize() {
     ControllerScriptEngineBase::initialize();
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)

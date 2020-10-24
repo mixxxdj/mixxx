@@ -7,6 +7,7 @@ class ControllerScriptModuleEngine : public ControllerScriptEngineBase {
     Q_OBJECT
   public:
     ControllerScriptModuleEngine(Controller* controller);
+    ~ControllerScriptModuleEngine();
 
     bool initialize() override;
 
