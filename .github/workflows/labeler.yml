@@ -17,3 +17,8 @@ jobs:
     - uses: actions/labeler@main
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+        # This works around bug https://github.com/actions/labeler/issues/104.
+        # The workaround was proposed here:
+        # https://github.com/wesnoth/wesnoth/commit/958c82d0867568057caaf58356502ec8c87d8366
+        sync-labels: ""
