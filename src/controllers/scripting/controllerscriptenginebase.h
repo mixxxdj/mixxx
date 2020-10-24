@@ -42,15 +42,14 @@ class ControllerScriptEngineBase : public QObject {
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
 
+    void watchScriptFile(const QString& absoluteFilePath);
+
     QJSValue wrapArrayBufferCallback(const QJSValue& callback);
 
     bool m_bDisplayingExceptionDialog;
     QJSEngine* m_pJSEngine;
 
     Controller* m_pController;
-
-    // Filesystem watcher for script auto-reload
-    QFileSystemWatcher m_scriptWatcher;
 
     bool m_bTesting;
 
@@ -59,6 +58,8 @@ class ControllerScriptEngineBase : public QObject {
 
   private:
     QJSValue m_makeArrayBufferWrapperFunction;
+    // Filesystem watcher for script auto-reload
+    QFileSystemWatcher m_scriptWatcher;
 
   private slots:
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);

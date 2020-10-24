@@ -14,7 +14,7 @@ bool ControllerScriptModuleEngine::initialize() {
         return false;
     }
 
-    m_scriptWatcher.addPath(m_moduleFileInfo.absoluteFilePath());
+    watchScriptFile(m_moduleFileInfo.absoluteFilePath());
 
     QJSValue initFunction = mod.property("init");
     if (!executeFunction(initFunction, QJSValueList{})) {

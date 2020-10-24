@@ -218,6 +218,10 @@ void ControllerScriptEngineBase::scriptErrorDialog(
     }
 }
 
+void ControllerScriptEngineBase::watchScriptFile(const QString& absoluteFilePath) {
+    m_scriptWatcher.addPath(absoluteFilePath);
+}
+
 void ControllerScriptEngineBase::errorDialogButton(
         const QString& key, QMessageBox::StandardButton clickedButton) {
     Q_UNUSED(key);
