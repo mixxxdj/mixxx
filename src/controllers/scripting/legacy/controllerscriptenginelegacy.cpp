@@ -101,7 +101,7 @@ bool ControllerScriptEngineLegacy::initialize() {
         if (!script.functionPrefix.isEmpty()) {
             m_scriptFunctionPrefixes.append(script.functionPrefix);
         }
-        watchScriptFile(script.file.absoluteFilePath());
+        watchScriptFile(script.file);
     }
 
     for (QString functionName : m_scriptFunctionPrefixes) {
@@ -165,7 +165,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
                    << scriptFile.absoluteFilePath();
         return false;
     }
-    watchScriptFile(scriptFile.absoluteFilePath());
+    watchScriptFile(scriptFile);
 
     qDebug() << "ControllerScriptHandlerLegacy: Loading"
              << scriptFile.absoluteFilePath();

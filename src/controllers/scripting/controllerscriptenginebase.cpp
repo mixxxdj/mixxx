@@ -214,8 +214,8 @@ void ControllerScriptEngineBase::scriptErrorDialog(
     }
 }
 
-void ControllerScriptEngineBase::watchScriptFile(const QString& absoluteFilePath) {
-    m_scriptWatcher.addPath(absoluteFilePath);
+void ControllerScriptEngineBase::watchScriptFile(const QFileInfo& fileInfo) {
+    m_scriptWatcher.addPath(fileInfo.absoluteFilePath());
 }
 
 void ControllerScriptEngineBase::errorDialogButton(

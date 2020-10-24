@@ -42,7 +42,7 @@ class ControllerScriptEngineBase : public QObject {
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
 
-    void watchScriptFile(const QString& absoluteFilePath);
+    void watchScriptFile(const QFileInfo& fileInfo);
 
     QJSValue wrapArrayBufferCallback(const QJSValue& callback);
 
