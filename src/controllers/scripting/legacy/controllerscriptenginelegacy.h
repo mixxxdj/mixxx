@@ -19,7 +19,7 @@ class ScriptConnection;
 class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     Q_OBJECT
   public:
-    ControllerScriptEngineLegacy(Controller* controller);
+    explicit ControllerScriptEngineLegacy(Controller* controller);
     ~ControllerScriptEngineLegacy();
 
     bool initialize() override;

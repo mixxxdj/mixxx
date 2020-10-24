@@ -17,7 +17,7 @@ class EvaluationException;
 class ControllerScriptEngineBase : public QObject {
     Q_OBJECT
   public:
-    ControllerScriptEngineBase(Controller* controller);
+    explicit ControllerScriptEngineBase(Controller* controller);
     virtual ~ControllerScriptEngineBase() = default;
 
     virtual bool initialize();
