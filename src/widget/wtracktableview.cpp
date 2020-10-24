@@ -945,8 +945,13 @@ void WTrackTableView::applySortingIfVisible() {
 void WTrackTableView::applySorting() {
     TrackModel* trackModel = getTrackModel();
     int sortColumnId = static_cast<int>(m_pSortColumn->get());
-    if (sortColumnId < TrackModel::SortColumnId::SORTCOLUMN_ID_MIN ||
-            sortColumnId > TrackModel::SortColumnId::SORTCOLUMN_ID_MAX) {
+    if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+        // During startup phase of Mixxx, this method is called with SORTCOLUMN_INVALID
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(
+            sortColumnId >= TrackModel::SortColumnId::SORTCOLUMN_ID_MIN &&
+            sortColumnId < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX) {
         return;
     }
 

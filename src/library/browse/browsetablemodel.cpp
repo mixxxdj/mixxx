@@ -136,7 +136,7 @@ BrowseTableModel::~BrowseTableModel() {
 
 int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
     if (column < TrackModel::SortColumnId::SORTCOLUMN_ID_MIN ||
-            column > TrackModel::SortColumnId::SORTCOLUMN_ID_MAX) {
+            column >= TrackModel::SortColumnId::SORTCOLUMN_ID_MAX) {
         return -1;
     }
 
