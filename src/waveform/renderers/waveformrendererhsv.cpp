@@ -80,16 +80,16 @@ void WaveformRendererHSV::draw(QPainter* painter,
 
     QPen pen;
     pen.setCapStyle(Qt::FlatCap);
-    pen.setWidth(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
+    pen.setWidthF(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
 
     const int breadth = m_waveformRenderer->getBreadth();
-    const float halfBreadth = (float)breadth / 2.0;
+    const float halfBreadth = static_cast<float>(breadth) / 2.0f;
 
-    const float heightFactor = allGain * halfBreadth / 255.0;
+    const float heightFactor = allGain * halfBreadth / 255.0f;
 
     //draw reference line
     painter->setPen(m_pColors->getAxesColor());
-    painter->drawLine(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth);
+    painter->drawLine(QLineF(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth));
 
     for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
         // Width of the x position in visual indices.
@@ -144,7 +144,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
         if (maxAll[0] && maxAll[1]) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
-            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
+                            maxHigh[0] + maxHigh[1]) *
+                    1.2f;
 
             // prevent division by zero
             if (total > 0)

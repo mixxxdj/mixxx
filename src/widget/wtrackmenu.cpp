@@ -24,6 +24,7 @@
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/qt.h"
@@ -1494,6 +1495,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
             m_pTrackModel);
     connect(m_pDlgTrackInfo.get(),
             &QDialog::finished,
+            this,
             [this]() {
                 if (m_pDlgTrackInfo.get() == sender()) {
                     m_pDlgTrackInfo.release()->deleteLater();
@@ -1517,6 +1519,7 @@ void WTrackMenu::slotShowDlgTagFetcher() {
             m_pTrackModel);
     connect(m_pDlgTagFetcher.get(),
             &QDialog::finished,
+            this,
             [this]() {
                 if (m_pDlgTagFetcher.get() == sender()) {
                     m_pDlgTagFetcher.release()->deleteLater();

@@ -15,7 +15,7 @@ class ReplayGainTest : public testing::Test {
         const double actualValue = mixxx::ReplayGain::ratioFromString(inputValue, &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
-        EXPECT_FLOAT_EQ(expectedValue, actualValue);
+        EXPECT_NEAR(expectedValue, actualValue, 0.005);
 
         return actualResult;
     }
@@ -93,8 +93,7 @@ TEST_F(ReplayGainTest, RatioFromStringValidRange) {
                 QString("  %1 DB ").arg(replayGainDb),
                 QString("  %1db ").arg(replayGainDb)
         };
-        float expectedValue;
-        expectedValue = db2ratio(double(replayGainDb));
+        const auto expectedValue = static_cast<float>(db2ratio(static_cast<double>(replayGainDb)));
         for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
             ratioFromString(inputValues[i], true, expectedValue);
             if (0 <= replayGainDb) {
@@ -133,8 +132,8 @@ TEST_F(ReplayGainTest, PeakFromStringValid) {
     peakFromString("+1", true, mixxx::ReplayGain::kPeakClip);
     peakFromString("1.0", true, mixxx::ReplayGain::kPeakClip);
     peakFromString("+1.0", true, mixxx::ReplayGain::kPeakClip);
-    peakFromString("  0.12345  ", true, 0.12345);
-    peakFromString("  1.2345", true, 1.2345);
+    peakFromString("  0.12345  ", true, 0.12345f);
+    peakFromString("  1.2345", true, 1.2345f);
 }
 
 TEST_F(ReplayGainTest, PeakFromStringInvalid) {
