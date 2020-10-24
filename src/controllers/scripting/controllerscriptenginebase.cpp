@@ -215,7 +215,9 @@ void ControllerScriptEngineBase::scriptErrorDialog(
 }
 
 void ControllerScriptEngineBase::watchScriptFile(const QFileInfo& fileInfo) {
-    m_scriptWatcher.addPath(fileInfo.absoluteFilePath());
+    if (!m_scriptWatcher.addPath(fileInfo.absoluteFilePath())) {
+        controllerDebug("Failed to watch script file " + fileInfo.absoluteFilePath());
+    }
 }
 
 void ControllerScriptEngineBase::errorDialogButton(
