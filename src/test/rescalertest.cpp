@@ -1,14 +1,8 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include <QDebug>
 
 #include "util/math.h"
 #include "util/rescaler.h"
-
-
-using ::testing::ElementsAre;
-
-namespace {
 
 class RescalerUtilsTest : public testing::Test {
 };
@@ -62,5 +56,3 @@ TEST_F(RescalerUtilsTest, Test) {
     result = RescalerUtils::oneByXToLinear(result, 1000, 0, 100);
     EXPECT_TRUE(fabs(result - 50) < 0.0000000001);
 }
-
-}  // namespace
