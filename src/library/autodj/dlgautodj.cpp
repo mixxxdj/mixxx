@@ -148,8 +148,9 @@ DlgAutoDJ::DlgAutoDJ(
             "last sound.");
     QString transitionUnitToolTip = tr(
             "Sets the units to use when specifying how long a transition should last.\n"
+            "\n"
             "When using beats for the transition time, if the tracks do not "
-            "have the same BPM, this specifies\n"
+            "have the same BPM, this also specifies\n"
             "before/from which point to calculate the transition period.");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
