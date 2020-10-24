@@ -13,11 +13,4 @@ class CoverArtDelegate final : public BaseCoverArtDelegate {
   private:
     CoverInfo coverInfoForIndex(
             const QModelIndex& index) const final;
-
-    int m_iCoverSourceColumn;
-    int m_iCoverTypeColumn;
-    int m_iCoverLocationColumn;
-    int m_iCoverHashColumn;
-    int m_iTrackIdColumn;
-    int m_iTrackLocationColumn;
 };
