@@ -20,7 +20,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     Q_OBJECT
   public:
     explicit ControllerScriptEngineLegacy(Controller* controller);
-    ~ControllerScriptEngineLegacy();
+    ~ControllerScriptEngineLegacy() override;
 
     bool initialize() override;
 
