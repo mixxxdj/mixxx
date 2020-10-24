@@ -19,8 +19,8 @@ class WSearchRelatedTracksMenu : public QMenu {
             const QString& searchQuery);
 
   private:
-    bool addTriggerSearchAction(
-            bool addSeparatorBeforeNextAction,
+    void addTriggerSearchAction(
+            bool* /*in/out*/ pAddSeparatorBeforeNextAction,
             const QString& actionText,
             QString searchQuery);
 };

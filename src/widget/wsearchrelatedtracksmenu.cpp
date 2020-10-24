@@ -47,19 +47,21 @@ WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
         : QMenu(tr("Search related Tracks"), parent) {
 }
 
-bool WSearchRelatedTracksMenu::addTriggerSearchAction(
-        bool addSeparatorBeforeNextAction,
+void WSearchRelatedTracksMenu::addTriggerSearchAction(
+        bool* /*in/out*/ pAddSeparatorBeforeNextAction,
         const QString& actionText,
         QString /*!by-value-because-captured-by-lambda!*/ searchQuery) {
-    if (addSeparatorBeforeNextAction) {
+    DEBUG_ASSERT(pAddSeparatorBeforeNextAction);
+    if (*pAddSeparatorBeforeNextAction) {
         addSeparator();
     }
+    // Reset the flag before adding the next action
+    *pAddSeparatorBeforeNextAction = false;
     addAction(
             mixxx::escapeTextPropertyWithoutShortcuts(actionText),
             [this, searchQuery]() {
                 emit triggerSearch(searchQuery);
             });
-    return false;
 }
 
 void WSearchRelatedTracksMenu::addActionsForTrack(
@@ -79,8 +81,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QStringLiteral("~key:\"") +
                     keyText +
                     QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -97,8 +99,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     minBpmNumber +
                     QStringLiteral(" bpm:<=") +
                     maxBpmNumber;
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -134,8 +136,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                         QStringLiteral("artist:\"") +
                         primaryArtist +
                         QChar('"');
-                addSeparatorBeforeNextAction = addTriggerSearchAction(
-                        addSeparatorBeforeNextAction,
+                addTriggerSearchAction(
+                        &addSeparatorBeforeNextAction,
                         actionText,
                         searchQuery);
             }
@@ -146,8 +148,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                         QStringLiteral("artist:\"") +
                         secondaryArtist +
                         QChar('"');
-                addSeparatorBeforeNextAction = addTriggerSearchAction(
-                        addSeparatorBeforeNextAction,
+                addTriggerSearchAction(
+                        &addSeparatorBeforeNextAction,
                         actionText,
                         searchQuery);
             }
@@ -158,8 +160,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                         QStringLiteral("album_artist:\"") +
                         primaryArtist +
                         QChar('"');
-                addSeparatorBeforeNextAction = addTriggerSearchAction(
-                        addSeparatorBeforeNextAction,
+                addTriggerSearchAction(
+                        &addSeparatorBeforeNextAction,
                         actionText,
                         searchQuery);
             }
@@ -170,8 +172,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                         QStringLiteral("album_artist:\"") +
                         secondaryArtist +
                         QChar('"');
-                addSeparatorBeforeNextAction = addTriggerSearchAction(
-                        addSeparatorBeforeNextAction,
+                addTriggerSearchAction(
+                        &addSeparatorBeforeNextAction,
                         actionText,
                         searchQuery);
             }
@@ -186,8 +188,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QStringLiteral("composer:\"") +
                     composer +
                     QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -204,8 +206,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QStringLiteral("title:\"") +
                     title +
                     QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -219,8 +221,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QStringLiteral("album:\"") +
                     album +
                     QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -234,8 +236,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QStringLiteral("grouping:\"") +
                     grouping +
                     QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -252,8 +254,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             const QString searchQuery =
                     QStringLiteral("year:") +
                     releaseYearNumber;
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -267,8 +269,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QStringLiteral("genre:\"") +
                     genre +
                     QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
@@ -282,8 +284,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QStringLiteral("location:\"") +
                     locationPath +
                     QChar('"');
-            addSeparatorBeforeNextAction = addTriggerSearchAction(
-                    addSeparatorBeforeNextAction,
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
                     actionText,
                     searchQuery);
         }
