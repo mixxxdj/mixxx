@@ -33,7 +33,6 @@
 #MixerContainer,
 #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini,
-#ComboBoxAutoDjCalcTransitionPeriod::checked,
 #ComboBoxAutoDjTransitionUnit::checked,
 WEffectSelector::checked, #fadeModeCombobox::checked,
 WLibrary,
@@ -1069,7 +1068,6 @@ WTrackMenu QMenu QCheckBox,
 #KeyText, #KeyTextSmall,
 #PreviewLabel,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod, #ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit, #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
 WBeatSpinBox, #spinBoxTransition,
@@ -1275,20 +1273,16 @@ QPushButton#pushButtonRecording:checked {
     border-image: url(skin:/classic/buttons/btn_embedded_effectselector_active.svg) 2 2 2 2;  */
   }
 
-#ComboBoxAutoDjCalcTransitionPeriod,
-#ComboBoxAutoDjCalcTransitionPeriod:on,
 #ComboBoxAutoDjTransitionUnit,
 #ComboBoxAutoDjTransitionUnit:on,
 #fadeModeCombobox,
 #fadeModeCombobox:on {
   border-width: 2px 2px 2px 2px;
   }
-  #ComboBoxAutoDjCalcTransitionPeriod,
   #ComboBoxAutoDjTransitionUnit,
   #fadeModeCombobox {
     border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-  #ComboBoxAutoDjCalcTransitionPeriod:on,
   #ComboBoxAutoDjTransitionUnit:on,
   #fadeModeCombobox:on {
     border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
@@ -2323,7 +2317,6 @@ WLibrary QRadioButton::indicator:unchecked {
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
@@ -2371,23 +2364,19 @@ WBeatSpinBox,
 #SkinSettings,
 WSearchLineEdit,
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 WEffectSelector::item,
-#ComboBoxAutoDjCalcTransitionPeriod::item,
 #ComboBoxAutoDjTransitionUnit::item,
 #fadeModeCombobox::item {
   background-color: #0f0f0f;
 }
-#ComboBoxAutoDjCalcTransitionPeriod,
 #ComboBoxAutoDjTransitionUnit,
 WEffectSelector, #fadeModeCombobox {
   background-color: #161616;
 }
   /* hovered items */
   WEffectSelector::item:selected,
-  #ComboBoxAutoDjCalcTransitionPeriod::item:selected,
   #ComboBoxAutoDjTransitionUnit::item:selected,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
@@ -2417,7 +2406,6 @@ WEffectSelector, #fadeModeCombobox {
   }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
-  #ComboBoxAutoDjCalcTransitionPeriod::item:checked:selected,
   #ComboBoxAutoDjTransitionUnit::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #2a1e03;
@@ -2426,7 +2414,6 @@ WEffectSelector, #fadeModeCombobox {
 
 
 WEffectSelector,
-#ComboBoxAutoDjCalcTransitionPeriod,
 #ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   /* The 3D frame on the combo box becomes flat when you give it a border
@@ -2438,7 +2425,6 @@ WEffectSelector,
     padding: 0px 0px 2px 5px;
     margin: 0px;
   }
-  #ComboBoxAutoDjCalcTransitionPeriod,
   #ComboBoxAutoDjTransitionUnit,
   #fadeModeCombobox {
     height: 19px;
@@ -2446,7 +2432,6 @@ WEffectSelector,
     margin: 0px 1px 2px 1px;
   }
   WEffectSelector::down-arrow,
-  #ComboBoxAutoDjCalcTransitionPeriod::down-arrow,
   #ComboBoxAutoDjTransitionUnit::down-arrow,
   #fadeModeCombobox::down-arrow {
     image: url(skin:/classic/buttons/btn__fx_selector_down.svg);
@@ -2455,7 +2440,6 @@ WEffectSelector,
     margin: 0;
     }
     WEffectSelector::down-arrow:hover,
-    #ComboBoxAutoDjCalcTransitionPeriod::down-arrow:hover,
     #ComboBoxAutoDjTransitionUnit::down-arrow:hover,
     #fadeModeCombobox::down-arrow:hover {
       image: url(skin:/classic/buttons/btn__fx_selector_down_pressed.svg);
@@ -2464,13 +2448,11 @@ WEffectSelector,
   WEffectSelector QAbstractScrollArea {
     min-width: 160px;
   }
-  #ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
   #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     min-width: 185px;
   }
   WEffectSelector::indicator:checked,
-  #ComboBoxAutoDjCalcTransitionPeriod::indicator:checked,
   #ComboBoxAutoDjTransitionUnit::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
@@ -2481,10 +2463,6 @@ WEffectSelector,
   WEffectSelector::checked, /* selected item */
   WEffectSelector::indicator, /* checkbox, tick mark */
   WEffectSelector::drop-down,
-  #ComboBoxAutoDjCalcTransitionPeriod::checked, /* selected mode */
-  #ComboBoxAutoDjCalcTransitionPeriod::indicator, /* checkbox, tick mark */
-  #ComboBoxAutoDjCalcTransitionPeriod::drop-down,
-  #ComboBoxAutoDjCalcTransitionPeriod::indicator:!checked,
   #ComboBoxAutoDjTransitionUnit::checked, /* selected mode */
   #ComboBoxAutoDjTransitionUnit::indicator, /* checkbox, tick mark */
   #ComboBoxAutoDjTransitionUnit::drop-down,
