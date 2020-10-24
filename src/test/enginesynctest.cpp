@@ -17,6 +17,7 @@
 namespace {
 constexpr double kMaxFloatingPointErrorLowPrecision = 0.005;
 constexpr double kMaxFloatingPointErrorHighPrecision = 0.0000000000000005;
+constexpr double kMaxBeatDistanceEpsilon = 1e-9;
 }
 
 /// Tests for Master Sync.
@@ -1384,25 +1385,25 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChangeNoQuant) {
     for (int i = 0; i < 50; ++i) {
         ProcessBuffer();
         // Keep messing with the rate
-        float rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
+        double rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
         ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), rate);
 
         // Buffers should be in sync.
-        ASSERT_FLOAT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
-                                ->get(),
-                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                        ->get());
+        ASSERT_NEAR(
+                ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+                kMaxBeatDistanceEpsilon);
     }
 
     // Make sure we're actually going somewhere!
-    EXPECT_GT(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                      ->get(),
+    EXPECT_GT(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
             0);
     // Buffers should be in sync.
-    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
-                      ->get(),
-            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                    ->get());
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
 }
 
 TEST_F(EngineSyncTest, ZeroLatencyRateChangeQuant) {
@@ -1435,25 +1436,25 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChangeQuant) {
     for (int i = 0; i < 50; ++i) {
         ProcessBuffer();
         // Keep messing with the rate
-        float rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
+        double rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
         ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), rate);
 
         // Buffers should be in sync.
-        ASSERT_FLOAT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
-                                ->get(),
-                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                        ->get());
+        ASSERT_NEAR(
+                ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+                kMaxBeatDistanceEpsilon);
     }
 
     // Make sure we're actually going somewhere!
-    EXPECT_GT(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                      ->get(),
+    EXPECT_GT(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
             0);
     // Buffers should be in sync.
-    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
-                      ->get(),
-            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                    ->get());
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
 }
 
 TEST_F(EngineSyncTest, ZeroLatencyRateDiffQuant) {
@@ -1485,25 +1486,25 @@ TEST_F(EngineSyncTest, ZeroLatencyRateDiffQuant) {
     for (int i = 0; i < 50; ++i) {
         ProcessBuffer();
         // Keep messing with the rate
-        float rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
+        double rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
         ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), rate);
 
         // Buffers should be in sync.
-        ASSERT_FLOAT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
-                                ->get(),
-                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                        ->get());
+        ASSERT_NEAR(
+                ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+                kMaxBeatDistanceEpsilon);
     }
 
     // Make sure we're actually going somewhere!
-    EXPECT_GT(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                      ->get(),
+    EXPECT_GT(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
             0);
     // Buffers should be in sync.
-    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
-                      ->get(),
-            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                    ->get());
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
 }
 
 // In this test, we set play *first* and then turn on master sync.
