@@ -1099,11 +1099,11 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
     }
 
     if (samplerControls) {
-        parented_ptr<QMenu> samplerControlMenu = make_parented<QMenu>(tr("Samplers"), controlMenu);
+        QMenu* samplerControlMenu = new QMenu(tr("Samplers"), controlMenu);
         controlMenu->addMenu(samplerControlMenu);
-        parented_ptr<QMenu> samplerResetControlMenu = nullptr;
+        QMenu* samplerResetControlMenu = nullptr;
         if (resetControlMenu) {
-            samplerResetControlMenu = make_parented<QMenu>(tr("Samplers"), resetControlMenu);
+            samplerResetControlMenu = new QMenu(tr("Samplers"), resetControlMenu);
             resetControlMenu->addMenu(samplerResetControlMenu);
         }
         for (int i = 1; i <= iNumSamplers; ++i) {
