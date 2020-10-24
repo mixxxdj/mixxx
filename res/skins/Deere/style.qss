@@ -583,7 +583,6 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:focus,
 #fadeModeCombobox:focus,
 #ComboBoxAutoDjTransitionUnit:focus,
-#ComboBoxAutoDjCalcTransitionPeriod:focus,
 #DlgAutoDJ QSpinBox:focus {
   outline: none;
 }
@@ -671,7 +670,6 @@ QPushButton#pushButtonRepeatPlaylist {
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar:horizontal,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   border-top: 1px solid #141414;
@@ -682,7 +680,6 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 }
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar:vertical,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   border-left: 1px solid #141414;
@@ -696,8 +693,6 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 #LibraryContainer QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::add-page,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::sub-page,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-page,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
@@ -706,7 +701,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 }
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::handle:horizontal,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
@@ -716,7 +710,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 }
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::handle:vertical,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
@@ -728,8 +721,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 #LibraryContainer QScrollBar::handle:vertical:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::handle:horizontal:hover,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::handle:vertical:hover,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover,
@@ -746,10 +737,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::add-line:horizontal,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::add-line:vertical,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::sub-line:horizontal,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea QScrollBar::sub-line:vertical,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-line:horizontal,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-line:vertical,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-line:horizontal,
@@ -765,7 +752,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
 WEffectSelector QAbstractScrollArea::corner,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea::corner,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea::corner,
 #fadeModeCombobox QAbstractScrollArea::corner {
   border-top: 1px solid #141414;
@@ -1889,7 +1875,6 @@ do not highlight either state. */
 
 /* common styles for WEffectSelector, QMenu, QToolTip */
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
@@ -1902,20 +1887,17 @@ WTrackMenu QMenu {
   padding: 2px;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   font: 13px;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   min-width: 180px;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
@@ -1940,7 +1922,6 @@ WTrackMenu QMenu QCheckBox {
   background-color: #201f1f;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
 #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
@@ -1958,7 +1939,6 @@ WTrackMenu QMenu {
 }
   /* hovered items */
   WEffectSelector::item:selected,
-  #ComboBoxAutoDjCalcTransitionPeriod::item:selected,
   #ComboBoxAutoDjTransitionUnit::item:selected,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
@@ -1985,7 +1965,6 @@ WTrackMenu QMenu {
 
 
 WEffectSelector,
-#ComboBoxAutoDjCalcTransitionPeriod,
 #ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   color: #c1cabe;
@@ -2002,7 +1981,6 @@ WEffectSelector {
   padding: 0px 6px;
   background-color: #404040;
 }
-#ComboBoxAutoDjCalcTransitionPeriod,
 #ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   /* 1px is added in each dimension. 20+1+1 = 22 = button height */
@@ -2012,13 +1990,11 @@ WEffectSelector {
 }
 
   WEffectSelector:hover,
-  #ComboBoxAutoDjCalcTransitionPeriod:hover,
   #ComboBoxAutoDjTransitionUnit:hover,
   #fadeModeCombobox:hover {
     border: 1px ridge #015d8d;
   }
   WEffectSelector::drop-down,
-  #ComboBoxAutoDjCalcTransitionPeriod::drop-down,
   #ComboBoxAutoDjTransitionUnit::drop-down,
   #fadeModeCombobox::drop-down {
     /* This causes the Qt theme's widget style to magically not apply. Go figure. */
@@ -2026,14 +2002,12 @@ WEffectSelector {
   }
   WEffectSelector::down-arrow,
   #ComboBoxAutoDjTransitionUnit::down-arrow,
-  #ComboBoxAutoDjCalcTransitionPeriod::down-arrow,
   #fadeModeCombobox::down-arrow {
     width: 20px;
     height: 20px;
     image: url(skin:/icon/ic_chevron_down_48px.svg);
   }
   WEffectSelector::item:!selected,
-  #ComboBoxAutoDjCalcTransitionPeriod::item:!selected,
   #ComboBoxAutoDjTransitionUnit::item:!selected,
   #fadeModeCombobox::item:!selected {
     background-color: #201f1f;
@@ -2041,14 +2015,12 @@ WEffectSelector {
   /* currently loaded effect */
   WEffectSelector::checked,
   #ComboBoxAutoDjTransitionUnit::checked,
-  #ComboBoxAutoDjCalcTransitionPeriod::checked,
   #fadeModeCombobox::checked {
     color: #4495F4;
     font-weight: bold;
   }
   WEffectSelector::indicator:checked,
   #ComboBoxAutoDjTransitionUnit::indicator:checked,
-  #ComboBoxAutoDjCalcTransitionPeriod::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
       use margin + border to create a square checkbox sized like kill buttons */
@@ -2068,10 +2040,6 @@ WEffectSelector {
   #ComboBoxAutoDjTransitionUnit::indicator, /* checkbox, tick mark */
   #ComboBoxAutoDjTransitionUnit::drop-down,
   #ComboBoxAutoDjTransitionUnit::indicator:!checked,
-  #ComboBoxAutoDjCalcTransitionPeriod::checked, /* selected mode */
-  #ComboBoxAutoDjCalcTransitionPeriod::indicator, /* checkbox, tick mark */
-  #ComboBoxAutoDjCalcTransitionPeriod::drop-down,
-  #ComboBoxAutoDjCalcTransitionPeriod::indicator:!checked,
   #LibraryContainer QMenu::item,
   WBeatSpinBox QMenu::item,
   WCueMenuPopup QMenu::item,
