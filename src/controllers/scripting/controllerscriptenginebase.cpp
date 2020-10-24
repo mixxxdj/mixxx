@@ -71,7 +71,7 @@ bool ControllerScriptEngineBase::initialize() {
 }
 
 void ControllerScriptEngineBase::shutdown() {
-    m_scriptWatcher.removePaths(m_scriptWatcher.directories());
+    m_scriptWatcher.removePaths(m_scriptWatcher.files());
 
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
