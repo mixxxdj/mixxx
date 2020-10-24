@@ -22,6 +22,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
+#include "notificationmanager.h"
 #include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
@@ -166,6 +167,8 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(0, tr("fonts"));
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
+
+    m_pNotificationManager = std::make_shared<NotificationManager>();
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
@@ -539,6 +542,9 @@ void CoreServices::shutdown() {
     // beforehand!
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "detaching all track collections";
     CLEAR_AND_CHECK_DELETED(m_pTrackCollectionManager);
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting NotificationManager";
+    CLEAR_AND_CHECK_DELETED(m_pNotificationManager);
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();
