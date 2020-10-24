@@ -100,7 +100,7 @@ DDJ200.jog = function(channel, control, value, status, group) {
     } else {
         var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
         if (DDJ200.vDeck[vDeckNo]["jogEnabled"]) {
-            var vgroup = "[Channel" + vDeckNo +"]";
+            var vgroup = "[Channel" + vDeckNo + "]";
             engine.setValue(vgroup, "jog", value - 64);
         }
     }
