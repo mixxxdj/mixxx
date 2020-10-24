@@ -75,10 +75,12 @@
 
 * Add controller mapping for Hercules DJControl Inpulse 200 [#2542](https://github.com/mixxxdj/mixxx/pull/2542)
 * Add controller mapping for Hercules DJControl Jogvision [#2370](https://github.com/mixxxdj/mixxx/pull/2370)
-* Fix missing manual in deb package [lp:1889776] (https://bugs.launchpad.net/mixxx/+bug/1889776)
-* Fix caching of duplicate tracks that reference the same file #3027
-* Fix loss of precision when dealing with floating-point sample positions while setting loop out position and seeking using vinyl control #3126 #3127
-* Prevent moving a loop beyond track end #3117 https://bugs.launchpad.net/mixxx/+bug/1799574
+* Fix missing manual in deb package [lp:1889776](https://bugs.launchpad.net/mixxx/+bug/1889776)
+* Fix caching of duplicate tracks that reference the same file [#3027](https://github.com/mixxxdj/mixxx/pull/3027)
+* Fix loss of precision when dealing with floating-point sample positions while setting loop out position and seeking using vinyl control [#3126](https://github.com/mixxxdj/mixxx/pull/3126) [#3127](https://github.com/mixxxdj/mixxx/pull/3127)
+* Prevent moving a loop beyond track end [#3117](https://github.com/mixxxdj/mixxx/pull/3117) [lp:1799574](https://bugs.launchpad.net/mixxx/+bug/1799574)
+* Use 6 instead of only 4 compatible musical keys (major/minor) [#3205](https://github.com/mixxxdj/mixxx/pull/3205)
+* Fix possible memory corruption using JACK on Linux [#3160](https://github.com/mixxxdj/mixxx/pull/3160)
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (2020-06-27)
 
