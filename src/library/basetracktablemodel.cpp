@@ -507,7 +507,7 @@ QVariant BaseTrackTableModel::roleValue(
             pixmap.save(&buffer, "PPM"); // Most simple format, without compression effort
             QString html = QString(
                     "<img src='data:image/x-portable-pixmap;base64, %0'>")
-                                   .arg(QString(data.toBase64()));
+                                   .arg(QString::fromLatin1(data.toBase64()));
             return html;
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
             return kEmptyString;
