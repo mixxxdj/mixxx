@@ -59,14 +59,14 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent,
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig),
           m_lastNumPlayers(0) {
-<<<<<<< HEAD
     setObjectName(QStringLiteral("MainMenu"));
     initialize();
-||||||| parent of b40bbda059 (Remove unesarry functions, cleanup)
-    initialize();
-=======
+    rebuild();
+}
+
+void WMainMenuBar::rebuild() {
+    clear();
     createMenu([this](QMenu* x) { addMenu(x); });
->>>>>>> b40bbda059 (Remove unesarry functions, cleanup)
 }
 
 void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {

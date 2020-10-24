@@ -1329,6 +1329,12 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
         // #885890 and Bug #1076789. Before touching anything here, please read
         // those bugs.
+        //setMenuBar(nullptr);
+        //m_pMenuBar->rebuild();
+        //setMenuBar(m_pMenuBar);
+        m_pMenuBar->hide();
+        m_pMenuBar->show();
+        //m_pMenuBar->update();
         createMenuBar();
         connectMenuBar();
         if (m_pMenuBar->isNativeMenuBar()) {
@@ -1337,8 +1343,8 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
 #endif
     } else {
 #ifdef __LINUX__
-        createMenuBar();
-        connectMenuBar();
+//        createMenuBar();
+//        connectMenuBar();
 #endif
         showNormal();
     }

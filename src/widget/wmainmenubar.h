@@ -41,6 +41,7 @@ class WMainMenuBar : public QMenuBar {
     WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
     void createMenu(FnAddMenu fnAddMenu);
+    void rebuild();
     void setVisible(bool visible) override;
   public slots:
     void onLibraryScanStarted();
