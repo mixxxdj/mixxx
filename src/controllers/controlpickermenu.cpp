@@ -329,7 +329,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Go to cue point and play after release"), cueMenu);
 
     // Hotcues
-    QMenu* hotcueMenu = addSubmenu(tr("Hotcues"));
+    QMenu* hotcueMainMenu = addSubmenu(tr("Hotcues"));
     QString hotcueActivateTitle = tr("Hotcue %1");
     QString hotcueClearTitle = tr("Clear Hotcue %1");
     QString hotcueSetTitle = tr("Set Hotcue %1");
@@ -344,8 +344,25 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
     QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
     QString hotcuePreviewDescription = tr("Preview from hotcue %1");
+    // add menus for hotcues 1-16.
+    // though, keep the menu small put additional hotcues in a separate menu,
+    // but don't create that submenu for less than 4 additional hotcues.
+    int preferredHotcuesVisible = 16;
+    int moreMenuThreshold = 4;
+    QMenu* parentMenu = hotcueMainMenu;
+    QMenu* hotcueMoreMenu = nullptr;
+    bool moreHotcues = NUM_HOT_CUES >= preferredHotcuesVisible + moreMenuThreshold;
+    if (moreHotcues) {
+        // populate menu here, add it below #preferredHotcuesVisible
+        hotcueMoreMenu = new QMenu(
+                tr("Hotcues %1-%2").arg(preferredHotcuesVisible + 1).arg(NUM_HOT_CUES),
+                hotcueMainMenu);
+    }
     for (int i = 1; i <= NUM_HOT_CUES; ++i) {
-        QMenu* hotcueSubMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)), hotcueMenu);
+        if (moreHotcues && i > preferredHotcuesVisible) {
+            parentMenu = hotcueMoreMenu;
+        }
+        QMenu* hotcueSubMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)), parentMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_activate").arg(i),
                                  hotcueActivateTitle.arg(QString::number(i)),
                                  hotcueActivateDescription.arg(QString::number(i)),
@@ -374,6 +391,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                  hotcuePreviewTitle.arg(QString::number(i)),
                                  hotcuePreviewDescription.arg(QString::number(i)),
                                  hotcueSubMenu);
+    }
+    if (moreHotcues) {
+        hotcueMainMenu->addSeparator();
+        hotcueMainMenu->addMenu(hotcueMoreMenu);
     }
 
     // Loops
