@@ -213,9 +213,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
         return false;
     }
 
-    QString scriptCode;
-    scriptCode.append(input.readAll());
-    scriptCode.append('\n');
+    QString scriptCode = QString(input.readAll()) + QStringLiteral("\n");
     input.close();
 
     QJSValue scriptFunction = m_pJSEngine->evaluate(scriptCode, filename);
