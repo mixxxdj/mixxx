@@ -7,7 +7,6 @@
 
 #include "controllers/controllerpreset.h"
 #include "controllers/scripting/controllerscriptenginebase.h"
-#include "util/duration.h"
 
 /// ControllerScriptEngineLegacy loads and executes controller scripts for the legacy
 /// JS/XML hybrid controller mapping system.
