@@ -69,7 +69,8 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    virtual void receiveShortMessage(unsigned char status,
+    virtual void receiveShortMessage(
+            unsigned char status,
             unsigned char control,
             unsigned char value,
             mixxx::Duration timestamp);
@@ -91,14 +92,16 @@ class MidiController : public Controller {
     void commitTemporaryInputMappings();
 
   private:
-    void processInputMapping(const MidiInputMapping& mapping,
-                             unsigned char status,
-                             unsigned char control,
-                             unsigned char value,
-                             mixxx::Duration timestamp);
-    void processInputMapping(const MidiInputMapping& mapping,
-                             const QByteArray& data,
-                             mixxx::Duration timestamp);
+    void processInputMapping(
+            const MidiInputMapping& mapping,
+            unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
+    void processInputMapping(
+            const MidiInputMapping& mapping,
+            const QByteArray& data,
+            mixxx::Duration timestamp);
 
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
