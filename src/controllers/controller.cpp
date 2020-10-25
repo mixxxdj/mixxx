@@ -68,14 +68,12 @@ bool Controller::applyPreset(bool initializeScripts) {
         return true;
     }
 
-    bool success = true;
-
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
     if (initializeScripts) {
-        success = m_pScriptEngineLegacy->initialize();
+        return m_pScriptEngineLegacy->initialize();
     }
 
-    return success;
+    return true;
 }
 
 void Controller::startLearning() {
