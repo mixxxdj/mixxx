@@ -47,7 +47,7 @@ void LV2EffectProcessor::processChannel(
     Q_UNUSED(groupFeatures);
 
     for (int i = 0; i < m_engineEffectParameters.size(); i++) {
-        m_LV2parameters[i] = m_engineEffectParameters[i]->value();
+        m_LV2parameters[i] = static_cast<float>(m_engineEffectParameters[i]->value());
     }
 
     int j = 0;
@@ -91,7 +91,7 @@ LV2EffectGroupState* LV2EffectProcessor::createSpecificState(
 
     if (pInstance) {
         for (int i = 0; i < m_engineEffectParameters.size(); i++) {
-            m_LV2parameters[i] = m_engineEffectParameters[i]->value();
+            m_LV2parameters[i] = static_cast<float>(m_engineEffectParameters[i]->value());
             lilv_instance_connect_port(pInstance,
                     m_controlPortIndices[i], &m_LV2parameters[i]);
         }
