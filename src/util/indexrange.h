@@ -153,8 +153,6 @@ class IndexRange final: private std::pair<SINT, SINT> {
     }
 };
 
-IndexRange reverse(IndexRange arg);
-
 /// Intersect two ranges with compatible orientations.
 ///
 /// Returns std::nullopt of the ranges are disconnected without

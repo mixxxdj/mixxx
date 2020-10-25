@@ -60,18 +60,6 @@ bool IndexRange::isPartOf(IndexRange outerIndexRange) const {
     return false;
 }
 
-IndexRange reverse(IndexRange arg) {
-    if (arg.empty()) {
-        return arg;
-    } else {
-        if (arg.start() < arg.end()) {
-            return IndexRange::between(arg.end() - 1, arg.start() - 1);
-        } else {
-            return IndexRange::between(arg.end() + 1, arg.start() + 1);
-        }
-    }
-}
-
 std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs) {
     if (lhs.start() < lhs.end()) {
         if (rhs.start() <= rhs.end()) {

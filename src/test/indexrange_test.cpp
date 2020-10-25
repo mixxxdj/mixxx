@@ -166,8 +166,6 @@ TEST_F(IndexRangeTest, equal) {
     EXPECT_FALSE(IndexRange::forward(-1, 3) != IndexRange::between(-1, 2));
     EXPECT_TRUE(IndexRange::backward(-1, 3) == IndexRange::between(-1, -4));
     EXPECT_FALSE(IndexRange::backward(-1, 3) != IndexRange::between(-1, -4));
-    EXPECT_FALSE(IndexRange::between(-1, 3) == reverse(IndexRange::between(-1, 3)));
-    EXPECT_TRUE(IndexRange::between(-1, 3) != reverse(IndexRange::between(-1, 3)));
     EXPECT_FALSE(IndexRange::between(0, 0) == IndexRange::between(1, 1));
     EXPECT_TRUE(IndexRange::between(0, 0) != IndexRange::between(1, 1));
 }
@@ -188,14 +186,6 @@ TEST_F(IndexRangeTest, isPartOf) {
     EXPECT_FALSE(IndexRange::between(3, 3).isPartOf(IndexRange::between(1, -2)));
     EXPECT_TRUE(IndexRange::between(1, 1).isPartOf(IndexRange::between(-2, 1)));
     EXPECT_TRUE(IndexRange::between(1, 1).isPartOf(IndexRange::between(1, -2)));
-}
-
-TEST_F(IndexRangeTest, reverse) {
-    EXPECT_EQ(IndexRange(), reverse(IndexRange()));
-    EXPECT_EQ(IndexRange::between(1, 1), reverse(IndexRange::between(1, 1)));
-    EXPECT_EQ(IndexRange::between(-1, -1), reverse(IndexRange::between(-1, -1)));
-    EXPECT_EQ(IndexRange::between(8, -5), reverse(IndexRange::between(-4, 9)));
-    EXPECT_EQ(IndexRange::between(-9, -3), reverse(IndexRange::between(-4, -10)));
 }
 
 TEST_F(IndexRangeTest, intersect2) {
