@@ -14,13 +14,6 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(Controller* controller)
           m_bTesting(false) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
-
-    // Subclasses are responsible for adding paths to watch to m_scriptWatcher
-    // in their initializeScriptEngine method.
-    connect(&m_scriptWatcher,
-            &QFileSystemWatcher::fileChanged,
-            this,
-            &ControllerScriptEngineBase::reload);
 }
 
 bool ControllerScriptEngineBase::initialize() {
@@ -71,8 +64,6 @@ bool ControllerScriptEngineBase::initialize() {
 }
 
 void ControllerScriptEngineBase::shutdown() {
-    m_scriptWatcher.removePaths(m_scriptWatcher.files());
-
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
     if (m_pJSEngine) {
@@ -211,12 +202,6 @@ void ControllerScriptEngineBase::scriptErrorDialog(
                 &ErrorDialogHandler::stdButtonClicked,
                 this,
                 &ControllerScriptEngineBase::errorDialogButton);
-    }
-}
-
-void ControllerScriptEngineBase::watchScriptFile(const QFileInfo& fileInfo) {
-    if (!m_scriptWatcher.addPath(fileInfo.absoluteFilePath())) {
-        controllerDebug("Failed to watch script file " + fileInfo.absoluteFilePath());
     }
 }
 

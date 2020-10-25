@@ -58,6 +58,8 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
     QList<ControllerPreset::ScriptFileInfo> m_scriptFiles;
 
+    QFileSystemWatcher m_fileWatcher;
+
     friend class ScriptConnection;
     friend class ControllerScriptInterfaceLegacy;
     friend class ColorJSProxy;

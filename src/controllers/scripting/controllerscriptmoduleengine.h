@@ -24,4 +24,5 @@ class ControllerScriptModuleEngine : public ControllerScriptEngineBase {
     QJSValue m_shutdownFunction;
 
     QFileInfo m_moduleFileInfo;
+    QFileSystemWatcher m_fileWatcher;
 };

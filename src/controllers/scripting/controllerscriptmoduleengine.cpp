@@ -1,5 +1,13 @@
 #include "controllers/scripting/controllerscriptmoduleengine.h"
 
+ControllerScriptModuleEngine::ControllerScriptModuleEngine(Controller* controller)
+        : ControllerScriptEngineBase(controller) {
+    connect(&m_fileWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerScriptModuleEngine::reload);
+}
+
 ControllerScriptModuleEngine::~ControllerScriptModuleEngine() {
     shutdown();
 }
@@ -18,7 +26,9 @@ bool ControllerScriptModuleEngine::initialize() {
         return false;
     }
 
-    watchScriptFile(m_moduleFileInfo);
+    if (!m_fileWatcher.addPath(m_moduleFileInfo.absoluteFilePath())) {
+        qWarning() << "Failed to watch script file" << m_moduleFileInfo.absoluteFilePath();
+    }
 
     QJSValue initFunction = mod.property("init");
     if (!executeFunction(initFunction, QJSValueList{})) {

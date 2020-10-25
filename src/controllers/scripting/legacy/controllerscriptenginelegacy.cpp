@@ -10,6 +10,10 @@
 
 ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(Controller* controller)
         : ControllerScriptEngineBase(controller) {
+    connect(&m_fileWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerScriptEngineLegacy::reload);
 }
 
 ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
@@ -101,7 +105,6 @@ bool ControllerScriptEngineLegacy::initialize() {
         if (!script.functionPrefix.isEmpty()) {
             m_scriptFunctionPrefixes.append(script.functionPrefix);
         }
-        watchScriptFile(script.file);
     }
 
     for (QString functionName : m_scriptFunctionPrefixes) {
@@ -165,7 +168,13 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
                    << scriptFile.absoluteFilePath();
         return false;
     }
-    watchScriptFile(scriptFile);
+
+    // If the script is invalid, it should be watched so the user can fix it
+    // without having to restart Mixxx. So, add it to the watcher before
+    // evaluating it.
+    if (!m_fileWatcher.addPath(scriptFile.absoluteFilePath())) {
+        qWarning() << "Failed to watch script file" << scriptFile.absoluteFilePath();
+    };
 
     qDebug() << "ControllerScriptHandlerLegacy: Loading"
              << scriptFile.absoluteFilePath();
