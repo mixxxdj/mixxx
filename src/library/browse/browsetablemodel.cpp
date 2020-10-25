@@ -203,6 +203,17 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
+CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
+    TrackPointer pTrack = getTrack(index);
+    if (pTrack) {
+        return CoverInfo::CoverInfo(pTrack->getCoverInfo(), getTrackLocation(index));
+    } else {
+        qWarning()
+                << "Track is not available in library"
+                << getTrackLocation(index);
+        return CoverInfo();
+    }
+}
 const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
