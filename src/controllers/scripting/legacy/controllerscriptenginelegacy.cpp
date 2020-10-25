@@ -70,6 +70,7 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
         wrappedFunction = it.value();
     } else {
         QStringList wrapperArgList;
+        wrapperArgList.reserve(numberOfArgs);
         for (int i = 1; i <= numberOfArgs; i++) {
             wrapperArgList << QString("arg%1").arg(i);
         }
