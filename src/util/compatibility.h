@@ -1,9 +1,6 @@
 #pragma once
 
-#include <QCoreApplication>
-#include <QGuiApplication>
 #include <QList>
-#include <QScreen>
 #include <QUuid>
 #include <QWindow>
 #include <QWidget>
@@ -79,26 +76,6 @@ inline qreal getDevicePixelRatioF(const QWidget* widget) {
 
     // return integer value as last resort
     return widget->devicePixelRatio();
-}
-
-inline QScreen* getPrimaryScreen() {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
-    VERIFY_OR_DEBUG_ASSERT(app) {
-        qWarning() << "Unable to get applications QCoreApplication instance, cannot determine primary screen!";
-    } else {
-        return app->primaryScreen();
-    }
-#endif
-    const QList<QScreen*> screens = QGuiApplication::screens();
-    VERIFY_OR_DEBUG_ASSERT(!screens.isEmpty()) {
-        qWarning() << "No screens found, cannot determine primary screen!";
-    } else {
-        return screens.first();
-    }
-
-    // All attempts to find primary screen failed, return nullptr
-    return nullptr;
 }
 
 inline
