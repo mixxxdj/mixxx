@@ -61,5 +61,4 @@ class ControllerScriptEngineBase : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
     friend class ColorMapperJSProxy;
-    friend class ControllerEngineTest;
 };
