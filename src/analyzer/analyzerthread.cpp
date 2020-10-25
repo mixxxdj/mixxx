@@ -277,7 +277,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                 // If we have read an incomplete chunk while the range has grown
                 // we need to discard the read results and re-read the current
                 // chunk!
-                remainingFrameRange = span(remainingFrameRange, chunkFrameRange);
+
+                remainingFrameRange.growFront(chunkFrameRange.length());
                 continue;
             }
             DEBUG_ASSERT(remainingFrameRange.end() < audioSourceProxy.frameIndexRange().end());

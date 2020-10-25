@@ -115,45 +115,6 @@ std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs) {
     return std::nullopt;
 }
 
-IndexRange span(IndexRange lhs, IndexRange rhs) {
-    if (lhs.start() < lhs.end()) {
-        if (rhs.start() <= rhs.end()) {
-            const SINT start = std::min(lhs.start(), rhs.start());
-            const SINT end = std::max(lhs.end(), rhs.end());
-            DEBUG_ASSERT(start <= end);
-            return IndexRange::between(start, end);
-        } else {
-            DEBUG_ASSERT(!"Cannot span index ranges with different orientations");
-            return IndexRange();
-        }
-    } else if (lhs.start() > lhs.end()) {
-        if (rhs.start() >= rhs.end()) {
-            const SINT start = std::max(lhs.start(), rhs.start());
-            const SINT end = std::min(lhs.end(), rhs.end());
-            DEBUG_ASSERT(start >= end);
-            return IndexRange::between(start, end);
-        } else {
-            DEBUG_ASSERT(!"Cannot span index ranges with different orientations");
-            return IndexRange();
-        }
-    } else {
-        // Single point = empty range
-        DEBUG_ASSERT(lhs.empty());
-        DEBUG_ASSERT(lhs.start() == lhs.end());
-        if (rhs.start() <= rhs.end()) {
-            const SINT start = std::min(lhs.start(), rhs.start());
-            const SINT end = std::max(lhs.end(), rhs.end());
-            DEBUG_ASSERT(start <= end);
-            return IndexRange::between(start, end);
-        } else {
-            const SINT start = std::max(lhs.start(), rhs.start());
-            const SINT end = std::min(lhs.end(), rhs.end());
-            DEBUG_ASSERT(start >= end);
-            return IndexRange::between(start, end);
-        }
-    }
-}
-
 std::ostream& operator<<(std::ostream& os, IndexRange arg) {
     return os << '[' << arg.start() << " -> " << arg.end() << ')';
 }

@@ -129,7 +129,7 @@ class SoundSourceProxyTest : public MixxxTest {
                                     skipRange.length() - skippedRange.length(),
                                     pAudioSource->getSignalInfo().samples2frames(m_skipSampleBuffer.size())));
             EXPECT_FALSE(nextRange.empty());
-            EXPECT_TRUE(intersect(nextRange, skipRange) == nextRange);
+            EXPECT_TRUE(nextRange.isPartOf(skipRange));
             const auto readRange = pAudioSource->readSampleFrames(
                     mixxx::WritableSampleFrames(
                             nextRange,
@@ -140,11 +140,12 @@ class SoundSourceProxyTest : public MixxxTest {
                 return skippedRange;
             }
             EXPECT_TRUE(readRange.start() == nextRange.start());
-            EXPECT_TRUE(intersect(readRange, skipRange) == readRange);
+            EXPECT_TRUE(readRange.isPartOf(skipRange));
             if (skippedRange.empty()) {
                 skippedRange = readRange;
             } else {
-                skippedRange = span(skippedRange, nextRange);
+                EXPECT_TRUE(skippedRange.end() == nextRange.start());
+                skippedRange.growBack(nextRange.length());
             }
         }
         return skippedRange;

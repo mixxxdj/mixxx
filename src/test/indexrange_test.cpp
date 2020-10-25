@@ -233,23 +233,4 @@ TEST_F(IndexRangeTest, intersect2) {
                     IndexRange::between(0, -1), IndexRange::between(-1, -1)));
 }
 
-TEST_F(IndexRangeTest, span) {
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 0), IndexRange::between(0, 1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 1), IndexRange::between(-1, 1)));
-    EXPECT_EQ(IndexRange::between(-2, 2), span(IndexRange::between(-2, 1), IndexRange::between(-1, 2)));
-    EXPECT_EQ(IndexRange::between(-2, 2), span(IndexRange::between(-2, -1), IndexRange::between(1, 2)));
-    EXPECT_EQ(IndexRange::between(1, -1), span(IndexRange::between(0, -1), IndexRange::between(1, 0)));
-    EXPECT_EQ(IndexRange::between(1, -1), span(IndexRange::between(1, -1), IndexRange::between(1, -1)));
-    EXPECT_EQ(IndexRange::between(2, -2), span(IndexRange::between(1, -2), IndexRange::between(2, -1)));
-    EXPECT_EQ(IndexRange::between(2, -2), span(IndexRange::between(-1, -2), IndexRange::between(2, 1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 1), IndexRange::between(0, 0)));
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(0, 0), IndexRange::between(-1, 1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 1), IndexRange::between(1, 1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(1, 1), IndexRange::between(-1, 1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 1), IndexRange::between(-1, -1)));
-    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, -1), IndexRange::between(-1, 1)));
-    EXPECT_EQ(IndexRange::between(3, -1), span(IndexRange::between(1, -1), IndexRange::between(3, 3)));
-    EXPECT_EQ(IndexRange::between(1, -3), span(IndexRange::between(-3, -3), IndexRange::between(1, -1)));
-}
-
 } // namespace mixxx

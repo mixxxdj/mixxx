@@ -172,8 +172,6 @@ inline IndexRange intersect(IndexRange lhs, IndexRange rhs) {
     return res ? *res : IndexRange();
 }
 
-IndexRange span(IndexRange lhs, IndexRange rhs);
-
 inline
 bool operator!=(IndexRange lhs, IndexRange rhs) {
     return !(lhs == rhs);
