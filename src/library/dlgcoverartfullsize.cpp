@@ -8,7 +8,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/widgethelper.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
@@ -145,13 +145,14 @@ void DlgCoverArtFullSize::slotCoverFound(
     // borders touch the edges of the screen.
     QSize dialogSize = m_pixmap.size();
 
-    const QScreen* primaryScreen = getPrimaryScreen();
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
     QRect availableScreenGeometry;
-    if (primaryScreen) {
-        availableScreenGeometry = primaryScreen->availableGeometry();
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
         availableScreenGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        availableScreenGeometry = pScreen->availableGeometry();
     }
 
     const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
