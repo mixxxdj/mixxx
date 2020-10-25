@@ -69,7 +69,6 @@ class ControlPickerMenu : public QMenu {
     QString m_resetStr;
     QString m_microphoneStr;
     QString m_auxStr;
-    QString m_effectRackStr;
     QString m_effectUnitStr;
     QString m_effectStr;
     QString m_parameterStr;
