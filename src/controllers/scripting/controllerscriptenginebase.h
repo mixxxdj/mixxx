@@ -33,7 +33,7 @@ class ControllerScriptEngineBase : public QObject {
         m_bTesting = testing;
     };
 
-    bool isTesting() {
+    bool isTesting() const {
         return m_bTesting;
     }
 
