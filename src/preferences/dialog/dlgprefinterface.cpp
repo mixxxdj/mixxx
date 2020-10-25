@@ -28,7 +28,9 @@ const QRegExp kMinSizeRegExp("<MinimumSize>(\\d+), *(\\d+)<");
 bool checkSkinResolution(
         const QScreen& screen,
         const QString& skin) {
-    const auto screenSize = screen.availableSize();
+    // Use the full resolution of the entire screen that is
+    // available in full-screen mode.
+    const auto screenSize = screen.size();
     QFile skinfile(skin + QStringLiteral("/skin.xml"));
     if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream in(&skinfile);
