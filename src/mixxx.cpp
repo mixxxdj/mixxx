@@ -60,7 +60,6 @@
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
 #include "util/experiment.h"
@@ -74,6 +73,7 @@
 #include "util/timer.h"
 #include "util/translations.h"
 #include "util/version.h"
+#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
@@ -1502,13 +1502,19 @@ void MixxxMainWindow::rebootMixxxView() {
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
 
-        const QScreen* primaryScreen = getPrimaryScreen();
-        if (primaryScreen) {
-            newX = std::max(0, std::min(newX, primaryScreen->geometry().width() - m_pWidgetParent->width()));
-            newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pWidgetParent->height()));
-            move(newX,newY);
-        } else {
+        const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+        VERIFY_OR_DEBUG_ASSERT(pScreen) {
             qWarning() << "Unable to move window inside screen borders.";
+        }
+        else {
+            newX = std::max(0,
+                    std::min(newX,
+                            pScreen->geometry().width() -
+                                    m_pWidgetParent->width()));
+            newY = std::max(0,
+                    std::min(newY,
+                            pScreen->geometry().height() - m_pWidgetParent->height()));
+            move(newX, newY);
         }
     }
 
