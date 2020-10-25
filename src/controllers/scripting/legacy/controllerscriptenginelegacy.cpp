@@ -34,17 +34,17 @@ bool ControllerScriptEngineLegacy::callFunctionOnObjects(QList<QString> scriptFu
     for (const QString& prefixName : scriptFunctionPrefixes) {
         QJSValue prefix = global.property(prefixName);
         if (!prefix.isObject()) {
-            qWarning() << "ControllerScriptHandlerLegacy: No" << prefixName << "object in script";
+            qWarning() << "No" << prefixName << "object in script";
             continue;
         }
 
         QJSValue init = prefix.property(function);
         if (!init.isCallable()) {
-            qWarning() << "ControllerScriptHandlerLegacy:" << prefixName << "has no"
+            qWarning() << prefixName << "has no"
                        << function << " method";
             continue;
         }
-        controllerDebug("ControllerScriptHandlerLegacy: Executing"
+        controllerDebug("Executing"
                 << prefixName << "." << function);
         QJSValue result = init.callWithInstance(prefix, args);
         if (result.isError()) {
@@ -164,7 +164,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     }
 
     if (!scriptFile.exists()) {
-        qWarning() << "ControllerScriptHandlerLegacy: File does not exist:"
+        qWarning() << "File does not exist:"
                    << scriptFile.absoluteFilePath();
         return false;
     }
@@ -176,7 +176,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
         qWarning() << "Failed to watch script file" << scriptFile.absoluteFilePath();
     };
 
-    qDebug() << "ControllerScriptHandlerLegacy: Loading"
+    qDebug() << "Loading"
              << scriptFile.absoluteFilePath();
 
     // Read in the script file
@@ -184,7 +184,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     QFile input(filename);
     if (!input.open(QIODevice::ReadOnly)) {
         qWarning() << QString(
-                "ControllerScriptHandlerLegacy: Problem opening the script file: %1, "
+                "Problem opening the script file: %1, "
                 "error # %2, %3")
                               .arg(filename,
                                       QString::number(input.error()),

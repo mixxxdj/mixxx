@@ -102,7 +102,7 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
 double ControllerScriptInterfaceLegacy::getValue(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
+        qWarning() << "Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -112,7 +112,7 @@ double ControllerScriptInterfaceLegacy::getValue(QString group, QString name) {
 void ControllerScriptInterfaceLegacy::setValue(
         QString group, QString name, double newValue) {
     if (isnan(newValue)) {
-        qWarning() << "ControllerScriptInterface: script setting [" << group << ","
+        qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return;
     }
@@ -133,7 +133,7 @@ void ControllerScriptInterfaceLegacy::setValue(
 double ControllerScriptInterfaceLegacy::getParameter(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
+        qWarning() << "Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -143,7 +143,7 @@ double ControllerScriptInterfaceLegacy::getParameter(QString group, QString name
 void ControllerScriptInterfaceLegacy::setParameter(
         QString group, QString name, double newParameter) {
     if (isnan(newParameter)) {
-        qWarning() << "ControllerScriptInterface: script setting [" << group << ","
+        qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return;
     }
@@ -162,7 +162,7 @@ void ControllerScriptInterfaceLegacy::setParameter(
 double ControllerScriptInterfaceLegacy::getParameterForValue(
         QString group, QString name, double value) {
     if (isnan(value)) {
-        qWarning() << "ControllerScriptInterface: script setting [" << group << ","
+        qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return 0.0;
     }
@@ -170,7 +170,7 @@ double ControllerScriptInterfaceLegacy::getParameterForValue(
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
+        qWarning() << "Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -189,7 +189,7 @@ double ControllerScriptInterfaceLegacy::getDefaultValue(QString group, QString n
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
+        qWarning() << "Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -202,7 +202,7 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
+        qWarning() << "Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -223,7 +223,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
         // existing during tests is okay.
         if (!m_pScriptEngineLegacy->isTesting()) {
             m_pScriptEngineLegacy->throwJSError(
-                    "ControllerScriptInterface: script tried to connect to "
+                    "script tried to connect to "
                     "ControlObject (" +
                     group + ", " + name + ") which is non-existent.");
         }
@@ -313,12 +313,12 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(
         if (!m_pScriptEngineLegacy->isTesting()) {
             if (disconnect) {
                 m_pScriptEngineLegacy->throwJSError(
-                        "ControllerScriptInterface: script tried to disconnect from "
+                        "script tried to disconnect from "
                         "ControlObject (" +
                         group + ", " + name + ") which is non-existent.");
             } else {
                 m_pScriptEngineLegacy->throwJSError(
-                        "ControllerScriptInterface: script tried to connect to "
+                        "script tried to connect to "
                         "ControlObject (" +
                         group + ", " + name + ") which is non-existent.");
             }
