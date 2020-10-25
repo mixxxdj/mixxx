@@ -701,6 +701,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/audiosource.cpp
   src/sources/audiosourcestereoproxy.cpp
   src/sources/metadatasourcetaglib.cpp
+  src/sources/readaheadframebuffer.cpp
   src/sources/soundsource.cpp
   src/sources/soundsourceflac.cpp
   src/sources/soundsourceoggvorbis.cpp
