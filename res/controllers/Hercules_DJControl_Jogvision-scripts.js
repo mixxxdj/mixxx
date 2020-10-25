@@ -5,7 +5,7 @@
 // * Version: 1.25 (see changelog at https://github.com/mixxxdj/mixxx/pull/2370)
 
 // EXTRAS ADDED TO ORIGINAL MAPPING
-// - MODE+Loop ON                  : set a loop_in mark (with curently defined loop_size), activate it, and enable slip mode
+// - MODE+Loop ON                  : set a loop_in mark (with currently defined loop_size), activate it, and enable slip mode
 // - MODE+Loop X 1/2 / X 2         : do a 'beatjump_size' beats beatjump backward/forward
 // - MODE+Loop Size Knob           : decrease/increase pitch (only key, not tempo!)
 // - MODE+JogWheel plate (playing) : scratch with 'Slip' ON (deactivate 'Slip' when plate is released)
@@ -29,7 +29,7 @@ var CFG = {
         "beatHelper": 1,           // 0|1 (0=disabled; 1=use outer jog leg to indicate where to slide the pitch controller; see also 'CFG.fine.beatHelpSensitivity' variable)
         "beatActiveMode": "follow" // normal|reverse|blink|follow|fill|bounce|alternate|off|on (see table below)
     },
-    // FINE TUNNING Variables (you may modify them, but not too far from the default values...)
+    // FINE TUNING Variables (you may modify them, but not too far from the default values...)
     "fine": {
         "beatHelpSensitivity": 0.5, // [0..1)    Max distance (float) in BPMs to be considered as a match (in use if CFG.user.beatHelper=1): the lower, the more sensitive. Values equal or bigger than 1 are reset to 0.9 and a warning is printed
         "quickMoveFactor": 0.002,   // [0..1]    the smaller (float), the slower MODE+JogWheel will move 'playposition' (when such channel is NOT playing)
