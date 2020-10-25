@@ -107,7 +107,7 @@ bool ControllerScriptEngineLegacy::initialize() {
         }
     }
 
-    for (QString functionName : m_scriptFunctionPrefixes) {
+    for (QString functionName : std::as_const(m_scriptFunctionPrefixes)) {
         if (functionName.isEmpty()) {
             continue;
         }
