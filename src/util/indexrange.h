@@ -179,17 +179,6 @@ bool operator!=(IndexRange lhs, IndexRange rhs) {
     return !(lhs == rhs);
 }
 
-
-inline
-bool operator<(IndexRange lhs, IndexRange rhs) {
-    return (lhs.length() < rhs.length()) && (lhs.isPartOf(rhs));
-}
-
-inline
-bool operator>(IndexRange lhs, IndexRange rhs) {
-    return rhs < lhs;
-}
-
 std::ostream& operator<<(std::ostream& os, IndexRange arg);
 
 QDebug operator<<(QDebug dbg, IndexRange arg);

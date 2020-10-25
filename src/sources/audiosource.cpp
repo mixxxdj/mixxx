@@ -203,8 +203,8 @@ bool AudioSource::verifyReadable() {
     auto readableSampleFrames = readSampleFrames(writableSampleFrames);
     DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isPartOf(
             writableSampleFrames.frameIndexRange()));
-    if (readableSampleFrames.frameIndexRange() <
-            writableSampleFrames.frameIndexRange()) {
+    if (readableSampleFrames.frameIndexRange().length() <
+            writableSampleFrames.frameIndexRange().length()) {
         kLogger.warning()
                 << "Read test failed:"
                 << "expected ="
@@ -321,7 +321,8 @@ ReadableSampleFrames AudioSource::readSampleFrames(
                             readable.frameIndexRange().end());
                 }
             }
-            DEBUG_ASSERT(shrinkedFrameIndexRange < m_frameIndexRange);
+            DEBUG_ASSERT(shrinkedFrameIndexRange.isPartOf(m_frameIndexRange) &&
+                    shrinkedFrameIndexRange.length() < m_frameIndexRange.length());
             kLogger.info()
                     << "Shrinking readable frame index range:"
                     << "before =" << m_frameIndexRange
