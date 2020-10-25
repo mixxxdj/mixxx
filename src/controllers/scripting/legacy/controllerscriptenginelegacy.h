@@ -9,11 +9,6 @@
 #include "controllers/scripting/controllerscriptenginebase.h"
 #include "util/duration.h"
 
-class Controller;
-class ControllerScriptInterfaceLegacy;
-class EvaluationException;
-class ScriptConnection;
-
 /// ControllerScriptEngineLegacy loads and executes controller scripts for the legacy
 /// JS/XML hybrid controller mapping system.
 class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
