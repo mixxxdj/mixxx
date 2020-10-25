@@ -13,8 +13,6 @@ namespace {
 // a viable upper bound for the context menu.
 constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
 
-constexpr int kMinMenuWidthInPixels = 100;
-
 constexpr double kRelativeBpmRange = 0.06; // +/-6 %
 
 inline int bpmLowerBound(double bpm) {
@@ -89,24 +87,20 @@ QString WSearchRelatedTracksMenu::elideActionText(
     if (elidableTextSuffix.isEmpty()) {
         return actionTextPrefix;
     }
-    const auto prefixWidthInPixels =
-            fontMetrics().boundingRect(actionTextPrefix).width();
-    const auto minWidthInPixels =
-            math_max(
-                    prefixWidthInPixels,
-                    kMinMenuWidthInPixels);
     const auto* const pScreen =
             mixxx::widgethelper::getScreen(*this);
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         // This should never fail
         return actionTextPrefix;
     }
+    const auto prefixWidthInPixels =
+            fontMetrics().boundingRect(actionTextPrefix).width();
     const auto maxWidthInPixels =
             math_max(
-                    static_cast<int>(
+                    static_cast<int>(std::ceil(
                             pScreen->availableSize().width() *
-                            kMaxMenuToAvailableScreenWidthRatio),
-                    minWidthInPixels);
+                            kMaxMenuToAvailableScreenWidthRatio)),
+                    prefixWidthInPixels);
     const auto elidedTextSuffix =
             fontMetrics().elidedText(
                     elidableTextSuffix,
