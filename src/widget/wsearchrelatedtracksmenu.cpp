@@ -321,15 +321,21 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
     {
         const auto locationPath = track.getFileInfo().directory();
         if (!locationPath.isEmpty()) {
+            // Search folder and all subfolders, i.e. for "path/to/folder"
+            // also find files in "path/to/folder/subfolder" but not in
+            // "path/to/folder copy".
+            DEBUG_ASSERT(!locationPath.endsWith(QChar('/')));
+            const auto locationPathWithTerminator =
+                    locationPath + QChar('/');
             const QString searchQuery =
                     QStringLiteral("location:\"") +
-                    locationPath +
+                    locationPathWithTerminator +
                     QChar('"');
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
                     tr("Folder: "),
-                    quoteText(locationPath));
+                    quoteText(locationPathWithTerminator));
         }
     }
 }
