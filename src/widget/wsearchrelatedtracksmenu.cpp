@@ -9,7 +9,9 @@
 
 namespace {
 
-constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2; // 20%
+// Occupying up to 20% of the screen's width has been considered
+// a viable upper bound for the context menu.
+constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
 
 constexpr int kMinMenuWidthInPixels = 100;
 
