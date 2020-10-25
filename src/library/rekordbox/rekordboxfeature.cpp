@@ -1334,10 +1334,14 @@ TreeItemModel* RekordboxFeature::getChildModel() {
 QString RekordboxFeature::formatRootViewHtml() const {
     QString title = tr("Rekordbox");
     QString summary = tr(
-            "Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode. <br/>"
-            "Rekordbox can only export to USB or SD devices with a FAT or HFS file system. <br/>"
-            "Mixxx can read a database from any device that contains the database folders (PIONEER and Contents). <br/>"
-            "Not supported are Rekordbox databases that have been moved to an external device via <br/>"
+            "Reads databases exported for Pioneer CDJ / XDJ players using "
+            "the Rekordbox Export mode. <br/>"
+            "Rekordbox can only export to USB or SD devices with a FAT or "
+            "HFS file system. <br/>"
+            "Mixxx can read a database from any device that contains the "
+            "database folders (PIONEER and Contents). <br/>"
+            "Not supported are Rekordbox databases that have been moved to "
+            "an external device via <br/>"
             "Preferences > Advanced > Database management. <br/>"
             "<br/>"
             "The following data is read:");
