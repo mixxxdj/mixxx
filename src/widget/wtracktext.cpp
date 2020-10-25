@@ -10,7 +10,8 @@
 #include "widget/wtrackmenu.h"
 
 namespace {
-const WTrackMenu::Features trackMenuFeatures =
+constexpr WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::SearchRelated |
         WTrackMenu::Feature::Playlist |
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
@@ -23,13 +24,13 @@ const WTrackMenu::Features trackMenuFeatures =
 
 WTrackText::WTrackText(QWidget* pParent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         const QString& group)
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pTrackCollectionManager, trackMenuFeatures)) {
+                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 

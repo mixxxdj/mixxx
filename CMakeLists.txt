@@ -909,6 +909,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wpushbutton.cpp
   src/widget/wrecordingduration.cpp
   src/widget/wsearchlineedit.cpp
+  src/widget/wsearchrelatedtracksmenu.cpp
   src/widget/wsingletoncontainer.cpp
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
