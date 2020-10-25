@@ -1,22 +1,21 @@
-#include <QList>
-#include <QDir>
-#include <QToolTip>
-#include <QDoubleSpinBox>
-#include <QWidget>
-#include <QLocale>
-#include <QDesktopWidget>
-
 #include "preferences/dialog/dlgprefinterface.h"
-#include "preferences/usersettings.h"
+
+#include <QDir>
+#include <QDoubleSpinBox>
+#include <QList>
+#include <QLocale>
+#include <QScreen>
+#include <QToolTip>
+#include <QWidget>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "skin/skinloader.h"
-#include "skin/legacyskinparser.h"
-#include "control/controlobject.h"
-#include "mixxx.h"
-#include "util/screensaver.h"
 #include "defs_urls.h"
-#include "util/autohidpi.h"
+#include "mixxx.h"
+#include "preferences/usersettings.h"
+#include "skin/legacyskinparser.h"
+#include "skin/skinloader.h"
+#include "util/screensaver.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -370,8 +369,8 @@ void DlgPrefInterface::slotApply() {
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise
 bool DlgPrefInterface::checkSkinResolution(QString skin)
 {
-    int screenWidth = QApplication::desktop()->width();
-    int screenHeight = QApplication::desktop()->height();
+    const int screenWidth = screen()->availableSize().width();
+    const int screenHeight = screen()->availableSize().height();
 
     const QRegExp min_size_regex("<MinimumSize>(\\d+), *(\\d+)<");
     QFile skinfile(skin + "/skin.xml");

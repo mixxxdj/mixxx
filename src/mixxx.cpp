@@ -18,7 +18,6 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
-#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QGLFormat>
 #include <QGLWidget>

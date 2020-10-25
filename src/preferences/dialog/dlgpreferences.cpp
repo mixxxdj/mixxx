@@ -15,7 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QDesktopWidget>
 #include <QDialog>
 #include <QEvent>
 #include <QScrollArea>
@@ -583,7 +582,7 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 QRect DlgPreferences::getDefaultGeometry() {
     QSize optimumSize;
     adjustSize();
-    optimumSize = qApp->desktop()->availableGeometry(this).size();
+    optimumSize = screen()->availableSize();
 
     if (frameSize() == size()) {
         // This code is reached in Gnome 2.3
