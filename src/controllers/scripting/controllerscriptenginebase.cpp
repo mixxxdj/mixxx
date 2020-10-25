@@ -168,8 +168,7 @@ void ControllerScriptEngineBase::scriptErrorDialog(
 
     props->setType(DLG_WARNING);
     props->setTitle(tr("Controller Preset Error"));
-    props->setText(QString(tr("The preset for your controller \"%1\" is not "
-                              "working properly."))
+    props->setText(tr("The preset for your controller \"%1\" is not working properly.")
                            .arg(m_pController->getName()));
     props->setInfoText(QStringLiteral("<html>") +
             tr("The script code needs to be fixed.") + QStringLiteral("<p>") +
