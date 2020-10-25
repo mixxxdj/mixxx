@@ -39,6 +39,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
   public slots:
     void setScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
+        m_fileWatcher.removePaths(m_fileWatcher.files());
         m_scriptFiles = scripts;
     }
 
