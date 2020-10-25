@@ -31,12 +31,6 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     /// and ensures the function is executed with the correct 'this' object.
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
-    // There is lots of tight coupling between ControllerScriptEngineLegacy
-    // and ControllerScriptInterface. This is probably not worth improving in legacy code.
-    QJSEngine* jsEngine() {
-        return m_pJSEngine;
-    }
-
   public slots:
     void setScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
         m_fileWatcher.removePaths(m_fileWatcher.files());
@@ -59,6 +53,12 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
     QFileSystemWatcher m_fileWatcher;
 
+    // There is lots of tight coupling between ControllerScriptEngineLegacy
+    // and ControllerScriptInterface. This is probably not worth improving in legacy code.
     friend class ControllerScriptInterfaceLegacy;
+    QJSEngine* jsEngine() const {
+        return m_pJSEngine;
+    }
+
     friend class ControllerScriptEngineLegacyTest;
 };
