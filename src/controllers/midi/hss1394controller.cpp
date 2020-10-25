@@ -48,9 +48,8 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 break;
             default:
                 // Handle platter messages and any others that are not 3 bytes
-                QByteArray outArray = QByteArray::fromRawData(
-                        reinterpret_cast<const char*>(pBuffer), uBufferSize);
-                emit receiveSysex(outArray, timestamp);
+                QByteArray byteArray(reinterpret_cast<const char*>(pBuffer), uBufferSize);
+                emit receiveSysex(byteArray, timestamp);
                 i = uBufferSize;
                 break;
         }
