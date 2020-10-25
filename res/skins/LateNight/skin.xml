@@ -159,8 +159,8 @@
       <SetVariable name="SignalLowColor">orangered</SetVariable><!-- #ff4500 -->
 
       <SetVariable name="DimBrightThresholdOverview">127</SetVariable>
-      <SetVariable name="DimBrightThresholdWaveform">90</SetVariable>
-      <SetVariable name="DimBrightThresholdHotcueBtn">90</SetVariable>
+      <SetVariable name="DimBrightThresholdWaveform">105</SetVariable>
+      <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
 
       <SetVariable name="AxesColor">#999</SetVariable>
       <SetVariable name="BeatColor">#999</SetVariable>
