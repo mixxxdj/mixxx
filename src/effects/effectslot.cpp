@@ -321,7 +321,6 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
         if (pEffectPreset && !pEffectPreset.isNull()) {
             m_loadedParameters[parameterType].clear();
-            int slot = 0;
             for (const auto& parameterPreset :
                     pEffectPreset->getParameterPresets()) {
                 if (parameterPreset.hidden() || parameterPreset.isNull()) {
@@ -331,12 +330,10 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
                 for (const auto& pParameter :
                         m_allParameters.value(parameterType)) {
                     if (pParameter->manifest()->id() == parameterPreset.id()) {
-                        m_loadedParameters[parameterType].insert(
-                                slot, pParameter);
+                        m_loadedParameters[parameterType].append(pParameter);
                         break;
                     }
                 }
-                slot++;
             }
         }
     }
