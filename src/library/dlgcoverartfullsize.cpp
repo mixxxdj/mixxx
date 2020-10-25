@@ -1,6 +1,5 @@
 #include "library/dlgcoverartfullsize.h"
 
-#include <QDesktopWidget>
 #include <QRect>
 #include <QScreen>
 #include <QStyle>

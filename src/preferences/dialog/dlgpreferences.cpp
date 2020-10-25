@@ -15,7 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QDesktopWidget>
 #include <QDialog>
 #include <QEvent>
 #include <QScrollArea>
@@ -62,12 +61,13 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
-#include "mixxx.h"
 #include "controllers/controllermanager.h"
-#include "skin/skinloader.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
+#include "mixxx.h"
+#include "skin/skinloader.h"
 #include "util/compatibility.h"
+#include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
@@ -581,9 +581,12 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 }
 
 QRect DlgPreferences::getDefaultGeometry() {
-    QSize optimumSize;
     adjustSize();
-    optimumSize = qApp->desktop()->availableGeometry(this).size();
+    const auto* const pScreen = mixxx::widgethelper::getScreen(*this);
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        return QRect();
+    }
+    QSize optimumSize = pScreen->availableSize();
 
     if (frameSize() == size()) {
         // This code is reached in Gnome 2.3
