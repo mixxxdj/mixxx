@@ -59,9 +59,6 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
     QFileSystemWatcher m_fileWatcher;
 
-    friend class ScriptConnection;
     friend class ControllerScriptInterfaceLegacy;
-    friend class ColorJSProxy;
-    friend class ColorMapperJSProxy;
     friend class ControllerScriptEngineLegacyTest;
 };
