@@ -66,7 +66,6 @@
 #include "library/trackcollectionmanager.h"
 #include "mixxx.h"
 #include "skin/skinloader.h"
-#include "util/compatibility.h"
 #include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
@@ -419,15 +418,16 @@ void DlgPreferences::onShow() {
     int newX = m_geometry[0].toInt();
     int newY = m_geometry[1].toInt();
 
-    const QScreen* primaryScreen = getPrimaryScreen();
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
     QSize screenSpace;
-    if (primaryScreen) {
-        screenSpace = primaryScreen->geometry().size();
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
         screenSpace = QSize(800, 600);
     }
-    newX = std::max(0, std::min(newX, screenSpace.width()- m_geometry[2].toInt()));
+    else {
+        screenSpace = pScreen->availableSize();
+    }
+    newX = std::max(0, std::min(newX, screenSpace.width() - m_geometry[2].toInt()));
     newY = std::max(0, std::min(newY, screenSpace.height() - m_geometry[3].toInt()));
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
