@@ -7,6 +7,9 @@
 #include <QList>
 
 #include "util/assert.h"
+#if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
+#include "util/widgethelper.h"
+#endif
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
 
@@ -66,16 +69,15 @@ struct QOverload : QConstOverload<Args...>, QNonConstOverload<Args...>
 inline qreal getDevicePixelRatioF(const QWidget* widget) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     return widget->devicePixelRatioF();
-#endif
-
-    // Crawl up to the window and return qreal value
-    QWindow* window = widget->window()->windowHandle();
-    if (window) {
-        return window->devicePixelRatio();
+#else
+    const QWindow* const pWindow =
+            mixxx::widgethelper::getWindow(*widget);
+    VERIFY_OR_DEBUG_ASSERT(pWindow) {
+        // return integer value as last resort
+        return widget->devicePixelRatio();
     }
-
-    // return integer value as last resort
-    return widget->devicePixelRatio();
+    return pWindow->devicePixelRatio();
+#endif
 }
 
 inline
