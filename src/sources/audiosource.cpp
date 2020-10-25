@@ -201,9 +201,8 @@ bool AudioSource::verifyReadable() {
             frameIndexRange().splitAndShrinkFront(numSampleFrames),
             SampleBuffer::WritableSlice(sampleBuffer));
     auto readableSampleFrames = readSampleFrames(writableSampleFrames);
-    DEBUG_ASSERT(
-            readableSampleFrames.frameIndexRange() <=
-            writableSampleFrames.frameIndexRange());
+    DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isPartOf(
+            writableSampleFrames.frameIndexRange()));
     if (readableSampleFrames.frameIndexRange() <
             writableSampleFrames.frameIndexRange()) {
         kLogger.warning()
@@ -293,7 +292,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
         // forward clamped request
         ReadableSampleFrames readable = readSampleFramesClamped(writable);
         DEBUG_ASSERT(readable.frameIndexRange().empty() ||
-                readable.frameIndexRange() <= writable.frameIndexRange());
+                readable.frameIndexRange().isPartOf(writable.frameIndexRange()));
         if (readable.frameIndexRange() != writable.frameIndexRange()) {
             kLogger.warning()
                     << "Failed to read sample frames:"
@@ -341,7 +340,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
 
 void AudioSource::adjustFrameIndexRange(
         IndexRange frameIndexRange) {
-    DEBUG_ASSERT(frameIndexRange <= m_frameIndexRange);
+    DEBUG_ASSERT(frameIndexRange.isPartOf(m_frameIndexRange));
     m_frameIndexRange = frameIndexRange;
 }
 

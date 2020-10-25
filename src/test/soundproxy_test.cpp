@@ -250,7 +250,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                                     readFrameIndexRange,
                                     mixxx::SampleBuffer::WritableSlice(contReadData)));
             ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
-            ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
+            ASSERT_TRUE(contSampleFrames.frameIndexRange().isPartOf(readFrameIndexRange));
             ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
             contFrameIndex += contSampleFrames.frameLength();
 
@@ -361,7 +361,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                                         readFrameIndexRange,
                                         mixxx::SampleBuffer::WritableSlice(contReadData)));
                 ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
-                ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
+                ASSERT_TRUE(contSampleFrames.frameIndexRange().isPartOf(readFrameIndexRange));
                 ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
                 contFrameIndex += contSampleFrames.frameLength();
 

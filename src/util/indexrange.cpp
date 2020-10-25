@@ -42,6 +42,24 @@ IndexRange IndexRange::splitAndShrinkBack(SINT backLength) {
     }
 }
 
+bool IndexRange::isPartOf(IndexRange outerIndexRange) const {
+    if (start() < end()) {
+        if (outerIndexRange.start() <= outerIndexRange.end()) {
+            return (outerIndexRange.start() <= start() &&
+                    outerIndexRange.end() >= end());
+        }
+        DEBUG_ASSERT(!"Cannot compare ranges with different orientations");
+        return false;
+    }
+
+    if (outerIndexRange.start() >= outerIndexRange.end()) {
+        return (outerIndexRange.start() >= start() &&
+                outerIndexRange.end() <= end());
+    }
+    DEBUG_ASSERT(!"Cannot compare ranges with different orientations");
+    return false;
+}
+
 IndexRange reverse(IndexRange arg) {
     if (arg.empty()) {
         return arg;

@@ -140,6 +140,8 @@ class IndexRange final: private std::pair<SINT, SINT> {
     // the length of this range.
     IndexRange splitAndShrinkBack(SINT backLength);
 
+    bool isPartOf(IndexRange outerIndexRange) const;
+
     friend
     bool operator==(IndexRange lhs, IndexRange rhs) {
         return (lhs.first == rhs.first) && (lhs.second == rhs.second);
@@ -177,19 +179,10 @@ bool operator!=(IndexRange lhs, IndexRange rhs) {
     return !(lhs == rhs);
 }
 
-inline
-bool operator<=(IndexRange lhs, IndexRange rhs) {
-    return intersect2(lhs, rhs) == std::make_optional(lhs);
-}
-
-inline
-bool operator>=(IndexRange lhs, IndexRange rhs) {
-    return rhs <= lhs;
-}
 
 inline
 bool operator<(IndexRange lhs, IndexRange rhs) {
-    return (lhs.length() < rhs.length()) && (lhs <= rhs);
+    return (lhs.length() < rhs.length()) && (lhs.isPartOf(rhs));
 }
 
 inline
