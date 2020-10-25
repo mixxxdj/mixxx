@@ -494,9 +494,9 @@ QVariant BaseTrackTableModel::showCoverArtTooltip(
     }
     QByteArray data;
     QBuffer buffer(&data);
-    pixmap.save(&buffer, "PPM"); // Most simple format, without compression effort
+    pixmap.save(&buffer, "BMP"); // Binary bitmap format, without compression effort
     QString html = QString(
-            "<img src='data:image/x-portable-pixmap;base64, %0'>")
+            "<img src='data:image/bmp;base64, %0'>")
                            .arg(QString::fromLatin1(data.toBase64()));
     return html;
 }
