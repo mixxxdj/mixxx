@@ -8,7 +8,7 @@ var DDJ200 = {
 
 DDJ200.init = function() {
     for (var i = 1; i <= 4; i++) {
-        
+
         // create associative arrays for 4 virtual decks
         this.vDeck[i] = {
             syncEnabled: false,
@@ -112,7 +112,7 @@ DDJ200.scratch = function(channel, control, value, status, group) {
     // Convert value down to +1/-1
     // Register the movement
     engine.scratchTick(DDJ200.vDeckNo[script.deckFromGroup(group)],
-                       value - 64);
+        value - 64);
 };
 
 DDJ200.touch = function(channel, control, value, status, group) {
@@ -282,7 +282,7 @@ DDJ200.hotcueNActivate = function(channel, control, value, status, group) {
     var hotcue = "hotcue_" + (control + 1);
     engine.setValue(vgroup, hotcue + "_activate", true);
     midi.sendShortMsg(status, control,
-                      0x7F * engine.getValue(vgroup, hotcue + "_enabled"));
+        0x7F * engine.getValue(vgroup, hotcue + "_enabled"));
     var deckNo = script.deckFromGroup(group);
     midi.sendShortMsg(0x90 + deckNo - 1, 0x0B, 0x7F *
                       engine.getValue(vgroup, "play")); // set play LED
@@ -316,10 +316,10 @@ DDJ200.switchLEDs = function(vDeckNo) {
     midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
                       (engine.getValue(vgroup, "cue_point") !== -1));
     midi.sendShortMsg(0x90 + d, 0x58, 0x7F * engine.getValue(vgroup,
-                                                             "sync_enabled"));
+        "sync_enabled"));
     if (! DDJ200.fourDeckMode) {
         midi.sendShortMsg(0x90 + d, 0x54,
-                          0x7F * engine.getValue(vgroup, "pfl"));
+            0x7F * engine.getValue(vgroup, "pfl"));
     }
 
     for (var i = 1; i <= 8; i++) {
