@@ -47,8 +47,6 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     bool evaluateScriptFile(const QFileInfo& scriptFile);
     void shutdown() override;
 
-    void generateScriptFunctions(const QString& code);
-
     bool callFunctionOnObjects(QList<QString>,
             const QString&,
             QJSValueList args = QJSValueList(),
