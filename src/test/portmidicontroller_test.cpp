@@ -38,6 +38,10 @@ class MockPortMidiController : public PortMidiController {
     MOCK_METHOD4(receiveShortMessage,
             void(unsigned char, unsigned char, unsigned char, mixxx::Duration));
     MOCK_METHOD2(receive, void(const QByteArray&, mixxx::Duration));
+
+    // These tests are unrelated to scripting.
+    MOCK_METHOD0(startEngine, void());
+    MOCK_METHOD0(stopEngine, void());
 };
 
 class MockPortMidiDevice : public PortMidiDevice {

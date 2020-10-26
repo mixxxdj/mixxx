@@ -101,11 +101,11 @@ class Controller : public QObject, ConstControllerPresetVisitor {
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
-    void startEngine();
+    virtual void startEngine();
 
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
-    void stopEngine();
+    virtual void stopEngine();
 
     // To be called when receiving events
     void triggerActivity();
