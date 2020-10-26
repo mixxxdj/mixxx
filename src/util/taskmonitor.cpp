@@ -58,11 +58,6 @@ void TaskMonitor::slotReportTaskProgress(
             progressMessage);
 }
 
-void TaskMonitor::slotCanceled() {
-    DEBUG_ASSERT(m_pProgressDlg);
-    abortAllTasks();
-}
-
 void TaskMonitor::registerTask(
         Task* pTask,
         const QString& title) {
@@ -160,6 +155,15 @@ void TaskMonitor::updateProgress() {
                 static_cast<int>(kPercentageOfCompletionMax * m_taskInfos.size()));
         m_pProgressDlg->setWindowModality(Qt::ApplicationModal);
         m_pProgressDlg->setMinimumDuration(m_minimumProgressDuration.toIntegerMillis());
+        connect(m_pProgressDlg.get(),
+                &QProgressDialog::canceled,
+                this,
+                [this]() {
+                    VERIFY_OR_DEBUG_ASSERT(m_pProgressDlg) {
+                        return;
+                    }
+                    abortAllTasks();
+                });
     }
     // TODO: Display the title and optional progress message of each
     // task. Maybe also the individual progress and an option to abort
