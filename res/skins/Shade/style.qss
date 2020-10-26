@@ -79,6 +79,9 @@ WEffectSelector::indicator:!checked,
 #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::item,
 #fadeModeCombobox::indicator:!checked,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit::item,
+#ComboBoxAutoDjTransitionUnit::indicator:!checked,
 QToolTip,
 WBeatSpinBox,
 WBeatSpinBox QMenu,
@@ -100,6 +103,8 @@ WCoverArtMenu::item {
   background-color: #aab2b7;
   }
   #spinBoxTransition,
+  #ComboBoxAutoDjTransitionUnit,
+  #ComboBoxAutoDjTransitionUnit::down-arrow,
   #fadeModeCombobox,
   #fadeModeCombobox::down-arrow {
     color: #060613;
@@ -117,12 +122,17 @@ WEffectSelector::indicator:!checked,
 #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::down-arrow,
 #fadeModeCombobox::indicator:!checked,
+#ComboBoxAutoDjTransitionUnit,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit::down-arrow,
+#ComboBoxAutoDjTransitionUnit::indicator:!checked,
 WLibrary QPushButton:enabled,
 WBeatSpinBox,
 #spinBoxTransition {
   font: 13px;
   }
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   min-width: 160px;
@@ -133,6 +143,9 @@ WEffectSelector::down-arrow,
 #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox::down-arrow,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit,
+#ComboBoxAutoDjTransitionUnit::down-arrow,
 #spinBoxTransition,
 QToolTip,
 WBeatSpinBox QMenu,
@@ -147,6 +160,7 @@ WCoverArtMenu {
   border-color: #060613;
   }
   WEffectSelector,
+  #ComboBoxAutoDjTransitionUnit,
   #fadeModeCombobox {
     padding-left: 3px;
     }
@@ -154,11 +168,13 @@ WCoverArtMenu {
       margin-top: 0px;
       margin-bottom: 0px;
       }
+    #ComboBoxAutoDjTransitionUnit,
     #fadeModeCombobox {
       margin: 0px 0px 2px 1px;
       height: 20px;
     }
   WEffectSelector::drop-down,
+  #ComboBoxAutoDjTransitionUnit::drop-down,
   #fadeModeCombobox::drop-down {
     border: 0px;
     }
@@ -166,11 +182,14 @@ WCoverArtMenu {
     WEffectSelector::down-arrow {
       height: 18px;
     }
+    #ComboBoxAutoDjTransitionUnit::drop-down,
+    #ComboBoxAutoDjTransitionUnit::down-arrow,
     #fadeModeCombobox::drop-down,
     #fadeModeCombobox::down-arrow {
       height: 20px;
     }
     WEffectSelector::down-arrow,
+    #ComboBoxAutoDjTransitionUnit::down-arrow,
     #fadeModeCombobox::down-arrow {
       border-width: 0px 0px 0px 1px;
       margin: 0px;
@@ -196,6 +215,7 @@ WCoverArtMenu {
     border: 0px solid transparent;
   }
   WEffectSelector::indicator:checked,
+  #ComboBoxAutoDjTransitionUnit::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     border: 1px solid #191f24;
     /* checkbox container is 28 x 22px;
@@ -205,6 +225,7 @@ WCoverArtMenu {
   /* hovered items */
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
+  #ComboBoxAutoDjTransitionUnit::item:selected,
   WBeatSpinBox QMenu::item:selected,
   #LibraryContainer QMenu::item:selected,
   WCueMenuPopup QMenu::item:selected,
@@ -227,6 +248,7 @@ WCoverArtMenu {
   }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
+  #ComboBoxAutoDjTransitionUnit::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #8699b8;
   }
@@ -239,11 +261,13 @@ WCoverArtMenu {
   WTrackMenu::indicator:checked,
   WTrackMenu QMenu::indicator:checked,
   WEffectSelector::indicator:checked,
+  #ComboBoxAutoDjTransitionUnit::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     border-color: #1a2025;
     image: url(skin:/btn/btn_lib_checkmark_black.svg);
   }
   WEffectSelector::indicator:checked,
+  #ComboBoxAutoDjTransitionUnit::indicator:checked,
   #fadeModeCombobox::indicator:checked,
   #LibraryContainer QMenu::indicator:checked,
   WTrackMenu::indicator:checked,
@@ -610,6 +634,8 @@ WSearchLineEdit {
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:horizontal,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   background-color: #626f87;
@@ -653,6 +679,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
@@ -660,6 +687,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 }
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
@@ -670,6 +698,8 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 #LibraryContainer QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-page,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   min-width: 14px;
@@ -680,6 +710,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   background: #626f87;
@@ -688,11 +720,13 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 }
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 40px;
 }
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 40px;
 }
@@ -701,6 +735,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 #LibraryContainer QScrollBar::add-line:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-line:horizontal,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical {
   width: 0px;
@@ -710,6 +746,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
 #LibraryContainer QScrollBar::sub-line:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-line:horizontal,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
   width: 0px;
@@ -719,6 +757,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
 WEffectSelector QAbstractScrollArea::corner,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea::corner,
 #fadeModeCombobox QAbstractScrollArea::corner {
   background-color: #0f0f0f;
   border-top: 1px solid #585858;

@@ -6,6 +6,9 @@ WEffectSelector::indicator:!checked,
 #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::item,
 #fadeModeCombobox::indicator:!checked,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit::item,
+#ComboBoxAutoDjTransitionUnit::indicator:!checked,
 QToolTip,
 WBeatSpinBox,
 WBeatSpinBox QMenu,
@@ -27,6 +30,8 @@ WCoverArtMenu::item {
   background-color: #ad9e4f;
   }
   #spinBoxTransition,
+  #ComboBoxAutoDjTransitionUnit,
+  #ComboBoxAutoDjTransitionUnit::down-arrow,
   #fadeModeCombobox,
   #fadeModeCombobox::down-arrow {
     color: #060613;
@@ -44,8 +49,10 @@ WCoverArtMenu::item {
   /* hovered items */
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
+  #ComboBoxAutoDjTransitionUnit::item:selected,
   WEffectSelector::indicator:selected,
   #fadeModeCombobox::indicator:selected,
+  #ComboBoxAutoDjTransitionUnit::indicator:selected,
   WBeatSpinBox QMenu::item:selected,
   #LibraryContainer QMenu::item:selected,
   WTrackMenu::item:selected,
@@ -66,6 +73,7 @@ WCoverArtMenu::item {
 
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
+  #ComboBoxAutoDjTransitionUnit::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #887a35;
   }
@@ -88,6 +96,7 @@ WCoverArtMenu::item {
   WTrackMenu::indicator:checked,
   WTrackMenu QMenu::indicator:checked,
   WEffectSelector::indicator:checked,
+  #ComboBoxAutoDjTransitionUnit::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     border-color: #222;
     background-color: #4bcf09;
