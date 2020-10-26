@@ -13,7 +13,7 @@
 
 // TODO(rryan): Move to a utility file.
 namespace {
-const char* kTempFilenameExtension = "-tmp";
+const QString kTempFilenameExtension = QStringLiteral(".tmp");
 
 QString computeResourcePath() {
     // Try to read in the resource directory from the command line
@@ -203,15 +203,15 @@ bool ConfigObject<ValueType>::save() {
     QTextStream stream(&tmpFile);
     stream.setCodec("UTF-8");
 
-    QString grp = "";
+    QString group = "";
 
     uint minLength = 0;
     for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
         //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
-        if (i.key().group != grp) {
-            grp = i.key().group;
+        if (i.key().group != group) {
+            group = i.key().group;
             stream << "\n"
-                   << grp << "\n";
+                   << group << "\n";
             minLength += i.key().group.length() + 2;
         }
         stream << i.key().item << " " << i.value().value << "\n";
@@ -222,27 +222,27 @@ bool ConfigObject<ValueType>::save() {
     tmpFile.flush();
     // the stream is usually longer, depending on the amount of encoded data.
     if (stream.pos() < minLength || QFileInfo(tmpFile).size() != stream.pos()) {
-        qWarning() << "Error while writing configuration file: " << tmpFile.fileName();
+        qWarning().nospace() << "Error while writing configuration file: " << tmpFile.fileName();
         return false;
     }
 
     tmpFile.close();
     if (tmpFile.error() !=
             QFile::NoError) { //could be better... should actually say what the error was..
-        qWarning() << "Error while writing configuration file: "
-                   << tmpFile.fileName() << ":" << tmpFile.errorString();
+        qWarning().nospace() << "Error while writing configuration file: "
+                             << tmpFile.fileName() << ": " << tmpFile.errorString();
         return false;
     }
 
     QFile oldConfig(m_filename);
     if (!oldConfig.remove()) {
-        qWarning() << "Could not remove old config file: "
-                   << oldConfig.fileName() << ":" << oldConfig.errorString();
+        qWarning().nospace() << "Could not remove old config file: "
+                             << oldConfig.fileName() << ": " << oldConfig.errorString();
         return false;
     }
     if (!tmpFile.rename(m_filename)) {
-        qWarning() << "Could not rename tmp file to config file: "
-                   << tmpFile.fileName() << ":" << tmpFile.errorString();
+        qWarning().nospace() << "Could not rename tmp file to config file: "
+                             << tmpFile.fileName() << ": " << tmpFile.errorString();
         return false;
     }
 
