@@ -644,6 +644,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Add to Auto DJ Queue (replace)"),
                tr("Replace Auto DJ Queue with selected tracks"),
                libraryMenu, false, m_libraryStr);
+    libraryMenu->addSeparator();
     addControl("[Library]",
             "search_history_next",
             tr("Select next search history"),
@@ -674,6 +675,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Track Load and Play"),
                                            tr("Load selected track and play"), libraryMenu);
 
+    libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
                tr("Record Mix"),
                tr("Toggle mix recording"),
