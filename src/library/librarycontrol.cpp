@@ -222,7 +222,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             [this]() {
-                if (m_pSearchbox) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     m_pSearchbox->slotMoveSelectedHistory(1);
                 }
             });
@@ -230,16 +230,16 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             [this]() {
-                if (m_pSearchbox) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     m_pSearchbox->slotMoveSelectedHistory(-1);
                 }
             });
     connect(m_pSelectHistoryMove.get(),
             &ControlEncoder::valueChanged,
             this,
-            [this](double direction) {
-                if (m_pSearchbox) {
-                    m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(direction));
+            [this](double steps) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
                 }
             });
 

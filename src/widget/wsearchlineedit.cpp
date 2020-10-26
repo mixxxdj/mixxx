@@ -281,11 +281,11 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
         if (keyEvent->key() == Qt::Key_Down) {
             // in case the user entered a new search query
             // und presses the down key, save the query for later recall
-            if (findData(currentText(), Qt::DisplayRole) == -1) {
+            if (findCurrentTextIndex() == -1) {
                 slotSaveSearch();
             }
         } else if (keyEvent->key() == Qt::Key_Enter) {
-            if (findData(currentText(), Qt::DisplayRole) == -1) {
+            if (findCurrentTextIndex() == -1) {
                 slotSaveSearch();
             }
             // The default handler will add the entry to the list,
@@ -390,7 +390,7 @@ void WSearchLineEdit::slotTriggerSearch() {
 
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
-    int cIndex = findData(currentText(), Qt::DisplayRole);
+    int cIndex = findCurrentTextIndex();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
             << "save search. Index: "
@@ -414,8 +414,8 @@ void WSearchLineEdit::slotSaveSearch() {
     }
 }
 
-void WSearchLineEdit::slotMoveSelectedHistory(int direction) {
-    int nIndex = currentIndex() + direction;
+void WSearchLineEdit::slotMoveSelectedHistory(int steps) {
+    int nIndex = currentIndex() + steps;
     // we wrap around to the last entry on backwards direction
     if (nIndex < -1) {
         nIndex = count() - 1;
@@ -437,7 +437,7 @@ void WSearchLineEdit::refreshState() {
 }
 
 void WSearchLineEdit::showPopup() {
-    int cIndex = findData(currentText(), Qt::DisplayRole);
+    int cIndex = findCurrentTextIndex();
     if (cIndex == -1) {
         slotSaveSearch();
     } else {

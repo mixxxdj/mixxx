@@ -49,8 +49,10 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void slotClearSearch();
     bool slotClearSearchIfClearButtonHasFocus();
 
-    /// Select the next/previous entry from the history
-    void slotMoveSelectedHistory(int direction);
+    /// The function selects an entry relative to the currently selected
+    /// entry in the history and executes the search.
+    /// The parameter specifies the distance in steps (positive/negative = downward/upward)
+    void slotMoveSelectedHistory(int steps);
 
   private slots:
     void slotSetShortcutFocus();
@@ -74,6 +76,10 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void updateEditBox(const QString& text);
     void updateClearButton(const QString& text);
     void updateStyleMetrics();
+
+    inline int findCurrentTextIndex() {
+        return findData(currentText(), Qt::DisplayRole);
+    }
 
     QString getSearchText() const;
 
