@@ -846,10 +846,10 @@ TraktorZ2.beatOutputHandler = function(value, group, key) {
                 if (TraktorZ2.displayBrightness[group] <= 0x02) {
                     engine.stopTimer(TraktorZ2.chTimer[group][1]);
                     TraktorZ2.chTimer[group][1] = -1;
-                 }
+                }
             }, false);
         }
-    }   
+    }
 };
 
 TraktorZ2.displayLoopCount = function(group) {
@@ -875,15 +875,15 @@ TraktorZ2.displayLoopCount = function(group) {
         if (
             (playposition >= engine.getValue(group, "loop_start_position")) &&
             (playposition <= engine.getValue(group, "loop_end_position"))
-           ) {
-           displayBrightness = TraktorZ2.displayBrightness[group];
+        ) {
+            displayBrightness = TraktorZ2.displayBrightness[group];
         } else {
             displayBrightness = LedDimmed;
         }
     } else {
         displayBrightness = LedBright;
     }
-    
+
     if (beatloopSize < 1) {
         // Fraction of a beat
         var beatloopSizeRemainder = 1 / beatloopSize;
@@ -903,7 +903,7 @@ TraktorZ2.displayLoopCount = function(group) {
             TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -1, displayBrightness); // Show special symbol of number 1 and the fraction stroke combined in left digit
         }
     } else {
-        // Beat integer        
+        // Beat integer
         beatloopSizeRemainder = beatloopSize;
         for (var digit in led3DigitModulus) {
             var leastSignificiantDigit = (beatloopSizeRemainder % 10);
