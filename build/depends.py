@@ -948,6 +948,7 @@ class MixxxCore(Feature):
                    "src/sources/audiosource.cpp",
                    "src/sources/audiosourcestereoproxy.cpp",
                    "src/sources/metadatasourcetaglib.cpp",
+                   "src/sources/readaheadframebuffer.cpp",
                    "src/sources/soundsource.cpp",
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
