@@ -115,11 +115,20 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="ComboBoxAutoDjTransitionUnit">
-       <property name="toolTip">
-        <string/>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-      </widget>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>10</width>
+         <height>1</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <widget class="QSpinBox" name="spinBoxTransition">
@@ -144,9 +153,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="labelTransitionAppendix">
-       <property name="text">
-        <string>sec.</string>
+      <widget class="QComboBox" name="ComboBoxAutoDjTransitionUnit">
+       <property name="toolTip">
+        <string/>
        </property>
       </widget>
      </item>

@@ -120,9 +120,6 @@ DlgAutoDJ::DlgAutoDJ(
             "Repeat the playlist");
     QString spinBoxTransitionTooltip = tr(
             "Determines the duration of the transition");
-    QString labelTransitionTooltip = tr(
-            // "sec" as in seconds
-            "Seconds");
     QString fadeModeTooltip = tr(
             "Auto DJ Fade Modes\n"
             "\n"
@@ -159,7 +156,6 @@ DlgAutoDJ::DlgAutoDJ(
     pushButtonAddRandom->setToolTip(addRandomBtnTooltip);
     pushButtonRepeatPlaylist->setToolTip(repeatBtnTooltip);
     spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
-    labelTransitionAppendix->setToolTip(labelTransitionTooltip);
     fadeModeCombobox->setToolTip(fadeModeTooltip);
 
     connect(spinBoxTransition,
@@ -210,7 +206,6 @@ DlgAutoDJ::DlgAutoDJ(
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
-    updateTransitionAppendixLabel();
 
     ComboBoxAutoDjTransitionUnit->addItem(tr("Seconds"));
     ComboBoxAutoDjTransitionUnit->addItem(tr("Beats (Outgoing track)"));
@@ -239,16 +234,6 @@ void DlgAutoDJ::setupActionButton(QPushButton* pButton,
     if (m_bShowButtonText) {
         pButton->setText(fallbackText);
     }
-}
-
-void DlgAutoDJ::updateTransitionAppendixLabel() {
-    QString transitionUnit;
-    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::Seconds) {
-        transitionUnit = tr("sec.");
-    } else {
-        transitionUnit = tr("beats.");
-    }
-    labelTransitionAppendix->setText(transitionUnit);
 }
 
 void DlgAutoDJ::onShow() {
@@ -397,5 +382,4 @@ bool DlgAutoDJ::hasFocus() const {
 void DlgAutoDJ::slotSetAutoDJTransitionUnit(int transitionUnit) {
     m_pAutoDJProcessor->setAutoDJTransitionUnit(
             static_cast<AutoDJProcessor::TransitionUnit>(transitionUnit));
-    updateTransitionAppendixLabel();
 }
