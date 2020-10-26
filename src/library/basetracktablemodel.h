@@ -191,7 +191,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual BaseCoverArtDelegate* doCreateCoverArtDelegate(
             QTableView* pTableView) const = 0;
 
-    QVariant showCoverArtTooltip(
+    QVariant composeCoverArtToolTipHtml(
             const QModelIndex& index) const;
 
     Qt::ItemFlags defaultItemFlags(

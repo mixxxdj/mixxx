@@ -467,7 +467,7 @@ bool BaseTrackTableModel::setData(
     return setTrackValueForColumn(pTrack, column, value, role);
 }
 
-QVariant BaseTrackTableModel::showCoverArtTooltip(
+QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         const QModelIndex& index) const {
     // Determine height of the cover art image depending on the screen size
     unsigned int absHeightOfCoverartTooltip;
@@ -513,7 +513,7 @@ QVariant BaseTrackTableModel::roleValue(
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-            return showCoverArtTooltip(index);
+            return composeCoverArtToolTipHtml(index);
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
             return kEmptyString;
         }
