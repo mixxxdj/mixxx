@@ -17,6 +17,8 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
+#include "util/sample.h"
+#include "util/samplebuffer.h"
 #include "util/timer.h"
 
 namespace {
@@ -232,7 +234,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);
 
-    mixxx::IndexRange remainingFrameRange = audioSource->frameIndexRange();
+    mixxx::IndexRange remainingFrameRange =
+            mixxx::IndexRange::forward(0, audioSource->frameIndexRange().end());
     while (!remainingFrameRange.empty()) {
         sleepWhileSuspended();
         if (isStopping()) {
@@ -248,11 +251,14 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         DEBUG_ASSERT(!chunkFrameRange.empty());
 
         // Request the next chunk of audio data
-        const auto readableSampleFrames =
-                audioSourceProxy.readSampleFrames(
-                        mixxx::WritableSampleFrames(
-                                chunkFrameRange,
-                                mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
+        auto writableSampleFrames =
+                mixxx::WritableSampleFrames(
+                        chunkFrameRange,
+                        mixxx::SampleBuffer::WritableSlice(m_sampleBuffer));
+
+        // Request the next chunk of audio data
+        auto readableSampleFrames =
+                audioSourceProxy.readSampleFrames(writableSampleFrames);
         // The returned range fits into the requested range
         DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
 
@@ -260,33 +266,31 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // while reading. We need to adjust all frame ranges to reflect this new
         // situation by restoring all invariants and consistency requirements!
 
-        // Shrink the original range of the current chunks to the actual available
-        // range.
-        chunkFrameRange = intersect(chunkFrameRange, audioSourceProxy.frameIndexRange());
-        // The audio data that has just been read should still fit into the adjusted
-        // chunk range.
-        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
+        if (readableSampleFrames.frameIndexRange().start() > chunkFrameRange.start()) {
+            // failed to read bytes form the beginning
+            // try again next time
+            remainingFrameRange.growFront(chunkFrameRange.end() -
+                    readableSampleFrames.frameIndexRange().start());
 
-        // We also need to adjust the remaining frame range for the next requests.
-        remainingFrameRange = intersect(remainingFrameRange, audioSourceProxy.frameIndexRange());
-        // Currently the range will never grow, but lets also account for this case
-        // that might become relevant in the future.
-        VERIFY_OR_DEBUG_ASSERT(remainingFrameRange.empty() ||
-                remainingFrameRange.end() == audioSourceProxy.frameIndexRange().end()) {
-            if (chunkFrameRange.length() < mixxx::kAnalysisFramesPerChunk) {
-                // If we have read an incomplete chunk while the range has grown
-                // we need to discard the read results and re-read the current
-                // chunk!
-                remainingFrameRange = span(remainingFrameRange, chunkFrameRange);
-                continue;
-            }
-            DEBUG_ASSERT(remainingFrameRange.end() < audioSourceProxy.frameIndexRange().end());
-            kLogger.warning()
-                    << "Unexpected growth of the audio source while reading"
-                    << mixxx::IndexRange::forward(
-                            remainingFrameRange.end(), audioSourceProxy.frameIndexRange().end());
-            remainingFrameRange.growBack(
-                    audioSourceProxy.frameIndexRange().end() - remainingFrameRange.end());
+            // construct a silence buffer for the unreadable part
+            SampleUtil::clear(writableSampleFrames.writableData(),
+                    audioSourceProxy.getSignalInfo().frames2samples(
+                            readableSampleFrames.frameIndexRange().start() -
+                            chunkFrameRange.start()));
+            readableSampleFrames = mixxx::ReadableSampleFrames(
+                    mixxx::IndexRange::forward(chunkFrameRange.start(),
+                            readableSampleFrames.frameIndexRange().start() -
+                                    chunkFrameRange.start()),
+                    mixxx::SampleBuffer::ReadableSlice(
+                            writableSampleFrames.writableData(),
+                            audioSourceProxy.getSignalInfo().frames2samples(
+                                    readableSampleFrames.frameIndexRange()
+                                            .start() -
+                                    chunkFrameRange.start())));
+        } else if (readableSampleFrames.frameIndexRange().end() < chunkFrameRange.end()) {
+            // reached an early end
+            // adjust the remaining range
+            remainingFrameRange.shrinkBack(remainingFrameRange.length());
         }
 
         sleepWhileSuspended();
