@@ -23,7 +23,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
-    virtual void showPopup();
+    virtual void showPopup() override;
 
     explicit WSearchLineEdit(QWidget* pParent);
     ~WSearchLineEdit() override = default;

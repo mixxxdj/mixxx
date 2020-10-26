@@ -24,11 +24,19 @@ const QString kEmptySearch = QStringLiteral("");
 
 const QString kDisabledText = QStringLiteral("- - -");
 
-inline QString clearButtonStyleSheet(int pxPaddingRight) {
+constexpr int kClearbuttonClearence = 1;
+
+inline QString clearButtonStyleSheet(int pxPaddingRight, Qt::LayoutDirection direction) {
     DEBUG_ASSERT(pxPaddingRight >= 0);
-    return QString(
-            QStringLiteral("WSearchLineEdit { padding-right: %1px; }"))
-            .arg(pxPaddingRight);
+    if (direction == Qt::RightToLeft) {
+        return QString(
+                QStringLiteral("WSearchLineEdit { padding-left: %1px; }"))
+                .arg(pxPaddingRight);
+    } else {
+        return QString(
+                QStringLiteral("WSearchLineEdit { padding-right: %1px; }"))
+                .arg(pxPaddingRight);
+    }
 }
 
 int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
@@ -134,7 +142,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     QSize clearButtonSize = m_clearButton->sizeHint();
 
     // Ensures the text does not obscure the clear image.
-    setStyleSheet(clearButtonStyleSheet(clearButtonSize.width() + m_frameWidth + 1));
+    setStyleSheet(clearButtonStyleSheet(
+            clearButtonSize.width() + m_frameWidth + kClearbuttonClearence,
+            layoutDirection()));
 
     refreshState();
 }
@@ -451,12 +461,15 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
         // Disable while placeholder is shown
         m_clearButton->setVisible(false);
         // no right padding
-        setStyleSheet(clearButtonStyleSheet(0));
+        setStyleSheet(clearButtonStyleSheet(0, layoutDirection()));
     } else {
         // Enable otherwise
         m_clearButton->setVisible(true);
         // make sure the text won't be drawn behind the Clear button icon
-        setStyleSheet(clearButtonStyleSheet(m_innerHeight + m_frameWidth));
+        setStyleSheet(clearButtonStyleSheet(
+                m_innerHeight + m_dropButtonWidth +
+                        m_frameWidth + kClearbuttonClearence,
+                layoutDirection()));
     }
 }
 
