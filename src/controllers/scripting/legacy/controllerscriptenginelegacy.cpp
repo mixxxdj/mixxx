@@ -108,6 +108,12 @@ bool ControllerScriptEngineLegacy::initialize() {
         }
     }
 
+    // For testing, do not actually initialize the scripts, just check for
+    // syntax errors above.
+    if (m_bTesting) {
+        return true;
+    }
+
     for (QString functionName : std::as_const(m_scriptFunctionPrefixes)) {
         if (functionName.isEmpty()) {
             continue;

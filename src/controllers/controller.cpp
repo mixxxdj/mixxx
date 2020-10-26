@@ -51,7 +51,7 @@ void Controller::stopEngine() {
     m_pScriptEngineLegacy = nullptr;
 }
 
-bool Controller::applyPreset(bool initializeScripts) {
+bool Controller::applyPreset() {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -69,11 +69,7 @@ bool Controller::applyPreset(bool initializeScripts) {
     }
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
-    if (initializeScripts) {
-        return m_pScriptEngineLegacy->initialize();
-    }
-
-    return true;
+    return m_pScriptEngineLegacy->initialize();
 }
 
 void Controller::startLearning() {

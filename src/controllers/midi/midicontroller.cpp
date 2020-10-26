@@ -58,9 +58,9 @@ bool MidiController::matchPreset(const PresetInfo& preset) {
     return false;
 }
 
-bool MidiController::applyPreset(bool initializeScripts) {
+bool MidiController::applyPreset() {
     // Handles the engine
-    bool result = Controller::applyPreset(initializeScripts);
+    bool result = Controller::applyPreset();
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {

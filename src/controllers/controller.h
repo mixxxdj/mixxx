@@ -84,13 +84,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
-    /// Apply the preset to the controller.
-    /// @brief Initializes both controller engine and static output mappings.
-    ///
-    /// @param initializeScripts Can be set to false to skip script
-    /// initialization for unit tests.
-    /// @return Returns whether it was successful.
-    virtual bool applyPreset(bool initializeScripts = true);
+    virtual bool applyPreset();
 
     // Puts the controller in and out of learning mode.
     void startLearning();

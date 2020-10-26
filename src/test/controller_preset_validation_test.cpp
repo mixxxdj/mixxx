@@ -82,8 +82,7 @@ bool ControllerPresetValidationTest::testLoadPreset(const PresetInfo& preset) {
     FakeController controller;
     controller.setDeviceName("Test Controller");
     controller.setPreset(*pPreset);
-    // Do not initialize the scripts.
-    bool result = controller.applyPreset(false);
+    bool result = controller.applyPreset();
     controller.stopEngine();
     return result;
 }
