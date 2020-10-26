@@ -181,9 +181,6 @@ AutoDJProcessor::AutoDJProcessor(
             m_pConfig->getValue(
                     ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
                     static_cast<int>(TransitionUnit::Seconds)));
-
-    m_pLeftBPM = make_parented<ControlProxy>(ConfigKey("[Channel1]", "bpm"), this);
-    m_pRightBPM = make_parented<ControlProxy>(ConfigKey("[Channel2]", "bpm"), this);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -1663,8 +1660,6 @@ bool AutoDJProcessor::nextTrackLoaded() {
 }
 
 double AutoDJProcessor::getFadeTime() {
-    const double leftBPM = m_pLeftBPM->get();
-    const double rightBPM = m_pRightBPM->get();
     double fromBPM, toBPM;
 
     const double transitionTime = m_transitionTime;
@@ -1673,6 +1668,18 @@ double AutoDJProcessor::getFadeTime() {
     double crossfader = getCrossfader();
     DeckAttributes* pLeftDeck = m_decks[0];
     DeckAttributes* pRightDeck = m_decks[1];
+
+    // Calculate the BPM for tracks in both decks
+    TrackPointer leftTrack = pLeftDeck->getLoadedTrack();
+    TrackPointer rightTrack = pRightDeck->getLoadedTrack();
+
+    const double leftTrackBPM = leftTrack->getBpm();
+    const double rightTrackBPM = rightTrack->getBpm();
+    const double leftDeckRateRatio = pLeftDeck->rateRatio();
+    const double rightDeckRateRatio = pRightDeck->rateRatio();
+
+    const double leftBPM = leftTrackBPM * leftDeckRateRatio;
+    const double rightBPM = rightTrackBPM * rightDeckRateRatio;
 
     if (pLeftDeck->isPlaying() &&
             (!pRightDeck->isPlaying() || crossfader < 0.0)) {

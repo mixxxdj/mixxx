@@ -313,8 +313,6 @@ class AutoDJProcessor : public QObject {
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
 
-    ControlProxy* m_pLeftBPM;
-    ControlProxy* m_pRightBPM;
     ControlProxy* m_pLeftSyncMode;
     ControlProxy* m_pRightSyncMode;
 
