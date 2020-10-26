@@ -1,33 +1,52 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
 
+  <!-- Create Singletons for samplers 1-4 because they're needed when
+    showing 4 or 8 samplers... -->
   <Template src="skin:/samplers/singletons.xml"/>
+  <!-- ...the create a singleton for samplers_8decks.xml because it's used
+    when showing 8 or 16 samplers. -->
+  <SingletonDefinition>
+    <ObjectName>Samplers_1-8</ObjectName>
+    <Children>
+      <Template src="skin:/samplers/samplers_8decks.xml"/>
+    </Children>
+  </SingletonDefinition>
 
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
+      <WidgetStack currentpage="[LateNight],sampler_rows" persist="true">
         <Children>
-          <WidgetStack currentpage="[Skin],8_samplers">
+
+          <!--4 Samplers -->
+          <Template trigger="[LateNight],show_4samplers" src="skin:/samplers/samplers_4decks.xml"/>
+
+          <!--8 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_8samplers">
+            <Layout>vertical</Layout>
             <Children>
-
-              <!--only 4 Sampler but big -->
-              <Template src="skin:/samplers/samplers_4decks.xml"/>
-
-              <!--8 Sampler -->
-              <Template trigger="[Skin],8_samplers" on_hide_select="0" src="skin:/samplers/samplers_8decks.xml"/>
-
+              <SingletonContainer trigger="[LateNight],show_8samplers">
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
             </Children>
-          </WidgetStack>
-        </Children>
-      </WidgetGroup>
+          </WidgetGroup>
 
-      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+          <!--16 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_16samplers">
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
+              <Template src="skin:/samplers/samplers_16decks.xml"/>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
 
     </Children>
     <Connection>

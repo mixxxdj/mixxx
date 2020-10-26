@@ -64,6 +64,7 @@ for:
       libavutil-dev
       libchromaprint-dev
       libebur128-dev
+      libfftw3-dev
       libflac-dev
       libid3tag0-dev
       liblilv-dev
@@ -237,8 +238,10 @@ for:
       -DBATTERY=ON
       -DBROADCAST=ON
       -DBULK=ON
+      -DENGINEPRIME=ON
       -DHID=ON
       -DHSS1394=ON
+      -DKEYFINDER=OFF
       -DLOCALECOMPARE=ON
       -DMAD=ON
       -DMEDIAFOUNDATION=ON

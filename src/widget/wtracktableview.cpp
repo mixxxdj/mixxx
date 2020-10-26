@@ -8,6 +8,7 @@
 
 #include "control/controlobject.h"
 #include "library/dao/trackschema.h"
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -31,7 +32,7 @@ const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck("[Controls]", "AllowTrackL
 
 WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         double backgroundColorOpacity,
         bool sorting)
         : WLibraryTableView(parent,
@@ -39,7 +40,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
                   ConfigKey(LIBRARY_CONFIGVALUE,
                           WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
-          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
@@ -321,7 +322,7 @@ void WTrackTableView::initTrackMenu() {
 
     m_pTrackMenu = make_parented<WTrackMenu>(this,
             m_pConfig,
-            m_pTrackCollectionManager,
+            m_pLibrary,
             WTrackMenu::Feature::All,
             trackModel);
     connect(m_pTrackMenu.get(),
@@ -833,10 +834,12 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollectionManager->unhideTracks(trackIds);
+    m_pLibrary->trackCollections()->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
@@ -863,12 +866,21 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
     // Save the selection
     const QList<TrackId> selectedTrackIds = getSelectedTrackIds();
     int savedHScrollBarPos = horizontalScrollBar()->value();
+    // Save the column of focused table cell.
+    // The cell is not necessarily part of the selection, but even if it's
+    // focused after deselecting a row we may assume the user clicked onto the
+    // column that will be used for sorting.
+    int prevColum = 0;
+    if (currentIndex().isValid()) {
+        prevColum = currentIndex().column();
+    }
 
     sortByColumn(headerSection, sortOrder);
 
     QItemSelectionModel* currentSelection = selectionModel();
     currentSelection->reset(); // remove current selection
 
+    // Find previously selected tracks and store respective rows for reselection.
     QMap<int, int> selectedRows;
     for (const auto& trackId : selectedTrackIds) {
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
@@ -886,19 +898,32 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
         }
     }
 
-    QModelIndex first;
+    // Select the first row of the previous selection.
+    // This scrolls to that row and with the leftmost cell being focused we have
+    // a starting point (currentIndex) for navigation with Up/Down keys.
+    // Replaces broken scrollTo() (see comment below)
+    if (!selectedRows.isEmpty()) {
+        selectRow(selectedRows.firstKey());
+    }
+
+    // Refocus the cell in the column that was focused before sorting.
+    // With this, any Up/Down key press moves the selection and keeps the
+    // horizontal scrollbar position we will restore below.
+    QModelIndex restoreIndex = itemModel->index(currentIndex().row(), prevColum);
+    if (restoreIndex.isValid()) {
+        setCurrentIndex(restoreIndex);
+    }
+
+    // Restore previous selection (doesn't affect focused cell).
     QMapIterator<int, int> i(selectedRows);
     while (i.hasNext()) {
         i.next();
         QModelIndex tl = itemModel->index(i.key(), 0);
         currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
-
-        if (!first.isValid()) {
-            first = tl;
-        }
     }
 
-    scrollTo(first, QAbstractItemView::EnsureVisible);
+    // This seems to be broken since at least Qt 5.12: no scrolling is issued
+    //scrollTo(first, QAbstractItemView::EnsureVisible);
     horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
@@ -963,17 +988,14 @@ bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
 
-void WTrackTableView::saveCurrentVScrollBarPos()
-{
+void WTrackTableView::saveCurrentVScrollBarPos() {
     saveVScrollBarPos(getTrackModel());
 }
 
-void WTrackTableView::restoreCurrentVScrollBarPos()
-{
+void WTrackTableView::restoreCurrentVScrollBarPos() {
     restoreVScrollBarPos(getTrackModel());
 }
 
-void WTrackTableView::keyNotationChanged()
-{
+void WTrackTableView::keyNotationChanged() {
     QWidget::update();
 }

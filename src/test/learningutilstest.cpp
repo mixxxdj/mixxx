@@ -1,7 +1,8 @@
 #include <stdint.h>
 
-#include "test/mixxxtest.h"
+#include "control/controlobject.h"
 #include "controllers/learningutils.h"
+#include "test/mixxxtest.h"
 #include "util/memory.h"
 
 std::ostream& operator<<(std::ostream& stream, const MidiInputMapping& mapping) {

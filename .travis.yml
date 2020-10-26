@@ -17,7 +17,7 @@ env:
     - SCONSFLAGS="battery=1 bulk=1 debug_assertions_fatal=1 hid=1 hss1394=0 lilv=1 opus=1 qtkeychain=1 shoutcast=1 test=1 verbose=0 vinylcontrol=1 virtualize=0"
     # For CMake builds
     # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
-    - CMAKEFLAGS="-DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON"
+    - CMAKEFLAGS="-DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON -DENGINEPRIME=ON"
     - GTEST_COLOR=1
     - CTEST_OUTPUT_ON_FAILURE=1
     # Render analyzer waveform tests to an offscreen buffer
@@ -27,38 +27,6 @@ env:
 
 jobs:
   include:
-    - name: pre-commit
-      if: type != pull_request
-      language: python
-      python: 3.7
-      # There are too many files in the repo that have formatting issues. We'll
-      # disable these checks for now when pushing directly (but still run these
-      # on Pull Requests!).
-      env: SKIP=end-of-file-fixer,trailing-whitespace,clang-format,eslint
-      cache:
-        directories:
-          - $HOME/.cache/pre-commit
-      before_install:
-        - pip install pre-commit==2.5.1
-      script:
-        - pre-commit run --all-files
-      addons: []
-
-    - name: pre-commit-pr
-      if: type == pull_request
-      language: python
-      python: 3.7
-      cache:
-        directories:
-          - $HOME/.cache/pre-commit
-      before_install:
-        - pip install pre-commit==2.5.1
-      script:
-        # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
-        # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
-        - pre-commit run --from-ref HEAD^1 --to-ref HEAD --show-diff-on-failure
-      addons: []
-
     - name: Ubuntu/gcc/SCons build
       compiler: gcc
       # Ubuntu Bionic build prerequisites
@@ -78,7 +46,7 @@ jobs:
       cache: ccache
       # Ubuntu Bionic build prerequisites
       # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
-      env: CMAKEFLAGS_EXTRA="-DENGINEPRIME=ON -DFAAD=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
+      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -223,6 +191,7 @@ addons:
       - libchromaprint-dev
       - libebur128-dev
       - libfaad-dev
+      - libfftw3-dev
       - libflac-dev
       - libid3tag0-dev
       - liblilv-dev

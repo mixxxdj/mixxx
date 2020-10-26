@@ -6,12 +6,15 @@
 /// Enable/disable verbose debug logging globally.
 ///
 /// Verbose debug logging is only needed temporarily during
-/// development and probably cause performance degressions.
-/// IT SHOULD BE KEPT DISABLED IN REGULAR BUILDS!
+/// development and will probably cause performance degressions,
+/// especially when debug messages are logged from real-time code.
+/// IT SHOULD BE KEPT DISABLED IN REGULAR BUILDS AND IS ONLY
+/// SUITABLE FOR DEVELOPMENT!
 ///
 /// After switching the default log level from Debug to Info
 /// this #define might be enabled permanently and could then
-/// finally be removed from the code.
+/// be removed from the code. Debug logs are intended for
+/// developers, not for regular users.
 ///
 /// Example for verbose debug logs: SoundSourceFFmpeg
 #define VERBOSE_DEBUG_LOG false

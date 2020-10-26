@@ -8,10 +8,9 @@ extern "C" {
 
 } // extern "C"
 
+#include "sources/readaheadframebuffer.h"
 #include "sources/soundsourceprovider.h"
-
 #include "util/logging.h"
-#include "util/readaheadsamplebuffer.h"
 
 Q_DECLARE_LOGGING_CATEGORY(mixxxLogSourceFFmpeg)
 #define MIXXX_LOGGING_CATEGORY_SOURCE_FFMPEG \
@@ -38,19 +37,14 @@ class SoundSourceFFmpeg : public SoundSource {
     bool initResampling(
             audio::ChannelCount* pResampledChannelCount,
             audio::SampleRate* pResampledSampleRate);
-    const CSAMPLE* resampleDecodedFrame();
-
-    // Consume as many buffered sample frames as possible and return
-    // the remaining range that could not be filled from the  buffer.
-    WritableSampleFrames consumeSampleBuffer(
-            WritableSampleFrames writableSampleFrames);
+    const CSAMPLE* resampleDecodedAVFrame();
 
     // Seek to the requested start index (if needed) or return false
     // upon seek errors.
     bool adjustCurrentPosition(
             SINT startIndex);
 
-    bool consumeNextPacket(
+    bool consumeNextAVPacket(
             AVPacket* pavPacket,
             AVPacket** ppavNextPacket);
 
@@ -192,11 +186,9 @@ class SoundSourceFFmpeg : public SoundSource {
     AVFrame* m_pavDecodedFrame;
     AVFrame* m_pavResampledFrame;
 
-    ReadAheadSampleBuffer m_sampleBuffer;
+    FrameCount m_seekPrerollFrameCount;
 
-    SINT m_seekPrerollFrameCount;
-
-    SINT m_curFrameIndex;
+    ReadAheadFrameBuffer m_frameBuffer;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {

@@ -11,7 +11,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 class WLibrary;
 class KeyboardEventFilter;

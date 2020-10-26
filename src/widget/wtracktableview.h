@@ -7,7 +7,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "preferences/usersettings.h"
-#include "track/track.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
@@ -15,8 +14,8 @@
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
-class TrackCollectionManager;
 class ExternalTrackCollection;
+class Library;
 class WTrackMenu;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
@@ -28,7 +27,7 @@ class WTrackTableView : public WLibraryTableView {
     WTrackTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             double backgroundColorOpacity,
             bool sorting);
     ~WTrackTableView() override;
@@ -92,7 +91,7 @@ class WTrackTableView : public WLibraryTableView {
     void initTrackMenu();
 
     const UserSettingsPointer m_pConfig;
-    TrackCollectionManager* const m_pTrackCollectionManager;
+    Library* const m_pLibrary;
 
     // Context menu container
     parented_ptr<WTrackMenu> m_pTrackMenu;

@@ -4,7 +4,8 @@
     <name>Mixman DM2 (Linux)</name>
     <author>Jan Jockusch</author>
     <description>This is the DM2 mapping for the Linux driver (dm2linux.sourceforge.net)</description>
-  </info>        
+    <manual>mixman_dm2</manual>
+  </info>
   <controller id="Mixman DM2 (Linux)">
     <scriptfiles>
       <file functionprefix="DM2" filename="Mixman DM2 (Linux).js"/>

@@ -74,16 +74,16 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const float breadth = m_waveformRenderer->getBreadth();
-    const float halfBreadth = breadth / 2.0;
+    const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = m_alignment == Qt::AlignCenter
-            ? allGain*halfBreadth/255.0
-            : allGain*m_waveformRenderer->getBreadth()/255.0;
+            ? allGain * halfBreadth / 255.0f
+            : allGain * m_waveformRenderer->getBreadth() / 255.0f;
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
         painter->setPen(m_pColors->getAxesColor());
-        painter->drawLine(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth);
+        painter->drawLine(QLineF(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth));
     }
 
     int actualLowLineNumber = 0;

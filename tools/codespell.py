@@ -11,7 +11,9 @@ import typing
 import githelper
 
 
-def run_codespell_on_lines(rootdir, filename, lines, codespell_args):
+def run_codespell_on_lines(
+    rootdir, filename, lines, codespell_args, ignore_matches
+):
     """
     Run codespell on the requested lines.
 
@@ -30,20 +32,40 @@ def run_codespell_on_lines(rootdir, filename, lines, codespell_args):
 
     result = 0
     for line in output.splitlines():
-        matched_fname_with_line = line.partition(": ")[0]
+        matched_fname_with_line, _, content = line.partition(": ")
         matched_fname, _, linenum = matched_fname_with_line.rpartition(":")
         assert matched_fname == filename
-        if int(linenum) in lines:
-            result = 1
-            print(line)
+        if int(linenum) not in lines:
+            continue
+
+        match, _, suggestions = content.partition("==>")
+        if match.strip() in ignore_matches:
+            continue
+
+        result = 1
+        print(line)
 
     return result
+
+
+def get_ignore_matches(fp):
+    for line in fp:
+        content, sep, comment = line.partition("#")
+        content = content.strip()
+        if not content:
+            continue
+        yield content
 
 
 def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--from-ref", help="use changes changes since commit")
     parser.add_argument("--to-ref", help="use changes until commit")
+    parser.add_argument(
+        "--ignore-file",
+        type=argparse.FileType("r"),
+        help="ignore matches (one per line)",
+    )
     parser.add_argument("--files", nargs="*", help="only check these files")
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Be verbose"
@@ -75,6 +97,10 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
         include_files=args.files,
     )
 
+    ignore_matches = set()
+    if args.ignore_file:
+        ignore_matches = set(get_ignore_matches(args.ignore_file))
+
     result = 0
     for filename, file_lines in itertools.groupby(
         files_with_added_lines, key=lambda line: line.sourcefile
@@ -85,6 +111,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
             filename,
             lines,
             [arg for arg in codespell_args if arg != "--"],
+            ignore_matches,
         )
 
     return result

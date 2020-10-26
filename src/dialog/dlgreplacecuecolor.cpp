@@ -11,6 +11,7 @@
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/track.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
@@ -97,6 +98,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     m_pNewColorPickerAction->setSelectedColor(firstColor);
     connect(m_pNewColorPickerAction,
             &WColorPickerAction::colorPicked,
+            this,
             [this](mixxx::RgbColor::optional_t color) {
                 if (color) {
                     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(*color));
@@ -129,6 +131,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
+            this,
             [this](mixxx::RgbColor::optional_t color) {
                 if (color) {
                     setButtonColor(pushButtonCurrentColor,
@@ -152,6 +155,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     connect(buttonBox,
             &QDialogButtonBox::clicked,
+            this,
             [this](QAbstractButton* button) {
                 switch (buttonBox->buttonRole(button)) {
                 case QDialogButtonBox::RejectRole:

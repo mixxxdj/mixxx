@@ -1,13 +1,16 @@
+#include "widget/wtrackproperty.h"
+
 #include <QDebug>
 #include <QUrl>
 
 #include "control/controlobject.h"
-#include "widget/wtrackmenu.h"
-#include "widget/wtrackproperty.h"
+#include "track/track.h"
 #include "util/dnd.h"
+#include "widget/wtrackmenu.h"
 
 namespace {
-const WTrackMenu::Features kTrackMenuFeatures =
+constexpr WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::SearchRelated |
         WTrackMenu::Feature::Playlist |
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
@@ -21,13 +24,13 @@ const WTrackMenu::Features kTrackMenuFeatures =
 WTrackProperty::WTrackProperty(
         QWidget* pParent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         const QString& group)
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
+                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 
@@ -88,7 +91,7 @@ void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack);
-        m_pTrackMenu->slotShowTrackInfo();
+        m_pTrackMenu->slotShowDlgTrackInfo();
     }
 }
 

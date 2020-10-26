@@ -1,38 +1,18 @@
-/***************************************************************************
-                          sounddeviceportaudio.cpp
-                             -------------------
-    begin                : Sun Aug 15, 2007 (Stardate -315378.5417935057)
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDDEVICEPORTAUDIO_H
-#define SOUNDDEVICEPORTAUDIO_H
+#pragma once
 
 #include <portaudio.h>
 
+#include <QHash>
 #include <QString>
-#include "util/performancetimer.h"
 
 #include "soundio/sounddevice.h"
 #include "util/duration.h"
-#include "util/fifo.h"
 #include "util/logging.h"
+#include "util/performancetimer.h"
 
 Q_DECLARE_LOGGING_CATEGORY(mixxxLogDevicePortAudio)
 #define MIXXX_LOGGING_CATEGORY_DEVICE_PORTAUDIO \
 MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_DEVICE, "PortAudio")
-
-#define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 
 class SoundManager;
 class ControlProxy;
@@ -100,5 +80,3 @@ class SoundDevicePortAudio : public SoundDevice {
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
 };
-
-#endif

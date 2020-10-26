@@ -117,7 +117,7 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
     } 
 
     for (int i = 0; i < m_parameters.size(); i++) {
-        m_params[i] = m_parameters[i]->value();
+        m_params[i] = static_cast<float>(m_parameters[i]->value());
     }
 
     int j = 0;
@@ -142,7 +142,7 @@ LV2EffectGroupState* LV2EffectProcessor::createGroupState(const mixxx::EnginePar
     LilvInstance* handle = pState->lilvIinstance();
     if (handle) {
         for (int i = 0; i < m_parameters.size(); i++) {
-            m_params[i] = m_parameters[i]->value();
+            m_params[i] = static_cast<float>(m_parameters[i]->value());
             lilv_instance_connect_port(handle, m_controlPortIndices[i], &m_params[i]);
         }
 

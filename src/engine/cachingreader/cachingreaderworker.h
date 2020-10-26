@@ -1,18 +1,17 @@
 #ifndef ENGINE_CACHINGREADERWORKER_H
 #define ENGINE_CACHINGREADERWORKER_H
 
-#include <QtDebug>
 #include <QMutex>
 #include <QSemaphore>
-#include <QThread>
 #include <QString>
+#include <QThread>
+#include <QtDebug>
 
 #include "engine/cachingreader/cachingreaderchunk.h"
-#include "track/track.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
+#include "track/track_decl.h"
 #include "util/fifo.h"
-
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {

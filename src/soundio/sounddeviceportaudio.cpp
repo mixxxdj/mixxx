@@ -1,32 +1,10 @@
-/***************************************************************************
-                          sounddeviceportaudio.cpp
-                             -------------------
-    begin                : Sun Aug 15, 2007 (Stardate -315378.5417935057)
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/sounddeviceportaudio.h"
 
-#include <portaudio.h>
 #include <float.h>
 
-#include <QtDebug>
 #include <QRegularExpression>
 #include <QThread>
-
-#ifdef __LINUX__
-#include <QLibrary>
-#endif
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -34,12 +12,18 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/denormalsarezero.h"
+#include "util/fifo.h"
+#include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
+
+#ifdef __LINUX__
+// for PaAlsa_EnableRealtimeScheduling
+#include <pa_linux_alsa.h>
+#endif
 
 Q_LOGGING_CATEGORY(mixxxLogDevicePortAudio, MIXXX_LOGGING_CATEGORY_DEVICE_PORTAUDIO)
 
@@ -56,6 +40,8 @@ constexpr int kDriftReserve = 1;
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 constexpr int kFifoSize = 2 * kDriftReserve + 1;
+
+constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 
 // We warn only at invalid timing 3, since the first two
 // callbacks can be always wrong due to a setup/open jitter
@@ -390,35 +376,8 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             << "Opened stream";
 
 #ifdef __LINUX__
-    //Attempt to dynamically load and resolve stuff in the PortAudio library
-    //in order to enable RT priority with ALSA.
-    {
-        QLibrary portaudioLib("libportaudio.so.2");
-        qCInfo(mixxxLogDevicePortAudio)
-                << "Loading dynamic library"
-                << portaudioLib.fileName();
-        if (portaudioLib.load()) {
-            qCDebug(mixxxLogDevicePortAudio)
-                    << "Loaded dynamic library"
-                    << portaudioLib.fileName();
-            EnableAlsaRT enableRealtimeScheduling =
-                    reinterpret_cast<EnableAlsaRT>(portaudioLib.resolve(
-                            "PaAlsa_EnableRealtimeScheduling"));
-            if (enableRealtimeScheduling) {
-                qCInfo(mixxxLogDevicePortAudio)
-                        << "Enabling real-time scheduling";
-                enableRealtimeScheduling(pStream, 1);
-            } else {
-                 qCInfo(mixxxLogDevicePortAudio)
-                        << "Real-time scheduling not available";
-            }
-            // Ignore if the library could not be unloaded
-            (void) portaudioLib.unload();
-        } else {
-            qCWarning(mixxxLogDevicePortAudio)
-                    << "Failed to load dynamic library"
-                    << portaudioLib.fileName();
-        }
+    if (m_deviceInfo->hostApi == paALSA) {
+        PaAlsa_EnableRealtimeScheduling(pStream, 1);
     }
 #endif
 
@@ -1370,8 +1329,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 void SoundDevicePortAudio::updateAudioLatencyUsage(
         const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate
-            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_pMasterAudioLatencyUsage->set(
                 secInAudioCb

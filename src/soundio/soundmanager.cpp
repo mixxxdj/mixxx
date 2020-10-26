@@ -63,7 +63,6 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
           m_paInitialized(false),
-          m_jackSampleRate(-1),
           m_config(this),
           m_pErrorDevice(NULL),
           m_underflowHappened(0),
@@ -238,7 +237,9 @@ QList<unsigned int> SoundManager::getSampleRates(QString api) const {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
         QList<unsigned int> samplerates;
-        samplerates.append(m_jackSampleRate);
+        if (m_jackSampleRate.isValid()) {
+            samplerates.append(m_jackSampleRate);
+        }
         return samplerates;
     }
     return m_samplerates;
@@ -319,7 +320,8 @@ void SoundManager::queryDevicesPortaudio() {
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
-            m_jackSampleRate = deviceInfo->defaultSampleRate;
+            m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
+                    deviceInfo->defaultSampleRate);
         }
     }
 }

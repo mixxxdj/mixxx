@@ -1,9 +1,10 @@
-#include <QMessageBox>
-
 #include "library/autodj/dlgautodj.h"
+
+#include <QMessageBox>
 
 #include "library/playlisttablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -15,8 +16,7 @@ const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
 } // anonymous namespace
 
-DlgAutoDJ::DlgAutoDJ(
-        WLibrary* parent,
+DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
         AutoDJProcessor* pProcessor,
@@ -25,10 +25,11 @@ DlgAutoDJ::DlgAutoDJ(
           Ui::DlgAutoDJ(),
           m_pConfig(pConfig),
           m_pAutoDJProcessor(pProcessor),
-          m_pTrackTableView(new WTrackTableView(this, m_pConfig,
-                                                pLibrary->trackCollections(),
-                                                parent->getTrackTableBackgroundColorOpacity(),
-                                                /*no sorting*/ false)),
+          m_pTrackTableView(new WTrackTableView(this,
+                  m_pConfig,
+                  pLibrary,
+                  parent->getTrackTableBackgroundColorOpacity(),
+                  /*no sorting*/ false)),
           m_bShowButtonText(parent->getShowButtonText()),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);
@@ -190,7 +191,7 @@ DlgAutoDJ::DlgAutoDJ(
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
     // skin changes, etc.).
-    spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
+    spinBoxTransition->setValue(static_cast<int>(m_pAutoDJProcessor->getTransitionTime()));
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::transitionTimeChanged,
             this,

@@ -45,14 +45,17 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
-    const double lineWidth = (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.0;
+    auto firstVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getFirstDisplayedPosition() * dataSize);
+    auto lastVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getLastDisplayedPosition() * dataSize);
+    const auto lineWidth = static_cast<GLfloat>(
+            1.0 / m_waveformRenderer->getVisualSamplePerPixel() + 1);
 
-    const int firstIndex = int(firstVisualIndex+0.5);
+    const auto firstIndex = static_cast<int>(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex%2;
 
-    const int lastIndex = int(lastVisualIndex+0.5);
+    const auto lastIndex = static_cast<int>(lastVisualIndex + 0.5);
     lastVisualIndex = lastIndex + lastIndex%2;
 
     // Reset device for native painting
@@ -86,8 +89,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
         //draw reference line
         glBegin(GL_LINES); {
-            glColor4f(m_axesColor_r, m_axesColor_g,
-                      m_axesColor_b, m_axesColor_a);
+            glColor4f(static_cast<GLfloat>(m_axesColor_r),
+                    static_cast<GLfloat>(m_axesColor_g),
+                    static_cast<GLfloat>(m_axesColor_b),
+                    static_cast<GLfloat>(m_axesColor_a));
             glVertex2f(firstVisualIndex,0);
             glVertex2f(lastVisualIndex,0);
         }
@@ -101,7 +106,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
             int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
             int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
 
-            glColor4f(m_lowColor_r, m_lowColor_g, m_lowColor_b, 0.8);
+            glColor4f(static_cast<GLfloat>(m_lowColor_r),
+                    static_cast<GLfloat>(m_lowColor_g),
+                    static_cast<GLfloat>(m_lowColor_b),
+                    0.8f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
@@ -113,7 +121,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
                 glVertex2f(visualIndex,-1.f*lowGain*maxLow1);
             }
 
-            glColor4f(m_midColor_r, m_midColor_g, m_midColor_b, 0.85);
+            glColor4f(static_cast<GLfloat>(m_midColor_r),
+                    static_cast<GLfloat>(m_midColor_g),
+                    static_cast<GLfloat>(m_midColor_b),
+                    0.85f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
@@ -125,7 +136,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
                 glVertex2f(visualIndex,-1.f * midGain * maxMid1);
             }
 
-            glColor4f(m_highColor_r, m_highColor_g, m_highColor_b, 0.9);
+            glColor4f(static_cast<GLfloat>(m_highColor_r),
+                    static_cast<GLfloat>(m_highColor_g),
+                    static_cast<GLfloat>(m_highColor_b),
+                    0.9f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
@@ -165,7 +179,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
             int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
             int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
 
-            glColor4f(m_lowColor_r, m_lowColor_g, m_lowColor_b, 0.8);
+            glColor4f(static_cast<GLfloat>(m_lowColor_r),
+                    static_cast<GLfloat>(m_lowColor_g),
+                    static_cast<GLfloat>(m_lowColor_b),
+                    0.8f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
@@ -178,7 +195,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
                 glVertex2f(visualIndex, lowGain * maxLow);
             }
 
-            glColor4f(m_midColor_r, m_midColor_g, m_midColor_b, 0.85);
+            glColor4f(static_cast<GLfloat>(m_midColor_r),
+                    static_cast<GLfloat>(m_midColor_g),
+                    static_cast<GLfloat>(m_midColor_b),
+                    0.85f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
@@ -191,7 +211,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
                 glVertex2f(visualIndex, midGain * maxMid);
             }
 
-            glColor4f(m_highColor_r, m_highColor_g, m_highColor_b, 0.9);
+            glColor4f(static_cast<GLfloat>(m_highColor_r),
+                    static_cast<GLfloat>(m_highColor_g),
+                    static_cast<GLfloat>(m_highColor_b),
+                    0.9f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {

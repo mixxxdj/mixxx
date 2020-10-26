@@ -10,7 +10,7 @@
         <author>Swiftb0y</author>
         <description>4 deck mapping with options for controlling effect units. Refer to the Mixxx wiki page for how to configure it to control effect units.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=9276</forums>
-        <wiki>https://mixxx.org/wiki/doku.php/behringer_cmd_mm-1</wiki>
+        <manual>behringer_cmd_mm_1</manual>
     </info>
     <controller id="CMD">
         <scriptfiles>

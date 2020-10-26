@@ -33,7 +33,6 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     KeyFinder::AudioData m_audioData;
 
     SINT m_currentFrame;
-    mixxx::track::io::key::ChromaticKey m_previousKey;
     KeyChangeList m_resultKeys;
 };
 

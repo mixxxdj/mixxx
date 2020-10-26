@@ -4,7 +4,10 @@
 
 #include "util/math.h"
 
-const unsigned int updateCoef = 32;
+namespace {
+constexpr unsigned int updateCoef = 32;
+constexpr auto kDoublePi = static_cast<CSAMPLE>(2.0 * M_PI);
+} // namespace
 
 // static
 QString PhaserEffect::getId() {
@@ -149,7 +152,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE depth = 0;
     if (enableState != EffectEnableState::Disabling) {
-        depth = m_pDepthParameter->value();
+        depth = static_cast<CSAMPLE>(m_pDepthParameter->value());
     }
 
     double periodParameter = m_pLFOPeriodParameter->value();
@@ -167,11 +170,11 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     }
     // freqSkip is used to calculate the phase independently for each channel,
     // so do not multiply periodSamples by the number of channels.
-    CSAMPLE freqSkip = 1.0 / periodSamples * 2.0 * M_PI;
+    const auto freqSkip = static_cast<CSAMPLE>(1.0f / periodSamples * kDoublePi);
 
-    CSAMPLE feedback = m_pFeedbackParameter->value();
-    CSAMPLE range = m_pRangeParameter->value();
-    int stages = 2 * m_pStagesParameter->value();
+    const auto feedback = static_cast<CSAMPLE>(m_pFeedbackParameter->value());
+    const auto range = static_cast<CSAMPLE>(m_pRangeParameter->value());
+    const auto stages = static_cast<int>(2 * m_pStagesParameter->value());
 
     CSAMPLE* oldInLeft = pState->oldInLeft;
     CSAMPLE* oldOutLeft = pState->oldOutLeft;
@@ -189,7 +192,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
             / bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN depthStart = oldDepth + depthDelta;
 
-    int stereoCheck = m_pStereoParameter->value();
+    const auto stereoCheck = static_cast<int>(m_pStereoParameter->value());
     int counter = 0;
 
     for (unsigned int i = 0;
@@ -199,25 +202,27 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         right = pInput[i + 1] + tanh(right * feedback);
 
         // For stereo enabled, the channels are out of phase
-        pState->leftPhase = fmodf(pState->leftPhase + freqSkip, 2.0 * M_PI);
-        pState->rightPhase = fmodf(pState->rightPhase + freqSkip + M_PI * stereoCheck, 2.0 * M_PI);
+        pState->leftPhase = fmodf(pState->leftPhase + freqSkip, kDoublePi);
+        pState->rightPhase = fmodf(
+                pState->rightPhase + freqSkip + static_cast<float>(M_PI) * stereoCheck,
+                kDoublePi);
 
         // Updating filter coefficients once every 'updateCoef' samples to avoid
         // extra computing
         if ((counter++) % updateCoef == 0) {
-                CSAMPLE delayLeft = 0.5 + 0.5 * sin(pState->leftPhase);
-                CSAMPLE delayRight = 0.5 + 0.5 * sin(pState->rightPhase);
+            const auto delayLeft = static_cast<CSAMPLE>(0.5 + 0.5 * sin(pState->leftPhase));
+            const auto delayRight = static_cast<CSAMPLE>(0.5 + 0.5 * sin(pState->rightPhase));
 
-                // Coefficient computing based on the following:
-                // https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
-                CSAMPLE wLeft = range * delayLeft;
-                CSAMPLE wRight = range * delayRight;
+            // Coefficient computing based on the following:
+            // https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
+            CSAMPLE wLeft = range * delayLeft;
+            CSAMPLE wRight = range * delayRight;
 
-                CSAMPLE tanwLeft = tanh(wLeft / 2);
-                CSAMPLE tanwRight = tanh(wRight / 2);
+            CSAMPLE tanwLeft = tanh(wLeft / 2);
+            CSAMPLE tanwRight = tanh(wRight / 2);
 
-                filterCoefLeft = (1.0 - tanwLeft) / (1.0 + tanwLeft);
-                filterCoefRight = (1.0 - tanwRight) / (1.0 + tanwRight);
+            filterCoefLeft = (1.0f - tanwLeft) / (1.0f + tanwLeft);
+            filterCoefRight = (1.0f - tanwRight) / (1.0f + tanwRight);
         }
 
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
@@ -226,8 +231,8 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / bufferParameters.channelCount());
 
         // Computing output combining the original and processed sample
-        pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
-        pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
+        pOutput[i] = pInput[i] * (1.0f - 0.5f * depth) + left * depth * 0.5f;
+        pOutput[i + 1] = pInput[i + 1] * (1.0f - 0.5f * depth) + right * depth * 0.5f;
     }
 
     pState->oldDepth = depth;
