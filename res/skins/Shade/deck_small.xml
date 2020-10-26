@@ -39,9 +39,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 9px sans-serif;
+                        font: bold 13px sans-serif;
                         font-family: "Open Sans";
-                        background-color: transparent;
                         color: #191F24;
                       }
                     </Style>
@@ -51,16 +50,13 @@
                       <TrackProperty>
                         <TooltipId>track_title</TooltipId>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
-                          color: #191F24;
                           text-align: left;
-                          padding: 0px 2px;
+                          padding: 1px 2px;
                         }
                         </Style>
                         <Property>titleInfo</Property>
                         <Channel><Variable name="channum"/></Channel>
-                        <SizePolicy>me,f</SizePolicy>
+                        <SizePolicy>e,f</SizePolicy>
                         <MinimumSize>50,19</MinimumSize>
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
@@ -71,16 +67,17 @@
                         <BackPath>style/style_component_border.png</BackPath>
                       </WidgetGroup>
 
+                      <WidgetGroup>
+                        <Size>4f,19f</Size>
+                      </WidgetGroup>
+
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
-                        <Size>55min,19f</Size>
+                        <Size>50min,19f</Size>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: Open Sans;
-                          color: #191F24;
                           text-align: right;
                           padding: 3px 0px 2px 0px;
-                          margin: 0px 0px 0px 10px;
+                          margin: 0px 0px 0px 0px;
                         }
                         </Style>
                         <Group><Variable name="group"/></Group>
@@ -100,9 +97,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 9px sans-serif;
+                        font: bold 13px sans-serif;
                         font-family: "Open Sans";
-                        background-color: transparent;
                         color: #191F24;
                       }
                     </Style>
@@ -112,12 +108,8 @@
                       <TrackProperty>
                         <TooltipId>track_title</TooltipId>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
-                          background-color: transparent;
-                          color: #191F24;
                           text-align: left;
-                          padding: 2px 2px;
+                          padding: 1px 2px;
                         }
                         </Style>
                         <Property>artist</Property>
@@ -138,9 +130,7 @@
                         <TooltipId>visual_key</TooltipId>
                         <Size>30min,18f</Size>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
-                          text-align: left;
+                          text-align: center;
                           padding: 3px 1px 3px 0px;
                         }
                         </Style>
@@ -162,8 +152,6 @@
                         <TooltipId>visual_bpm</TooltipId>
                         <Size>42f,18f</Size>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
                           padding: 3px 1px 3px 0px;
                         }
                         </Style>

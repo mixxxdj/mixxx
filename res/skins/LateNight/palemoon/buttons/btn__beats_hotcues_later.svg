@@ -23,24 +23,20 @@
   </metadata>
   <defs
      id="defs18" />
-  <g
-     style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-     id="g835">
-    <path
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.6;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="M 12,3 H 4 v 7 h 6 v 11 h 2 z"
-       id="path833-3-3" />
-    <path
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
-       id="path6-7-6"
-       d="m 13,16 h 2 v 3 l 7,-4 -7,-4 v 3 h -2 z" />
-  </g>
+  <path
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.6;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 14,3 H 6 v 7 h 6 v 11 h 2 z"
+     id="path833-6" />
   <path
      id="path833-3"
-     d="M 12,3 H 4 v 7 h 6 v 11 h 2 z"
+     d="M 14,3 H 6 v 7 h 6 v 11 h 2 z"
      style="fill:#3f3d3d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   <path
-     d="m 13,16 h 2 v 3 l 7,-4 -7,-4 v 3 h -2 z"
-     id="path6-7"
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path6-3"
+     d="m 15,20 7,-4 -7,-4 z" />
+  <path
+     d="m 15,20 7,-4 -7,-4 z"
+     id="path6"
      style="fill:#928476;fill-opacity:1" />
 </svg>

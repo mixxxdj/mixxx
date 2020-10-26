@@ -54,7 +54,7 @@ IndexRange reverse(IndexRange arg) {
     }
 }
 
-IndexRange intersect(IndexRange lhs, IndexRange rhs) {
+std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs) {
     if (lhs.start() < lhs.end()) {
         if (rhs.start() <= rhs.end()) {
             const SINT start = std::max(lhs.start(), rhs.start());
@@ -64,7 +64,7 @@ IndexRange intersect(IndexRange lhs, IndexRange rhs) {
             }
         } else {
             DEBUG_ASSERT(!"Cannot intersect index ranges with different orientations");
-            return IndexRange();
+            return std::nullopt;
         }
     } else if (lhs.start() > lhs.end()) {
         if (rhs.start() >= rhs.end()) {
@@ -75,7 +75,7 @@ IndexRange intersect(IndexRange lhs, IndexRange rhs) {
             }
         } else {
             DEBUG_ASSERT(!"Cannot intersect index ranges with different orientations");
-            return IndexRange();
+            return std::nullopt;
         }
     } else {
         // Single point = empty range
@@ -94,7 +94,7 @@ IndexRange intersect(IndexRange lhs, IndexRange rhs) {
         }
     }
     // disconnected
-    return IndexRange();
+    return std::nullopt;
 }
 
 IndexRange span(IndexRange lhs, IndexRange rhs) {
