@@ -1,5 +1,6 @@
 #include "wsearchlineedit.h"
 
+#include <QAbstractItemView>
 #include <QFont>
 #include <QLineEdit>
 #include <QShortcut>
@@ -90,6 +91,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     //: Shown in the library search bar when it is empty.
     lineEdit()->setPlaceholderText(tr("Search..."));
     installEventFilter(this);
+    view()->installEventFilter(this);
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
@@ -217,12 +219,17 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 
     setToolTip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for") + "\n" +
-            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") + "\n" +
-            tr("For more information see User Manual > Mixxx Library") + "\n\n" +
-
-            tr("Shortcut") + ": \n" +
-            tr("Ctrl+F") + "  " + tr("Focus", "Give search bar input focus") + "\n" +
-            tr("Ctrl+Backspace") + "  " + tr("Clear input", "Clear the search bar input field") + "\n" +
+            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
+            "\n" + tr("For more information see User Manual > Mixxx Library") +
+            "\n\n" +
+            tr("Shortcut") + ": \n" + tr("Ctrl+F") + "  " +
+            tr("Focus", "Give search bar input focus") + "\n" +
+            tr("Ctrl+Backspace") + "  " +
+            tr("Clear input", "Clear the search bar input field") + "\n" +
+            tr("Ctrl+Space") + "  " +
+            tr("Toggle search history",
+                    "Shows/hides the search history entries") +
+            "\n" +
             tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
 }
 
@@ -283,6 +290,17 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             }
             // The default handler will add the entry to the list,
             // this already happened in slotSaveSearch
+            return true;
+        } else if (keyEvent->key() == Qt::Key_Space &&
+                keyEvent->modifiers() == Qt::ControlModifier) {
+            // open popup on ctrl + space
+            if (view()->isVisible()) {
+                qDebug() << "should hide";
+                hidePopup();
+            } else {
+                qDebug() << "showme";
+                showPopup();
+            }
             return true;
         }
     }
