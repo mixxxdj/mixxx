@@ -19,6 +19,7 @@
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/treeitem.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -733,7 +734,7 @@ void CrateFeature::slotExportTrackFiles() {
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
-    QList<TrackPointer> trackpointers;
+    TrackPointerList trackpointers;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = m_crateTableModel.index(i, 0);
         trackpointers.push_back(m_crateTableModel.getTrack(index));

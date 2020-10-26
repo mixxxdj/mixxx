@@ -55,7 +55,7 @@ WOverview #PassthroughLabel,
 #BroadcastButton,
 /* SKin settings & Library */
 #SkinSettingsToggle,
-#DeckSizeButton[value="1"],
+#SkinSettingsNumToggle[value="1"],
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
@@ -84,7 +84,7 @@ WLibrary QPushButton {
 }
 /* regular font weight */
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
 #SkinSettingsText,
 QToolTip,
@@ -138,7 +138,7 @@ WEffectSelector QAbstractScrollArea,
 #labelRecFilename,
 #labelRecStatistics,
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
 #SkinSettingsText  {
   font-size: 13px;
@@ -166,9 +166,9 @@ WTime {
 }
 
 #SkinSettingsLabelButton,
-#CategoryLabel  {
+#CategoryLabel,
+#SkinSettingsNumToggleHeader  {
   font-size: 17px;
-  text-align: left;
 }
 
 #ArtistText,
@@ -286,8 +286,11 @@ WOverview QLabel {
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
-  #PlayPositionGutter, #DurationGutter {
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+ #TrackColorFullCompact {
+    padding: 0px 3px 0px 5px;
+  }
+  #TrackColorMini {
+    padding: 0px 0px 0px 5px;
   }
 
 #DeckSettings {

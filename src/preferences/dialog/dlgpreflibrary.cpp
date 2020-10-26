@@ -264,6 +264,7 @@ void DlgPrefLibrary::slotRemoveDir() {
         tr("Delete Track Metadata"), QMessageBox::AcceptRole);
     QPushButton* leaveUnchangedButton = removeMsgBox.addButton(
         tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
+    Q_UNUSED(leaveUnchangedButton); // Only used in DEBUG_ASSERT
     removeMsgBox.setDefaultButton(cancelButton);
     removeMsgBox.exec();
 

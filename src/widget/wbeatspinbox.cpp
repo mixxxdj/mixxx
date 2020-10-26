@@ -279,7 +279,8 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
         // QAbstractSpinBox::minimumSizeHint() the lineEdit()->font() is used for
         // rendering
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
     }
     return QDoubleSpinBox::event(pEvent);
@@ -294,7 +295,8 @@ bool WBeatLineEdit::event(QEvent* pEvent) {
         // Only scale pixel size fonts, point size fonts are scaled by the OS
         // This font instance is the one, used for rendering.
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
     }
     return QLineEdit::event(pEvent);

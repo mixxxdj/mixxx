@@ -74,7 +74,8 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
 
     QMutexLocker lock(&m_mutex);
     m_grid.mutable_bpm()->set_bpm(dBpm);
-    m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample / kFrameSize);
+    m_grid.mutable_first_beat()->set_frame_position(
+            static_cast<google::protobuf::int32>(dFirstBeatSample / kFrameSize));
     // Calculate beat length as sample offsets
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
 }
@@ -322,7 +323,8 @@ void BeatGrid::translate(double dNumSamples) {
         return;
     }
     double newFirstBeatFrames = (firstBeatSample() + dNumSamples) / kFrameSize;
-    m_grid.mutable_first_beat()->set_frame_position(newFirstBeatFrames);
+    m_grid.mutable_first_beat()->set_frame_position(
+            static_cast<google::protobuf::int32>(newFirstBeatFrames));
     locker.unlock();
     emit updated();
 }

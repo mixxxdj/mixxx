@@ -388,6 +388,16 @@
 
       </Children>
     </WidgetGroup>
-    <Template src="skin:skin_settings.xml"/>
+    <WidgetGroup>
+      <Layout>vertical</Layout>
+      <SizePolicy>min,me</SizePolicy>
+      <Connection>
+        <ConfigKey>[Master],skin_settings</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <Template src="skin:skin_settings.xml"/>
+      </Children>
+    </WidgetGroup>
   </Children>
 </skin>

@@ -27,8 +27,8 @@
      style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
      id="g854">
     <path
-       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
-       d="m 9,3 v 3 l 11,1e-6 v 2 L 9,8 v 3 L 2,7 Z"
+       style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 9,3 V 6 L 22,6 V 8 H 9 v 3 L 2,7 Z"
        id="path4-3" />
     <path
        d="M 15,21 H 13 V 9 h 2 z"
@@ -54,7 +54,7 @@
   <path
      id="path4"
      fill="#928476"
-     d="m9 3v3l11 1e-6v2l-11-1e-6v3l-7-4z" />
+     d="M 9,3 V 6 L 22,6 V 8 L 9,8 v 3 L 2,7 Z" />
   <path
      style="fill:#3f3d3d;fill-opacity:1"
      id="path2"

@@ -11,30 +11,15 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <!-- Expanding spacers in between control contexts -->
-      <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
-      <Template src="skin:loop.xml"/>
-      <WidgetGroup><Size>3min,1min</Size></WidgetGroup>
-      <Template src="skin:beatjump.xml"/>
-      <WidgetGroup><Size>3min,1min</Size></WidgetGroup>
-      <Template src="skin:special_cues.xml"/>
-      <WidgetGroup>
-        <Size>3min,1min</Size>
-        <MaximumSize>12,-1</MaximumSize>
-      </WidgetGroup>
-      <Template src="skin:hotcues.xml"/>
-      <WidgetGroup>
-        <Size>3min,1min</Size>
-        <MaximumSize>12,-1</MaximumSize>
-      </WidgetGroup>
 
+      <!-- Play / Cue -->
       <WidgetGroup>
+        <ObjectName>PlayCueContainer</ObjectName>
         <Layout>vertical</Layout>
         <MinimumSize>32,42</MinimumSize>
         <MaximumSize>60, -1</MaximumSize>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-
           <Template src="skin:left_right_display_2state_button.xml">
             <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
             <SetVariable name="ObjectName">DeckCue</SetVariable>
@@ -48,9 +33,6 @@
             <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
             <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
           </Template>
-
-          <!-- Workaround for layout spacing -->
-          <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
           <WidgetGroup><!-- Play button + play_indicator -->
             <Layout>stacked</Layout>
@@ -73,9 +55,34 @@
               </Template>
             </Children>
           </WidgetGroup>
-
         </Children>
       </WidgetGroup>
+
+      <WidgetGroup>
+        <Size>3min,1min</Size>
+        <MaximumSize>12,-1</MaximumSize>
+      </WidgetGroup>
+
+      <Template src="skin:hotcues.xml"/>
+
+      <WidgetGroup>
+        <Size>3min,1min</Size>
+        <MaximumSize>12,-1</MaximumSize>
+      </WidgetGroup>
+
+      <Template src="skin:special_cues.xml"/>
+
+      <!-- Expanding spacers in between control contexts -->
+      <WidgetGroup><Size>3min,1min</Size></WidgetGroup>
+
+      <Template src="skin:deck_looping_controls.xml"/>
+
+      <WidgetGroup><Size>3min,1min</Size></WidgetGroup>
+
+      <Template src="skin:deck_beatjump_controls.xml"/>
+
+      <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>
