@@ -123,7 +123,10 @@ void TaskMonitor::reportTaskProgress(
 }
 
 void TaskMonitor::abortAllTasks() {
-    for (auto* pTask : m_taskInfos.keys()) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    const auto abortedTasks = m_taskInfos;
+    m_taskInfos.clear();
+    for (auto* pTask : abortedTasks.keys()) {
         QMetaObject::invokeMethod(
                 pTask,
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
@@ -134,7 +137,6 @@ void TaskMonitor::abortAllTasks() {
 #endif
         );
     }
-    m_taskInfos.clear();
     updateProgress();
 }
 
