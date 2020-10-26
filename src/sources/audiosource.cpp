@@ -219,7 +219,8 @@ bool AudioSource::verifyReadable() {
 std::optional<WritableSampleFrames> AudioSource::clampWritableSampleFrames(
         WritableSampleFrames sampleFrames) const {
     const auto clampedFrameIndexRange =
-            clampFrameIndexRange(sampleFrames.frameIndexRange());
+            intersect2(sampleFrames.frameIndexRange(), frameIndexRange());
+
     if (!clampedFrameIndexRange) {
         return std::nullopt;
     }
