@@ -397,7 +397,7 @@ TraktorZ2.buttonHandler = function(field) {
 
 TraktorZ2.traktorbuttonHandler = function(field) {
     HIDDebug("TraktorZ2: traktorbuttonHandler" + " field: " + field + " field.value: " + field.value);
-    if (field.value === 1) {        
+    if (field.value === 1) {
         TraktorZ2.controller.setOutput(field.group, "traktorbutton", LedBright,  true); // Controller internal state ON -> Switch LED to represent this state
     } else {
         TraktorZ2.controller.setOutput(field.group, "traktorbutton", LedOff,     true); // Controller internal state OFF -> Switch LED to represent this state
@@ -846,10 +846,9 @@ TraktorZ2.beatOutputHandler = function(value, group, key) {
                 if (TraktorZ2.displayBrightness[group] <= 0x02) {
                     engine.stopTimer(TraktorZ2.chTimer[group][1]);
                     TraktorZ2.chTimer[group][1] = -1;
-                }
+                 }
             }, false);
         }
-    
     }   
 };
 
@@ -857,12 +856,12 @@ TraktorZ2.displayLoopCount = function(group) {
     // @param group may be either[Channel1] or [Channel2]
     // @param TraktorZ2.displayBrightness[group] may be aninteger value from 0x00 to 0x07
     var beatloopSize = engine.getValue(group, "beatloop_size");
-       
+
     var led2DigitModulus = {
         "[Digit3]": 10,
         "[Digit2]": 100
     };
-    
+
     var led3DigitModulus = {
         "[Digit3]": 10,
         "[Digit2]": 100,
