@@ -290,15 +290,14 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             }
             // The default handler will add the entry to the list,
             // this already happened in slotSaveSearch
+            slotTriggerSearch();
             return true;
         } else if (keyEvent->key() == Qt::Key_Space &&
                 keyEvent->modifiers() == Qt::ControlModifier) {
             // open popup on ctrl + space
             if (view()->isVisible()) {
-                qDebug() << "should hide";
                 hidePopup();
             } else {
-                qDebug() << "showme";
                 showPopup();
             }
             return true;
