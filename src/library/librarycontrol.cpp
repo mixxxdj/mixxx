@@ -577,9 +577,8 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
         return;
     }
 
-    bool keyIsTab = event.key() == static_cast<int>(Qt::Key_Tab);
-    bool keyIsUpDown = event.key() == static_cast<int>(Qt::Key_Up) ||
-            event.key() == static_cast<int>(Qt::Key_Down);
+    bool keyIsTab = event.key() == Qt::Key_Tab;
+    bool keyIsUpDown = event.key() == Qt::Key_Up || event.key() == Qt::Key_Down;
 
     // If the main window has focus, any widget can receive Tab.
     // Other keys should be sent to library widgets only to not
