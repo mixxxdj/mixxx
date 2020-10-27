@@ -17,6 +17,11 @@
 
 #include <QtDebug>
 
+namespace {
+constexpr int kRateSensitivityMin = 100;
+constexpr int kRateSensitivityMax = 2500;
+} // namespace
+
 // Static default values for rate buttons (percents)
 ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeCoarse;
 ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeFine;
@@ -222,11 +227,11 @@ RateControl::RampMode RateControl::getRateRampMode() {
 void RateControl::setRateRampSensitivity(int sense) {
     // Reverse the actual sensitivity value passed.
     // That way the gui works in an intuitive manner.
-    sense = RATE_SENSITIVITY_MAX - sense + RATE_SENSITIVITY_MIN;
-    if (sense < RATE_SENSITIVITY_MIN) {
-        m_iRateRampSensitivity = RATE_SENSITIVITY_MIN;
-    } else if (sense > RATE_SENSITIVITY_MAX) {
-        m_iRateRampSensitivity = RATE_SENSITIVITY_MAX;
+    sense = kRateSensitivityMax - sense + kRateSensitivityMin;
+    if (sense < kRateSensitivityMin) {
+        m_iRateRampSensitivity = kRateSensitivityMin;
+    } else if (sense > kRateSensitivityMax) {
+        m_iRateRampSensitivity = kRateSensitivityMax;
     } else {
         m_iRateRampSensitivity = sense;
     }
