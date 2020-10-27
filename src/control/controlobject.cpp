@@ -94,6 +94,12 @@ double ControlObject::get(const ConfigKey& key) {
     return pCop ? pCop->get() : 0.0;
 }
 
+// static
+bool ControlObject::toBool(const ConfigKey& key) {
+    const double value = ControlObject::get(key);
+    return (value != 0);
+}
+
 double ControlObject::getParameter() const {
     return m_pControl ? m_pControl->getParameter() : 0.0;
 }

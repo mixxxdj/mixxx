@@ -416,7 +416,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
-        if (!(m_pVinylControlEnabled->get() &&
+        if (!(m_pVinylControlEnabled->toBool() &&
                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
             seekOnLoad(0.0);
         }

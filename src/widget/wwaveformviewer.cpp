@@ -282,5 +282,5 @@ void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
 }
 
 bool WWaveformViewer::isPlaying() const {
-    return m_pPlayEnabled->get();
+    return m_pPlayEnabled->toBool();
 }

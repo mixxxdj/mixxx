@@ -401,13 +401,13 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->toBool();
-        bool useScratch2Value = m_pScratch2Enable->get() != 0;
+        bool useScratch2Value = m_pScratch2Enable->toBool();
 
         // By default scratch2_enable is enough to determine if the user is
         // scratching or not. Moving platter controllers have to disable
         // "scratch2_indicates_scratching" if they are not scratching,
         // to allow things like key-lock.
-        if (useScratch2Value && m_pScratch2Scratching->get()) {
+        if (useScratch2Value && m_pScratch2Scratching->toBool()) {
             *pReportScratching = true;
         }
 
@@ -478,9 +478,9 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             int vcmode = m_pVCMode ? static_cast<int>(m_pVCMode->get()) : MIXXX_VCMODE_ABSOLUTE;
             // TODO(owen): Instead of just ignoring reverse mode, should we
             // disable absolute mode instead?
-            if (m_pReverseButton->get()
-                    && !m_pScratch2Enable->get()
-                    && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+            if (m_pReverseButton->toBool() && !m_pScratch2Enable->toBool() &&
+                    (!bVinylControlEnabled ||
+                            vcmode != MIXXX_VCMODE_ABSOLUTE)) {
                 rate = -rate;
                 *pReportReverse = true;
             }

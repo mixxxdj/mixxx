@@ -163,7 +163,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterEnabled = new ControlProxy("[Master]", "enabled", this);
     masterMixComboBox->addItem(tr("Disabled"));
     masterMixComboBox->addItem(tr("Enabled"));
-    masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
+    masterMixComboBox->setCurrentIndex(m_pMasterEnabled->toBool() ? 1 : 0);
     connect(masterMixComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(masterMixChanged(int)));
     m_pMasterEnabled->connectValueChanged(this, &DlgPrefSound::masterEnabledChanged);
@@ -171,7 +171,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterMonoMixdown = new ControlProxy("[Master]", "mono_mixdown", this);
     masterOutputModeComboBox->addItem(tr("Stereo"));
     masterOutputModeComboBox->addItem(tr("Mono"));
-    masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->get() ? 1 : 0);
+    masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->toBool() ? 1 : 0);
     connect(masterOutputModeComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(this, &DlgPrefSound::masterMonoMixdownChanged);
