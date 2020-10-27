@@ -205,7 +205,7 @@ bool ConfigObject<ValueType>::save() {
 
     QString group = "";
 
-    uint minLength = 0;
+    qint64 minLength = 0;
     for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
         //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
         if (i.key().group != group) {
@@ -219,7 +219,6 @@ bool ConfigObject<ValueType>::save() {
     }
 
     stream.flush();
-    tmpFile.flush();
     // the stream is usually longer, depending on the amount of encoded data.
     if (stream.pos() < minLength || QFileInfo(tmpFile).size() != stream.pos()) {
         qWarning().nospace() << "Error while writing configuration file: " << tmpFile.fileName();
