@@ -116,8 +116,8 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN balance = 0;
     CSAMPLE_GAIN midSide = 0;
     if (enableState != EffectEnableState::Disabling) {
-        balance = static_cast<decltype(balance)>(m_pBalanceParameter->value());
-        midSide = static_cast<decltype(midSide)>(m_pMidSideParameter->value());
+        balance = static_cast<CSAMPLE_GAIN>(m_pBalanceParameter->value());
+        midSide = static_cast<CSAMPLE_GAIN>(m_pMidSideParameter->value());
     }
 
     CSAMPLE_GAIN balanceDelta = (balance - pGroupState->m_oldBalance)

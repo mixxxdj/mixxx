@@ -253,7 +253,7 @@ class LVMixEQEffectGroupState : public EffectState {
     int m_rampHoldOff;
     int m_groupDelay;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
     double m_loFreq;
     double m_hiFreq;
 

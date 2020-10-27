@@ -195,7 +195,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     const auto stereoCheck = static_cast<int>(m_pStereoParameter->value());
     int counter = 0;
 
-    for (unsigned int i = 0;
+    for (SINT i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         left = pInput[i] + tanh(left * feedback);
