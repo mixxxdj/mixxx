@@ -363,14 +363,14 @@ void SyncControl::slotControlPlay(double play) {
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {
-    if (enabled && getSyncMode() == SYNC_FOLLOWER) {
+    if (enabled != 0 && getSyncMode() == SYNC_FOLLOWER) {
         // If vinyl control was enabled and we're a follower, disable sync mode.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
 }
 
 void SyncControl::slotPassthroughChanged(double enabled) {
-    if (enabled && isSynchronized()) {
+    if (enabled != 0 && isSynchronized()) {
         // If passthrough was enabled and sync was on, disable it.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }

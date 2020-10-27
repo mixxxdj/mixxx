@@ -655,8 +655,8 @@ void LibraryControl::slotSortColumn(double v) {
 
 void LibraryControl::slotSortColumnToggle(double v) {
     int column = static_cast<int>(v);
-    if (static_cast<int>(m_pSortColumn->get()) == column) {
-        m_pSortOrder->set(!m_pSortOrder->get());
+    if (column == static_cast<int>(m_pSortColumn->get())) {
+        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1 : 0);
     } else {
         m_pSortColumn->set(v);
         m_pSortOrder->set(0);
