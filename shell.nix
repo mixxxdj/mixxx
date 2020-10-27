@@ -1,5 +1,6 @@
 { nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
-, releaseMode ? false, enableKeyfinder ? true, buildType ? "auto" }:
+, releaseMode ? false, enableKeyfinder ? true, buildType ? "auto", cFlags ? [ ]
+}:
 let
   inherit (nixroot)
     stdenv pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
@@ -10,7 +11,7 @@ let
   else
     buildType;
 
-  cFlags = [
+  allCFlags = cFlags ++ [
     ("-DKEYFINDER=" + (if enableKeyfinder then "ON" else "OFF"))
     ("-DCMAKE_BUILD_TYPE=" + cmakeBuildType)
   ];
@@ -63,7 +64,7 @@ let
   shell-configure = nixroot.writeShellScriptBin "configure" ''
     mkdir -p cbuild
     cd cbuild
-    cmake .. ${lib.escapeShellArgs cFlags} "$@"
+    cmake .. ${lib.escapeShellArgs allCFlags} "$@"
     cd ..
     if [ ! -e venv/bin/pre-commit ]; then
       virtualenv -p python3 venv
@@ -186,7 +187,7 @@ in stdenv.mkDerivation rec {
   else
     [ ]);
 
-  cmakeFlags = cFlags;
+  cmakeFlags = allCFlags;
 
   buildInputs = (with pkgs; [
     chromaprint
