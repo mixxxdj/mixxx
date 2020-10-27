@@ -24,8 +24,7 @@ namespace {
 
 const QRegExp kMinSizeRegExp("<MinimumSize>(\\d+), *(\\d+)<");
 
-//Returns TRUE if skin fits to screen resolution, FALSE otherwise
-bool checkSkinResolution(
+bool skinFitsScreenSize(
         const QScreen& screen,
         const QString& skin) {
     // Use the full resolution of the entire screen that is
@@ -132,7 +131,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     for (const QFileInfo& skinInfo : skins) {
         bool sizeOk;
         if (pScreen &&
-                checkSkinResolution(
+                skinFitsScreenSize(
                         *pScreen,
                         skinInfo.absoluteFilePath())) {
             ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
@@ -370,7 +369,7 @@ void DlgPrefInterface::slotSetSkin(int) {
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
         const auto* const pScreen = getScreen();
         if (pScreen &&
-                checkSkinResolution(*pScreen, ComboBoxSkinconf->currentText())) {
+                skinFitsScreenSize(*pScreen, ComboBoxSkinconf->currentText())) {
             warningLabel->hide();
         } else {
             warningLabel->show();
