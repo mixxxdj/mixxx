@@ -76,7 +76,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto keyText = track.getKeyText();
         if (!keyText.isEmpty()) {
             const auto actionText =
-                    tr("Key: Harmonic with \"%1\"").arg(keyText);
+                    tr("Key: Harmonic with %1").arg(keyText);
             const QString searchQuery =
                     QStringLiteral("~key:\"") +
                     keyText +
@@ -131,7 +131,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             // Search tracks with similar artist(s)
             {
                 const auto actionText =
-                        tr("Artist: \"%1\"").arg(primaryArtist);
+                        tr("Artist: %1").arg(primaryArtist);
                 const QString searchQuery =
                         QStringLiteral("artist:\"") +
                         primaryArtist +
@@ -143,7 +143,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             }
             if (!secondaryArtist.isEmpty()) {
                 const auto actionText =
-                        tr("Artist: \"%1\"").arg(secondaryArtist);
+                        tr("Artist: %1").arg(secondaryArtist);
                 const QString searchQuery =
                         QStringLiteral("artist:\"") +
                         secondaryArtist +
@@ -155,7 +155,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             }
             {
                 const auto actionText =
-                        tr("Album Artist: \"%1\"").arg(primaryArtist);
+                        tr("Album Artist: %1").arg(primaryArtist);
                 const QString searchQuery =
                         QStringLiteral("album_artist:\"") +
                         primaryArtist +
@@ -167,7 +167,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             }
             if (!secondaryArtist.isEmpty()) {
                 const auto actionText =
-                        tr("Album Artist: \"%1\"").arg(secondaryArtist);
+                        tr("Album Artist: %1").arg(secondaryArtist);
                 const QString searchQuery =
                         QStringLiteral("album_artist:\"") +
                         secondaryArtist +
@@ -183,7 +183,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto composer = track.getComposer();
         if (!composer.isEmpty()) {
             const auto actionText =
-                    tr("Composer: \"%1\"").arg(composer);
+                    tr("Composer: %1").arg(composer);
             const QString searchQuery =
                     QStringLiteral("composer:\"") +
                     composer +
@@ -201,7 +201,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto title = track.getTitle();
         if (!title.isEmpty()) {
             const auto actionText =
-                    tr("Title: \"%1\"").arg(title);
+                    tr("Title: %1").arg(title);
             const QString searchQuery =
                     QStringLiteral("title:\"") +
                     title +
@@ -216,7 +216,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto album = track.getAlbum();
         if (!album.isEmpty()) {
             const auto actionText =
-                    tr("Album: \"%1\"").arg(album);
+                    tr("Album: %1").arg(album);
             const QString searchQuery =
                     QStringLiteral("album:\"") +
                     album +
@@ -231,7 +231,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto grouping = track.getGrouping();
         if (!grouping.isEmpty()) {
             const auto actionText =
-                    tr("Grouping: \"%1\"").arg(grouping);
+                    tr("Grouping: %1").arg(grouping);
             const QString searchQuery =
                     QStringLiteral("grouping:\"") +
                     grouping +
@@ -264,7 +264,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto genre = track.getGenre();
         if (!genre.isEmpty()) {
             const auto actionText =
-                    tr("Genre: \"%1\"").arg(genre);
+                    tr("Genre: %1").arg(genre);
             const QString searchQuery =
                     QStringLiteral("genre:\"") +
                     genre +
@@ -279,7 +279,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto locationPath = track.getFileInfo().directory();
         if (!locationPath.isEmpty()) {
             const auto actionText =
-                    tr("Folder: \"%1\"").arg(locationPath);
+                    tr("Folder: %1").arg(locationPath);
             const QString searchQuery =
                     QStringLiteral("location:\"") +
                     locationPath +
