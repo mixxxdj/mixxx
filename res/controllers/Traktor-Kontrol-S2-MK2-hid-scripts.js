@@ -194,8 +194,6 @@ TraktorS2MK2.registerInputPackets = function() {
     // There are also some 4 bit encoders.
     MessageLong.addControl("[Channel1]", "rate", 0x07, "H");
     MessageLong.addControl("[Channel2]", "rate", 0x09, "H");
-    engine.softTakeover("[Channel1]", "rate", true);
-    engine.softTakeover("[Channel2]", "rate", true);
     MessageLong.addControl("[Channel1]", "!left_encoder", 0x01, "B", 0x0F, false, this.leftEncoder);
     MessageLong.addControl("[Channel1]", "!right_encoder", 0x01, "B", 0xF0, false, this.rightEncoder);
     MessageLong.addControl("[Channel2]", "!left_encoder", 0x02, "B", 0xF0, false, this.leftEncoder);
@@ -210,15 +208,6 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x21, "H", 0xFFFF, false, this.effectKnob);
     MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x23, "H", 0xFFFF, false, this.effectKnob);
     MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x25, "H", 0xFFFF, false, this.effectKnob);
-
-    for (var i = 1; i <= 2; i++) {
-        engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
-        engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "meta", true);
-        for (var j = 1; j <= 2; j++) {
-            engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "parameter" + j, true);
-            engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "parameter" + j, true);
-        }
-    }
 
     MessageLong.addControl("[Channel1]", "volume", 0x13, "H");
     MessageLong.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x27, "H");
@@ -241,6 +230,37 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageLong.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
     MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0x0F, false, this.browseEncoder);
 
+    // Soft takeover for knobs
+    engine.softTakeover("[Channel1]", "rate", true);
+    engine.softTakeover("[Channel2]", "rate", true);
+
+    engine.softTakeover("[Channel1]", "volume", true);
+    engine.softTakeover("[Channel2]", "volume", true);
+
+    engine.softTakeover("[Channel1]", "pregain", true);
+    engine.softTakeover("[Channel2]", "pregain", true);
+
+    engine.softTakeover("[Master]", "crossfader", true);
+    engine.softTakeover("[Master]", "headMix", true);
+
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
+
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
+
+    for (var i = 1; i <= 3; i++) {
+        engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
+        engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "meta", true);
+        for (var j = 1; j <= 3; j++) {
+            engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "parameter" + j, true);
+            engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "parameter" + j, true);
+        }
+    }
+
+    // Set scalers
     TraktorS2MK2.scalerParameter.useSetParameter = true;
     this.controller.setScaler("volume", this.scalerVolume);
     this.controller.setScaler("headMix", this.scalerSlider);
@@ -251,6 +271,8 @@ TraktorS2MK2.registerInputPackets = function() {
     this.controller.setScaler("crossfader", this.scalerSlider);
     this.controller.setScaler("rate", this.scalerSlider);
     this.controller.setScaler("mix", this.scalerParameter);
+
+    // Register packet
     this.controller.registerInputPacket(MessageLong);
 };
 
