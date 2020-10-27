@@ -201,7 +201,7 @@ MC7000.delayedSysEx = function() {
 // Sampler Volume Control
 MC7000.samplerLevel = function(channel, control, value) {
     // check if the Sampler Volume is at Zero and if so hide the sampler bank
-    if (value > 0x00) {
+    if (value > 0) {
         engine.setValue("[Samplers]", "show_samplers", true);
     } else {
         engine.setValue("[Samplers]", "show_samplers", false);
@@ -571,36 +571,37 @@ MC7000.vinylModeToggle = function(channel, control, value, status, group) {
 };
 
 // Use select button to load and eject track from deck
-MC7000.LoadLongPress = false;
-MC7000.LOADtimer = 0;
+MC7000.loadLongPress = false;
+MC7000.loadTimer = 0;
 
-MC7000.LOADassertlongpress = function() {
-    MC7000.LoadLongPress = true;
-    MC7000.LOADtimer = 0;
+MC7000.loadAssertLongPress = function() {
+    MC7000.loadLongPress = true;
+    MC7000.loadTimer = 0;
 };
 
-MC7000.LOADdown = function() {
-    MC7000.LoadLongPress = false;
-    MC7000.LOADtimer = engine.beginTimer(500, MC7000.LOADassertlongpress, true);
+MC7000.loadDown = function() {
+    MC7000.loadLongPress = false;
+    MC7000.loadTimer = engine.beginTimer(500, MC7000.loadAssertLongPress, true);
 };
 
-MC7000.LOADup = function(group) {
-    if (MC7000.LOADtimer !== 0) {
-        engine.stopTimer(MC7000.LOADtimer);
-        MC7000.LOADtimer = 0;
+MC7000.loadUp = function(group) {
+    if (MC7000.loadTimer !== 0) {
+        engine.stopTimer(MC7000.loadTimer);
+        MC7000.loadTimer = 0;
     }
-    if (MC7000.LoadLongPress) {
+    if (MC7000.loadLongPress) {
         script.triggerControl(group, "eject", 100);
     } else {
         script.triggerControl(group, "LoadSelectedTrack", 100);
     }
 };
-MC7000.LoadButton = function(channel, control, value, status, group) {
+
+MC7000.loadButton = function(channel, control, value, status, group) {
     //LOAD hold <500ms: load track, >500ms: eject
     if (value === 0x7F) {
-        MC7000.LOADdown();
+        MC7000.loadDown();
     } else {
-        MC7000.LOADup(group);
+        MC7000.loadUp(group);
     }
 };
 
@@ -845,9 +846,9 @@ MC7000.sortLibrary = function(channel, control, value) {
 /* LEDs for VuMeter */
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
-    var VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : Math.pow(value, 4) * MC7000.VuMeterLEDPeakValue - 1,
+    var vuLevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : Math.pow(value, 4) * (MC7000.VuMeterLEDPeakValue - 1),
         deckNumber = script.deckFromGroup(group);
-    midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, VULevelOutValue);
+    midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, vuLevelOutValue);
 };
 
 /* LEDs around Jog wheel */
@@ -860,8 +861,8 @@ MC7000.JogLed = function(value, group) {
         trackDuration = engine.getValue(group, "duration"),
         position = value * trackDuration / 60 * MC7000.scratchParams.recordSpeed,
         // LED ring contains 48 segments with each LED activated by the next even number
-        LEDmidiSignal = 48 * 2,
-        activeLED = MC7000.isVinylMode[deckNumber - 1] ? Math.round(position * LEDmidiSignal) % LEDmidiSignal : value * LEDmidiSignal;
+        jogLedOutValue = 48 * 2,
+        activeLED = MC7000.isVinylMode[deckNumber - 1] ? Math.round(position * jogLedOutValue) % jogLedOutValue : value * jogLedOutValue;
 
     midi.sendShortMsg(0x90 + deckNumber - 1, 0x06, activeLED);
 };
