@@ -1530,46 +1530,22 @@ if(KEYFINDER)
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    find_path(KeyFinder_BUNDLED_SOURCE
-      NAMES keyfinder.h
-      PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib/libKeyFinder"
-      NO_DEFAULT_PATH
-      DOC "Bundled KeyFinder library directory")
-    mark_as_advanced(KeyFinder_BUNDLED_SOURCE)
-    if(EXISTS "${KeyFinder_BUNDLED_SOURCE}")
-      message(STATUS "Found KeyFinder bundled in ${KeyFinder_BUNDLED_SOURCE}")
-      ExternalProject_Add(libKeyFinder
-        SOURCE_DIR "${KeyFinder_BUNDLED_SOURCE}"
-        # Common settings (Bundled + Git repo)
-        INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
-        CMAKE_ARGS
-          -DBUILD_STATIC_LIBS=ON
-          -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
-          -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-          -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-          -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
-        BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
-        BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
-        EXCLUDE_FROM_ALL TRUE
-      )
-    else()
-      ExternalProject_Add(libKeyFinder
-        GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
-        GIT_TAG v2.2.2
-        GIT_SHALLOW TRUE
-        # Common settings (Bundled + Git repo)
-        INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
-        CMAKE_ARGS
-          -DBUILD_STATIC_LIBS=ON
-          -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
-          -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-          -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-          -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
-        BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
-        BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
-        EXCLUDE_FROM_ALL TRUE
-      )
-    endif()
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    ExternalProject_Add(libKeyFinder
+      URL "https://github.com/ibsh/libKeyFinder/archive/v2.2.2.zip"
+      URL_HASH SHA256=f04ff63c9710d969e79b71bde18abd720e886f537951a1045cc50cb497a72492
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
+      INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
+      CMAKE_ARGS
+        -DBUILD_STATIC_LIBS=ON
+        -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
+      BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
+      EXCLUDE_FROM_ALL TRUE
+    )
 
     # This is a bit of a hack to make sure that the include directory actually
     # exists when configuring the build.
