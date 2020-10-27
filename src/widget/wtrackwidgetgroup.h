@@ -7,15 +7,15 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wwidgetgroup.h"
 
+class Library;
 class WTrackMenu;
-class TrackCollectionManager;
 
 class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackWidgetGroup(QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             const QString& group);
     ~WTrackWidgetGroup() override;
     void setup(const QDomNode& node, const SkinContext& context) override;

@@ -16,8 +16,7 @@ const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
 } // anonymous namespace
 
-DlgAutoDJ::DlgAutoDJ(
-        WLibrary* parent,
+DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
         AutoDJProcessor* pProcessor,
@@ -26,10 +25,11 @@ DlgAutoDJ::DlgAutoDJ(
           Ui::DlgAutoDJ(),
           m_pConfig(pConfig),
           m_pAutoDJProcessor(pProcessor),
-          m_pTrackTableView(new WTrackTableView(this, m_pConfig,
-                                                pLibrary->trackCollections(),
-                                                parent->getTrackTableBackgroundColorOpacity(),
-                                                /*no sorting*/ false)),
+          m_pTrackTableView(new WTrackTableView(this,
+                  m_pConfig,
+                  pLibrary,
+                  parent->getTrackTableBackgroundColorOpacity(),
+                  /*no sorting*/ false)),
           m_bShowButtonText(parent->getShowButtonText()),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);
