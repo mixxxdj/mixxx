@@ -119,14 +119,14 @@ void TaskMonitor::reportTaskProgress(
 
 void TaskMonitor::abortAllTasks() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    const auto toBeAbortedTasks = m_taskInfos.keys();
     // Detach all monitored tasks before iterating over
-    // them to prevent any kind of side-effects. Aborting
+    // them to prevent any kind of side-effects! Aborting
     // a task may start new tasks in response.
-    const auto toBeAbortedTasks = m_taskInfos;
     m_taskInfos.clear();
     // Iterator over the detached, immutable copy of
     // the task list
-    for (auto* pTask : toBeAbortedTasks.keys()) {
+    for (auto* pTask : toBeAbortedTasks) {
         QMetaObject::invokeMethod(
                 pTask,
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
