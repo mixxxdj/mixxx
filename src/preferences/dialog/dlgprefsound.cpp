@@ -689,7 +689,8 @@ void DlgPrefSound::masterMixChanged(int value) {
 }
 
 void DlgPrefSound::masterEnabledChanged(double value) {
-    masterMixComboBox->setCurrentIndex(value ? 1 : 0);
+    const bool masterEnabled = (value != 0);
+    masterMixComboBox->setCurrentIndex(masterEnabled ? 1 : 0);
 }
 
 void DlgPrefSound::masterOutputModeComboBoxChanged(int value) {
@@ -697,7 +698,8 @@ void DlgPrefSound::masterOutputModeComboBoxChanged(int value) {
 }
 
 void DlgPrefSound::masterMonoMixdownChanged(double value) {
-    masterOutputModeComboBox->setCurrentIndex(value ? 1 : 0);
+    const bool masterMonoMixdownEnabled = (value != 0);
+    masterOutputModeComboBox->setCurrentIndex(masterMonoMixdownEnabled ? 1 : 0);
 }
 
 void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {

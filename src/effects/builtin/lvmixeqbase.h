@@ -173,12 +173,12 @@ class LVMixEQEffectGroupState : public EffectState {
         // We know the exact group delay here so we can just hold off the ramping.
         m_delay3->processAndPauseFilter(pInput, m_pHighBuf, numSamples);
 
-        if (m_oldMid) {
+        if (m_oldMid != 0) {
             m_delay2->processAndPauseFilter(pInput, m_pBandBuf, numSamples);
             m_low2->processAndPauseFilter(m_pBandBuf, m_pBandBuf, numSamples);
         }
 
-        if (m_oldLow) {
+        if (m_oldLow != 0) {
             m_low1->processAndPauseFilter(pInput, m_pLowBuf, numSamples);
         }
 

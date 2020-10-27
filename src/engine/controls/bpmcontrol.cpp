@@ -225,8 +225,10 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     pBeats->setBpm(averageBpm);
 }
 
-void BpmControl::slotControlBeatSyncPhase(double v) {
-    if (!v) return;
+void BpmControl::slotControlBeatSyncPhase(double value) {
+    if (value == 0) {
+        return;
+    }
 
     if (isSynchronized()) {
         m_dUserOffset.setValue(0.0);
@@ -234,13 +236,19 @@ void BpmControl::slotControlBeatSyncPhase(double v) {
     getEngineBuffer()->requestSyncPhase();
 }
 
-void BpmControl::slotControlBeatSyncTempo(double v) {
-    if (!v) return;
+void BpmControl::slotControlBeatSyncTempo(double value) {
+    if (value == 0) {
+        return;
+    }
+
     syncTempo();
 }
 
-void BpmControl::slotControlBeatSync(double v) {
-    if (!v) return;
+void BpmControl::slotControlBeatSync(double value) {
+    if (value == 0) {
+        return;
+    }
+
     if (!syncTempo()) {
         // syncTempo failed, nothing else to do
         return;
@@ -250,7 +258,7 @@ void BpmControl::slotControlBeatSync(double v) {
     // this is used from controller scripts, where the latching behaviour of
     // the sync_enable CO cannot be used
     if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
-        slotControlBeatSyncPhase(v);
+        slotControlBeatSyncPhase(value);
     }
 }
 
@@ -1036,7 +1044,7 @@ void BpmControl::resetSyncAdjustment() {
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     // Without a beatgrid we don't know any beat details.
     SampleOfTrack sot = getSampleOfTrack();
-    if (!sot.rate || !m_pBeats) {
+    if (sot.rate == 0 || !m_pBeats) {
         return;
     }
 

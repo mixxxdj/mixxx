@@ -192,7 +192,7 @@ class EffectManifestParameter {
         return m_showInParametertSlot;
     }
     virtual void setShowInParameterSlot(double show) {
-        m_showInParametertSlot = show;
+        m_showInParametertSlot = (show != 0);
     }
 
     ////////////////////////////////////////////////////////////////////////////////

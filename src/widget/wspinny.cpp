@@ -528,7 +528,7 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
     }
     m_bSignalActive = enabled;
 
-    if (enabled && m_iVinylInput != -1) {
+    if (enabled != 0 && m_iVinylInput != -1) {
         m_pVCManager->addSignalQualityListener(this);
     } else {
         m_pVCManager->removeSignalQualityListener(this);
@@ -539,7 +539,7 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
 }
 
 void WSpinny::updateVinylControlEnabled(double enabled) {
-    m_bVinylActive = enabled;
+    m_bVinylActive = (enabled != 0);
 }
 
 void WSpinny::updateSlipEnabled(double enabled) {

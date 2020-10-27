@@ -393,8 +393,8 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     processTempRate(iSamplesPerBuffer);
 
     double rate;
-    double searching = m_pRateSearch->get();
-    if (searching) {
+    const double searching = m_pRateSearch->get();
+    if (searching != 0) {
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {

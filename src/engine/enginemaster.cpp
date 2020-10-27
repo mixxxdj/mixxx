@@ -305,14 +305,14 @@ void EngineMaster::processChannels(int iBufferSize) {
 
             // Check if we need to fade out the master channel
             GainCache& gainCache = m_channelMasterGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 gainCache.m_fadeout = true;
                 m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
-             }
+            }
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelTalkoverGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 gainCache.m_fadeout = true;
                 m_activeTalkoverChannels.append(pChannelInfo);
             }
@@ -323,7 +323,7 @@ void EngineMaster::processChannels(int iBufferSize) {
             } else {
                 // Check if we need to fade out the channel
                 GainCache& gainCache = m_channelMasterGainCache[i];
-                if (gainCache.m_gain) {
+                if (gainCache.m_gain != 0) {
                     gainCache.m_fadeout = true;
                     m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
                 }
@@ -337,7 +337,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelHeadphoneGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 m_channelHeadphoneGainCache[i].m_fadeout = true;
                 m_activeHeadphoneChannels.append(pChannelInfo);
             }
