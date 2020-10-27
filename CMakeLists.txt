@@ -1530,21 +1530,46 @@ if(KEYFINDER)
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    ExternalProject_Add(keyfinder
-      GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
-      GIT_TAG v2.2.2
-      GIT_SHALLOW TRUE
-      INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
-      CMAKE_ARGS
-        -DBUILD_STATIC_LIBS=ON
-        -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
-      BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
-      EXCLUDE_FROM_ALL TRUE
-    )
+    find_path(KeyFinder_BUNDLED_SOURCE
+      NAMES keyfinder.h
+      PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib/libKeyFinder"
+      NO_DEFAULT_PATH
+      DOC "Bundled KeyFinder library directory")
+    mark_as_advanced(KeyFinder_BUNDLED_SOURCE)
+    if(EXISTS "${KeyFinder_BUNDLED_SOURCE}")
+      message(STATUS "Found KeyFinder bundled in ${KeyFinder_BUNDLED_SOURCE}")
+      ExternalProject_Add(libKeyFinder
+        SOURCE_DIR "${KeyFinder_BUNDLED_SOURCE}"
+        # Common settings (Bundled + Git repo)
+        INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
+        CMAKE_ARGS
+          -DBUILD_STATIC_LIBS=ON
+          -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+          -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+          -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+          -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
+        BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
+        EXCLUDE_FROM_ALL TRUE
+      )
+    else()
+      ExternalProject_Add(libKeyFinder
+        GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
+        GIT_TAG v2.2.2
+        GIT_SHALLOW TRUE
+        # Common settings (Bundled + Git repo)
+        INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
+        CMAKE_ARGS
+          -DBUILD_STATIC_LIBS=ON
+          -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+          -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+          -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+          -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
+        BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
+        EXCLUDE_FROM_ALL TRUE
+      )
+    endif()
 
     # This is a bit of a hack to make sure that the include directory actually
     # exists when configuring the build.
@@ -1557,7 +1582,7 @@ if(KEYFINDER)
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
 
     add_library(mixxx-keyfinder STATIC IMPORTED)
-    add_dependencies(mixxx-keyfinder keyfinder)
+    add_dependencies(mixxx-keyfinder libKeyFinder)
     set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
     target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
     target_include_directories(mixxx-keyfinder INTERFACE "${KeyFinder_INSTALL_DIR}/include")
