@@ -266,8 +266,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     }
 
     //are we even playing and enabled at all?
-    if (!m_bIsEnabled)
+    if (!m_bIsEnabled) {
         return;
+    }
 
     double dVinylPitch = timecoder_get_pitch(&timecoder);
 
