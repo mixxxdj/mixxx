@@ -225,7 +225,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (value != 0) {
+                if (value >= 1.0) {
                     m_pSearchbox->slotMoveSelectedHistory(1);
                 }
             });
@@ -236,7 +236,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (value != 0) {
+                if (value >= 1.0) {
                     m_pSearchbox->slotMoveSelectedHistory(-1);
                 }
             });
@@ -247,7 +247,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (steps != 0) {
+                if (steps >= 1.0 || steps <= -1.0) {
                     m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
                 }
             });
