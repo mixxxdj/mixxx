@@ -1507,13 +1507,12 @@ void MixxxMainWindow::rebootMixxxView() {
             qWarning() << "Unable to move window inside screen borders.";
         }
         else {
-            newX = std::max(0,
-                    std::min(newX,
-                            pScreen->geometry().width() -
-                                    m_pWidgetParent->width()));
-            newY = std::max(0,
-                    std::min(newY,
-                            pScreen->geometry().height() - m_pWidgetParent->height()));
+            const auto borderWidth =
+                    pScreen->geometry().width() - m_pWidgetParent->width();
+            const auto borderHeight =
+                    pScreen->geometry().height() - m_pWidgetParent->height();
+            newX = std::max(0, std::min(newX, borderWidth));
+            newY = std::max(0, std::min(newY, borderHeight));
             move(newX, newY);
         }
     }
