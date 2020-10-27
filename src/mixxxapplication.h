@@ -23,7 +23,7 @@ class MixxxApplication : public QApplication {
     bool touchIsRightButton();
     void registerMetaTypes();
 
-    int m_rightPessedButtons;
+    int m_rightPressedButtons;
     ControlProxy* m_pTouchShift;
 
 };

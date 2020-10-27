@@ -57,7 +57,7 @@ class QMouseEventEditable : public QMouseEvent {
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
-          m_rightPessedButtons(0),
+          m_rightPressedButtons(0),
           m_pTouchShift(nullptr) {
     registerMetaTypes();
 }
@@ -231,11 +231,11 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
                 touchIsRightButton()) {
             // Assert the assumption that QT synthesizes only one click at a time
             // = two events (see above)
-            VERIFY_OR_DEBUG_ASSERT(m_rightPessedButtons < 2) {
+            VERIFY_OR_DEBUG_ASSERT(m_rightPressedButtons < 2) {
                 break;
             }
             mouseEvent->setButton(Qt::RightButton);
-            m_rightPessedButtons++;
+            m_rightPressedButtons++;
         }
         break;
     }
@@ -243,9 +243,9 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
-                m_rightPessedButtons > 0) {
+                m_rightPressedButtons > 0) {
             mouseEvent->setButton(Qt::RightButton);
-            m_rightPessedButtons--;
+            m_rightPressedButtons--;
         }
         break;
     }
