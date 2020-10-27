@@ -141,7 +141,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[Channel1]", "!left_encoder_press", 0x0F, "B", 0x01, false, this.leftEncoderPress);
     MessageShort.addControl("[Channel1]", "!right_encoder_press", 0x0F, "B", 0x02, false, this.rightEncoderPress);
     MessageShort.addControl("[Channel1]", "!jog_touch", 0x0A, "B", 0x01, false, this.jogTouch);
-    MessageShort.addControl("[Channel1]", "!jog_wheel", 0x01, "I", null, false, this.jogMove);
+    MessageShort.addControl("[Channel1]", "!jog_wheel", 0x01, "I", 0xFFFFFFFF, false, this.jogMove);
     MessageShort.addControl("[Channel1]", "!load_track", 0x0C, "B", 0x08, false, this.loadTrackButton);
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effect_focus_button",
         0x0E, "B", 0x10, false, this.effectFocusButton);
@@ -165,7 +165,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[Channel2]", "!left_encoder_press", 0x0F, "B", 0x08, false, this.leftEncoderPress);
     MessageShort.addControl("[Channel2]", "!right_encoder_press", 0x0F, "B", 0x10, false, this.rightEncoderPress);
     MessageShort.addControl("[Channel2]", "!jog_touch", 0x0A, "B", 0x02, false, this.jogTouch);
-    MessageShort.addControl("[Channel2]", "!jog_wheel", 0x05, "I", null, false, this.jogMove);
+    MessageShort.addControl("[Channel2]", "!jog_wheel", 0x05, "I", 0xFFFFFFFF, false, this.jogMove);
     MessageShort.addControl("[Channel2]", "!load_track", 0x0C, "B", 0x04, false, this.loadTrackButton);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effect_focus_button",
         0xD, "B", 0x04, false, this.effectFocusButton);
@@ -202,14 +202,14 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageLong.addControl("[Channel2]", "!right_encoder", 0x03, "B", 0x0F, false, this.rightEncoder);
 
     MessageLong.addControl("[EffectRack1_EffectUnit1]", "mix", 0x17, "H");
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob1", 0x19, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob2", 0x1B, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob3", 0x1D, "H", null, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob1", 0x19, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob2", 0x1B, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob3", 0x1D, "H", 0xFFFF, false, this.effectKnob);
 
     MessageLong.addControl("[EffectRack1_EffectUnit2]", "mix", 0x1F, "H");
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x21, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x23, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x25, "H", null, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x21, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x23, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x25, "H", 0xFFFF, false, this.effectKnob);
 
     for (var i = 1; i <= 2; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
