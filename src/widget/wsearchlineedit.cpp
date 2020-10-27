@@ -279,6 +279,12 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Down) {
+            // after clearing the text field the down key is expected to
+            // show the last entry
+            if (currentText().isEmpty()) {
+                setCurrentIndex(0);
+                return true;
+            }
             // in case the user entered a new search query
             // und presses the down key, save the query for later recall
             if (findCurrentTextIndex() == -1) {
@@ -503,6 +509,9 @@ void WSearchLineEdit::slotClearSearch() {
             << "slotClearSearch";
 #endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
+    // select the last entry as current before cleaning the text field
+    // so arrow keys will work as expected
+    setCurrentIndex(-1);
     // Clearing the edit field will engage the debouncing timer
     // and gives the user the chance for entering a new search
     // before returning the whole (and probably huge) library.
