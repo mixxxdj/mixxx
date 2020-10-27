@@ -157,8 +157,8 @@ void DlgLibraryExport::browseExportDirectory() {
     QString lastExportDirectory =
             m_pConfig->getValue(ConfigKey("[Library]", "LastLibraryExportDirectory"),
                     QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    auto baseDirectory =
-            QFileDialog::getExistingDirectory(nullptr, tr("Export Library To"), lastExportDirectory);
+    auto baseDirectory = QFileDialog::getExistingDirectory(
+            nullptr, tr("Export Library To"), lastExportDirectory);
     if (baseDirectory.isEmpty()) {
         return;
     }

@@ -98,7 +98,8 @@ Library::Library(
     connect(m_pMixxxLibraryFeature,
             &MixxxLibraryFeature::exportLibrary,
             this,
-            &Library::exportLibrary);
+            &Library::exportLibrary,
+            Qt::DirectConnection /* signal-to-signal */);
 #endif
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
@@ -108,8 +109,16 @@ Library::Library(
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
 #ifdef __ENGINEPRIME__
-    connect(m_pCrateFeature, &CrateFeature::exportAllCrates, this, &Library::exportLibrary);
-    connect(m_pCrateFeature, &CrateFeature::exportCrate, this, &Library::exportCrate);
+    connect(m_pCrateFeature,
+            &CrateFeature::exportAllCrates,
+            this,
+            &Library::exportLibrary,
+            Qt::DirectConnection);
+    connect(m_pCrateFeature,
+            &CrateFeature::exportCrate,
+            this,
+            &Library::exportCrate,
+            Qt::DirectConnection);
 #endif
 
     BrowseFeature* browseFeature = new BrowseFeature(
@@ -587,8 +596,6 @@ void Library::searchTracksInCollection(const QString& query) {
 #ifdef __ENGINEPRIME__
 std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
         QWidget* parent) {
-    // New object is expected to be owned (and lifecycle-managed)
-    // by the supplied parent widget.
     return std::make_unique<mixxx::LibraryExporter>(
             parent, m_pConfig, m_pTrackCollectionManager);
 }

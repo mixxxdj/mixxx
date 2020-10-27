@@ -26,12 +26,12 @@ class LibraryExporter : public QWidget {
 
   public slots:
     /// Begin the process of a library export.
-    void requestExport() {
+    void slotRequestExport() {
         requestExportWithOptionalInitialCrate(std::nullopt);
     }
 
     /// Begin the process of a library export, with an initial crate set.
-    void requestExportWithInitialCrate(CrateId initialSelectedCrate) {
+    void slotRequestExportWithInitialCrate(CrateId initialSelectedCrate) {
         requestExportWithOptionalInitialCrate(
                 std::make_optional(initialSelectedCrate));
     }

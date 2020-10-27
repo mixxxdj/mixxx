@@ -21,7 +21,10 @@ void LibraryExporter::requestExportWithOptionalInitialCrate(
     if (!m_pDialog) {
         m_pDialog = make_parented<DlgLibraryExport>(
                 this, m_pConfig, m_pTrackCollectionManager);
-        connect(m_pDialog.get(), &DlgLibraryExport::startEnginePrimeExport, this, &LibraryExporter::beginEnginePrimeExport);
+        connect(m_pDialog.get(),
+                &DlgLibraryExport::startEnginePrimeExport,
+                this,
+                &LibraryExporter::beginEnginePrimeExport);
     } else {
         m_pDialog->show();
         m_pDialog->raise();
@@ -41,15 +44,42 @@ void LibraryExporter::beginEnginePrimeExport(
             m_pTrackCollectionManager,
             std::move(request));
     connect(pJobThread, &EnginePrimeExportJob::finished, pJobThread, &QObject::deleteLater);
+    connect(pJobThread,
+            &EnginePrimeExportJob::completed,
+            this,
+            [](int numTracks, int numCrates) {
+                QMessageBox::information(nullptr,
+                        tr("Export Completed"),
+                        QString{tr("Exported %1 track(s) and %2 crate(s).")}
+                                .arg(numTracks)
+                                .arg(numCrates));
+            });
+    connect(pJobThread,
+            &EnginePrimeExportJob::failed,
+            this,
+            [](QString message) {
+                QMessageBox::critical(nullptr,
+                        tr("Export Failed"),
+                        QString{tr("Export failed: %1")}.arg(message));
+            });
 
     // Construct a dialog to monitor job progress and offer cancellation.
-    auto pd = make_parented<QProgressDialog>(this);
-    pd->setLabelText(tr("Exporting to Engine Prime..."));
-    pd->setMinimumDuration(0);
-    connect(pJobThread, &EnginePrimeExportJob::jobMaximum, pd, &QProgressDialog::setMaximum);
-    connect(pJobThread, &EnginePrimeExportJob::jobProgress, pd, &QProgressDialog::setValue);
-    connect(pJobThread, &EnginePrimeExportJob::finished, pd, &QObject::deleteLater);
-    connect(pd, &QProgressDialog::canceled, pJobThread, &EnginePrimeExportJob::cancel);
+    auto pProgressDlg = make_parented<QProgressDialog>(this);
+    pProgressDlg->setLabelText(tr("Exporting to Engine Prime..."));
+    pProgressDlg->setMinimumDuration(0);
+    connect(pJobThread,
+            &EnginePrimeExportJob::jobMaximum,
+            pProgressDlg,
+            &QProgressDialog::setMaximum);
+    connect(pJobThread,
+            &EnginePrimeExportJob::jobProgress,
+            pProgressDlg,
+            &QProgressDialog::setValue);
+    connect(pJobThread, &EnginePrimeExportJob::finished, pProgressDlg, &QObject::deleteLater);
+    connect(pProgressDlg,
+            &QProgressDialog::canceled,
+            pJobThread,
+            &EnginePrimeExportJob::slotCancel);
 
     pJobThread->start();
 }

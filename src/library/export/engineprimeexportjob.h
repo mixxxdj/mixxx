@@ -41,9 +41,15 @@ class EnginePrimeExportJob : public QThread {
     /// Informs of progress through the job, up to the pre-signalled maximum.
     void jobProgress(int progress);
 
+    /// Inform of a completed export job.
+    void completed(int numTracksExported, int numCratesExported);
+
+    /// Inform of a failed export job.
+    void failed(QString message);
+
   public slots:
     /// Request cancellation of any running export job.
-    void cancel();
+    void slotCancel();
 
   private slots:
     // These slots are used to load data from the Mixxx database on the main

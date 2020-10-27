@@ -203,11 +203,11 @@ MixxxMainWindow::MixxxMainWindow(
     connect(m_pCoreServices->getLibrary().get(),
             &Library::exportLibrary,
             m_pLibraryExporter.get(),
-            &mixxx::LibraryExporter::requestExport);
+            &mixxx::LibraryExporter::slotRequestExport);
     connect(m_pCoreServices->getLibrary().get(),
             &Library::exportCrate,
             m_pLibraryExporter.get(),
-            &mixxx::LibraryExporter::requestExportWithInitialCrate);
+            &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
 #endif
 
     connectMenuBar();
@@ -395,7 +395,7 @@ MixxxMainWindow::~MixxxMainWindow() {
 
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
-    m_pLibraryExporter = nullptr; // is a unique_ptr
+    m_pLibraryExporter.reset();
 #endif
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
@@ -745,9 +745,9 @@ void MixxxMainWindow::connectMenuBar() {
 #ifdef __ENGINEPRIME__
     if (m_pLibraryExporter) {
         connect(m_pMenuBar,
-                SIGNAL(exportLibrary()),
+                &WMainMenuBar::exportLibrary,
                 m_pLibraryExporter.get(),
-                SLOT(requestExport()));
+                &mixxx::LibraryExporter::slotRequestExport);
     }
 #endif
 }

@@ -122,12 +122,17 @@ void CrateFeature::initActions() {
     connect(m_pExportAllCratesAction.get(),
             &QAction::triggered,
             this,
-            &CrateFeature::slotExportAllCrates);
+            &CrateFeature::exportAllCrates);
     m_pExportCrateAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
     connect(m_pExportCrateAction.get(),
             &QAction::triggered,
             this,
-            &CrateFeature::slotExportCrate);
+            [this]() {
+                CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+                if (crateId.isValid()) {
+                    emit exportCrate(crateId);
+                }
+            });
 #endif
 }
 
@@ -835,20 +840,3 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackPointer());
 }
-
-#ifdef __ENGINEPRIME__
-void CrateFeature::slotExportAllCrates() {
-    emit exportAllCrates();
-}
-
-void CrateFeature::slotExportCrate() {
-    if (!m_lastRightClickedIndex.isValid()) {
-        return;
-    }
-
-    CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
-    if (crateId.isValid()) {
-        emit exportCrate(crateId);
-    }
-}
-#endif

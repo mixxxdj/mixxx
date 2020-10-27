@@ -14,6 +14,7 @@
 #include "library/trackset/crate/crate.h"
 #include "track/track.h"
 #include "util/optional.h"
+#include "util/thread_affinity.h"
 #include "waveform/waveformfactory.h"
 
 namespace el = djinterop::enginelibrary;
@@ -293,18 +294,20 @@ EnginePrimeExportJob::EnginePrimeExportJob(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         EnginePrimeExportRequest request)
-        : QThread(parent),
+        : QThread{parent},
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_request{std::move(request)} {
     // Must be collocated with the TrackCollectionManager.
-    DEBUG_ASSERT(m_pTrackCollectionManager != nullptr);
-    moveToThread(m_pTrackCollectionManager->thread());
+    if (parent != nullptr) {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
+    } else {
+        DEBUG_ASSERT(m_pTrackCollectionManager);
+        moveToThread(m_pTrackCollectionManager->thread());
+    }
 }
 
 void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
-    // Note: this slot exists to ensure the track collection is never accessed
-    // from outside its own thread.
-    DEBUG_ASSERT(thread() == m_pTrackCollectionManager->thread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     if (crateIds.isEmpty()) {
         // No explicit crate ids specified, meaning we want to export the
@@ -373,9 +376,7 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
 }
 
 void EnginePrimeExportJob::loadTrack(TrackRef trackRef) {
-    // Note: this slot exists to ensure the track collection is never accessed
-    // from outside its own thread.
-    DEBUG_ASSERT(thread() == m_pTrackCollectionManager->thread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     // Load the track.
     m_pLastLoadedTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
@@ -392,9 +393,7 @@ void EnginePrimeExportJob::loadTrack(TrackRef trackRef) {
 }
 
 void EnginePrimeExportJob::loadCrate(CrateId crateId) {
-    // Note: this slot exists to ensure the track collection is never accessed
-    // from outside its own thread.
-    DEBUG_ASSERT(thread() == m_pTrackCollectionManager->thread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     // Load crate details.
     m_pTrackCollectionManager->internalCollection()->crates().readCrateById(
@@ -431,11 +430,19 @@ void EnginePrimeExportJob::run() {
     emit jobProgress(currProgress);
 
     // Ensure that the database exists, creating an empty one if not.
-    bool created;
-    djinterop::database db = el::create_or_load_database(
-            m_request.engineLibraryDbDir.path().toStdString(),
-            m_request.exportVersion,
-            created);
+    std::unique_ptr<djinterop::database> pDb;
+    try {
+        bool created;
+        pDb = std::make_unique<djinterop::database>(el::create_or_load_database(
+                m_request.engineLibraryDbDir.path().toStdString(),
+                m_request.exportVersion,
+                created));
+    } catch (std::exception& e) {
+        qCritical() << "Failed to create/load database:" << e.what();
+        emit failed(e.what());
+        return;
+    }
+
     ++currProgress;
     emit jobProgress(currProgress);
 
@@ -461,11 +468,20 @@ void EnginePrimeExportJob::run() {
 
         qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().value()
                 << "at" << m_pLastLoadedTrack->getFileInfo().location() << "...";
-        exportTrack(m_request,
-                db,
-                mixxxToEnginePrimeTrackIdMap,
-                m_pLastLoadedTrack,
-                std::move(m_pLastLoadedWaveform));
+        try {
+            exportTrack(m_request,
+                    *pDb,
+                    mixxxToEnginePrimeTrackIdMap,
+                    m_pLastLoadedTrack,
+                    std::move(m_pLastLoadedWaveform));
+        } catch (std::exception& e) {
+            qCritical() << "Failed to export track"
+                        << m_pLastLoadedTrack->getId().value() << ":"
+                        << e.what();
+            emit failed(e.what());
+            return;
+        }
+
         m_pLastLoadedTrack.reset();
 
         ++currProgress;
@@ -475,12 +491,20 @@ void EnginePrimeExportJob::run() {
     // We will ensure that there is a special top-level crate representing the
     // root of all Mixxx-exported items.  Mixxx tracks and crates will exist
     // underneath this crate.
-    auto optionalExtRootCrate = db.root_crate_by_name(kMixxxRootCrateName);
-    auto extRootCrate = optionalExtRootCrate
-            ? *optionalExtRootCrate
-            : db.create_root_crate(kMixxxRootCrateName);
+    std::unique_ptr<djinterop::crate> pExtRootCrate;
+    try {
+        auto optionalExtRootCrate = pDb->root_crate_by_name(kMixxxRootCrateName);
+        pExtRootCrate = std::make_unique<djinterop::crate>(optionalExtRootCrate
+                        ? *optionalExtRootCrate
+                        : pDb->create_root_crate(kMixxxRootCrateName));
+    } catch (std::exception& e) {
+        qCritical() << "Failed to create/identify root crate:" << e.what();
+        emit failed(e.what());
+        return;
+    }
+
+    // Add each track to the root crate, even if it also belongs to others.
     for (const TrackRef& trackRef : m_trackRefs) {
-        // Add each track to the root crate, even if it also belongs to others.
         if (!mixxxToEnginePrimeTrackIdMap.contains(trackRef.getId())) {
             qInfo() << "Not adding track" << trackRef.getId()
                     << "to any crates, as it was not exported";
@@ -489,7 +513,14 @@ void EnginePrimeExportJob::run() {
 
         auto extTrackId = mixxxToEnginePrimeTrackIdMap.value(
                 trackRef.getId());
-        extRootCrate.add_track(extTrackId);
+        try {
+            pExtRootCrate->add_track(extTrackId);
+        } catch (std::exception& e) {
+            qCritical() << "Failed to add track" << trackRef.getId()
+                        << "to root crate:" << e.what();
+            emit failed(e.what());
+            return;
+        }
     }
 
     ++currProgress;
@@ -512,20 +543,28 @@ void EnginePrimeExportJob::run() {
         }
 
         qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().value() << "...";
-        exportCrate(
-                extRootCrate,
-                mixxxToEnginePrimeTrackIdMap,
-                m_lastLoadedCrate,
-                m_lastLoadedCrateTrackIds);
+        try {
+            exportCrate(
+                    *pExtRootCrate,
+                    mixxxToEnginePrimeTrackIdMap,
+                    m_lastLoadedCrate,
+                    m_lastLoadedCrateTrackIds);
+        } catch (std::exception& e) {
+            qCritical() << "Failed to add crate" << m_lastLoadedCrate.getId().value()
+                        << ":" << e.what();
+            emit failed(e.what());
+            return;
+        }
 
         ++currProgress;
         emit jobProgress(currProgress);
     }
 
     qInfo() << "Engine Prime Export Job completed successfully";
+    emit completed(m_trackRefs.size(), m_crateIds.size());
 }
 
-void EnginePrimeExportJob::cancel() {
+void EnginePrimeExportJob::slotCancel() {
     m_cancellationRequested = 1;
 }
 

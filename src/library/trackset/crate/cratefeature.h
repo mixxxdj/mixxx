@@ -67,10 +67,6 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
     void slotExportTrackFiles();
-#ifdef __ENGINEPRIME__
-    void slotExportAllCrates();
-    void slotExportCrate();
-#endif
     void slotAnalyzeCrate();
     void slotCrateTableChanged(CrateId crateId);
     void slotCrateContentChanged(CrateId crateId);
