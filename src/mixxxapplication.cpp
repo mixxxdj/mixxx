@@ -219,10 +219,10 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
 #endif // Q_OS_MAC
 
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
-    // All touch events are translated in two simultaneous events one for
-    // target QWidgetWindow and one for the target QWidget
+    // All touch events are translated into two simultaneous events: one for
+    // the target QWidgetWindow and one for the target QWidget.
     // A second touch becomes a mouse move without additional press and release
-    // events
+    // events.
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
         QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
