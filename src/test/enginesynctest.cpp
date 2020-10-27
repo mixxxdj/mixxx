@@ -88,7 +88,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
         if (group == m_sInternalClockGroup) {
             if (!ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                    "sync_master"))
-                            ->get()) {
+                            ->toBool()) {
                 return false;
             }
             if (m_pEngineSync->getMaster()) {

@@ -256,7 +256,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
 
     // Check if vinyl control is enabled...
-    m_bIsEnabled = enabled == NULL ? false : checkEnabled(m_bIsEnabled, enabled->get());
+    m_bIsEnabled = (!enabled) ? false : checkEnabled(m_bIsEnabled, enabled->toBool());
 
     if(bHaveSignal) {
         // Always analyze the input samples
@@ -309,7 +309,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     double filePosition = playPos->get() * m_dOldDuration;
 
     int reportedMode = static_cast<int>(mode->get());
-    bool reportedPlayButton = playButton->get();
+    bool reportedPlayButton = playButton->toBool();
 
     if (m_iVCMode != reportedMode) {
         //if we are playing, don't allow change
@@ -333,7 +333,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     }
 
     //if looping has been enabled, don't allow absolute mode
-    if (loopEnabled->get() && m_iVCMode == MIXXX_VCMODE_ABSOLUTE) {
+    if (loopEnabled->toBool() && m_iVCMode == MIXXX_VCMODE_ABSOLUTE) {
         m_iVCMode = MIXXX_VCMODE_RELATIVE;
         mode->slotSet((double)m_iVCMode);
     }
@@ -486,7 +486,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 //if we're in relative mode then we'll do a sync
                 //because it might select a cue
                 if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE ||
-                        (m_iVCMode == MIXXX_VCMODE_RELATIVE && cueing->get())) {
+                        (m_iVCMode == MIXXX_VCMODE_RELATIVE && cueing->toBool())) {
                     syncPosition();
                     resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 }
@@ -565,7 +565,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         }
 
         //playbutton status may have changed
-        reportedPlayButton = playButton->get();
+        reportedPlayButton = playButton->toBool();
 
         if (reportedPlayButton) {
             // Only add to the ring if pitch is stable
@@ -616,8 +616,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 m_dDisplayPitch += pitch_difference * .01;
             }
             // Don't show extremely high or low speeds in the UI.
-            if (reportedPlayButton && !scratching->get() &&
-                        m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
+            if (reportedPlayButton && !scratching->toBool() &&
+                    m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
                 m_pRateRatio->set(m_dDisplayPitch);
             } else {
                 m_pRateRatio->set(1.0);
@@ -787,7 +787,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is) {
         // the track will keep playing at the previous rate.
         // This allows for single-deck control, dj handoffs, etc.
 
-        togglePlayButton(playButton->get() || fabs(m_pVCRate->get()) > 0.05);
+        togglePlayButton(playButton->toBool() || fabs(m_pVCRate->get()) > 0.05);
         m_pVCRate->set(m_pRateRatio->get());
         resetSteadyPitch(0.0, 0.0);
         m_bForceResync = true;
