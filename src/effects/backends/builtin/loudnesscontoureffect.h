@@ -25,7 +25,7 @@ class LoudnessContourEffectGroupState final : public EffectState {
     CSAMPLE_GAIN m_oldGain;
     double m_oldFilterGainDb;
     bool m_oldUseGain;
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class LoudnessContourEffect

@@ -55,7 +55,8 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
     EngineEffectParameterPointer m_pPotLow;
     QList<EngineEffectParameterPointer> m_pPotMid;
     EngineEffectParameterPointer m_pPotHigh;
-    unsigned int m_oldSampleRate;
+    
+    mixxx::audio::SampleRate m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);
 };

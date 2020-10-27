@@ -179,7 +179,7 @@ void TremoloEffect::processChannel(
             m_pPhaseParameter->value() * framePerPeriod);
     currentFrame = currentFrame % framePerPeriod;
 
-    for (unsigned int i = 0;
+    for (SINT i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         unsigned int positionFrame = (currentFrame - phaseOffsetFrame);

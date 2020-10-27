@@ -182,10 +182,9 @@ void FlangerEffect::processChannel(
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
-   for (unsigned int i = 0;
-          i < bufferParameters.samplesPerBuffer();
-          i += bufferParameters.channelCount()) {
-
+    for (SINT i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
         CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
         double width_ramped = widthRamped.getNext();
