@@ -52,6 +52,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
     }
+    m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
@@ -272,13 +273,14 @@ CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) 
 }
 
 void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
-    QColor highlightColor = Color::chooseContrastColor(pMark->fillColor());
-    pMark->setBaseColor(highlightColor);
+    QColor highlightColor = Color::chooseContrastColor(pMark->fillColor(),
+            m_dimBrightThreshold);
+    pMark->setBaseColor(highlightColor, m_dimBrightThreshold);
 }
 
 void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
     QColor originalColor = mixxx::RgbColor::toQColor(getCuePointerFromCueMark(pMark)->getColor());
-    pMark->setBaseColor(originalColor);
+    pMark->setBaseColor(originalColor, m_dimBrightThreshold);
 }
 
 bool WWaveformViewer::isPlaying() const {
