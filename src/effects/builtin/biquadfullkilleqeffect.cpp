@@ -4,17 +4,16 @@
 #include "util/math.h"
 
 namespace {
-static const double kStartupSamplerate = 44100;
-static const double kMinimumFrequency = 10.0;
-static const double kMaximumFrequency = kStartupSamplerate / 2;
-static const double kStartupMidFreq = 1100.0;
-static const double kQBoost = 0.3;
-static const double kQKill = 0.9;
-static const double kQLowKillShelve = 0.4;
-static const double kQHighKillShelve = 0.4;
-static const double kKillGain = -23;
-static const double kBesselStartRatio = 0.25;
-
+constexpr mixxx::audio::SampleRate kStartupSamplerate(44100);
+constexpr double kMinimumFrequency = 10.0;
+constexpr double kMaximumFrequency = static_cast<double>(kStartupSamplerate) / 2.0;
+constexpr double kStartupMidFreq = 1100.0;
+constexpr double kQBoost = 0.3;
+constexpr double kQKill = 0.9;
+constexpr double kQLowKillShelve = 0.4;
+constexpr double kQHighKillShelve = 0.4;
+constexpr double kKillGain = -23;
+constexpr double kBesselStartRatio = 0.25;
 
 double getCenterFrequency(double low, double high) {
     double scaleLow = log10(low);
