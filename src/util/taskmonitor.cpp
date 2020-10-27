@@ -119,9 +119,14 @@ void TaskMonitor::reportTaskProgress(
 
 void TaskMonitor::abortAllTasks() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    const auto abortedTasks = m_taskInfos;
+    // Detach all monitored tasks before iterating over
+    // them to prevent any kind of side-effects. Aborting
+    // a task may start new tasks in response.
+    const auto toBeAbortedTasks = m_taskInfos;
     m_taskInfos.clear();
-    for (auto* pTask : abortedTasks.keys()) {
+    // Iterator over the detached, immutable copy of
+    // the task list
+    for (auto* pTask : toBeAbortedTasks.keys()) {
         QMetaObject::invokeMethod(
                 pTask,
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
@@ -132,6 +137,9 @@ void TaskMonitor::abortAllTasks() {
 #endif
         );
     }
+    // Finally update the progress bar, which should have
+    // finished if no new tasks have been started in the
+    // meantime.
     updateProgress();
 }
 
