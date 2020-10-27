@@ -217,10 +217,15 @@ bool AudioSource::verifyReadable() {
     return true;
 }
 
-WritableSampleFrames AudioSource::clampWritableSampleFrames(
+std::optional<WritableSampleFrames> AudioSource::clampWritableSampleFrames(
         WritableSampleFrames sampleFrames) const {
-    const auto readableFrameIndexRange =
+    const auto clampedFrameIndexRange =
             clampFrameIndexRange(sampleFrames.frameIndexRange());
+    if (!clampedFrameIndexRange) {
+        return std::nullopt;
+    }
+    const auto readableFrameIndexRange = *clampedFrameIndexRange;
+
     // adjust offset and length of the sample buffer
     DEBUG_ASSERT(
             sampleFrames.frameIndexRange().start() <=
@@ -271,8 +276,16 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
 
 ReadableSampleFrames AudioSource::readSampleFrames(
         WritableSampleFrames sampleFrames) {
-    const auto writable =
+    const auto clamped =
             clampWritableSampleFrames(sampleFrames);
+    if (!clamped) {
+        // result is undefined
+        // TODO: Changing the return type to std::optional<ReadableSampleFrames>
+        // and instead returning std::nullopt here would be more appropriate
+        return ReadableSampleFrames(
+                IndexRange::forward(sampleFrames.frameIndexRange().start(), 0));
+    }
+    const auto writable = *clamped;
     if (writable.frameIndexRange().empty()) {
         // result is empty
         return ReadableSampleFrames(writable.frameIndexRange());

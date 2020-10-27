@@ -189,7 +189,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                         bufferParameters.framesPerBuffer());
 
     //TODO: rewrite to remove assumption of stereo buffer
-    for (unsigned int i = 0;
+    for (SINT i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         CSAMPLE_GAIN send_ramped = send.getNext();

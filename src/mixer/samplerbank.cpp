@@ -13,12 +13,18 @@ SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
         : QObject(pPlayerManager),
           m_pPlayerManager(pPlayerManager) {
     DEBUG_ASSERT(m_pPlayerManager);
+
     m_pCOLoadBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "LoadSamplerBank"), this);
-    connect(m_pCOLoadBank.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadSamplerBank(double)));
+    connect(m_pCOLoadBank.get(),
+            &ControlObject::valueChanged,
+            this,
+            &SamplerBank::slotLoadSamplerBank);
+
     m_pCOSaveBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "SaveSamplerBank"), this);
-    connect(m_pCOSaveBank.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotSaveSamplerBank(double)));
+    connect(m_pCOSaveBank.get(),
+            &ControlObject::valueChanged,
+            this,
+            &SamplerBank::slotSaveSamplerBank);
 
     m_pCONumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"), this);
 }
@@ -31,11 +37,12 @@ void SamplerBank::slotSaveSamplerBank(double v) {
         return;
     }
 
-    QString fileFilter = tr("Mixxx Sampler Banks (*.xml)");
-    QString samplerBankPath = QFileDialog::getSaveFileName(
-            NULL, tr("Save Sampler Bank"),
+    const QString xmlSuffix = QStringLiteral(".xml");
+    QString fileFilter = tr("Mixxx Sampler Banks (*%1)").arg(xmlSuffix);
+    QString samplerBankPath = QFileDialog::getSaveFileName(nullptr,
+            tr("Save Sampler Bank"),
             QString(),
-            tr("Mixxx Sampler Banks (*.xml)"),
+            fileFilter,
             &fileFilter);
     if (samplerBankPath.isNull() || samplerBankPath.isEmpty()) {
         return;
@@ -43,18 +50,15 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 
     // Manually add extension due to bug in QFileDialog
     // via https://bugreports.qt-project.org/browse/QTBUG-27186
-    // Can be removed after switch to Qt5
     QFileInfo fileName(samplerBankPath);
-    if (fileName.suffix().isEmpty()) {
-        QString ext = fileFilter.section(".",1,1);
-        ext.chop(1);
-        samplerBankPath.append(".").append(ext);
+    if (fileName.suffix().isEmpty() || !fileName.suffix().endsWith(xmlSuffix)) {
+        samplerBankPath.append(xmlSuffix);
     }
 
     if (!saveSamplerBankToPath(samplerBankPath)) {
-        QMessageBox::warning(NULL,
-                        tr("Error Saving Sampler Bank"),
-                        tr("Could not write the sampler bank to '%1'.")
+        QMessageBox::warning(nullptr,
+                tr("Error Saving Sampler Bank"),
+                tr("Could not write the sampler bank to '%1'.")
                         .arg(samplerBankPath));
     }
 }
@@ -65,7 +69,7 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager) {
         qWarning() << "SamplerBank::saveSamplerBankToPath called with no PlayerManager";
         return false;
     }
@@ -84,7 +88,7 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         Sampler* pSampler = m_pPlayerManager->getSampler(i + 1);
-        if (pSampler == NULL) {
+        if (!pSampler) {
             continue;
         }
         QDomElement samplerNode = doc.createElement(QString("sampler"));
@@ -112,8 +116,7 @@ void SamplerBank::slotLoadSamplerBank(double v) {
         return;
     }
 
-    QString samplerBankPath = QFileDialog::getOpenFileName(
-            NULL,
+    QString samplerBankPath = QFileDialog::getOpenFileName(nullptr,
             tr("Load Sampler Bank"),
             QString(),
             tr("Mixxx Sampler Banks (*.xml)"));
@@ -122,10 +125,10 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     }
 
     if (!loadSamplerBankFromPath(samplerBankPath)) {
-        QMessageBox::warning(NULL,
-                      tr("Error Reading Sampler Bank"),
-                      tr("Could not open the sampler bank file '%1'.")
-                      .arg(samplerBankPath));
+        QMessageBox::warning(nullptr,
+                tr("Error Reading Sampler Bank"),
+                tr("Could not open the sampler bank file '%1'.")
+                        .arg(samplerBankPath));
     }
 }
 
@@ -135,7 +138,7 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlayerManager) {
         qWarning() << "SamplerBank::loadSamplerBankFromPath called with no PlayerManager";
         return false;
     }

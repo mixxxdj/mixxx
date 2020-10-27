@@ -39,7 +39,7 @@ class ThreeBandBiquadEQEffectGroupState final : public EffectState {
     double m_loFreqCorner;
     double m_highFreqCorner;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffectGroupState> {

@@ -75,8 +75,12 @@ class WaveformWidgetRenderer {
     }
 
     double getPlayPos() const { return m_playPos;}
-    double getPlayPosVSample() const { return m_playPosVSample;}
-    double getTotalVSample() const { return m_totalVSamples;}
+    int getPlayPosVSample() const {
+        return m_playPosVSample;
+    }
+    int getTotalVSample() const {
+        return m_totalVSamples;
+    }
     double getZoomFactor() const { return m_zoomFactor;}
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}

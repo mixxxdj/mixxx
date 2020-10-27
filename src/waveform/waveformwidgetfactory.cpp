@@ -518,7 +518,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         //previousWidget->hold();
         double previousZoom = previousWidget->getZoomFactor();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
-        double previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
+        int previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -991,7 +991,7 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
     m_vsyncThread = new VSyncThread(this);
-
+    m_vsyncThread->setObjectName(QStringLiteral("VSync"));
     m_vsyncThread->setVSyncType(m_vSyncType);
     m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
 
