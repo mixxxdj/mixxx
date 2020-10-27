@@ -77,7 +77,7 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& bufferParame
         : EffectState(bufferParameters),
           m_pHighBuf(MAX_BUFFER_LEN),
           m_oldSampleRate(bufferParameters.sampleRate()),
-          m_freq(kMinCornerHz),
+          m_freq(static_cast<int>(kMinCornerHz)),
           m_oldBalance(0),
           m_oldMidSide(0) {
     m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(bufferParameters.sampleRate(),

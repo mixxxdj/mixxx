@@ -30,7 +30,8 @@ constexpr double kBpmAdjustStep = 0.01;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
 constexpr double kBpmTapMin = 30.0;
-const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
+const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(
+        static_cast<qint64>(1000.0 * (60.0 / kBpmTapMin)));
 constexpr int kBpmTapFilterLength = 5;
 
 // The local_bpm is calculated forward and backward this number of beats, so
