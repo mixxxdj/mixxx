@@ -660,7 +660,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             false,
             m_libraryStr);
     addControl("[Library]",
-            "search_history_move",
+            "search_history_selector",
             tr("Move selected search entry"),
             tr("Moves the selected search history item into given direction "
                "and steps"),

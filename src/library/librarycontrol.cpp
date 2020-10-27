@@ -212,33 +212,42 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &LibraryControl::slotTrackColorNext);
 
     // Control to navigate between widgets (tab/shit+tab button)
-    m_pSelectHistroyNext = std::make_unique<ControlPushButton>(
+    m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "search_history_next"));
     m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "search_history_prev"));
-    m_pSelectHistoryMove = std::make_unique<ControlEncoder>(
-            ConfigKey("[Library]", "search_history_move"), false);
-    connect(m_pSelectHistroyNext.get(),
+    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "search_history_selector"), false);
+    connect(m_pSelectHistoryNext.get(),
             &ControlPushButton::valueChanged,
             this,
-            [this]() {
+            [this](double value) {
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value != 0) {
                     m_pSearchbox->slotMoveSelectedHistory(1);
                 }
             });
     connect(m_pSelectHistoryPrev.get(),
             &ControlPushButton::valueChanged,
             this,
-            [this]() {
+            [this](double value) {
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value != 0) {
                     m_pSearchbox->slotMoveSelectedHistory(-1);
                 }
             });
-    connect(m_pSelectHistoryMove.get(),
+    connect(m_pSelectHistorySelect.get(),
             &ControlEncoder::valueChanged,
             this,
             [this](double steps) {
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (steps != 0) {
                     m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
                 }
             });
