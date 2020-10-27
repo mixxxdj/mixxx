@@ -44,6 +44,8 @@ class MixxxLibraryFeature final : public LibraryFeature {
         return true;
     }
 
+    void searchAndActivate(const QString& query);
+
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;

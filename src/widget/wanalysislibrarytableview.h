@@ -11,7 +11,7 @@ class WAnalysisLibraryTableView : public WTrackTableView {
     WAnalysisLibraryTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             double trackTableBackgroundColorOpacity);
 
     void onSearch(const QString& text) override;
