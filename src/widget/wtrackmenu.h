@@ -129,6 +129,7 @@ class WTrackMenu : public QMenu {
     void slotHide();
     void slotUnhide();
     void slotPurge();
+    void slotRemoveFromDisk();
 
   private:
     // This getter verifies that m_pTrackModel is set when
@@ -224,6 +225,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pHideAct{};
     QAction* m_pUnhideAct{};
     QAction* m_pPurgeAct{};
+    QAction* m_pRemoveFromDiskAct{};
 
     // Show track-editor action
     QAction* m_pPropertiesAct{};

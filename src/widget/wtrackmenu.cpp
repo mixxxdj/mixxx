@@ -207,6 +207,14 @@ void WTrackMenu::createActions() {
         connect(m_pPurgeAct, &QAction::triggered, this, &WTrackMenu::slotPurge);
     }
 
+    if (featureIsEnabled(Feature::RemoveFromDisk)) {
+        m_pRemoveFromDiskAct = new QAction(tr("Remove from disk"), this);
+        connect(m_pRemoveFromDiskAct,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotRemoveFromDisk);
+    }
+
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
@@ -465,6 +473,11 @@ void WTrackMenu::setupActions() {
         }
     }
 
+    if (featureIsEnabled(Feature::RemoveFromDisk) &&
+            m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
+        addAction(m_pRemoveFromDiskAct);
+    }
+
     if (featureIsEnabled(Feature::FileBrowser)) {
         addAction(m_pFileBrowserAct);
     }
@@ -711,6 +724,13 @@ void WTrackMenu::updateMenus() {
         }
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             m_pPurgeAct->setEnabled(!locked);
+        }
+    }
+
+    if (featureIsEnabled(Feature::RemoveFromDisk)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
+            m_pRemoveFromDiskAct->setEnabled(!locked);
         }
     }
 
@@ -1526,6 +1546,141 @@ void WTrackMenu::slotClearAllMetadata() {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+}
+
+namespace {
+
+class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    mutable QList<TrackRef> tr_tracksToPurge;
+    mutable QList<QString> tr_tracksToKeep;
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        auto trackRef = TrackRef::fromFileInfo(
+                pTrack->getFileInfo(),
+                pTrack->getId());
+        VERIFY_OR_DEBUG_ASSERT(trackRef.isValid()) {
+            return;
+        }
+        QString location = pTrack->getLocation();
+        QFile file(location);
+        if (file.exists() && !file.remove()) {
+            // Deletion failed, log warning and queue location for the
+            // Failed Deletions warning.
+            qWarning()
+                    << "Queued file"
+                    << location
+                    << "could not be deleted. Track is not purged";
+            tr_tracksToKeep.append(location);
+            return;
+        } else {
+            // File doesn't exist or was deleted. Queue for purging.
+            tr_tracksToPurge.append(trackRef);
+        }
+    }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotRemoveFromDisk() {
+    // Collect & de-duplicate file locations for the Delete warning.
+    QList<QString> trackLocations;
+    trackLocations.reserve(getTrackCount());
+    for (const auto& trackRef : getTrackRefs()) {
+        DEBUG_ASSERT(trackRef.hasLocation());
+        QString location = trackRef.getLocation();
+        if (!trackLocations.contains(location)) {
+            trackLocations.append(location);
+        }
+    }
+
+    // TODO Use a dialog with a QListView that can be scrolled horizontally?
+    // Or improve linebreaks and formatting in the current plain textview.
+    // TODO Should each item may have a checkbox to allow removing it from the delete list
+    // or is it okay for the user to Cancel and adjust the selection in the tracks table?
+    // TODO Allow to keep all selected tracks' references
+
+    // Show Delete warning.
+    QMessageBox msgBoxDelete(QMessageBox::Critical,
+            QObject::tr("Delete Files"),
+            nullptr);
+    msgBoxDelete.setInformativeText(
+            QObject::tr("<b>Permanently delete these %1 files from disk?</b>"
+                        "                                                      "
+                        "      <br>"
+                        "%2<br>"
+                        "<br>"
+                        "<b>This can not be undone!</b><br>")
+                    .arg(QString::number(trackLocations.length()),
+                            // Primitive hack to create a pseudo list.
+                            QString(QStringLiteral("&#8226; ")) +
+                                    trackLocations.join(
+                                            QStringLiteral("<br>&#8226; "))));
+    msgBoxDelete.setTextFormat(Qt::RichText);
+    QAbstractButton* deleteBtn = msgBoxDelete.addButton(
+            tr("Delete Files!"), QMessageBox::AcceptRole);
+    msgBoxDelete.addButton(QMessageBox::Cancel);
+    msgBoxDelete.setDefaultButton(QMessageBox::Cancel);
+    msgBoxDelete.exec();
+    if (msgBoxDelete.clickedButton() != deleteBtn) {
+        return;
+    }
+
+    // Set up and initiate the track batch operation
+    const auto progressLabelText =
+            tr("Removing %1 track file(s) from disk...",
+                    "",
+                    getTrackCount());
+    const auto trackOperator =
+            RemoveTrackFilesFromDiskTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+
+    // Purge deleted tracks and show deletion summary message.
+    if (trackOperator.tr_tracksToPurge.length() > 0) {
+        // Purge only those tracks whose files were actually deleted.
+        m_pLibrary->trackCollections()->purgeTracks(trackOperator.tr_tracksToPurge);
+        // Optional message box:
+        QMessageBox msgBoxPurgeTracks(QMessageBox::Information,
+                QObject::tr("Yeaiij!"),
+                nullptr);
+        msgBoxPurgeTracks.setInformativeText(
+                QObject::tr(
+                        "<br><b>"
+                        "%1 annoying tracks were deleted from disk and "
+                        "purged from the Mixxx database."
+                        "<br><br>")
+                        .arg(QString::number(trackOperator.tr_tracksToPurge.length())));
+        msgBoxPurgeTracks.setTextFormat(Qt::RichText);
+        msgBoxPurgeTracks.exec();
+    }
+
+    // Show list of tracks that could not be deleted and are thus not going to be purged.
+    if (trackOperator.tr_tracksToKeep.length() >= 0) {
+        return;
+    }
+    QMessageBox msgBoxKeepTracks(QMessageBox::Warning,
+            QObject::tr("Some Files Were Not Deleted"),
+            nullptr);
+    msgBoxKeepTracks.setInformativeText(
+            QObject::tr("<br><br><b>"
+                        "The following %1 files could not be deleted from disk."
+                        "Make sure you have write access to those files and "
+                        "try again later.</b>"
+                        "<br>"
+                        "%2"
+                        "<br>")
+                    .arg(QString::number(
+                                 trackOperator.tr_tracksToKeep.length()),
+                            // Primitive hack to create a pseudo list.
+                            QString(QStringLiteral("&#8226; ")) +
+                                    trackOperator.tr_tracksToKeep.join(
+                                            QStringLiteral("<br>&#8226; "))));
+    msgBoxKeepTracks.setTextFormat(Qt::RichText);
+    msgBoxKeepTracks.exec();
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {
