@@ -137,6 +137,10 @@ class WTrackMenu : public QMenu {
 
     std::unique_ptr<mixxx::TrackPointerIterator> newTrackPointerIterator() const;
 
+    /// WARNING: The provided pTrackPointerOperation must ensure NOT
+    /// TO MODIFY the underlying m_pTrackModel during the iteration!!!
+    /// This might happen not only directly but also indirectly by
+    /// handling signals, e.g. TrackDAO::enforceModelUpdate().
     int applyTrackPointerOperation(
             const QString& progressLabelText,
             const mixxx::TrackPointerOperation* pTrackPointerOperation,
