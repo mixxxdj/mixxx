@@ -384,7 +384,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.
-    if (m_pQuantize->toBool() || isMaster(getSyncMode()) ||
+    if (!m_pQuantize->toBool() || isMaster(getSyncMode()) ||
             !m_pBeats || m_pReverseButton->toBool()) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
