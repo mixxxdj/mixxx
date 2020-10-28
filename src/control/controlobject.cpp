@@ -96,8 +96,7 @@ double ControlObject::get(const ConfigKey& key) {
 
 // static
 bool ControlObject::toBool(const ConfigKey& key) {
-    const double value = ControlObject::get(key);
-    return (value != 0);
+    return ControlObject::get(key) > 0;
 }
 
 double ControlObject::getParameter() const {
