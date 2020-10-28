@@ -39,8 +39,8 @@ class LibraryView {
     /// 1, the view should move to the next selection in the list.
     virtual void moveSelection(int delta) {Q_UNUSED(delta);}
 
-    virtual int getColumnIdFromCurrentIndex() {
-        return TrackModel::SortColumnId::SORTCOLUMN_INVALID;
+    virtual TrackModel::SortColumnId getColumnIdFromCurrentIndex() {
+        return TrackModel::SortColumnId::sortColumnInvalid;
     };
     /// If applicable, requests that the LibraryView changes the track color of
     /// the selected track. Does nothing otherwise.

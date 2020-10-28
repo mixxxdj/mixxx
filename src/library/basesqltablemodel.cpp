@@ -70,40 +70,90 @@ void BaseSqlTableModel::initHeaderProperties() {
 
 void BaseSqlTableModel::initSortColumnMapping() {
     // Add a bijective mapping between the SortColumnIds and column indices
-    for (int i = 0; i < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX; ++i) {
+    for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax); ++i) {
         m_columnIndexBySortColumnId[i] = -1;
     }
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COLOR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_SAMPLERATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnArtist)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnTitle)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnAlbum)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnAlbumArtist)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnYear)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnGenre)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnComposer)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnGrouping)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnTrackNumber)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnFileType)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnNativeLocation)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnComment)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnDuration)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnBitRate)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnBpm)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnReplayGain)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnDateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnTimesPlayed)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnRating)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnKey)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnPreview)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnColor)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnCoverArt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::sortColumnSampleRate)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
 
     m_sortColumnIdByColumnIndex.clear();
-    for (int i = TrackModel::SortColumnId::SORTCOLUMN_ID_MIN;
-            i < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX;
+    for (int i = static_cast<int>(TrackModel::SortColumnId::sortColumnIdMin);
+            i < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax);
             ++i) {
         TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
-        m_sortColumnIdByColumnIndex.insert(m_columnIndexBySortColumnId[sortColumn], sortColumn);
+        m_sortColumnIdByColumnIndex.insert(
+                m_columnIndexBySortColumnId[static_cast<int>(sortColumn)],
+                sortColumn);
     }
 }
 
@@ -329,15 +379,15 @@ void BaseSqlTableModel::setTable(const QString& tableName,
 }
 
 int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
-    if (column == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+    if (column == TrackModel::SortColumnId::sortColumnInvalid) {
         return -1;
     }
 
-    return m_columnIndexBySortColumnId[column];
+    return m_columnIndexBySortColumnId[static_cast<int>(column)];
 }
 
 TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) {
-    return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::SORTCOLUMN_INVALID);
+    return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::sortColumnInvalid);
 }
 
 const QString BaseSqlTableModel::currentSearch() const {

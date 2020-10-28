@@ -275,7 +275,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
             }
         }
 
-        m_pSortColumn->set(trackModel->sortColumnIdFromColumnIndex(sortColumn));
+        m_pSortColumn->set(static_cast<int>(trackModel->sortColumnIdFromColumnIndex(sortColumn)));
         m_pSortOrder->set(sortOrder);
         applySorting();
     }
@@ -363,10 +363,10 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     }
 }
 
-int WTrackTableView::getColumnIdFromCurrentIndex() {
+TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     TrackModel* trackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
-        return TrackModel::SortColumnId::SORTCOLUMN_INVALID;
+        return TrackModel::SortColumnId::sortColumnInvalid;
     }
     return trackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
@@ -945,13 +945,13 @@ void WTrackTableView::applySortingIfVisible() {
 void WTrackTableView::applySorting() {
     TrackModel* trackModel = getTrackModel();
     int sortColumnId = static_cast<int>(m_pSortColumn->get());
-    if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
-        // During startup phase of Mixxx, this method is called with SORTCOLUMN_INVALID
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::sortColumnInvalid)) {
+        // During startup phase of Mixxx, this method is called with sortColumnInvalid
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(
-            sortColumnId >= TrackModel::SortColumnId::SORTCOLUMN_ID_MIN &&
-            sortColumnId < TrackModel::SortColumnId::SORTCOLUMN_ID_MAX) {
+            sortColumnId >= static_cast<int>(TrackModel::SortColumnId::sortColumnIdMin) &&
+            sortColumnId < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax)) {
         return;
     }
 
@@ -977,12 +977,12 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     TrackModel* trackModel = getTrackModel();
     TrackModel::SortColumnId sortColumnId = trackModel->sortColumnIdFromColumnIndex(headerSection);
 
-    if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+    if (sortColumnId == TrackModel::SortColumnId::sortColumnInvalid) {
         return;
     }
 
-    if (sortColumnId != static_cast<int>(m_pSortColumn->get())) {
-        m_pSortColumn->set(sortColumnId);
+    if (static_cast<int>(sortColumnId) != static_cast<int>(m_pSortColumn->get())) {
+        m_pSortColumn->set(static_cast<int>(sortColumnId));
         sortingChanged = true;
     }
     if (sortOrder != m_pSortOrder->get()) {

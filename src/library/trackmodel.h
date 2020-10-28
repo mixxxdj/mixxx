@@ -51,46 +51,46 @@ class TrackModel {
 
     // Note that these enum values are used literally by controller scripts and must never be changed!
     // Both reordering or insertion of new enum variants is strictly forbidden!
-    // New variants must always be inserted between the last valid and before the terminating variant SORTCOLUMN_ID_MAX!
-    enum SortColumnId {
-        SORTCOLUMN_INVALID = -1,
-        SORTCOLUMN_CURRENTINDEX = 0, // Column with the cursor on it
-        SORTCOLUMN_ARTIST = 1,
-        SORTCOLUMN_TITLE = 2,
-        SORTCOLUMN_ALBUM = 3,
-        SORTCOLUMN_ALBUMARTIST = 4,
-        SORTCOLUMN_YEAR = 5,
-        SORTCOLUMN_GENRE = 6,
-        SORTCOLUMN_COMPOSER = 7,
-        SORTCOLUMN_GROUPING = 8,
-        SORTCOLUMN_TRACKNUMBER = 9,
-        SORTCOLUMN_FILETYPE = 10,
-        SORTCOLUMN_NATIVELOCATION = 11,
-        SORTCOLUMN_COMMENT = 12,
-        SORTCOLUMN_DURATION = 13,
-        SORTCOLUMN_BITRATE = 14,
-        SORTCOLUMN_BPM = 15,
-        SORTCOLUMN_REPLAYGAIN = 16,
-        SORTCOLUMN_DATETIMEADDED = 17,
-        SORTCOLUMN_TIMESPLAYED = 18,
-        SORTCOLUMN_RATING = 19,
-        SORTCOLUMN_KEY = 20,
-        SORTCOLUMN_PREVIEW = 21,
-        SORTCOLUMN_COVERART = 22,
-        SORTCOLUMN_POSITION = 23,
-        SORTCOLUMN_PLAYLISTID = 24,
-        SORTCOLUMN_LOCATION = 25,
-        SORTCOLUMN_FILENAME = 26,
-        SORTCOLUMN_FILE_MODIFIED_TIME = 27,
-        SORTCOLUMN_FILE_CREATION_TIME = 28,
-        SORTCOLUMN_SAMPLERATE = 29,
-        SORTCOLUMN_COLOR = 30,
+    // New variants must always be inserted between the last valid and before the terminating variant sortColumnIdMax!
+    enum class SortColumnId : int {
+        sortColumnInvalid = -1,
+        sortColumnCurrentIndex = 0, // Column with the cursor on it
+        sortColumnArtist = 1,
+        sortColumnTitle = 2,
+        sortColumnAlbum = 3,
+        sortColumnAlbumArtist = 4,
+        sortColumnYear = 5,
+        sortColumnGenre = 6,
+        sortColumnComposer = 7,
+        sortColumnGrouping = 8,
+        sortColumnTrackNumber = 9,
+        sortColumnFileType = 10,
+        sortColumnNativeLocation = 11,
+        sortColumnComment = 12,
+        sortColumnDuration = 13,
+        sortColumnBitRate = 14,
+        sortColumnBpm = 15,
+        sortColumnReplayGain = 16,
+        sortColumnDateTimeAdded = 17,
+        sortColumnTimesPlayed = 18,
+        sortColumnRating = 19,
+        sortColumnKey = 20,
+        sortColumnPreview = 21,
+        sortColumnCoverArt = 22,
+        sortColumnPosition = 23,
+        sortColumnPlaylistId = 24,
+        sortColumnLocation = 25,
+        sortColumnFilename = 26,
+        sortColumnFileModifiedTime = 27,
+        sortColumnFileCreationTime = 28,
+        sortColumnSampleRate = 29,
+        sortColumnColor = 30,
 
-        // SORTCOLUMN_ID_MAX terminates the list of columns, it must be always after the last item
-        SORTCOLUMN_ID_MAX,
+        // sortColumnIdMax terminates the list of columns, it must be always after the last item
+        sortColumnIdMax,
 
-        SORTCOLUMN_ID_MIN = SORTCOLUMN_ARTIST,
-        NUM_SORTCOLUMNIDS = (SORTCOLUMN_ID_MAX - SORTCOLUMN_ID_MIN) + 1
+        sortColumnIdMin = sortColumnArtist,
+        sortColumnNumOfIds = (sortColumnIdMax - sortColumnIdMin) + 1
     };
 
     // Deserialize and return the track at the given QModelIndex
@@ -188,8 +188,7 @@ class TrackModel {
 
     virtual SortColumnId sortColumnIdFromColumnIndex(int index) {
         Q_UNUSED(index);
-        return SORTCOLUMN_INVALID;
-
+        return TrackModel::SortColumnId::sortColumnInvalid;
     }
 
     virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {

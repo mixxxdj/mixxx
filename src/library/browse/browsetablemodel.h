@@ -88,7 +88,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
     QString m_previewDeckGroup;
-    int m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ID_MAX];
+    int m_columnIndexBySortColumnId[TrackModel::SortColumnId::sortColumnIdMax];
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
 };
