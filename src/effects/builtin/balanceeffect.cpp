@@ -130,8 +130,8 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
 
     double freq = pGroupState->m_freq;
     if (pGroupState->m_oldSampleRate != bufferParameters.sampleRate() ||
-            (freq != static_cast<int>(m_pBypassFreqParameter->value()))) {
-        freq = static_cast<int>(m_pBypassFreqParameter->value());
+            (freq != m_pBypassFreqParameter->value())) {
+        freq = m_pBypassFreqParameter->value();
         pGroupState->m_oldSampleRate = bufferParameters.sampleRate();
         pGroupState->setFilters(bufferParameters.sampleRate(), pGroupState->m_freq);
     }
