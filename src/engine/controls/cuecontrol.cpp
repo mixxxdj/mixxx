@@ -858,7 +858,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
 }
 
 void CueControl::hotcueClear(HotcueControl* pControl, double value) {
-    if (value != 0) {
+    if (value == 0) {
         return;
     }
 
