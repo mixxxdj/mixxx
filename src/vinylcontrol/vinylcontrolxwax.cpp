@@ -256,7 +256,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
 
     // Check if vinyl control is enabled...
-    m_bIsEnabled = (!enabled) ? false : checkEnabled(m_bIsEnabled, enabled->toBool());
+    m_bIsEnabled = enabled && checkEnabled(m_bIsEnabled, enabled->toBool());
 
     if(bHaveSignal) {
         // Always analyze the input samples
