@@ -43,13 +43,14 @@ class WTrackMenu : public QMenu {
         BPM = 1 << 7,
         Color = 1 << 8,
         HideUnhidePurge = 1 << 9,
-        FileBrowser = 1 << 10,
-        Properties = 1 << 11,
-        SearchRelated = 1 << 12,
+        RemoveFromDisk = 1 << 10,
+        FileBrowser = 1 << 11,
+        Properties = 1 << 12,
+        SearchRelated = 1 << 13,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
-                BPM | Color | HideUnhidePurge | FileBrowser | Properties |
-                SearchRelated
+                BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
+                Properties | SearchRelated
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
