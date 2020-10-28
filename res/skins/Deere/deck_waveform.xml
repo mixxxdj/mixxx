@@ -16,46 +16,6 @@
 
       <Template src="skin:vinylcontrol.xml"/>
 
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>75f,75f</Size>
-            <Connection>
-              <ConfigKey>[Skin],show_4decks</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-            <Children>
-              <SingletonContainer>
-                <ObjectName>SpinnySingleton<Variable name="i"/></ObjectName>
-              </SingletonContainer>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>55f,55f</Size>
-            <Connection>
-              <ConfigKey>[Skin],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-            <Children>
-              <SingletonContainer>
-                <ObjectName>SpinnySingleton<Variable name="i"/></ObjectName>
-              </SingletonContainer>
-            </Children>
-          </WidgetGroup>
-
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_spinnies</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
