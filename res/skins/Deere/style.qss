@@ -371,12 +371,18 @@ QPushButton#LibraryPreviewButton:checked:hover {
 WSearchLineEdit {
   margin: 0px 2px 0px 0px;
   padding: 2px;
+  /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
   border: 1px solid #4B4B4B;
+  */
   background-color: #1e1e1e;
   color: #d2d2d2;
   }
   WSearchLineEdit:focus {
+    /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
     border: 1px solid #FF6600;
+    */
     color: #D6D6D6;
     selection-color: #222222;
     selection-background-color: #d2d2d2;
