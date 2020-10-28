@@ -653,13 +653,13 @@ void LibraryControl::slotSortColumn(double v) {
     m_pSortColumnToggle->set(v);
 }
 
-void LibraryControl::slotSortColumnToggle(double v) {
-    int column = static_cast<int>(v);
+void LibraryControl::slotSortColumnToggle(double value) {
+    int column = static_cast<int>(value);
     if (column == static_cast<int>(m_pSortColumn->get())) {
-        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1 : 0);
+        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
     } else {
-        m_pSortColumn->set(v);
-        m_pSortOrder->set(0);
+        m_pSortColumn->set(value);
+        m_pSortOrder->set(0.0);
     }
 }
 
