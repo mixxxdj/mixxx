@@ -2868,10 +2868,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 /* AutoDJ button icons */
 
-  /* align/center AutoDJ transition label vertically with spinbox */
-  QLabel#labelTransitionAppendix {
-    margin: 0px 0px 5px 0px;
-  }
   /* Push labels away from buttons at the right */
   /* AutoDJ selection info */
   QLabel#labelSelectionInfo,
