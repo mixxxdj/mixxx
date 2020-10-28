@@ -55,7 +55,7 @@ class WaveformMark {
     }
 
     // Sets the appropriate mark colors based on the base color
-    void setBaseColor(QColor baseColor);
+    void setBaseColor(QColor baseColor, int dimBrightThreshold);
     QColor fillColor() const {
         return m_fillColor;
     }

@@ -90,6 +90,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   private slots:
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
+    void slotCloneFromSampler(double sampler);
     void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -117,6 +118,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Deck clone control
     std::unique_ptr<ControlObject> m_pCloneFromDeck;
+    std::unique_ptr<ControlObject> m_pCloneFromSampler;
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;

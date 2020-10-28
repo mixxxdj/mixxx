@@ -34,7 +34,7 @@ class LinkwitzRiley8EQEffectGroupState : public EffectState {
     CSAMPLE* m_pMidBuf;
     CSAMPLE* m_pHighBuf;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
     int m_loFreq;
     int m_hiFreq;
 };

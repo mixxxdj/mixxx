@@ -16,6 +16,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -528,7 +529,7 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     pPlaylistTableModel->select();
 
     int rows = pPlaylistTableModel->rowCount();
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistTableModel->index(i, 0);
         tracks.push_back(pPlaylistTableModel->getTrack(index));

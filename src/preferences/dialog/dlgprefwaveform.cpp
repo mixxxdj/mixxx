@@ -30,15 +30,17 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     }
 
     // Populate zoom options.
-    for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
-        defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
+    for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
+            i <= static_cast<int>(WaveformWidgetRenderer::s_waveformMaxZoom);
+            i++) {
+        defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
     slotUpdate();
+
     connect(frameRateSpinBox,
             SIGNAL(valueChanged(int)),
             this,
@@ -156,9 +158,9 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
-    playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
-    beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
-    beatGridAlphaSlider->setValue(factory->beatGridAlpha());
+    playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
+    beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
+    beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(

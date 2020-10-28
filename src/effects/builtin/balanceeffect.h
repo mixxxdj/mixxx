@@ -20,7 +20,7 @@ class BalanceGroupState : public EffectState {
 
     mixxx::SampleBuffer m_pHighBuf;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
     int m_freq;
 
     CSAMPLE m_oldBalance;

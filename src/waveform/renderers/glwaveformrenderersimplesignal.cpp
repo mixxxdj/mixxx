@@ -46,14 +46,17 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
-    double lineWidth = (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.0;
+    auto firstVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getFirstDisplayedPosition() * dataSize);
+    auto lastVisualIndex = static_cast<GLfloat>(
+            m_waveformRenderer->getLastDisplayedPosition() * dataSize);
+    const auto lineWidth = static_cast<GLfloat>(
+            1.0 / m_waveformRenderer->getVisualSamplePerPixel() + 1);
 
-    const int firstIndex = int(firstVisualIndex+0.5);
+    const auto firstIndex = static_cast<int>(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex%2;
 
-    const int lastIndex = int(lastVisualIndex+0.5);
+    const auto lastIndex = static_cast<int>(lastVisualIndex + 0.5);
     lastVisualIndex = lastIndex + lastIndex%2;
 
     // Reset device for native painting
@@ -86,8 +89,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
         //draw reference line
         glBegin(GL_LINES); {
-            glColor4f(m_axesColor_r, m_axesColor_g,
-                      m_axesColor_b, m_axesColor_a);
+            glColor4f(static_cast<GLfloat>(m_axesColor_r),
+                    static_cast<GLfloat>(m_axesColor_g),
+                    static_cast<GLfloat>(m_axesColor_b),
+                    static_cast<GLfloat>(m_axesColor_a));
             glVertex2f(firstVisualIndex,0);
             glVertex2f(lastVisualIndex,0);
         }
@@ -100,7 +105,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
             int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
 
-            glColor4f(m_signalColor_r, m_signalColor_g, m_signalColor_b, 0.9);
+            glColor4f(static_cast<GLfloat>(m_signalColor_r),
+                    static_cast<GLfloat>(m_signalColor_g),
+                    static_cast<GLfloat>(m_signalColor_b),
+                    0.9f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {
@@ -138,7 +146,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
             int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
 
-            glColor4f(m_signalColor_r, m_signalColor_g, m_signalColor_b, 0.8);
+            glColor4f(static_cast<GLfloat>(m_signalColor_r),
+                    static_cast<GLfloat>(m_signalColor_g),
+                    static_cast<GLfloat>(m_signalColor_b),
+                    0.8f);
             for (int visualIndex = firstIndex;
                     visualIndex < lastIndex;
                     visualIndex += 2) {

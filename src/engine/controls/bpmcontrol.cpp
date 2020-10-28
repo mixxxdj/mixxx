@@ -180,7 +180,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
-        const int translate_dist = getSampleOfTrack().rate * -.01;
+        const double translate_dist = getSampleOfTrack().rate * -.01;
         pBeats->translate(translate_dist);
     }
 }
@@ -190,7 +190,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const int translate_dist = getSampleOfTrack().rate * .01;
+        const double translate_dist = getSampleOfTrack().rate * .01;
         pBeats->translate(translate_dist);
     }
 }
@@ -310,7 +310,7 @@ bool BpmControl::syncTempo() {
         // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
 
-        float fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
+        double fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
         if (fabs(fThisLocalBpm * 2.0 - fOtherLocalBpm) < fFileBpmDelta) {
             desiredRate /= 2.0;
         } else if (fabs(fThisLocalBpm - 2.0 * fOtherLocalBpm) < fFileBpmDelta) {
@@ -436,6 +436,7 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         kLogger.trace() << m_group << "****************";
         kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
         kLogger.trace() << "my     beat distance:" << thisBeatDistance;
+        kLogger.trace() << "user offset distance:" << m_dUserOffset.getValue();
         kLogger.trace() << "error               :"
                         << (shortest_distance - m_dUserOffset.getValue());
         kLogger.trace() << "user offset         :" << m_dUserOffset.getValue();
@@ -710,7 +711,7 @@ double BpmControl::getNearestPositionInPhase(
 
             // Syncing to after the loop end.
             if (end_delta > 0 && loop_length > 0.0) {
-                int i = end_delta / loop_length;
+                double i = end_delta / loop_length;
                 dNewPlaypos = loop_start_position + end_delta - i * loop_length;
 
                 // Move new position after loop jump into phase as well.
@@ -886,7 +887,7 @@ double BpmControl::getBeatMatchPosition(
 
             // Syncing to after the loop end.
             if (end_delta > 0 && loop_length > 0.0) {
-                int i = end_delta / loop_length;
+                double i = end_delta / loop_length;
                 dNewPlaypos = loop_start_position + end_delta - i * loop_length;
 
                 // Move new position after loop jump into phase as well.
@@ -957,7 +958,7 @@ void BpmControl::slotBeatsTranslate(double v) {
     if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         double currentSample = getSampleOfTrack().current;
         double closestBeat = pBeats->findClosestBeat(currentSample);
-        int delta = currentSample - closestBeat;
+        int delta = static_cast<int>(currentSample - closestBeat);
         if (delta % 2 != 0) {
             delta--;
         }
@@ -1011,6 +1012,9 @@ double BpmControl::updateBeatDistance() {
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
+    if (kLogger.traceEnabled()) {
+        qDebug() << getGroup() << "BpmControl::setTargetBeatDistance:" << beatDistance;
+    }
     m_dSyncTargetBeatDistance.setValue(beatDistance);
 }
 

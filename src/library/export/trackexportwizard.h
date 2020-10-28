@@ -21,9 +21,9 @@
 class TrackExportWizard : public QObject {
   Q_OBJECT
   public:
-    TrackExportWizard(QWidget *parent, UserSettingsPointer pConfig,
-                      QList<TrackPointer> tracks)
-            : m_parent(parent), m_pConfig(pConfig), m_tracks(tracks) { }
+    TrackExportWizard(QWidget* parent, UserSettingsPointer pConfig, TrackPointerList tracks)
+            : m_parent(parent), m_pConfig(pConfig), m_tracks(tracks) {
+    }
     virtual ~TrackExportWizard() { }
 
     // Displays a dialog requesting destination directory, then performs
@@ -35,7 +35,7 @@ class TrackExportWizard : public QObject {
 
     QWidget* m_parent;
     UserSettingsPointer m_pConfig;
-    QList<TrackPointer> m_tracks;
+    TrackPointerList m_tracks;
     QScopedPointer<TrackExportDlg> m_dialog;
     QScopedPointer<TrackExportWorker> m_worker;
 };

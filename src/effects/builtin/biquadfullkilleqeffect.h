@@ -52,10 +52,10 @@ class BiquadFullKillEQEffectGroupState : public EffectState {
     double m_loFreqCorner;
     double m_highFreqCorner;
 
-    int m_rampHoldOff;
-    int m_groupDelay;
+    SINT m_rampHoldOff;
+    SINT m_groupDelay;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffectGroupState> {

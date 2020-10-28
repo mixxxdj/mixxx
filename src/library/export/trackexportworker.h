@@ -36,8 +36,9 @@ class TrackExportWorker : public QThread {
 
     // Constructor does not validate the destination directory.  Calling classes
     // should do that.
-    TrackExportWorker(QString destDir, QList<TrackPointer> tracks)
-            : m_destDir(destDir), m_tracks(tracks) { }
+    TrackExportWorker(QString destDir, TrackPointerList tracks)
+            : m_destDir(destDir), m_tracks(tracks) {
+    }
     virtual ~TrackExportWorker() { };
 
     // exports ALL the tracks.  Thread joins on success or failure.
@@ -83,7 +84,7 @@ class TrackExportWorker : public QThread {
 
     OverwriteMode m_overwriteMode = OverwriteMode::ASK;
     const QString m_destDir;
-    const QList<TrackPointer> m_tracks;
+    const TrackPointerList m_tracks;
 };
 
 #endif  // TRACKEXPORTWORKER_H
