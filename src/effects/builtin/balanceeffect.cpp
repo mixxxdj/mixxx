@@ -77,7 +77,7 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& bufferParame
         : EffectState(bufferParameters),
           m_pHighBuf(MAX_BUFFER_LEN),
           m_oldSampleRate(bufferParameters.sampleRate()),
-          m_freq(static_cast<int>(kMinCornerHz)),
+          m_freq(kMinCornerHz),
           m_oldBalance(0),
           m_oldMidSide(0) {
     m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(bufferParameters.sampleRate(),
@@ -90,7 +90,7 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& bufferParame
 BalanceGroupState::~BalanceGroupState() {
 }
 
-void BalanceGroupState::setFilters(int sampleRate, int freq) {
+void BalanceGroupState::setFilters(int sampleRate, double freq) {
     m_low->setFrequencyCorners(sampleRate, freq);
     m_high->setFrequencyCorners(sampleRate, freq);
 }
@@ -128,7 +128,7 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN balanceStart = pGroupState->m_oldBalance + balanceDelta;
     CSAMPLE_GAIN midSideStart = pGroupState->m_oldMidSide + midSideDelta;
 
-    int freq = pGroupState->m_freq;
+    double freq = pGroupState->m_freq;
     if (pGroupState->m_oldSampleRate != bufferParameters.sampleRate() ||
             (freq != static_cast<int>(m_pBypassFreqParameter->value()))) {
         freq = static_cast<int>(m_pBypassFreqParameter->value());
