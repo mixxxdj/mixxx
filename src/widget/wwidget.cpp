@@ -91,11 +91,13 @@ bool WWidget::event(QEvent* e) {
             const QTouchEvent::TouchPoint &touchPoint =
                     touchEvent->touchPoints().first();
             QMouseEvent mouseEvent(eventType,
-                    touchPoint.pos().toPoint(),
-                    touchPoint.screenPos().toPoint(),
+                    touchPoint.pos(),
+                    touchPoint.pos(),
+                    touchPoint.screenPos(),
                     m_activeTouchButton, // Button that causes the event
                     Qt::NoButton, // Not used, so no need to fake a proper value.
-                    touchEvent->modifiers());
+                    touchEvent->modifiers(), 
+                    Qt::MouseEventSynthesizedByApplication);
 
             return QWidget::event(&mouseEvent);
         }
