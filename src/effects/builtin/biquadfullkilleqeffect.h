@@ -17,8 +17,6 @@
 #include "util/memory.h"
 #include "util/samplebuffer.h"
 
-static const int kMaxDelay2 = 3300; // allows a 30 Hz filter at 97346;
-
 class BiquadFullKillEQEffectGroupState : public EffectState {
   public:
     BiquadFullKillEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
