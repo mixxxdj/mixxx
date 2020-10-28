@@ -655,7 +655,7 @@ void LibraryControl::slotSortColumn(double v) {
 
 void LibraryControl::slotSortColumnToggle(double v) {
     int sortColumnId = static_cast<int>(v);
-    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::sortColumnCurrentIndex)) {
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::CurrentIndex)) {
         if (!m_pLibraryWidget) {
             return;
         }

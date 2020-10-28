@@ -14,62 +14,62 @@ SeratoPlaylistModel::SeratoPlaylistModel(QObject* parent,
 
 void SeratoPlaylistModel::initSortColumnMapping() {
     // Add a bijective mapping between the SortColumnIds and column indices
-    for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax); ++i) {
+    for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::IdMax); ++i) {
         m_columnIndexBySortColumnId[i] = -1;
     }
 
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnArtist)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Artist)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnTitle)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Title)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnAlbum)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Album)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnAlbumArtist)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::AlbumArtist)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnYear)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Year)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnGenre)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Genre)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnComposer)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Composer)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnGrouping)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Grouping)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnTrackNumber)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::TrackNumber)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnFileType)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::FileType)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnNativeLocation)] =
+            TrackModel::SortColumnId::NativeLocation)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnComment)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Comment)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnDuration)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Duration)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnBitRate)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::BitRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnBpm)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Bpm)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnReplayGain)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::ReplayGain)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnDateTimeAdded)] =
+            TrackModel::SortColumnId::DateTimeAdded)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnTimesPlayed)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::TimesPlayed)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnRating)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Rating)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnKey)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Key)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnPreview)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnCoverArt)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::CoverArt)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
-    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::sortColumnPosition)] =
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Position)] =
             fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
     m_sortColumnIdByColumnIndex.clear();
-    for (int i = static_cast<int>(TrackModel::SortColumnId::sortColumnIdMin);
-            i < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax);
+    for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
+            i < static_cast<int>(TrackModel::SortColumnId::IdMax);
             ++i) {
         TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
         m_sortColumnIdByColumnIndex.insert(

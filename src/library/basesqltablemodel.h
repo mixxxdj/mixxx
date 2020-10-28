@@ -96,7 +96,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QSqlDatabase m_database;
 
     QString m_tableOrderBy;
-    int m_columnIndexBySortColumnId[TrackModel::SortColumnId::sortColumnIdMax];
+    int m_columnIndexBySortColumnId[TrackModel::SortColumnId::IdMax];
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
   private slots:

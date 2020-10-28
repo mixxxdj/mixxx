@@ -51,46 +51,46 @@ class TrackModel {
 
     // Note that these enum values are used literally by controller scripts and must never be changed!
     // Both reordering or insertion of new enum variants is strictly forbidden!
-    // New variants must always be inserted between the last valid and before the terminating variant sortColumnIdMax!
+    // New variants must always be inserted between the last valid and before the terminating variant IdMax!
     enum class SortColumnId : int {
-        sortColumnInvalid = -1,
-        sortColumnCurrentIndex = 0, // Column with the cursor on it
-        sortColumnArtist = 1,
-        sortColumnTitle = 2,
-        sortColumnAlbum = 3,
-        sortColumnAlbumArtist = 4,
-        sortColumnYear = 5,
-        sortColumnGenre = 6,
-        sortColumnComposer = 7,
-        sortColumnGrouping = 8,
-        sortColumnTrackNumber = 9,
-        sortColumnFileType = 10,
-        sortColumnNativeLocation = 11,
-        sortColumnComment = 12,
-        sortColumnDuration = 13,
-        sortColumnBitRate = 14,
-        sortColumnBpm = 15,
-        sortColumnReplayGain = 16,
-        sortColumnDateTimeAdded = 17,
-        sortColumnTimesPlayed = 18,
-        sortColumnRating = 19,
-        sortColumnKey = 20,
-        sortColumnPreview = 21,
-        sortColumnCoverArt = 22,
-        sortColumnPosition = 23,
-        sortColumnPlaylistId = 24,
-        sortColumnLocation = 25,
-        sortColumnFilename = 26,
-        sortColumnFileModifiedTime = 27,
-        sortColumnFileCreationTime = 28,
-        sortColumnSampleRate = 29,
-        sortColumnColor = 30,
+        Invalid = -1,
+        CurrentIndex = 0, // Column with the cursor on it
+        Artist = 1,
+        Title = 2,
+        Album = 3,
+        AlbumArtist = 4,
+        Year = 5,
+        Genre = 6,
+        Composer = 7,
+        Grouping = 8,
+        TrackNumber = 9,
+        FileType = 10,
+        NativeLocation = 11,
+        Comment = 12,
+        Duration = 13,
+        BitRate = 14,
+        Bpm = 15,
+        ReplayGain = 16,
+        DateTimeAdded = 17,
+        TimesPlayed = 18,
+        Rating = 19,
+        Key = 20,
+        Preview = 21,
+        CoverArt = 22,
+        Position = 23,
+        PlaylistId = 24,
+        Location = 25,
+        Filename = 26,
+        FileModifiedTime = 27,
+        FileCreationTime = 28,
+        SampleRate = 29,
+        Color = 30,
 
-        // sortColumnIdMax terminates the list of columns, it must be always after the last item
-        sortColumnIdMax,
+        // IdMax terminates the list of columns, it must be always after the last item
+        IdMax,
 
-        sortColumnIdMin = sortColumnArtist,
-        sortColumnNumOfIds = (sortColumnIdMax - sortColumnIdMin) + 1
+        IdMin = Artist,
+        NumOfIds = (IdMax - IdMin) + 1
     };
 
     // Deserialize and return the track at the given QModelIndex
@@ -188,7 +188,7 @@ class TrackModel {
 
     virtual SortColumnId sortColumnIdFromColumnIndex(int index) {
         Q_UNUSED(index);
-        return TrackModel::SortColumnId::sortColumnInvalid;
+        return TrackModel::SortColumnId::Invalid;
     }
 
     virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {

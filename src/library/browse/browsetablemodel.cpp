@@ -68,63 +68,63 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 
     setDefaultSort(COLUMN_FILENAME, Qt::AscendingOrder);
 
-    for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax); ++i) {
+    for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::IdMax); ++i) {
         m_columnIndexBySortColumnId[i] = -1;
     }
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnFilename)] = COLUMN_FILENAME;
+            TrackModel::SortColumnId::Filename)] = COLUMN_FILENAME;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnArtist)] = COLUMN_ARTIST;
+            TrackModel::SortColumnId::Artist)] = COLUMN_ARTIST;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnTitle)] = COLUMN_TITLE;
+            TrackModel::SortColumnId::Title)] = COLUMN_TITLE;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnAlbum)] = COLUMN_ALBUM;
+            TrackModel::SortColumnId::Album)] = COLUMN_ALBUM;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnAlbumArtist)] =
+            TrackModel::SortColumnId::AlbumArtist)] =
             COLUMN_ALBUMARTIST;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnYear)] = COLUMN_YEAR;
+            TrackModel::SortColumnId::Year)] = COLUMN_YEAR;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnGenre)] = COLUMN_GENRE;
+            TrackModel::SortColumnId::Genre)] = COLUMN_GENRE;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnComposer)] = COLUMN_COMPOSER;
+            TrackModel::SortColumnId::Composer)] = COLUMN_COMPOSER;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnGrouping)] = COLUMN_GROUPING;
+            TrackModel::SortColumnId::Grouping)] = COLUMN_GROUPING;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnTrackNumber)] =
+            TrackModel::SortColumnId::TrackNumber)] =
             COLUMN_TRACK_NUMBER;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnFileType)] = COLUMN_TYPE;
+            TrackModel::SortColumnId::FileType)] = COLUMN_TYPE;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnNativeLocation)] =
+            TrackModel::SortColumnId::NativeLocation)] =
             COLUMN_NATIVELOCATION;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnComment)] = COLUMN_COMMENT;
+            TrackModel::SortColumnId::Comment)] = COLUMN_COMMENT;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnDuration)] = COLUMN_DURATION;
+            TrackModel::SortColumnId::Duration)] = COLUMN_DURATION;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnBitRate)] = COLUMN_BITRATE;
+            TrackModel::SortColumnId::BitRate)] = COLUMN_BITRATE;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnBpm)] = COLUMN_BPM;
+            TrackModel::SortColumnId::Bpm)] = COLUMN_BPM;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnReplayGain)] =
+            TrackModel::SortColumnId::ReplayGain)] =
             COLUMN_REPLAYGAIN;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnKey)] = COLUMN_KEY;
+            TrackModel::SortColumnId::Key)] = COLUMN_KEY;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnPreview)] = COLUMN_PREVIEW;
+            TrackModel::SortColumnId::Preview)] = COLUMN_PREVIEW;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnGrouping)] = COLUMN_GROUPING;
+            TrackModel::SortColumnId::Grouping)] = COLUMN_GROUPING;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnFileModifiedTime)] =
+            TrackModel::SortColumnId::FileModifiedTime)] =
             COLUMN_FILE_MODIFIED_TIME;
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::sortColumnFileCreationTime)] =
+            TrackModel::SortColumnId::FileCreationTime)] =
             COLUMN_FILE_CREATION_TIME;
 
     m_sortColumnIdByColumnIndex.clear();
-    for (int i = static_cast<int>(TrackModel::SortColumnId::sortColumnIdMin);
-            i < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax);
+    for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
+            i < static_cast<int>(TrackModel::SortColumnId::IdMax);
             ++i) {
         TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
         int columnIndex = m_columnIndexBySortColumnId[static_cast<int>(sortColumn)];
@@ -163,8 +163,8 @@ BrowseTableModel::~BrowseTableModel() {
 }
 
 int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
-    if (column < TrackModel::SortColumnId::sortColumnIdMin ||
-            column >= TrackModel::SortColumnId::sortColumnIdMax) {
+    if (column < TrackModel::SortColumnId::IdMin ||
+            column >= TrackModel::SortColumnId::IdMax) {
         return -1;
     }
 
@@ -172,7 +172,7 @@ int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId colum
 }
 
 TrackModel::SortColumnId BrowseTableModel::sortColumnIdFromColumnIndex(int index) {
-    return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::sortColumnInvalid);
+    return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::Invalid);
 }
 
 const QList<int>& BrowseTableModel::searchColumns() const {

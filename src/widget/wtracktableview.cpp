@@ -366,7 +366,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
 TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     TrackModel* trackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
-        return TrackModel::SortColumnId::sortColumnInvalid;
+        return TrackModel::SortColumnId::Invalid;
     }
     return trackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
@@ -945,13 +945,13 @@ void WTrackTableView::applySortingIfVisible() {
 void WTrackTableView::applySorting() {
     TrackModel* trackModel = getTrackModel();
     int sortColumnId = static_cast<int>(m_pSortColumn->get());
-    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::sortColumnInvalid)) {
-        // During startup phase of Mixxx, this method is called with sortColumnInvalid
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::Invalid)) {
+        // During startup phase of Mixxx, this method is called with Invalid
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(
-            sortColumnId >= static_cast<int>(TrackModel::SortColumnId::sortColumnIdMin) &&
-            sortColumnId < static_cast<int>(TrackModel::SortColumnId::sortColumnIdMax)) {
+            sortColumnId >= static_cast<int>(TrackModel::SortColumnId::IdMin) &&
+            sortColumnId < static_cast<int>(TrackModel::SortColumnId::IdMax)) {
         return;
     }
 
@@ -977,7 +977,7 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     TrackModel* trackModel = getTrackModel();
     TrackModel::SortColumnId sortColumnId = trackModel->sortColumnIdFromColumnIndex(headerSection);
 
-    if (sortColumnId == TrackModel::SortColumnId::sortColumnInvalid) {
+    if (sortColumnId == TrackModel::SortColumnId::Invalid) {
         return;
     }
 

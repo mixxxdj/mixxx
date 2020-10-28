@@ -40,7 +40,7 @@ class LibraryView {
     virtual void moveSelection(int delta) {Q_UNUSED(delta);}
 
     virtual TrackModel::SortColumnId getColumnIdFromCurrentIndex() {
-        return TrackModel::SortColumnId::sortColumnInvalid;
+        return TrackModel::SortColumnId::Invalid;
     };
     /// If applicable, requests that the LibraryView changes the track color of
     /// the selected track. Does nothing otherwise.
