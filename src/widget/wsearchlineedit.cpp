@@ -25,7 +25,7 @@ const QString kEmptySearch = QStringLiteral("");
 
 const QString kDisabledText = QStringLiteral("- - -");
 
-constexpr int kClearbuttonClearence = 1;
+constexpr int kClearButtonClearence = 1;
 
 inline QString clearButtonStyleSheet(int pxPadding, Qt::LayoutDirection direction) {
     DEBUG_ASSERT(pxPadding >= 0);
@@ -145,7 +145,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     // Ensures the text does not obscure the clear image.
     setStyleSheet(clearButtonStyleSheet(
-            clearButtonSize.width() + m_frameWidth + kClearbuttonClearence,
+            clearButtonSize.width() + m_frameWidth + kClearButtonClearence,
             layoutDirection()));
 
     refreshState();
@@ -491,7 +491,7 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
         // make sure the text won't be drawn behind the Clear button icon
         setStyleSheet(clearButtonStyleSheet(
                 m_innerHeight + m_dropButtonWidth +
-                        m_frameWidth + kClearbuttonClearence,
+                        m_frameWidth + kClearButtonClearence,
                 layoutDirection()));
     }
 }
