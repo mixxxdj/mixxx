@@ -88,7 +88,7 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
     // rarely used, to achieve equal loudness and maximum dynamic
     const CSAMPLE gainCorrection = (17 - bit_depth) / 8;
 
-    for (unsigned int i = 0;
+    for (SINT i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         pState->accumulator += downsample;

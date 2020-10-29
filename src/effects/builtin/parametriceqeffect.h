@@ -61,8 +61,7 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
     QList<EngineEffectParameter*> m_pPotQ;
     QList<EngineEffectParameter*> m_pPotCenter;
 
-
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(ParametricEQEffect);
 };

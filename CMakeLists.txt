@@ -710,6 +710,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/audiosource.cpp
   src/sources/audiosourcestereoproxy.cpp
   src/sources/metadatasourcetaglib.cpp
+  src/sources/readaheadframebuffer.cpp
   src/sources/soundsource.cpp
   src/sources/soundsourceflac.cpp
   src/sources/soundsourceoggvorbis.cpp
@@ -1605,7 +1606,7 @@ if(KEYFINDER)
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     ExternalProject_Add(keyfinder
       GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
-      GIT_TAG faa563f0898b3cbfbd2ed0696deebc8a9b0c9af6
+      GIT_TAG v2.2.2
       GIT_SHALLOW TRUE
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
@@ -2073,6 +2074,7 @@ if(NOT CLANG_SANITIZERS STREQUAL "")
   endif()
   list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
   target_compile_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
+  target_link_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
 endif()
 
 # CoreAudio MP3/AAC Decoder

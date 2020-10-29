@@ -92,9 +92,8 @@ void BroadcastManager::slotControlEnabled(double v) {
         // Wrap around manually .
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
-        v = 0.0;
-        m_pBroadcastEnabled->set(v);
-        emit broadcastEnabled(v);
+        m_pBroadcastEnabled->set(0.0);
+        emit broadcastEnabled(false);
     }
 
     if (v > 0.0) {

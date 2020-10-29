@@ -88,16 +88,16 @@ class LVMixEQEffectGroupState : public EffectState {
         // buffer size-dependent start delay. During such start delay some unwanted
         // frequencies are slipping though or wanted frequencies are damped.
         // We know the exact group delay here so we can just hold off the ramping.
-        if (fHigh || m_oldHigh) {
+        if (fHigh != 0 || m_oldHigh != 0) {
             m_delay3->process(pInput, m_pHighBuf, numSamples);
         }
 
-        if (fMid || m_oldMid) {
+        if (fMid != 0 || m_oldMid != 0) {
             m_delay2->process(pInput, m_pBandBuf, numSamples);
             m_low2->process(m_pBandBuf, m_pBandBuf, numSamples);
         }
 
-        if (fLow || m_oldLow) {
+        if (fLow != 0 || m_oldLow != 0) {
             m_low1->process(pInput, m_pLowBuf, numSamples);
         }
 
@@ -118,9 +118,9 @@ class LVMixEQEffectGroupState : public EffectState {
         } else {
             int copySamples = 0;
             int rampingSamples = numSamples;
-            if ((fLow && !m_oldLow) ||
-                    (fMid && !m_oldMid) ||
-                    (fHigh && !m_oldHigh)) {
+            if ((fLow != 0 && m_oldLow == 0) ||
+                    (fMid != 0 && m_oldMid == 0) ||
+                    (fHigh != 0 && m_oldHigh == 0)) {
                 // we have just switched at least one filter on
                 // Hold off ramping for the group delay
                 if (m_rampHoldOff == kRampDone) {
@@ -173,12 +173,12 @@ class LVMixEQEffectGroupState : public EffectState {
         // We know the exact group delay here so we can just hold off the ramping.
         m_delay3->processAndPauseFilter(pInput, m_pHighBuf, numSamples);
 
-        if (m_oldMid) {
+        if (m_oldMid != 0) {
             m_delay2->processAndPauseFilter(pInput, m_pBandBuf, numSamples);
             m_low2->processAndPauseFilter(m_pBandBuf, m_pBandBuf, numSamples);
         }
 
-        if (m_oldLow) {
+        if (m_oldLow != 0) {
             m_low1->processAndPauseFilter(pInput, m_pLowBuf, numSamples);
         }
 
@@ -253,7 +253,7 @@ class LVMixEQEffectGroupState : public EffectState {
     int m_rampHoldOff;
     int m_groupDelay;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
     double m_loFreq;
     double m_hiFreq;
 
