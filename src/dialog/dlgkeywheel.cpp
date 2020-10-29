@@ -1,3 +1,4 @@
+#include <QDir>
 #include <QKeyEvent>
 #include <QMouseEvent>
 
@@ -5,24 +6,33 @@
 
 using namespace mixxx::track::io::key;
 
+namespace {
+auto kKeywheelSVG = QStringLiteral("images/keywheel/keywheel.svg");
+const KeyUtils::KeyNotation kNotationHidden[]{
+        KeyUtils::KeyNotation::Traditional,
+        KeyUtils::KeyNotation::OpenKeyAndTraditional,
+        KeyUtils::KeyNotation::LancelotAndTraditional};
+} // namespace
+
 DlgKeywheel::DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig) :
     QDialog(parent),
     ui(new Ui::DlgKeywheel),
     m_pConfig(pConfig)
 {
     ui->setupUi(this);
-
-    auto svg = pConfig->getResourcePath() + QString("images/keywheel/keywheel.svg");
-    QFile xmlFile(svg);
+    QDir resourceDir(m_pConfig->getResourcePath());
+    auto svgPath = resourceDir.filePath(kKeywheelSVG);
+    qDebug() << svgPath;
+    QFile xmlFile(svgPath);
     if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
-        qDebug() << "Could not load template: " << svg;
+        qDebug() << "Could not load template: " << svgPath;
         return;
     }
     m_domDocument.setContent(&xmlFile);
 
     // FIXME(poelzi): try to prevent aspect ratio. This fails unfortunatelly
     QSizePolicy qsp = ui->graphic->sizePolicy(); //.setHeightForWidth(true);
-    qsp.setWidthForHeight(true);
+    qsp.setHeightForWidth(true);
     ui->graphic->setSizePolicy(qsp);
     installEventFilter(this);
     ui->graphic->installEventFilter(this);
@@ -31,8 +41,8 @@ DlgKeywheel::DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig) :
     auto pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
     m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(pKeyNotation->get()));
     // we skip the TRADITIONAL display, because it shows redundant informations only
-    if (m_notation == KeyUtils::KeyNotation::TRADITIONAL) {
-            m_notation = KeyUtils::KeyNotation::OPEN_KEY;
+    if (m_notation == KeyUtils::KeyNotation::Traditional) {
+        m_notation = KeyUtils::KeyNotation::OpenKey;
     }
     updateDisplay();
 }
@@ -59,18 +69,31 @@ bool DlgKeywheel::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-void DlgKeywheel::switchDisplay(int dir) {
-    m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(m_notation) + dir);
-    // we skip the TRADITIONAL display, because it shows redundant informations only
-    if (m_notation == KeyUtils::KeyNotation::TRADITIONAL) {
-            m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(m_notation) + dir);
+bool DlgKeywheel::isHiddenNotation(KeyUtils::KeyNotation notation) {
+    for (size_t i = 0; i < sizeof(kNotationHidden) / sizeof(kNotationHidden[0]); i++) {
+        if (kNotationHidden[i] == notation) {
+            return true;
+        }
     }
-    if (m_notation >= KeyUtils::KeyNotation::KEY_NOTATION_MAX) {
-        m_notation = KeyUtils::KeyNotation::CUSTOM;
-    } else if (m_notation <= KeyUtils::KeyNotation::INVALID) {
-        m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(KeyUtils::KeyNotation::KEY_NOTATION_MAX) - 1);
-    }
+    return false;
+}
 
+void DlgKeywheel::switchDisplay(int step) {
+    KeyUtils::KeyNotation newNotation = static_cast<KeyUtils::KeyNotation>(
+            static_cast<int>(m_notation) + step);
+    // we skip variants with redundant information
+    while (newNotation <= KeyUtils::KeyNotation::Invalid ||
+            newNotation >= KeyUtils::KeyNotation::NumKeyNotations ||
+            isHiddenNotation(newNotation)) {
+        newNotation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(newNotation) + step);
+        if (newNotation >= KeyUtils::KeyNotation::NumKeyNotations) {
+            newNotation = KeyUtils::KeyNotation::Custom;
+        } else if (newNotation <= KeyUtils::KeyNotation::Invalid) {
+            newNotation = static_cast<KeyUtils::KeyNotation>(
+                    static_cast<int>(KeyUtils::KeyNotation::NumKeyNotations) - 1);
+        }
+    }
+    m_notation = newNotation;
     // we update the SVG nodes with the new value
     updateDisplay();
 }
@@ -97,8 +120,11 @@ void DlgKeywheel::updateDisplay() {
             if (text.isText()) {
                 QDomText textNode = text.toText();
                 ChromaticKey key = static_cast<ChromaticKey>(id.midRef(2).toInt());
-                textNode.setData(KeyUtils::keyToString(key,
-                                                       m_notation));
+                QString keyString = KeyUtils::keyToString(key, m_notation);
+                if (keyString.length() > 4) {
+                    keyString.replace(QChar(' '), QChar('\n'));
+                }
+                textNode.setData(keyString);
             }
         }
 

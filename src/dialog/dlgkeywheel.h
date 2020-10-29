@@ -28,12 +28,12 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-
-    KeyUtils::KeyNotation m_notation;
-    QDomDocument m_domDocument;
-    Ui::DlgKeywheel *ui;
-    QSvgWidget *m_wheel;
-    UserSettingsPointer m_pConfig;
+  bool isHiddenNotation(KeyUtils::KeyNotation notation);
+  KeyUtils::KeyNotation m_notation;
+  QDomDocument m_domDocument;
+  Ui::DlgKeywheel* ui;
+  QSvgWidget* m_wheel;
+  UserSettingsPointer m_pConfig;
 };
 
 #endif // DLGKEYWHEEL_H
