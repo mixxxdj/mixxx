@@ -135,7 +135,8 @@ void WaveformRenderMark::slotCuesUpdated() {
                 !pMark->fillColor().isValid() ||
                 newColor != pMark->fillColor()) {
             pMark->m_text = newLabel;
-            pMark->setBaseColor(newColor);
+            int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
+            pMark->setBaseColor(newColor, dimBrightThreshold);
             generateMarkImage(pMark);
         }
     }

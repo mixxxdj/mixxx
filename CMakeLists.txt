@@ -2074,6 +2074,7 @@ if(NOT CLANG_SANITIZERS STREQUAL "")
   endif()
   list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
   target_compile_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
+  target_link_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
 endif()
 
 # CoreAudio MP3/AAC Decoder

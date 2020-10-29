@@ -158,6 +158,10 @@
       <SetVariable name="SignalMidColor">darkgreen</SetVariable><!-- #006400 -->
       <SetVariable name="SignalLowColor">orangered</SetVariable><!-- #ff4500 -->
 
+      <SetVariable name="DimBrightThresholdOverview">127</SetVariable>
+      <SetVariable name="DimBrightThresholdWaveform">105</SetVariable>
+      <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
+
       <SetVariable name="AxesColor">#999</SetVariable>
       <SetVariable name="BeatColor">#999</SetVariable>
       <SetVariable name="PlayPosColor">#00c6ff</SetVariable>

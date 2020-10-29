@@ -135,7 +135,7 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain_delta) {
+    if (gain_delta != 0) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -178,7 +178,7 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
 
     const CSAMPLE_GAIN gain1Delta = (gain1 - gain1Old)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain1Delta) {
+    if (gain1Delta != 0) {
         const CSAMPLE_GAIN start_gain = gain1Old + gain1Delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -194,7 +194,7 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
 
     const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain2Delta) {
+    if (gain2Delta != 0) {
         const CSAMPLE_GAIN start_gain = gain2Old + gain2Delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -243,7 +243,7 @@ void SampleUtil::addWithRampingGain(CSAMPLE* M_RESTRICT pDest,
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain_delta) {
+    if (gain_delta != 0) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -336,7 +336,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* M_RESTRICT pDest,
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain_delta) {
+    if (gain_delta != 0) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED only with "int i"
         for (int i = 0; i < numSamples / 2; ++i) {

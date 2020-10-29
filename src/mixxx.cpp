@@ -1582,15 +1582,15 @@ bool MixxxMainWindow::confirmExit() {
     unsigned int deckCount = m_pPlayerManager->numDecks();
     unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
-        if (ControlObject::get(
-                ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
+        if (ControlObject::toBool(
+                    ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
     for (unsigned int i = 0; i < samplerCount; ++i) {
-        if (ControlObject::get(
-                ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
+        if (ControlObject::toBool(
+                    ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;
             break;
         }
