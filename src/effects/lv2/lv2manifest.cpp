@@ -190,7 +190,7 @@ void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
         const LilvNode* value = lilv_scale_point_get_value(option);
         QString strDescription(lilv_node_as_string(description));
         param->appendStep(qMakePair(strDescription,
-                (double)lilv_node_as_float(value)));
+                static_cast<double>(lilv_node_as_float(value))));
     }
 
     if (options != NULL) {
