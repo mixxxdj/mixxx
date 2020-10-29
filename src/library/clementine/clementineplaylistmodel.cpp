@@ -1,6 +1,7 @@
+#include "library/clementine/clementineplaylistmodel.h"
+
 #include <QtDebug>
 
-#include "library/clementine/clementineplaylistmodel.h"
 #include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"

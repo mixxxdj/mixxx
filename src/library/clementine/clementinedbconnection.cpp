@@ -11,9 +11,9 @@
 #include "util/performancetimer.h"
 
 namespace {
-  constexpr int clementineUndefBpm = -1; // clementine saves undefined bpm as -1
-  constexpr int clementineUndefDuration = -1; // clementine saves undefined duration as -1
-}
+constexpr int clementineUndefBpm = -1;      // clementine saves undefined bpm as -1
+constexpr int clementineUndefDuration = -1; // clementine saves undefined duration as -1
+} // namespace
 
 ClementineDbConnection::ClementineDbConnection() {
 }
