@@ -184,6 +184,7 @@ jobs:
         - source /tmp/bootstrap_nix
         - nix-channel --add https://nixos.org/channels/nixos-20.03 nixpkgs
         - nix-channel --update
+        - nix-env -iA nixpkgs.cachix
       cache: &nixcache
         directories:
         - $HOME/nix.store
@@ -201,7 +202,7 @@ jobs:
         - mkdir -p $HOME/nix.store
         - nix copy --to file://$HOME/nix.store -f shell.nix buildInputs
       script:
-        - nix-build shell.nix --arg releaseMode true --arg defaultLv2Plugins true
+        - nix-build shell.nix --arg releaseMode true --arg defaultLv2Plugins true | cachix push mixxx
     - name: Nix development shell build
       install: *nixinstall
       cache: *nixcache
@@ -211,7 +212,7 @@ jobs:
       script:
         - nix-shell --arg enableKeyfinder true --arg defaultLv2Plugins true --command "configure; build;"
         - test -e cbuild/mixxx -a -e cbuild/.mixxx-wrapped
-        - cd cbuild && ./mixxx --help && cd ..
+        - cd cbuild && ./mixxx --help && ./mixxx-test
 
 git:
   depth: 1
