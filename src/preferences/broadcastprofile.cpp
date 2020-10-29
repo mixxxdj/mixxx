@@ -25,62 +25,62 @@ using namespace QKeychain;
 #include "broadcastprofile.h"
 
 namespace {
-const char* kDoctype = "broadcastprofile";
-const char* kDocumentRoot = "BroadcastProfile";
-const char* kSecureCredentials = "SecureCredentialsStorage";
-const char* kBitrate = "Bitrate";
-const char* kChannels = "Channels";
-const char* kCustomArtist = "CustomArtist";
-const char* kCustomTitle = "CustomTitle";
-const char* kEnableMetadata = "EnableMetadata";
-const char* kEnableReconnect = "EnableReconnect";
-const char* kEnabled = "Enabled";
-const char* kFormat = "Format";
-const char* kHost = "Host";
-const char* kLimitReconnects = "LimitReconnects";
-const char* kLogin = "Login";
-const char* kMaximumRetries = "MaximumRetries";
-const char* kMetadataCharset = "MetadataCharset";
-const char* kMetadataFormat = "MetadataFormat";
-const char* kMountPoint = "Mountpoint";
-const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
-const char* kOggDynamicUpdate = "OggDynamicUpdate";
-const char* kPassword = "Password";
-const char* kPort = "Port";
-const char* kProfileName = "ProfileName";
-const char* kReconnectFirstDelay = "ReconnectFirstDelay";
-const char* kReconnectPeriod = "ReconnectPeriod";
-const char* kServertype = "Servertype";
-const char* kStreamDesc = "StreamDesc";
-const char* kStreamGenre = "StreamGenre";
-const char* kStreamName = "StreamName";
-const char* kStreamIRC = "StreamIRC";
-const char* kStreamAIM = "StreamAIM";
-const char* kStreamICQ = "StreamICQ";
-const char* kStreamPublic = "StreamPublic";
-const char* kStreamWebsite = "StreamWebsite";
+constexpr const char* kDoctype = "broadcastprofile";
+constexpr const char* kDocumentRoot = "BroadcastProfile";
+constexpr const char* kSecureCredentials = "SecureCredentialsStorage";
+constexpr const char* kBitrate = "Bitrate";
+constexpr const char* kChannels = "Channels";
+constexpr const char* kCustomArtist = "CustomArtist";
+constexpr const char* kCustomTitle = "CustomTitle";
+constexpr const char* kEnableMetadata = "EnableMetadata";
+constexpr const char* kEnableReconnect = "EnableReconnect";
+constexpr const char* kEnabled = "Enabled";
+constexpr const char* kFormat = "Format";
+constexpr const char* kHost = "Host";
+constexpr const char* kLimitReconnects = "LimitReconnects";
+constexpr const char* kLogin = "Login";
+constexpr const char* kMaximumRetries = "MaximumRetries";
+constexpr const char* kMetadataCharset = "MetadataCharset";
+constexpr const char* kMetadataFormat = "MetadataFormat";
+constexpr const char* kMountPoint = "Mountpoint";
+constexpr const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
+constexpr const char* kOggDynamicUpdate = "OggDynamicUpdate";
+constexpr const char* kPassword = "Password";
+constexpr const char* kPort = "Port";
+constexpr const char* kProfileName = "ProfileName";
+constexpr const char* kReconnectFirstDelay = "ReconnectFirstDelay";
+constexpr const char* kReconnectPeriod = "ReconnectPeriod";
+constexpr const char* kServertype = "Servertype";
+constexpr const char* kStreamDesc = "StreamDesc";
+constexpr const char* kStreamGenre = "StreamGenre";
+constexpr const char* kStreamName = "StreamName";
+constexpr const char* kStreamIRC = "StreamIRC";
+constexpr const char* kStreamAIM = "StreamAIM";
+constexpr const char* kStreamICQ = "StreamICQ";
+constexpr const char* kStreamPublic = "StreamPublic";
+constexpr const char* kStreamWebsite = "StreamWebsite";
 
 #ifdef __QTKEYCHAIN__
-const char* kKeychainPrefix = "Mixxx - ";
+constexpr const char* kKeychainPrefix = "Mixxx - ";
 #endif
 
-const double kDefaultBitrate = 128;
-const int kDefaultChannels = 2;
-const bool kDefaultEnableMetadata = false;
-const bool kDefaultEnableReconnect = true;
-const bool kDefaultLimitReconnects = true;
-const int kDefaultMaximumRetries = 10;
+constexpr int kDefaultBitrate = 128;
+constexpr int kDefaultChannels = 2;
+constexpr bool kDefaultEnableMetadata = false;
+constexpr bool kDefaultEnableReconnect = true;
+constexpr bool kDefaultLimitReconnects = true;
+constexpr int kDefaultMaximumRetries = 10;
 // No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
 const QString kDefaultMetadataFormat("$artist - $title");
-const bool kDefaultNoDelayFirstReconnect = true;
-const bool kDefaultOggDynamicupdate = false;
-double kDefaultReconnectFirstDelay = 0.0;
-double kDefaultReconnectPeriod = 5.0;
+constexpr bool kDefaultNoDelayFirstReconnect = true;
+constexpr bool kDefaultOggDynamicupdate = false;
+constexpr double kDefaultReconnectFirstDelay = 0.0;
+constexpr double kDefaultReconnectPeriod = 5.0;
 const QString kDefaultStreamName = QStringLiteral("Mixxx");
 const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
-const bool kDefaultStreamPublic = false;
+constexpr bool kDefaultStreamPublic = false;
 
 const QRegExp kForbiddenChars =
         QRegExp("[<>:\"\\/|?*\\\\]|(\\.\\.)"

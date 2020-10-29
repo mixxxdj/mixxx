@@ -15,14 +15,14 @@
 #include "util/memory.h"
 #include "util/samplebuffer.h"
 
-static const int kMaxDelay2 = 3300; // allows a 30 Hz filter at 97346;
-
 class BiquadFullKillEQEffectGroupState : public EffectState {
   public:
     BiquadFullKillEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
 
     void setFilters(
-            int sampleRate, double lowFreqCorner, double highFreqCorner);
+            mixxx::audio::SampleRate sampleRate,
+            double lowFreqCorner,
+            double highFreqCorner);
 
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowBoost;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midBoost;
@@ -73,7 +73,7 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 
-    void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
+    void setFilters(mixxx::audio::SampleRate sampleRate, double lowFreqCorner, double highFreqCorner);
 
   private:
     BiquadFullKillEQEffect(const BiquadFullKillEQEffect&) = delete;

@@ -112,7 +112,10 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         --m_peakDurationR;
     }
 
-    m_ctrlPeakIndicator->set(m_ctrlPeakIndicatorR->get() || m_ctrlPeakIndicatorL->get());
+    m_ctrlPeakIndicator->set(
+            (m_ctrlPeakIndicatorR->toBool() || m_ctrlPeakIndicatorL->toBool())
+                    ? 1.0
+                    : 0.0);
 }
 
 void EngineVuMeter::doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume)

@@ -46,16 +46,24 @@ class WaveformWidgetRenderer {
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
 
-    double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
-    double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
+    double getFirstDisplayedPosition() const {
+        return m_firstDisplayedPosition;
+    }
+    double getLastDisplayedPosition() const {
+        return m_lastDisplayedPosition;
+    }
 
     void setZoom(double zoom);
 
     void setDisplayBeatGrid(bool set);
     void setDisplayBeatGridAlpha(int alpha);
 
-    double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
-    double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
+    double getVisualSamplePerPixel() const {
+        return m_visualSamplePerPixel;
+    }
+    double getAudioSamplePerPixel() const {
+        return m_audioSamplePerPixel;
+    }
 
     // those function replace at its best sample position to an admissible
     // sample position according to the current visual resampling
@@ -74,27 +82,54 @@ class WaveformWidgetRenderer {
         return m_trackPixelCount * (position - m_firstDisplayedPosition);
     }
 
-    double getPlayPos() const { return m_playPos;}
+    double getPlayPos() const {
+        return m_playPos;
+    }
     int getPlayPosVSample() const {
         return m_playPosVSample;
     }
     int getTotalVSample() const {
         return m_totalVSamples;
     }
-    double getZoomFactor() const { return m_zoomFactor;}
-    double getGain() const { return m_gain;}
-    int getTrackSamples() const { return m_trackSamples;}
+    double getZoomFactor() const {
+        return m_zoomFactor;
+    }
+    double getGain() const {
+        return m_gain;
+    }
+    int getTrackSamples() const {
+        return m_trackSamples;
+    }
 
-    int getBeatGridAlpha() const { return m_alphaBeatGrid; }
+    int getBeatGridAlpha() const {
+        return m_alphaBeatGrid;
+    }
 
     void resize(int width, int height, float devicePixelRatio);
-    int getHeight() const { return m_height;}
-    int getWidth() const { return m_width;}
-    float getDevicePixelRatio() const { return m_devicePixelRatio; }
-    int getLength() const { return m_orientation == Qt::Horizontal ? m_width : m_height;}
-    int getBreadth() const { return m_orientation == Qt::Horizontal ? m_height : m_width;}
-    Qt::Orientation getOrientation() const { return m_orientation;}
-    const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
+    int getHeight() const {
+        return m_height;
+    }
+    int getWidth() const {
+        return m_width;
+    }
+    float getDevicePixelRatio() const {
+        return m_devicePixelRatio;
+    }
+    int getLength() const {
+        return m_orientation == Qt::Horizontal ? m_width : m_height;
+    }
+    int getBreadth() const {
+        return m_orientation == Qt::Horizontal ? m_height : m_width;
+    }
+    Qt::Orientation getOrientation() const {
+        return m_orientation;
+    }
+    const WaveformSignalColors* getWaveformSignalColors() const {
+        return &m_colors;
+    }
+    int getDimBrightThreshold() {
+        return m_dimBrightThreshold;
+    }
 
     template< class T_Renderer>
     inline T_Renderer* addRenderer() {
@@ -124,6 +159,7 @@ class WaveformWidgetRenderer {
     TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
     Qt::Orientation m_orientation;
+    int m_dimBrightThreshold;
     int m_height;
     int m_width;
     float m_devicePixelRatio;

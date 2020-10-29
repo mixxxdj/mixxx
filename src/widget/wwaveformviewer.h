@@ -87,6 +87,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
 
     WaveformWidgetAbstract* m_waveformWidget;
 
+    int m_dimBrightThreshold;
+
     friend class WaveformWidgetFactory;
 
     CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
