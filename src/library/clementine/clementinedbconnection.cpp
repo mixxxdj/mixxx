@@ -133,7 +133,7 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
         entry.playcount = query.value(13).toInt();
         entry.composer = query.value(14).toString();
 
-        if (entry.artist == "" && entry.title == "") {
+        if (entry.artist.isEmpty() && entry.title.isEmpty()) {
             entry.artist =
                     "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
             entry.title = location.split(QDir::separator()).last();
