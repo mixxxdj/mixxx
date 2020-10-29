@@ -319,7 +319,7 @@ DDJ200.switchLEDs = function(vDeckNo) {
                       (engine.getValue(vgroup, "cue_point") !== -1));
     midi.sendShortMsg(0x90 + d, 0x58, 0x7F * engine.getValue(vgroup,
         "sync_enabled"));
-    if (! DDJ200.fourDeckMode) {
+    if (!DDJ200.fourDeckMode) {
         midi.sendShortMsg(0x90 + d, 0x54,
             0x7F * engine.getValue(vgroup, "pfl"));
     }
