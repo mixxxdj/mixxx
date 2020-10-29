@@ -48,7 +48,16 @@ enum class WriteFlag {
 
 Q_DECLARE_FLAGS(WriteFlags, WriteFlag)
 
+// Clang 10 complains about an unused function introduced by
+// Q_DECLARE_OPERATORS_FOR_FLAGS
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
 Q_DECLARE_OPERATORS_FOR_FLAGS(WriteFlags)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 /// Format message for writing into log file (ignores QT_MESSAGE_PATTERN,
 /// because logfiles should have a fixed format).

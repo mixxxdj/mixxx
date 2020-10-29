@@ -24,8 +24,8 @@
 
 namespace {
 constexpr double kdMaxDelayPot = 500;
-const int kiMaxDelay = (kdMaxDelayPot + 8) / 1000 *
-    mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount;
+const int kiMaxDelay = static_cast<int>((kdMaxDelayPot + 8) / 1000 *
+        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
 } // anonymous namespace
 
 EngineDelay::EngineDelay(const QString& group, ConfigKey delayControl, bool bPersist)

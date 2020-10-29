@@ -17,7 +17,7 @@ DlgHidden::DlgHidden(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
+                          pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           false)) {
     setupUi(this);

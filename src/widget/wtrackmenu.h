@@ -11,15 +11,17 @@
 #include "preferences/usersettings.h"
 #include "track/trackref.h"
 #include "util/color/rgbcolor.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 class ExternalTrackCollection;
-class TrackCollectionManager;
+class Library;
 class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
+class WSearchRelatedTracksMenu;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
@@ -43,15 +45,17 @@ class WTrackMenu : public QMenu {
         HideUnhidePurge = 1 << 9,
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
+        SearchRelated = 1 << 12,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
-                BPM | Color | HideUnhidePurge | FileBrowser | Properties
+                BPM | Color | HideUnhidePurge | FileBrowser | Properties |
+                SearchRelated
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             Features flags = Feature::All,
             TrackModel* trackModel = nullptr);
     ~WTrackMenu() override;
@@ -137,6 +141,10 @@ class WTrackMenu : public QMenu {
 
     std::unique_ptr<mixxx::TrackPointerIterator> newTrackPointerIterator() const;
 
+    /// WARNING: The provided pTrackPointerOperation must ensure NOT
+    /// TO MODIFY the underlying m_pTrackModel during the iteration!!!
+    /// This might happen not only directly but also indirectly by
+    /// handling signals, e.g. TrackDAO::enforceModelUpdate().
     int applyTrackPointerOperation(
             const QString& progressLabelText,
             const mixxx::TrackPointerOperation* pTrackPointerOperation,
@@ -173,7 +181,7 @@ class WTrackMenu : public QMenu {
     std::optional<std::optional<mixxx::RgbColor>> getCommonTrackColor() const;
     CoverInfo getCoverInfoOfLastTrack() const;
 
-    TrackModel* m_pTrackModel{};
+    TrackModel* const m_pTrackModel;
     QModelIndexList m_trackIndexList;
 
     // Source of track list when TrackModel is not set.
@@ -195,6 +203,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
+    parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
 
     // Reload Track Metadata Action:
     QAction* m_pImportMetadataFromFileAct{};
@@ -253,7 +262,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearAllMetadataAction{};
 
     const UserSettingsPointer m_pConfig;
-    TrackCollectionManager* const m_pTrackCollectionManager;
+    Library* const m_pLibrary;
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;

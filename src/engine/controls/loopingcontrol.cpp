@@ -1214,13 +1214,13 @@ void LoopingControl::slotBeatJump(double beats) {
 }
 
 void LoopingControl::slotBeatJumpForward(double pressed) {
-    if (pressed) {
+    if (pressed != 0) {
         slotBeatJump(m_pCOBeatJumpSize->get());
     }
 }
 
 void LoopingControl::slotBeatJumpBackward(double pressed) {
-    if (pressed) {
+    if (pressed != 0) {
         slotBeatJump(-1.0 * m_pCOBeatJumpSize->get());
     }
 }
@@ -1436,9 +1436,9 @@ void BeatLoopingControl::slotLegacy(double v) {
     }
 }
 
-void BeatLoopingControl::slotActivate(double v) {
-    //qDebug() << "slotActivate" << m_dBeatLoopSize << "v" << v;
-    if (!v) {
+void BeatLoopingControl::slotActivate(double value) {
+    //qDebug() << "slotActivate" << m_dBeatLoopSize << "value" << value;
+    if (value == 0) {
         return;
     }
     emit activateBeatLoop(this);
@@ -1453,9 +1453,9 @@ void BeatLoopingControl::slotActivateRoll(double v) {
     }
 }
 
-void BeatLoopingControl::slotToggle(double v) {
-    //qDebug() << "slotToggle" << m_dBeatLoopSize << "v" << v;
-    if (!v) {
+void BeatLoopingControl::slotToggle(double value) {
+    //qDebug() << "slotToggle" << m_dBeatLoopSize << "value" << value;
+    if (value == 0) {
         return;
     }
     if (m_bActive) {

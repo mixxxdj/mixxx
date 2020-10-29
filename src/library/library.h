@@ -90,6 +90,10 @@ class Library: public QObject {
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 
+    /// Triggers a new search in the internal track collection
+    /// and shows the results by switching the view.
+    void searchTracksInCollection(const QString& query);
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
