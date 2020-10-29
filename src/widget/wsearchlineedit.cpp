@@ -27,16 +27,16 @@ const QString kDisabledText = QStringLiteral("- - -");
 
 constexpr int kClearbuttonClearence = 1;
 
-inline QString clearButtonStyleSheet(int pxPaddingRight, Qt::LayoutDirection direction) {
-    DEBUG_ASSERT(pxPaddingRight >= 0);
+inline QString clearButtonStyleSheet(int pxPadding, Qt::LayoutDirection direction) {
+    DEBUG_ASSERT(pxPadding >= 0);
     if (direction == Qt::RightToLeft) {
         return QString(
                 QStringLiteral("WSearchLineEdit { padding-left: %1px; }"))
-                .arg(pxPaddingRight);
+                .arg(pxPadding);
     } else {
         return QString(
                 QStringLiteral("WSearchLineEdit { padding-right: %1px; }"))
-                .arg(pxPaddingRight);
+                .arg(pxPadding);
     }
 }
 
