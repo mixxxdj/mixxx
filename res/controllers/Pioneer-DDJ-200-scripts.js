@@ -304,7 +304,7 @@ DDJ200.pfl = function(channel, control, value, status, group) {
         var vgroup = "[Channel" + vDeckNo + "]";
         var pfl = ! engine.getValue(vgroup, "pfl");
         engine.setValue(vgroup, "pfl", pfl);
-        if (! DDJ200.fourDeckMode) {
+        if (!DDJ200.fourDeckMode) {
             midi.sendShortMsg(status, 0x54, 0x7F * pfl);  // switch pfl LED
         }
     }
