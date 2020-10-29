@@ -176,8 +176,9 @@ DDJ200.play = function(channel, control, value, status, group) {
         var vgroup = "[Channel" + vDeckNo + "]";
         var playing = engine.getValue(vgroup, "play");
         engine.setValue(vgroup, "play", ! playing);
-        if (engine.getValue(vgroup, "play") === playing)
-            engine.setValue(vgroup, "play", ! playing);
+        if (engine.getValue(vgroup, "play") === playing) {
+            engine.setValue(vgroup, "play", !playing);
+        }
         //midi.sendShortMsg(status, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
         midi.sendShortMsg(status, 0x0B, engine.getValue(vgroup, "play") ? 0x7F : 0);
     }
