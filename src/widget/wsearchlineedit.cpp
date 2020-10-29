@@ -87,6 +87,8 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setIconSize(QSize(0, 0));
     setInsertPolicy(QComboBox::InsertAtTop);
+    setMinimumSize(0, 0);
+    setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
 
     //: Shown in the library search bar when it is empty.
     lineEdit()->setPlaceholderText(tr("Search..."));
