@@ -46,7 +46,7 @@ class WaveformMark {
         if (!hasVisible()) {
             return true;
         }
-        return m_pVisibleCos->get();
+        return m_pVisibleCos->toBool();
     }
 
     template <typename Receiver, typename Slot>

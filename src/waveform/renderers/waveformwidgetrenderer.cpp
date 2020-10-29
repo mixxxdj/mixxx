@@ -133,7 +133,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
-    if (m_audioSamplePerPixel && truePlayPos != -1) {
+    if (m_audioSamplePerPixel != 0 && truePlayPos != -1) {
         // Track length in pixels.
         m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
 
