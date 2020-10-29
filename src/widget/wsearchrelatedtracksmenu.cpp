@@ -178,7 +178,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             // Search tracks with similar artist(s)
             {
                 const auto actionTextPrefix = tr("Artist");
-                const auto searchQueryPrefix = QStringLiteral("artist:\"");
+                const auto searchQueryPrefix = QStringLiteral("artist:");
                 {
                     const QString searchQuery =
                             searchQueryPrefix +
@@ -202,7 +202,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             }
             {
                 const auto actionTextPrefix = tr("Album Artist");
-                const auto searchQueryPrefix = QStringLiteral("album_artist:\"");
+                const auto searchQueryPrefix = QStringLiteral("album_artist:");
                 {
                     const QString searchQuery =
                             searchQueryPrefix +
