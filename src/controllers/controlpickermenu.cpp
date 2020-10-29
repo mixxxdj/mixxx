@@ -668,13 +668,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             false,
             m_libraryStr);
 
-    // Load track (these can be loaded into any channel)
-    addDeckAndSamplerControl("LoadSelectedTrack",
-                             tr("Load Track"),
-                             tr("Load selected track"), libraryMenu);
-    addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Track Load and Play"),
-                                           tr("Load selected track and play"), libraryMenu);
-
     libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
                tr("Record Mix"),
