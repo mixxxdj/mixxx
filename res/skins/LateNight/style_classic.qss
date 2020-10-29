@@ -400,7 +400,7 @@ WLibrary,
 /* All rows in FULL deck */
 #DeckRows12345,
 #DeckRows2345 {
-  margin: 2px 0px 3px 2px;
+  margin: 2px 0px 2px 2px;
   background-color: transparent;
 }
   /* All rows in compact deck */
@@ -673,18 +673,21 @@ WLibrary,
     }
 
 #MixerMasterHeadphone {
-  margin: 3px 3px 3px 0px;
+  margin: 2px 2px 2px 0px;
   }
   #MasterControls {
-    padding: 3px;
+    padding: 2px;
     margin-bottom: 2px;
   }
   #MasterHeadphoneSeparator {
-    min-height: 2px;
-    max-height: 2px;
-  }
+    min-height: 0px;
+    max-height: 0px;
+    }
+    #BoothLabelBox {
+      padding: 0px 0px 2px 2px;
+    }
   #HeadphoneControls {
-    padding: 3px;
+    padding: 2px;
   }
 
 /* All VU meter instances */

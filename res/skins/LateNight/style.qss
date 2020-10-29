@@ -148,8 +148,7 @@ WEffectSelector QAbstractScrollArea,
 #PreviewTitle,
 #PreviewLabel,
 WBeatSpinBox,
-#spinBoxTransition,
-WTime {
+#spinBoxTransition {
   font-size: 14px;
 }
 
@@ -159,7 +158,9 @@ WTime {
 #BpmText,
 #BpmTextSmall,
 #FxUnitLabel,
-#SamplerTitle {
+#SamplerTitle,
+WTime,
+WRecordingDuration {
   font-size: 16px;
 }
 
@@ -430,7 +431,10 @@ WSpinny { /*
   #MasterControls,
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  }
+    }
+    #BoothLabelBox {
+      qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    }
   #MasterHeadphoneSeparator {
   }
 
