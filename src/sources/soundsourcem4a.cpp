@@ -430,12 +430,12 @@ bool SoundSourceM4A::replaceDecoder(
             return false;
         }
     } else {
-        if (m_pFaad->Init2(
+        if (static_cast<signed char>(m_pFaad->Init2(
                     hNewDecoder,
                     m_pMP4ESConfigBuffer,
                     m_sizeofMP4ESConfigBuffer,
                     &sampleRate,
-                    &channelCount) < 0) {
+                    &channelCount)) < 0) {
             free(m_pMP4ESConfigBuffer);
             m_pMP4ESConfigBuffer = nullptr;
             kLogger.warning() << "Failed to initialize the AAC decoder from "

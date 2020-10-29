@@ -275,7 +275,7 @@ void LibraryControl::maybeCreateGroupController(const QString& group) {
 }
 
 void LibraryControl::slotNumDecksChanged(double v) {
-    int iNumDecks = v;
+    int iNumDecks = static_cast<int>(v);
 
     if (iNumDecks < 0) {
         return;
@@ -287,7 +287,7 @@ void LibraryControl::slotNumDecksChanged(double v) {
 }
 
 void LibraryControl::slotNumSamplersChanged(double v) {
-    int iNumSamplers = v;
+    int iNumSamplers = static_cast<int>(v);
 
     if (iNumSamplers < 0) {
         return;
@@ -300,7 +300,7 @@ void LibraryControl::slotNumSamplersChanged(double v) {
 
 
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
-    int iNumPreviewDecks = v;
+    int iNumPreviewDecks = static_cast<int>(v);
 
     if (iNumPreviewDecks < 0) {
         return;
@@ -562,17 +562,26 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
 }
 
 void LibraryControl::setLibraryFocus() {
-    // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
+    // TODO: Set the focus of the library panel directly instead of sending tab from sidebar
     VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
+    // Try to focus the sidebar.
     m_pSidebarWidget->setFocus();
+    // This may have failed, for example when a Cover window still has focus,
+    // so make sure the sidebar is focused or we'll crash.
+    if (!m_pSidebarWidget->hasFocus()) {
+        return;
+    }
+    // Send Tab to move focus to the Tracks table.
+    // Obviously only works as desired if the skin widgets are arranged
+    // accordingly.
     QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
     QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    if (m_pSidebarWidget == NULL) {
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
     if (v > 0) {
@@ -626,7 +635,9 @@ void LibraryControl::slotGoToItem(double v) {
 
     // Focus the library if this is a leaf node in the tree
     if (m_pSidebarWidget->hasFocus()) {
-        // ToDo can't expand Tracks and AutoDJ, always returns false for those root items
+        // Note that Tracks and AutoDJ always return 'false':
+        // expanding those root items via controllers is considered dispensable
+        // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
             return setLibraryFocus();
         } else {
@@ -636,8 +647,9 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Load current track if a LibraryView object has focus
-    if (m_pLibraryWidget->hasFocus()) {
-        return slotLoadSelectedIntoFirstStopped(v);
+    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    if (activeView && activeView->hasFocus()) {
+        return activeView->loadSelectedTrack();
     }
 
     // Clear the search if the searchbox has focus
@@ -653,13 +665,13 @@ void LibraryControl::slotSortColumn(double v) {
     m_pSortColumnToggle->set(v);
 }
 
-void LibraryControl::slotSortColumnToggle(double v) {
-    int column = static_cast<int>(v);
-    if (static_cast<int>(m_pSortColumn->get()) == column) {
-        m_pSortOrder->set(!m_pSortOrder->get());
+void LibraryControl::slotSortColumnToggle(double value) {
+    int column = static_cast<int>(value);
+    if (column == static_cast<int>(m_pSortColumn->get())) {
+        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
     } else {
-        m_pSortColumn->set(v);
-        m_pSortOrder->set(0);
+        m_pSortColumn->set(value);
+        m_pSortOrder->set(0.0);
     }
 }
 

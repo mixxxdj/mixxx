@@ -72,7 +72,7 @@ TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
     // Fill the entire buffer with 1 kHz tone
     double omega = 2.0 * M_PI * kTonePitchHz / pTrack->getSampleRate();
     for (int i = 0; i < nTrackSampleDataLength; i++) {
-        pTrackSampleData[i] = cos(i / kChannelCount * omega);
+        pTrackSampleData[i] = static_cast<CSAMPLE>(cos(i / kChannelCount * omega));
     }
 
     analyzeTrack();
@@ -98,7 +98,7 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
     // Fill the middle with 1 kHz tone
     double omega = 2.0 * M_PI * kTonePitchHz / pTrack->getSampleRate();
     for (int i = nTrackSampleDataLength / 4; i < 3 * nTrackSampleDataLength / 4; i++) {
-        pTrackSampleData[i] = cos(i / kChannelCount * omega);
+        pTrackSampleData[i] = static_cast<CSAMPLE>(cos(i / kChannelCount * omega));
     }
 
     // Fill the last quarter with silence
@@ -131,7 +131,7 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
 
     // Fill the second fifth with 1 kHz tone
     for (int i = oneFifthOfTrackLength; i < 2 * oneFifthOfTrackLength; i++) {
-        pTrackSampleData[i] = cos(i / kChannelCount * omega);
+        pTrackSampleData[i] = static_cast<CSAMPLE>(cos(i / kChannelCount * omega));
     }
 
     // Fill the third fifth with silence
@@ -141,7 +141,7 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
 
     // Fill the fourth fifth with 1 kHz tone
     for (int i = 3 * oneFifthOfTrackLength; i < 4 * oneFifthOfTrackLength; i++) {
-        pTrackSampleData[i] = cos(i / kChannelCount * omega);
+        pTrackSampleData[i] = static_cast<CSAMPLE>(cos(i / kChannelCount * omega));
     }
 
     // Fill the fifth fifth with silence
@@ -189,7 +189,7 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     // Fill the second half with 1 kHz tone
     double omega = 2.0 * M_PI * kTonePitchHz / pTrack->getSampleRate();
     for (int i = nTrackSampleDataLength / 2; i < nTrackSampleDataLength; i++) {
-        pTrackSampleData[i] = sin(i / kChannelCount * omega);
+        pTrackSampleData[i] = static_cast<CSAMPLE>(sin(i / kChannelCount * omega));
     }
 
     analyzeTrack();

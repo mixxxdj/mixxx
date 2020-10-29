@@ -1050,7 +1050,7 @@ void ControllerEngine::scratchEnable(
         double beta,
         bool ramp) {
     // If we're already scratching this deck, override that with this request
-    if (m_dx[deck]) {
+    if (m_dx[deck] != 0) {
         //qDebug() << "Already scratching deck" << deck << ". Overriding.";
         int timerId = m_scratchTimers.key(deck);
         killTimer(timerId);
@@ -1099,7 +1099,7 @@ void ControllerEngine::scratchEnable(
     }
 
     // Initialize scratch filter
-    if (alpha && beta) {
+    if (alpha != 0 && beta != 0) {
         m_scratchFilters[deck]->init(kAlphaBetaDt, initVelocity, alpha, beta);
     } else {
         // Use filter's defaults if not specified

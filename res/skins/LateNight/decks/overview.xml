@@ -18,6 +18,7 @@
     <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
     <LabelFontSize><Variable name="OverviewFontSize"/></LabelFontSize>
+    <DimBrightThreshold><Variable name="DimBrightThresholdOverview"/></DimBrightThreshold>
     <!--LabelTextColor>#fff</LabelTextColor>
     <LabelBackgroundColor>rgba(0,0,0,255)</LabelBackgroundColor>
     <LabelBackgroundColor>0,0,0,255</LabelBackgroundColor>
