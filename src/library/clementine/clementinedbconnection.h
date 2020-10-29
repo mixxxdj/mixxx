@@ -25,7 +25,7 @@ class ClementineDbConnection {
         QString grouping;
         int tracknumber;
         int dateadded;
-        int bpm;
+        double bpm;
         int bitrate;
         QString comment;
         int playcount;

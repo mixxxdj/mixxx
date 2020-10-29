@@ -128,7 +128,7 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
         entry.genre = query.value(8).toString();
         entry.grouping = query.value(15).toString();
         entry.tracknumber = query.value(9).toInt();
-        entry.bpm = query.value(10).toInt();
+        entry.bpm = query.value(10).toDouble();
         entry.bitrate = query.value(11).toInt();
         entry.comment = query.value(12).toString();
         entry.playcount = query.value(13).toInt();
