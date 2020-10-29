@@ -214,7 +214,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
 
     emit deleted(playlistId);
     if (!playedTrackIds.isEmpty()) {
-        tracksRemovedFromPlayedHistory(playedTrackIds);
+        emit tracksRemovedFromPlayedHistory(playedTrackIds);
     }
 }
 
@@ -529,7 +529,7 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
 
     emit trackRemoved(playlistId, trackId, position);
     if (getHiddenType(playlistId) == PLHT_SET_LOG) {
-        tracksRemovedFromPlayedHistory({trackId});
+        emit tracksRemovedFromPlayedHistory({trackId});
     }
 }
 
