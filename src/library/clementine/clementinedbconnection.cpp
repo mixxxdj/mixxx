@@ -10,6 +10,11 @@
 #include "track/track.h"
 #include "util/performancetimer.h"
 
+namespace {
+  constexpr int clementineUndefBpm = -1; // clementine saves undefined bpm as -1
+  constexpr int clementineUndefDuration = -1; // clementine saves undefined duration as -1
+}
+
 ClementineDbConnection::ClementineDbConnection() {
 }
 
@@ -68,10 +73,7 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
 
     QSqlQuery query(m_database);
     query.setForwardOnly(true); // Saves about 50% time
-
-    QString queryString;
-
-    queryString = QString(
+    query.prepare(
             "SELECT "
             "ROWID, "
             "playlist_items.title, "    // 1
@@ -93,10 +95,9 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
             "playlist_items.type, "       // 16
             "playlist_items.albumartist " // 17
             "FROM playlist_items "
-            "WHERE playlist_items.playlist = %1")
-                          .arg(playlistId);
+            "WHERE playlist_items.playlist = :playlistId");
+    query.bindValue(":playlistId", playlistId);
 
-    query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return {};
@@ -110,10 +111,10 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
         QString location = QUrl::fromEncoded(
                 query.value(2).toByteArray(), QUrl::StrictMode)
                                    .toLocalFile();
-        bool track_already_in_library = false;
+        bool trackAlreadyInLibrary = false;
         TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
                 TrackRef::fromFileInfo(location),
-                &track_already_in_library);
+                &trackAlreadyInLibrary);
 
         entry.artist = query.value(4).toString();
         entry.title = query.value(1).toString();
@@ -133,22 +134,22 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
         entry.playcount = query.value(13).toInt();
         entry.composer = query.value(14).toString();
 
-        if (entry.artist == "" && entry.title == "") {
+        if (entry.artist.isEmpty() && entry.title.isEmpty()) {
             entry.artist =
-                    "Unknown"; // may confuse with real "Unknown" artists from whitelabels?
+                    QObject::tr("Unknown Artist");
             entry.title = location.split(QDir::separator()).last();
         }
-        if (entry.bpm == -1) { // clementine saves undefined bpm as -1
+        if (entry.bpm == clementineUndefBpm) {
             entry.bpm = 0;
         }
-        if (duration == -1) { // clementine saves undefined duration as -1
+        if (duration == clementineUndefDuration) {
             entry.duration = 0;
         } else {
             entry.duration = int(duration / 1000000000);
         }
 
         //If found in mixxx lib overwrite information
-        if (track_already_in_library) {
+        if (trackAlreadyInLibrary) {
             entry.bpm = pTrack->getBpm();
             entry.duration = pTrack->getDurationInt();
         }

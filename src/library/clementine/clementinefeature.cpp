@@ -58,7 +58,7 @@ void ClementineFeature::activate() {
 
         if (!QFile::exists(m_databaseFile)) {
             QMessageBox::warning(
-                    NULL,
+                    nullptr,
                     tr("Error loading Clementine database"),
                     tr("Clementine database file not found at\n") +
                             m_databaseFile);
@@ -67,7 +67,7 @@ void ClementineFeature::activate() {
 
         if (!m_connection.open(m_databaseFile)) {
             QMessageBox::warning(
-                    NULL,
+                    nullptr,
                     tr("Error loading Clementine database"),
                     tr("There was an error loading your Clementine database at\n") +
                             m_databaseFile);
