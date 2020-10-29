@@ -604,7 +604,8 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     if (!m_pAutoDjEnabled) {
         m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
     }
-    bool autoDjSkipClone = m_pAutoDjEnabled->get() && (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
+    bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
+            (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 
     if (cloneOnDoubleTap && m_lastLoadedPlayer == group
         && elapsed < mixxx::Duration::fromSeconds(0.5)

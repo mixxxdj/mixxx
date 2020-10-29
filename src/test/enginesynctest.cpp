@@ -45,15 +45,15 @@ class EngineSyncTest : public MockedEngineBackendTest {
         if (group == m_sInternalClockGroup) {
             return !ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                       "sync_master"))
-                            ->get();
+                            ->toBool();
         }
         if (ControlObject::getControl(ConfigKey(group, "sync_mode"))->get() != SYNC_FOLLOWER) {
             return false;
         }
-        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get()) {
+        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->toBool()) {
             return false;
         }
-        if (ControlObject::getControl(ConfigKey(group, "sync_master"))->get()) {
+        if (ControlObject::getControl(ConfigKey(group, "sync_master"))->toBool()) {
             return false;
         }
         return true;
@@ -88,7 +88,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
         if (group == m_sInternalClockGroup) {
             if (!ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                    "sync_master"))
-                            ->get()) {
+                            ->toBool()) {
                 return false;
             }
             if (m_pEngineSync->getMaster()) {
@@ -128,10 +128,10 @@ class EngineSyncTest : public MockedEngineBackendTest {
                 return false;
             }
         }
-        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get()) {
+        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->toBool()) {
             return false;
         }
-        if (!ControlObject::getControl(ConfigKey(group, "sync_master"))->get()) {
+        if (!ControlObject::getControl(ConfigKey(group, "sync_master"))->toBool()) {
             return false;
         }
         return true;

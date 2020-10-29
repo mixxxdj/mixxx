@@ -666,10 +666,10 @@ void LibraryControl::slotSortColumnToggle(double v) {
     }
 
     if (static_cast<int>(m_pSortColumn->get()) == sortColumnId) {
-        m_pSortOrder->set(!m_pSortOrder->get());
+        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
     } else {
         m_pSortColumn->set(sortColumnId);
-        m_pSortOrder->set(0);
+        m_pSortOrder->set(0.0);
     }
 }
 

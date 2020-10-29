@@ -960,7 +960,7 @@ void WTrackTableView::applySorting() {
         return;
     }
 
-    Qt::SortOrder sortOrder = m_pSortOrder->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
+    Qt::SortOrder sortOrder = (m_pSortOrder->get() == 0) ? Qt::AscendingOrder : Qt::DescendingOrder;
 
     // This line sorts the TrackModel
     horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
