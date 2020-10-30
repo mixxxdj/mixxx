@@ -136,7 +136,7 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
 
         if (entry.artist.isEmpty() && entry.title.isEmpty()) {
             entry.artist =
-                    QObject::tr("Unknown Artist");
+                    QObject::tr("");
             entry.title = location.split(QDir::separator()).last();
         }
         if (entry.bpm == clementineUndefBpm) {
