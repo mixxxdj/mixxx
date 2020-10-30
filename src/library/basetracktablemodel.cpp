@@ -475,8 +475,9 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
                 primaryScreen->availableGeometry().height() *
                 kRelHeightOfCoverartTooltip);
     } else {
-        qWarning() << "Assuming screen height of 800px.";
-        absHeightOfCoverartTooltip = 800 * kRelHeightOfCoverartTooltip;
+        VERIFY_OR_DEBUG_ASSERT(primaryScreen) {
+            return QVariant();
+        }
     }
     // Get image from cover art cache
     CoverArtCache* pCache = CoverArtCache::instance();
