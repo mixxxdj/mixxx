@@ -121,7 +121,7 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
     }
 
     int j = 0;
-    for (unsigned int i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
+    for (int i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
         m_inputL[j] = pInput[i];
         m_inputR[j] = pInput[i + 1];
         j++;
@@ -130,7 +130,7 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
     lilv_instance_run(pState->lilvIinstance(), bufferParameters.framesPerBuffer());
 
     j = 0;
-    for (unsigned int i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
+    for (int i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
         pOutput[i] = m_outputL[j];
         pOutput[i + 1] = m_outputR[j];
         j++;
