@@ -543,13 +543,19 @@ WLibrary WColorPicker QPushButton {
 WSearchLineEdit {
   margin-top: 2px;
   padding: 2px;
+  /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
   border: 1px solid #656565;
+  */
   background: #0f0f0f;
   color: #cfcfcf;
   }
   WSearchLineEdit:focus {
     padding: 1px;
+    /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
     border: 2px solid #ff6600;
+    */
     color: #eeeeee;
     selection-color: #0f0f0f;
     selection-background-color: #d2d2d2;

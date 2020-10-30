@@ -142,6 +142,19 @@ QAbstractScrollArea::corner {
       border: 0px;
     }
 
+WSearchLineEdit {
+  /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
+  border-top: 1px solid #0d0d0d;
+  border-left: 1px solid #121212;
+  border-bottom: 1px solid #2a2a2a;
+  border-right: 1px solid #252525;
+  border-radius: 1px;
+  */
+  background-color: #19191a;
+  }
+
+
 /* recessed regions */
 #WaveformBox1,
 #WaveformBox2,
@@ -150,7 +163,6 @@ QAbstractScrollArea::corner {
 #WaveformsFrame,
 #OverviewBox,
 #OverviewBoxMini,
-WSearchLineEdit,
 WCueMenuPopup #CueLabelEdit {
   border-top: 1px solid #0d0d0d;
   border-left: 1px solid #121212;
@@ -160,8 +172,7 @@ WCueMenuPopup #CueLabelEdit {
   }
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView,
-WSearchLineEdit {
+#LibraryContainer QTreeView {
   border-top: 1px solid #000;
   border-left: 1px solid #000;
   border-bottom: 1px solid #1e1e1e;
@@ -174,8 +185,7 @@ WSearchLineEdit {
   }
   #WaveformsFrame,
   #OverviewBox,
-  #OverviewBoxMini,
-  WSearchLineEdit {
+  #OverviewBoxMini {
     border-radius: 1px;
   }
   #OverviewBox[highlight="1"],
@@ -2604,8 +2614,11 @@ WSearchLineEdit {
   }
   WSearchLineEdit:focus {
     padding: 1px;
+    /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
     border: 2px solid #257b82;
     border-radius: 0px;
+    */
   }
   /* Dunno when this is true */
   WSearchLineEdit[active="false"] {

@@ -2957,7 +2957,10 @@ WLibrary QSpinBox {
 /* library search text box */
 WSearchLineEdit {
   padding: 2px;
-  border: 1px solid #656565;
+/* Setting the border disables to on screen keyboard
+   on Gnome for some reasons.
+  border: 0px;
+*/
   color: #cfcfcf;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;

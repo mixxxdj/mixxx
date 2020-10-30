@@ -77,6 +77,19 @@ WLibrary,
     border-radius: 0px;
   }
 
+WSearchLineEdit {
+  /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
+  border-top: 1px solid #0a0a0a;
+  border-left: 1px solid #0a0a0a;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
+  border-bottom-left-radius: 1px;
+  border-top-right-radius: 1px;
+  */
+  background-color: #151515;
+  }
+
 /* borders of embedded regions like deck buttons & Master mixer */
 #WaveformBox1,
 #WaveformBox2,
@@ -87,7 +100,6 @@ WLibrary,
 #MasterControls, #HeadphoneControls,
 #FxParametersBg,
 #SamplerHotcues,
-WSearchLineEdit,
 #OverviewBox, #OverviewBoxMini {
   border-top: 1px solid #0a0a0a;
   border-left: 1px solid #0a0a0a;
@@ -2195,8 +2207,11 @@ WSearchLineEdit {
   }
   WSearchLineEdit:focus {
     padding: 1px;
+   /* Setting the border disables to on screen keyboard
+     on Gnome for some reasons.
     border: 2px solid #d08e00;
     border-radius: 0px;
+    */
   }
   WSearchLineEdit[active="false"],
   WSearchLineEdit:disabled {
