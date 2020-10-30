@@ -200,7 +200,7 @@ void MidiController::commitTemporaryInputMappings() {
     m_temporaryInputMappings.clear();
 }
 
-void MidiController::receiveShortMessage(unsigned char status,
+void MidiController::receivedShortMessage(unsigned char status,
         unsigned char control,
         unsigned char value,
         mixxx::Duration timestamp) {

@@ -40,7 +40,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 if (i + 2 < uBufferSize) {
                     note = pBuffer[i+1];
                     velocity = pBuffer[i+2];
-                    emit receiveShortMessage(status, note, velocity, timestamp);
+                    emit receivedShortMessage(status, note, velocity, timestamp);
                 } else {
                     qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
                 }
@@ -49,7 +49,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
             default:
                 // Handle platter messages and any others that are not 3 bytes
                 QByteArray byteArray(reinterpret_cast<const char*>(pBuffer), uBufferSize);
-                emit receiveSysex(byteArray, timestamp);
+                emit receivedSysex(byteArray, timestamp);
                 i = uBufferSize;
                 break;
         }
@@ -111,11 +111,11 @@ int Hss1394Controller::open() {
 
     m_pChannelListener = new DeviceChannelListener(this, getName());
     connect(m_pChannelListener,
-            &DeviceChannelListener::receiveShortMessage,
+            &DeviceChannelListener::receivedShortMessage,
             this,
-            &Hss1394Controller::receiveShortMessage);
+            &Hss1394Controller::receivedShortMessage);
     connect(m_pChannelListener,
-            &DeviceChannelListener::receiveSysex,
+            &DeviceChannelListener::receivedSysex,
             this,
             &Hss1394Controller::receive);
 
@@ -153,11 +153,11 @@ int Hss1394Controller::close() {
     }
 
     disconnect(m_pChannelListener,
-            &DeviceChannelListener::receiveShortMessage,
+            &DeviceChannelListener::receivedShortMessage,
             this,
-            &Hss1394Controller::receiveShortMessage);
+            &Hss1394Controller::receivedShortMessage);
     disconnect(m_pChannelListener,
-            &DeviceChannelListener::receiveSysex,
+            &DeviceChannelListener::receivedSysex,
             this,
             &Hss1394Controller::receive);
 

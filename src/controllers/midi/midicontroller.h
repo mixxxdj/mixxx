@@ -69,7 +69,7 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    virtual void receiveShortMessage(
+    virtual void receivedShortMessage(
             unsigned char status,
             unsigned char control,
             unsigned char value,

@@ -35,7 +35,7 @@ class MockPortMidiController : public PortMidiController {
         PortMidiController::sendSysexMsg(data, length);
     }
 
-    MOCK_METHOD4(receiveShortMessage,
+    MOCK_METHOD4(receivedShortMessage,
             void(unsigned char, unsigned char, unsigned char, mixxx::Duration));
     MOCK_METHOD2(receive, void(const QByteArray&, mixxx::Duration));
 
@@ -232,9 +232,9 @@ TEST_F(PortMidiControllerTest, Poll_Read_Basic) {
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
 
-    EXPECT_CALL(*m_pController, receiveShortMessage(0x90, 0x3C, 0x40, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0x90, 0x3C, 0x40, _))
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receiveShortMessage(0x80, 0x3C, 0x40, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0x80, 0x3C, 0x40, _))
             .InSequence(read);
 
     pollDevice();
@@ -269,9 +269,9 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime) {
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receiveShortMessage(0xF8, 0x00, 0x00, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0xF8, 0x00, 0x00, _))
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receiveShortMessage(0xFA, 0x00, 0x00, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0xFA, 0x00, 0x00, _))
             .InSequence(read);
     EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
@@ -367,7 +367,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExInterrupted_FollowedByNormalMessag
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receiveShortMessage(0x90, 0x3C, 0x40, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0x90, 0x3C, 0x40, _))
             .InSequence(read);
 
     pollDevice();
