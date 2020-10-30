@@ -135,8 +135,10 @@ AutoDJProcessor::AutoDJProcessor(
 
     m_pAddRandomTrack = new ControlPushButton(
             ConfigKey("[AutoDJ]", "add_random_track"));
-    connect(m_pAddRandomTrack, &ControlObject::valueChanged,
-            this, &AutoDJProcessor::controlAddRandomTrack);
+    connect(m_pAddRandomTrack,
+            &ControlObject::valueChanged,
+            this,
+            &AutoDJProcessor::controlAddRandomTrack);
 
     m_pFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));

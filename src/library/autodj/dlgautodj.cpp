@@ -319,8 +319,7 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
             pushButtonFadeNow->setEnabled(true);
         }
 
-        // You can always skip the next track if we are enabled.
-        pushButtonSkipNext->setEnabled(true);   
+        pushButtonSkipNext->setEnabled(true);
     }
 }
 
