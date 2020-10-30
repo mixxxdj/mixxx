@@ -96,6 +96,7 @@ let
     ${wrapperCmd} mixxx --prefix LV2_PATH : ${
       lib.makeSearchPath "lib/lv2" allLv2Plugins
     }
+    ${wrapperCmd} mixxx-test
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
