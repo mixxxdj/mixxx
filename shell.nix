@@ -125,6 +125,10 @@ let
       exit 1
     fi
     cd cbuild
+    # in case we run in a ci environment nix is < 20.09 QT_PLUGIN_PATH may not be set
+    if [ -z "$QT_PLUGIN_PATH" ]; then
+      export QT_PLUGIN_PATH=${pkgs.qt5.qtbase}/${pkgs.qt5.qtbase.qtPluginPrefix}
+    fi
     exec env LV2_PATH=${lib.makeSearchPath "lib/lv2" allLv2Plugins} ./mixxx-test
   '';
 
