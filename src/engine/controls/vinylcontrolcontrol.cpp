@@ -158,10 +158,10 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
 bool VinylControlControl::isEnabled()
 {
-    return m_pControlVinylEnabled->get();
+    return m_pControlVinylEnabled->toBool();
 }
 
 bool VinylControlControl::isScratching()
 {
-    return m_pControlVinylScratching->get();
+    return m_pControlVinylScratching->toBool();
 }
