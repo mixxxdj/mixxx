@@ -27,6 +27,8 @@
                 <Alignment>center</Alignment>
               </Label>
 
+              <Template src="skin:/controls/button_xfader_aux.xml"/>
+
               <WidgetGroup>
                 <ObjectName>AuxPlayBox</ObjectName>
                 <Layout>vertical</Layout>
@@ -41,8 +43,6 @@
                   </Template>
                 </Children>
               </WidgetGroup>
-
-              <Template src="skin:/controls/button_xfader_aux.xml"/>
 
             </Children>
           </WidgetGroup><!-- MicAuxMainControls -->
@@ -69,7 +69,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/knob_textless.xml">
+                  <Template src="skin:/controls/knob.xml">
                     <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="KnobColor">orange</SetVariable>

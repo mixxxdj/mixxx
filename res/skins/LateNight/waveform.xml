@@ -68,7 +68,7 @@
             </Mark>
             <Mark>
               <Control>loop_end_position</Control>
-              <Text>&#8635;</Text>
+              <!-- <Text>&#8635;</Text> -->
               <Align>top|right</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>

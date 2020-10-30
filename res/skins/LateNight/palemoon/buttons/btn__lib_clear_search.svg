@@ -27,25 +27,25 @@
      id="title2">Mixxx 1.12+ iconset</title>
   <path
      id="path846"
-     d="M 17,4 V 15 H 7 L 2,9.5 7,4 Z"
+     d="M -3,4 V 15 H -13 L -18,9.5 -13,4 Z"
      style="fill:none;fill-opacity:1;stroke:#676767;stroke-width:0.846154px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   <g
-     style="opacity:1;stroke:#676767;stroke-opacity:1"
+     style="opacity:1;stroke:#676767;stroke-width:0.696756;stroke-opacity:1"
      id="g8"
-     transform="matrix(0.70833144,0,0,0.70833144,4.6517175,-6.4374573)">
+     transform="matrix(1.0166134,0,0,1.0166135,-0.45733303,-13.373803)">
     <g
-       style="stroke:#676767;stroke-opacity:1"
+       style="stroke:#676767;stroke-width:0.696756;stroke-opacity:1"
        id="g6"
        transform="matrix(0.4151,0,0,0.4151,-1.6604,19.547)">
       <g
          id="g862"
-         style="opacity:1;stroke:#676767;stroke-width:3.8544929;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+         style="opacity:1;stroke:#676767;stroke-width:2.68564;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
         <path
-           style="fill:none;stroke:#676767;stroke-width:3.8544929;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:none;stroke:#676767;stroke-width:2.68564;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            d="M 36.027491,-1.3177544 19.164084,15.545652"
            id="path856" />
         <path
-           style="fill:none;stroke:#676767;stroke-width:3.8544929;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:none;stroke:#676767;stroke-width:2.68564;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            d="M 19.164084,-1.3177544 36.027491,15.545652"
            id="path858" />
       </g>
