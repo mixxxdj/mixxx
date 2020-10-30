@@ -74,8 +74,6 @@ void ClementineFeature::activate() {
             return;
         }
 
-        m_isActivated = true;
-
         std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
         QList<ClementineDbConnection::Playlist> playlists = m_connection.getPlaylists();
         for (const ClementineDbConnection::Playlist& playlist : playlists) {
@@ -86,9 +84,7 @@ void ClementineFeature::activate() {
 
         m_childModel.setRootItem(std::move(pRootItem));
 
-        if (m_isActivated) {
-            activate();
-        }
+        activate();
 
         qDebug() << "Clementine library loaded: success";
 
