@@ -84,6 +84,7 @@ let
     "wrapProgram");
 
   shell-build = nixroot.writeShellScriptBin "build" ''
+    set -e
     if [ ! -d "cbuild" ]; then
       >&2 echo "First you have to run configure."
       exit 1
@@ -103,7 +104,7 @@ let
       exit 1
     fi
     cd cbuild
-    ./mixxx --resourcePath res/ "$@"
+    exec ./mixxx --resourcePath res/ "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
@@ -112,9 +113,18 @@ let
       exit 1
     fi
     cd cbuild
-    LV2_PATH=${
+    exec env LV2_PATH=${
       lib.makeSearchPath "lib/lv2" allLv2Plugins
     } gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
+  '';
+
+  shell-run-tests = nixroot.writeShellScriptBin "run-tests" ''
+    if [ ! -f "cbuild/mixxx-test" ]; then
+      >&2 echo "First you have to run build."
+      exit 1
+    fi
+    cd cbuild
+    exec env LV2_PATH=${lib.makeSearchPath "lib/lv2" allLv2Plugins} ./mixxx-test
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then
@@ -154,6 +164,7 @@ in stdenv.mkDerivation rec {
     echo " build - compiles Mixxx"
     echo " run - runs Mixxx with development settings"
     echo " debug - runs Mixxx inside gdb"
+    echo " run-tests - runs Mixxx tests"
       '';
 
   src = if releaseMode then
@@ -183,6 +194,7 @@ in stdenv.mkDerivation rec {
       shell-configure
       shell-debug
       shell-run
+      shell-run-tests
     ])
   else
     [ ]);

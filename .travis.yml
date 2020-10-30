@@ -202,7 +202,12 @@ jobs:
         - mkdir -p $HOME/nix.store
         - nix copy --to file://$HOME/nix.store -f shell.nix buildInputs
       script:
-        - nix-build shell.nix --arg releaseMode true --arg defaultLv2Plugins true | cachix push mixxx
+        - |
+          if [ -n "$CACHIX_SIGNING_KEY" ]; then
+            nix-build shell.nix --arg releaseMode true --arg defaultLv2Plugins true | cachix push mixxx;
+          else
+            nix-build shell.nix --arg releaseMode true --arg defaultLv2Plugins true
+          fi
     - name: Nix development shell build
       install: *nixinstall
       cache: *nixcache
@@ -210,9 +215,9 @@ jobs:
       before_install: *nix_before_install
       env: *nix_env
       script:
-        - nix-shell --arg enableKeyfinder true --arg defaultLv2Plugins true --command "configure; build;"
+        - nix-shell --arg enableKeyfinder true --arg defaultLv2Plugins true --command "configure && build && run-tests"
         - test -e cbuild/mixxx -a -e cbuild/.mixxx-wrapped
-        - cd cbuild && ./mixxx --help && ./mixxx-test
+        - cd cbuild && ./mixxx --help
 
 git:
   depth: 1
