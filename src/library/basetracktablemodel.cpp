@@ -25,8 +25,6 @@ namespace {
 
 const mixxx::Logger kLogger("BaseTrackTableModel");
 
-const QString kEmptyString = QStringLiteral("");
-
 constexpr double kRelHeightOfCoverartTooltip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
@@ -490,7 +488,7 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
             CoverArtCache::Loading::NoSignal);
     if (pixmap.isNull()) {
         // Cache miss -> Don't show a tooltip
-        return kEmptyString;
+        return QVariant();
     }
     QByteArray data;
     QBuffer buffer(&data);
@@ -515,7 +513,7 @@ QVariant BaseTrackTableModel::roleValue(
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
             return composeCoverArtToolTipHtml(index);
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-            return kEmptyString;
+            return QVariant();
         }
         M_FALLTHROUGH_INTENDED;
     case Qt::DisplayRole:
