@@ -18,7 +18,7 @@ class ControllerScriptEngineBase : public QObject {
     Q_OBJECT
   public:
     explicit ControllerScriptEngineBase(Controller* controller);
-    virtual ~ControllerScriptEngineBase() = default;
+    virtual ~ControllerScriptEngineBase() override = default;
 
     virtual bool initialize();
 
