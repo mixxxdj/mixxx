@@ -662,12 +662,22 @@ void LibraryControl::slotSortColumn(double v) {
     m_pSortColumnToggle->set(v);
 }
 
-void LibraryControl::slotSortColumnToggle(double value) {
-    int column = static_cast<int>(value);
-    if (column == static_cast<int>(m_pSortColumn->get())) {
+void LibraryControl::slotSortColumnToggle(double v) {
+    int sortColumnId = static_cast<int>(v);
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::CurrentIndex)) {
+        if (!m_pLibraryWidget) {
+            return;
+        }
+        // Get the ID of the column with the cursor
+        sortColumnId =
+                static_cast<int>(m_pLibraryWidget->getActiveView()
+                                         ->getColumnIdFromCurrentIndex());
+    }
+
+    if (static_cast<int>(m_pSortColumn->get()) == sortColumnId) {
         m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
     } else {
-        m_pSortColumn->set(value);
+        m_pSortColumn->set(sortColumnId);
         m_pSortOrder->set(0.0);
     }
 }
