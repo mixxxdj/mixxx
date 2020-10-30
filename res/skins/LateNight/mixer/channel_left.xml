@@ -11,119 +11,94 @@ vertical layout and a side-by-side layout for two-deck mode -->
   <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
 
   <WidgetGroup>
-    <SizePolicy>min,min</SizePolicy>
+    <ObjectName>MixerChannel_2Decks</ObjectName>
     <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
 
-      <WidgetGroup>
-        <ObjectName>MixerChannel_2Decks</ObjectName>
-        <Layout>horizontal</Layout>
+      <WidgetGroup><!-- EQs -->
+        <Layout>vertical</Layout>
+        <ObjectName>MixerChannel_2Decks_Left</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- EQs -->
-            <Layout>vertical</Layout>
-            <ObjectName>MixerChannel_2Decks_Left</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-
-              <!-- Spacer when there's no QuickEffect loaded -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <Size>0min,34f</Size>
-                <Connection>
-                  <ConfigKey>[QuickEffectRack1_<Variable name="Group"/>_Effect1],loaded</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <Template src="skin:/mixer/eq_knob_left.xml">
-                <SetVariable name="EqParameter">3</SetVariable>
-                <SetVariable name="EqRange">High</SetVariable>
-              </Template>
-
-              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
-
-              <Template src="skin:/mixer/eq_knob_left.xml">
-                <SetVariable name="EqParameter">2</SetVariable>
-                <SetVariable name="EqRange">Mid</SetVariable>
-              </Template>
-
-              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
-
-              <Template src="skin:/mixer/eq_knob_left.xml">
-                <SetVariable name="EqParameter">1</SetVariable>
-                <SetVariable name="EqRange">Low</SetVariable>
-              </Template>
-
-              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
-
-              <Template src="skin:/mixer/quick_effect_knob_left.xml"/>
-
-              <!-- Spacer -->
-              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
-            </Children>
+          <!-- Spacer when there's no QuickEffect loaded -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Size>0min,34f</Size>
             <Connection>
-              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+              <ConfigKey>[QuickEffectRack1_<Variable name="Group"/>_Effect1],loaded</ConfigKey>
+              <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /EQs -->
+          </WidgetGroup>
 
-          <WidgetGroup>
-            <ObjectName>VolumeGain2Decks</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:/controls/knob_textless.xml">
-                <SetVariable name="Size">40f,34f</SetVariable>
-                <SetVariable name="KnobColor">orange</SetVariable>
-                <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
-                <SetVariable name="Control">pregain</SetVariable>
-                <SetVariable name="TooltipId">pregain</SetVariable>
-              </Template>
+          <Template src="skin:/mixer/eq_knob_left.xml">
+            <SetVariable name="EqParameter">3</SetVariable>
+            <SetVariable name="EqRange">High</SetVariable>
+          </Template>
 
-              <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
-              <SliderComposed><!-- Volume -->
-                <TooltipId>channel_volume</TooltipId>
-                <Size>42f,107f</Size>
-                <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
-                <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
-                <Horizontal>false</Horizontal>
-                <BarColor><Variable name="BarColorVolume"/></BarColor>
-                <BarWidth><Variable name="BarWidth"/></BarWidth>
-                <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
-                <BarRoundCaps>true</BarRoundCaps>
-                <BarAxisPos>21.0</BarAxisPos>
-                <Connection>
-                  <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
-                </Connection>
-              </SliderComposed>
+          <Template src="skin:/mixer/eq_knob_left.xml">
+            <SetVariable name="EqParameter">2</SetVariable>
+            <SetVariable name="EqRange">Mid</SetVariable>
+          </Template>
 
-              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- VolumeGain2Decks -->
+          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
+          <Template src="skin:/mixer/eq_knob_left.xml">
+            <SetVariable name="EqParameter">1</SetVariable>
+            <SetVariable name="EqRange">Low</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
+          <Template src="skin:/mixer/quick_effect_knob_left.xml"/>
+
+          <!-- Spacer -->
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
-          <Transform><Not/></Transform>
         </Connection>
-      </WidgetGroup><!-- MixerChannel_2Decks -->
+      </WidgetGroup><!-- /EQs -->
 
       <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <ObjectName>VolumeGain2Decks</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:/mixer/channel_4decks.xml"/>
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+          <Template src="skin:/controls/knob.xml">
+            <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="KnobColor">orange</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
+            <SetVariable name="Control">pregain</SetVariable>
+            <SetVariable name="TooltipId">pregain</SetVariable>
+          </Template>
 
+          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+
+          <SliderComposed><!-- Volume -->
+            <TooltipId>channel_volume</TooltipId>
+            <Size>42f,107f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <BarColor><Variable name="BarColorVolume"/></BarColor>
+            <BarWidth><Variable name="BarWidth"/></BarWidth>
+            <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
+            <BarRoundCaps>true</BarRoundCaps>
+            <BarAxisPos>21.0</BarAxisPos>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- VolumeGain2Decks -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- MixerChannel_2Decks -->
 </Template>
