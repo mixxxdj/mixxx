@@ -36,18 +36,6 @@ bool ControllerScriptModuleEngine::initialize() {
         return false;
     }
 
-    QJSValue handleInputFunction = mod.property("handleInput");
-    if (handleInputFunction.isCallable()) {
-        m_handleInputFunction = handleInputFunction;
-    } else {
-        scriptErrorDialog(
-                "Controller JavaScript module exports no handleInput function.",
-                QStringLiteral("handleInput"),
-                true);
-        shutdown();
-        return false;
-    }
-
     QJSValue shutdownFunction = mod.property("shutdown");
     if (shutdownFunction.isCallable()) {
         m_shutdownFunction = shutdownFunction;
@@ -61,12 +49,4 @@ bool ControllerScriptModuleEngine::initialize() {
 void ControllerScriptModuleEngine::shutdown() {
     executeFunction(m_shutdownFunction, QJSValueList());
     ControllerScriptEngineBase::shutdown();
-}
-
-void ControllerScriptModuleEngine::handleInput(
-        QByteArray data, mixxx::Duration timestamp) {
-    QJSValueList args;
-    args << m_pJSEngine->toScriptValue(data);
-    args << timestamp.toDoubleMillis();
-    executeFunction(m_handleInputFunction, args);
 }

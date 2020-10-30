@@ -15,12 +15,9 @@ class ControllerScriptModuleEngine : public ControllerScriptEngineBase {
         m_moduleFileInfo = moduleFileInfo;
     }
 
-    void handleInput(QByteArray data, mixxx::Duration timestamp);
-
   private:
     void shutdown() override;
 
-    QJSValue m_handleInputFunction;
     QJSValue m_shutdownFunction;
 
     QFileInfo m_moduleFileInfo;
