@@ -36,7 +36,9 @@ DDJ200.init = function() {
     }, true);
 };
 
-DDJ200.shutdown = function() { DDJ200.LEDsOff(); };
+DDJ200.shutdown = function() {
+    DDJ200.LEDsOff();
+};
 
 DDJ200.LEDsOff = function() {                         // trun off LED buttons:
 
