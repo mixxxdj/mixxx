@@ -24,7 +24,7 @@ const QString kColorButtonStyleSheetDark = QStringLiteral(
 void setButtonColor(QPushButton* button, const QColor& color) {
     button->setText(color.name());
     button->setStyleSheet(
-            (Color::isDimmColor(color)
+            (Color::isDimColor(color)
                             ? kColorButtonStyleSheetDark
                             : kColorButtonStyleSheetLight)
                     .arg(color.name()));

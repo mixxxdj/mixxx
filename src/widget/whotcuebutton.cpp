@@ -7,15 +7,20 @@
 #include "mixer/playerinfo.h"
 #include "track/track.h"
 
+namespace {
+constexpr int kDefaultDimBrightThreshold = 127;
+}
+
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),
           m_group(group),
           m_hotcue(Cue::kNoHotCue),
           m_hoverCueColor(false),
           m_pCoColor(nullptr),
-          m_cueColorDimmed(false),
-          m_isCueColorLight(false),
-          m_isCueColorDark(false) {
+          m_cueColorDimThreshold(kDefaultDimBrightThreshold),
+          m_bCueColorDimmed(false),
+          m_bCueColorIsLight(false),
+          m_bCueColorIsDark(false) {
 }
 
 void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
@@ -29,6 +34,13 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     } else {
         SKIN_WARNING(node, context) << "Hotcue value invalid";
     }
+
+    bool okay;
+    m_cueColorDimThreshold = context.selectInt(node, QStringLiteral("DimBrightThreshold"), &okay);
+    if (!okay) {
+        m_cueColorDimThreshold = kDefaultDimBrightThreshold;
+    }
+
     m_hoverCueColor = context.selectBool(node, QStringLiteral("Hover"), false);
 
     m_pCueMenuPopup = make_parented<WCueMenuPopup>(context.getConfig(), this);
@@ -119,7 +131,7 @@ void WHotcueButton::slotColorChanged(double color) {
         return;
     }
     QColor cueColor = QColor::fromRgb(static_cast<QRgb>(color));
-    m_cueColorDimmed = Color::isDimmColor(cueColor);
+    m_bCueColorDimmed = Color::isDimColorCustom(cueColor, m_cueColorDimThreshold);
 
     QString style =
             QStringLiteral(
@@ -133,7 +145,7 @@ void WHotcueButton::slotColorChanged(double color) {
                 QStringLiteral(
                         "WWidget[displayValue=\"1\"]:hover, "
                         "WWidget[displayValue=\"2\"]:hover { background-color: ") +
-                cueColor.lighter(m_cueColorDimmed ? 120 : 80).name() +
+                cueColor.lighter(m_bCueColorDimmed ? 120 : 80).name() +
                 QStringLiteral("; }");
     }
 
@@ -184,13 +196,13 @@ void WHotcueButton::slotTypeChanged(double type) {
 void WHotcueButton::restyleAndRepaint() {
     if (readDisplayValue()) {
         // Adjust properties for Qss file
-        m_isCueColorLight = !m_cueColorDimmed;
-        m_isCueColorDark = m_cueColorDimmed;
+        m_bCueColorIsLight = !m_bCueColorDimmed;
+        m_bCueColorIsDark = m_bCueColorDimmed;
     } else {
         // We are now at the background set by qss.
         // Since we don't know the color reset both
-        m_isCueColorLight = false;
-        m_isCueColorDark = false;
+        m_bCueColorIsLight = false;
+        m_bCueColorIsDark = false;
     }
     WPushButton::restyleAndRepaint();
 }

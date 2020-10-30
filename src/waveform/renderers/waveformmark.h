@@ -66,7 +66,7 @@ class WaveformMark {
         if (!hasVisible()) {
             return true;
         }
-        return m_pVisibleCO->get();
+        return m_pVisibleCO->toBool();
     }
 
     template <typename Receiver, typename Slot>
@@ -75,7 +75,7 @@ class WaveformMark {
     }
 
     // Sets the appropriate mark colors based on the base color
-    void setBaseColor(QColor baseColor);
+    void setBaseColor(QColor baseColor, int dimBrightThreshold);
     QColor fillColor() const {
         return m_fillColor;
     }

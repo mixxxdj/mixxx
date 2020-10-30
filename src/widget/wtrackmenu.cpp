@@ -828,6 +828,8 @@ std::unique_ptr<mixxx::TrackPointerIterator> WTrackMenu::newTrackPointerIterator
         if (m_trackIndexList.isEmpty()) {
             return nullptr;
         }
+        // m_pTrackModel must not be modified during the iteration,
+        // neither directly nor indirectly through signals!!!
         return std::make_unique<mixxx::TrackPointerModelIterator>(
                 m_pTrackModel,
                 m_trackIndexList);

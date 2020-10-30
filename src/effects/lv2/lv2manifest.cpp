@@ -152,9 +152,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 }
 
 LV2Manifest::~LV2Manifest() {
-    delete m_minimum;
-    delete m_maximum;
-    delete m_default;
+    delete[] m_minimum;
+    delete[] m_maximum;
+    delete[] m_default;
 }
 
 EffectManifestPointer LV2Manifest::getEffectManifest() const {
@@ -189,8 +189,8 @@ void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
         const LilvNode* description = lilv_scale_point_get_label(option);
         const LilvNode* value = lilv_scale_point_get_value(option);
         QString strDescription(lilv_node_as_string(description));
-        param->appendStep(qMakePair(strDescription, 
-		(double)lilv_node_as_float(value)));
+        param->appendStep(qMakePair(strDescription,
+                static_cast<double>(lilv_node_as_float(value))));
     }
 
     if (options != NULL) {

@@ -10,11 +10,6 @@
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
-const int RATE_TEMP_STEP = 500;
-const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
-const int RATE_SENSITIVITY_MIN = 100;
-const int RATE_SENSITIVITY_MAX = 2500;
-
 class BpmControl;
 class Rotary;
 class ControlTTRotary;

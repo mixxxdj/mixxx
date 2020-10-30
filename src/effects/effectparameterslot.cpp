@@ -29,7 +29,7 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
             ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(
-        static_cast<double>(EffectManifestParameter::LinkType::NUM_LINK_TYPES));
+            static_cast<int>(EffectManifestParameter::LinkType::NUM_LINK_TYPES));
     m_pControlLinkType->connectValueChangeRequest(
             this, &EffectParameterSlot::slotLinkTypeChanging);
 
