@@ -305,14 +305,14 @@ void EngineMaster::processChannels(int iBufferSize) {
 
             // Check if we need to fade out the master channel
             GainCache& gainCache = m_channelMasterGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 gainCache.m_fadeout = true;
                 m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
-             }
+            }
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelTalkoverGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 gainCache.m_fadeout = true;
                 m_activeTalkoverChannels.append(pChannelInfo);
             }
@@ -323,7 +323,7 @@ void EngineMaster::processChannels(int iBufferSize) {
             } else {
                 // Check if we need to fade out the channel
                 GainCache& gainCache = m_channelMasterGainCache[i];
-                if (gainCache.m_gain) {
+                if (gainCache.m_gain != 0) {
                     gainCache.m_fadeout = true;
                     m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
                 }
@@ -337,7 +337,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelHeadphoneGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 m_channelHeadphoneGainCache[i].m_fadeout = true;
                 m_activeHeadphoneChannels.append(pChannelInfo);
             }
@@ -390,9 +390,9 @@ void EngineMaster::process(const int iBufferSize) {
     }
     //Trace t("EngineMaster::process");
 
-    bool masterEnabled = m_pMasterEnabled->get();
-    bool boothEnabled = m_pBoothEnabled->get();
-    bool headphoneEnabled = m_pHeadphoneEnabled->get();
+    bool masterEnabled = m_pMasterEnabled->toBool();
+    bool boothEnabled = m_pBoothEnabled->toBool();
+    bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
 
     m_iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     m_iBufferSize = iBufferSize;
@@ -731,7 +731,7 @@ void EngineMaster::process(const int iBufferSize) {
         }
     }
 
-    if (m_pMasterMonoMixdown->get()) {
+    if (m_pMasterMonoMixdown->toBool()) {
         SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, m_iBufferSize);
     }
 
@@ -776,7 +776,7 @@ void EngineMaster::processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphone
     // If Head Split is enabled, replace the left channel of the pfl buffer
     // with a mono mix of the headphone buffer, and the right channel of the pfl
     // buffer with a mono mix of the master output buffer.
-    if (m_pHeadSplitEnabled->get()) {
+    if (m_pHeadSplitEnabled->toBool()) {
         // note: NOT VECTORIZED because of in place copy
         for (unsigned int i = 0; i + 1 < m_iBufferSize; i += 2) {
             m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;

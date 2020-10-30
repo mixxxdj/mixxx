@@ -239,8 +239,9 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
 }
 
 void VinylControlProcessor::toggleDeck(double value) {
-    if (!value)
+    if (value == 0) {
         return;
+    }
 
     /** few different cases here:
      * 1. No decks have vinyl control enabled.

@@ -179,6 +179,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_passthroughOverlayColor;
     QColor m_playedOverlayColor;
     QColor m_lowColor;
+    int m_dimBrightThreshold;
     QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks

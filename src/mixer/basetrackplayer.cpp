@@ -615,8 +615,8 @@ void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
     m_pLoadedTrack->setColor(color);
 }
 
-void BaseTrackPlayerImpl::slotPlayToggled(double v) {
-    if (!v && m_replaygainPending) {
+void BaseTrackPlayerImpl::slotPlayToggled(double value) {
+    if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
     }
 }
