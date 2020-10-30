@@ -37,11 +37,11 @@ class EffectManifestParameter {
         BEATS, // multiples of a beat
     };
 
-    enum class LinkType {
-        NONE = 0,  // Not controlled by the meta knob
-        LINKED,  // Controlled by the meta knob as it is
-        LINKED_LEFT,  // Controlled by the left side of the meta knob
-        LINKED_RIGHT, // Controlled by the right side of the meta knob
+    enum class LinkType : int {
+        NONE = 0,          // Not controlled by the meta knob
+        LINKED,            // Controlled by the meta knob as it is
+        LINKED_LEFT,       // Controlled by the left side of the meta knob
+        LINKED_RIGHT,      // Controlled by the right side of the meta knob
         LINKED_LEFT_RIGHT, // Controlled by both sides of the meta knob
         NUM_LINK_TYPES
     };
@@ -192,7 +192,7 @@ class EffectManifestParameter {
         return m_showInParametertSlot;
     }
     virtual void setShowInParameterSlot(double show) {
-        m_showInParametertSlot = show;
+        m_showInParametertSlot = show != 0;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
