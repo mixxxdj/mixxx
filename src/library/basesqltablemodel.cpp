@@ -737,7 +737,7 @@ CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     coverInfo.coverLocation =
             index.sibling(index.row(),
                          fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_SOURCE))
+                                         COLUMN_LIBRARYTABLE_COVERART_LOCATION))
                     .data()
                     .toString();
     coverInfo.trackLocation =
