@@ -766,7 +766,7 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
     }
 }
 
-BaseCoverArtDelegate* BaseSqlTableModel::doCreateCoverArtDelegate(
+CoverArtDelegate* BaseSqlTableModel::doCreateCoverArtDelegate(
         QTableView* pTableView) const {
     return new CoverArtDelegate(pTableView);
 }

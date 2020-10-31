@@ -1136,7 +1136,6 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/colordelegate.cpp",
-                   "src/library/basecoverartdelegate.cpp",
                    "src/library/coverartdelegate.cpp",
                    "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",

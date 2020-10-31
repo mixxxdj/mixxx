@@ -1,9 +1,9 @@
 #include "library/basetracktablemodel.h"
 
-#include "library/basecoverartdelegate.h"
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
 #include "library/coverartcache.h"
+#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
 #include "library/previewbuttondelegate.h"
@@ -381,14 +381,14 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         auto* pCoverArtDelegate =
                 doCreateCoverArtDelegate(pTableView);
-        // WLibraryTableView -> BaseCoverArtDelegate
+        // WLibraryTableView -> CoverArtDelegate
         connect(pTableView,
                 &WLibraryTableView::onlyCachedCoverArt,
                 pCoverArtDelegate,
-                &BaseCoverArtDelegate::slotInhibitLazyLoading);
-        // BaseCoverArtDelegate -> BaseTrackTableModel
+                &CoverArtDelegate::slotInhibitLazyLoading);
+        // CoverArtDelegate -> BaseTrackTableModel
         connect(pCoverArtDelegate,
-                &BaseCoverArtDelegate::rowsChanged,
+                &CoverArtDelegate::rowsChanged,
                 this,
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;

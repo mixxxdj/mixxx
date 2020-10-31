@@ -105,7 +105,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     void tracksChanged(QSet<TrackId> trackIds);
 
   private:
-    BaseCoverArtDelegate* doCreateCoverArtDelegate(
+    CoverArtDelegate* doCreateCoverArtDelegate(
             QTableView* pTableView) const final;
 
     void setTrackValueForColumn(
