@@ -276,7 +276,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
             }
         }
 
-        m_pSortColumn->set(trackModel->sortColumnIdFromColumnIndex(sortColumn));
+        m_pSortColumn->set(static_cast<int>(trackModel->sortColumnIdFromColumnIndex(sortColumn)));
         m_pSortOrder->set(sortOrder);
         applySorting();
     }
@@ -362,6 +362,14 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
                     TrackModel::Capability::AddToAutoDJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
     }
+}
+
+TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
+    TrackModel* trackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return TrackModel::SortColumnId::Invalid;
+    }
+    return trackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
 void WTrackTableView::assignPreviousTrackColor() {
@@ -940,7 +948,13 @@ void WTrackTableView::applySortingIfVisible() {
 void WTrackTableView::applySorting() {
     TrackModel* trackModel = getTrackModel();
     int sortColumnId = static_cast<int>(m_pSortColumn->get());
-    if (sortColumnId < 0 || sortColumnId >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::Invalid)) {
+        // During startup phase of Mixxx, this method is called with Invalid
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(
+            sortColumnId >= static_cast<int>(TrackModel::SortColumnId::IdMin) &&
+            sortColumnId < static_cast<int>(TrackModel::SortColumnId::IdMax)) {
         return;
     }
 
@@ -966,12 +980,12 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     TrackModel* trackModel = getTrackModel();
     TrackModel::SortColumnId sortColumnId = trackModel->sortColumnIdFromColumnIndex(headerSection);
 
-    if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+    if (sortColumnId == TrackModel::SortColumnId::Invalid) {
         return;
     }
 
-    if (sortColumnId != static_cast<int>(m_pSortColumn->get())) {
-        m_pSortColumn->set(sortColumnId);
+    if (static_cast<int>(sortColumnId) != static_cast<int>(m_pSortColumn->get())) {
+        m_pSortColumn->set(static_cast<int>(sortColumnId));
         sortingChanged = true;
     }
     if (sortOrder != m_pSortOrder->get()) {

@@ -641,6 +641,30 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Replace Auto DJ Queue with selected tracks"),
                libraryMenu, false, m_libraryStr);
     libraryMenu->addSeparator();
+    addControl("[Library]",
+            "search_history_next",
+            tr("Select next search history"),
+            tr("Selects the next search history entry"),
+            libraryMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "search_history_prev",
+            tr("Select previous search history"),
+            tr("Selects the previous search history entry"),
+            libraryMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "search_history_selector",
+            tr("Move selected search entry"),
+            tr("Moves the selected search history item into given direction "
+               "and steps"),
+            libraryMenu,
+            false,
+            m_libraryStr);
+
+    libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
                tr("Record Mix"),
                tr("Toggle mix recording"),

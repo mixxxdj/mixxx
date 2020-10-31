@@ -61,6 +61,7 @@
             <ObjectName>DeckRateSpacer</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Children/>
+            <!-- this is sized and styled in css -->
             <Connection>
               <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
               <Transform><Not/></Transform>

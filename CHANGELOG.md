@@ -87,6 +87,7 @@
 * Use 6 instead of only 4 compatible musical keys (major/minor) [#3205](https://github.com/mixxxdj/mixxx/pull/3205)
 * Fix possible memory corruption using JACK on Linux [#3160](https://github.com/mixxxdj/mixxx/pull/3160)
 * Fix possible crash when trying to refocus the tracks table while another Mixxx window has focus [#3201](https://github.com/mixxxdj/mixxx/pull/3201)
+* Fix touch control [lp:1895431](https://bugs.launchpad.net/mixxx/+bug/1895431)
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (2020-06-27)
 

@@ -57,7 +57,6 @@
                   <Label>
                     <ObjectName>FxUnitControllerInputIndicator</ObjectName>
                     <Size>2f,0min</Size>
-                    <!-- <Text> > </Text> -->
                     <Connection>
                       <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
                       <BindProperty>highlight</BindProperty>
@@ -155,11 +154,11 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/controls/knob_textless.xml">
-            <SetVariable name="Size">40f,34f</SetVariable>
+          <Template src="skin:/controls/knob.xml">
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="ObjectName">SuperKnob</SetVariable>
-            <SetVariable name="KnobBg">regular</SetVariable>
-            <SetVariable name="KnobIndicator">regular</SetVariable>
+            <SetVariable name="KnobBg">small</SetVariable>
+            <SetVariable name="KnobIndicator">small</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorSuper"/></SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
@@ -178,11 +177,11 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/controls/knob_textless.xml">
-            <SetVariable name="Size">40f,34f</SetVariable>
+          <Template src="skin:/controls/knob.xml">
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="ObjectName">DryWetKnob</SetVariable>
-            <SetVariable name="KnobBg">regular</SetVariable>
-            <SetVariable name="KnobIndicator">regular</SetVariable>
+            <SetVariable name="KnobBg">small</SetVariable>
+            <SetVariable name="KnobIndicator">small</SetVariable>
             <SetVariable name="KnobColor">red</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>

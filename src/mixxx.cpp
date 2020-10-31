@@ -211,7 +211,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
                 static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
-    setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
@@ -1491,26 +1490,6 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     }
     // standard event processing
     return QObject::eventFilter(obj, event);
-}
-
-bool MixxxMainWindow::event(QEvent* e) {
-    switch(e->type()) {
-    case QEvent::TouchBegin:
-    case QEvent::TouchUpdate:
-    case QEvent::TouchEnd:
-    {
-        // If the touch event falls through to the main widget, no touch widget
-        // was touched, so we resend it as a mouse event.
-        // We have to accept it here, so QApplication will continue to deliver
-        // the following events of this touch point as well.
-        QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
-        touchEvent->accept();
-        return true;
-    }
-    default:
-        break;
-    }
-    return QWidget::event(e);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
