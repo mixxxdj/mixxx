@@ -99,7 +99,6 @@ class MixxxMainWindow : public QMainWindow {
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
     bool eventFilter(QObject *obj, QEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
-    bool event(QEvent* e) override;
 
   private:
     void initialize(QApplication *app, const CmdlineArgs& args);
