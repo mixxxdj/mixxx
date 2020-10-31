@@ -405,16 +405,26 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
 }
 
 void LibraryControl::setLibraryFocus() {
-    if (m_pSidebarWidget) {
-        // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
-        m_pSidebarWidget->setFocus();
-        QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-        QApplication::sendEvent(m_pSidebarWidget, &event);
+    // TODO: Set the focus of the library panel directly instead of sending tab from sidebar
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+        return;
     }
+    // Try to focus the sidebar.
+    m_pSidebarWidget->setFocus();
+    // This may have failed, for example when a Cover window still has focus,
+    // so make sure the sidebar is focused or we'll crash.
+    if (!m_pSidebarWidget->hasFocus()) {
+        return;
+    }
+    // Send Tab to move focus to the Tracks table.
+    // Obviously only works as desired if the skin widgets are arranged
+    // accordingly.
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+    QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    if (m_pSidebarWidget == NULL) {
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
     if (v > 0) {
@@ -472,8 +482,8 @@ void LibraryControl::slotGoToItem(double v) {
             slotToggleSelectedSidebarItem(v);
         }
     }
-    // TODO(xxx) instead of remote control the widgets individual, we should 
-    // translate this into Alt+Return and handle it at each library widget 
+    // TODO(xxx) instead of remote control the widgets individual, we should
+    // translate this into Alt+Return and handle it at each library widget
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
     //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
