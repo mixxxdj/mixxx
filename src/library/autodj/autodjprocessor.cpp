@@ -829,6 +829,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
+    m_pAutoDJTableModel->select();
     bool randomQueueEnabled = m_pConfig->getValue<bool>(
             ConfigKey("[Auto DJ]", "EnableRandomQueue"));
     int minAutoDJCrateTracks = m_pConfig->getValueString(
