@@ -306,9 +306,9 @@ TraktorZ2.LibraryFocusHandler = function(field) {
     HIDDebug("TraktorZ2: LibraryFocusHandler");
     if (field.value) {
         if (TraktorZ2.shiftActive) {
-            engine.setValue("[Library]", "sort_column_toggle", -1);
+            engine.setValue("[Library]", "sort_column_toggle", 0);
         } else {
-            script.toggleControl("[Library]", "MoveFocus");
+            engine.setValue("[Library]", "MoveFocusForward", true);
         }
     }
 };
