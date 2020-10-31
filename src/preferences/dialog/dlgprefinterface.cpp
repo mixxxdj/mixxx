@@ -64,12 +64,13 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxLocale->model()->sort(0); // Sort languages list
     ComboBoxLocale->insertItem(0, "System", ""); // System default locale - insert at the top
 
-    //
     // Skin configurations
-    //
-    QString warningString = "<img src=\":/images/preferences/ic_preferences_warning.png\") width=16 height=16 />"
-        + tr("The minimum size of the selected skin is bigger than your screen resolution.");
-    warningLabel->setText(warningString);
+    QString sizeWarningString =
+            "<img src=\":/images/preferences/ic_preferences_warning.svg\") "
+            "width=16 height=16 />   " +
+            tr("The minimum size of the selected skin is bigger than your "
+               "screen resolution.");
+    warningLabel->setText(sizeWarningString);
 
     ComboBoxSkinconf->clear();
     // align left edge of preview image and skin description with comboboxes
@@ -103,7 +104,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
             // schemes must be updated here to populate the drop-down box and set m_colorScheme
             slotUpdateSchemes();
             skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
-            if (size_ok) {
+            if (checkSkinResolution(configuredSkinPath)) {
                 warningLabel->hide();
             } else {
                 warningLabel->show();
@@ -313,8 +314,13 @@ void DlgPrefInterface::slotSetSkin(int) {
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
-        checkSkinResolution(ComboBoxSkinconf->currentText())
-            ? warningLabel->hide() : warningLabel->show();
+
+        if (checkSkinResolution(m_pSkinLoader->getSkinPath(m_skin))) {
+            warningLabel->hide();
+        } else {
+            warningLabel->show();
+        }
+
         slotUpdateSchemes();
         slotSetSkinDescription(m_skin);
     }
