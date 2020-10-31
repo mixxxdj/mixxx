@@ -452,8 +452,8 @@ TraktorZ2.registerInputPackets = function() {
 
 
     this.controller.registerInputPacket(messageShort);
-    
-    
+
+
     var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
 
     this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1]", "mix", 0x0D, 0xFFFF, this.parameterHandler); // MACRO FX1 D/W
