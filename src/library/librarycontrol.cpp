@@ -554,10 +554,13 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     if (keyIsTab && !QApplication::focusWidget()){
         setLibraryFocus();
     }
+
     // Send the event pointer to the currently focused widget
     auto focusWidget = QApplication::focusWidget();
-    for (auto i = 0; i < event.count(); ++i) {
-        QApplication::sendEvent(focusWidget, &event);
+    if (focusWidget) {
+        for (auto i = 0; i < event.count(); ++i) {
+            QApplication::sendEvent(focusWidget, &event);
+        }
     }
 }
 
@@ -568,6 +571,7 @@ void LibraryControl::setLibraryFocus() {
     }
     // Try to focus the sidebar.
     m_pSidebarWidget->setFocus();
+
     // This may have failed, for example when a Cover window still has focus,
     // so make sure the sidebar is focused or we'll crash.
     if (!m_pSidebarWidget->hasFocus()) {
