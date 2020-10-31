@@ -1211,7 +1211,7 @@ if(APPLE)
 
   # Qt5::QCocoaIntegrationPlugin a plugin in Qt5Gui module, which is found as
   # dependency for Qt5Widgets by find_package(Qt5 COMPONENTS Widgets REQUIRED).
-  install_qt5_plugin(Qt5::QCocoaIntegrationPlugin QT_PLUGINS "${MACOS_BUNDLE_PREFIX}")
+  #install_qt5_plugin(Qt5::QCocoaIntegrationPlugin QT_PLUGINS "${MACOS_BUNDLE_PREFIX}")
 
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/qt.conf" "[Paths]\nPlugins = ${_qt_plugin_dir}\n")
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/qt.conf" DESTINATION "${MIXXX_INSTALL_DATADIR}")
