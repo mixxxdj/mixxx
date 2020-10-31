@@ -488,8 +488,8 @@
                               <Template src="skin:left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                                 <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
-                                <SetVariable name="MinimumSize">42,22</SetVariable>
-                                <SetVariable name="MaximumSize">42,22</SetVariable>
+                                <SetVariable name="MinimumSize">46,22</SetVariable>
+                                <SetVariable name="MaximumSize">46,22</SetVariable>
                                 <SetVariable name="SizePolicy">f,f</SetVariable>
                                 <SetVariable name="state_0_text">Match</SetVariable>
                                 <SetVariable name="state_0_pressed"></SetVariable>
