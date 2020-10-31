@@ -39,7 +39,6 @@ class ClementineFeature : public BaseExternalLibraryFeature {
     ClementineDbConnection m_connection;
 
     QSqlDatabase m_database;
-    bool m_isActivated;
     QString m_dbfile;
 
     QFutureWatcher<TreeItem*> m_future_watcher;

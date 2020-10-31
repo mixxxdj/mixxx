@@ -19,7 +19,6 @@ ClementineFeature::ClementineFeature(Library* pLibrary, UserSettingsPointer pCon
     m_connection.setTrackCollection(m_pLibrary->trackCollections());
     m_pClementinePlaylistModel = new ClementinePlaylistModel(
             this, m_pLibrary->trackCollections(), &m_connection);
-    m_isActivated = false;
     m_title = tr("Clementine");
 }
 
@@ -50,48 +49,43 @@ QIcon ClementineFeature::getIcon() {
 void ClementineFeature::activate() {
     qDebug("ClementineFeature::activate()");
 
-    if (!m_isActivated) {
-        if (!QFile::exists(m_databaseFile)) {
-            // Fall back to default
-            m_databaseFile = ClementineDbConnection::getDatabaseFile();
-        }
-
-        if (!QFile::exists(m_databaseFile)) {
-            QMessageBox::warning(
-                    nullptr,
-                    tr("Error loading Clementine database"),
-                    tr("Clementine database file not found at\n") +
-                            m_databaseFile);
-            qDebug() << m_databaseFile << "does not exist";
-        }
-
-        if (!m_connection.open(m_databaseFile)) {
-            QMessageBox::warning(
-                    nullptr,
-                    tr("Error loading Clementine database"),
-                    tr("There was an error loading your Clementine database at\n") +
-                            m_databaseFile);
-            return;
-        }
-
-        std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
-        QList<ClementineDbConnection::Playlist> playlists = m_connection.getPlaylists();
-        for (const ClementineDbConnection::Playlist& playlist : playlists) {
-            qDebug() << playlist.name;
-            // append the playlist to the child model
-            pRootItem->appendChild(playlist.name, playlist.playlistId);
-        }
-
-        m_childModel.setRootItem(std::move(pRootItem));
-
-        activate();
-
-        qDebug() << "Clementine library loaded: success";
-
-        //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
-        m_title = tr("Clementine");
-        emit(featureLoadingFinished(this));
+    if (!QFile::exists(m_databaseFile)) {
+        // Fall back to default
+        m_databaseFile = ClementineDbConnection::getDatabaseFile();
     }
+
+    if (!QFile::exists(m_databaseFile)) {
+        QMessageBox::warning(
+                nullptr,
+                tr("Error loading Clementine database"),
+                tr("Clementine database file not found at\n") +
+                        m_databaseFile);
+        qDebug() << m_databaseFile << "does not exist";
+    }
+
+    if (!m_connection.open(m_databaseFile)) {
+        QMessageBox::warning(
+                nullptr,
+                tr("Error loading Clementine database"),
+                tr("There was an error loading your Clementine database at\n") +
+                        m_databaseFile);
+        return;
+    }
+
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
+    QList<ClementineDbConnection::Playlist> playlists = m_connection.getPlaylists();
+    for (const ClementineDbConnection::Playlist& playlist : playlists) {
+        qDebug() << playlist.name;
+        // append the playlist to the child model
+        pRootItem->appendChild(playlist.name, playlist.playlistId);
+    }
+
+    m_childModel.setRootItem(std::move(pRootItem));
+    qDebug() << "Clementine library loaded: success";
+
+    //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+    m_title = tr("Clementine");
+    emit(featureLoadingFinished(this));
 
     m_pClementinePlaylistModel->setTableModel(0); // Gets the master playlist
     emit(showTrackModel(m_pClementinePlaylistModel));
