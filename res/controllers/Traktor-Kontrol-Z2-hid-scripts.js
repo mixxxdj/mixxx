@@ -60,7 +60,7 @@ TraktorZ2.fxOnClickHandler = function(field) {
         }
     }
 
-    if (field.value == 1) {
+    if (field.value !== 0) {
         if (numOfLoadedandEnabledEffects === 0) {
             for (effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effects"); effectIdx++) {
                 if (engine.getValue(field.group.substr(0, field.group.length-1) + "_Effect" + effectIdx + "]", "loaded") === 1) {
@@ -74,7 +74,7 @@ TraktorZ2.fxOnClickHandler = function(field) {
     }
 };
 
-TraktorZ2.fxOnLedHandler = function(field) {
+TraktorZ2.fxOnLedHandler = function() {
     HIDDebug("TraktorZ2: fxOnLedHandler");
     for (var macroFxUnitIdx = 1; macroFxUnitIdx <= 2; macroFxUnitIdx++) {
         var numOfLoadedButDisabledEffects = 0;
@@ -115,7 +115,7 @@ TraktorZ2.Deck = function(deckNumber, group) {
     this.loopKnobEncoderState = 0;
 };
 
-TraktorZ2.Deck.prototype.registerInputs = function(messageShort, messageLong) {
+TraktorZ2.Deck.prototype.registerInputs = function(messageShort) {
     HIDDebug("TraktorZ2: Deck.prototype.registerInputs");
     var deckFn = TraktorZ2.Deck.prototype;
 
@@ -406,12 +406,11 @@ TraktorZ2.traktorbuttonHandler = function(field) {
 
 TraktorZ2.registerInputPackets = function() {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
-    var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
 
     HIDDebug("TraktorZ2: registerInputPackets");
     for (var idx in TraktorZ2.Decks) {
         var deck = TraktorZ2.Decks[idx];
-        deck.registerInputs(messageShort, messageLong);
+        deck.registerInputs(messageShort);
     }
 
     this.registerInputButton(messageShort, "[Channel1]", "switchDeck", 0x06, 0x02, this.deckSwitchHandler);
@@ -453,6 +452,9 @@ TraktorZ2.registerInputPackets = function() {
 
 
     this.controller.registerInputPacket(messageShort);
+    
+    
+    var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
 
     this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1]", "mix", 0x0D, 0xFFFF, this.parameterHandler); // MACRO FX1 D/W
     this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1]", "super1", 0x0F, 0xFFFF, this.parameterHandler); // MACRO FX1 FX
@@ -809,7 +811,7 @@ TraktorZ2.hotcueOutputHandler = function() {
     }
 };
 
-TraktorZ2.beatOutputHandler = function(value, group, key) {
+TraktorZ2.beatOutputHandler = function(value, group) {
     if (value === 1) {
         for (var timerIdx = 1; timerIdx <= 2; timerIdx++) {
             if (TraktorZ2.chTimer[group][timerIdx] !== -1) {
@@ -905,8 +907,8 @@ TraktorZ2.displayLoopCount = function(group) {
     } else {
         // Beat integer
         beatloopSizeRemainder = beatloopSize;
-        for (var digit in led3DigitModulus) {
-            var leastSignificiantDigit = (beatloopSizeRemainder % 10);
+        for ( digit in led3DigitModulus) {
+            leastSignificiantDigit = (beatloopSizeRemainder % 10);
             beatloopSizeRemainder = beatloopSizeRemainder - leastSignificiantDigit;
             //HIDDebug(leastSignificiantDigit + " " + beatloopSizeRemainder + " " + group + " " + digit);
             if ((digit === "[Digit1]" && beatloopSize < 100) || (digit === "[Digit2]" && beatloopSize < 10)) {
