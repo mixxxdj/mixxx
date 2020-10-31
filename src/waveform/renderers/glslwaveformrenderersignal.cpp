@@ -365,7 +365,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
                             1.0));
             m_frameShaderProgram->setUniformValue("midColor",
                     QVector4D(static_cast<GLfloat>(m_rgbMidColor_r),
-                            static_cast<GLfloat>(m_rgbMidColor_r),
+                            static_cast<GLfloat>(m_rgbMidColor_g),
                             static_cast<GLfloat>(m_rgbMidColor_b),
                             1.0));
             m_frameShaderProgram->setUniformValue("highColor",
