@@ -17,13 +17,13 @@ class MixxxApplication : public QApplication {
 #endif
 #endif
 
+    bool notify(QObject*, QEvent*) override;
+
   private:
     bool touchIsRightButton();
     void registerMetaTypes();
 
-    int m_fakeMouseSourcePointId;
-    QWidget* m_fakeMouseWidget;
-    enum Qt::MouseButton m_activeTouchButton;
+    int m_rightPressedButtons;
     ControlProxy* m_pTouchShift;
 
 };
