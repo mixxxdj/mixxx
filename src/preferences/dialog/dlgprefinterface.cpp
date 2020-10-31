@@ -88,15 +88,9 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     }
 
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
-    QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
     int index = 0;
     for (const QFileInfo& skinInfo : skins) {
-        bool size_ok = checkSkinResolution(skinInfo.absoluteFilePath());
-        if (size_ok) {
-            ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
-        } else {
-            ComboBoxSkinconf->insertItem(index, sizeWarningIcon, skinInfo.fileName());
-        }
+        ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
 
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             m_skin = skinInfo.fileName();
