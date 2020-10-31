@@ -726,16 +726,16 @@ MC7000.sortLibrary = function(channel, control, value) {
     var sortColumn;
     switch (control) {
     case 0x12:  // TITLE
-        sortColumn = 1;
+        sortColumn = 2;
         break;
     case 0x13:  // BPM
-        sortColumn = 14;
+        sortColumn = 15;
         break;
     case 0x14:  // ARTIST
-        sortColumn = 0;
+        sortColumn = 1;
         break;
     case 0x20:  // KEY
-        sortColumn = 19;
+        sortColumn = 20;
         break;
     }
     engine.setValue("[Library]", "sort_column_toggle", sortColumn);

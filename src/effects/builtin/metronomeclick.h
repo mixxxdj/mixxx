@@ -5,7 +5,7 @@
 // This is a new recording from a real metronome
 // it was converted from *.wav to plain text using Audacity
 
-const unsigned int kClickSize44100 = 1024;
+const SINT kClickSize44100 = 1024;
 const CSAMPLE kClick44100[kClickSize44100] = {
         0.03459f,
         0.09436f,

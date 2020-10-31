@@ -554,25 +554,38 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     if (keyIsTab && !QApplication::focusWidget()){
         setLibraryFocus();
     }
+
     // Send the event pointer to the currently focused widget
     auto focusWidget = QApplication::focusWidget();
-    for (auto i = 0; i < event.count(); ++i) {
-        QApplication::sendEvent(focusWidget, &event);
+    if (focusWidget) {
+        for (auto i = 0; i < event.count(); ++i) {
+            QApplication::sendEvent(focusWidget, &event);
+        }
     }
 }
 
 void LibraryControl::setLibraryFocus() {
-    // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
+    // TODO: Set the focus of the library panel directly instead of sending tab from sidebar
     VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
+    // Try to focus the sidebar.
     m_pSidebarWidget->setFocus();
+
+    // This may have failed, for example when a Cover window still has focus,
+    // so make sure the sidebar is focused or we'll crash.
+    if (!m_pSidebarWidget->hasFocus()) {
+        return;
+    }
+    // Send Tab to move focus to the Tracks table.
+    // Obviously only works as desired if the skin widgets are arranged
+    // accordingly.
     QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
     QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    if (m_pSidebarWidget == NULL) {
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
     if (v > 0) {
@@ -643,6 +656,13 @@ void LibraryControl::slotGoToItem(double v) {
     // Clear the search if the searchbox has focus
     emit clearSearchIfClearButtonHasFocus();
 
+    // If the focused window is a dialog, press Enter
+    auto focusWindow = QApplication::focusWindow();
+    if (focusWindow && (focusWindow->type() & (Qt::Dialog | Qt::Popup))) {
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+        QApplication::sendEvent(focusWindow, &event);
+    }
+
     // TODO(xxx) instead of remote control the widgets individual, we should
     // translate this into Alt+Return and handle it at each library widget
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
@@ -654,12 +674,22 @@ void LibraryControl::slotSortColumn(double v) {
 }
 
 void LibraryControl::slotSortColumnToggle(double v) {
-    int column = static_cast<int>(v);
-    if (static_cast<int>(m_pSortColumn->get()) == column) {
-        m_pSortOrder->set(!m_pSortOrder->get());
+    int sortColumnId = static_cast<int>(v);
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::CurrentIndex)) {
+        if (!m_pLibraryWidget) {
+            return;
+        }
+        // Get the ID of the column with the cursor
+        sortColumnId =
+                static_cast<int>(m_pLibraryWidget->getActiveView()
+                                         ->getColumnIdFromCurrentIndex());
+    }
+
+    if (static_cast<int>(m_pSortColumn->get()) == sortColumnId) {
+        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
     } else {
-        m_pSortColumn->set(v);
-        m_pSortOrder->set(0);
+        m_pSortColumn->set(sortColumnId);
+        m_pSortOrder->set(0.0);
     }
 }
 

@@ -90,7 +90,7 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& bufferParame
 BalanceGroupState::~BalanceGroupState() {
 }
 
-void BalanceGroupState::setFilters(int sampleRate, int freq) {
+void BalanceGroupState::setFilters(int sampleRate, double freq) {
     m_low->setFrequencyCorners(sampleRate, freq);
     m_high->setFrequencyCorners(sampleRate, freq);
 }
@@ -116,8 +116,8 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN balance = 0;
     CSAMPLE_GAIN midSide = 0;
     if (enableState != EffectEnableState::Disabling) {
-        balance = static_cast<decltype(balance)>(m_pBalanceParameter->value());
-        midSide = static_cast<decltype(midSide)>(m_pMidSideParameter->value());
+        balance = static_cast<CSAMPLE_GAIN>(m_pBalanceParameter->value());
+        midSide = static_cast<CSAMPLE_GAIN>(m_pMidSideParameter->value());
     }
 
     CSAMPLE_GAIN balanceDelta = (balance - pGroupState->m_oldBalance)
@@ -128,10 +128,10 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN balanceStart = pGroupState->m_oldBalance + balanceDelta;
     CSAMPLE_GAIN midSideStart = pGroupState->m_oldMidSide + midSideDelta;
 
-    int freq = pGroupState->m_freq;
+    double freq = pGroupState->m_freq;
     if (pGroupState->m_oldSampleRate != bufferParameters.sampleRate() ||
-            (freq != static_cast<int>(m_pBypassFreqParameter->value()))) {
-        freq = static_cast<int>(m_pBypassFreqParameter->value());
+            (freq != m_pBypassFreqParameter->value())) {
+        freq = m_pBypassFreqParameter->value();
         pGroupState->m_oldSampleRate = bufferParameters.sampleRate();
         pGroupState->setFilters(bufferParameters.sampleRate(), pGroupState->m_freq);
     }
