@@ -907,7 +907,7 @@ TraktorZ2.displayLoopCount = function(group) {
     } else {
         // Beat integer
         beatloopSizeRemainder = beatloopSize;
-        for ( digit in led3DigitModulus) {
+        for (digit in led3DigitModulus) {
             leastSignificiantDigit = (beatloopSizeRemainder % 10);
             beatloopSizeRemainder = beatloopSizeRemainder - leastSignificiantDigit;
             //HIDDebug(leastSignificiantDigit + " " + beatloopSizeRemainder + " " + group + " " + digit);
