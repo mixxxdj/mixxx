@@ -140,7 +140,7 @@ class IndexRange final: private std::pair<SINT, SINT> {
     // the length of this range.
     IndexRange splitAndShrinkBack(SINT backLength);
 
-    bool isPartOf(IndexRange outerIndexRange) const;
+    bool isSubrangeOf(IndexRange outerIndexRange) const;
 
     friend
     bool operator==(IndexRange lhs, IndexRange rhs) {

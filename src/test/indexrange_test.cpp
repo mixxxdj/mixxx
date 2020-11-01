@@ -170,22 +170,22 @@ TEST_F(IndexRangeTest, equal) {
     EXPECT_TRUE(IndexRange::between(0, 0) != IndexRange::between(1, 1));
 }
 
-TEST_F(IndexRangeTest, isPartOf) {
-    EXPECT_FALSE(IndexRange::between(3, 3).isPartOf(IndexRange::between(-2, 2)));
-    EXPECT_TRUE(IndexRange::between(0, 0).isPartOf(IndexRange::between(2, -1)));
-    EXPECT_TRUE(IndexRange::between(2, 2).isPartOf(IndexRange::between(2, -1)));
-    EXPECT_FALSE(IndexRange::between(-2, -2).isPartOf(IndexRange::between(2, -1)));
-    EXPECT_TRUE(IndexRange::between(-2, 1).isPartOf(IndexRange::between(-2, 2)));
-    EXPECT_TRUE(IndexRange::between(1, -2).isPartOf(IndexRange::between(2, -2)));
-    EXPECT_FALSE(IndexRange::between(-2, 1).isPartOf(IndexRange::between(-1, 2)));
-    EXPECT_FALSE(IndexRange::between(1, -2).isPartOf(IndexRange::between(2, -1)));
-    EXPECT_FALSE(IndexRange::between(-2, 1).isPartOf(IndexRange::between(0, 1)));
-    EXPECT_FALSE(IndexRange::between(-2, 1).isPartOf(IndexRange::between(1, 2)));
-    EXPECT_FALSE(IndexRange::between(-2, 1).isPartOf(IndexRange::between(1, 1)));
-    EXPECT_FALSE(IndexRange::between(3, 3).isPartOf(IndexRange::between(-2, 1)));
-    EXPECT_FALSE(IndexRange::between(3, 3).isPartOf(IndexRange::between(1, -2)));
-    EXPECT_TRUE(IndexRange::between(1, 1).isPartOf(IndexRange::between(-2, 1)));
-    EXPECT_TRUE(IndexRange::between(1, 1).isPartOf(IndexRange::between(1, -2)));
+TEST_F(IndexRangeTest, isSubrangeOf) {
+    EXPECT_FALSE(IndexRange::between(3, 3).isSubrangeOf(IndexRange::between(-2, 2)));
+    EXPECT_TRUE(IndexRange::between(0, 0).isSubrangeOf(IndexRange::between(2, -1)));
+    EXPECT_TRUE(IndexRange::between(2, 2).isSubrangeOf(IndexRange::between(2, -1)));
+    EXPECT_FALSE(IndexRange::between(-2, -2).isSubrangeOf(IndexRange::between(2, -1)));
+    EXPECT_TRUE(IndexRange::between(-2, 1).isSubrangeOf(IndexRange::between(-2, 2)));
+    EXPECT_TRUE(IndexRange::between(1, -2).isSubrangeOf(IndexRange::between(2, -2)));
+    EXPECT_FALSE(IndexRange::between(-2, 1).isSubrangeOf(IndexRange::between(-1, 2)));
+    EXPECT_FALSE(IndexRange::between(1, -2).isSubrangeOf(IndexRange::between(2, -1)));
+    EXPECT_FALSE(IndexRange::between(-2, 1).isSubrangeOf(IndexRange::between(0, 1)));
+    EXPECT_FALSE(IndexRange::between(-2, 1).isSubrangeOf(IndexRange::between(1, 2)));
+    EXPECT_FALSE(IndexRange::between(-2, 1).isSubrangeOf(IndexRange::between(1, 1)));
+    EXPECT_FALSE(IndexRange::between(3, 3).isSubrangeOf(IndexRange::between(-2, 1)));
+    EXPECT_FALSE(IndexRange::between(3, 3).isSubrangeOf(IndexRange::between(1, -2)));
+    EXPECT_TRUE(IndexRange::between(1, 1).isSubrangeOf(IndexRange::between(-2, 1)));
+    EXPECT_TRUE(IndexRange::between(1, 1).isSubrangeOf(IndexRange::between(1, -2)));
 }
 
 TEST_F(IndexRangeTest, intersect2) {

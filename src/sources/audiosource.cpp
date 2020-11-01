@@ -201,7 +201,7 @@ bool AudioSource::verifyReadable() {
             frameIndexRange().splitAndShrinkFront(numSampleFrames),
             SampleBuffer::WritableSlice(sampleBuffer));
     auto readableSampleFrames = readSampleFrames(writableSampleFrames);
-    DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isPartOf(
+    DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(
             writableSampleFrames.frameIndexRange()));
     if (readableSampleFrames.frameIndexRange().length() <
             writableSampleFrames.frameIndexRange().length()) {
@@ -293,7 +293,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
         // forward clamped request
         ReadableSampleFrames readable = readSampleFramesClamped(writable);
         DEBUG_ASSERT(readable.frameIndexRange().empty() ||
-                readable.frameIndexRange().isPartOf(writable.frameIndexRange()));
+                readable.frameIndexRange().isSubrangeOf(writable.frameIndexRange()));
         if (readable.frameIndexRange() != writable.frameIndexRange()) {
             kLogger.warning()
                     << "Failed to read sample frames:"
@@ -322,7 +322,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
                             readable.frameIndexRange().end());
                 }
             }
-            DEBUG_ASSERT(shrinkedFrameIndexRange.isPartOf(m_frameIndexRange) &&
+            DEBUG_ASSERT(shrinkedFrameIndexRange.isSubrangeOf(m_frameIndexRange) &&
                     shrinkedFrameIndexRange.length() < m_frameIndexRange.length());
             kLogger.info()
                     << "Shrinking readable frame index range:"
@@ -342,7 +342,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
 
 void AudioSource::adjustFrameIndexRange(
         IndexRange frameIndexRange) {
-    DEBUG_ASSERT(frameIndexRange.isPartOf(m_frameIndexRange));
+    DEBUG_ASSERT(frameIndexRange.isSubrangeOf(m_frameIndexRange));
     m_frameIndexRange = frameIndexRange;
 }
 

@@ -42,7 +42,7 @@ IndexRange IndexRange::splitAndShrinkBack(SINT backLength) {
     }
 }
 
-bool IndexRange::isPartOf(IndexRange outerIndexRange) const {
+bool IndexRange::isSubrangeOf(IndexRange outerIndexRange) const {
     if (outerIndexRange.start() <= outerIndexRange.end()) {
         if (start() <= end()) {
             return (outerIndexRange.start() <= start() &&
