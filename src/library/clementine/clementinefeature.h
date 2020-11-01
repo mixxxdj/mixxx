@@ -31,21 +31,14 @@ class ClementineFeature : public BaseExternalLibraryFeature {
   private:
     void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) override;
 
-    ClementinePlaylistModel* m_pClementinePlaylistModel;
+    //a new DB connection for the worker thread
+    std::shared_ptr<ClementineDbConnection> m_connection;
+
+    parented_ptr<ClementinePlaylistModel> m_pClementinePlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
 
-    //a new DB connection for the worker thread
-    ClementineDbConnection m_connection;
-
-    QSqlDatabase m_database;
-    QString m_dbfile;
-
-    QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
-    bool m_cancelImport;
     QIcon m_icon;
-
-    QString m_databaseFile;
 };

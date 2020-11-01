@@ -11,20 +11,19 @@
 #include "util/performancetimer.h"
 
 namespace {
-constexpr int clementineUndefBpm = -1;      // clementine saves undefined bpm as -1
-constexpr int clementineUndefDuration = -1; // clementine saves undefined duration as -1
+constexpr int kClementineUndefinedBpm = -1;      // clementine saves undefined bpm as -1
+constexpr int kClementineUndefinedDuration = -1; // clementine saves undefined duration as -1
 } // namespace
 
-ClementineDbConnection::ClementineDbConnection() {
+ClementineDbConnection::ClementineDbConnection(const TrackCollectionManager* pTrackCollection):
+    m_database(),
+    m_pTrackCollectionManager(pTrackCollection)
+{
 }
 
 ClementineDbConnection::~ClementineDbConnection() {
     qDebug() << "Close Clementine database";
     m_database.close();
-}
-
-void ClementineDbConnection::setTrackCollection(TrackCollectionManager* pTrackCollection) {
-    m_pTrackCollectionManager = pTrackCollection;
 }
 
 bool ClementineDbConnection::open(const QString& databaseFile) {
@@ -44,9 +43,9 @@ bool ClementineDbConnection::open(const QString& databaseFile) {
     }
 }
 
-QList<struct ClementineDbConnection::Playlist> ClementineDbConnection::getPlaylists() {
-    QList<struct ClementineDbConnection::Playlist> list;
-    struct ClementineDbConnection::Playlist playlist;
+QList<ClementinePlaylist> ClementineDbConnection::getPlaylists() const{
+    QList<ClementinePlaylist> list;
+    ClementinePlaylist playlist;
 
     QSqlQuery query(m_database);
     query.prepare("SELECT ROWID, playlists.name FROM playlists ORDER BY playlists.name");
@@ -63,13 +62,13 @@ QList<struct ClementineDbConnection::Playlist> ClementineDbConnection::getPlayli
     return list;
 }
 
-QList<struct ClementineDbConnection::PlaylistEntry>
-ClementineDbConnection::getPlaylistEntries(int playlistId) {
+QList<ClementinePlaylistEntry>
+ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     PerformanceTimer time;
     time.start();
 
-    QList<struct ClementineDbConnection::PlaylistEntry> list;
-    struct ClementineDbConnection::PlaylistEntry entry;
+    QList<ClementinePlaylistEntry> list;
+    ClementinePlaylistEntry entry;
 
     QSqlQuery query(m_database);
     query.setForwardOnly(true); // Saves about 50% time
@@ -85,7 +84,6 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
             "playlist_items.rating, "   // 7
             "playlist_items.genre, "    // 8
             "playlist_items.track, "    // 9
-            //"playlist_items.DateAddedStamp, "   //
             "playlist_items.bpm, "        // 10
             "playlist_items.bitrate, "    // 11
             "playlist_items.comment, "    // 12
@@ -139,10 +137,10 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
                     QObject::tr("");
             entry.title = location.split(QDir::separator()).last();
         }
-        if (entry.bpm == clementineUndefBpm) {
+        if (entry.bpm == kClementineUndefinedBpm) {
             entry.bpm = 0;
         }
-        if (duration == clementineUndefDuration) {
+        if (duration == kClementineUndefinedDuration) {
             entry.duration = 0;
         } else {
             entry.duration = int(duration / 1000000000);
@@ -164,7 +162,7 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) {
 }
 
 // static
-QString ClementineDbConnection::getDatabaseFile() {
+QString ClementineDbConnection::getDatabaseFile(){
     QString dbfile;
 
     QSettings ini(QSettings::IniFormat, QSettings::UserScope, "Clementine", "Clementine");

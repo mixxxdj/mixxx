@@ -11,8 +11,8 @@ class ClementinePlaylistModel : public BaseSqlTableModel {
   public:
     ClementinePlaylistModel(QObject* pParent,
             TrackCollectionManager* pTrackCollectionManager,
-            ClementineDbConnection* pConnection);
-    ~ClementinePlaylistModel() = default;
+            std::shared_ptr<ClementineDbConnection> pConnection);
+    ~ClementinePlaylistModel() override = default;
 
     void setTableModel(int playlistId);
 
@@ -31,6 +31,6 @@ class ClementinePlaylistModel : public BaseSqlTableModel {
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
     QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
 
-    ClementineDbConnection* m_pConnection;
+    std::shared_ptr<ClementineDbConnection> m_pConnection;
     int m_playlistId;
 };

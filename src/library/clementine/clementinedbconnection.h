@@ -3,49 +3,47 @@
 #include <QSqlDatabase>
 #include <QUrl>
 
-//#include "library/trackmodel.h"
 //Forward declare
 class TrackCollectionManager;
 
+struct ClementinePlaylist {
+    QString playlistId;
+    QString name;
+};
+
+struct ClementinePlaylistEntry {
+    int trackId;
+    QString title;
+    QUrl uri;
+    int duration;
+    int year;
+    int rating;
+    QString genre;
+    QString grouping;
+    int tracknumber;
+    int dateadded;
+    double bpm;
+    int bitrate;
+    QString comment;
+    int playcount;
+    QString composer;
+    QString artist;
+    QString album;
+    QString albumartist;
+};
+
 class ClementineDbConnection {
   public:
-    struct Playlist {
-        QString playlistId;
-        QString name;
-    };
-
-    struct PlaylistEntry {
-        int trackId;
-        QString title;
-        QUrl uri;
-        int duration;
-        int year;
-        int rating;
-        QString genre;
-        QString grouping;
-        int tracknumber;
-        int dateadded;
-        double bpm;
-        int bitrate;
-        QString comment;
-        int playcount;
-        QString composer;
-        QString artist;
-        QString album;
-        QString albumartist;
-    };
-
-    ClementineDbConnection();
+    ClementineDbConnection(const TrackCollectionManager* pTrackCollection);
     ~ClementineDbConnection();
-    void setTrackCollection(TrackCollectionManager* pTrackCollection);
 
     static QString getDatabaseFile();
 
     bool open(const QString& databaseFile);
-    QList<struct Playlist> getPlaylists();
-    QList<struct PlaylistEntry> getPlaylistEntries(int playlistId);
+    QList<ClementinePlaylist> getPlaylists() const;
+    QList<ClementinePlaylistEntry> getPlaylistEntries(int playlistId) const;
 
   private:
     QSqlDatabase m_database;
-    TrackCollectionManager* m_pTrackCollectionManager;
+    const TrackCollectionManager* m_pTrackCollectionManager;
 };

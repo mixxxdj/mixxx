@@ -35,7 +35,7 @@
 
 ClementinePlaylistModel::ClementinePlaylistModel(QObject* pParent,
         TrackCollectionManager* pTrackCollectionManager,
-        ClementineDbConnection* pConnection)
+        std::shared_ptr<ClementineDbConnection> pConnection)
         : BaseSqlTableModel(pParent,
                   pTrackCollectionManager,
                   "mixxx.db.model.Clementine_playlist"),
@@ -50,6 +50,10 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
         return;
     }
 
+    if (playlistId < 0) {
+        return;
+    }
+
     if (m_playlistId >= 0) {
         // Clear old playlist
         m_playlistId = -1;
@@ -60,78 +64,71 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
         }
     }
 
-    if (playlistId >= 0) {
-        // setup new playlist
-        m_playlistId = playlistId;
+    // setup new playlist
+    m_playlistId = playlistId;
 
-        QSqlQuery query(m_database);
-        QString strQuery(
-                "CREATE TEMP TABLE IF NOT EXISTS " Clementine_TABLE
-                " (" CLM_VIEW_ORDER " INTEGER, " CLM_ARTIST " TEXT, " CLM_TITLE
-                " TEXT, " CLM_DURATION " INTEGER, " CLM_URI " TEXT, " CLM_ALBUM
-                " TEXT, " CLM_ALBUM_ARTIST " TEXT, " CLM_YEAR
-                " INTEGER, " CLM_RATING " INTEGER, " CLM_GENRE
-                " TEXT, " CLM_GROUPING " TEXT, " CLM_TRACKNUMBER " INTEGER, "
-                //CLM_DATEADDED " INTEGER, "
-                CLM_BPM " INTEGER, " CLM_BITRATE " INTEGER, " CLM_COMMENT
-                " TEXT, " CLM_PLAYCOUNT " INTEGER, " CLM_COMPOSER
-                " TEXT, " CLM_PREVIEW " TEXT)");
-        if (!query.exec(strQuery)) {
-            LOG_FAILED_QUERY(query);
-        }
+    QSqlQuery query(m_database);
+    QString strQuery(
+            "CREATE TEMP TABLE IF NOT EXISTS " Clementine_TABLE
+            " (" CLM_VIEW_ORDER " INTEGER, " CLM_ARTIST " TEXT, " CLM_TITLE
+            " TEXT, " CLM_DURATION " INTEGER, " CLM_URI " TEXT, " CLM_ALBUM
+            " TEXT, " CLM_ALBUM_ARTIST " TEXT, " CLM_YEAR
+            " INTEGER, " CLM_RATING " INTEGER, " CLM_GENRE
+            " TEXT, " CLM_GROUPING " TEXT, " CLM_TRACKNUMBER " INTEGER, "
+            CLM_BPM " INTEGER, " CLM_BITRATE " INTEGER, " CLM_COMMENT
+            " TEXT, " CLM_PLAYCOUNT " INTEGER, " CLM_COMPOSER
+            " TEXT, " CLM_PREVIEW " TEXT)");
+    if (!query.exec(strQuery)) {
+        LOG_FAILED_QUERY(query);
+    }
 
-        query.prepare(
-                "INSERT INTO " Clementine_TABLE " (" CLM_VIEW_ORDER
-                ", " CLM_ARTIST ", " CLM_TITLE ", " CLM_DURATION ", " CLM_URI
-                ", " CLM_ALBUM ", " CLM_ALBUM_ARTIST ", " CLM_YEAR
-                ", " CLM_RATING ", " CLM_GENRE ", " CLM_GROUPING
-                ", " CLM_TRACKNUMBER ", "
-                //CLM_DATEADDED ", "
-                CLM_BPM ", " CLM_BITRATE ", " CLM_COMMENT ", " CLM_PLAYCOUNT
-                ", " CLM_COMPOSER
-                ") "
-                "VALUES (:" CLM_VIEW_ORDER ", :" CLM_ARTIST ", :" CLM_TITLE
-                ", :" CLM_DURATION ", :" CLM_URI ", :" CLM_ALBUM
-                ", :" CLM_ALBUM_ARTIST ", :" CLM_YEAR ", :" CLM_RATING
-                ", :" CLM_GENRE ", :" CLM_GROUPING ", :" CLM_TRACKNUMBER ", :"
-                //CLM_DATEADDED ", :"
-                CLM_BPM ", :" CLM_BITRATE ", :" CLM_COMMENT ", :" CLM_PLAYCOUNT
-                ", :" CLM_COMPOSER ") ");
+    query.prepare(
+            "INSERT INTO " Clementine_TABLE " (" CLM_VIEW_ORDER
+            ", " CLM_ARTIST ", " CLM_TITLE ", " CLM_DURATION ", " CLM_URI
+            ", " CLM_ALBUM ", " CLM_ALBUM_ARTIST ", " CLM_YEAR
+            ", " CLM_RATING ", " CLM_GENRE ", " CLM_GROUPING
+            ", " CLM_TRACKNUMBER ", "
+            CLM_BPM ", " CLM_BITRATE ", " CLM_COMMENT ", " CLM_PLAYCOUNT
+            ", " CLM_COMPOSER
+            ") "
+            "VALUES (:" CLM_VIEW_ORDER ", :" CLM_ARTIST ", :" CLM_TITLE
+            ", :" CLM_DURATION ", :" CLM_URI ", :" CLM_ALBUM
+            ", :" CLM_ALBUM_ARTIST ", :" CLM_YEAR ", :" CLM_RATING
+            ", :" CLM_GENRE ", :" CLM_GROUPING ", :" CLM_TRACKNUMBER ", :"
+            CLM_BPM ", :" CLM_BITRATE ", :" CLM_COMMENT ", :" CLM_PLAYCOUNT
+            ", :" CLM_COMPOSER ") ");
 
-        QList<struct ClementineDbConnection::PlaylistEntry> list =
-                m_pConnection->getPlaylistEntries(playlistId);
+    QList<ClementinePlaylistEntry> entrysList =
+            m_pConnection->getPlaylistEntries(playlistId);
 
-        if (!list.isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, list.size() - 1);
-            int i = 1;
-            foreach (struct ClementineDbConnection::PlaylistEntry entry, list) {
-                query.bindValue(":" CLM_VIEW_ORDER, i++);
-                query.bindValue(":" CLM_ARTIST, entry.artist);
-                query.bindValue(":" CLM_TITLE, entry.title);
-                query.bindValue(":" CLM_DURATION, entry.duration);
-                query.bindValue(":" CLM_URI, entry.uri);
-                query.bindValue(":" CLM_ALBUM, entry.album);
-                query.bindValue(":" CLM_ALBUM_ARTIST, entry.albumartist);
-                query.bindValue(":" CLM_YEAR, entry.year);
-                query.bindValue(":" CLM_RATING, entry.rating);
-                query.bindValue(":" CLM_GENRE, entry.genre);
-                query.bindValue(":" CLM_GROUPING, entry.grouping);
-                query.bindValue(":" CLM_TRACKNUMBER, entry.tracknumber);
+    if (!entrysList.isEmpty()) {
+        beginInsertRows(QModelIndex(), 0, entrysList.size() - 1);
+        int i = 1;
+        foreach (ClementinePlaylistEntry entry, entrysList) {
+            query.bindValue(":" CLM_VIEW_ORDER, i++);
+            query.bindValue(":" CLM_ARTIST, entry.artist);
+            query.bindValue(":" CLM_TITLE, entry.title);
+            query.bindValue(":" CLM_DURATION, entry.duration);
+            query.bindValue(":" CLM_URI, entry.uri);
+            query.bindValue(":" CLM_ALBUM, entry.album);
+            query.bindValue(":" CLM_ALBUM_ARTIST, entry.albumartist);
+            query.bindValue(":" CLM_YEAR, entry.year);
+            query.bindValue(":" CLM_RATING, entry.rating);
+            query.bindValue(":" CLM_GENRE, entry.genre);
+            query.bindValue(":" CLM_GROUPING, entry.grouping);
+            query.bindValue(":" CLM_TRACKNUMBER, entry.tracknumber);
 
-                query.bindValue(":" CLM_BPM, entry.bpm);
-                query.bindValue(":" CLM_BITRATE, entry.bitrate);
-                query.bindValue(":" CLM_COMMENT, entry.comment);
-                query.bindValue(":" CLM_PLAYCOUNT, entry.playcount);
-                query.bindValue(":" CLM_COMPOSER, entry.composer);
+            query.bindValue(":" CLM_BPM, entry.bpm);
+            query.bindValue(":" CLM_BITRATE, entry.bitrate);
+            query.bindValue(":" CLM_COMMENT, entry.comment);
+            query.bindValue(":" CLM_PLAYCOUNT, entry.playcount);
+            query.bindValue(":" CLM_COMPOSER, entry.composer);
 
-                if (!query.exec()) {
-                    LOG_FAILED_QUERY(query);
-                }
-                // qDebug() << "-----" << entry.pTrack->title << query.executedQuery();
+            if (!query.exec()) {
+                LOG_FAILED_QUERY(query);
             }
-
-            endInsertRows();
         }
+        endInsertRows();
     }
 
     QStringList tableColumns;
@@ -151,7 +148,6 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
                        << CLM_GENRE
                        << CLM_GROUPING
                        << CLM_TRACKNUMBER
-                       //<< CLM_DATEADDED
                        << CLM_BPM
                        << CLM_BITRATE
                        << CLM_COMMENT
@@ -267,24 +263,6 @@ QString ClementinePlaylistModel::getTrackLocation(const QModelIndex& index) cons
     qDebug() << location << " = " << url;
 
     if (!location.isEmpty()) {
-        return location;
-    }
-
-    // Try to convert a smb path location = url.toLocalFile();
-    QString temp_location = url.toString();
-
-    if (temp_location.startsWith("smb://")) {
-        // Hack for samba mounts works only on German GNOME Linux
-        // smb://daniel-desktop/volume/Musik/Lastfm/Limp Bizkit/Chocolate Starfish And The Hot Dog Flavored Water/06 - Rollin' (Air Raid Vehicle).mp3"
-        // TODO(xxx): use gio instead
-
-        location = QDir::homePath() + "/.gvfs/";
-        location += temp_location.section('/', 3, 3);
-        location += " auf ";
-        location += temp_location.section('/', 2, 2);
-        location += "/";
-        location += temp_location.section('/', 4);
-
         return location;
     }
 
