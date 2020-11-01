@@ -639,7 +639,9 @@ void LibraryControl::slotGoToItem(double v) {
 
     // Focus the library if this is a leaf node in the tree
     if (m_pSidebarWidget->hasFocus()) {
-        // ToDo can't expand Tracks and AutoDJ, always returns false for those root items
+        // Note that Tracks and AutoDJ always return 'false':
+        // expanding those root items via controllers is considered dispensable
+        // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
             return setLibraryFocus();
         } else {
@@ -649,8 +651,9 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Load current track if a LibraryView object has focus
-    if (m_pLibraryWidget->hasFocus()) {
-        return slotLoadSelectedIntoFirstStopped(v);
+    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    if (activeView && activeView->hasFocus()) {
+        return activeView->loadSelectedTrack();
     }
 
     // Clear the search if the searchbox has focus
