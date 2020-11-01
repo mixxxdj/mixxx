@@ -425,7 +425,7 @@ void DlgPreferences::onShow() {
         screenSpace = QSize(800, 600);
     }
     else {
-        screenSpace = pScreen->availableSize();
+        screenSpace = pScreen->size();
     }
     newX = std::max(0, std::min(newX, screenSpace.width() - m_geometry[2].toInt()));
     newY = std::max(0, std::min(newY, screenSpace.height() - m_geometry[3].toInt()));
@@ -586,7 +586,7 @@ QRect DlgPreferences::getDefaultGeometry() {
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         return QRect();
     }
-    QSize optimumSize = pScreen->availableSize();
+    QSize optimumSize = pScreen->size();
 
     if (frameSize() == size()) {
         // This code is reached in Gnome 2.3
