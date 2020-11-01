@@ -518,7 +518,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
   src/library/banshee/bansheeplaylistmodel.cpp
-  src/library/basecoverartdelegate.cpp
   src/library/baseexternallibraryfeature.cpp
   src/library/baseexternalplaylistmodel.cpp
   src/library/baseexternaltrackmodel.cpp
