@@ -1,24 +1,62 @@
-#include <QList>
-#include <QDir>
-#include <QToolTip>
-#include <QDoubleSpinBox>
-#include <QWidget>
-#include <QLocale>
-#include <QDesktopWidget>
-
 #include "preferences/dialog/dlgprefinterface.h"
-#include "preferences/usersettings.h"
+
+#include <QDir>
+#include <QDoubleSpinBox>
+#include <QList>
+#include <QLocale>
+#include <QScreen>
+#include <QToolTip>
+#include <QWidget>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "skin/skinloader.h"
-#include "skin/legacyskinparser.h"
-#include "control/controlobject.h"
-#include "mixxx.h"
-#include "util/screensaver.h"
 #include "defs_urls.h"
-#include "util/autohidpi.h"
+#include "mixxx.h"
+#include "preferences/usersettings.h"
+#include "skin/legacyskinparser.h"
+#include "skin/skinloader.h"
+#include "util/screensaver.h"
+#include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
+
+namespace {
+
+const QRegExp kMinSizeRegExp("<MinimumSize>(\\d+), *(\\d+)<");
+
+bool skinFitsScreenSize(
+        const QScreen& screen,
+        const QString& skin) {
+    // Use the full resolution of the entire screen that is
+    // available in full-screen mode.
+    const auto screenSize = screen.size();
+    QFile skinfile(skin + QStringLiteral("/skin.xml"));
+    if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&skinfile);
+        bool found_size = false;
+        while (!in.atEnd()) {
+            if (kMinSizeRegExp.indexIn(in.readLine()) != -1) {
+                found_size = true;
+                break;
+            }
+        }
+        if (found_size) {
+            return !(kMinSizeRegExp.cap(1).toInt() > screenSize.width() ||
+                    kMinSizeRegExp.cap(2).toInt() > screenSize.height());
+        }
+    }
+
+    // If regex failed, fall back to skin name parsing.
+    QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
+    QString resName = skin.right(skin.count() - skinName.count());
+    QString res = resName.left(resName.lastIndexOf(QRegExp("\\d")) + 1);
+    QString skinWidth = res.left(res.indexOf("x"));
+    QString skinHeight = res.right(res.count() - skinWidth.count() - 1);
+    return skinWidth.toInt() <= screenSize.width() &&
+            skinHeight.toInt() <= screenSize.height();
+}
+
+} // namespace
 
 DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
@@ -89,6 +127,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
 
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
     int index = 0;
+    const auto* const pScreen = getScreen();
     for (const QFileInfo& skinInfo : skins) {
         ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
 
@@ -98,7 +137,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
             // schemes must be updated here to populate the drop-down box and set m_colorScheme
             slotUpdateSchemes();
             skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
-            if (checkSkinResolution(configuredSkinPath)) {
+            if (skinFitsScreenSize(*pScreen, configuredSkinPath)) {
                 warningLabel->hide();
             } else {
                 warningLabel->show();
@@ -148,7 +187,17 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdate();
 }
 
-DlgPrefInterface::~DlgPrefInterface() {
+QScreen* DlgPrefInterface::getScreen() const {
+    auto* pScreen =
+            mixxx::widgethelper::getScreen(*this);
+    if (!pScreen) {
+        // Obtain the screen from the main widget as a fallback. This
+        // is necessary if no window is available before the widget
+        // is displayed.
+        pScreen = mixxx::widgethelper::getScreen(*m_mixxx);
+    }
+    DEBUG_ASSERT(pScreen);
+    return pScreen;
 }
 
 void DlgPrefInterface::slotUpdateSchemes() {
@@ -308,13 +357,13 @@ void DlgPrefInterface::slotSetSkin(int) {
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
-
-        if (checkSkinResolution(m_pSkinLoader->getSkinPath(m_skin))) {
+        const auto* const pScreen = getScreen();
+        if (pScreen &&
+                skinFitsScreenSize(*pScreen, m_pSkinLoader->getSkinPath(m_skin))) {
             warningLabel->hide();
         } else {
             warningLabel->show();
         }
-
         slotUpdateSchemes();
         slotSetSkinDescription(m_skin);
     }
@@ -365,38 +414,6 @@ void DlgPrefInterface::slotApply() {
         m_skinOnUpdate = m_skin;
     }
     m_bRebootMixxxView = false;
-}
-
-//Returns TRUE if skin fits to screen resolution, FALSE otherwise
-bool DlgPrefInterface::checkSkinResolution(QString skin)
-{
-    int screenWidth = QApplication::desktop()->width();
-    int screenHeight = QApplication::desktop()->height();
-
-    const QRegExp min_size_regex("<MinimumSize>(\\d+), *(\\d+)<");
-    QFile skinfile(skin + "/skin.xml");
-    if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream in(&skinfile);
-        bool found_size = false;
-        while (!in.atEnd()) {
-            if (min_size_regex.indexIn(in.readLine()) != -1) {
-                found_size = true;
-                break;
-            }
-        }
-        if (found_size) {
-            return !(min_size_regex.cap(1).toInt() > screenWidth ||
-                     min_size_regex.cap(2).toInt() > screenHeight);
-        }
-    }
-
-    // If regex failed, fall back to skin name parsing.
-    QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
-    QString resName = skin.right(skin.count()-skinName.count());
-    QString res = resName.left(resName.lastIndexOf(QRegExp("\\d"))+1);
-    QString skinWidth = res.left(res.indexOf("x"));
-    QString skinHeight = res.right(res.count()-skinWidth.count()-1);
-    return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
