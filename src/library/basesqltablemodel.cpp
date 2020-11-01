@@ -792,12 +792,7 @@ CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
                                          COLUMN_LIBRARYTABLE_COVERART_LOCATION))
                     .data()
                     .toString();
-    coverInfo.trackLocation =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_NATIVELOCATION))
-                    .data()
-                    .toString();
+    coverInfo.trackLocation = getTrackLocation(index);
     return coverInfo;
 }
 
