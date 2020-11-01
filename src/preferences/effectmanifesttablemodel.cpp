@@ -148,7 +148,9 @@ bool EffectManifestTableModel::removeRows(int row, int count, const QModelIndex&
     Q_UNUSED(parent);
     beginRemoveRows(QModelIndex(), row, row + count - 1);
     for (int i = row; i < row + count; i++) {
-        m_manifests.removeAt(i);
+        // QList shrinks and reassigns indices after each removal,
+        // so keep removing at the index of the first row removed.
+        m_manifests.removeAt(row);
     }
     endRemoveRows();
     return true;
