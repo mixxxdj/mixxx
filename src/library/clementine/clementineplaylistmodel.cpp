@@ -115,7 +115,6 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
             query.bindValue(":" CLM_GENRE, entry.genre);
             query.bindValue(":" CLM_GROUPING, entry.grouping);
             query.bindValue(":" CLM_TRACKNUMBER, entry.tracknumber);
-
             query.bindValue(":" CLM_BPM, entry.bpm);
             query.bindValue(":" CLM_BITRATE, entry.bitrate);
             query.bindValue(":" CLM_COMMENT, entry.comment);
