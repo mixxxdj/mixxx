@@ -16,12 +16,13 @@ var LedBright = 0x07;
 var TraktorZ2 = new function() {
     this.controller = new HIDController();
 
-    this.shiftLocked  = false;
     this.shiftPressed = false;
-    this.shiftActive  = false;
 
-    // When true, packets will not be sent to the controller.  Good for doing mass updates.
-    this.batchingOutputs = false;
+    // 0x00: shift mode off / and not active pressed
+    // 0x01: shift mode off / but active pressed
+    // 0x02: shift mode on  / and not active pressed
+    // 0x03: shift mode on  / and active pressed
+    this.shiftState  = 0x00;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
@@ -107,8 +108,8 @@ TraktorZ2.Deck = function(deckNumber, group) {
     this.activeChannel = "[Channel" + deckNumber + "]";
 
     // Various states
-    this.syncPressedTimer = 0;
-    this.vinylcontrolTimer = 0;
+    TraktorZ2.syncPressedTimer = 0;
+    TraktorZ2.vinylcontrolTimer = 0;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
@@ -210,8 +211,8 @@ TraktorZ2.Deck.prototype.numberButtonHandler = function(field) {
     var padNumber = parseInt(field.id[field.id.length - 1]);
     var action = "";
 
-    // Hotcues mode
-    if (TraktorZ2.shiftActive) {
+    // Hotcues mode clear when shift button is active pressed
+    if (TraktorZ2.shiftState & 0x01) {
         action = "_clear";
     } else {
         action = "_activate";
@@ -232,7 +233,7 @@ TraktorZ2.Deck.prototype.vinylcontrolHandler = function(field) {
     HIDDebug("TraktorZ2: vinylcontrolHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field);
     var vinylControlMode = engine.getValue(this.activeChannel, "vinylcontrol_mode");
     var ch = this.activeChannel; // Use global variable in timer function, because this.activeChannel can change until the timer is active
-    this.vinylcontrolTimer = engine.beginTimer(300, function() {
+    TraktorZ2.vinylcontrolTimer = engine.beginTimer(300, function() {
         if (vinylControlMode >= 2) {
             vinylControlMode = 0;
         } else {
@@ -240,15 +241,41 @@ TraktorZ2.Deck.prototype.vinylcontrolHandler = function(field) {
         }
         engine.setValue(ch, "vinylcontrol_mode", vinylControlMode);
         // Reset vinylcontrol button timer state if active
-        if (this.vinylcontrolTimer !== 0) {
-            this.vinylcontrolTimer = 0;
+        if (TraktorZ2.vinylcontrolTimer !== 0) {
+            TraktorZ2.vinylcontrolTimer = 0;
         }
     }, true);
 };
 
+
+TraktorZ2.vinylcontrolOutputHandler = function() {
+    HIDDebug("TraktorZ2: vinylcontrolOutputHandler");
+    for (var chidx = 1; chidx <= 2; chidx++) {
+        var ch = "[Channel" + chidx + "]";
+        if (engine.getValue(ch, "vinylcontrol_status") === 0) {
+            // Vinyl control disabled
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedOff, chidx === 2);
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedOff, chidx === 2);
+        } else if (engine.getValue(ch, "vinylcontrol_status") === 1) {
+            // Vinyl control signal
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedBright, chidx === 2);
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedOff, chidx === 2);
+        } else if (engine.getValue(ch, "vinylcontrol_status") === 2) {
+            // Track end section of control vinyl
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedOff, chidx === 2);
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedBright, chidx === 2);
+        } else {
+            // Passthrough
+            // Track end section of control vinyl
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedDimmed, chidx === 2);
+            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedDimmed, chidx === 2);
+        }
+    }
+};
+
 TraktorZ2.Deck.prototype.syncHandler = function(field) {
     HIDDebug("TraktorZ2: syncHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field);
-    if (TraktorZ2.shiftActive) {
+    if (TraktorZ2.shiftState & 0x01) {
         engine.setValue(this.activeChannel, "beatsync_phase", field.value);
         // Light LED while pressed
         //this.colorOutput(field.value, "sync_enabled");
@@ -263,11 +290,11 @@ TraktorZ2.Deck.prototype.syncHandler = function(field) {
             script.triggerControl(this.activeChannel, "beatsync");
             // Start timer to measure how long button is pressed
             var ch = this.activeChannel; // Use global variable in timer function, because this.activeChannel can change until the timer is active
-            this.syncPressedTimer = engine.beginTimer(300, function() {
+            TraktorZ2.syncPressedTimer = engine.beginTimer(300, function() {
                 engine.setValue(ch, "sync_enabled", 1);
                 // Reset sync button timer state if active
-                if (this.syncPressedTimer !== 0) {
-                    this.syncPressedTimer = 0;
+                if (TraktorZ2.syncPressedTimer !== 0) {
+                    TraktorZ2.syncPressedTimer = 0;
                 }
             }, true);
 
@@ -279,9 +306,9 @@ TraktorZ2.Deck.prototype.syncHandler = function(field) {
             engine.setValue(this.activeChannel, "sync_enabled", 0);
         }
     } else {
-        if (this.syncPressedTimer !== 0) {
+        if (TraktorZ2.syncPressedTimer !== 0) {
             // Timer still running -> stop it and unlight LED
-            engine.stopTimer(this.syncPressedTimer);
+            engine.stopTimer(TraktorZ2.syncPressedTimer);
             //this.colorOutput(0, "sync_enabled");
         }
     }
@@ -290,12 +317,13 @@ TraktorZ2.Deck.prototype.syncHandler = function(field) {
 TraktorZ2.selectTrackHandler = function(field) {
     HIDDebug("TraktorZ2: selectTrackHandler");
     var delta = 1;
-    if ((field.value + 1) % 16 === this.browseKnobEncoderState) {
+    if ((field.value + 1) % 16 === TraktorZ2.browseKnobEncoderState) {
         delta = -1;
     }
-    this.browseKnobEncoderState = field.value;
+    TraktorZ2.browseKnobEncoderState = field.value;
 
-    if (TraktorZ2.shiftActive) {
+    // If shift mode is locked
+    if (TraktorZ2.shiftState == 0x02) {
         engine.setValue("[Library]", "MoveHorizontal", delta);
     } else {
         engine.setValue("[Library]", "MoveVertical", delta);
@@ -305,7 +333,8 @@ TraktorZ2.selectTrackHandler = function(field) {
 TraktorZ2.LibraryFocusHandler = function(field) {
     HIDDebug("TraktorZ2: LibraryFocusHandler");
     if (field.value) {
-        if (TraktorZ2.shiftActive) {
+        // If shift mode is locked
+        if (TraktorZ2.shiftState == 0x02) {
             engine.setValue("[Library]", "sort_column_toggle", 0);
         } else {
             engine.setValue("[Library]", "MoveFocusForward", true);
@@ -314,7 +343,8 @@ TraktorZ2.LibraryFocusHandler = function(field) {
 };
 
 TraktorZ2.Deck.prototype.loadTrackHandler = function(field) {
-    if (TraktorZ2.shiftActive) {
+    // If shift mode is locked or active pressed
+    if (TraktorZ2.shiftState) {
         if (this.activeChannel === "[Channel1]") {
             engine.setValue("[Channel1]", "CloneFromDeck", 2);
         } else if (this.activeChannel === "[Channel2]") {
@@ -339,7 +369,9 @@ TraktorZ2.Deck.prototype.defineButton = function(msg, name, deckOffset, deckBitm
 
 TraktorZ2.Deck.prototype.selectLoopHandler = function(field) {
     HIDDebug("TraktorZ2: selectLoopHandler");
-    if (TraktorZ2.shiftActive) {
+
+    // If shift mode is locked
+    if (TraktorZ2.shiftState == 0x02) {
         // Adjust beatjump size
         var beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
         if ((field.value + 1) % 16  === this.moveKnobEncoderState) {
@@ -374,7 +406,8 @@ TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
     if (field.value === 1) {
         var isLoopActive = engine.getValue(this.activeChannel, "loop_enabled");
 
-        if (TraktorZ2.shiftActive) {
+        // Shift state ??
+        if (TraktorZ2.shiftState) {
             engine.setValue(this.activeChannel, "reloop_toggle", field.value);
         } else {
             if (isLoopActive) {
@@ -426,7 +459,7 @@ TraktorZ2.registerInputPackets = function() {
 
     this.registerInputButton(messageShort, "[Master]", "skin_settings", 0x03, 0x08, this.buttonHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "quantize", 0x03, 0x10, this.buttonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "quantize", 0x03, 0x04, this.buttonHandler);
     this.registerInputButton(messageShort, "[Channel2]", "quantize", 0x03, 0x10, this.buttonHandler);
 
     // Mic button
@@ -531,43 +564,52 @@ TraktorZ2.registerInputButton = function(message, group, name, offset, bitmask, 
 TraktorZ2.shiftHandler = function(field) {
     HIDDebug("TraktorZ2: shiftHandler");
 
+    // This function sets TraktorZ2.shiftState as follows:
+    // 0x00: shift mode off / and not active pressed
+    // 0x01: shift mode off / but active pressed
+    // 0x02: shift mode on  / and not active pressed
+    // 0x03: shift mode on  / and active pressed
+
     if (TraktorZ2.shiftPressed === false && field.value === 1) {
         TraktorZ2.shiftPressed = true;
-        TraktorZ2.shiftActive = true;
+        TraktorZ2.shiftState |= 0x01;
         TraktorZ2.controller.setOutput("[Master]", "shift",  LedBright,  true);
 
-        this.shiftPressedTimer = engine.beginTimer(200, function() {
+        TraktorZ2.shiftPressedTimer = engine.beginTimer(200, function() {
             // Reset sync button timer state if active
-            if (this.shiftPressedTimer !== 0) {
-                this.shiftPressedTimer = 0;
+            if (TraktorZ2.shiftPressedTimer !== 0) {
+                TraktorZ2.shiftPressedTimer = 0;
             }
-            TraktorZ2.shiftLocked = false;
             HIDDebug("TraktorZ2: shift unlocked");
         }, true);
-
-
-        if (TraktorZ2.shiftLocked === true) {
-            TraktorZ2.shiftLocked = false;
-        } else {
-            TraktorZ2.shiftLocked = true;
-        }
 
         HIDDebug("TraktorZ2: shift pressed");
     } else if (TraktorZ2.shiftPressed === true && field.value === 0) {
 
         TraktorZ2.shiftPressed = false;
 
-        HIDDebug("TraktorZ2: shift stopped");
-        if (this.shiftPressedTimer !== 0) {
-            // Timer still running -> stop it and unlight LED
-            engine.stopTimer(this.shiftPressedTimer);
+        HIDDebug("TraktorZ2: shift button released"  + TraktorZ2.shiftState);
+        if (TraktorZ2.shiftPressedTimer !== 0) {
+            if (TraktorZ2.shiftState & 0x02) {
+                // Timer still running -> stop it and set LED depending on previous lock state
+                TraktorZ2.shiftState = 0x00;
+                TraktorZ2.controller.setOutput("[Master]", "shift",  LedOff,  true);
+            } else {
+                TraktorZ2.shiftState = 0x02;
+                TraktorZ2.controller.setOutput("[Master]", "shift",  LedDimmed,  true);
+            }
+            engine.stopTimer(TraktorZ2.shiftPressedTimer);
+            HIDDebug("TraktorZ2: static shift state changed to: "  + TraktorZ2.shiftState);
+        } else {
+            if (TraktorZ2.shiftState & 0x02) {
+                TraktorZ2.shiftState = 0x02;
+                TraktorZ2.controller.setOutput("[Master]", "shift",  LedDimmed,  true);
+            } else {
+                TraktorZ2.shiftState = 0x00;
+                TraktorZ2.controller.setOutput("[Master]", "shift",  LedOff,  true);
+            }
+            HIDDebug("TraktorZ2: back to static shift state: " + TraktorZ2.shiftState);
         }
-
-        if (TraktorZ2.shiftLocked === false) {
-            TraktorZ2.shiftActive = false;
-            TraktorZ2.controller.setOutput("[Master]", "shift",  LedOff,  true);
-        }
-        HIDDebug("TraktorZ2: shift released");
     }
 };
 
@@ -594,6 +636,15 @@ TraktorZ2.incomingData = function(data, length) {
 
 TraktorZ2.shutdown = function() {
 
+    // Switch software mixing mode of and given LED control to mixer hardware
+    var data = [0x00, 0x40];
+    controller.sendFeatureReport(data, 0xF1);
+
+    var data = [0xFF, 0x40];
+    controller.sendFeatureReport(data, 0xF3);
+
+    TraktorZ2.controller.setOutput("[Master]", "!usblight", LedBright, true);
+
     HIDDebug("TraktorZ2: Shutdown done!");
 };
 
@@ -606,35 +657,35 @@ TraktorZ2.debugLights = function() {
         /* 0x80 */
         0x00,  // 0x01 3 bits (0x40, 0x20, 0x10) control Warning Symbol on top left brightness (orange)
         0x00,  // 0x02 3 bits (0x40, 0x20, 0x10) control Timecode-Vinyl Symbol on top right brightness (orange)
-        0x0A,  // 0x03 3 bits (0x40, 0x20, 0x10) control Snap-Button S brightness (blue)
-        0x0A,  // 0x04 3 bits (0x40, 0x20, 0x10) control Quantize-Button Q brightness (blue)
-        0x0A,  // 0x05 3 bits (0x40, 0x20, 0x10) control Settings-Button (Gear-Wheel-Symbol) brightness (orange)
-        0x0A,  // 0x06 3 bits (0x40, 0x20, 0x10) control SHIFT-Button brightness (white)
-        0x7F,  // 0x07 3 bits (0x40, 0x20, 0x10) control Deck A button brightness (blue)
-        0x7F,  // 0x08 3 bits (0x40, 0x20, 0x10) control Deck B button brightness (blue)
-        0x0A,  // 0x09 3 bits (0x40, 0x20, 0x10) control Deck C button brightness (white)
-        0x0A,  // 0x0A 3 bits (0x40, 0x20, 0x10) control Deck D button brightness (white)
+        0x00,  // 0x03 3 bits (0x40, 0x20, 0x10) control Snap-Button S brightness (blue)
+        0x00,  // 0x04 3 bits (0x40, 0x20, 0x10) control Quantize-Button Q brightness (blue)
+        0x00,  // 0x05 3 bits (0x40, 0x20, 0x10) control Settings-Button (Gear-Wheel-Symbol) brightness (orange)
+        0x00,  // 0x06 3 bits (0x40, 0x20, 0x10) control SHIFT-Button brightness (white)
+        0x00,  // 0x07 3 bits (0x40, 0x20, 0x10) control Deck A button brightness (blue)
+        0x00,  // 0x08 3 bits (0x40, 0x20, 0x10) control Deck B button brightness (blue)
+        0x00,  // 0x09 3 bits (0x40, 0x20, 0x10) control Deck C button brightness (white)
+        0x00,  // 0x0A 3 bits (0x40, 0x20, 0x10) control Deck D button brightness (white)
 
         0x00,  // 0x0B 3 bits (0x40, 0x20, 0x10) control Deck C volume text label backlight brightness (white)
         0x00,  // 0x0C 3 bits (0x40, 0x20, 0x10) control Deck D volume text label backlight brightness (white)
 
-        0x0A,  // 0x0D 3 bits (0x40, 0x20, 0x10) control Macro FX1 On button brightness (orange)
-        0x0A,  // 0x0E 3 bits (0x40, 0x20, 0x10) control Deck 1 Flux button brightness (orange)
-        0x0A,  // 0x0F 3 bits (0x40, 0x20, 0x10) control Channel 1 FX1 select button brightness (orange)
-        0x0A,  // 0x10 3 bits (0x40, 0x20, 0x10) control Channel 1 FX2 select button brightness (orange)
-        0x7F,  // 0x11 3 bits (0x40, 0x20, 0x10) control Load A button brightness (orange)
-        0x0A,  // 0x12 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (orange)
-        0x7F,  // 0x13 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (green)
-        0x0A,  // 0x14 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync A button brightness (orange)
+        0x00,  // 0x0D 3 bits (0x40, 0x20, 0x10) control Macro FX1 On button brightness (orange)
+        0x00,  // 0x0E 3 bits (0x40, 0x20, 0x10) control Deck 1 Flux button brightness (orange)
+        0x00,  // 0x0F 3 bits (0x40, 0x20, 0x10) control Channel 1 FX1 select button brightness (orange)
+        0x00,  // 0x10 3 bits (0x40, 0x20, 0x10) control Channel 1 FX2 select button brightness (orange)
+        0x00,  // 0x11 3 bits (0x40, 0x20, 0x10) control Load A button brightness (orange)
+        0x70,  // 0x12 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (orange)
+        0x00,  // 0x13 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (green)
+        0x00,  // 0x14 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync A button brightness (orange)
 
-        0x0A,  // 0x15 3 bits (0x40, 0x20, 0x10) control Macro FX2 On button brightness (orange)
-        0x0A,  // 0x16 3 bits (0x40, 0x20, 0x10) control Deck 2 Flux button brightness (orange)
-        0x0A,  // 0x17 3 bits (0x40, 0x20, 0x10) control Channel 2 FX1 select button brightness (orange)
-        0x0A,  // 0x18 3 bits (0x40, 0x20, 0x10) control Channel 2 FX2 select button brightness (orange)
-        0x7F,  // 0x19 3 bits (0x40, 0x20, 0x10) control Load B button brightness (orange)
-        0x0A,  // 0x1A 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (orange)
-        0x7F,  // 0x1B 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (green)
-        0x0A,  // 0x1C 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync B button brightness (orange)
+        0x00,  // 0x15 3 bits (0x40, 0x20, 0x10) control Macro FX2 On button brightness (orange)
+        0x00,  // 0x16 3 bits (0x40, 0x20, 0x10) control Deck 2 Flux button brightness (orange)
+        0x00,  // 0x17 3 bits (0x40, 0x20, 0x10) control Channel 2 FX1 select button brightness (orange)
+        0x00,  // 0x18 3 bits (0x40, 0x20, 0x10) control Channel 2 FX2 select button brightness (orange)
+        0x00,  // 0x19 3 bits (0x40, 0x20, 0x10) control Load B button brightness (orange)
+        0x70,  // 0x1A 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (orange)
+        0x30,  // 0x1B 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (green)
+        0x00,  // 0x1C 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync B button brightness (orange)
         0x00, 0x00, 0x00, // 0x1D HotCue 1 Deck 1 RGB
         0x00, 0x00, 0x00, // 0x20 HotCue 2 Deck 1 RGB
         0x00, 0x00, 0x00, // 0x23 HotCue 3 Deck 1 RGB
@@ -652,11 +703,11 @@ TraktorZ2.debugLights = function() {
         0x00,  // 0x3A 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower left vertical bar brightness (orange)
         0x00,  // 0x3B 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower horizontal bar brightness (orange)
 
-        0x7F,  // 0x3C 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment center horizontal bar brightness (orange)
-        0x7F,  // 0x3D 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower right vertical bar brightness (orange)
-        0x7F,  // 0x3E 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x3C 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x3D 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x3E 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper right vertical bar brightness (orange)
         0x00,  // 0x3F 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper horizontal bar brightness (orange)
-        0x7F,  // 0x40 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x40 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper left vertical bar brightness (orange)
         0x00,  // 0x41 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower left vertical bar brightness (orange)
         0x00,  // 0x42 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower horizontal bar brightness (orange)
 
@@ -676,11 +727,11 @@ TraktorZ2.debugLights = function() {
         0x00,  // 0x4F 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower left vertical bar brightness (orange)
         0x00,  // 0x50 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower horizontal bar brightness (orange)
 
-        0x7F,  // 0x51 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment center horizontal bar brightness (orange)
-        0x7F,  // 0x52 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower right vertical bar brightness (orange)
-        0x7F,  // 0x53 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x51 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x52 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x53 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper right vertical bar brightness (orange)
         0x00,  // 0x54 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper horizontal bar brightness (orange)
-        0x7F,  // 0x55 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x55 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper left vertical bar brightness (orange)
         0x00,  // 0x56 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower left vertical bar brightness (orange)
         0x00,  // 0x57 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower horizontal bar brightness (orange)
 
@@ -1002,6 +1053,12 @@ TraktorZ2.registerOutputPackets = function() {
         }
     }
 
+
+    outputA.addOutput("[Channel1]", "quantize", 0x03, "B", 0x70);
+    engine.connectControl("[Channel1]", "quantize", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+    outputA.addOutput("[Channel2]", "quantize", 0x04, "B", 0x70);
+    engine.connectControl("[Channel2]", "quantize", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+
     outputA.addOutput("[Master]", "skin_settings", 0x05, "B", 0x70);
     engine.connectControl("[Master]", "skin_settings", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
     outputA.addOutput("[Master]", "shift", 0x06, "B", 0x70);
@@ -1039,11 +1096,17 @@ TraktorZ2.registerOutputPackets = function() {
 
     outputA.addOutput("[Channel1]", "slip_enabled", 0x0E, "B", 0x70);
     engine.connectControl("[Channel1]", "slip_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+    outputA.addOutput("[Channel1]", "!vinylcontrol_orange", 0x12, "B", 0x70);
+    outputA.addOutput("[Channel1]", "!vinylcontrol_green", 0x13, "B", 0x70);
+    engine.connectControl("[Channel1]", "vinylcontrol_status", TraktorZ2.bind(TraktorZ2.vinylcontrolOutputHandler, this));
     outputA.addOutput("[Channel1]", "sync_enabled", 0x14, "B", 0x70);
     engine.connectControl("[Channel1]", "sync_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 
     outputA.addOutput("[Channel2]", "slip_enabled", 0x16, "B", 0x70);
     engine.connectControl("[Channel2]", "slip_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+    outputA.addOutput("[Channel2]", "!vinylcontrol_orange", 0x1A, "B", 0x70);
+    outputA.addOutput("[Channel2]", "!vinylcontrol_green", 0x1B, "B", 0x70);
+    engine.connectControl("[Channel2]", "vinylcontrol_status", TraktorZ2.bind(TraktorZ2.vinylcontrolOutputHandler, this));
     outputA.addOutput("[Channel2]", "sync_enabled", 0x1C, "B", 0x70);
     engine.connectControl("[Channel2]", "sync_enabled", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 
@@ -1086,6 +1149,8 @@ TraktorZ2.registerOutputPackets = function() {
 
     outputB.addOutput("[Channel2]", "traktorbutton", 0x26, "B", 0x70);
     // engine.connectControl("[Channel2]", "passthrough", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
+
+    outputB.addOutput("[Master]", "!usblight", 0x27, "B", 0x70);
 
     var VuOffsets = {
         "[Channel1]": 0x02, // ChA
@@ -1168,20 +1233,23 @@ TraktorZ2.init = function(_id) {
 
     // Traktor Z2 can be switched per channel from internal mixing to external mixing
     // This is done by USB HID: Set Reports (Feature) 0xF1
+    // Bit 0x10 Must be set to see any LED output
     // 0xF1 9n 40  -> Bit 0x01 of n means  Ch1 (internal) mixing
     // 0xF1 9n 40  -> Bit 0x02 of n means  Ch2 (internal) mixing
     // 0xF1 9n 40  -> Bit 0x04 of n means  MasterCh (internal) mixing
     // 0xF1 9n 40  -> Bit 0x08 of n means  Mic/Aux (internal) mixing
 
-    var data = [0x9F, 0x40];
+    var data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF1);
-    // var data = [0x91, 0x40];
-    // controller.sendFeatureReport(data, 0xF3);
+    var data = [0xFF, 0x40];
+    controller.sendFeatureReport(data, 0xF3);
 
     //TraktorZ2.debugLights();
 
     TraktorZ2.registerInputPackets();
     TraktorZ2.registerOutputPackets();
+
+    TraktorZ2.controller.setOutput("[Master]", "!usblight", LedDimmed, true);
 
     TraktorZ2.deckSwitchHandler["[Channel1]"] = 1;
     TraktorZ2.controller.setOutput("[Channel1]", "!deck", LedBright,       true);
