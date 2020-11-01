@@ -323,7 +323,7 @@ TraktorZ2.selectTrackHandler = function(field) {
     TraktorZ2.browseKnobEncoderState = field.value;
 
     // If shift mode is locked
-    if (TraktorZ2.shiftState == 0x02) {
+    if (TraktorZ2.shiftState === 0x02) {
         engine.setValue("[Library]", "MoveHorizontal", delta);
     } else {
         engine.setValue("[Library]", "MoveVertical", delta);
@@ -334,7 +334,7 @@ TraktorZ2.LibraryFocusHandler = function(field) {
     HIDDebug("TraktorZ2: LibraryFocusHandler");
     if (field.value) {
         // If shift mode is locked
-        if (TraktorZ2.shiftState == 0x02) {
+        if (TraktorZ2.shiftState === 0x02) {
             engine.setValue("[Library]", "sort_column_toggle", 0);
         } else {
             engine.setValue("[Library]", "MoveFocusForward", true);
@@ -371,7 +371,7 @@ TraktorZ2.Deck.prototype.selectLoopHandler = function(field) {
     HIDDebug("TraktorZ2: selectLoopHandler");
 
     // If shift mode is locked
-    if (TraktorZ2.shiftState == 0x02) {
+    if (TraktorZ2.shiftState === 0x02) {
         // Adjust beatjump size
         var beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
         if ((field.value + 1) % 16  === this.moveKnobEncoderState) {
@@ -640,7 +640,7 @@ TraktorZ2.shutdown = function() {
     var data = [0x00, 0x40];
     controller.sendFeatureReport(data, 0xF1);
 
-    var data = [0xFF, 0x40];
+    data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF3);
 
     TraktorZ2.controller.setOutput("[Master]", "!usblight", LedBright, true);
@@ -1241,7 +1241,7 @@ TraktorZ2.init = function(_id) {
 
     var data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF1);
-    var data = [0xFF, 0x40];
+    data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF3);
 
     //TraktorZ2.debugLights();
