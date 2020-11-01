@@ -104,7 +104,8 @@ TreeItemModel* ClementineFeature::getChildModel() {
     return &m_childModel;
 }
 
-void ClementineFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
+void ClementineFeature::appendTrackIdsFromRightClickIndex(
+        QList<TrackId>* trackIds, QString* pPlaylist) {
     if (!lastRightClickedIndex().isValid()) {
         return;
     }

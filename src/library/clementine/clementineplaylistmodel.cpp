@@ -74,26 +74,27 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
             " TEXT, " CLM_DURATION " INTEGER, " CLM_URI " TEXT, " CLM_ALBUM
             " TEXT, " CLM_ALBUM_ARTIST " TEXT, " CLM_YEAR
             " INTEGER, " CLM_RATING " INTEGER, " CLM_GENRE
-            " TEXT, " CLM_GROUPING " TEXT, " CLM_TRACKNUMBER " INTEGER, " CLM_BPM " INTEGER, " CLM_BITRATE " INTEGER, " CLM_COMMENT
-            " TEXT, " CLM_PLAYCOUNT " INTEGER, " CLM_COMPOSER
-            " TEXT, " CLM_PREVIEW " TEXT)");
+            " TEXT, " CLM_GROUPING " TEXT, " CLM_TRACKNUMBER
+            " INTEGER, " CLM_BPM " INTEGER, " CLM_BITRATE
+            " INTEGER, " CLM_COMMENT " TEXT, " CLM_PLAYCOUNT
+            " INTEGER, " CLM_COMPOSER " TEXT, " CLM_PREVIEW " TEXT)");
     if (!query.exec(strQuery)) {
         LOG_FAILED_QUERY(query);
     }
 
     query.prepare(
-            "INSERT INTO " Clementine_TABLE " (" CLM_VIEW_ORDER
-            ", " CLM_ARTIST ", " CLM_TITLE ", " CLM_DURATION ", " CLM_URI
-            ", " CLM_ALBUM ", " CLM_ALBUM_ARTIST ", " CLM_YEAR
-            ", " CLM_RATING ", " CLM_GENRE ", " CLM_GROUPING
-            ", " CLM_TRACKNUMBER ", " CLM_BPM ", " CLM_BITRATE ", " CLM_COMMENT ", " CLM_PLAYCOUNT
-            ", " CLM_COMPOSER
+            "INSERT INTO " Clementine_TABLE " (" CLM_VIEW_ORDER ", " CLM_ARTIST
+            ", " CLM_TITLE ", " CLM_DURATION ", " CLM_URI ", " CLM_ALBUM
+            ", " CLM_ALBUM_ARTIST ", " CLM_YEAR ", " CLM_RATING ", " CLM_GENRE
+            ", " CLM_GROUPING ", " CLM_TRACKNUMBER ", " CLM_BPM ", " CLM_BITRATE
+            ", " CLM_COMMENT ", " CLM_PLAYCOUNT ", " CLM_COMPOSER
             ") "
             "VALUES (:" CLM_VIEW_ORDER ", :" CLM_ARTIST ", :" CLM_TITLE
             ", :" CLM_DURATION ", :" CLM_URI ", :" CLM_ALBUM
             ", :" CLM_ALBUM_ARTIST ", :" CLM_YEAR ", :" CLM_RATING
-            ", :" CLM_GENRE ", :" CLM_GROUPING ", :" CLM_TRACKNUMBER ", :" CLM_BPM ", :" CLM_BITRATE ", :" CLM_COMMENT ", :" CLM_PLAYCOUNT
-            ", :" CLM_COMPOSER ") ");
+            ", :" CLM_GENRE ", :" CLM_GROUPING ", :" CLM_TRACKNUMBER
+            ", :" CLM_BPM ", :" CLM_BITRATE ", :" CLM_COMMENT
+            ", :" CLM_PLAYCOUNT ", :" CLM_COMPOSER ") ");
 
     QList<ClementinePlaylistEntry> entrysList =
             m_pConnection->getPlaylistEntries(playlistId);
