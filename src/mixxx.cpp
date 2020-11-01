@@ -1,7 +1,6 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
-#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QGLFormat>
 #include <QGuiApplication>
@@ -43,7 +42,6 @@
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
 #include "util/experiment.h"
@@ -57,6 +55,7 @@
 #include "util/timer.h"
 #include "util/translations.h"
 #include "util/version.h"
+#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
@@ -1462,18 +1461,18 @@ void MixxxMainWindow::rebootMixxxView() {
         int newX = initPosition.x() + (initSize.width() - m_pCentralWidget->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pCentralWidget->height()) / 2;
 
-        const QScreen* primaryScreen = getPrimaryScreen();
-        if (primaryScreen) {
-            newX = std::max(0,
-                    std::min(newX,
-                            primaryScreen->geometry().width() -
-                                    m_pCentralWidget->width()));
-            newY = std::max(0,
-                    std::min(newY,
-                            primaryScreen->geometry().height() - m_pCentralWidget->height()));
-            move(newX, newY);
-        } else {
+        const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+        VERIFY_OR_DEBUG_ASSERT(pScreen) {
             qWarning() << "Unable to move window inside screen borders.";
+        }
+        else {
+            const auto windowMarginWidth =
+                    pScreen->geometry().width() - m_pCentralWidget->width();
+            const auto windowMarginHeight =
+                    pScreen->geometry().height() - m_pCentralWidget->height();
+            newX = std::max(0, std::min(newX, windowMarginWidth));
+            newY = std::max(0, std::min(newY, windowMarginHeight));
+            move(newX, newY);
         }
     }
 

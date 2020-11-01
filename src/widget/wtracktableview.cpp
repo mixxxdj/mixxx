@@ -336,28 +336,32 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackLoadAction settings
     int doubleClickActionConfigValue =
             m_pConfig->getValue(ConfigKey("[Library]", "TrackLoadAction"),
-                    static_cast<int>(DlgPrefLibrary::LOAD_TO_DECK));
+                    static_cast<int>(DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck));
     DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
             static_cast<DlgPrefLibrary::TrackDoubleClickAction>(
                     doubleClickActionConfigValue);
+
+    if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::Ignore) {
+        return;
+    }
 
     auto trackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
 
-    if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
+    if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::LoadToDeck)) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             emit loadTrack(pTrack);
         }
-    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM &&
+    } else if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::AddToAutoDJBottom &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::AddToAutoDJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
-    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP &&
+    } else if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::AddToAutoDJTop &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::AddToAutoDJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
