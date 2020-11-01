@@ -24,6 +24,8 @@ env:
     - QT_QPA_PLATFORM=offscreen
     # DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD for deploys.
     - secure: aS40s8gx1mM01oRj2pskFqR+rBID1nnTY7hwSqkT1bgJT+JF0tMZt/SkMjR08bp+3soNbBtqJgZKAhQ6Tts2DtkWQGbUiXgU5QpowUcecTxge/jqxZeWdJWThpB+qWs70Fm0QhzZXIyBPM8EGljWbLum5ncR7AUBEasRboNZ0P8=
+    # CACHIX_SIGNING_KEY for cachix deploys.
+    - secure: NSL5IoCb1+Sh4T3KP50y1qWZ+8+wRetupQDHY6fCmF1tlWSTtBxQIYGBTeE1iTFe8kJPv8CcgQ6HlNh7ss0s152gqhAbpVbq0thAtqL0qt6DFO3tyhA6tYxoOcf6DN+4qQG0A1EVqhFEhB3iWzWWA9PkJrzLV7FLt1kbxoFt1Zg=
 
 jobs:
   include:
