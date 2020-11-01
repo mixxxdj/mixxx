@@ -64,13 +64,11 @@ bool ControllerScriptEngineBase::initialize() {
 }
 
 void ControllerScriptEngineBase::shutdown() {
-    // Delete the script engine, first clearing the pointer so that
-    // other threads will not get the dead pointer after we delete it.
-    if (m_pJSEngine) {
-        QJSEngine* engine = m_pJSEngine;
-        m_pJSEngine = nullptr;
-        engine->deleteLater();
+    VERIFY_OR_DEBUG_ASSERT(m_pJSEngine) {
+        return;
     }
+    delete m_pJSEngine;
+    m_pJSEngine = nullptr;
 }
 
 void ControllerScriptEngineBase::reload() {
