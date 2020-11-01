@@ -15,10 +15,9 @@ constexpr int kClementineUndefinedBpm = -1;      // clementine saves undefined b
 constexpr int kClementineUndefinedDuration = -1; // clementine saves undefined duration as -1
 } // namespace
 
-ClementineDbConnection::ClementineDbConnection(const TrackCollectionManager* pTrackCollection):
-    m_database(),
-    m_pTrackCollectionManager(pTrackCollection)
-{
+ClementineDbConnection::ClementineDbConnection(const TrackCollectionManager* pTrackCollection)
+        : m_database(),
+          m_pTrackCollectionManager(pTrackCollection) {
 }
 
 ClementineDbConnection::~ClementineDbConnection() {
@@ -43,7 +42,7 @@ bool ClementineDbConnection::open(const QString& databaseFile) {
     }
 }
 
-QList<ClementinePlaylist> ClementineDbConnection::getPlaylists() const{
+QList<ClementinePlaylist> ClementineDbConnection::getPlaylists() const {
     QList<ClementinePlaylist> list;
     ClementinePlaylist playlist;
 
@@ -75,15 +74,15 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     query.prepare(
             "SELECT "
             "ROWID, "
-            "playlist_items.title, "    // 1
-            "playlist_items.filename, " // 2
-            "playlist_items.length, "   // 3
-            "playlist_items.artist, "   // 4
-            "playlist_items.year, "     // 5
-            "playlist_items.album, "    // 6
-            "playlist_items.rating, "   // 7
-            "playlist_items.genre, "    // 8
-            "playlist_items.track, "    // 9
+            "playlist_items.title, "      // 1
+            "playlist_items.filename, "   // 2
+            "playlist_items.length, "     // 3
+            "playlist_items.artist, "     // 4
+            "playlist_items.year, "       // 5
+            "playlist_items.album, "      // 6
+            "playlist_items.rating, "     // 7
+            "playlist_items.genre, "      // 8
+            "playlist_items.track, "      // 9
             "playlist_items.bpm, "        // 10
             "playlist_items.bitrate, "    // 11
             "playlist_items.comment, "    // 12
@@ -162,7 +161,7 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
 }
 
 // static
-QString ClementineDbConnection::getDatabaseFile(){
+QString ClementineDbConnection::getDatabaseFile() {
     QString dbfile;
 
     QSettings ini(QSettings::IniFormat, QSettings::UserScope, "Clementine", "Clementine");

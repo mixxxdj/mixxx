@@ -11,16 +11,18 @@
 #include "library/library.h"
 #include "track/track.h"
 
-ClementineFeature::ClementineFeature(Library* pLibrary, UserSettingsPointer pConfig)
-    : BaseExternalLibraryFeature(pLibrary, pConfig),
-    m_connection(std::make_shared<ClementineDbConnection>(m_pLibrary->trackCollections())),
-    m_pClementinePlaylistModel(make_parented<ClementinePlaylistModel>(this, m_pLibrary->trackCollections(), m_connection)),
-    m_childModel(),
-    m_playlists(),
-    m_future(),
-    m_title(tr("Clementine")),
-    m_icon(":/images/library/ic_library_clementine.png")
-{
+ClementineFeature::ClementineFeature(
+        Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
+          m_connection(std::make_shared<ClementineDbConnection>(
+                  m_pLibrary->trackCollections())),
+          m_pClementinePlaylistModel(make_parented<ClementinePlaylistModel>(
+                  this, m_pLibrary->trackCollections(), m_connection)),
+          m_childModel(),
+          m_playlists(),
+          m_future(),
+          m_title(tr("Clementine")),
+          m_icon(":/images/library/ic_library_clementine.png") {
 }
 
 ClementineFeature::~ClementineFeature() {
@@ -102,8 +104,8 @@ TreeItemModel* ClementineFeature::getChildModel() {
     return &m_childModel;
 }
 
-void ClementineFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist){
-    if (!lastRightClickedIndex().isValid()){
+void ClementineFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
+    if (!lastRightClickedIndex().isValid()) {
         return;
     }
 
