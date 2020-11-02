@@ -200,7 +200,7 @@ jobs:
         - EXTRA_NIX_CONFIG: extra.conf
       before_cache: &nix_before_cache
         - mkdir -p $HOME/nix.store
-        - nix copy --to file://$HOME/nix.store -f shell.nix buildInputs
+        - nix copy --to file://$HOME/nix.store -f shell.nix buildInputs || true
       script:
         - |
           if [ -n "$CACHIX_SIGNING_KEY" ]; then
