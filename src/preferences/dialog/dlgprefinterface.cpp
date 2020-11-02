@@ -324,11 +324,17 @@ void DlgPrefInterface::slotSetTooltips() {
     }
 }
 
-void DlgPrefInterface::notifyRebootNecessary() {
+void DlgPrefInterface::notifyLocaleRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(
         this, tr("Information"),
         tr("Mixxx must be restarted before the new locale setting will take effect."));
+}
+
+void DlgPrefInterface::notifySkinRebootNecessary() {
+    // make the fact that you have to restart mixxx more obvious
+    QMessageBox::information(
+            this, tr("Information"), tr("Mixxx must be restarted to load the new skin."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -403,15 +409,21 @@ void DlgPrefInterface::slotApply() {
     }
 
     if (locale != m_localeOnUpdate) {
-        notifyRebootNecessary();
+        notifyLocaleRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
     }
 
     if (m_bRebootMixxxView) {
+        // Require restarting Mixxx to apply the new skin in order to work around
+        // macOS skin change crash. https://bugs.launchpad.net/mixxx/+bug/1877487
+#ifdef __APPLE__
+        notifySkinRebootNecessary();
+#else
         m_mixxx->rebootMixxxView();
         // Allow switching skins multiple times without closing the dialog
         m_skinOnUpdate = m_skin;
+#endif
     }
     m_bRebootMixxxView = false;
 }
