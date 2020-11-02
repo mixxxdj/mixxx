@@ -100,7 +100,6 @@ for:
   before_build:
      # Limit cache size to 100 MB
     - ccache -M 100M
-    - ccache -c
     - ccache -s
 
   build_script:
