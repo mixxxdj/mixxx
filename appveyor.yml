@@ -212,8 +212,12 @@ for:
     - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
     - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
     - cd %APPVEYOR_BUILD_FOLDER%
-     # Limit cache size to 100 MB
-    - clcache -M 100000000
+    # Limit cache size to 4 GB.
+    # AppVeyor allows 1 GB cache for the free plan but stores it compressed.
+    # Compression ratio is ~80%, so we could have ~10 GB uncompressed total cache.
+    # Split cache in half with Ubuntu ccache and underestimate compression ratio a little to
+    # avoid going over the limit.
+    - clcache -M 4294967296
     - clcache -s
     # Improve clcache performance
     - set CLCACHE_SERVER=1
