@@ -150,15 +150,20 @@ void DlgCoverArtFullSize::slotCoverFound(
     // whitespace appearing on the side when resizing a window whose
     // borders touch the edges of the screen.
     QSize dialogSize = m_pixmap.size();
+    QWidget* parent = parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(parent) {
+        qWarning() << "DlgCoverArtFullSize does not have a parent.";
+        parent = this;
+    }
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*parent);
     QRect availableScreenGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
         availableScreenGeometry = QRect(0, 0, 800, 600);
     }
     else {
-        availableScreenGeometry = pScreen->availableGeometry();
+        availableScreenGeometry = pScreen->geometry();
     }
 
     const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
