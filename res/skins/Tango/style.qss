@@ -1180,7 +1180,6 @@ WBeatSpinBox,
 }
 
 #KeyDisplayMatch, #KeyControls {
-  margin-bottom: 1px;
 }
 #RateButtons {
   margin-top: 1px;
