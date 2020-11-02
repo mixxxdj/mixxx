@@ -46,6 +46,12 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
     setupUi(this);
 }
 
+void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
+    // prevent the window from being destroyed
+    hide();
+    event->ignore();
+}
+
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     if (!pTrack) {
         return;
