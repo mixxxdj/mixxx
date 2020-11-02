@@ -29,7 +29,7 @@ EffectSlot::EffectSlot(const QString& group,
           m_pBackendManager(pEffectsManager->getBackendManager()),
           m_pMessenger(pEffectsMessenger),
           m_pVisibleEffects(m_pEffectsManager->getVisibleEffectsList()),
-          m_pChainSlot(pChainSlot),
+          m_pChain(pChainSlot),
           m_pEngineEffectChain(pEngineEffectChain),
           m_pEngineEffect(nullptr) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngineEffectChain) {
@@ -138,9 +138,10 @@ void EffectSlot::addToEngine() {
         return;
     }
 
-    m_pEngineEffect = new EngineEffect(m_pManifest,
+    m_pEngineEffect = new EngineEffect(
+            m_pManifest,
             m_pBackendManager,
-            m_pChainSlot->getActiveChannels(),
+            m_pChain->getActiveChannels(),
             m_pEffectsManager->registeredInputChannels(),
             m_pEffectsManager->registeredOutputChannels());
 
