@@ -15,7 +15,7 @@ constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
 
 constexpr double kRelativeBpmRange = 0.06; // +/-6 %
 
-const QString kActionTextPrefixSuffixSeparator = QString::fromUtf8(" ▶ ");
+const QString kActionTextPrefixSuffixSeparator = QStringLiteral(" | ");
 
 inline int bpmLowerBound(double bpm) {
     return static_cast<int>(std::floor((1 - kRelativeBpmRange) * bpm));
