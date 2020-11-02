@@ -212,8 +212,8 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
 
 QJSValue ControllerScriptInterfaceLegacy::makeConnection(
         QString group, QString name, const QJSValue callback) {
-    QJSEngine* jsEngine = m_pScriptEngineLegacy->jsEngine();
-    VERIFY_OR_DEBUG_ASSERT(jsEngine) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }
 
@@ -246,7 +246,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
     connection.id = QUuid::createUuid();
 
     if (coScript->addScriptConnection(connection)) {
-        return jsEngine->newQObject(
+        return pJsEngine->newQObject(
                 new ScriptConnectionJSProxy(connection));
     }
 
@@ -302,7 +302,7 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(
         actualCallbackFunction = passedCallback;
     }
 
-    QJSEngine* pScriptEngine = m_pScriptEngineLegacy->jsEngine();
+    auto pScriptEngine = m_pScriptEngineLegacy->jsEngine();
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     // This check is redundant with makeConnection, but the

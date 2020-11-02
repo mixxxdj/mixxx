@@ -22,7 +22,7 @@ bool ControllerScriptEngineBase::initialize() {
     }
 
     // Create the Script Engine
-    m_pJSEngine = new QJSEngine(this);
+    m_pJSEngine = std::make_shared<QJSEngine>(this);
 
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
 
@@ -64,11 +64,8 @@ bool ControllerScriptEngineBase::initialize() {
 }
 
 void ControllerScriptEngineBase::shutdown() {
-    VERIFY_OR_DEBUG_ASSERT(m_pJSEngine) {
-        return;
-    }
-    delete m_pJSEngine;
-    m_pJSEngine = nullptr;
+    DEBUG_ASSERT(m_pJSEngine.use_count() == 1);
+    m_pJSEngine.reset();
 }
 
 void ControllerScriptEngineBase::reload() {

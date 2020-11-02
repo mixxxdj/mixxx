@@ -4,6 +4,7 @@
 #include <QJSEngine>
 #include <QJSValue>
 #include <QMessageBox>
+#include <memory>
 
 #include "controllers/controllerpreset.h"
 #include "util/duration.h"
@@ -45,7 +46,7 @@ class ControllerScriptEngineBase : public QObject {
     QJSValue wrapArrayBufferCallback(const QJSValue& callback);
 
     bool m_bDisplayingExceptionDialog;
-    QJSEngine* m_pJSEngine;
+    std::shared_ptr<QJSEngine> m_pJSEngine;
 
     Controller* m_pController;
 

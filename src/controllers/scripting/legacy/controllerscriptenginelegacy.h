@@ -50,7 +50,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     // There is lots of tight coupling between ControllerScriptEngineLegacy
     // and ControllerScriptInterface. This is probably not worth improving in legacy code.
     friend class ControllerScriptInterfaceLegacy;
-    QJSEngine* jsEngine() const {
+    std::shared_ptr<QJSEngine> jsEngine() const {
         return m_pJSEngine;
     }
 
