@@ -56,6 +56,12 @@ Variables:
                 </Children>
               </WidgetGroup>
 
+              <TrackWidgetGroup>
+                <Size>0me,2f</Size>
+                <Group><Variable name="group"/></Group>
+                <TrackColorAlpha>255</TrackColorAlpha>
+              </TrackWidgetGroup>
+
               <WidgetGroup><!-- by / Artist / Key / BPM -->
                 <Layout>horizontal</Layout>
                 <Size>200me,20f</Size>
@@ -93,20 +99,6 @@ Variables:
                         <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
                       </Template>
-
-                      <!-- Show/light up if key is not original, like with script.
-                            Not working, only once per skin load.
-                          Tried different controls: pitch (from script), pitch_adjust, ...
-                      <WidgetGroup>
-                        <ObjectName>KeyOffsetWarning</ObjectName>
-                        <Size>50f,13f</Size>
-                        <Layout>horizontal</Layout>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                          <Transform><Not/><IsEqual>1</IsEqual></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup> -->
 
                       <Key><!-- Actual Key display -->
                         <TooltipId>visual_key</TooltipId>
