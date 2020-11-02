@@ -259,9 +259,12 @@ for:
       )
     # Generate WIX installer
     - cpack -G "WIX"
+    # copy package so one file gets deployed with a uniquely identifying name
+    # and one with a name we can link to from the website
     - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
       If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
-        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi
+        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% %MIXXX_PACKAGE_NAME%.msi
+        cp %MIXXX_PACKAGE_NAME%.msi mixxx-%APPVEYOR_REPO_BRANCH%-latest.msi
       ) else (
         echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
