@@ -123,6 +123,7 @@ AutoDJProcessor::AutoDJProcessor(
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
+    m_pAutoDJTableModel->select();
 
     m_pShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
@@ -829,7 +830,6 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
-    m_pAutoDJTableModel->select();
     bool randomQueueEnabled = m_pConfig->getValue<bool>(
             ConfigKey("[Auto DJ]", "EnableRandomQueue"));
     int minAutoDJCrateTracks = m_pConfig->getValueString(
