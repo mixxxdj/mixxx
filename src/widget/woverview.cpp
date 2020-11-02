@@ -119,6 +119,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_passthroughOverlayColor = m_signalColors.getPassthroughOverlayColor();
     m_playedOverlayColor = m_signalColors.getPlayedOverlayColor();
     m_lowColor = m_signalColors.getLowColor();
+    m_dimBrightThreshold = m_signalColors.getDimBrightThreshold();
 
     m_labelBackgroundColor = context.selectColor(node, "LabelBackgroundColor");
     if (!m_labelBackgroundColor.isValid()) {
@@ -390,7 +391,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             && pMark->getSamplePosition() != Cue::kNoPosition) {
             QColor newColor = mixxx::RgbColor::toQColor(currentCue->getColor());
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
-                pMark->setBaseColor(newColor);
+                pMark->setBaseColor(newColor, m_dimBrightThreshold);
             }
 
             int hotcueNumber = currentCue->getHotCue();

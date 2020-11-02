@@ -264,6 +264,7 @@ void DlgPrefLibrary::slotRemoveDir() {
         tr("Delete Track Metadata"), QMessageBox::AcceptRole);
     QPushButton* leaveUnchangedButton = removeMsgBox.addButton(
         tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
+    Q_UNUSED(leaveUnchangedButton); // Only used in DEBUG_ASSERT
     removeMsgBox.setDefaultButton(cancelButton);
     removeMsgBox.exec();
 
@@ -277,6 +278,8 @@ void DlgPrefLibrary::slotRemoveDir() {
     } else if (removeMsgBox.clickedButton() == deleteAllButton) {
         removalType = Library::RemovalType::PurgeTracks;
     } else {
+        // Only used in DEBUG_ASSERT
+        Q_UNUSED(leaveUnchangedButton);
         DEBUG_ASSERT(removeMsgBox.clickedButton() == leaveUnchangedButton);
         removalType = Library::RemovalType::KeepTracks;
     }

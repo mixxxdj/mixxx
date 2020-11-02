@@ -17,7 +17,7 @@ int brightness(int red, int green, int blue) {
 
 // If the baseColor is darker than the global threshold,
 // returns a lighter color, otherwise returns a darker color.
-QColor chooseContrastColor(QColor baseColor) {
+QColor chooseContrastColor(QColor baseColor, int dimBrightThreshold) {
     // Will produce a color that is 60% brighter.
     static const int iLighterFactor = 160;
     // We consider a hsv color dark if its value is <= 20% of max value
@@ -44,7 +44,10 @@ QColor chooseContrastColor(QColor baseColor) {
     // not a good indicator of a color brightness (saturation comes into play too).
     // That's why we call chooseColorByBrightness so the proper brightness of the color is used
     // to choose between the light and the dark colors.
-    QColor contrastColor = chooseColorByBrightness(baseColor, lightColor.toRgb(), darkColor.toRgb());
+    QColor contrastColor = chooseColorByBrightness(baseColor,
+            lightColor.toRgb(),
+            darkColor.toRgb(),
+            dimBrightThreshold);
     return contrastColor;
 }
 

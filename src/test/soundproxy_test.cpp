@@ -49,6 +49,7 @@ class SoundSourceProxyTest : public MixxxTest {
                 // that fixed this bug is unknown.
                 << "-itunes-12.3.0-aac.m4a"
                 << "-itunes-12.7.0-aac.m4a"
+                << "-ffmpeg-aac.m4a"
 #if defined(__FFMPEG__) || defined(__COREAUDIO__)
                 << "-itunes-12.7.0-alac.m4a"
 #endif
@@ -535,15 +536,38 @@ TEST_F(SoundSourceProxyTest, readBeyondEnd) {
         ASSERT_GT(remainingFrames, 0);
         ASSERT_LT(remainingFrames, kReadFrameCount);
 
-        // Read beyond the end
         mixxx::SampleBuffer readBuffer(
                 pAudioSource->getSignalInfo().frames2samples(kReadFrameCount));
-        EXPECT_EQ(
-                mixxx::IndexRange::forward(seekIndex, remainingFrames),
-                pAudioSource->readSampleFrames(
-                        mixxx::WritableSampleFrames(
-                                mixxx::IndexRange::forward(seekIndex, kReadFrameCount),
-                                mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
+
+        // Read beyond the end, starting within the valid range
+        EXPECT_EQ(mixxx::IndexRange::forward(seekIndex, remainingFrames),
+                pAudioSource
+                        ->readSampleFrames(mixxx::WritableSampleFrames(
+                                mixxx::IndexRange::forward(
+                                        seekIndex, kReadFrameCount),
+                                mixxx::SampleBuffer::WritableSlice(
+                                        readBuffer)))
+                        .frameIndexRange());
+
+        // Read beyond the end, starting at the upper boundary of the valid range
+        EXPECT_EQ(mixxx::IndexRange::forward(pAudioSource->frameIndexMax(), 0),
+                pAudioSource
+                        ->readSampleFrames(mixxx::WritableSampleFrames(
+                                mixxx::IndexRange::forward(
+                                        pAudioSource->frameIndexMax(), kReadFrameCount),
+                                mixxx::SampleBuffer::WritableSlice(
+                                        readBuffer)))
+                        .frameIndexRange());
+
+        // Read beyond the end, starting beyond the upper boundary of the valid range
+        EXPECT_EQ(mixxx::IndexRange::forward(pAudioSource->frameIndexMax() + 1, 0),
+                pAudioSource
+                        ->readSampleFrames(mixxx::WritableSampleFrames(
+                                mixxx::IndexRange::forward(
+                                        pAudioSource->frameIndexMax() + 1, kReadFrameCount),
+                                mixxx::SampleBuffer::WritableSlice(
+                                        readBuffer)))
+                        .frameIndexRange());
     }
 }
 

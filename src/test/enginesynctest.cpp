@@ -1,7 +1,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <string>
 
 #include "control/controlobject.h"
@@ -18,6 +17,7 @@
 namespace {
 constexpr double kMaxFloatingPointErrorLowPrecision = 0.005;
 constexpr double kMaxFloatingPointErrorHighPrecision = 0.0000000000000005;
+constexpr double kMaxBeatDistanceEpsilon = 1e-9;
 }
 
 /// Tests for Master Sync.
@@ -45,15 +45,15 @@ class EngineSyncTest : public MockedEngineBackendTest {
         if (group == m_sInternalClockGroup) {
             return !ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                       "sync_master"))
-                            ->get();
+                            ->toBool();
         }
         if (ControlObject::getControl(ConfigKey(group, "sync_mode"))->get() != SYNC_FOLLOWER) {
             return false;
         }
-        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get()) {
+        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->toBool()) {
             return false;
         }
-        if (ControlObject::getControl(ConfigKey(group, "sync_master"))->get()) {
+        if (ControlObject::getControl(ConfigKey(group, "sync_master"))->toBool()) {
             return false;
         }
         return true;
@@ -88,7 +88,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
         if (group == m_sInternalClockGroup) {
             if (!ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                    "sync_master"))
-                            ->get()) {
+                            ->toBool()) {
                 return false;
             }
             if (m_pEngineSync->getMaster()) {
@@ -128,10 +128,10 @@ class EngineSyncTest : public MockedEngineBackendTest {
                 return false;
             }
         }
-        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get()) {
+        if (!ControlObject::getControl(ConfigKey(group, "sync_enabled"))->toBool()) {
             return false;
         }
-        if (!ControlObject::getControl(ConfigKey(group, "sync_master"))->get()) {
+        if (!ControlObject::getControl(ConfigKey(group, "sync_master"))->toBool()) {
             return false;
         }
         return true;
@@ -1344,19 +1344,17 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
-TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
+TEST_F(EngineSyncTest, ZeroLatencyRateChangeNoQuant) {
     // Confirm that a rate change in an explicit master is instantly communicated
     // to followers.
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 160, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
-    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
     // Make Channel2 master to weed out any channel ordering issues.
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))
-            ->set(SYNC_MASTER_EXPLICIT);
+            ->set(SYNC_FOLLOWER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
             ->set(SYNC_FOLLOWER);
     // Exaggerate the effect with a high rate.
@@ -1370,14 +1368,172 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
                     ->get());
 
-    ProcessBuffer();
-    ProcessBuffer();
+    for (int i = 0; i < 50; ++i) {
+        ProcessBuffer();
+        // Keep messing with the rate
+        double rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
+        ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), rate);
+
+        // Buffers should be in sync.
+        ASSERT_NEAR(
+                ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+                kMaxBeatDistanceEpsilon);
+    }
+
+    // Make sure we're actually going somewhere!
+    EXPECT_GT(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            0);
+    // Buffers should be in sync.
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
+}
+
+TEST_F(EngineSyncTest, ZeroLatencyRateChangeQuant) {
+    // Confirm that a rate change in an explicit master is instantly communicated
+    // to followers.
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 160, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+
+    // Make Channel2 master to weed out any channel ordering issues.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+    // Exaggerate the effect with a high rate.
+    ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 10.0);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
+                      ->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
+                    ->get());
+
+    for (int i = 0; i < 50; ++i) {
+        ProcessBuffer();
+        // Keep messing with the rate
+        double rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
+        ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), rate);
+
+        // Buffers should be in sync.
+        ASSERT_NEAR(
+                ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+                kMaxBeatDistanceEpsilon);
+    }
+
+    // Make sure we're actually going somewhere!
+    EXPECT_GT(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            0);
+    // Buffers should be in sync.
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
+}
+
+TEST_F(EngineSyncTest, ZeroLatencyRateDiffQuant) {
+    // Confirm that a rate change in an explicit master is instantly communicated
+    // to followers.
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 160, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+
+    // Make Channel2 master to weed out any channel ordering issues.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+    // Exaggerate the effect with a high rate.
+    ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 10.0);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
+                      ->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
+                    ->get());
+
+    for (int i = 0; i < 50; ++i) {
+        ProcessBuffer();
+        // Keep messing with the rate
+        double rate = i % 2 == 0 ? i / 10.0 : i / -10.0;
+        ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), rate);
+
+        // Buffers should be in sync.
+        ASSERT_NEAR(
+                ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+                ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+                kMaxBeatDistanceEpsilon);
+    }
+
+    // Make sure we're actually going somewhere!
+    EXPECT_GT(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            0);
+    // Buffers should be in sync.
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
+}
+
+// In this test, we set play *first* and then turn on master sync.
+// This exercises a slightly different ordering of signals that we
+// need to check. The Sync feature is unfortunately brittle.
+// This test exercises https://bugs.launchpad.net/mixxx/+bug/1884324
+TEST_F(EngineSyncTest, ActivatingSyncDoesNotCauseDrifting) {
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 150, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 150, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
     ProcessBuffer();
 
+    // make sure we aren't out-of-sync from the start
+    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
+                      ->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
+                    ->get());
+
+    // engage first sync-master
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+
+    // engage second Sync-master
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+
+    // Run for a number of buffers
+    for (int i = 0; i < 25; ++i) {
+        ProcessBuffer();
+    }
     // Make sure we're actually going somewhere!
     EXPECT_GT(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
                       ->get(),
             0);
+
     // Buffers should be in sync.
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
                       ->get(),
@@ -1419,7 +1575,6 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
 
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
     for (int i = 0; i < 50; ++i) {
-        qDebug() << "bpm test loop iter" << i;
         ProcessBuffer();
         // The beat distances are NOT as simple as x2 or /2.  Use the built-in functions
         // to do the proper conversion.

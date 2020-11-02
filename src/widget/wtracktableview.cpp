@@ -8,6 +8,7 @@
 
 #include "control/controlobject.h"
 #include "library/dao/trackschema.h"
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -31,7 +32,7 @@ const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck("[Controls]", "AllowTrackL
 
 WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         double backgroundColorOpacity,
         bool sorting)
         : WLibraryTableView(parent,
@@ -39,7 +40,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
                   ConfigKey(LIBRARY_CONFIGVALUE,
                           WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
-          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
@@ -321,7 +322,7 @@ void WTrackTableView::initTrackMenu() {
 
     m_pTrackMenu = make_parented<WTrackMenu>(this,
             m_pConfig,
-            m_pTrackCollectionManager,
+            m_pLibrary,
             WTrackMenu::Feature::All,
             trackModel);
     connect(m_pTrackMenu.get(),
@@ -833,10 +834,12 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollectionManager->unhideTracks(trackIds);
+    m_pLibrary->trackCollections()->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
@@ -946,7 +949,7 @@ void WTrackTableView::applySorting() {
         return;
     }
 
-    Qt::SortOrder sortOrder = m_pSortOrder->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
+    Qt::SortOrder sortOrder = (m_pSortOrder->get() == 0) ? Qt::AscendingOrder : Qt::DescendingOrder;
 
     // This line sorts the TrackModel
     horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
