@@ -1,10 +1,12 @@
 #pragma once
 
+#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QList>
+#include <QScreen>
 #include <QUuid>
-#include <QWindow>
 #include <QWidget>
-#include <QList>
+#include <QWindow>
 
 #include "util/assert.h"
 #if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
@@ -101,6 +103,29 @@ QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
     } else {
         return uuidToStringWithoutBraces(uuid);
     }
+}
+
+inline QScreen* getPrimaryScreen() {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
+    VERIFY_OR_DEBUG_ASSERT(app) {
+        qWarning() << "Unable to get applications QCoreApplication instance, "
+                      "cannot determine primary screen!";
+    }
+    else {
+        return app->primaryScreen();
+    }
+#endif
+    const QList<QScreen*> screens = QGuiApplication::screens();
+    VERIFY_OR_DEBUG_ASSERT(!screens.isEmpty()) {
+        qWarning() << "No screens found, cannot determine primary screen!";
+    }
+    else {
+        return screens.first();
+    }
+
+    // All attempts to find primary screen failed, return nullptr
+    return nullptr;
 }
 
 template <typename T>
