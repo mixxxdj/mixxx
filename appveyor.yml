@@ -214,7 +214,6 @@ for:
     - cd %APPVEYOR_BUILD_FOLDER%
      # Limit cache size to 100 MB
     - clcache -M 100000000
-    - clcache -c
     - clcache -s
     # Improve clcache performance
     - set CLCACHE_SERVER=1
