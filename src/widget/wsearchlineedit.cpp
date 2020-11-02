@@ -97,6 +97,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
+    m_clearButton->setFocusPolicy(Qt::ClickFocus);
     // Query style for arrow width and frame border
     updateStyleMetrics();
 
@@ -280,7 +281,13 @@ QString WSearchLineEdit::getSearchText() const {
 bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        if (keyEvent->key() == Qt::Key_Down) {
+        if (keyEvent->key() == Qt::Key_Up) {
+            if (findCurrentTextIndex() == 0) {
+                setCurrentIndex(-1);
+                setCurrentText("");
+                return true;
+            }
+        } else if (keyEvent->key() == Qt::Key_Down) {
             // after clearing the text field the down key is expected to
             // show the last entry
             if (currentText().isEmpty()) {
