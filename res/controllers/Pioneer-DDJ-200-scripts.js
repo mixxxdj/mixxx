@@ -40,7 +40,7 @@ DDJ200.shutdown = function() {
     DDJ200.LEDsOff();
 };
 
-DDJ200.LEDsOff = function() {                         // trun off LED buttons:
+DDJ200.LEDsOff = function() {                         // turn off LED buttons:
 
     for (var i = 0; i <= 1; i++) {
         midi.sendShortMsg(0x96 + i, 0x63, 0x00);      // set headphone master
@@ -275,7 +275,7 @@ DDJ200.cueGotoandstop = function(channel, control, value, status, group) {
         var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
         var vgroup = "[Channel" + vDeckNo + "]";
         engine.setValue(vgroup, "cue_gotoandstop", true);
-        //engine.setValue(vgroup, "start_stop", true); // go to start if prefered
+        //engine.setValue(vgroup, "start_stop", true); // go to start if preferred
         midi.sendShortMsg(status, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
     }
 };
