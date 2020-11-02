@@ -17,18 +17,22 @@ QPoint mapPopupToScreen(
         // This should never fail
         return popupUpperLeft;
     }
-    const auto screenSize = pScreen->size();
+
+    // the screen geometry is the physical screen of the virtual desktop
+    // this will be offset by it's top and left starting points
+    const auto screenSize = pScreen->geometry();
+
     // math_clamp() cannot be used, because if the dimensions of
     // the popup menu are greater than the screen size a debug
     // assertion would be triggered!
     const auto adjustedX = math_max(0,
             math_min(
                     popupUpperLeft.x(),
-                    screenSize.width() - popupSize.width()));
+                    screenSize.left() + screenSize.width() - popupSize.width()));
     const auto adjustedY = math_max(0,
             math_min(
                     popupUpperLeft.y(),
-                    screenSize.height() - popupSize.height()));
+                    screenSize.top() + screenSize.height() - popupSize.height()));
     return QPoint(adjustedX, adjustedY);
 }
 
