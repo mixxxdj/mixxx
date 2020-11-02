@@ -378,7 +378,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new ColorDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         auto* pCoverArtDelegate =
-                doCreateCoverArtDelegate(pTableView);
+                new CoverArtDelegate(pTableView);
         // WLibraryTableView -> CoverArtDelegate
         connect(pTableView,
                 &WLibraryTableView::onlyCachedCoverArt,
