@@ -610,7 +610,7 @@ void Tooltips::addStandardTooltips() {
                   << QString("%1 + %2: %3")
                              .arg(rightClick,
                                      shift,
-                                     tr("Delete selected cuepoint."));
+                                     tr("Delete selected hotcue."));
 
     // Status displays and toggle buttons
     add("toggle_recording")

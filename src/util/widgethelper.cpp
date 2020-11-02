@@ -28,11 +28,11 @@ QPoint mapPopupToScreen(
     const auto adjustedX = math_max(0,
             math_min(
                     popupUpperLeft.x(),
-                    screenSize.left() + screenSize.width() - popupSize.width()));
+                    screenSize.right() - popupSize.width()));
     const auto adjustedY = math_max(0,
             math_min(
                     popupUpperLeft.y(),
-                    screenSize.top() + screenSize.height() - popupSize.height()));
+                    screenSize.bottom() - popupSize.height()));
     return QPoint(adjustedX, adjustedY);
 }
 
