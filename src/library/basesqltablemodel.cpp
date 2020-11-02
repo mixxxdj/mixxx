@@ -6,7 +6,6 @@
 #include <QtDebug>
 #include <algorithm>
 
-#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
@@ -816,11 +815,6 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
             emit dataChanged(topLeft, bottomRight);
         }
     }
-}
-
-CoverArtDelegate* BaseSqlTableModel::doCreateCoverArtDelegate(
-        QTableView* pTableView) const {
-    return new CoverArtDelegate(pTableView);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
