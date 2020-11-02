@@ -101,8 +101,13 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
             if (!pHotCue) {
                 return;
             }
+            if (e->modifiers().testFlag(Qt::ShiftModifier)) {
+                pTrack->removeCue(pHotCue);
+                return;
+            }
             m_pCueMenuPopup->setTrackAndCue(pTrack, pHotCue);
-            m_pCueMenuPopup->popup(e->globalPos());
+            // use the bottom left corner as starting point for popup
+            m_pCueMenuPopup->popup(mapToGlobal(QPoint(0, height())));
         }
         return;
     }
