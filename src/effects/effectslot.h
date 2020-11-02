@@ -175,7 +175,7 @@ class EffectSlot : public QObject {
     EffectsMessengerPointer m_pMessenger;
     VisibleEffectsListPointer m_pVisibleEffects;
     EffectManifestPointer m_pManifest;
-    EffectChain* m_pChainSlot;
+    EffectChain* m_pChain;
     EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;
     ParameterMap m_allParameters;
