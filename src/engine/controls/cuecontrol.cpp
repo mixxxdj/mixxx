@@ -694,7 +694,7 @@ void CueControl::quantizeChanged(double v) {
     }
 }
 
-void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueMode mode) {
+void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode mode) {
     //qDebug() << "CueControl::hotcueSet" << value;
 
     if (value == 0) {
@@ -720,18 +720,18 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueMode mod
     mixxx::CueType cueType = mixxx::CueType::Invalid;
 
     bool loopEnabled = m_pLoopEnabled->get();
-    if (mode == HotcueMode::Auto) {
-        mode = loopEnabled ? HotcueMode::Loop : HotcueMode::Cue;
+    if (mode == HotcueSetMode::Auto) {
+        mode = loopEnabled ? HotcueSetMode::Loop : HotcueSetMode::Cue;
     }
 
     switch (mode) {
-    case HotcueMode::Cue: {
+    case HotcueSetMode::Cue: {
         // If no loop is enabled, just store regular jump cue
         cueStartPosition = getQuantizedCurrentPosition();
         cueType = mixxx::CueType::HotCue;
         break;
     }
-    case HotcueMode::Loop: {
+    case HotcueSetMode::Loop: {
         if (loopEnabled) {
             // If a loop is enabled, save the current loop
             cueStartPosition = m_pLoopStartPosition->get();
@@ -751,7 +751,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueMode mod
         break;
     }
     default:
-        DEBUG_ASSERT(!"Invalid HotcueMode");
+        DEBUG_ASSERT(!"Invalid HotcueSetMode");
         return;
     }
 
@@ -979,7 +979,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double value) {
     m_pHotcueFocus->set(pControl->getHotcueNumber());
 }
 
-void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueMode mode) {
+void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSetMode mode) {
     //qDebug() << "CueControl::hotcueActivate" << value;
 
     QMutexLocker lock(&m_mutex);
@@ -2337,15 +2337,15 @@ HotcueControl::~HotcueControl() {
 }
 
 void HotcueControl::slotHotcueSet(double v) {
-    emit hotcueSet(this, v, HotcueMode::Auto);
+    emit hotcueSet(this, v, HotcueSetMode::Auto);
 }
 
 void HotcueControl::slotHotcueSetCue(double v) {
-    emit hotcueSet(this, v, HotcueMode::Cue);
+    emit hotcueSet(this, v, HotcueSetMode::Cue);
 }
 
 void HotcueControl::slotHotcueSetLoop(double v) {
-    emit hotcueSet(this, v, HotcueMode::Loop);
+    emit hotcueSet(this, v, HotcueSetMode::Loop);
 }
 
 void HotcueControl::slotHotcueGoto(double v) {
@@ -2369,15 +2369,15 @@ void HotcueControl::slotHotcueLoopToggle(double v) {
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
-    emit hotcueActivate(this, v, HotcueMode::Auto);
+    emit hotcueActivate(this, v, HotcueSetMode::Auto);
 }
 
 void HotcueControl::slotHotcueActivateCue(double v) {
-    emit hotcueActivate(this, v, HotcueMode::Cue);
+    emit hotcueActivate(this, v, HotcueSetMode::Cue);
 }
 
 void HotcueControl::slotHotcueActivateLoop(double v) {
-    emit hotcueActivate(this, v, HotcueMode::Loop);
+    emit hotcueActivate(this, v, HotcueSetMode::Loop);
 }
 
 void HotcueControl::slotHotcueActivatePreview(double v) {
