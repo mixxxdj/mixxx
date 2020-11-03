@@ -47,11 +47,15 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
 }
 
 void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
-    // Since the same instance if opened again by the same parent widget
-    // we need to prevent qt from destroying it's children
     hide();
     slotLoadTrack(nullptr);
-    event->ignore();
+    if (parentWidget()) {
+        // If the widget has a parent. Since the same instance will be reused again.
+        // we need to prevent qt from destroying it's children
+        event->ignore();
+    } else {
+        QDialog::closeEvent(event);
+    }
 }
 
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
