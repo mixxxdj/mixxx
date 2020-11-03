@@ -142,16 +142,16 @@ QStringList Version::dependencyVersions() {
 void Version::logBuildDetails() {
     QString version = Version::version();
     QString buildBranch = developmentBranch();
-    QString buildRevision = developmentRevision();
+    QString buildCommitHash = developmentCommitHash();
     QString buildFlags = Version::buildFlags();
 
     QStringList buildInfo;
-    if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
+    if (!buildBranch.isEmpty() && !buildCommitHash.isEmpty()) {
         buildInfo.append(
-            QString("git %1 r%2").arg(buildBranch, buildRevision));
-    } else if (!buildRevision.isEmpty()) {
+                QString("git branch %1 commit %2").arg(buildBranch, buildCommitHash));
+    } else if (!buildCommitHash.isEmpty()) {
         buildInfo.append(
-            QString("git r%2").arg(buildRevision));
+                QString("git commit %2").arg(buildCommitHash));
     }
 #ifndef DISABLE_BUILDTIME // buildtime=1, on by default
     buildInfo.append("built on: " __DATE__ " @ " __TIME__);
