@@ -34,7 +34,7 @@
           <WidgetGroup>
             <ObjectName>SamplerTitleBoxMini</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>i,f</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
             <MinimumSize>,18</MinimumSize>
             <Children>
               <TrackProperty>
@@ -55,7 +55,7 @@
             <Children>
               <Number>
                 <TooltipId>visual_bpm</TooltipId>
-                <ObjectName>SamplerBpm</ObjectName>
+                <ObjectName>SamplerBpmMini</ObjectName>
                 <Size>45f,18f</Size>
                 <Group><Variable name="Group"/></Group>
                 <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->

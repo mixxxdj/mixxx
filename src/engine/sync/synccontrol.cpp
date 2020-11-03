@@ -7,6 +7,7 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/math.h"
@@ -129,12 +130,12 @@ void SyncControl::setSyncMode(SyncMode mode) {
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(isMaster(mode));
     if (mode == SYNC_FOLLOWER) {
-        if (m_pVCEnabled && m_pVCEnabled->get()) {
+        if (m_pVCEnabled && m_pVCEnabled->toBool()) {
             // If follower mode is enabled, disable vinyl control.
             m_pVCEnabled->set(0.0);
         }
     }
-    if (mode != SYNC_NONE && m_pPassthroughEnabled->get()) {
+    if (mode != SYNC_NONE && m_pPassthroughEnabled->toBool()) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
         // This is very unlikely to happen so this deserves a warning.
         qWarning() << "Notified of sync mode change when passthrough was "
@@ -362,14 +363,14 @@ void SyncControl::slotControlPlay(double play) {
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {
-    if (enabled && getSyncMode() == SYNC_FOLLOWER) {
+    if (enabled != 0 && getSyncMode() == SYNC_FOLLOWER) {
         // If vinyl control was enabled and we're a follower, disable sync mode.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
 }
 
 void SyncControl::slotPassthroughChanged(double enabled) {
-    if (enabled && isSynchronized()) {
+    if (enabled != 0 && isSynchronized()) {
         // If passthrough was enabled and sync was on, disable it.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
@@ -388,7 +389,7 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
         kLogger.trace() << getGroup() << "SyncControl::slotSyncModeChangeRequest";
     }
     SyncMode mode = syncModeFromDouble(state);
-    if (m_pPassthroughEnabled->get() && mode != SYNC_NONE) {
+    if (m_pPassthroughEnabled->toBool() && mode != SYNC_NONE) {
         qDebug() << "Disallowing enabling of sync mode when passthrough active";
     } else {
         m_pChannel->getEngineBuffer()->requestSyncMode(mode);
@@ -401,7 +402,7 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
             // Already master.
             return;
         }
-        if (m_pPassthroughEnabled->get()) {
+        if (m_pPassthroughEnabled->toBool()) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
@@ -417,7 +418,7 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
 
     // Allow a request for state change even if it's the same as the current
     // state.  We might have toggled on and off in the space of one buffer.
-    if (bEnabled && m_pPassthroughEnabled->get()) {
+    if (bEnabled && m_pPassthroughEnabled->toBool()) {
         qDebug() << "Disallowing enabling of sync mode when passthrough active";
         return;
     }

@@ -51,7 +51,7 @@ bool NetworkOutputStreamWorker::threadWaiting() {
 }
 
 qint64 NetworkOutputStreamWorker::getStreamTimeFrames() {
-    return static_cast<double>(getStreamTimeUs()) * m_sampleRate / 1000000.0;
+    return static_cast<qint64>(static_cast<double>(getStreamTimeUs()) * m_sampleRate / 1000000.0);
 }
 
 qint64 NetworkOutputStreamWorker::getStreamTimeUs() {

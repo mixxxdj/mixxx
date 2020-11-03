@@ -18,7 +18,7 @@ namespace {
 // (defined in AnalyzerWaveform::initialize) do not align well and thus
 // generate interference. Currently we are at this odd factor: 441 * 0.01161 = 5.12.
 // This should be adjusted to be an integer.
-constexpr float kStepSecs = 0.01161;
+constexpr float kStepSecs = 0.01161f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
 
@@ -50,7 +50,7 @@ AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
-    m_stepSize = m_iSampleRate * kStepSecs;
+    m_stepSize = static_cast<int>(m_iSampleRate * kStepSecs);
     m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximumBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(m_stepSize, m_windowSize));

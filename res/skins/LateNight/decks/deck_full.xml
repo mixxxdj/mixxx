@@ -55,11 +55,19 @@
               <Template src="skin:/decks/row_5_transportLoopJump.xml" />
 
             </Children>
+          </WidgetGroup><!-- DeckRows12345 -->
+
+          <WidgetGroup>
+            <ObjectName>DeckRateSpacer</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Children/>
+            <!-- this is sized and styled in css -->
             <Connection>
               <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
-              <BindProperty>highlight</BindProperty>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup> <!-- DeckRows12345 -->
+          </WidgetGroup>
 
           <Template src="skin:/decks/rate_controls.xml"/>
         </Children>

@@ -173,10 +173,10 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
             fMid[i] = 1.0;
         }
     } else {
-        fLow = m_pPotLow->value();
-        fHigh = m_pPotHigh->value();
+        fLow = static_cast<float>(m_pPotLow->value());
+        fHigh = static_cast<float>(m_pPotHigh->value());
         for (int i = 0; i < 6; i++) {
-            fMid[i] = m_pPotMid[i]->value();
+            fMid[i] = static_cast<float>(m_pPotMid[i]->value());
         }
     }
 
@@ -200,7 +200,7 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
     }
 
     int bufIndex = 0;
-    if (fLow) {
+    if (fLow != 0) {
         pState->m_low->process(pInput, pState->m_pBufs[1 - bufIndex], bufferParameters.samplesPerBuffer());
         bufIndex = 1 - bufIndex;
     } else {
@@ -209,7 +209,7 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
     }
 
     for (int i = 0; i < 6; i++) {
-        if (fMid[i]) {
+        if (fMid[i] != 0) {
             pState->m_bands[i]->process(pState->m_pBufs[bufIndex],
                                         pState->m_pBufs[1 - bufIndex], bufferParameters.samplesPerBuffer());
             bufIndex = 1 - bufIndex;
@@ -218,14 +218,13 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
         }
     }
 
-    if (fHigh) {
+    if (fHigh != 0) {
         pState->m_high->process(pState->m_pBufs[bufIndex],
                                 pOutput, bufferParameters.samplesPerBuffer());
     } else {
         SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], bufferParameters.samplesPerBuffer());
         pState->m_high->pauseFilter();
     }
-
 
     pState->m_oldLow = fLow;
     pState->m_oldHigh = fHigh;

@@ -11,9 +11,9 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
-#include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "track/track.h"
 #include "util/color/colorpalette.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
@@ -22,11 +22,14 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wstarrating.h"
 
-const int kFilterLength = 80;
-const int kMinBpm = 30;
+namespace {
+constexpr int kFilterLength = 80;
+constexpr int kMinBpm = 30;
+} // namespace
 
 // Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
+const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
+        static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 
 DlgTrackInfo::DlgTrackInfo(
         const TrackModel* trackModel)

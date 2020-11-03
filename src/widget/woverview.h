@@ -20,12 +20,13 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wwidget.h"
@@ -88,7 +89,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_pixmapDone;
     float m_waveformPeak;
 
-    int m_diffGain;
+    float m_diffGain;
     qreal m_devicePixelRatio;
 
   private slots:
@@ -177,6 +178,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_passthroughOverlayColor;
     QColor m_playedOverlayColor;
     QColor m_lowColor;
+    int m_dimBrightThreshold;
     QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks

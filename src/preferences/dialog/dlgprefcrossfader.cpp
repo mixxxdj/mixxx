@@ -89,7 +89,7 @@ void DlgPrefCrossfader::slotResetToDefaults() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
-    SliderXFader->setValue(sliderVal);
+    SliderXFader->setValue(static_cast<int>(sliderVal));
 
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);
@@ -166,7 +166,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     // reduced by 2 x 1 for border + 2 x 1 for inner distance to border
     double xfadeStep = 2. / (pointCount - 1);
     for (int i = 0; i < pointCount; i++) {
-        double gain1, gain2;
+        CSAMPLE_GAIN gain1, gain2;
         EngineXfader::getXfadeGains((-1. + (xfadeStep * i)),
                                     m_transform, m_cal,
                                     m_xFaderMode,
@@ -175,9 +175,9 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
         double gain = sqrt(gain1 * gain1 + gain2 * gain2);
         // scale for graph
-        gain1 *= 0.71;
-        gain2 *= 0.71;
-        gain *= 0.71;
+        gain1 *= 0.71f;
+        gain2 *= 0.71f;
+        gain *= 0.71f;
 
         // draw it
         pointTotal = QPointF(i + 1, (1. - gain) * (sizeY) - 3);

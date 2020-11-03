@@ -2,13 +2,13 @@
 
 #include <memory>
 
-#include "test/mixxxtest.h"
-
+#include "control/controlobject.h"
 #include "database/mixxxdb.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "util/db/dbconnectionpooler.h"
+#include "test/mixxxtest.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 
 class LibraryTest : public MixxxTest {
   protected:

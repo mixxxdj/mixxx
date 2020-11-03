@@ -1,5 +1,4 @@
-#ifndef BESSELLVMIXEQBASE_H
-#define BESSELLVMIXEQBASE_H
+#pragma once
 
 #include "effects/effectprocessor.h"
 #include "engine/filters/enginefilterdelay.h"
@@ -8,36 +7,44 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
-static const int kRampDone = -1;
-static const double kStartupLoFreq = 246;
-static const double kStartupHiFreq = 2484;
+class LVMixEQEffectGroupStateConstants {
+  public:
+    LVMixEQEffectGroupStateConstants() = delete;
 
+    static constexpr SINT kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
+    static constexpr SINT kRampDone = -1;
+    static constexpr double kStartupLoFreq = 246;
+    static constexpr double kStartupHiFreq = 2484;
+};
 
 template<class LPF>
 class LVMixEQEffectGroupState : public EffectState {
   public:
-    LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
-          m_oldLow(1.0),
-          m_oldMid(1.0),
-          m_oldHigh(1.0),
-          m_rampHoldOff(kRampDone),
-          m_oldSampleRate(bufferParameters.sampleRate()),
-          m_loFreq(kStartupLoFreq),
-          m_hiFreq(kStartupHiFreq) {
+    explicit LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters),
+              m_oldLow(1.0),
+              m_oldMid(1.0),
+              m_oldHigh(1.0),
+              m_rampHoldOff(LVMixEQEffectGroupStateConstants::kRampDone),
+              m_oldSampleRate(bufferParameters.sampleRate()),
+              m_loFreq(LVMixEQEffectGroupStateConstants::kStartupLoFreq),
+              m_hiFreq(LVMixEQEffectGroupStateConstants::kStartupHiFreq) {
         m_pLowBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
         m_pBandBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
         m_pHighBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
 
-        m_low1 = new LPF(bufferParameters.sampleRate(), kStartupLoFreq);
-        m_low2 = new LPF(bufferParameters.sampleRate(), kStartupHiFreq);
-        m_delay2 = new EngineFilterDelay<kMaxDelay>();
-        m_delay3 = new EngineFilterDelay<kMaxDelay>();
-        setFilters(bufferParameters.sampleRate(), kStartupLoFreq, kStartupHiFreq);
+        m_low1 = new LPF(bufferParameters.sampleRate(),
+                LVMixEQEffectGroupStateConstants::kStartupLoFreq);
+        m_low2 = new LPF(bufferParameters.sampleRate(),
+                LVMixEQEffectGroupStateConstants::kStartupHiFreq);
+        m_delay2 = new EngineFilterDelay<LVMixEQEffectGroupStateConstants::kMaxDelay>();
+        m_delay3 = new EngineFilterDelay<LVMixEQEffectGroupStateConstants::kMaxDelay>();
+        setFilters(bufferParameters.sampleRate(),
+                LVMixEQEffectGroupStateConstants::kStartupLoFreq,
+                LVMixEQEffectGroupStateConstants::kStartupHiFreq);
     }
 
-    virtual ~LVMixEQEffectGroupState() {
+    ~LVMixEQEffectGroupState() override {
         delete m_low1;
         delete m_low2;
         delete m_delay2;
@@ -47,22 +54,30 @@ class LVMixEQEffectGroupState : public EffectState {
         SampleUtil::free(m_pHighBuf);
     }
 
-    void setFilters(int sampleRate, double lowFreq, double highFreq) {
-        int delayLow1 = m_low1->setFrequencyCornersForIntDelay(
-                lowFreq / sampleRate, kMaxDelay);
-        int delayLow2 = m_low2->setFrequencyCornersForIntDelay(
-                highFreq / sampleRate, kMaxDelay);
+    void setFilters(
+            mixxx::audio::SampleRate sampleRate,
+            double lowFreq,
+            double highFreq) {
+        SINT delayLow1 = m_low1->setFrequencyCornersForIntDelay(
+                lowFreq / sampleRate, LVMixEQEffectGroupStateConstants::kMaxDelay);
+        SINT delayLow2 = m_low2->setFrequencyCornersForIntDelay(
+                highFreq / sampleRate, LVMixEQEffectGroupStateConstants::kMaxDelay);
 
         m_delay2->setDelay((delayLow1 - delayLow2) * 2);
         m_delay3->setDelay(delayLow1 * 2);
         m_groupDelay = delayLow1 * 2;
     }
 
-    void processChannel(const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const int numSamples,
-                        const unsigned int sampleRate,
-                        double fLow, double fMid, double fHigh,
-                        double loFreq, double hiFreq) {
+    void processChannel(
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            SINT numSamples,
+            mixxx::audio::SampleRate sampleRate,
+            double dLow,
+            double dMid,
+            double dHigh,
+            double loFreq,
+            double hiFreq) {
         if (m_oldSampleRate != sampleRate ||
                 (m_loFreq != loFreq) ||
                 (m_hiFreq != hiFreq)) {
@@ -76,28 +91,29 @@ class LVMixEQEffectGroupState : public EffectState {
         // we can subtract or add the filtered signal to the dry signal if we compensate this delay
         // The dry signal represents the high gain
         // Then the higher low pass is added and at least the lower low pass result.
-        fLow = fLow - fMid;
-        fMid = fMid - fHigh;
+        auto fLow = static_cast<CSAMPLE>(dLow - dMid);
+        auto fMid = static_cast<CSAMPLE>(dMid - dHigh);
+        auto fHigh = static_cast<CSAMPLE>(dHigh);
 
         // Note: We do not call pauseFilter() here because this will introduce a
         // buffer size-dependent start delay. During such start delay some unwanted
         // frequencies are slipping though or wanted frequencies are damped.
         // We know the exact group delay here so we can just hold off the ramping.
-        if (fHigh || m_oldHigh) {
+        if (fHigh != 0 || m_oldHigh != 0) {
             m_delay3->process(pInput, m_pHighBuf, numSamples);
         }
 
-        if (fMid || m_oldMid) {
+        if (fMid != 0 || m_oldMid != 0) {
             m_delay2->process(pInput, m_pBandBuf, numSamples);
             m_low2->process(m_pBandBuf, m_pBandBuf, numSamples);
         }
 
-        if (fLow || m_oldLow) {
+        if (fLow != 0 || m_oldLow != 0) {
             m_low1->process(pInput, m_pLowBuf, numSamples);
         }
 
         // Test code for comparing streams as two stereo channels
-        //for (unsigned int i = 0; i < numSamples; i +=2) {
+        //for (SINT i = 0; i < numSamples; i +=2) {
         //    pOutput[i] = pState->m_pLowBuf[i];
         //    pOutput[i + 1] = pState->m_pBandBuf[i];
         //}
@@ -111,20 +127,20 @@ class LVMixEQEffectGroupState : public EffectState {
                     m_pHighBuf, fHigh,
                     numSamples);
         } else {
-            int copySamples = 0;
-            int rampingSamples = numSamples;
-            if ((fLow && !m_oldLow) ||
-                    (fMid && !m_oldMid) ||
-                    (fHigh && !m_oldHigh)) {
+            SINT copySamples = 0;
+            SINT rampingSamples = numSamples;
+            if ((fLow != 0 && m_oldLow == 0) ||
+                    (fMid != 0 && m_oldMid == 0) ||
+                    (fHigh != 0 && m_oldHigh == 0)) {
                 // we have just switched at least one filter on
                 // Hold off ramping for the group delay
-                if (m_rampHoldOff == kRampDone) {
+                if (m_rampHoldOff == LVMixEQEffectGroupStateConstants::kRampDone) {
                     // multiply the group delay * 2 to ensure that the filter is
                     // settled it is actually at a factor of 1,8 at default setting
                     m_rampHoldOff = m_groupDelay * 2;
                     // ensure that we have at least 128 samples for ramping
                     // (the smallest buffer, that suits for de-clicking)
-                    int rampingSamples = numSamples - (m_rampHoldOff % numSamples);
+                    SINT rampingSamples = numSamples - (m_rampHoldOff % numSamples);
                     if (rampingSamples < 128) {
                         m_rampHoldOff += rampingSamples;
                     }
@@ -132,7 +148,7 @@ class LVMixEQEffectGroupState : public EffectState {
 
                 // ramping is done in one of the following calls if
                 // pState->m_rampHoldOff >= numSamples;
-                copySamples = math_min<int>(m_rampHoldOff, numSamples);
+                copySamples = math_min(m_rampHoldOff, numSamples);
                 m_rampHoldOff -= copySamples;
                 rampingSamples = numSamples - copySamples;
 
@@ -153,27 +169,27 @@ class LVMixEQEffectGroupState : public EffectState {
                 m_oldLow = fLow;
                 m_oldMid = fMid;
                 m_oldHigh = fHigh;
-                m_rampHoldOff = kRampDone;
-
+                m_rampHoldOff = LVMixEQEffectGroupStateConstants::kRampDone;
             }
         }
     }
 
     void processChannelAndPause(
-            const CSAMPLE* pInput, CSAMPLE* pOutput, const int numSamples) {
-
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            SINT numSamples) {
         // Note: We do not call pauseFilter() here because this will introduce a
         // buffer size-dependent start delay. During such start delay some unwanted
         // frequencies are slipping though or wanted frequencies are damped.
         // We know the exact group delay here so we can just hold off the ramping.
         m_delay3->processAndPauseFilter(pInput, m_pHighBuf, numSamples);
 
-        if (m_oldMid) {
+        if (m_oldMid != 0) {
             m_delay2->processAndPauseFilter(pInput, m_pBandBuf, numSamples);
             m_low2->processAndPauseFilter(m_pBandBuf, m_pBandBuf, numSamples);
         }
 
-        if (m_oldLow) {
+        if (m_oldLow != 0) {
             m_low1->processAndPauseFilter(pInput, m_pLowBuf, numSamples);
         }
 
@@ -186,20 +202,20 @@ class LVMixEQEffectGroupState : public EffectState {
 
     /*
 
-        int copySamples = 0;
-        int rampingSamples = numSamples;
+        SINT copySamples = 0;
+        SINT rampingSamples = numSamples;
         if ((fLow && !m_oldLow) ||
                 (fMid && !m_oldMid) ||
                 (fHigh && !m_oldHigh)) {
             // we have just switched at least one filter on
             // Hold off ramping for the group delay
-            if (m_rampHoldOff == kRampDone) {
+            if (m_rampHoldOff == LVMixEQEffectGroupStateConstants::kRampDone) {
                 // multiply the group delay * 2 to ensure that the filter is
                 // settled it is actually at a factor of 1,8 at default setting
                 m_rampHoldOff = m_groupDelay * 2;
                 // ensure that we have at least 128 samples for ramping
                 // (the smallest buffer, that suits for de-clicking)
-                int rampingSamples = numSamples - (m_rampHoldOff % numSamples);
+                SINT rampingSamples = numSamples - (m_rampHoldOff % numSamples);
                 if (rampingSamples < 128) {
                     m_rampHoldOff += rampingSamples;
                 }
@@ -207,7 +223,7 @@ class LVMixEQEffectGroupState : public EffectState {
 
             // ramping is done in one of the following calls if
             // pState->m_rampHoldOff >= numSamples;
-            copySamples = math_min<int>(m_rampHoldOff, numSamples);
+            copySamples = math_min(m_rampHoldOff, numSamples);
             m_rampHoldOff -= copySamples;
             rampingSamples = numSamples - copySamples;
 
@@ -228,7 +244,7 @@ class LVMixEQEffectGroupState : public EffectState {
             m_oldLow = fLow;
             m_oldMid = fMid;
             m_oldHigh = fHigh;
-            m_rampHoldOff = kRampDone;
+            m_rampHoldOff = LVMixEQEffectGroupStateConstants::kRampDone;
 
         }
     }
@@ -238,17 +254,17 @@ class LVMixEQEffectGroupState : public EffectState {
   private:
     LPF* m_low1;
     LPF* m_low2;
-    EngineFilterDelay<kMaxDelay>* m_delay2;
-    EngineFilterDelay<kMaxDelay>* m_delay3;
+    EngineFilterDelay<LVMixEQEffectGroupStateConstants::kMaxDelay>* m_delay2;
+    EngineFilterDelay<LVMixEQEffectGroupStateConstants::kMaxDelay>* m_delay3;
 
-    double m_oldLow;
-    double m_oldMid;
-    double m_oldHigh;
+    CSAMPLE_GAIN m_oldLow;
+    CSAMPLE_GAIN m_oldMid;
+    CSAMPLE_GAIN m_oldHigh;
 
-    int m_rampHoldOff;
-    int m_groupDelay;
+    SINT m_rampHoldOff;
+    SINT m_groupDelay;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
     double m_loFreq;
     double m_hiFreq;
 
@@ -256,5 +272,3 @@ class LVMixEQEffectGroupState : public EffectState {
     CSAMPLE* m_pBandBuf;
     CSAMPLE* m_pHighBuf;
 };
-
-#endif // BESSELLVMIXEQBASE_H

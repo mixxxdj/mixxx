@@ -2,17 +2,16 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
-#include <QtDebug>
-#include <QStringList>
 #include <QDateTime>
 #include <QDirIterator>
+#include <QStringList>
+#include <QtDebug>
 
 #include "library/browse/browsetablemodel.h"
-
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/datetime.h"
 #include "util/trace.h"
-
 
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;
@@ -179,11 +178,6 @@ void BrowseThread::populateModel() {
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_ALBUM, item);
 
-            item = new QStandardItem(pTrack->getAlbumArtist());
-            item->setToolTip(item->text());
-            item->setData(item->text(), Qt::UserRole);
-            row_data.insert(COLUMN_ALBUMARTIST, item);
-
             item = new QStandardItem(pTrack->getTrackNumber());
             item->setToolTip(item->text());
             item->setData(item->text().toInt(), Qt::UserRole);
@@ -205,11 +199,6 @@ void BrowseThread::populateModel() {
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_COMPOSER, item);
-
-            item = new QStandardItem(pTrack->getGrouping());
-            item->setToolTip(item->text());
-            item->setData(item->text(), Qt::UserRole);
-            row_data.insert(COLUMN_GROUPING, item);
 
             item = new QStandardItem(pTrack->getComment());
             item->setToolTip(item->text());
@@ -248,6 +237,16 @@ void BrowseThread::populateModel() {
             item->setToolTip(nativeLocation);
             item->setData(location, Qt::UserRole);
             row_data.insert(COLUMN_NATIVELOCATION, item);
+
+            item = new QStandardItem(pTrack->getAlbumArtist());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_ALBUMARTIST, item);
+
+            item = new QStandardItem(pTrack->getGrouping());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_GROUPING, item);
 
             const auto fileLastModified =
                     pTrack->getFileInfo().fileLastModified();

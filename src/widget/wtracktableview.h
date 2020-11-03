@@ -7,7 +7,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "preferences/usersettings.h"
-#include "track/track.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
@@ -41,6 +40,7 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
+    TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();

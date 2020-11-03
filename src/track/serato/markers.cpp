@@ -9,8 +9,13 @@ namespace {
 
 mixxx::Logger kLogger("SeratoMarkers");
 
-constexpr int kNumEntries = 14;
-constexpr int kLoopEntryStartIndex = 5;
+// The number of entries are fixed, the "SeratoMarkers_" tag always contains
+// the first 5 cues and 9 loops. Additional cues points can be stored in the
+// "SeratoMarkers2" tag.
+constexpr int kNumCueEntries = 5;
+constexpr int kNumLoopEntries = 9;
+constexpr int kNumEntries = kNumCueEntries + kNumLoopEntries;
+
 constexpr int kEntrySizeID3 = 22;
 constexpr int kEntrySizeMP4 = 19;
 constexpr quint32 kNoPosition = 0x7F7F7F7F;
@@ -337,14 +342,14 @@ bool SeratoMarkers::parseID3(
             return false;
         }
 
-        if (i < kLoopEntryStartIndex &&
+        if (i < kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
             kLogger.warning() << "Parsing SeratoMarkers_ failed:"
                               << "Expected cue entry but found type" << pEntry->type();
             return false;
         }
 
-        if (i >= kLoopEntryStartIndex &&
+        if (i >= kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
             kLogger.warning() << "Parsing SeratoMarkers_ failed:"
                               << "Expected loop entry but found type"
@@ -430,14 +435,14 @@ bool SeratoMarkers::parseMP4(
             return false;
         }
 
-        if (i < kLoopEntryStartIndex &&
+        if (i < kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
             kLogger.warning() << "Parsing SeratoMarkers_ (MP4) failed:"
                               << "Expected cue entry but found type" << pEntry->type();
             return false;
         }
 
-        if (i >= kLoopEntryStartIndex &&
+        if (i >= kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
             kLogger.warning() << "Parsing SeratoMarkers_ (MP4) failed:"
                               << "Expected loop entry but found type"
@@ -570,8 +575,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
     int loopIndex = 0;
-    for (const auto& pEntry : m_entries) {
-        DEBUG_ASSERT(pEntry);
+    for (const auto& pEntry : qAsConst(m_entries)) {
+        VERIFY_OR_DEBUG_ASSERT(pEntry) {
+            continue;
+        }
         switch (pEntry->typeId()) {
         case SeratoMarkersEntry::TypeId::Cue: {
             if (pEntry->hasStartPosition()) {
@@ -580,7 +587,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         pEntry->getStartPosition(),
                         std::nullopt,
                         cueIndex,
-                        "",
+                        QString(),
                         pEntry->getColor());
                 cueInfos.append(cueInfo);
             }
@@ -589,12 +596,19 @@ QList<CueInfo> SeratoMarkers::getCues() const {
         }
         case SeratoMarkersEntry::TypeId::Loop: {
             if (pEntry->hasStartPosition()) {
+                if (!pEntry->hasEndPosition()) {
+                    // Usually this can't happen unless Serato is buggy or the
+                    // Metadata is broken. But we should never trust user data
+                    // and better be safe than sorry.
+                    qWarning() << "SeratoMarkers: Loop" << loopIndex << "has no end position!";
+                    continue;
+                }
                 CueInfo loopInfo = CueInfo(
                         CueType::Loop,
                         pEntry->getStartPosition(),
                         pEntry->getEndPosition(),
                         loopIndex,
-                        "",
+                        QString(),
                         std::nullopt);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute
@@ -608,6 +622,102 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     }
 
     return cueInfos;
+}
+
+void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
+    QMap<int, CueInfo> cueMap;
+    QMap<int, CueInfo> loopMap;
+
+    for (const CueInfo& cueInfo : cueInfos) {
+        // All of these check can be debug assertions, as the list should be
+        // pre-filtered by the seratoTags class.
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+            continue;
+        }
+        int hotcueNumber = *cueInfo.getHotCueNumber();
+
+        VERIFY_OR_DEBUG_ASSERT(hotcueNumber >= 0) {
+            continue;
+        }
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
+            continue;
+        }
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getStartPositionMillis()) {
+            continue;
+        }
+
+        switch (cueInfo.getType()) {
+        case CueType::HotCue:
+            cueMap.insert(hotcueNumber, cueInfo);
+            break;
+        case CueType::Loop:
+            VERIFY_OR_DEBUG_ASSERT(cueInfo.getEndPositionMillis()) {
+                continue;
+            }
+            loopMap.insert(hotcueNumber, cueInfo);
+            break;
+        default:
+            DEBUG_ASSERT(!"Invalid cue type");
+            continue;
+        }
+    }
+
+    QList<SeratoMarkersEntryPointer> entries;
+    for (int i = 0; i < kNumCueEntries; i++) {
+        const CueInfo cueInfo = cueMap.value(i);
+
+        SeratoMarkersEntryPointer pEntry;
+        if (cueInfo.getStartPositionMillis()) {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    true,
+                    static_cast<int>(*cueInfo.getStartPositionMillis()),
+                    false,
+                    0,
+                    *cueInfo.getColor(),
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Cue),
+                    false);
+        } else {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    false,
+                    0,
+                    false,
+                    0,
+                    RgbColor(0),
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Unknown),
+                    false);
+        }
+        entries.append(pEntry);
+    }
+
+    for (int i = 0; i < kNumLoopEntries; i++) {
+        const CueInfo cueInfo = loopMap.value(i);
+
+        SeratoMarkersEntryPointer pEntry;
+        if (cueInfo.getStartPositionMillis()) {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    true,
+                    static_cast<int>(*cueInfo.getStartPositionMillis()),
+                    true,
+                    static_cast<int>(*cueInfo.getEndPositionMillis()),
+                    *cueInfo.getColor(),
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
+                    false);
+        } else {
+            pEntry = std::make_shared<SeratoMarkersEntry>(
+                    false,
+                    0,
+                    false,
+                    0,
+                    RgbColor(0),
+                    // In contrast to cues, unset saved loop have the same type
+                    // ID as set ones.
+                    static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
+                    false);
+        }
+        entries.append(pEntry);
+    }
+
+    setEntries(std::move(entries));
 }
 
 } // namespace mixxx

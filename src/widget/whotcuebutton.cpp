@@ -5,6 +5,11 @@
 #include <QtDebug>
 
 #include "mixer/playerinfo.h"
+#include "track/track.h"
+
+namespace {
+constexpr int kDefaultDimBrightThreshold = 127;
+}
 
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),
@@ -12,9 +17,10 @@ WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
           m_hotcue(Cue::kNoHotCue),
           m_hoverCueColor(false),
           m_pCoColor(nullptr),
-          m_cueColorDimmed(false),
-          m_isCueColorLight(false),
-          m_isCueColorDark(false) {
+          m_cueColorDimThreshold(kDefaultDimBrightThreshold),
+          m_bCueColorDimmed(false),
+          m_bCueColorIsLight(false),
+          m_bCueColorIsDark(false) {
 }
 
 void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
@@ -28,6 +34,13 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     } else {
         SKIN_WARNING(node, context) << "Hotcue value invalid";
     }
+
+    bool okay;
+    m_cueColorDimThreshold = context.selectInt(node, QStringLiteral("DimBrightThreshold"), &okay);
+    if (!okay) {
+        m_cueColorDimThreshold = kDefaultDimBrightThreshold;
+    }
+
     m_hoverCueColor = context.selectBool(node, QStringLiteral("Hover"), false);
 
     m_pCueMenuPopup = make_parented<WCueMenuPopup>(context.getConfig(), this);
@@ -88,8 +101,13 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
             if (!pHotCue) {
                 return;
             }
+            if (e->modifiers().testFlag(Qt::ShiftModifier)) {
+                pTrack->removeCue(pHotCue);
+                return;
+            }
             m_pCueMenuPopup->setTrackAndCue(pTrack, pHotCue);
-            m_pCueMenuPopup->popup(e->globalPos());
+            // use the bottom left corner as starting point for popup
+            m_pCueMenuPopup->popup(mapToGlobal(QPoint(0, height())));
         }
         return;
     }
@@ -110,8 +128,8 @@ void WHotcueButton::slotColorChanged(double color) {
     VERIFY_OR_DEBUG_ASSERT(color >= 0 && color <= 0xFFFFFF) {
         return;
     }
-    QColor cueColor = QColor::fromRgb(color);
-    m_cueColorDimmed = Color::isDimmColor(cueColor);
+    QColor cueColor = QColor::fromRgb(static_cast<QRgb>(color));
+    m_bCueColorDimmed = Color::isDimColorCustom(cueColor, m_cueColorDimThreshold);
 
     QString style =
             QStringLiteral("WWidget[displayValue=\"1\"] { background-color: ") +
@@ -121,7 +139,7 @@ void WHotcueButton::slotColorChanged(double color) {
     if (m_hoverCueColor) {
         style +=
                 QStringLiteral("WWidget[displayValue=\"1\"]:hover { background-color: ") +
-                cueColor.lighter(m_cueColorDimmed ? 120 : 80).name() +
+                cueColor.lighter(m_bCueColorDimmed ? 120 : 80).name() +
                 QStringLiteral("; }");
     }
 
@@ -132,13 +150,13 @@ void WHotcueButton::slotColorChanged(double color) {
 void WHotcueButton::restyleAndRepaint() {
     if (readDisplayValue()) {
         // Adjust properties for Qss file
-        m_isCueColorLight = !m_cueColorDimmed;
-        m_isCueColorDark = m_cueColorDimmed;
+        m_bCueColorIsLight = !m_bCueColorDimmed;
+        m_bCueColorIsDark = m_bCueColorDimmed;
     } else {
         // We are now at the background set by qss.
         // Since we don't know the color reset both
-        m_isCueColorLight = false;
-        m_isCueColorDark = false;
+        m_bCueColorIsLight = false;
+        m_bCueColorIsDark = false;
     }
     WPushButton::restyleAndRepaint();
 }

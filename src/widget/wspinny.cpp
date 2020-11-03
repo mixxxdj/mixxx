@@ -1,23 +1,25 @@
-#include <QtDebug>
+#include "widget/wspinny.h"
+
 #include <QApplication>
-#include <QUrl>
 #include <QMimeData>
 #include <QStylePainter>
+#include <QUrl>
 #include <QWindow>
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
-#include "waveform/sharedglcontext.h"
 #include "util/math.h"
-#include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "widget/wspinny.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
@@ -333,9 +335,9 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         // Some covers aren't square, so center them.
-        int x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
-        int y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
-        p.drawPixmap(x, y, m_loadedCoverScaled);
+        double x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
+        double y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
+        p.drawPixmap(QPointF(x, y), m_loadedCoverScaled);
     }
 
     if (m_pMaskImage) {
@@ -362,12 +364,12 @@ void WSpinny::render(VSyncThread* vSyncThread) {
     }
 
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos) {
-        m_fAngle = calculateAngle(m_dAngleCurrentPlaypos);
+        m_fAngle = static_cast<float>(calculateAngle(m_dAngleCurrentPlaypos));
         m_dAngleLastPlaypos = m_dAngleCurrentPlaypos;
     }
 
     if (m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos) {
-        m_fGhostAngle = calculateAngle(m_dGhostAngleCurrentPlaypos);
+        m_fGhostAngle = static_cast<float>(calculateAngle(m_dGhostAngleCurrentPlaypos));
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
@@ -453,11 +455,11 @@ double WSpinny::calculateAngle(double playpos) {
     const double originalAngle = angle;
     if (angle > 0)
     {
-        int x = (angle+180)/360;
+        const auto x = static_cast<int>((angle + 180) / 360);
         angle = angle - (360*x);
     } else
     {
-        int x = (angle-180)/360;
+        const auto x = static_cast<int>((angle - 180) / 360);
         angle = angle - (360*x);
     }
 
@@ -524,9 +526,9 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
     if (m_pVCManager == nullptr) {
         return;
     }
-    m_bSignalActive = enabled;
+    m_bSignalActive = enabled != 0;
 
-    if (enabled && m_iVinylInput != -1) {
+    if (m_bSignalActive && m_iVinylInput != -1) {
         m_pVCManager->addSignalQualityListener(this);
     } else {
         m_pVCManager->removeSignalQualityListener(this);
@@ -537,7 +539,7 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
 }
 
 void WSpinny::updateVinylControlEnabled(double enabled) {
-    m_bVinylActive = enabled;
+    m_bVinylActive = enabled != 0;
 }
 
 void WSpinny::updateSlipEnabled(double enabled) {

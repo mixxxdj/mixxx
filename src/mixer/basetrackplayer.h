@@ -9,7 +9,9 @@
 #include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/replaygain.h"
+#include "track/track_decl.h"
+#include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
 
@@ -88,6 +90,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   private slots:
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
+    void slotCloneFromSampler(double sampler);
     void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -115,6 +118,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Deck clone control
     std::unique_ptr<ControlObject> m_pCloneFromDeck;
+    std::unique_ptr<ControlObject> m_pCloneFromSampler;
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;

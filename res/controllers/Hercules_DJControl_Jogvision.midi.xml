@@ -5,7 +5,7 @@
     <author>DJ Phatso for Hercules Technical Support</author>
     <description>MIDI Mapping for Hercules DJControl Jogvision</description>
     <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12580</forums>
-    <wiki>https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision</wiki>
+    <manual>hercules_djcontrol_jogvision</manual>
   </info>
   <controller id="Hercules DJControl Jogvision">
     <scriptfiles>
@@ -152,10 +152,20 @@
       <!-- LOAD A -->
       <control>
         <group>[Channel1]</group>
-        <key>LoadSelectedTrack</key>
+        <key>DJCJV.loadTrack</key>
         <description>LOAD A button</description>
         <status>0x90</status>
         <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>eject</key>
+        <description>EJECT A button</description>
+        <status>0x90</status>
+        <midino>0x53</midino>
         <options>
           <normal />
         </options>
@@ -196,22 +206,12 @@
       <!-- Loop Section -->
       <control>
         <group>[Channel1]</group>
-        <key>loop_halve</key>
+        <key>DJCJV.beatLoopChange</key>
         <description>Loop Half</description>
         <status>0x90</status>
         <midino>0x00</midino>
         <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>reloop_toggle</key>
-        <description>Loop On button</description>
-        <status>0x90</status>
-        <midino>0x01</midino>
-        <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -226,12 +226,12 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>loop_double</key>
+        <key>DJCJV.beatLoopChange</key>
         <description>Loop Double</description>
         <status>0x90</status>
         <midino>0x02</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- FX section -->
@@ -616,10 +616,20 @@
       <!-- LOAD B -->
       <control>
         <group>[Channel2]</group>
-        <key>LoadSelectedTrack</key>
+        <key>DJCJV.loadTrack</key>
         <description>LOAD B button</description>
         <status>0x91</status>
         <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>eject</key>
+        <description>EJECT B button</description>
+        <status>0x91</status>
+        <midino>0x53</midino>
         <options>
           <normal />
         </options>
@@ -660,22 +670,12 @@
       <!-- Loop Section -->
       <control>
         <group>[Channel2]</group>
-        <key>loop_halve</key>
+        <key>DJCJV.beatLoopChange</key>
         <description>Loop Half</description>
         <status>0x91</status>
         <midino>0x00</midino>
         <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>reloop_toggle</key>
-        <description>Loop On button</description>
-        <status>0x91</status>
-        <midino>0x01</midino>
-        <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -690,12 +690,12 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>loop_double</key>
+        <key>DJCJV.beatLoopChange</key>
         <description>Loop Double</description>
         <status>0x91</status>
         <midino>0x02</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- FX section -->
@@ -1039,12 +1039,12 @@
       <!-- Browser section (Encoder button) -->
       <control>
         <group>[Library]</group>
-        <key>MoveFocus</key>
+        <key>DJCJV.moveFocus</key>
         <description>Browser button</description>
         <status>0x90</status>
         <midino>0x4F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- Crossfader -->
@@ -1061,12 +1061,12 @@
       <!-- Browser encoder -->
       <control>
         <group>[Library]</group>
-        <key>MoveVertical</key>
+        <key>DJCJV.browseLibrary</key>
         <description>Move Vertical (Browser Knob)</description>
         <status>0xB0</status>
         <midino>0x4E</midino>
         <options>
-          <selectknob />
+          <script-binding />
         </options>
       </control>
       <!-- CC's MIDI Channel 1 (0xB0 ) -->
@@ -1115,12 +1115,12 @@
       <!-- Gain -->
       <control>
         <group>[Channel1]</group>
-        <key>pregain</key>
+        <key>DJCJV.preGain</key>
         <description>Gain Deck A</description>
         <status>0xB0</status>
         <midino>0x4F</midino>
         <options>
-          <HercJog />
+          <script-binding />
         </options>
       </control>
       <!-- Filter -->
@@ -1213,7 +1213,7 @@
         <status>0xB0</status>
         <midino>0x47</midino>
         <options>
-          <HercJog />
+          <normal />
         </options>
       </control>
       <control>
@@ -1223,7 +1223,7 @@
         <status>0xB0</status>
         <midino>0x48</midino>
         <options>
-          <HercJog />
+          <normal />
         </options>
       </control>
       <control>
@@ -1233,17 +1233,17 @@
         <status>0xB0</status>
         <midino>0x49</midino>
         <options>
-          <HercJog />
+          <normal />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>mix</key>
+        <key>DJCJV.mixLevel</key>
         <description>Effect Rack 1 - Dry/Wet Level</description>
         <status>0xB0</status>
         <midino>0x46</midino>
         <options>
-          <HercJog />
+          <script-binding />
         </options>
       </control>
       <!-- CC's MIDI Channel 2 (0xB1) -->
@@ -1292,12 +1292,12 @@
       <!-- Gain -->
       <control>
         <group>[Channel2]</group>
-        <key>pregain</key>
-        <description>Gain Deck A</description>
+        <key>DJCJV.preGain</key>
+        <description>Gain Deck B</description>
         <status>0xB1</status>
         <midino>0x4F</midino>
         <options>
-          <HercJog />
+          <script-binding />
         </options>
       </control>
       <!-- Filter -->
@@ -1390,7 +1390,7 @@
         <status>0xB1</status>
         <midino>0x47</midino>
         <options>
-          <HercJog />
+          <normal />
         </options>
       </control>
       <control>
@@ -1400,7 +1400,7 @@
         <status>0xB1</status>
         <midino>0x48</midino>
         <options>
-          <HercJog />
+          <normal />
         </options>
       </control>
       <control>
@@ -1410,17 +1410,17 @@
         <status>0xB1</status>
         <midino>0x49</midino>
         <options>
-          <HercJog />
+          <normal />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>mix</key>
+        <key>DJCJV.mixLevel</key>
         <description>Effect Rack 1 - Dry/Wet Level</description>
         <status>0xB1</status>
         <midino>0x46</midino>
         <options>
-          <HercJog />
+          <script-binding />
         </options>
       </control>
     </controls>

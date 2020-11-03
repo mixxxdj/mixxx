@@ -38,6 +38,11 @@ TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
+CoverInfo ProxyTrackModel::getCoverInfo(const QModelIndex& index) const {
+    QModelIndex indexSource = mapToSource(index);
+    return m_pTrackModel ? m_pTrackModel->getCoverInfo(indexSource) : CoverInfo();
+}
+
 const QVector<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
     return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QVector<int>();
 }

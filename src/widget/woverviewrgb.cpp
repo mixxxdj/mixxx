@@ -35,7 +35,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255 * m_devicePixelRatio,
+        m_waveformSourceImage = QImage(
+                dataSize / 2,
+                static_cast<int>(2 * 255 * m_devicePixelRatio),
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }

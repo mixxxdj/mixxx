@@ -79,9 +79,6 @@ class TaskMonitor
             PercentageOfCompletion estimatedPercentageOfCompletion,
             const QString& progressMessage);
 
-  private slots:
-    void slotCanceled();
-
   private:
     Task* senderTask() const;
     void updateProgress();

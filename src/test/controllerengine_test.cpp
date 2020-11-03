@@ -1,19 +1,33 @@
+#include "controllers/controllerengine.h"
+
+#include <QScopedPointer>
+#include <QTemporaryFile>
 #include <QThread>
 #include <QtDebug>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/controllerengine.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
-#include "util/memory.h"
 #include "util/time.h"
+
+typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
 class ControllerEngineTest : public MixxxTest {
   protected:
+    static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
+        QByteArray contentsBa = contents.toLocal8Bit();
+        ScopedTemporaryFile pFile = std::make_unique<QTemporaryFile>();
+        pFile->open();
+        pFile->write(contentsBa);
+        pFile->close();
+        return pFile;
+    }
+
     void SetUp() override {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));

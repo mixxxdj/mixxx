@@ -222,7 +222,7 @@ unsigned int PlayerManager::numDecks() {
         }
     }
     // m_pCOPNumDecks->get() fails on MacOs
-    return pCOPNumDecks ? pCOPNumDecks->get() : 0;
+    return pCOPNumDecks ? static_cast<int>(pCOPNumDecks->get()) : 0;
 }
 
 // static
@@ -240,7 +240,7 @@ unsigned int PlayerManager::numSamplers() {
         }
     }
     // m_pCOPNumSamplers->get() fails on MacOs
-    return pCOPNumSamplers ? pCOPNumSamplers->get() : 0;
+    return pCOPNumSamplers ? static_cast<int>(pCOPNumSamplers->get()) : 0;
 }
 
 // static
@@ -259,7 +259,7 @@ unsigned int PlayerManager::numPreviewDecks() {
         }
     }
     // m_pCOPNumPreviewDecks->get() fails on MacOs
-    return pCOPNumPreviewDecks ? pCOPNumPreviewDecks->get() : 0;
+    return pCOPNumPreviewDecks ? static_cast<int>(pCOPNumPreviewDecks->get()) : 0;
 }
 
 void PlayerManager::slotChangeNumDecks(double v) {
@@ -604,7 +604,8 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     if (!m_pAutoDjEnabled) {
         m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
     }
-    bool autoDjSkipClone = m_pAutoDjEnabled->get() && (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
+    bool autoDjSkipClone = m_pAutoDjEnabled->toBool() &&
+            (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 
     if (cloneOnDoubleTap && m_lastLoadedPlayer == group
         && elapsed < mixxx::Duration::fromSeconds(0.5)

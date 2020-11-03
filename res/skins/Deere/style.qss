@@ -28,7 +28,6 @@
 }
 
 #CrossfaderContainer {
-  padding: 3px 3px 0px 3px;
 }
 
 #DeckTextRow {
@@ -89,7 +88,7 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 3px 0 3px;
+  padding: 0 2px 0 3px;
 }
 
 #ControlsRow {
@@ -879,6 +878,7 @@ WOverview #PassthroughLabel {
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
+#PlayCueContainer,
 #HotcueGrid,
 #VinylControlsGrid {
   padding: 1px;
@@ -1001,10 +1001,19 @@ WBeatSpinBox,
 
 #ArtistGutter, #TitleGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px;
-}
+  }
+  #TitleGutter {
+    padding: 2px 2px 1px 2px;
+  }
+  #ArtistGutter {
+    padding: 1px 2px 2px 2px;
+  }
 #TitleGutterSmall {
   padding: 0px;
+}
+
+#TrackColorWrapper {
+  margin-right: 2px;
 }
 
 #ArtistKeyBpmGutterSmall {
@@ -1257,6 +1266,10 @@ WBeatSpinBox,
   qproperty-alignment: 'AlignHCenter';
   font: 10px;
   margin-top: 1px;
+}
+
+#Crossfader {
+  margin-top: 3px;
 }
 
 #Crossfader[highlight="0"] {
@@ -1615,6 +1628,7 @@ do not highlight either state. */
 #EffectUnitMixModeButton {
   margin: 1px 4px;
   border-radius: 2px;
+  border: 0px;
 }
 
 #EffectUnitMixModeButton[value="0"]:hover,

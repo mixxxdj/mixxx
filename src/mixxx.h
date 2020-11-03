@@ -9,7 +9,7 @@
 #include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
@@ -99,7 +99,6 @@ class MixxxMainWindow : public QMainWindow {
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
     bool eventFilter(QObject *obj, QEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
-    bool event(QEvent* e) override;
 
   private:
     void initialize(QApplication *app, const CmdlineArgs& args);
