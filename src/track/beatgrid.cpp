@@ -371,7 +371,7 @@ void BeatGrid::setBpm(double dBpm) {
 
 void BeatGrid::round() {
     double roundedBpm = ::round(getBpm());
-    if(roundedBpm > 0) {
+    if (roundedBpm > 0) {
         setBpm(roundedBpm);
     }
 }

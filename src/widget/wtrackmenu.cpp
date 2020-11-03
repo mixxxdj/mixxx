@@ -1238,7 +1238,8 @@ namespace {
 
 class RoundBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
-    explicit RoundBpmTrackPointerOperation() {}
+    explicit RoundBpmTrackPointerOperation() {
+    }
 
   private:
     void doApply(

@@ -705,7 +705,6 @@ void BeatMap::round() {
     return;
 }
 
-
 void BeatMap::onBeatlistChanged() {
     if (!isValid()) {
         m_dLastFrame = 0;

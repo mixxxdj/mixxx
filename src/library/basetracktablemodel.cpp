@@ -13,6 +13,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/bpm.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
@@ -20,7 +21,6 @@
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
-#include "track/bpm.h"
 
 namespace {
 

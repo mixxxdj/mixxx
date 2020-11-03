@@ -132,7 +132,7 @@ void DlgTrackInfo::init() {
     connect(beatgridLock,
             &QCheckBox::stateChanged,
             this,
-            [this] (int state) {enableBpmControls(state == Qt::Unchecked);});
+            [this](int state) { enableBpmControls(state == Qt::Unchecked); });
 
     connect(spinBpm,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),

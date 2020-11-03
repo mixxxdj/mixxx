@@ -36,13 +36,13 @@ class Beats : public QObject {
     ~Beats() override = default;
 
     enum Capabilities {
-        BEATSCAP_NONE          = 0x0000,
-        BEATSCAP_ADDREMOVE     = 0x0001, // Add or remove a single beat
-        BEATSCAP_TRANSLATE     = 0x0002, // Move all beat markers earlier or later
-        BEATSCAP_SCALE         = 0x0004, // Scale beat distance by a fixed ratio
-        BEATSCAP_MOVEBEAT      = 0x0008, // Move a single Beat
-        BEATSCAP_SETBPM        = 0x0010, // Set new bpm, beat grid only
-        BEATSCAP_ROUND         = 0x0020  // Try to round the beat grid to interger segments
+        BEATSCAP_NONE = 0x0000,
+        BEATSCAP_ADDREMOVE = 0x0001, // Add or remove a single beat
+        BEATSCAP_TRANSLATE = 0x0002, // Move all beat markers earlier or later
+        BEATSCAP_SCALE = 0x0004,     // Scale beat distance by a fixed ratio
+        BEATSCAP_MOVEBEAT = 0x0008,  // Move a single Beat
+        BEATSCAP_SETBPM = 0x0010,    // Set new bpm, beat grid only
+        BEATSCAP_ROUND = 0x0020      // Try to round the beat grid to integer segments
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
 
