@@ -156,6 +156,12 @@ DlgAutoDJ::DlgAutoDJ(
     labelTransitionAppendix->setToolTip(labelTransitionTooltip);
     fadeModeCombobox->setToolTip(fadeModeTooltip);
 
+    // Prevent the interactive widgets from being focused with Tab or Shift+Tab
+    fadeModeCombobox->setFocusPolicy(Qt::ClickFocus);
+    spinBoxTransition->setFocusPolicy(Qt::ClickFocus);
+    // work around QLineEdit being protected
+    spinBoxTransition->findChild<QLineEdit*>()->setFocusPolicy(Qt::ClickFocus);
+
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
