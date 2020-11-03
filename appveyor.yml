@@ -161,7 +161,8 @@ for:
   clone_folder: c:\projects\mixxx
 
   cache:
-    - C:\mixxx-buildserver
+    # The Windows build environment is bigger than the 1 GB cache AppVeyor gives us for free.
+    #- C:\mixxx-buildserver
     - C:\Users\appveyor\clcache
 
   environment:
