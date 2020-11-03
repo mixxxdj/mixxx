@@ -1219,7 +1219,12 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
 
     for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
         // PlayerManager::groupForPreviewDeck is 0-indexed.
-        QString prefix = m_previewdeckStr.arg(i);
+        QString prefix;
+        if (iNumPreviewDecks == 1) {
+            prefix = m_previewdeckStr.arg("");
+        } else {
+            prefix = m_previewdeckStr.arg(i);
+        }
         QString group = PlayerManager::groupForPreviewDeck(i - 1);
         addSingleControl(group, control, controlTitle, controlDescription,
                          controlMenu, prefix, prefix);
