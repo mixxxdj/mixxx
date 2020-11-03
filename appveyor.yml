@@ -98,9 +98,12 @@ for:
       xsltproc
 
   before_build:
-     # Limit cache size to 100 MB
-    - ccache -M 100M
-    - ccache -c
+    # Limit cache size to 4 GB.
+    # AppVeyor allows 1 GB cache for the free plan but stores it compressed.
+    # Compression ratio is ~80%, so we could have ~10 GB uncompressed total cache.
+    # Split cache in half with Ubuntu ccache and underestimate compression ratio a little to
+    # avoid going over the limit.
+    - ccache -M 4G
     - ccache -s
 
   build_script:
@@ -261,9 +264,12 @@ for:
       )
     # Generate WIX installer
     - cpack -G "WIX"
+    # copy package so one file gets deployed with a uniquely identifying name
+    # and one with a name we can link to from the website
     - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
       If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
-        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi
+        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% %MIXXX_PACKAGE_NAME%.msi
+        && copy %MIXXX_PACKAGE_NAME%.msi mixxx-%APPVEYOR_REPO_BRANCH%-latest.msi
       ) else (
         echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )

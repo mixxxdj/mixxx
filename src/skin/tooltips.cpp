@@ -32,6 +32,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString scrollWheel = tr("Scroll-wheel");
+    QString shift = tr("Shift-key");
     QString loopActive = "(" + tr("loop active") + ")";
     QString loopInactive = "(" + tr("loop inactive") + ")";
     QString effectsWithinUnit = tr("Effects within the chain must be enabled to hear them.");
@@ -597,12 +598,19 @@ void Tooltips::addStandardTooltips() {
             << tr("Eject")
             << tr("Ejects track from the player.");
 
-    add("hotcue")
-            << tr("Hotcue")
-            << QString("%1: %2").arg(leftClick, tr("If hotcue is set, jumps to the hotcue."))
-            << tr("If hotcue is not set, sets the hotcue to the current play position.")
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Opens a menu to clear hotcues or edit their labels and colors."));
+    add("hotcue") << tr("Hotcue")
+                  << QString("%1: %2").arg(leftClick,
+                             tr("If hotcue is set, jumps to the hotcue."))
+                  << tr("If hotcue is not set, sets the hotcue to the current "
+                        "play position.")
+                  << quantizeSnap
+                  << QString("%1: %2").arg(rightClick,
+                             tr("Opens a menu to clear hotcues or edit their "
+                                "labels and colors."))
+                  << QString("%1 + %2: %3")
+                             .arg(rightClick,
+                                     shift,
+                                     tr("Delete selected hotcue."));
 
     // Status displays and toggle buttons
     add("toggle_recording")
