@@ -255,7 +255,7 @@ for:
       -DSTATIC_DEPS=ON
       -G "Ninja"
       ..
-    - cmake --build .
+    - cmake --build . -v
     - cmake --build . --target install
     - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
       If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
