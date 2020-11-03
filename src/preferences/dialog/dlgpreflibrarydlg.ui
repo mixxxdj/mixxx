@@ -244,9 +244,9 @@
       <string/>
      </property>
      <property name="title">
-      <string extracomment="Sets default action when double-clicking a track in the library.">Track Load Action</string>
+      <string extracomment="Sets default action when double-clicking a track in the library.">Track Double-Click Action</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_5">
+     <layout class="QGridLayout" name="gridLayout_dblick">
       <item row="0" column="0">
        <widget class="QRadioButton" name="radioButton_dbclick_deck">
         <property name="text">
@@ -260,14 +260,21 @@
       <item row="1" column="0">
        <widget class="QRadioButton" name="radioButton_dbclick_bottom">
         <property name="text">
-         <string>Add track to Auto DJ Queue (bottom)</string>
+         <string>Add track to Auto DJ queue (bottom)</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QRadioButton" name="radioButton_dbclick_top">
         <property name="text">
-         <string>Add track to Auto DJ Queue (top)</string>
+         <string>Add track to Auto DJ queue (top)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QRadioButton" name="radioButton_dbclick_ignore">
+        <property name="text">
+         <string>Ignore</string>
         </property>
        </widget>
       </item>
@@ -396,6 +403,7 @@
   <tabstop>radioButton_dbclick_deck</tabstop>
   <tabstop>radioButton_dbclick_bottom</tabstop>
   <tabstop>radioButton_dbclick_top</tabstop>
+  <tabstop>radioButton_dbclick_ignore</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
   <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>

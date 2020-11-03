@@ -6,7 +6,6 @@
 #include <QtDebug>
 #include <algorithm>
 
-#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/starrating.h"
@@ -763,6 +762,48 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     return QDir::fromNativeSeparators(nativeLocation);
 }
 
+CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
+    CoverInfo coverInfo;
+    coverInfo.setImageDigest(
+            index.sibling(index.row(),
+                         fieldIndex(ColumnCache::
+                                         COLUMN_LIBRARYTABLE_COVERART_DIGEST))
+                    .data()
+                    .toByteArray(),
+            index.sibling(index.row(),
+                         fieldIndex(ColumnCache::
+                                         COLUMN_LIBRARYTABLE_COVERART_HASH))
+                    .data()
+                    .toUInt());
+    coverInfo.color = mixxx::RgbColor::fromQVariant(
+            index.sibling(index.row(),
+                         fieldIndex(ColumnCache::
+                                         COLUMN_LIBRARYTABLE_COVERART_COLOR))
+                    .data());
+    if (coverInfo.hasImage()) {
+        coverInfo.type = static_cast<CoverInfo::Type>(
+                index.sibling(index.row(),
+                             fieldIndex(ColumnCache::
+                                             COLUMN_LIBRARYTABLE_COVERART_TYPE))
+                        .data()
+                        .toInt());
+        coverInfo.source = static_cast<CoverInfo::Source>(
+                index.sibling(index.row(),
+                             fieldIndex(ColumnCache::
+                                             COLUMN_LIBRARYTABLE_COVERART_SOURCE))
+                        .data()
+                        .toInt());
+        coverInfo.coverLocation =
+                index.sibling(index.row(),
+                             fieldIndex(ColumnCache::
+                                             COLUMN_LIBRARYTABLE_COVERART_LOCATION))
+                        .data()
+                        .toString();
+        coverInfo.trackLocation = getTrackLocation(index);
+    }
+    return coverInfo;
+}
+
 void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
@@ -778,11 +819,6 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
             emit dataChanged(topLeft, bottomRight);
         }
     }
-}
-
-BaseCoverArtDelegate* BaseSqlTableModel::doCreateCoverArtDelegate(
-        QTableView* pTableView) const {
-    return new CoverArtDelegate(pTableView);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
