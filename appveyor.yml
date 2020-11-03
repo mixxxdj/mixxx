@@ -296,7 +296,6 @@ for:
 
 
   artifacts:
-    - path: 'cmake_build/*.exe'
     - path: 'cmake_build/*.msi'
 
   on_finish:
