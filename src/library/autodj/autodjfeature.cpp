@@ -145,7 +145,7 @@ void AutoDJFeature::bindLibraryWidget(
             this,
             &AutoDJFeature::slotRandomQueue);
     connect(m_pAutoDJView,
-            &DlgAutoDJ::addRandomButton,
+            &DlgAutoDJ::addRandomTrackButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
 }

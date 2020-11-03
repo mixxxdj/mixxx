@@ -172,8 +172,12 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
                     selectRow(0);
                     DEBUG_ASSERT(currentIndex().row() == 0);
                 } else {
-                    // Select the focused row
-                    selectRow(currentIndex().row());
+                    // Select the row of the currently focused index.
+                    // For some reason selectRow(currentIndex().row()) would not
+                    // select for the first Qt::BacktabFocusReason in a session
+                    // even though currentIndex() is valid.
+                    selectionModel()->select(currentIndex(),
+                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
                 }
             }
             DEBUG_ASSERT(currentIndex().isValid());

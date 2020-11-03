@@ -2,7 +2,9 @@
 <!--
   Description:
     Deck visual row (waveform and spinny).
+    Use smaller spinny sizes for 4 decks than 2 decks.
   Variables:
+    i: deck number, used for to construct group name
     group: the group to connect to
 -->
 <Template>
@@ -13,8 +15,6 @@
     <Children>
 
       <Template src="skin:vinylcontrol.xml"/>
-
-      <Template src="skin:spinny.xml"/>
 
       <Visual>
         <TooltipId>waveform_display</TooltipId>
@@ -168,14 +168,6 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_up</SetVariable>
           </Template>
         </Children>
-        <!--The zoom buttons shift the center line off center in stacked waveform mode.-->
-        <Connection>
-          <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
       </WidgetGroup>
 
     </Children>

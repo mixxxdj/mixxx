@@ -27,12 +27,19 @@
                 <Elide>right</Elide>
               </TrackProperty>
 
+              <WidgetGroup>
+                <ObjectName>SamplerTitleBpmSeparator</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>f,me</SizePolicy>
+                <Children/>
+              </WidgetGroup>
+
               <Number>
                 <TooltipId>visual_bpm</TooltipId>
                 <ObjectName>SamplerBpm</ObjectName>
+                <Size>49f,0min</Size>
                 <Group><Variable name="Group"/></Group>
-                <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-                <Alignment>left</Alignment>
+                <Alignment>center</Alignment>
                 <Connection>
                   <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
                 </Connection>
@@ -41,20 +48,28 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </Number>
+
+              <WidgetGroup>
+                <Size>49f,0min</Size>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
 
-          <!--  * Play, Overview, Controls, Gain  | VU
-                * hotcues + Pfl                   |  meter -->
+      <!-- Play Overview Settings | Gain |  VU
+           Hotcues                | Pfl  | meter -->
           <WidgetGroup>
-            <ObjectName>SamplerRowTwo</ObjectName>
+            <ObjectName>SamplerRows23</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <!--  * Play, Overview, Controls, Gain
-                    * hotcues + Pfl  -->
+              <!-- Play Overview Settings  -->
               <WidgetGroup>
-                <ObjectName></ObjectName>
+                <ObjectName>SamplerPlayRow</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
@@ -64,6 +79,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
+
                       <WidgetGroup>
                         <ObjectName>SamplerPlayBox</ObjectName>
                         <Layout>horizontal</Layout>
@@ -80,7 +96,7 @@
                             <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play</SetVariable>
                           </Template>
                         </Children>
-                      </WidgetGroup><!-- SamplerPlay -->
+                      </WidgetGroup><!-- SamplerPlayBox -->
 
                       <WidgetGroup>
                         <ObjectName>OverviewBox</ObjectName>
@@ -96,91 +112,77 @@
                       </WidgetGroup><!-- OverviewBox -->
 
                       <WidgetGroup>
-                        <ObjectName>SamplerSettings</ObjectName>
+                        <ObjectName>SamplerSettingsContainer</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>max,min</SizePolicy>
                         <Children>
                           <WidgetGroup>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>min,min</SizePolicy>
+                            <ObjectName>SamplerSettings</ObjectName>
+                            <Layout>vertical</Layout>
+                            <SizePolicy>max,min</SizePolicy>
                             <Children>
-                              <Template src="skin:/controls/button_2state.xml">
-                                <SetVariable name="TooltipId">repeat</SetVariable>
-                                <SetVariable name="ObjectName">RepeatButton12</SetVariable>
-                                <SetVariable name="BtnType"></SetVariable>
-                                <SetVariable name="ConfigKey"><Variable name="Group"/>,repeat</SetVariable>
-                                <SetVariable name="Size">21f,18f</SetVariable>
-                              </Template>
-                              <Template src="skin:/controls/button_1state.xml">
-                                <SetVariable name="TooltipId">eject</SetVariable>
-                                <SetVariable name="ObjectName">EjectButton12</SetVariable>
-                                <SetVariable name="BtnType"></SetVariable>
-                                <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
-                                <SetVariable name="Size">21f,18f</SetVariable>
-                              </Template>
-                            </Children>
-                          </WidgetGroup>
+                              <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>min,min</SizePolicy>
+                                <Children>
+                                  <Template src="skin:/controls/button_2state.xml">
+                                    <SetVariable name="TooltipId">repeat</SetVariable>
+                                    <SetVariable name="ObjectName">RepeatButton12</SetVariable>
+                                    <SetVariable name="BtnType"></SetVariable>
+                                    <SetVariable name="ConfigKey"><Variable name="Group"/>,repeat</SetVariable>
+                                    <SetVariable name="Size">21f,18f</SetVariable>
+                                  </Template>
+                                  <Template src="skin:/controls/button_1state.xml">
+                                    <SetVariable name="TooltipId">eject</SetVariable>
+                                    <SetVariable name="ObjectName">EjectButton12</SetVariable>
+                                    <SetVariable name="BtnType"></SetVariable>
+                                    <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
+                                    <SetVariable name="Size">21f,18f</SetVariable>
+                                  </Template>
+                                </Children>
+                              </WidgetGroup>
 
-                          <WidgetGroup>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>min,min</SizePolicy>
-                            <Children>
-                              <Template src="skin:/controls/button_2state.xml">
-                                <SetVariable name="TooltipId">keylock</SetVariable>
-                                <SetVariable name="ObjectName">KeylockButton12</SetVariable>
-                                <SetVariable name="BtnType"></SetVariable>
-                                <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
-                                <SetVariable name="Size">21f,18f</SetVariable>
-                              </Template>
-                              <PushButton>
-                                <TooltipId>orientation</TooltipId>
-                                <Size>21f,18f</Size>
-                                <NumberStates>3</NumberStates>
-                                <State>
-                                  <Number>0</Number>
-                                  <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Pressed>
-                                  <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Unpressed>
-                                </State>
-                                <State>
-                                  <Number>1</Number>
-                                  <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Pressed>
-                                  <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Unpressed>
-                                </State>
-                                <State>
-                                  <Number>2</Number>
-                                  <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Pressed>
-                                  <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Unpressed>
-                                </State>
-                                <Connection>
-                                  <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
-                                  <ButtonState>LeftButton</ButtonState>
-                                </Connection>
-                              </PushButton>
+                              <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>min,min</SizePolicy>
+                                <Children>
+                                  <Template src="skin:/controls/button_2state.xml">
+                                    <SetVariable name="TooltipId">keylock</SetVariable>
+                                    <SetVariable name="ObjectName">KeylockButton12</SetVariable>
+                                    <SetVariable name="BtnType"></SetVariable>
+                                    <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
+                                    <SetVariable name="Size">21f,18f</SetVariable>
+                                  </Template>
+                                  <PushButton>
+                                    <TooltipId>orientation</TooltipId>
+                                    <Size>21f,18f</Size>
+                                    <NumberStates>3</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Pressed>
+                                      <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Unpressed>
+                                    </State>
+                                    <State>
+                                      <Number>1</Number>
+                                      <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Pressed>
+                                      <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Unpressed>
+                                    </State>
+                                    <State>
+                                      <Number>2</Number>
+                                      <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Pressed>
+                                      <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+                                </Children>
+                              </WidgetGroup>
                             </Children>
-                          </WidgetGroup>
+                          </WidgetGroup><!-- SamplerSettings -->
                         </Children>
-                      </WidgetGroup><!-- SamplerSettings -->
-
-                      <WidgetGroup>
-                        <ObjectName>SamplerGain</ObjectName>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Children>
-                          <Template src="skin:/controls/knob_textless.xml">
-                            <SetVariable name="TooltipId">pregain</SetVariable>
-                            <SetVariable name="Size">35f,30f</SetVariable>
-                            <SetVariable name="KnobBg">small</SetVariable>
-                            <SetVariable name="KnobIndicator">small</SetVariable>
-                            <SetVariable name="KnobColor">orange</SetVariable>
-                            <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
-                            <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
-                            <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
-                            <SetVariable name="unipolar">true</SetVariable>
-                            <SetVariable name="Group"><Variable name="Group"/></SetVariable>
-                            <SetVariable name="Control">pregain</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup><!-- SamplerGain -->
+                      </WidgetGroup><!-- SamplerSettingsContainer -->
                     </Children>
                   </WidgetGroup><!-- Play + overview + settings + gain -->
 
@@ -240,24 +242,25 @@
                           <WidgetGroup>
                             <SizePolicy>me,min</SizePolicy>
                           </WidgetGroup>
+
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>f,min</SizePolicy>
+                            <Children>
+                              <Template src="skin:/fx/assign_buttons.xml">
+                                <SetVariable name="Type">headphones</SetVariable>
+                              </Template>
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_sampler_fx</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+
+                          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+
                         </Children>
                       </WidgetGroup><!-- SamplerHotcues -->
-
-                      <WidgetGroup>
-                        <ObjectName>SamplerPfl</ObjectName>
-                        <Layout>horizontal</Layout>
-                        <Size>0min,0min</Size>
-                        <Children>
-                          <Template src="skin:/controls/button_2state.xml">
-                            <SetVariable name="TooltipId">pfl</SetVariable>
-                            <SetVariable name="ObjectName">PflButton</SetVariable>
-                            <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
-                            <SetVariable name="BtnSize">square</SetVariable>
-                            <SetVariable name="Size">26f,26f</SetVariable>
-                            <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup><!-- SamplerPfl -->
 
                     </Children>
                   </WidgetGroup><!-- hotcues + pfl -->
@@ -267,16 +270,77 @@
                                   * hotcues + Pfl  -->
 
               <WidgetGroup>
-                <ObjectName>SamplerVU</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>f,min</SizePolicy>
+                <ObjectName>SamplerGainPflVu_Container</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>f,me</SizePolicy>
                 <Children>
-                  <Template src="skin:/mixer/vumeter_single.xml">
-                    <SetVariable name="ChannelType">sampler</SetVariable>
-                    <SetVariable name="VuSize">sampler</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <ObjectName>SamplerGainPflVu</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>f,me</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <!-- <ObjectName>SamplerGainPflVu</ObjectName> -->
+                        <Layout>vertical</Layout>
+                        <SizePolicy>f,me</SizePolicy>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>SamplerGain</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,min</SizePolicy>
+                            <Children>
+                              <Template src="skin:/controls/knob.xml">
+                                <SetVariable name="TooltipId">pregain</SetVariable>
+                                <SetVariable name="Size">35f,30f</SetVariable>
+                                <SetVariable name="KnobBg">small</SetVariable>
+                                <SetVariable name="KnobIndicator">small</SetVariable>
+                                <SetVariable name="KnobColor">orange</SetVariable>
+                                <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
+                                <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+                                <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
+                                <SetVariable name="ArcUnipolar">true</SetVariable>
+                                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                                <SetVariable name="Control">pregain</SetVariable>
+                              </Template>
+                            </Children>
+                          </WidgetGroup><!-- SamplerGain -->
+
+                          <WidgetGroup><SizePolicy>me,me</SizePolicy></WidgetGroup>
+
+                          <WidgetGroup>
+                            <ObjectName>SamplerPfl</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <Size>0min,0min</Size>
+                            <Children>
+                              <Template src="skin:/controls/button_2state.xml">
+                                <SetVariable name="TooltipId">pfl</SetVariable>
+                                <SetVariable name="ObjectName">PflButton</SetVariable>
+                                <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+                                <SetVariable name="BtnSize">square</SetVariable>
+                                <SetVariable name="Size">26f,26f</SetVariable>
+                                <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
+                              </Template>
+                            </Children>
+                          </WidgetGroup><!-- SamplerPfl -->
+                        </Children>
+                      </WidgetGroup><!-- SamplerGainPfl -->
+
+                      <WidgetGroup>
+                        <ObjectName>SamplerVU</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>f,min</SizePolicy>
+                        <Children>
+                          <Template src="skin:/mixer/vumeter_single.xml">
+                            <SetVariable name="ChannelType">sampler</SetVariable>
+                            <SetVariable name="VuSize">sampler</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup><!-- SamplerVU -->
+                    </Children>
+                  </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- SamplerVU -->
+              </WidgetGroup><!-- SamplerGainPfl -->
+
             </Children>
           </WidgetGroup><!--  * Play, Overview, Controls, Gain  | VU
                               * hotcues + Pfl                   |  meter -->
@@ -309,7 +373,7 @@
           <WidgetGroup>
             <ObjectName>SamplerPitchSlider</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>min,me</SizePolicy>
             <Children>
               <SliderComposed>
                 <TooltipId>rate</TooltipId>

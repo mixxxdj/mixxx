@@ -276,7 +276,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
             }
         }
 
-        m_pSortColumn->set(trackModel->sortColumnIdFromColumnIndex(sortColumn));
+        m_pSortColumn->set(static_cast<int>(trackModel->sortColumnIdFromColumnIndex(sortColumn)));
         m_pSortOrder->set(sortOrder);
         applySorting();
     }
@@ -336,32 +336,44 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackLoadAction settings
     int doubleClickActionConfigValue =
             m_pConfig->getValue(ConfigKey("[Library]", "TrackLoadAction"),
-                    static_cast<int>(DlgPrefLibrary::LOAD_TO_DECK));
+                    static_cast<int>(DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck));
     DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
             static_cast<DlgPrefLibrary::TrackDoubleClickAction>(
                     doubleClickActionConfigValue);
+
+    if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::Ignore) {
+        return;
+    }
 
     auto trackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
 
-    if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
+    if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::LoadToDeck)) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             emit loadTrack(pTrack);
         }
-    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM &&
+    } else if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::AddToAutoDJBottom &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::AddToAutoDJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
-    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP &&
+    } else if (doubleClickAction == DlgPrefLibrary::TrackDoubleClickAction::AddToAutoDJTop &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::AddToAutoDJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
     }
+}
+
+TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
+    TrackModel* trackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return TrackModel::SortColumnId::Invalid;
+    }
+    return trackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
 void WTrackTableView::assignPreviousTrackColor() {
@@ -940,7 +952,13 @@ void WTrackTableView::applySortingIfVisible() {
 void WTrackTableView::applySorting() {
     TrackModel* trackModel = getTrackModel();
     int sortColumnId = static_cast<int>(m_pSortColumn->get());
-    if (sortColumnId < 0 || sortColumnId >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::Invalid)) {
+        // During startup phase of Mixxx, this method is called with Invalid
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(
+            sortColumnId >= static_cast<int>(TrackModel::SortColumnId::IdMin) &&
+            sortColumnId < static_cast<int>(TrackModel::SortColumnId::IdMax)) {
         return;
     }
 
@@ -966,12 +984,12 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     TrackModel* trackModel = getTrackModel();
     TrackModel::SortColumnId sortColumnId = trackModel->sortColumnIdFromColumnIndex(headerSection);
 
-    if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+    if (sortColumnId == TrackModel::SortColumnId::Invalid) {
         return;
     }
 
-    if (sortColumnId != static_cast<int>(m_pSortColumn->get())) {
-        m_pSortColumn->set(sortColumnId);
+    if (static_cast<int>(sortColumnId) != static_cast<int>(m_pSortColumn->get())) {
+        m_pSortColumn->set(static_cast<int>(sortColumnId));
         sortingChanged = true;
     }
     if (sortOrder != m_pSortOrder->get()) {

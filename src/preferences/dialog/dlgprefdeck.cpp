@@ -4,7 +4,6 @@
 #include <QDoubleSpinBox>
 #include <QWidget>
 #include <QLocale>
-#include <QDesktopWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
