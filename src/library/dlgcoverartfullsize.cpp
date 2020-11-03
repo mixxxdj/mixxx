@@ -62,6 +62,11 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
+    // The real size will be calculated later.
+    // If you zoom in so the window is larger then the desktop, close the
+    // window and reopen, the window will not be resized correctly
+    // by slotCoverFound. Setting a small fixed size before show fixes this
+    resize(100, 100);
     show();
     raise();
     activateWindow();
