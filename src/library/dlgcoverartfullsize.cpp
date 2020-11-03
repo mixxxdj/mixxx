@@ -47,8 +47,10 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
 }
 
 void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
-    // prevent the window from being destroyed
+    // Since the same instance if opened again by the same parent widget
+    // we need to prevent qt from destroying it's children
     hide();
+    slotLoadTrack(nullptr);
     event->ignore();
 }
 
@@ -121,6 +123,8 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
     if (m_pLoadedTrack) {
         CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
+    } else {
+        coverArt->setPixmap(QPixmap());
     }
 }
 
@@ -157,20 +161,20 @@ void DlgCoverArtFullSize::slotCoverFound(
     }
 
     const QScreen* const pScreen = mixxx::widgethelper::getScreen(*parent);
-    QRect availableScreenGeometry;
+    QRect screenGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
-        availableScreenGeometry = QRect(0, 0, 800, 600);
+        screenGeometry = QRect(0, 0, 800, 600);
     }
     else {
-        availableScreenGeometry = pScreen->geometry();
+        screenGeometry = pScreen->geometry();
     }
 
-    const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
+    const QSize availableScreenSpace = screenGeometry.size() * 0.9;
     if (dialogSize.height() > availableScreenSpace.height()) {
-        dialogSize.scale(dialogSize.width(), availableScreenSpace.height(), Qt::KeepAspectRatio);
-    } else if (dialogSize.width() > availableScreenSpace.width()) {
-        dialogSize.scale(availableScreenSpace.width(), dialogSize.height(), Qt::KeepAspectRatio);
+        dialogSize.scale(dialogSize.width(), screenGeometry.height(), Qt::KeepAspectRatio);
+    } else if (dialogSize.width() > screenGeometry.width()) {
+        dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
     }
     QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
             Qt::KeepAspectRatio,
@@ -183,7 +187,7 @@ void DlgCoverArtFullSize::slotCoverFound(
             Qt::LeftToRight,
             Qt::AlignCenter,
             dialogSize,
-            availableScreenGeometry));
+            screenGeometry));
 }
 
 // slots to handle signals from the context menu
