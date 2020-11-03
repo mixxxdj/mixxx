@@ -1,5 +1,4 @@
-#ifndef VERSION_H
-#define VERSION_H
+#pragma once
 
 #include <QString>
 
@@ -34,5 +33,3 @@ class Version {
     // Prints out diagnostic information about this build.
     static void logBuildDetails();
 };
-
-#endif /* VERSION_H */
