@@ -302,7 +302,7 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(
         actualCallbackFunction = passedCallback;
     }
 
-    auto pScriptEngine = m_pScriptEngineLegacy->jsEngine();
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     // This check is redundant with makeConnection, but the
@@ -331,12 +331,12 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(
     if (passedCallback.isString()) {
         // This check is redundant with makeConnection, but it must be done here
         // before evaluating the code string.
-        VERIFY_OR_DEBUG_ASSERT(pScriptEngine != nullptr) {
+        VERIFY_OR_DEBUG_ASSERT(pJsEngine != nullptr) {
             return QJSValue(false);
         }
 
         actualCallbackFunction =
-                pScriptEngine->evaluate(passedCallback.toString());
+                pJsEngine->evaluate(passedCallback.toString());
 
         if (!actualCallbackFunction.isCallable()) {
             QString sErrorMessage(
@@ -366,7 +366,7 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(
                             "connection " +
                             connection.id.toString();
 
-            return pScriptEngine->newQObject(
+            return pJsEngine->newQObject(
                     new ScriptConnectionJSProxy(connection));
         }
     } else if (passedCallback.isQObject()) {
