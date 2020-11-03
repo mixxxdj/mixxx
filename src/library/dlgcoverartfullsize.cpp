@@ -50,8 +50,8 @@ void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
     hide();
     slotLoadTrack(nullptr);
     if (parentWidget()) {
-        // If the widget has a parent. Since the same instance will be reused again.
-        // we need to prevent qt from destroying it's children
+        // Since the widget has a parent, this instance will be reused again.
+        // We need to prevent qt from destroying it's children
         event->ignore();
     } else {
         QDialog::closeEvent(event);
