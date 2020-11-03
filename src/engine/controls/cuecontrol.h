@@ -259,7 +259,7 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
-    void setCurrentSavedLoopControl(HotcueControl* pControl);
+    void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
     double quantizeCuePoint(double position);
     double getQuantizedCurrentPosition();

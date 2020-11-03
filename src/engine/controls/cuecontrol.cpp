@@ -795,7 +795,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     }
 
     if (cueType == mixxx::CueType::Loop) {
-        setCurrentSavedLoopControl(pControl);
+        setCurrentSavedLoopControlAndActivate(pControl);
     }
 
     // If quantize is enabled and we are not playing, jump to the cue point
@@ -914,7 +914,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double value) {
 
     if (pCue->getType() == mixxx::CueType::Loop) {
         seekAbs(startPosition);
-        setCurrentSavedLoopControl(pControl);
+        setCurrentSavedLoopControlAndActivate(pControl);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
         seekAbs(startPosition);
         setBeatLoop(startPosition, true);
@@ -956,7 +956,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double value) {
         // active the first time this happens and toggle the loop_enabled state
         // on subsequent invocations.
         if (m_pCurrentSavedLoopControl != pControl) {
-            setCurrentSavedLoopControl(pControl);
+            setCurrentSavedLoopControlAndActivate(pControl);
         } else {
             bool loopActive = pControl->getStatus() == HotcueControl::Status::Active;
             setLoop(pCue->getPosition(), pCue->getEndPosition(), !loopActive);
@@ -966,7 +966,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double value) {
         // The hotcue_X_loop_toggle CO was invoked for a hotcue. In that case,
         // create a beatloop starting at the hotcue position. This is useful for
         // mapping the CUE LOOP mode labeled on some controllers.
-        setCurrentSavedLoopControl(nullptr);
+        setCurrentSavedLoopControlAndActivate(nullptr);
         double startPosition = pCue->getPosition();
         bool loopActive = m_pLoopEnabled->get() && (startPosition == m_pLoopStartPosition->get());
         setBeatLoop(startPosition, !loopActive);
@@ -1050,7 +1050,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
             pControl->setPreviewingType(pCue->getType());
             pControl->setPreviewingPosition(position);
             if (pCue->getType() == mixxx::CueType::Loop) {
-                setCurrentSavedLoopControl(pControl);
+                setCurrentSavedLoopControlAndActivate(pControl);
             } else if (pControl->getStatus() == HotcueControl::Status::Set) {
                 pControl->setStatus(HotcueControl::Status::Active);
             }
@@ -2095,7 +2095,7 @@ void CueControl::hotcueFocusColorNext(double value) {
     pCue->setColor(colorPalette.nextColor(*color));
 }
 
-void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
+void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) {
     if (m_pCurrentSavedLoopControl && m_pCurrentSavedLoopControl != pControl) {
         // Disable previous saved loop
         DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
@@ -2126,7 +2126,7 @@ void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
 }
 
 void CueControl::slotLoopReset() {
-    setCurrentSavedLoopControl(nullptr);
+    setCurrentSavedLoopControlAndActivate(nullptr);
 }
 
 void CueControl::slotLoopEnabledChanged(bool enabled) {
@@ -2168,7 +2168,7 @@ void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
     CuePointer pCue(m_pCurrentSavedLoopControl->getCue());
 
     VERIFY_OR_DEBUG_ASSERT(pCue->getType() == mixxx::CueType::Loop) {
-        setCurrentSavedLoopControl(nullptr);
+        setCurrentSavedLoopControlAndActivate(nullptr);
         return;
     }
 
