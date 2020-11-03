@@ -69,6 +69,8 @@ def export_source(source, dest):
         return export_git(source, dest)
     return None
 
+def get_git_commit_hash():
+    return os.popen("git log -1 --format=%h").read().strip()
 
 def get_git_revision():
     return os.popen("git rev-list HEAD --first-parent --count").read().strip()
@@ -185,6 +187,8 @@ def write_build_header(path):
         # Do not emit BUILD_BRANCH on release branches.
         if branch_name and not branch_name.startswith('release'):
             f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
+        f.write('#define BUILD_COMMIT_HASH "%s%s"\n' % (get_git_commit_hash(),
+                                                      ' (modified)' if modified else ''))
         f.write('#define BUILD_REV "%s%s"\n' % (get_revision(),
                                                 '+' if modified else ''))
     finally:

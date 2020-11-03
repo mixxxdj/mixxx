@@ -3,5 +3,6 @@
 
 #define BUILD_BRANCH "@GIT_BRANCH@"
 #define BUILD_REV "@GIT_COMMIT_COUNT@"
+#define BUILD_COMMIT_HASH "@GIT_COMMIT_HASH@"
 
 #endif // BUILD_H

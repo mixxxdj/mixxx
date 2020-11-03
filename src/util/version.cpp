@@ -74,6 +74,15 @@ QString Version::developmentBranch() {
 }
 
 // static
+QString Version::developmentCommitHash() {
+#ifdef BUILD_COMMIT_HASH
+    return BUILD_COMMIT_HASH;
+#else
+    return QString();
+#endif
+}
+
+// static
 QString Version::developmentRevision() {
 #ifdef BUILD_REV
     return BUILD_REV;

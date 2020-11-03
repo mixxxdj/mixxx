@@ -18,6 +18,8 @@ class Version {
     // string if the branch is unknown.
     static QString developmentBranch();
 
+    static QString developmentCommitHash();
+
     // Returns the development revision (e.g. git3096) or the null string if the
     // revision is unknown.
     static QString developmentRevision();

@@ -7,23 +7,16 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
 
     QString mixxxVersion = Version::version();
     QString buildBranch = Version::developmentBranch();
-    QString buildRevision = Version::developmentRevision();
+    QString buildCommitHash = Version::developmentCommitHash();
 
-    QStringList version;
-    version.append(mixxxVersion);
-
-    if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
-        QStringList buildInfo;
-        buildInfo.append("build");
-        if (!buildBranch.isEmpty()) {
-            buildInfo.append(buildBranch);
-        }
-        if (!buildRevision.isEmpty()) {
-            buildInfo.append(QString("r%1").arg(buildRevision));
-        }
-        version.append(QString("(%1)").arg(buildInfo.join(" ")));
+    QString version(QStringLiteral("Mixxx version: ") + mixxxVersion);
+    if (!buildBranch.isEmpty()) {
+        version.append(QStringLiteral("\nGit branch: ") + buildBranch);
     }
-    version_label->setText(version.join(" "));
+    if (!buildCommitHash.isEmpty()) {
+        version.append(QStringLiteral("\nGit hash: ") + buildCommitHash);
+    }
+    version_label->setText(version);
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {

@@ -257,6 +257,17 @@ if(NOT GIT_COMMIT_HASH)
 endif()
 message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
 
+# Check if the worktree is dirty
+execute_process(
+  COMMAND git diff --quiet
+  RESULT_VARIABLE GIT_WORKTREE_DIRTY
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  ERROR_QUIET
+)
+if(GIT_WORKTREE_DIRTY EQUAL "1")
+  set(GIT_COMMIT_HASH "${GIT_COMMIT_HASH} (modified)")
+endif()
+
 # Get the number of commits on the working branch
 execute_process(
   COMMAND git rev-list --count --first-parent HEAD
@@ -268,18 +279,8 @@ execute_process(
 if(NOT GIT_COMMIT_COUNT)
     set(GIT_COMMIT_COUNT "unknown")
 endif()
-
-# Check if the worktree is dirty
-execute_process(
-  COMMAND git diff --quiet
-  RESULT_VARIABLE GIT_WORKTREE_DIRTY
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  ERROR_QUIET
-)
-if(GIT_WORKTREE_DIRTY EQUAL "1")
-  set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
-endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
+
 if(MSVC)
   # clcache support
   find_program(CLCACHE_EXECUTABLE "clcache")
