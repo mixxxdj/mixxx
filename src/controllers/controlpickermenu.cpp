@@ -1026,28 +1026,26 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Skin Controls
     QMenu* guiMenu = addSubmenu(tr("User Interface"));
-    addControl("[Samplers]", "show_samplers",
-               tr("Samplers Show/Hide"),
-               tr("Show/hide the sampler section"), guiMenu);
-    addControl("[Skin]",
-            "expand_samplers",
-            tr("Samplers Expand/Collapse"),
-            tr("Expand/collapse the sampler section"),
+    addControl("[Samplers]",
+            "show_samplers",
+            tr("Samplers Show/Hide"),
+            tr("Show/hide the sampler section"),
             guiMenu);
     addControl("[Microphone]",
             "show_microphone",
             tr("Microphone & Auxiliary Show/Hide"),
             tr("Show/hide the microphone & auxiliary section"),
             guiMenu);
-    addControl(VINYL_PREF_KEY, "show_vinylcontrol",
-               tr("Vinyl Control Show/Hide"),
-               tr("Show/hide the vinyl control section"), guiMenu);
-    addControl("[PreviewDeck]", "show_previewdeck",
-               tr("Preview Deck Show/Hide"),
-               tr("Show/hide the preview deck"), guiMenu);
-    addControl("[EffectRack1]", "show",
-               tr("Effect Rack Show/Hide"),
-               tr("Show/hide the effect rack"), guiMenu);
+    addControl("[PreviewDeck]",
+            "show_previewdeck",
+            tr("Preview Deck Show/Hide"),
+            tr("Show/hide the preview deck"),
+            guiMenu);
+    addControl("[EffectRack1]",
+            "show",
+            tr("Effect Rack Show/Hide"),
+            tr("Show/hide the effect rack"),
+            guiMenu);
     addControl("[Skin]",
             "show_4effectunits",
             tr("4 Effect Units Show/Hide"),
@@ -1058,32 +1056,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Mixer Show/Hide"),
             tr("Show or hide the mixer."),
             guiMenu);
+    addControl("[Library]",
+            "show_coverart",
+            tr("Cover Art Show/Hide (Library)"),
+            tr("Show/hide cover art in the library"),
+            guiMenu);
+    addControl("[Master]",
+            "maximize_library",
+            tr("Library Maximize/Restore"),
+            tr("Maximize the track library to take up all the available screen "
+               "space."),
+            guiMenu);
+
+    guiMenu->addSeparator();
+
     addControl("[Skin]",
             "show_4decks",
             tr("Toggle 4 Decks"),
             tr("Switches between showing 2 decks and 4 decks."),
             guiMenu);
     addControl("[Skin]",
-            "show_waveforms",
-            tr("Toggle Waveforms"),
-            tr("Show/hide the scrolling waveforms."),
-            guiMenu);
-    addControl("[Library]",
-            "show_coverart",
-            tr("Cover Art Show/Hide (Library)"),
-            tr("Show/hide cover art in the library"),
-            guiMenu);
-    addControl("[Skin]",
             "show_coverart",
             tr("Cover Art Show/Hide (Decks)"),
             tr("Show/hide cover art in the main decks"),
             guiMenu);
-    addControl("[Master]", "maximize_library",
-               tr("Library Maximize/Restore"),
-               tr("Maximize the track library to take up all the available screen space."), guiMenu);
+    addControl(VINYL_PREF_KEY,
+            "show_vinylcontrol",
+            tr("Vinyl Control Show/Hide"),
+            tr("Show/hide the vinyl control section"),
+            guiMenu);
 
-    QString spinnyTitle = tr("Vinyl Spinners Show/Hide");
-    // TODO(ronso0) Add hint that this currently only affects the Shade skin
+    QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");
     QMenu* spinnyMenu = addSubmenu(spinnyTitle, guiMenu);
     guiMenu->addSeparator();
@@ -1092,6 +1095,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Vinyl Spinners Show/Hide (All Decks)"),
             tr("Show/Hide all spinnies"),
             spinnyMenu);
+    // TODO(ronso0) Add hint that this currently only affects the Shade skin
     for (int i = 1; i <= iNumDecks; ++i) {
         addControl(QString("[Spinny%1]").arg(i),
                 "show_spinny",
@@ -1102,6 +1106,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     guiMenu->addSeparator();
 
+    addControl("[Skin]",
+            "show_waveforms",
+            tr("Toggle Waveforms"),
+            tr("Show/hide the scrolling waveforms."),
+            guiMenu);
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
     addDeckControl("waveform_zoom_down", tr("Waveform Zoom In"), tr("Zoom waveform in"), guiMenu);
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
