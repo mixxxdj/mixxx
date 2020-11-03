@@ -286,7 +286,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Skin],show_master_head_mixer</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

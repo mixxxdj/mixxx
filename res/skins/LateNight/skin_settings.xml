@@ -555,8 +555,8 @@ Description:
                         <Children>
 
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                            <SetVariable name="Text">Master / Headphone Mixer</SetVariable>
-                            <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
+                            <SetVariable name="Text">Main / Headphone Mixer</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_main_head_mixer</SetVariable>
                           </Template>
 
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">

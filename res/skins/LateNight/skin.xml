@@ -72,7 +72,7 @@
 
     <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_master_head_mixer">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_main_head_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
