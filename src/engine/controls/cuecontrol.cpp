@@ -1051,7 +1051,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
             pControl->setPreviewingPosition(position);
             if (pCue->getType() == mixxx::CueType::Loop) {
                 setCurrentSavedLoopControl(pControl);
-            } else if (pControl->getStatus() == HotcueControl::Status::Valid) {
+            } else if (pControl->getStatus() == HotcueControl::Status::Set) {
                 pControl->setStatus(HotcueControl::Status::Active);
             }
 
@@ -1079,7 +1079,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
                 if (cueType == mixxx::CueType::Loop) {
                     m_pLoopEnabled->set(0);
                 } else if (pControl->getStatus() == HotcueControl::Status::Active) {
-                    pControl->setStatus(HotcueControl::Status::Valid);
+                    pControl->setStatus(HotcueControl::Status::Set);
                 }
                 seekExact(position);
             }
@@ -2098,8 +2098,8 @@ void CueControl::hotcueFocusColorNext(double value) {
 void CueControl::setCurrentSavedLoopControl(HotcueControl* pControl) {
     if (m_pCurrentSavedLoopControl && m_pCurrentSavedLoopControl != pControl) {
         // Disable previous saved loop
-        DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Invalid);
-        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Valid);
+        DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
+        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Set);
         m_pCurrentSavedLoopControl = nullptr;
     }
 
@@ -2134,7 +2134,7 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
         return;
     }
 
-    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Invalid);
+    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
     DEBUG_ASSERT(
             m_pCurrentSavedLoopControl->getCue() &&
             m_pCurrentSavedLoopControl->getCue()->getPosition() ==
@@ -2147,7 +2147,7 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
     if (enabled) {
         m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Active);
     } else {
-        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Valid);
+        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Set);
     }
 }
 
@@ -2432,8 +2432,8 @@ void HotcueControl::setCue(CuePointer pCue) {
     setEndPosition(pCue->getEndPosition());
     setColor(pCue->getColor());
     setStatus((pCue->getType() == mixxx::CueType::Invalid)
-                    ? HotcueControl::Status::Invalid
-                    : HotcueControl::Status::Valid);
+                    ? HotcueControl::Status::Empty
+                    : HotcueControl::Status::Set);
     setType(pCue->getType());
     // set pCue only if all other data is in place
     // because we have a null check for valid data else where in the code
@@ -2455,7 +2455,7 @@ void HotcueControl::resetCue() {
     setPosition(Cue::kNoPosition);
     setEndPosition(Cue::kNoPosition);
     setType(mixxx::CueType::Invalid);
-    setStatus(Status::Invalid);
+    setStatus(Status::Empty);
 }
 
 void HotcueControl::setPosition(double position) {

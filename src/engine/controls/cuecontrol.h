@@ -60,9 +60,9 @@ class HotcueControl : public QObject {
     /// Describes the current status of the hotcue
     enum class Status {
         /// Hotuce not set
-        Invalid = 0,
+        Empty = 0,
         /// Hotcue is set and can be used
-        Valid = 1,
+        Set = 1,
         /// Hotcue is currently active (this only applies to Saved Loop cues
         /// while their loop is enabled). This status can be used by skins or
         /// controller mappings to highlight a the cue control that has saved the current loop,
