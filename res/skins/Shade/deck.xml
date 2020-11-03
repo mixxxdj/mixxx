@@ -181,9 +181,7 @@
                                 <Layout>horizontal</Layout>
                                 <Size>0e,81f</Size>
                                 <Children>
-                                  <SingletonContainer>
-                                    <ObjectName>Waveform<Variable name="channum"/></ObjectName>
-                                  </SingletonContainer>
+                                  <Template src="skin:waveform.xml"/>
                                 </Children>
                               </WidgetGroup>
 
