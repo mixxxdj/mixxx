@@ -4,6 +4,7 @@
 
 * Cover art: Prevent wrong cover art display due to hash conflicts
 * Cover art: Add background color for quick cover art preview
+* Add Random Track Control to AutoDJ [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (Unreleased)
 ### Hotcues ###
