@@ -144,9 +144,6 @@ void Version::logBuildDetails() {
         buildInfo.append(
             QString("git r%2").arg(buildRevision));
     }
-#ifndef DISABLE_BUILDTIME // buildtime=1, on by default
-    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
-#endif
     if (!buildFlags.isEmpty()) {
         buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
     }

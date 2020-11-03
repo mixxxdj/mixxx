@@ -1965,19 +1965,6 @@ if(BATTERY)
   target_compile_definitions(mixxx-lib PUBLIC __BATTERY__)
 endif()
 
-
-# Build Time
-option(BUILDTIME "Use __DATE__ and __TIME__" ON)
-if(NOT BUILDTIME)
-  # Distributions like openSUSE use tools (e. g. build-compare) to detect
-  # whether a built binary differs from a former build to avoid unneeded
-  # publishing of packages.
-  # If __DATE__ and __TIME__ are used the built binary differs always but
-  # the tools cannot detect the root and publish a new package although
-  # the only change is caused by __DATE__ and __TIME__.
-  target_compile_definitions(mixxx-lib PUBLIC DISABLE_BUILDTIME)
-endif()
-
 # Clang Color Diagnostics
 option(CLANG_COLORDIAG "Clang color diagnostics" OFF)
 if(CLANG_COLORDIAG)
