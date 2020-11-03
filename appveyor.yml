@@ -104,7 +104,6 @@ for:
     # Split cache in half with Ubuntu ccache and underestimate compression ratio a little to
     # avoid going over the limit.
     - ccache -M 4G
-    - ccache -s
 
   build_script:
     - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
@@ -142,6 +141,7 @@ for:
   after_test:
     - xsltproc -o ctest-to-junit-results.xml ../cmake/ctest-to-junit.xsl Testing/*/Test.xml
     - curl -F 'file=@ctest-to-junit-results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+    - ccache -s
 
 ########## END UBUNTU SPECIFIC CONFIGURATION ##########
 
@@ -219,7 +219,6 @@ for:
     # Split cache in half with Ubuntu ccache and underestimate compression ratio a little to
     # avoid going over the limit.
     - clcache -M 4294967296
-    - clcache -s
     # Improve clcache performance
     - set CLCACHE_SERVER=1
     - set CLCACHE_HARDLINK=1
@@ -293,7 +292,7 @@ for:
         $XSLInputElement.Transform((Resolve-Path $ctest_xml), (Join-Path (Resolve-Path .) "ctest-to-junit-results.xml"))
         $wc = New-Object 'System.Net.WebClient'
         $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\ctest-to-junit-results.xml))
-
+    - clcache -s
 
   artifacts:
     - path: 'cmake_build/*.msi'
