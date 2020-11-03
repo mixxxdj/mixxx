@@ -109,16 +109,10 @@
      </item>
      <item>
       <widget class="QComboBox" name="fadeModeCombobox">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
       </widget>
      </item>
      <item>
       <widget class="QSpinBox" name="spinBoxTransition">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
