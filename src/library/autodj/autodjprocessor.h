@@ -302,6 +302,13 @@ class AutoDJProcessor : public QObject {
     void calculateFadeThresholds();
 
     double getFadeTime();
+    double getFadeTimeArg(
+            DeckAttributes* pFromDeck,
+            DeckAttributes* pToDeck,
+            // TODO(c3n7): Remove these unused variables
+            double fromDeckSecond,
+            double fadeEndSecond,
+            double toDeckStartSecond);
 
     QList<DeckAttributes*> m_decks;
 
