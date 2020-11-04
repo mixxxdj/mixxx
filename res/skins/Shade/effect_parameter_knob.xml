@@ -13,7 +13,7 @@
 		<ObjectName>EffectParameterKnob</ObjectName>
 		<Layout>vertical</Layout>
 		<SizePolicy>me,f</SizePolicy>
-		<MinimumSize>-1,46</MinimumSize>
+		<MinimumSize>38,46</MinimumSize>
 		<MaximumSize>-1,46</MaximumSize>
 		<Children>
 			<EffectParameterName>
@@ -27,6 +27,9 @@
 					}
 					QLabel { qproperty-alignment: AlignCenter; }
 				</Style>
+        <Elide>right</Elide>
+        <SizePolicy>me,f</SizePolicy>
+        <MaximumSize>-1,46</MaximumSize>
 				<ObjectName>KnobLabel</ObjectName>
 				<EffectRack>1</EffectRack>
 				<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
