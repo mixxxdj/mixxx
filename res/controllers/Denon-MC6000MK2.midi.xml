@@ -4,7 +4,7 @@
         <name>Denon MC6000MK2</name>
         <author>Uwe Klotz a/k/a tapir</author>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=6251</forums>
-        <wiki>http://www.mixxx.org/wiki/doku.php/denon_mc6000mk2</wiki>
+        <manual>denon_mc6000mk2</manual>
     </info>
     <controller id="MC6000MK2">
         <scriptfiles>

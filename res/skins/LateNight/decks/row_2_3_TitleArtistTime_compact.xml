@@ -21,7 +21,7 @@
                 <Children>
                   <TrackProperty>
                     <ObjectName>TitleText</ObjectName>
-                    <Size>0me,23f</Size>
+                    <Size>0me,22f</Size>
                     <TooltipId>track_title</TooltipId>
                     <Property>title</Property>
                     <Alignment>Left</Alignment>
@@ -44,7 +44,7 @@
                   <NumberPos>
                     <ObjectName>PlayPositionText</ObjectName>
                     <TooltipId>track_time</TooltipId>
-                    <Size>0min,23f</Size>
+                    <Size>0min,22f</Size>
                     <Alignment>right</Alignment>
                     <Channel><Variable name="ChanNum"/></Channel>
                     <Connection>
@@ -62,6 +62,19 @@
           </WidgetGroup><!-- TitleRow -->
 
           <WidgetGroup>
+            <ObjectName>TrackColorFullCompact</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>0me,2f</Size>
+            <Children>
+              <TrackWidgetGroup>
+                <Size>0me,2f</Size>
+                <Group><Variable name="Group"/></Group>
+                <TrackColorAlpha>255</TrackColorAlpha>
+              </TrackWidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
             <ObjectName>ArtistRow</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
@@ -72,7 +85,7 @@
                 <Children>
                   <TrackProperty>
                     <ObjectName>ArtistText</ObjectName>
-                    <Size>0me,23f</Size>
+                    <Size>0me,22f</Size>
                     <TooltipId>track_artist</TooltipId>
                     <Property>artist</Property>
                     <Elide>right</Elide>
@@ -93,7 +106,7 @@
                   <TrackProperty>
                     <ObjectName>DurationText</ObjectName>
                     <TooltipId>track_duration</TooltipId>
-                    <Size>0min,23f</Size>
+                    <Size>0min,22f</Size>
                     <Property>durationFormatted</Property>
                     <Channel>
                       <Variable name="ChanNum"/>
@@ -106,7 +119,7 @@
           </WidgetGroup><!-- ArtistRow -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
           <BindProperty>highlight</BindProperty>
         </Connection>
       </WidgetGroup><!-- DeckRow_2_3_ArtistTitleTime -->

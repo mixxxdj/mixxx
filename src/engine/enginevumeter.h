@@ -1,32 +1,6 @@
-/***************************************************************************
-                          enginevumeter.h  -  description
-                             -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEVUMETER_H
-#define ENGINEVUMETER_H
+#pragma once
 
 #include "engine/engineobject.h"
-
-// Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
-#define VU_UPDATE_RATE 30 // in 1/s, fits to display frame rate
-#define PEAK_DURATION 500 // in ms
-
-// SMOOTHING FACTORS
-// Must be from 0-1 the lower the factor, the more smoothing that is applied
-#define ATTACK_SMOOTHING 1. // .85
-#define DECAY_SMOOTHING .1  //.16//.4
 
 class ControlPotmeter;
 class ControlProxy;
@@ -61,5 +35,3 @@ class EngineVuMeter : public EngineObject {
 
     ControlProxy* m_pSampleRate;
 };
-
-#endif

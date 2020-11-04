@@ -38,7 +38,7 @@ WWidget::~WWidget() {
 }
 
 bool WWidget::touchIsRightButton() {
-    return (m_pTouchShift->get() != 0.0);
+    return m_pTouchShift->toBool();
 }
 
 bool WWidget::event(QEvent* e) {
@@ -51,7 +51,8 @@ bool WWidget::event(QEvent* e) {
         // resetting the font to the original css values.
         // Only scale pixel size fonts, point size fonts are scaled by the OS
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
     } else if (isEnabled()) {
         switch(e->type()) {
@@ -88,14 +89,16 @@ bool WWidget::event(QEvent* e) {
                 break;
             }
 
-            const QTouchEvent::TouchPoint &touchPoint =
+            const QTouchEvent::TouchPoint& touchPoint =
                     touchEvent->touchPoints().first();
             QMouseEvent mouseEvent(eventType,
-                    touchPoint.pos().toPoint(),
-                    touchPoint.screenPos().toPoint(),
+                    touchPoint.pos(),
+                    touchPoint.pos(),
+                    touchPoint.screenPos(),
                     m_activeTouchButton, // Button that causes the event
-                    Qt::NoButton, // Not used, so no need to fake a proper value.
-                    touchEvent->modifiers());
+                    Qt::NoButton,        // Not used, so no need to fake a proper value.
+                    touchEvent->modifiers(),
+                    Qt::MouseEventSynthesizedByApplication);
 
             return QWidget::event(&mouseEvent);
         }

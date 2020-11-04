@@ -1,16 +1,15 @@
-// wlibrarytableview.cpp
-// Created 10/19/2009 by RJ Ryan (rryan@mit.edu)
+#include "widget/wlibrarytableview.h"
 
+#include <QFocusEvent>
+#include <QFontMetrics>
 #include <QHeaderView>
 #include <QPalette>
 #include <QScrollBar>
-#include <QFontMetrics>
 
 #include "library/trackmodel.h"
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wlibrarytableview.h"
 #include "util/math.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      UserSettingsPointer pConfig,
@@ -149,17 +148,42 @@ void WLibraryTableView::setSelectedClick(bool enable) {
     }
 }
 
-bool WLibraryTableView::event(QEvent* e) {
-    // On FocusIn, with no focused item, select the first track which can then
-    // instantly be loaded to a deck.
-    // This is especially helpful if the table has only one track, which can not
-    // be selected with up/down buttons, either physical or emulated via
-    // [Library],MoveVertical controls. See lp:1808632
-    if (e->type() == QEvent::FocusIn &&
-            model()->rowCount() > 0 &&
-            currentIndex().row() == -1) {
-        selectRow(0);
-    }
+void WLibraryTableView::focusInEvent(QFocusEvent* event) {
+    QTableView::focusInEvent(event);
 
-    return QTableView::event(e);
+    if (event->reason() == Qt::TabFocusReason ||
+            event->reason() == Qt::BacktabFocusReason) {
+        // On FocusIn caused by a tab action with no focused item, select the
+        // current or first track which can then instantly be loaded to a deck.
+        // This is especially helpful if the table has only one track, which can
+        // not be selected with up/down buttons, either physical or emulated via
+        // [Library],MoveVertical controls. See lp:1808632
+        if (model()->rowCount() > 0) {
+            if (selectionModel()->hasSelection()) {
+                DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());
+                if (!currentIndex().isValid() ||
+                        !selectionModel()->isSelected(currentIndex())) {
+                    // Reselect the first selected index
+                    selectRow(selectionModel()->selectedIndexes().first().row());
+                }
+            } else {
+                if (!currentIndex().isValid()) {
+                    // Select the first row if no row is focused
+                    selectRow(0);
+                    DEBUG_ASSERT(currentIndex().row() == 0);
+                } else {
+                    // Select the row of the currently focused index.
+                    // For some reason selectRow(currentIndex().row()) would not
+                    // select for the first Qt::BacktabFocusReason in a session
+                    // even though currentIndex() is valid.
+                    selectionModel()->select(currentIndex(),
+                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                }
+            }
+            DEBUG_ASSERT(currentIndex().isValid());
+            DEBUG_ASSERT(selectionModel()->isSelected(currentIndex()));
+            // scrollTo() doesn't always seem to work!?
+            scrollTo(currentIndex());
+        }
+    }
 }

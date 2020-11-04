@@ -9,9 +9,8 @@ Variables:
 -->
 <Template>
   <PushButton>
-    <TooltipId><Variable name="TooltipId"/></TooltipId>
-    <ObjectName>DeckSizeButton</ObjectName>
-    <Size><Variable name="Width"/>f,17f</Size>
+    <ObjectName>SkinSettingsNumToggle</ObjectName>
+    <Size><Variable name="Width"/>,18f</Size>
     <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
@@ -23,10 +22,9 @@ Variables:
       <Text><Variable name="Text"/></Text>
       <Alignment>center</Alignment>
     </State>
-    <Connection><!--
-      <ConfigKey persist="true">[LateNight],<Variable name="DeckSize"/>_deck_without_mixer</ConfigKey> -->
-      <ConfigKey persist="true">[LateNight],deck_size_without_mixer</ConfigKey>
-      <Transform><IsEqual><Variable name="DeckSize"/></IsEqual></Transform>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
+      <Transform><IsEqual><Variable name="IsEqual"/></IsEqual></Transform>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

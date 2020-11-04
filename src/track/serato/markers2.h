@@ -420,16 +420,21 @@ class SeratoMarkers2 final {
         return m_entries.isEmpty();
     }
 
-    const QList<std::shared_ptr<SeratoMarkers2Entry>>& getEntries() const {
+    const QList<SeratoMarkers2EntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(QList<std::shared_ptr<SeratoMarkers2Entry>> entries) {
+    void setEntries(QList<SeratoMarkers2EntryPointer> entries) {
         m_entries = std::move(entries);
     }
 
     QList<CueInfo> getCues() const;
+    void setCues(const QList<CueInfo>& cueInfos);
+
     RgbColor::optional_t getTrackColor() const;
+    void setTrackColor(RgbColor color);
+
     bool isBpmLocked() const;
+    void setBpmLocked(bool bpmLocked);
 
   private:
     static bool parseCommon(
@@ -462,9 +467,13 @@ class SeratoMarkers2 final {
     /// `m_lastBase64ByteFLAC`.
     QByteArray dumpFLAC() const;
 
+    int countEntriesByType(SeratoMarkers2Entry::TypeId typeId) const;
+    QList<SeratoMarkers2EntryPointer> findEntriesByType(SeratoMarkers2Entry::TypeId typeId) const;
+    SeratoMarkers2EntryPointer findEntryByType(SeratoMarkers2Entry::TypeId typeId) const;
+
     int m_allocatedSize;
     char m_lastBase64ByteFLAC;
-    QList<std::shared_ptr<SeratoMarkers2Entry>> m_entries;
+    QList<SeratoMarkers2EntryPointer> m_entries;
 };
 
 inline bool operator==(const SeratoMarkers2& lhs, const SeratoMarkers2& rhs) {

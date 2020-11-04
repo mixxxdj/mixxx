@@ -6,16 +6,13 @@ WEffect,
 WEffectSelector,
 WKey,
 WLabel, WLibrary QLabel,
-WNumber,
-WNumberPos,
-WPushButton, WLibrary QPushButton,
+WNumber, WNumberPos,
+WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
 WRecordingDuration,
 WTime,
 WTrackText,
 WTrackProperty,
-WBeatSpinBox,
 QSpinBox,
-QComboBox,
 WLibrary QHeaderView,
 WLibrary QHeaderView::item,
 QToolTip,
@@ -27,11 +24,11 @@ WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WOverview /* Hotcue labels in the overview */,
+WBeatSpinBox, #spinBoxTransition,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea,
-WLibrary QRadioButton {
+#fadeModeCombobox QAbstractScrollArea {
   font-family: "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;
@@ -55,7 +52,7 @@ WOverview #PassthroughLabel,
 #BroadcastButton,
 /* SKin settings & Library */
 #SkinSettingsToggle,
-#DeckSizeButton[value="1"],
+#SkinSettingsNumToggle[value="1"],
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
@@ -84,7 +81,7 @@ WLibrary QPushButton {
 }
 /* regular font weight */
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
 #SkinSettingsText,
 QToolTip,
@@ -122,7 +119,7 @@ WPushButton, WLibrary QPushButton,
 #SamplerTitleMini,
 #EQKillButton,
 #RateText,
-#SamplerBPM,
+#SamplerBpmMini,
 #PreviewBPM,
 WLibrary QRadioButton {
 	font-size: 12px;
@@ -138,37 +135,38 @@ WEffectSelector QAbstractScrollArea,
 #labelRecFilename,
 #labelRecStatistics,
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
-#SkinSettingsText  {
+#SkinSettingsText {
   font-size: 13px;
 }
 
 #PlayPositionTextSmall,
-#SamplerTitleMini,
+#SamplerTitleMini, #SamplerBpm,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #PreviewTitle,
 #PreviewLabel,
 WBeatSpinBox,
-#spinBoxTransition,
-WTime {
+#spinBoxTransition {
   font-size: 14px;
-  text-align: left;
 }
 
 #TitleTextSmall,
 #ArtistTextSmall,
 #PlayPositionText,
-#BpmText, #BpmTextSmall,
+#BpmText,
+#BpmTextSmall,
 #FxUnitLabel,
-#SamplerTitle {
+#SamplerTitle,
+WTime,
+WRecordingDuration {
   font-size: 16px;
 }
 
 #SkinSettingsLabelButton,
-#CategoryLabel  {
+#CategoryLabel,
+#SkinSettingsNumToggleHeader  {
   font-size: 17px;
-  text-align: left;
 }
 
 #ArtistText,
@@ -176,19 +174,32 @@ WTime {
   font-size: 18px;
 }
 
+#PlayPositionTextSmall,
+#SamplerTitle,
+#SamplerTitleMini,
+#MicAuxLabel,
+#MicAuxLabelUnconfigured,
+#PreviewTitle,
+#PreviewLabel,
+WBeatSpinBox,
+#spinBoxTransition {
+  text-align: left;
+}
+
 #RateText,
 #MicAuxLabel,
 #PreviewBPM,
-WBeatSpinBox, #spinBoxTransition {
+WBeatSpinBox,
+#spinBoxTransition {
   text-align: center;
-}
-WBeatSpinBox, #spinBoxTransition {
-  qproperty-alignment: 'AlignHCenter';
-}
+  }
+  WBeatSpinBox,#spinBoxTransition {
+    qproperty-alignment: 'AlignHCenter';
+  }
 
-#SamplerTitle,
-#SamplerTitleMini {
-  text-align: left;
+#SamplerBpm,
+#SamplerBpmMini {
+  text-align: right;
 }
 
 #KnobLabel,
@@ -286,8 +297,11 @@ WOverview QLabel {
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
-  #PlayPositionGutter, #DurationGutter {
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+ #TrackColorFullCompact {
+    padding: 0px 3px 0px 5px;
+  }
+  #TrackColorMini {
+    padding: 0px 0px 0px 5px;
   }
 
 #DeckSettings {
@@ -416,7 +430,10 @@ WSpinny { /*
   #MasterControls,
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  }
+    }
+    #BoothLabelBox {
+      qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    }
   #MasterHeadphoneSeparator {
   }
 
@@ -566,7 +583,7 @@ WEffectSelector {
     }
 
     #SamplerPitchSlider {
-      qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+      qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
     }
 
 /************** Samplers *****************************************************/

@@ -14,7 +14,8 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/beats.h"
+#include "track/track_decl.h"
 
 class EngineMaster;
 class EngineBuffer;
@@ -59,6 +60,9 @@ class EngineControl : public QObject {
     virtual void setCurrentSample(const double dCurrentSample,
             const double dTotalSamples, const double dTrackSampleRate);
     QString getGroup() const;
+
+    void setBeatLoop(double startPosition, bool enabled);
+    void setLoop(double startPosition, double endPosition, bool enabled);
 
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {

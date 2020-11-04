@@ -6,6 +6,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
 CrateTableModel::CrateTableModel(

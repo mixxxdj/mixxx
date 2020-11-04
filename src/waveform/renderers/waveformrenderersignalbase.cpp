@@ -153,29 +153,32 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
 void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
                                           float* pMidGain, float* pHighGain) {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    if (pAllGain != NULL) {
-        float allGain = m_waveformRenderer->getGain();
-        allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
-        *pAllGain = allGain;
+    if (pAllGain) {
+        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain()) *
+                static_cast<CSAMPLE_GAIN>(factory->getVisualGain(WaveformWidgetFactory::All));
+        ;
     }
 
     if (pLowGain || pMidGain || pHighGain) {
         // Per-band gain from the EQ knobs.
-        float lowGain(1.0), midGain(1.0), highGain(1.0);
+        CSAMPLE_GAIN lowGain = 1.0, midGain = 1.0, highGain = 1.0;
 
         // Only adjust low/mid/high gains if EQs are enabled.
         if (m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
                 m_pMidFilterControlObject &&
                 m_pHighFilterControlObject) {
-                lowGain = m_pLowFilterControlObject->get();
-                midGain = m_pMidFilterControlObject->get();
-                highGain = m_pHighFilterControlObject->get();
+                lowGain = static_cast<CSAMPLE_GAIN>(m_pLowFilterControlObject->get());
+                midGain = static_cast<CSAMPLE_GAIN>(m_pMidFilterControlObject->get());
+                highGain = static_cast<CSAMPLE_GAIN>(m_pHighFilterControlObject->get());
             }
 
-            lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
-            midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
-            highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+            lowGain *= static_cast<CSAMPLE_GAIN>(
+                    factory->getVisualGain(WaveformWidgetFactory::Low));
+            midGain *= static_cast<CSAMPLE_GAIN>(
+                    factory->getVisualGain(WaveformWidgetFactory::Mid));
+            highGain *= static_cast<CSAMPLE_GAIN>(
+                    factory->getVisualGain(WaveformWidgetFactory::High));
 
             if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
                 lowGain = 0;

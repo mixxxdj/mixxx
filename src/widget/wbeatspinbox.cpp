@@ -23,9 +23,11 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
     setMinimum(minimum);
     setMaximum(maximum);
     setKeyboardTracking(false);
-    // Prevent this widget from getting focused with tab
+    // Prevent this widget from getting focused with Tab
     // to avoid interfering with using the library via keyboard.
     setFocusPolicy(Qt::ClickFocus);
+    // This is necessary to also ignore Shift+Tab (Qt::BacktabFocusReason).
+    lineEdit()->setFocusPolicy(Qt::ClickFocus);
 
     setValue(m_valueControl.get());
     connect(this, SIGNAL(valueChanged(double)),
@@ -279,7 +281,8 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
         // QAbstractSpinBox::minimumSizeHint() the lineEdit()->font() is used for
         // rendering
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
     }
     return QDoubleSpinBox::event(pEvent);
@@ -294,7 +297,8 @@ bool WBeatLineEdit::event(QEvent* pEvent) {
         // Only scale pixel size fonts, point size fonts are scaled by the OS
         // This font instance is the one, used for rendering.
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
     }
     return QLineEdit::event(pEvent);

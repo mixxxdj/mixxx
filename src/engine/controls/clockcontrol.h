@@ -1,11 +1,10 @@
 #ifndef CLOCKCONTROL_H
 #define CLOCKCONTROL_H
 
-#include "preferences/usersettings.h"
 #include "engine/controls/enginecontrol.h"
-
-#include "track/track.h"
+#include "preferences/usersettings.h"
 #include "track/beats.h"
+#include "track/track_decl.h"
 
 class ControlProxy;
 class ControlObject;

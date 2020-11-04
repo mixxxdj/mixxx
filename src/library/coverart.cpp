@@ -3,6 +3,7 @@
 #include <QDebugStateSaver>
 
 #include "library/coverartutils.h"
+#include "track/track.h"
 #include "util/debug.h"
 #include "util/logger.h"
 

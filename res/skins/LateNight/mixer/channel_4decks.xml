@@ -22,7 +22,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <Template src="skin:/controls/knob_textless.xml">
+          <Template src="skin:/controls/knob.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="KnobColor">orange</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>

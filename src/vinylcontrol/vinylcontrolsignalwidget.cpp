@@ -59,7 +59,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
         return;
     }
 
-    m_iAngle = report.angle;
+    m_iAngle = static_cast<int>(report.angle);
     m_fSignalQuality = report.timecode_quality;
 
     int r,g,b;
@@ -111,10 +111,10 @@ void VinylControlSignalWidget::paintEvent(QPaintEvent* event) {
 
         //quarter axes
         painter.setPen(QColor(0, 127, 0));
-        painter.drawLine(sizeX * 0.25, 0, sizeX * 0.25, sizeY);
-        painter.drawLine(sizeX * 0.75, 0, sizeX * 0.75, sizeY);
-        painter.drawLine(0, sizeY * 0.25, sizeX, sizeY * 0.25);
-        painter.drawLine(0, sizeY * 0.75, sizeX, sizeY * 0.75);
+        painter.drawLine(QLineF(sizeX * 0.25, 0, sizeX * 0.25, sizeY));
+        painter.drawLine(QLineF(sizeX * 0.75, 0, sizeX * 0.75, sizeY));
+        painter.drawLine(QLineF(0, sizeY * 0.25, sizeX, sizeY * 0.25));
+        painter.drawLine(QLineF(0, sizeY * 0.75, sizeX, sizeY * 0.75));
 
         //sweep
         if (m_iAngle >= 0) {

@@ -1,13 +1,14 @@
-#include <QDesktopWidget>
+#include "library/dlgcoverartfullsize.h"
+
 #include <QRect>
 #include <QScreen>
 #include <QStyle>
 #include <QWheelEvent>
 
-#include "library/dlgcoverartfullsize.h"
-#include "library/coverartutils.h"
 #include "library/coverartcache.h"
-#include "util/compatibility.h"
+#include "library/coverartutils.h"
+#include "track/track.h"
+#include "util/widgethelper.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
@@ -144,13 +145,14 @@ void DlgCoverArtFullSize::slotCoverFound(
     // borders touch the edges of the screen.
     QSize dialogSize = m_pixmap.size();
 
-    const QScreen* primaryScreen = getPrimaryScreen();
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
     QRect availableScreenGeometry;
-    if (primaryScreen) {
-        availableScreenGeometry = primaryScreen->availableGeometry();
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
         availableScreenGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        availableScreenGeometry = pScreen->availableGeometry();
     }
 
     const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
@@ -247,8 +249,8 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // Scale the image size
     int oldWidth = width();
     int oldHeight = height();
-    int newWidth = oldWidth + (0.2 * event->angleDelta().y());
-    int newHeight = oldHeight + (0.2 * event->angleDelta().y());
+    auto newWidth = static_cast<int>(oldWidth + (0.2 * event->angleDelta().y()));
+    auto newHeight = static_cast<int>(oldHeight + (0.2 * event->angleDelta().y()));
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
 
@@ -261,8 +263,10 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     QPoint oldPointUnderCursor = event->pos();
 #endif
 
-    int newPointX = (double) oldPointUnderCursor.x() / oldWidth * newSize.width();
-    int newPointY = (double) oldPointUnderCursor.y() / oldHeight * newSize.height();
+    const auto newPointX = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.x()) / oldWidth * newSize.width());
+    const auto newPointY = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.y()) / oldHeight * newSize.height());
     QPoint newOrigin = QPoint(
         oldOrigin.x() + (oldPointUnderCursor.x() - newPointX),
         oldOrigin.y() + (oldPointUnderCursor.y() - newPointY));

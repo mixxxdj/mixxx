@@ -1,40 +1,46 @@
 #include "library/dlgtrackinfo.h"
 
-#include <QComboBox>
 #include <QDesktopServices>
 #include <QStringBuilder>
 #include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgtagfetcher.h"
+#include "library/trackmodel.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
-#include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "track/track.h"
 #include "util/color/colorpalette.h"
 #include "util/compatibility.h"
-#include "util/desktophelper.h"
 #include "util/datetime.h"
+#include "util/desktophelper.h"
 #include "util/duration.h"
+#include "widget/wcoverartlabel.h"
+#include "widget/wstarrating.h"
 
-const int kFilterLength = 80;
-const int kMinBpm = 30;
+namespace {
+constexpr int kFilterLength = 80;
+constexpr int kMinBpm = 30;
+} // namespace
 
 // Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
+const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
+        static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 
-DlgTrackInfo::DlgTrackInfo(QWidget* parent,
-        UserSettingsPointer pConfig,
+DlgTrackInfo::DlgTrackInfo(
         const TrackModel* trackModel)
-        : QDialog(parent),
-          m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
+        // No parent because otherwise it inherits the style parent's
+        // style which can make it unreadable. Bug #673411
+        : QDialog(nullptr),
+          m_pTrackModel(trackModel),
+          m_tapFilter(this, kFilterLength, kMaxInterval),
           m_dLastTapedBpm(-1.),
-          m_pWCoverArtLabel(new WCoverArtLabel(this)),
-          m_pWStarRating(new WStarRating(nullptr, this)),
-          m_pConfig(pConfig),
-          m_pTrackModel(trackModel) {
+          m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
+          m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
     init();
 }
 
@@ -48,37 +54,24 @@ void DlgTrackInfo::init() {
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
     coverLayout->setContentsMargins(0, 0, 0, 0);
-    coverLayout->insertWidget(0, m_pWCoverArtLabel);
+    coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
 
     starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     starsLayout->setSpacing(0);
     starsLayout->setContentsMargins(0, 0, 0, 0);
-    starsLayout->insertWidget(0, m_pWStarRating);
+    starsLayout->insertWidget(0, m_pWStarRating.get());
     // This is necessary to pass on mouseMove events to WStarRating
     m_pWStarRating->setMouseTracking(true);
 
-    m_pTagFetcher.reset(new DlgTagFetcher(this, m_pTrackModel));
     if (m_pTrackModel) {
         connect(btnNext,
                 &QPushButton::clicked,
                 this,
                 &DlgTrackInfo::slotNextButton);
-
         connect(btnPrev,
                 &QPushButton::clicked,
                 this,
                 &DlgTrackInfo::slotPrevButton);
-
-        connect(m_pTagFetcher.data(),
-                &DlgTagFetcher::next,
-                this,
-                &DlgTrackInfo::slotNextDlgTagFetcher);
-
-        connect(m_pTagFetcher.data(),
-                &DlgTagFetcher::previous,
-                this,
-                &DlgTrackInfo::slotPrevDlgTagFetcher);
-
     } else {
         btnNext->hide();
         btnPrev->hide();
@@ -145,9 +138,9 @@ void DlgTrackInfo::init() {
 
     connect(bpmTap,
             &QPushButton::pressed,
-            m_pTapFilter.data(),
+            &m_tapFilter,
             &TapFilter::tap);
-    connect(m_pTapFilter.data(),
+    connect(&m_tapFilter,
             &TapFilter::tapped,
             this,
             &DlgTrackInfo::slotBpmTap);
@@ -174,11 +167,11 @@ void DlgTrackInfo::init() {
                 this,
                 &DlgTrackInfo::slotCoverFound);
     }
-    connect(m_pWCoverArtLabel,
+    connect(m_pWCoverArtLabel.get(),
             &WCoverArtLabel::coverInfoSelected,
             this,
             &DlgTrackInfo::slotCoverInfoSelected);
-    connect(m_pWCoverArtLabel,
+    connect(m_pWCoverArtLabel.get(),
             &WCoverArtLabel::reloadCoverArt,
             this,
             &DlgTrackInfo::slotReloadCoverArt);
@@ -199,21 +192,14 @@ void DlgTrackInfo::slotCancel() {
 }
 
 void DlgTrackInfo::trackUpdated() {
-
 }
 
 void DlgTrackInfo::slotNextButton() {
     loadNextTrack();
-    if (m_pTagFetcher->isVisible()) {
-        m_pTagFetcher->loadTrack(m_currentTrackIndex);
-    }
 }
 
 void DlgTrackInfo::slotPrevButton() {
     loadPrevTrack();
-    if (m_pTagFetcher->isVisible()) {
-        m_pTagFetcher->loadTrack(m_currentTrackIndex);
-    }
 }
 
 void DlgTrackInfo::slotNextDlgTagFetcher() {
@@ -327,6 +313,9 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
         return;
     }
     loadTrackInternal(pTrack);
+    if (m_pDlgTagFetcher && m_pLoadedTrack) {
+        m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
+    }
 }
 
 void DlgTrackInfo::loadTrack(QModelIndex index) {
@@ -336,6 +325,9 @@ void DlgTrackInfo::loadTrack(QModelIndex index) {
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
+    if (m_pDlgTagFetcher && m_currentTrackIndex.isValid()) {
+        m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);
+    }
 }
 
 void DlgTrackInfo::slotCoverFound(
@@ -588,7 +580,7 @@ void DlgTrackInfo::slotKeyTextChanged() {
     // Try to parse the user's input as a key.
     const QString newKeyText = txtKey->text();
     Keys newKeys = KeyFactory::makeBasicKeysFromText(newKeyText,
-                                                     mixxx::track::io::key::USER);
+            mixxx::track::io::key::USER);
     const mixxx::track::io::key::ChromaticKey globalKey(newKeys.getGlobalKey());
 
     // If the new key string is invalid and not empty them reject the new key.
@@ -627,10 +619,34 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
 }
 
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
-    if (m_pTrackModel) {
-        m_pTagFetcher->loadTrack(m_currentTrackIndex);
-    } else {
-        m_pTagFetcher->loadTrack(m_pLoadedTrack);
+    if (!m_pDlgTagFetcher) {
+        m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
+                m_pTrackModel);
+        connect(m_pDlgTagFetcher.get(),
+                &QDialog::finished,
+                [this]() {
+                    if (m_pDlgTagFetcher.get() == sender()) {
+                        m_pDlgTagFetcher.release()->deleteLater();
+                    }
+                });
+        if (m_pTrackModel) {
+            connect(m_pDlgTagFetcher.get(),
+                    &DlgTagFetcher::next,
+                    this,
+                    &DlgTrackInfo::slotNextDlgTagFetcher);
+
+            connect(m_pDlgTagFetcher.get(),
+                    &DlgTagFetcher::previous,
+                    this,
+                    &DlgTrackInfo::slotPrevDlgTagFetcher);
+        }
     }
-    m_pTagFetcher->show();
+    if (m_pTrackModel) {
+        DEBUG_ASSERT(m_currentTrackIndex.isValid());
+        m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);
+    } else {
+        DEBUG_ASSERT(m_pLoadedTrack);
+        m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
+    }
+    m_pDlgTagFetcher->show();
 }
