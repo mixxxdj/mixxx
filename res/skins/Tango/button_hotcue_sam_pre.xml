@@ -33,17 +33,5 @@ Variables:
       <Text><Variable name="HotCue"/></Text>
       <Alignment>center</Alignment>
     </State>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_activate</ConfigKey>
-      <ButtonState>LeftButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_clear</ConfigKey>
-      <ButtonState>RightButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_enabled</ConfigKey>
-      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-    </Connection>
   </HotcueButton>
 </Template>
