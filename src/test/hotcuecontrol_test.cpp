@@ -917,7 +917,6 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
 
     const double beforeLoopPositionSamples = 0;
     const double loopStartPositionSamples = 8 * beatLengthSamples;
-    const double afterLoopPositionSamples = 16 * beatLengthSamples;
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
@@ -959,33 +958,6 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
 
     // Check that re-enabling loop didn't seek
     EXPECT_NEAR(beforeLoopPositionSamples, currentSamplePosition(), 2048);
-
-    // Disable loop
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
-    ProcessBuffer();
-    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-
-    // Seek to position after saved loop
-    setCurrentSamplePosition(afterLoopPositionSamples);
-
-    // Check that the previous seek disabled the loop
-    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-
-    // Re-Enable loop
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
-    ProcessBuffer();
-    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
-    EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-
-    // Check that re-enabling loop didn't seek
-    EXPECT_NEAR(afterLoopPositionSamples, currentSamplePosition(), 2048);
 
     // Disable loop
     m_pHotcue1Activate->slotSet(1);
@@ -1059,14 +1031,15 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
 
     positionBeforeActivate = currentSamplePosition();
 
-    // Activate saved loop (does not imply seeking to loop start)
+    // Activate saved loop (usually doesn't imply seeking to loop start, but in this case it does
+    // because the play position is behind the loop end position)
     m_pHotcue1Activate->slotSet(1);
     m_pHotcue1Activate->slotSet(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-    EXPECT_NEAR(positionBeforeActivate, currentSamplePosition(), 2000);
+    EXPECT_NEAR(loopStartPositionSamples, currentSamplePosition(), 2000);
 }
 
 TEST_F(HotcueControlTest, SavedLoopActivateWhilePlayingTogglesLoop) {

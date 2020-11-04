@@ -565,6 +565,18 @@ void LoopingControl::setLoop(double startPosition, double endPosition, bool enab
         m_pCOLoopEndPosition->set(loopSamples.end);
     }
     setLoopingEnabled(enabled);
+
+    // Seek back to loop in position if we're already behind the loop end.
+    //
+    // TODO(Holzhaus): This needs to be reverted as soon as GUI controls for
+    // controlling saved loop behaviour are in place, because this change makes
+    // saved loops very risky to use and might potentially mess up your mix.
+    // See https://github.com/mixxxdj/mixxx/pull/2194#issuecomment-721847833
+    // for details.
+    if (enabled && m_currentSample.getValue() > loopSamples.end) {
+        slotLoopInGoto(1);
+    }
+
     m_pCOBeatLoopSize->setAndConfirm(findBeatloopSizeForLoop(startPosition, endPosition));
 }
 
