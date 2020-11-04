@@ -47,11 +47,11 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
 }
 
 void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
-    hide();
-    slotLoadTrack(nullptr);
     if (parentWidget()) {
         // Since the widget has a parent, this instance will be reused again.
         // We need to prevent qt from destroying it's children
+        hide();
+        slotLoadTrack(nullptr);
         event->ignore();
     } else {
         QDialog::closeEvent(event);
@@ -163,13 +163,13 @@ void DlgCoverArtFullSize::slotCoverFound(
     // whitespace appearing on the side when resizing a window whose
     // borders touch the edges of the screen.
     QSize dialogSize = m_pixmap.size();
-    QWidget* parent = parentWidget();
-    VERIFY_OR_DEBUG_ASSERT(parent) {
+    QWidget* centerOverWidget = parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
         qWarning() << "DlgCoverArtFullSize does not have a parent.";
-        parent = this;
+        centerOverWidget = this;
     }
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*parent);
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
     QRect screenGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
