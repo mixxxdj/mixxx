@@ -1347,7 +1347,7 @@ DJ505.CueLoopMode = function(deck, offset) {
         colorMapper: DJ505.PadColorMap,
         outConnect: false,
         unshift: function() {
-            this.inKey = "hotcue_" + this.number + "_loop_toggle";
+            this.inKey = "hotcue_" + this.number + "_cueloop";
         },
         shift: function() {
             this.inKey = "hotcue_" + this.number + "_gotoandloop";
