@@ -12,7 +12,7 @@
 #include "preferences/usersettings.h"
 
 namespace {
-typedef std::function<void(QMenu*)> FnAddMenu;
+typedef std::function<void(QMenu*, QAction*, bool)> FnAddMenu;
 }
 
 class VisibilityControlConnection : public QObject {
@@ -40,7 +40,7 @@ class WMainMenuBar : public QMenuBar {
   public:
     WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
-    void createMenu(FnAddMenu fnAddMenu);
+    void createMenu(FnAddMenu fnAddMenu, bool isMainMenu = false);
     void rebuild();
     void setVisible(bool visible) override;
   public slots:

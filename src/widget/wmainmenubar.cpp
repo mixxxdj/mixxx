@@ -66,10 +66,17 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent,
 
 void WMainMenuBar::rebuild() {
     clear();
-    createMenu([this](QMenu* x) { addMenu(x); });
+    createMenu([this](QMenu* menu, QAction* action, bool separator) {
+        if (menu) {
+            addMenu(menu);
+        }
+        Q_UNUSED(action);
+        Q_UNUSED(separator);
+    },
+            true);
 }
 
-void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
+void WMainMenuBar::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"), this);
 
@@ -115,9 +122,12 @@ void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
     pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
     pFileQuit->setMenuRole(QAction::QuitRole);
     connect(pFileQuit, &QAction::triggered, this, &WMainMenuBar::quit);
-    pFileMenu->addAction(pFileQuit);
-
-    fnAddMenu(pFileMenu);
+    // we place the quit entry only in the mainmenu here, in the button menu
+    // at the end of the primary menu
+    if (isMainMenu) {
+        pFileMenu->addAction(pFileQuit);
+    }
+    fnAddMenu(pFileMenu, nullptr, false);
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
@@ -161,7 +171,7 @@ void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
     connect(pLibraryCreateCrate, &QAction::triggered, this, &WMainMenuBar::createCrate);
     pLibraryMenu->addAction(pLibraryCreateCrate);
 
-    fnAddMenu(pLibraryMenu);
+    fnAddMenu(pLibraryMenu, nullptr, false);
 
 #if defined(__APPLE__)
     // Note: On macOS 10.11 ff. we have to deal with "automagic" menu items,
@@ -319,7 +329,7 @@ void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
             &QAction::setChecked);
     pViewMenu->addAction(pViewFullScreen);
 
-    fnAddMenu(pViewMenu);
+    fnAddMenu(pViewMenu, nullptr, false);
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
@@ -438,7 +448,7 @@ void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
     connect(pOptionsPreferences, &QAction::triggered, this, &WMainMenuBar::showPreferences);
     pOptionsMenu->addAction(pOptionsPreferences);
 
-    fnAddMenu(pOptionsMenu);
+    fnAddMenu(pOptionsMenu, nullptr, false);
 
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
@@ -537,7 +547,7 @@ void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
                 &WMainMenuBar::slotDeveloperDebugger);
         pDeveloperMenu->addAction(pDeveloperDebugger);
 
-        fnAddMenu(pDeveloperMenu);
+        fnAddMenu(pDeveloperMenu, nullptr, false);
     }
 
     addSeparator();
@@ -626,7 +636,12 @@ void WMainMenuBar::createMenu(FnAddMenu fnAddMenu) {
     connect(pHelpAboutApp, &QAction::triggered, this, &WMainMenuBar::showAbout);
 
     pHelpMenu->addAction(pHelpAboutApp);
-    fnAddMenu(pHelpMenu);
+    fnAddMenu(pHelpMenu, nullptr, false);
+
+    if (!isMainMenu) {
+        fnAddMenu(nullptr, nullptr, true);
+        fnAddMenu(nullptr, pFileQuit, false);
+    }
 
     // we already know the num
     if (m_lastNumPlayers) {

@@ -19,5 +19,13 @@ WMainMenuBarButton::WMainMenuBarButton(QWidget* pParent,
 
 void WMainMenuBarButton::initialize(WMainMenuBar* pMainMenu) {
     setMenu(m_pMenu);
-    pMainMenu->createMenu([this](QMenu* x) { m_pMenu->addMenu(x); });
+    pMainMenu->createMenu([this](QMenu* menu, QAction* action, bool separator) {
+        if (menu) {
+            m_pMenu->addMenu(menu);
+        } else if (action) {
+            m_pMenu->addAction(action);
+        } else if (separator) {
+            m_pMenu->addSeparator();
+        }
+    });
 }
