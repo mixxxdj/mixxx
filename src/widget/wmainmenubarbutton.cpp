@@ -1,7 +1,8 @@
+#include "widget/wmainmenubarbutton.h"
+
 #include <QAction>
 #include <QMenu>
 
-#include "widget/wmainmenubarbutton.h"
 #include "widget/wmainmenubar.h"
 
 WMainMenuBarButton::WMainMenuBarButton(QWidget* pParent,
