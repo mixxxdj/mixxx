@@ -5,6 +5,9 @@ set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everythi
 
 # Used for force control of color output
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
+# Option to disable symlinks
+set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
+
 # Support new IN_LIST if() operator
 if(POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
@@ -1362,7 +1365,7 @@ add_custom_target(mixxx-benchmark
 )
 add_dependencies(mixxx-benchmark mixxx-test)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-testdata
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Symlinking test data to build directory..."
@@ -1388,7 +1391,7 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
