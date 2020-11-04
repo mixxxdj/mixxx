@@ -2485,5 +2485,7 @@ void HotcueControl::setStatus(HotcueControl::Status status) {
 }
 
 HotcueControl::Status HotcueControl::getStatus() const {
-    return static_cast<Status>(m_pHotcueStatus->get());
+    // Cast to int before casting to the int-based enum class because MSVC will
+    // throw a hissy fit otherwise.
+    return static_cast<Status>(static_cast<int>(m_pHotcueStatus->get()));
 }
