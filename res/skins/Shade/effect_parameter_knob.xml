@@ -42,7 +42,7 @@
 						<Children>
 							<EffectParameterKnob>
 								<NumberStates>64</NumberStates>
-								<Path>knobs/knob_rotary_s%1.png</Path>
+								<Path>knobs_no_center/knob_rotary_s%1.png</Path>
 								<Connection>
 									<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/></ConfigKey>
 								</Connection>
