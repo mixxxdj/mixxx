@@ -238,6 +238,7 @@ class AutoDJProcessor : public QObject {
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
+    void controlAddRandomTrack(double value);
 
   protected:
     // The following virtual signal wrappers are used for testing
@@ -316,6 +317,7 @@ class AutoDJProcessor : public QObject {
     ControlProxy* m_pCOCrossfaderReverse;
 
     ControlPushButton* m_pSkipNext;
+    ControlPushButton* m_pAddRandomTrack;
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;

@@ -30,7 +30,8 @@ constexpr double kBpmAdjustStep = 0.01;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
 constexpr double kBpmTapMin = 30.0;
-const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
+const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(
+        static_cast<qint64>(1000.0 * (60.0 / kBpmTapMin)));
 constexpr int kBpmTapFilterLength = 5;
 
 // The local_bpm is calculated forward and backward this number of beats, so
@@ -225,8 +226,10 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     pBeats->setBpm(averageBpm);
 }
 
-void BpmControl::slotControlBeatSyncPhase(double v) {
-    if (!v) return;
+void BpmControl::slotControlBeatSyncPhase(double value) {
+    if (value == 0) {
+        return;
+    }
 
     if (isSynchronized()) {
         m_dUserOffset.setValue(0.0);
@@ -234,13 +237,19 @@ void BpmControl::slotControlBeatSyncPhase(double v) {
     getEngineBuffer()->requestSyncPhase();
 }
 
-void BpmControl::slotControlBeatSyncTempo(double v) {
-    if (!v) return;
+void BpmControl::slotControlBeatSyncTempo(double value) {
+    if (value == 0) {
+        return;
+    }
+
     syncTempo();
 }
 
-void BpmControl::slotControlBeatSync(double v) {
-    if (!v) return;
+void BpmControl::slotControlBeatSync(double value) {
+    if (value == 0) {
+        return;
+    }
+
     if (!syncTempo()) {
         // syncTempo failed, nothing else to do
         return;
@@ -250,7 +259,7 @@ void BpmControl::slotControlBeatSync(double v) {
     // this is used from controller scripts, where the latching behaviour of
     // the sync_enable CO cannot be used
     if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
-        slotControlBeatSyncPhase(v);
+        slotControlBeatSyncPhase(value);
     }
 }
 
@@ -369,14 +378,14 @@ double BpmControl::calcSyncedRate(double userTweak) {
     m_dUserTweakingSync = userTweak != 0.0;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
-    if (m_pLocalBpm->get() != 0.0) {
+    if (m_pLocalBpm->toBool()) {
         rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
     }
 
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.
-    if (!m_pQuantize->get() || isMaster(getSyncMode()) ||
-            !m_pBeats || m_pReverseButton->get()) {
+    if (!m_pQuantize->toBool() || isMaster(getSyncMode()) ||
+            !m_pBeats || m_pReverseButton->toBool()) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
@@ -436,6 +445,7 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         kLogger.trace() << m_group << "****************";
         kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
         kLogger.trace() << "my     beat distance:" << thisBeatDistance;
+        kLogger.trace() << "user offset distance:" << m_dUserOffset.getValue();
         kLogger.trace() << "error               :"
                         << (shortest_distance - m_dUserOffset.getValue());
         kLogger.trace() << "user offset         :" << m_dUserOffset.getValue();
@@ -1011,6 +1021,9 @@ double BpmControl::updateBeatDistance() {
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
+    if (kLogger.traceEnabled()) {
+        qDebug() << getGroup() << "BpmControl::setTargetBeatDistance:" << beatDistance;
+    }
     m_dSyncTargetBeatDistance.setValue(beatDistance);
 }
 
@@ -1032,7 +1045,7 @@ void BpmControl::resetSyncAdjustment() {
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     // Without a beatgrid we don't know any beat details.
     SampleOfTrack sot = getSampleOfTrack();
-    if (!sot.rate || !m_pBeats) {
+    if (sot.rate == 0 || !m_pBeats) {
         return;
     }
 

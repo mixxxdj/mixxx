@@ -48,7 +48,7 @@ QString ControlDelegate::displayText(const QVariant& value,
     }
 
     if (m_bIsIndexScript) {
-        return tr("Script: %1(%2)").arg(key.item, key.group);
+        return tr("%1 %2").arg(key.group, key.item);
     }
 
     QString description = m_pPicker->descriptionForConfigKey(key);

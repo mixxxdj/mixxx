@@ -16,6 +16,7 @@
         <Group><Variable name="Group"/></Group>
         <Hotcue><Variable name="number"/></Hotcue>
         <NumberStates>2</NumberStates>
+        <DimBrightThreshold><Variable name="DimBrightThresholdHotcueBtn"/></DimBrightThreshold>
         <State>
           <Number>0</Number>
           <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square.svg</Unpressed>

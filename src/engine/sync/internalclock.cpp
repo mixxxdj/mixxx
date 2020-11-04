@@ -20,7 +20,6 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
           m_iOldSampleRate(44100),
           m_dOldBpm(124.0),
           m_dBaseBpm(124.0),
-          m_bClockUpdated(false),
           m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
           m_dClockPosition(0) {
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
@@ -101,7 +100,6 @@ void InternalClock::setMasterBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setMasterBeatDistance" << beatDistance;
     }
-    m_bClockUpdated.fetchAndStoreAcquire(true);
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.
@@ -202,18 +200,11 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
-    m_bClockUpdated.fetchAndStoreAcquire(false);
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
 void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     updateBeatLength(sampleRate, m_pClockBpm->get());
-
-    // If the clock was updated mid-call due to seeks or other updates from other decks, skip the
-    // incrementing of the clock.
-    if (m_bClockUpdated.fetchAndStoreRelaxed(false)) {
-        return;
-    }
 
     // stereo samples, so divide by 2
     m_dClockPosition += bufferSize / 2;

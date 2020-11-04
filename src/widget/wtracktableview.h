@@ -14,8 +14,8 @@
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
-class TrackCollectionManager;
 class ExternalTrackCollection;
+class Library;
 class WTrackMenu;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
@@ -27,7 +27,7 @@ class WTrackTableView : public WLibraryTableView {
     WTrackTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             double backgroundColorOpacity,
             bool sorting);
     ~WTrackTableView() override;
@@ -40,6 +40,7 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
+    TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();
@@ -91,7 +92,7 @@ class WTrackTableView : public WLibraryTableView {
     void initTrackMenu();
 
     const UserSettingsPointer m_pConfig;
-    TrackCollectionManager* const m_pTrackCollectionManager;
+    Library* const m_pLibrary;
 
     // Context menu container
     parented_ptr<WTrackMenu> m_pTrackMenu;

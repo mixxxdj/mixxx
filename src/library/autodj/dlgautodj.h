@@ -48,7 +48,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void slotSetAutoDJTransitionUnit(int transitionUnit);
 
   signals:
-    void addRandomButton(bool buttonChecked);
+    void addRandomTrackButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group, bool);
     void trackSelected(TrackPointer pTrack);

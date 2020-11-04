@@ -11,6 +11,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children/>
+        <!-- this is sized and styled in css -->
        </WidgetGroup>
 
       <WidgetGroup>
