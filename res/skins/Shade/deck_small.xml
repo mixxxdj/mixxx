@@ -39,8 +39,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 13px sans-serif;
-                        font-family: "Open Sans";
+                        font-size: 13px;
+                        font-weight: bold;
                         color: #191F24;
                       }
                     </Style>
@@ -98,8 +98,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 13px sans-serif;
-                        font-family: "Open Sans";
+                        font-size: 13px;
+                        font-weight: bold;
                         color: #191F24;
                       }
                     </Style>
