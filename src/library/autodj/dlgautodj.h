@@ -1,6 +1,7 @@
 #ifndef DLGAUTODJ_H
 #define DLGAUTODJ_H
 
+#include <QLineEdit>
 #include <QString>
 #include <QWidget>
 
