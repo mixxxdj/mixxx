@@ -327,9 +327,9 @@ void CueControl::createControls() {
                 &CueControl::hotcueGotoAndLoop,
                 Qt::DirectConnection);
         connect(pControl,
-                &HotcueControl::hotcueLoopToggle,
+                &HotcueControl::hotcueCueLoop,
                 this,
-                &CueControl::hotcueLoopToggle,
+                &CueControl::hotcueCueLoop,
                 Qt::DirectConnection);
         connect(pControl,
                 &HotcueControl::hotcueActivate,
@@ -935,7 +935,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double value) {
     m_pHotcueFocus->set(pControl->getHotcueNumber());
 }
 
-void CueControl::hotcueLoopToggle(HotcueControl* pControl, double value) {
+void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
     if (value == 0) {
         return;
     }
@@ -947,12 +947,16 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double value) {
     CuePointer pCue = pControl->getCue();
 
     if (!pCue || pCue->getPosition() == Cue::kNoPosition) {
-        return;
+        hotcueSet(pControl, value, HotcueSetMode::Cue);
+        pCue = pControl->getCue();
+        VERIFY_OR_DEBUG_ASSERT(pCue && pCue->getPosition() != Cue::kNoPosition) {
+            return;
+        }
     }
 
     switch (pCue->getType()) {
     case mixxx::CueType::Loop: {
-        // The hotcue_X_loop_toggle CO was invoked for a saved loop, set it as
+        // The hotcue_X_cueloop CO was invoked for a saved loop, set it as
         // active the first time this happens and toggle the loop_enabled state
         // on subsequent invocations.
         if (m_pCurrentSavedLoopControl != pControl) {
@@ -963,7 +967,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double value) {
         }
     } break;
     case mixxx::CueType::HotCue: {
-        // The hotcue_X_loop_toggle CO was invoked for a hotcue. In that case,
+        // The hotcue_X_cueloop CO was invoked for a hotcue. In that case,
         // create a beatloop starting at the hotcue position. This is useful for
         // mapping the CUE LOOP mode labeled on some controllers.
         setCurrentSavedLoopControlAndActivate(nullptr);
@@ -1003,7 +1007,13 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                         hotcueGoto(pControl, value);
                         break;
                     case mixxx::CueType::Loop:
-                        hotcueLoopToggle(pControl, value);
+                        if (m_pCurrentSavedLoopControl != pControl) {
+                            setCurrentSavedLoopControlAndActivate(pControl);
+                        } else {
+                            bool loopActive = pControl->getStatus() ==
+                                    HotcueControl::Status::Active;
+                            setLoop(pCue->getPosition(), pCue->getEndPosition(), !loopActive);
+                        }
                         break;
                     default:
                         DEBUG_ASSERT(!"Invalid CueType!");
@@ -2278,11 +2288,11 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // Enable/disable the loop associated with this hotcue (either a saved loop
     // or a beatloop from the hotcue position if this is a regular hotcue).
-    m_hotcueLoopToggle = new ControlPushButton(keyForControl(i, "loop_toggle"));
-    connect(m_hotcueLoopToggle,
+    m_hotcueCueLoop = new ControlPushButton(keyForControl(i, "cueloop"));
+    connect(m_hotcueCueLoop,
             &ControlObject::valueChanged,
             this,
-            &HotcueControl::slotHotcueLoopToggle,
+            &HotcueControl::slotHotcueCueLoop,
             Qt::DirectConnection);
 
     m_hotcueActivate = new ControlPushButton(keyForControl(i, "activate"));
@@ -2328,7 +2338,7 @@ HotcueControl::~HotcueControl() {
     delete m_hotcueGotoAndPlay;
     delete m_hotcueGotoAndStop;
     delete m_hotcueGotoAndLoop;
-    delete m_hotcueLoopToggle;
+    delete m_hotcueCueLoop;
     delete m_hotcueActivate;
     delete m_hotcueActivateCue;
     delete m_hotcueActivateLoop;
@@ -2364,8 +2374,8 @@ void HotcueControl::slotHotcueGotoAndLoop(double v) {
     emit hotcueGotoAndLoop(this, v);
 }
 
-void HotcueControl::slotHotcueLoopToggle(double v) {
-    emit hotcueLoopToggle(this, v);
+void HotcueControl::slotHotcueCueLoop(double v) {
+    emit hotcueCueLoop(this, v);
 }
 
 void HotcueControl::slotHotcueActivate(double v) {

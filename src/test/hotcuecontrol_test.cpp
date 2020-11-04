@@ -31,7 +31,7 @@ class HotcueControlTest : public BaseSignalPathTest {
         m_pHotcue1Goto = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_goto");
         m_pHotcue1GotoAndPlay = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_gotoandplay");
         m_pHotcue1GotoAndLoop = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_gotoandloop");
-        m_pHotcue1LoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_loop_toggle");
+        m_pHotcue1CueLoop = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_cueloop");
         m_pHotcue1Position = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_position");
         m_pHotcue1EndPosition = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_endposition");
         m_pHotcue1Enabled = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_1_enabled");
@@ -102,7 +102,7 @@ class HotcueControlTest : public BaseSignalPathTest {
     std::unique_ptr<ControlProxy> m_pHotcue1Goto;
     std::unique_ptr<ControlProxy> m_pHotcue1GotoAndPlay;
     std::unique_ptr<ControlProxy> m_pHotcue1GotoAndLoop;
-    std::unique_ptr<ControlProxy> m_pHotcue1LoopToggle;
+    std::unique_ptr<ControlProxy> m_pHotcue1CueLoop;
     std::unique_ptr<ControlProxy> m_pHotcue1Position;
     std::unique_ptr<ControlProxy> m_pHotcue1EndPosition;
     std::unique_ptr<ControlProxy> m_pHotcue1Enabled;
@@ -810,7 +810,7 @@ TEST_F(HotcueControlTest, SavedLoopReset) {
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 }
 
-TEST_F(HotcueControlTest, SavedLoopToggleWithExistingLoop) {
+TEST_F(HotcueControlTest, SavedLoopCueLoopWithExistingLoop) {
     createAndLoadFakeTrack();
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
@@ -827,8 +827,8 @@ TEST_F(HotcueControlTest, SavedLoopToggleWithExistingLoop) {
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 
     // Disable Loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1CueLoop->slotSet(1);
+    m_pHotcue1CueLoop->slotSet(0);
 
     EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
@@ -836,8 +836,8 @@ TEST_F(HotcueControlTest, SavedLoopToggleWithExistingLoop) {
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 
     // Re-Enable Loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1CueLoop->slotSet(1);
+    m_pHotcue1CueLoop->slotSet(0);
 
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
@@ -845,19 +845,66 @@ TEST_F(HotcueControlTest, SavedLoopToggleWithExistingLoop) {
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 }
 
-TEST_F(HotcueControlTest, SavedLoopToggleWithoutLoopOrBeats) {
+TEST_F(HotcueControlTest, CueLoopWithoutHotcueSetsHotcue) {
+    // Setup fake track with 120 bpm and calculate loop size
+    TrackPointer pTrack = loadTestTrackWithBpm(120.0);
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+
+    m_pHotcue1CueLoop->slotSet(1);
+    m_pHotcue1CueLoop->slotSet(0);
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+}
+
+TEST_F(HotcueControlTest, CueLoopWithSavedLoopToggles) {
+    // Setup fake track with 120 bpm and calculate loop size
+    TrackPointer pTrack = loadTestTrackWithBpm(120.0);
+
+    m_pHotcue1SetLoop->slotSet(1);
+    m_pHotcue1SetLoop->slotSet(0);
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
+    EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+
+    m_pHotcue1CueLoop->slotSet(1);
+    m_pHotcue1CueLoop->slotSet(0);
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
+    EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+    EXPECT_FALSE(m_pLoopEnabled->toBool());
+
+    m_pHotcue1CueLoop->slotSet(1);
+    m_pHotcue1CueLoop->slotSet(0);
+
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
+    EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+}
+
+TEST_F(HotcueControlTest, CueLoopWithoutLoopOrBeats) {
     createAndLoadFakeTrack();
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1CueLoop->slotSet(1);
+    m_pHotcue1CueLoop->slotSet(0);
 
-    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
+    EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
+    EXPECT_FALSE(m_pLoopEnabled->toBool());
 }
 
 TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
@@ -880,6 +927,8 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
     setCurrentSamplePosition(loopStartPositionSamples);
     ProcessBuffer();
 
+    m_pPlay->slotSet(1);
+
     // Set a beatloop
     m_pBeatloopActivate->slotSet(1);
     m_pBeatloopActivate->slotSet(0);
@@ -893,8 +942,7 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
 
     // Seek to start of track
     setCurrentSamplePosition(beforeLoopPositionSamples);
-    ProcessBuffer();
-    EXPECT_DOUBLE_EQ(beforeLoopPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(beforeLoopPositionSamples, currentSamplePosition(), 2048);
 
     // Check that the previous seek disabled the loop
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
@@ -902,30 +950,26 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Re-Enable loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1Activate->slotSet(1);
+    m_pHotcue1Activate->slotSet(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Check that re-enabling loop didn't seek
-    EXPECT_DOUBLE_EQ(beforeLoopPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(beforeLoopPositionSamples, currentSamplePosition(), 2048);
 
     // Disable loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1Activate->slotSet(1);
+    m_pHotcue1Activate->slotSet(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-
-    // Check that re-enabling loop didn't seek
-    EXPECT_DOUBLE_EQ(beforeLoopPositionSamples, currentSamplePosition());
 
     // Seek to position after saved loop
     setCurrentSamplePosition(afterLoopPositionSamples);
-    ProcessBuffer();
 
     // Check that the previous seek disabled the loop
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
@@ -933,26 +977,23 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Re-Enable loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1Activate->slotSet(1);
+    m_pHotcue1Activate->slotSet(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Check that re-enabling loop didn't seek
-    EXPECT_DOUBLE_EQ(afterLoopPositionSamples, currentSamplePosition());
+    EXPECT_NEAR(afterLoopPositionSamples, currentSamplePosition(), 2048);
 
     // Disable loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1Activate->slotSet(1);
+    m_pHotcue1Activate->slotSet(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
-
-    // Check that re-enabling loop didn't seek
-    EXPECT_DOUBLE_EQ(afterLoopPositionSamples, currentSamplePosition());
 }
 
 TEST_F(HotcueControlTest, SavedLoopActivate) {
@@ -1168,8 +1209,8 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     setCurrentSamplePosition(beforeLoopPositionSamples);
 
     // Re-enable saved loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1Activate->slotSet(1);
+    m_pHotcue1Activate->slotSet(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
@@ -1195,8 +1236,8 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     setCurrentSamplePosition(afterLoopPositionSamples);
 
     // Re-enable saved loop
-    m_pHotcue1LoopToggle->slotSet(1);
-    m_pHotcue1LoopToggle->slotSet(0);
+    m_pHotcue1Activate->slotSet(1);
+    m_pHotcue1Activate->slotSet(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
