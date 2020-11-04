@@ -215,9 +215,16 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     pModel->select(index, QItemSelectionModel::Select);
     setSelectionModel(pModel);
 
-    if (index.parent().isValid()) {
-        expand(index.parent());
+//FIXME(XXX): use expandRecursively when
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    QModelIndex parentIndex = index.parent();
+    if (parentIndex.isValid()) {
+        expand(parentIndex);
+        parentIndex = parentIndex.parent();
     }
+#else
+    expandRecursively(index);
+#endif
     scrollTo(index);
 }
 
