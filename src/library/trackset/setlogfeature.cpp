@@ -204,7 +204,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                 itemList.append(groupItem);
             }
 
-            std::unique_ptr<TreeItem> item(new TreeItem(name, id));
+            auto item = std::make_unique<TreeItem>(name, id);
             item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
 
             decorateChild(item.get(), id);

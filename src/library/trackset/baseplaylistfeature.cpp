@@ -706,8 +706,8 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
     if (pTreeItem->hasChildren()) {
         QList<TreeItem*> children = pTreeItem->children();
 
-        for (auto i = children.constBegin(); i != children.constEnd(); ++i) {
-            markTreeItem(*i);
+        for (int i = 0; i < children.size(); i++) {
+            markTreeItem(children.at(i));
         }
     }
 }
