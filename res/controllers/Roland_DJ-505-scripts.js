@@ -496,8 +496,8 @@ DJ505.Deck = function(deckNumbers, offset) {
 
     this.loopActive = new components.Button({
         midi: [0x94 + offset, 0x32],
-        inKey: "reloop_toggle",
-        outKey: "loop_enabled",
+        key: "loop_enabled",
+        type: components.Button.prototype.types.toggle,
     });
     this.reloopExit = new components.Button({
         midi: [0x94 + offset, 0x33],
