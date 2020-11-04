@@ -20,6 +20,7 @@ class VisibilityControlConnection : public QObject {
   public:
     VisibilityControlConnection(QObject* pParent, QAction* pAction,
                                 const ConfigKey& key);
+    double value();
 
   public slots:
     void slotClearControl();
@@ -43,6 +44,10 @@ class WMainMenuBar : public QMenuBar {
     void createMenu(FnAddMenu fnAddMenu, bool isMainMenu = false);
     void rebuild();
     void setVisible(bool visible) override;
+
+    bool shouldBeVisible() {
+        return m_pMenubarConnection ? m_pMenubarConnection->value() > 0.0 : true;
+    }
   public slots:
     void onLibraryScanStarted();
     void onLibraryScanFinished();
@@ -89,7 +94,7 @@ class WMainMenuBar : public QMenuBar {
 
   private:
     void initialize();
-    void createVisibilityControl(QAction* pAction, const ConfigKey& key);
+    VisibilityControlConnection* createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
@@ -97,4 +102,5 @@ class WMainMenuBar : public QMenuBar {
     QList<QAction*> m_vinylControlEnabledActions;
 
     unsigned int m_lastNumPlayers;
+    VisibilityControlConnection* m_pMenubarConnection;
 };

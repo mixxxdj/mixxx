@@ -1332,17 +1332,23 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         //setMenuBar(nullptr);
         //m_pMenuBar->rebuild();
         //setMenuBar(m_pMenuBar);
-        m_pMenuBar->hide();
-        m_pMenuBar->show();
+        if (m_pMenuBar->shouldBeVisible()) {
+            m_pMenuBar->hide();
+            m_pMenuBar->show();
+        }
         //m_pMenuBar->update();
-        createMenuBar();
-        connectMenuBar();
+        //createMenuBar();
+        //connectMenuBar();
         if (m_pMenuBar->isNativeMenuBar()) {
             m_pMenuBar->setNativeMenuBar(false);
         }
 #endif
     } else {
 #ifdef __LINUX__
+        if (m_pMenuBar->shouldBeVisible()) {
+            m_pMenuBar->hide();
+            m_pMenuBar->show();
+        }
 //        createMenuBar();
 //        connectMenuBar();
 #endif

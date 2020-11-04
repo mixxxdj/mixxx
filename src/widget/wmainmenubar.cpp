@@ -58,7 +58,8 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent,
         : QMenuBar(pParent),
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig),
-          m_lastNumPlayers(0) {
+          m_lastNumPlayers(0),
+          m_pMenubarConnection(nullptr) {
     setObjectName(QStringLiteral("MainMenu"));
     initialize();
     rebuild();
@@ -270,7 +271,8 @@ void WMainMenuBar::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
                     tr("Ctrl+7", "Menubar|View|Show Menu Bar"))));
     pViewShowMenuBar->setStatusTip(showMenubarText);
     pViewShowMenuBar->setWhatsThis(buildWhatsThis(showMenubarTitle, showMenubarText));
-    createVisibilityControl(pViewShowMenuBar, ConfigKey("[Skin]", "show_menubar"));
+    m_pMenubarConnection = createVisibilityControl(
+            pViewShowMenuBar, ConfigKey("[Skin]", "show_menubar"));
     pViewMenu->addAction(pViewShowMenuBar);
     connect(pViewShowMenuBar,
             &QAction::triggered,
@@ -732,8 +734,8 @@ void WMainMenuBar::slotVisitUrl(const QString& url) {
     QDesktopServices::openUrl(QUrl(url));
 }
 
-void WMainMenuBar::createVisibilityControl(QAction* pAction,
-                                           const ConfigKey& key) {
+VisibilityControlConnection* WMainMenuBar::createVisibilityControl(QAction* pAction,
+        const ConfigKey& key) {
     auto pConnection = new VisibilityControlConnection(this, pAction, key);
     connect(this,
             &WMainMenuBar::internalOnNewSkinLoaded,
@@ -743,6 +745,7 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             &WMainMenuBar::internalOnNewSkinAboutToLoad,
             pConnection,
             &VisibilityControlConnection::slotClearControl);
+    return pConnection;
 }
 
 void WMainMenuBar::onNumberOfDecksChanged(int decks) {
@@ -761,6 +764,10 @@ VisibilityControlConnection::VisibilityControlConnection(
           m_key(key),
           m_pAction(pAction) {
     connect(m_pAction, &QAction::triggered, this, &VisibilityControlConnection::slotActionToggled);
+}
+
+double VisibilityControlConnection::value() {
+    return m_pControl ? m_pControl->get() : 0.0;
 }
 
 void VisibilityControlConnection::slotClearControl() {
