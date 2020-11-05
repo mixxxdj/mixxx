@@ -48,8 +48,7 @@
               **********************************************
               -->
               <StatusLight>
-                <TooltipId>FIXME</TooltipId>
-                <Tooltip>Auto DJ active</Tooltip>
+                <TooltipId>autodj_status</TooltipId>
                 <Pos>120,180</Pos>
                 <NumberPos>3</NumberPos>
                 <PathStatusLight1>style/style_icon_autodj.png</PathStatusLight1>

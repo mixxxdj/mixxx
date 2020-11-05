@@ -141,8 +141,7 @@ Description:
         <Children>
 
           <StatusLight>
-            <TooltipId>FIXME</TooltipId>
-            <Tooltip>AutoDJ active</Tooltip>
+            <TooltipId>autodj_status</TooltipId>
             <ObjectName>AutoDjStatus</ObjectName>
             <Size>14f,22f</Size>
             <NumberPos>3</NumberPos>
