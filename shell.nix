@@ -164,6 +164,18 @@ in stdenv.mkDerivation rec {
     fi
     export PYTHONPATH=venv/lib/python3.7/site-packages/:$PYTHONPATH
     export SOURCE_DATE_EPOCH=315532800
+    if [ -z $QT_MESSAGE_PATTERN ]; then
+      QT_MESSAGE_PATTERN="`echo -e \"\033[32m%{time h:mm:ss.zzz}\033[0m \"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"%{if-category}\033[35m %{category}:\033[35m%{endif}\"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"[\033[97m{{threadname}}\033[0m] \"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"%{if-debug}\033[34m%{type} \033[36m%{function}%{endif}\"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"%{if-info}\033[32m%{type}%{endif}\"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"%{if-warning}\033[93m%{type}%{endif}\"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"%{if-critical}\033[91m%{type}%{endif}\"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"%{if-fatal}\033[97m\033[41m%{type} \033[30m%{file}:%{line}%{endif}\"`"
+      QT_MESSAGE_PATTERN+="`echo -e \"\033[0m  %{message}\"`"
+      export QT_MESSAGE_PATTERN
+    fi
     echo -e "Mixxx development shell. Available commands:\n"
     echo " configure - configures cmake (only has to run once)"
     echo " build - compiles Mixxx"
