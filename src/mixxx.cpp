@@ -876,11 +876,16 @@ void MixxxMainWindow::initializeWindow() {
     m_pMenuBar->setPalette(Pal);
 
     // Restore the current window state (position, maximized, etc)
-    restoreGeometry(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
-        ConfigKey("[MainWindow]", "geometry")).toUtf8()));
-    restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
-        ConfigKey("[MainWindow]", "state")).toUtf8()));
-
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        restoreGeometry(QByteArray::fromBase64(
+                m_pSettingsManager->settings()
+                        ->getValueString(ConfigKey("[MainWindow]", "geometry"))
+                        .toUtf8()));
+        restoreState(QByteArray::fromBase64(
+                m_pSettingsManager->settings()
+                        ->getValueString(ConfigKey("[MainWindow]", "state"))
+                        .toUtf8()));
+    }
     setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     slotUpdateWindowTitle(TrackPointer());
 }
