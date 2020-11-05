@@ -393,7 +393,7 @@ Description:
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                         <SetVariable name="Text">VU meters</SetVariable>
-                        <SetVariable name="Setting">[LateNight],show_vumeters_compact</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_vumeters_compact</SetVariable>
                       </Template>
 
                       <!-- Spinny -->
