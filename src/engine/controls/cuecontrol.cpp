@@ -1076,13 +1076,13 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
         // hotcue. If this hotcue is previewing:
         mixxx::CueType cueType = pControl->getPreviewingType();
         if (cueType != mixxx::CueType::Invalid) {
-            // Mark this hotcue as not previewing.
-            double position = pControl->getPreviewingPosition();
-            pControl->setPreviewingType(mixxx::CueType::Invalid);
-            pControl->setPreviewingPosition(Cue::kNoPosition);
-
             // If this is the last hotcue to leave preview.
             if (--m_iCurrentlyPreviewingHotcues == 0 && !m_bPreviewing) {
+                // Mark this hotcue as not previewing.
+                double position = pControl->getPreviewingPosition();
+                pControl->setPreviewingType(mixxx::CueType::Invalid);
+                pControl->setPreviewingPosition(Cue::kNoPosition);
+
                 m_pPlay->set(0.0);
                 // Need to unlock before emitting any signals to prevent deadlock.
                 lock.unlock();
