@@ -541,6 +541,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
     emit skinLoaded();
 
+    // we need to inform the internal state about fullscreen set by
+    // the restored geometry earlier in initialize()
+    emit fullScreenChanged(isFullScreen());
 
     // Wait until all other ControlObjects are set up before initializing
     // controllers
