@@ -2399,7 +2399,6 @@ void HotcueControl::slotHotcueClear(double v) {
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
-    m_pHotcueStatus->forceSet(newPosition == Cue::kNoPosition ? 0.0 : 1.0);
     emit hotcuePositionChanged(this, newPosition);
 }
 
