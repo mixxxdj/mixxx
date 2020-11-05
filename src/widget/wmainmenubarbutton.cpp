@@ -12,10 +12,12 @@ WMainMenuBarButton::WMainMenuBarButton(QWidget* pParent,
           WBaseWidget(this),
           m_pMenu(make_parented<QMenu>(this)) {
     initialize(pMainMenu);
-    setShortcut(
-            QKeySequence(pKbdConfig->getValue(
-                    ConfigKey("[KeyboardShortcuts]", "Hamburger_Open"),
-                    tr("F10"))));
+    auto shortcut = QKeySequence(pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "Hamburger_Open"),
+            tr("F10")));
+    setShortcut(shortcut);
+    setToolTip(tr("Mainmenu") + "\n" +
+            tr("Shortcut") + ": " + shortcut.toString(QKeySequence::NativeText));
 }
 
 void WMainMenuBarButton::initialize(WMainMenuBar* pMainMenu) {
