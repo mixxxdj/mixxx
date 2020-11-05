@@ -97,7 +97,7 @@ class CueControl : public EngineControl {
     ~CueControl() override;
 
     void hintReader(HintVector* pHintList) override;
-    bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
+    bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
     void resetIndicators();
     bool isPlayingByPlayButton();
