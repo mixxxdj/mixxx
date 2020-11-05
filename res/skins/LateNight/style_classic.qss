@@ -818,6 +818,9 @@ WPushButton#FxSuperLinkInvertButton {
   #SamplerPlayBoxMini {
     padding: 1px;
   }
+  #SamplerBpmMini {
+    margin-left: 1px;
+  }
 
 #Sampler {
   padding: 1px 0px 2px 2px;
@@ -994,7 +997,8 @@ WPushButton#FxSuperLinkInvertButton {
 #Deck2 WLabel, #DeckCompact2 WLabel, #DeckMini2 WLabel,
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
 #MicAuxLabel,
-#SamplerTitle, #SamplerTitleMini, #SamplerBpm,
+#SamplerTitle, #SamplerTitleMini,
+#SamplerBpm, #SamplerBpmMini,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
 #CategoryLabel,
 #SkinSettingsLabelButton,
@@ -1893,7 +1897,7 @@ QPushButton#pushButtonShuffle:enabled {
   image: url(skin:/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
   }
 
-QPushButton#pushButtonAddRandom:enabled {
+QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skin:/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
   }
 

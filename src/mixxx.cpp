@@ -156,6 +156,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
 
     initializeKeyboard();
+    installEventFilter(m_pKeyboard);
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(

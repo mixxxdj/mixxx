@@ -20,6 +20,7 @@ class PredefinedColorPalettes {
 
     static const QList<ColorPalette> kPalettes;
     static const mixxx::RgbColor kDefaultCueColor;
+    static const mixxx::RgbColor kDefaultLoopColor;
 };
 
 } // namespace mixxx

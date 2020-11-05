@@ -50,7 +50,8 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void restoreComboBoxes(
             const QString& hotcueColors,
             const QString& trackColors,
-            int defaultColor);
+            int defaultHotcueColor,
+            int defaultLoopColor);
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
