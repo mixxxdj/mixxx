@@ -13,20 +13,23 @@
 		<ObjectName>EffectParameterKnob</ObjectName>
 		<Layout>vertical</Layout>
 		<SizePolicy>me,f</SizePolicy>
-		<MinimumSize>-1,46</MinimumSize>
+		<MinimumSize>38,46</MinimumSize>
 		<MaximumSize>-1,46</MaximumSize>
 		<Children>
 			<EffectParameterName>
 				<Style>
 					WEffectParameter {
-						font: 10px/8px sans-serif;
-						font-family: "Open Sans";
+            font-size: 10px;
+            line-height: 8px;
 						background-color: transparent;
 						color: #191F24;
 						padding-left: 1px;
 					}
 					QLabel { qproperty-alignment: AlignCenter; }
 				</Style>
+        <Elide>right</Elide>
+        <SizePolicy>me,f</SizePolicy>
+        <MaximumSize>-1,46</MaximumSize>
 				<ObjectName>KnobLabel</ObjectName>
 				<EffectRack>1</EffectRack>
 				<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
@@ -42,7 +45,7 @@
 						<Children>
 							<EffectParameterKnob>
 								<NumberStates>64</NumberStates>
-								<Path>knobs/knob_rotary_s%1.png</Path>
+								<Path>knobs_no_center/knob_rotary_s%1.png</Path>
 								<Connection>
 									<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/></ConfigKey>
 								</Connection>
