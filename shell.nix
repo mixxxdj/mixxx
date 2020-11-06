@@ -144,6 +144,7 @@ let
       utillinux
       x42-plugins
       zam-plugins
+      sratom
     ])
   else
     [ ]);
@@ -203,6 +204,7 @@ in stdenv.mkDerivation rec {
       git-clang-format
       glibcLocales
       # for pre-commit installation since nixpkg.pre-commit may be to old
+      pre-commit
       python3
       python37Packages.pip
       python37Packages.setuptools
