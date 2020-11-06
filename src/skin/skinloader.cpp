@@ -4,7 +4,6 @@
 #include "skin/skinloader.h"
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QString>
 #include <QtDebug>

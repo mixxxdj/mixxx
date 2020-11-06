@@ -1,20 +1,22 @@
+#include "widget/wcoverart.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QBitmap>
-#include <QLabel>
 #include <QIcon>
-#include <QStylePainter>
+#include <QLabel>
 #include <QStyleOption>
+#include <QStylePainter>
 
 #include "control/controlobject.h"
-#include "widget/wcoverart.h"
-#include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
+#include "widget/wskincolor.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -265,7 +267,11 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
             m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
-        } else {
+        } else if (!m_loadedCover.isNull()) {
+            // Only show the fullsize cover art dialog if the current track
+            // actually has a cover.  The `init` method already shows the
+            // window and then emits a signal to load the cover, so this can't
+            // be handled by the method itself.
             m_pDlgFullSize->init(m_loadedTrack);
         }
     } // else it was a long leftclick or a right click that's already been processed

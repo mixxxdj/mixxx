@@ -17,10 +17,15 @@ typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {
   public:
-    enum class TypeId {
-        Unknown,
-        Cue,
-        Loop,
+    /// We didn't encounter other type IDs as those listed here (e.g. "2") yet.
+    /// Apparently these are not used.
+    enum class TypeId : int {
+        /// Used for unset cue points
+        Unknown = 0,
+        /// Used for set cue points
+        Cue = 1,
+        /// Used for saved loops (both set and unset ones)
+        Loop = 3,
     };
 
     SeratoMarkersEntry(
@@ -53,12 +58,13 @@ class SeratoMarkersEntry {
 
     SeratoMarkersEntry::TypeId typeId() const {
         SeratoMarkersEntry::TypeId typeId = SeratoMarkersEntry::TypeId::Unknown;
-        switch (type()) {
-        case 0: // This seems to be an unset Hotcue (i.e. without a position)
-        case 1: // Hotcue
+        switch (static_cast<SeratoMarkersEntry::TypeId>(type())) {
+        case SeratoMarkersEntry::TypeId::Unknown:
+            // This seems to be an unset Hotcue (i.e. without a position)
+        case SeratoMarkersEntry::TypeId::Cue:
             typeId = SeratoMarkersEntry::TypeId::Cue;
             break;
-        case 3: // Saved Loop
+        case SeratoMarkersEntry::TypeId::Loop:
             typeId = SeratoMarkersEntry::TypeId::Loop;
             break;
         }
@@ -130,7 +136,7 @@ class SeratoMarkers final {
   public:
     SeratoMarkers() = default;
 
-    /// Parse a binary Serato repesentation of the "Markers_" data from a
+    /// Parse a binary Serato representation of the "Markers_" data from a
     /// `QByteArray` and write the results to the `SeratoMarkers` instance.
     /// The `fileType` parameter determines the exact format of the data being
     /// used.
@@ -139,7 +145,7 @@ class SeratoMarkers final {
             const QByteArray& data,
             taglib::FileType fileType);
 
-    /// Create a binary Serato repesentation of the "Markers_" data suitable
+    /// Create a binary Serato representation of the "Markers_" data suitable
     /// for `fileType` and dump it into a `QByteArray`. The content of that
     /// byte array can be used for round-trip tests or written to the
     /// appropriate tag to make it accessible to Serato.
@@ -164,6 +170,7 @@ class SeratoMarkers final {
     }
 
     QList<CueInfo> getCues() const;
+    void setCues(const QList<CueInfo>& cueInfos);
 
   private:
     static bool parseID3(

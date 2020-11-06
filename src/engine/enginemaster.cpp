@@ -302,14 +302,14 @@ void EngineMaster::processChannels(int iBufferSize) {
 
             // Check if we need to fade out the master channel
             GainCache& gainCache = m_channelMasterGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 gainCache.m_fadeout = true;
                 m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
-             }
+            }
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelTalkoverGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 gainCache.m_fadeout = true;
                 m_activeTalkoverChannels.append(pChannelInfo);
             }
@@ -320,7 +320,7 @@ void EngineMaster::processChannels(int iBufferSize) {
             } else {
                 // Check if we need to fade out the channel
                 GainCache& gainCache = m_channelMasterGainCache[i];
-                if (gainCache.m_gain) {
+                if (gainCache.m_gain != 0) {
                     gainCache.m_fadeout = true;
                     m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
                 }
@@ -334,7 +334,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelHeadphoneGainCache[i];
-            if (gainCache.m_gain) {
+            if (gainCache.m_gain != 0) {
                 m_channelHeadphoneGainCache[i].m_fadeout = true;
                 m_activeHeadphoneChannels.append(pChannelInfo);
             }
@@ -387,9 +387,9 @@ void EngineMaster::process(const int iBufferSize) {
     }
     //Trace t("EngineMaster::process");
 
-    bool masterEnabled = m_pMasterEnabled->get();
-    bool boothEnabled = m_pBoothEnabled->get();
-    bool headphoneEnabled = m_pHeadphoneEnabled->get();
+    bool masterEnabled = m_pMasterEnabled->toBool();
+    bool boothEnabled = m_pBoothEnabled->toBool();
+    bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
 
     m_iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     m_iBufferSize = iBufferSize;
@@ -409,9 +409,9 @@ void EngineMaster::process(const int iBufferSize) {
     CSAMPLE pflMixGainInHeadphones = 1;
     CSAMPLE masterMixGainInHeadphones = 0;
     if (masterEnabled) {
-        CSAMPLE cf_val = m_pHeadMix->get();
-        pflMixGainInHeadphones = 0.5 * (-cf_val + 1.);
-        masterMixGainInHeadphones = 0.5 * (cf_val + 1.);
+        const auto cf_val = static_cast<CSAMPLE_GAIN>(m_pHeadMix->get());
+        pflMixGainInHeadphones = 0.5f * (-cf_val + 1.0f);
+        masterMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
         // qDebug() << "head val " << cf_val << ", head " << chead_gain
         //          << ", master " << cmaster_gain;
     }
@@ -489,7 +489,7 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
-    double crossfaderLeftGain, crossfaderRightGain;
+    CSAMPLE_GAIN crossfaderLeftGain, crossfaderRightGain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get(),
@@ -500,8 +500,10 @@ void EngineMaster::process(const int iBufferSize) {
     // m_masterGain takes care of applying the attenuation from
     // channel volume faders, crossfader, and talkover ducking.
     // Talkover is mixed in later according to the configured MicMonitorMode
-    m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
-                            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
+    m_masterGain.setGains(crossfaderLeftGain,
+            1.0f,
+            crossfaderRightGain,
+            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(
@@ -560,7 +562,7 @@ void EngineMaster::process(const int iBufferSize) {
             // Copy master mix to booth output with booth gain before mixing
             // talkover with master mix
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -573,7 +575,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -602,7 +604,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Copy master mix (with talkover mixed in) to booth output with booth gain
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -610,7 +612,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -627,7 +629,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Copy master mix to booth output with booth gain
             if (boothEnabled) {
-                CSAMPLE boothGain = m_pBoothGain->get();
+                CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
                                                 m_boothGainOld, boothGain,
                                                 m_iBufferSize);
@@ -645,7 +647,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE master_gain = m_pMasterGain->get();
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
@@ -705,7 +707,7 @@ void EngineMaster::process(const int iBufferSize) {
         // Balance values
         CSAMPLE balright = 1.;
         CSAMPLE balleft = 1.;
-        CSAMPLE bal = m_pBalance->get();
+        const auto bal = static_cast<CSAMPLE_GAIN>(m_pBalance->get());
         if (bal > 0.) {
             balleft -= bal;
         } else if (bal < 0.) {
@@ -726,7 +728,7 @@ void EngineMaster::process(const int iBufferSize) {
         }
     }
 
-    if (m_pMasterMonoMixdown->get()) {
+    if (m_pMasterMonoMixdown->toBool()) {
         SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, m_iBufferSize);
     }
 
@@ -761,7 +763,7 @@ void EngineMaster::applyMasterEffects() {
     }
 }
 
-void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
+void EngineMaster::processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphones) {
     // Add master mix to headphones
     SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
                                    m_headphoneMasterGainOld,
@@ -771,7 +773,7 @@ void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
     // If Head Split is enabled, replace the left channel of the pfl buffer
     // with a mono mix of the headphone buffer, and the right channel of the pfl
     // buffer with a mono mix of the master output buffer.
-    if (m_pHeadSplitEnabled->get()) {
+    if (m_pHeadSplitEnabled->toBool()) {
         // note: NOT VECTORIZED because of in place copy
         for (unsigned int i = 0; i + 1 < m_iBufferSize; i += 2) {
             m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
@@ -780,7 +782,7 @@ void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
     }
 
     // Apply headphone gain
-    CSAMPLE headphoneGain = m_pHeadGain->get();
+    CSAMPLE_GAIN headphoneGain = static_cast<CSAMPLE_GAIN>(m_pHeadGain->get());
     SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
                                  headphoneGain, m_iBufferSize);
     m_headphoneGainOld = headphoneGain;

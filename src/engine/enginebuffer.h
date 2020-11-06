@@ -11,7 +11,7 @@
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
 
@@ -106,6 +106,10 @@ class EngineBuffer : public EngineObject {
     double getBpm() const;
     // Returns the BPM of the loaded track around the current position (not thread-safe)
     double getLocalBpm() const;
+    /// Sets a beatloop for the loaded track (not thread safe)
+    void setBeatLoop(double startPosition, bool enabled);
+    /// Sets a loop for the loaded track (not thread safe)
+    void setLoop(double startPosition, double endPositon, bool enabled);
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -235,6 +239,7 @@ class EngineBuffer : public EngineObject {
     UserSettingsPointer m_pConfig;
 
     friend class CueControlTest;
+    friend class HotcueControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
@@ -300,7 +305,7 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    int m_trackSamplesOld;
+    double m_trackSamplesOld;
 
     // Copy of file sample rate
     double m_trackSampleRateOld;

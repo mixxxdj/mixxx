@@ -320,6 +320,19 @@
           </WidgetGroup><!-- UpperTextRow -->
 
           <WidgetGroup>
+            <ObjectName>TrackColorWrapper</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>0me,2f</Size>
+            <Children>
+              <TrackWidgetGroup>
+                <Size>0me,2f</Size>
+                <Group><Variable name="group"/></Group>
+                <TrackColorAlpha>255</TrackColorAlpha>
+              </TrackWidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
             <ObjectName>LowerTextRow</ObjectName>
             <Layout>horizontal</Layout>
             <!-- When TextRow is laid out, we need to ignore our children. Otherwise
@@ -488,8 +501,8 @@
                               <Template src="skin:left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                                 <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
-                                <SetVariable name="MinimumSize">42,22</SetVariable>
-                                <SetVariable name="MaximumSize">42,22</SetVariable>
+                                <SetVariable name="MinimumSize">46,22</SetVariable>
+                                <SetVariable name="MaximumSize">46,22</SetVariable>
                                 <SetVariable name="SizePolicy">f,f</SetVariable>
                                 <SetVariable name="state_0_text">Match</SetVariable>
                                 <SetVariable name="state_0_pressed"></SetVariable>

@@ -187,7 +187,7 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
         // m_minDB = 0
         // 0 dB = m_neutralParameter
         double overlay = m_offset * (1 - dValue);
-        if (m_minDB) {
+        if (m_minDB != 0) {
             dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
         } else {
             dParam = dValue * m_neutralParameter;
@@ -211,7 +211,7 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
         // db + linear overlay to reach
         // m_minDB = 0
         // 0 dB = m_neutralParameter;
-        if (m_minDB) {
+        if (m_minDB != 0) {
             double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
             dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
         } else {
@@ -232,7 +232,7 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
 
 double ControlAudioTaperPotBehavior::midiToParameter(double midiValue) {
     double dParam;
-    if (m_neutralParameter && m_neutralParameter != 1.0) {
+    if (m_neutralParameter != 0 && m_neutralParameter != 1.0) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
         if (neutralTest < m_neutralParameter) {
             dParam = midiValue /
@@ -255,7 +255,7 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     // always on a full Midi integer
     double dParam = valueToParameter(dValue);
     double dMidiParam = dParam * 127.0;
-    if (m_neutralParameter && m_neutralParameter != 1.0) {
+    if (m_neutralParameter != 0 && m_neutralParameter != 1.0) {
         if (dParam < m_neutralParameter) {
             dMidiParam += m_midiCorrection * dParam / m_neutralParameter;
         } else {
@@ -316,8 +316,8 @@ void ControlPushButtonBehavior::setValueFromMidi(
         auto* timer = getTimer();
         if (pressed) {
             // Toggle on press
-            double value = pControl->get();
-            pControl->set(!value, NULL);
+            bool value = (pControl->get() != 0);
+            pControl->set(!value, nullptr);
             timer->setSingleShot(true);
             timer->start(kPowerWindowTimeMillis);
         } else if (!timer->isActive()) {

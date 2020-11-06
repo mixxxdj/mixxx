@@ -2,6 +2,7 @@
 
 #include "track/macro.h"
 
+namespace {
 const QString kConfigGroup("[MacroRecording]");
 const QString kChannelGroup("[Channel1]");
 
@@ -16,3 +17,4 @@ void checkMacroAction(MacroPointer macro, MacroAction action = kAction) {
     // Loopback action
     EXPECT_EQ(macro->getActions().first().sourceFrame, action.targetFrame);
 }
+} // namespace

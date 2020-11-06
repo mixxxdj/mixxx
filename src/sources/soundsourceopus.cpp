@@ -131,7 +131,7 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(pOggOpusFile, -1);
     const auto duration = Duration::fromMicros(
-            1000000 * dTotalFrames / pTrackMetadata->getSampleRate());
+            static_cast<qint64>(1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
     pTrackMetadata->setDuration(duration);
 
 #ifndef TAGLIB_HAS_OPUSFILE

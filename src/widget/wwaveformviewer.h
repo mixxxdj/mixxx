@@ -9,7 +9,7 @@
 #include <QMutex>
 
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"
@@ -86,6 +86,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     WaveformMarkPointer m_pHoveredMark;
 
     WaveformWidgetAbstract* m_waveformWidget;
+
+    int m_dimBrightThreshold;
 
     friend class WaveformWidgetFactory;
 

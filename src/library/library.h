@@ -1,14 +1,15 @@
 #pragma once
 
-#include <QList>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QList>
+#include <QObject>
 #include <QPointer>
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 
@@ -86,6 +87,10 @@ class Library: public QObject {
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
+
+    /// Triggers a new search in the internal track collection
+    /// and shows the results by switching the view.
+    void searchTracksInCollection(const QString& query);
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);

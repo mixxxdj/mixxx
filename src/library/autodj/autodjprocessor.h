@@ -1,16 +1,16 @@
 #ifndef AUTODJPROCESSOR_H
 #define AUTODJPROCESSOR_H
 
+#include <QModelIndexList>
 #include <QObject>
 #include <QString>
-#include <QModelIndexList>
 
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/controls/cuecontrol.h"
 #include "library/playlisttablemodel.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 #include "util/class.h"
 
 class ControlPushButton;
@@ -78,8 +78,8 @@ class DeckAttributes : public QObject {
         return m_outroEndPos.get();
     }
 
-    int sampleRate() const {
-        return m_sampleRate.get();
+    mixxx::audio::SampleRate sampleRate() const {
+        return mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
     }
 
     double trackSamples() const {
@@ -227,6 +227,7 @@ class AutoDJProcessor : public QObject {
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
+    void controlAddRandomTrack(double value);
 
   protected:
     // The following virtual signal wrappers are used for testing
@@ -293,6 +294,7 @@ class AutoDJProcessor : public QObject {
     ControlProxy* m_pCOCrossfaderReverse;
 
     ControlPushButton* m_pSkipNext;
+    ControlPushButton* m_pAddRandomTrack;
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;

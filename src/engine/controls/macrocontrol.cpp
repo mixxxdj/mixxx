@@ -1,5 +1,7 @@
 #include "macrocontrol.h"
 
+#include "track/track.h"
+
 namespace {
 constexpr uint kRecordingTimerInterval = 100;
 constexpr size_t kRecordingQueueSize = kRecordingTimerInterval / 10;
@@ -265,6 +267,9 @@ void MacroControl::slotClear(double value) {
     if (getStatus() == Status::Recorded) {
         qCDebug(macroLoggingCategory) << "Clearing" << m_slot;
         m_pMacro->clear();
+        if (m_pMacro->getLabel().contains(QRegExp("^[0-9.]+$"))) {
+            m_pMacro->setLabel("");
+        }
         setStatus(Status::Empty);
     }
 }

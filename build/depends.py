@@ -946,6 +946,7 @@ class MixxxCore(Feature):
                    "src/sources/audiosource.cpp",
                    "src/sources/audiosourcestereoproxy.cpp",
                    "src/sources/metadatasourcetaglib.cpp",
+                   "src/sources/readaheadframebuffer.cpp",
                    "src/sources/soundsource.cpp",
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
@@ -980,6 +981,7 @@ class MixxxCore(Feature):
                    "src/widget/wspinny.cpp",
                    "src/widget/wskincolor.cpp",
                    "src/widget/wsearchlineedit.cpp",
+                   "src/widget/wsearchrelatedtracksmenu.cpp",
                    "src/widget/wpixmapstore.cpp",
                    "src/widget/paintable.cpp",
                    "src/widget/wimagestore.cpp",
@@ -1011,7 +1013,7 @@ class MixxxCore(Feature):
 
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
-                   "src/musicbrainz/crc.c",
+                   "src/musicbrainz/crc.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
                    "src/musicbrainz/musicbrainz.cpp",
                    "src/musicbrainz/musicbrainzxml.cpp",
@@ -1135,7 +1137,6 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/colordelegate.cpp",
-                   "src/library/basecoverartdelegate.cpp",
                    "src/library/coverartdelegate.cpp",
                    "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",
@@ -1336,7 +1337,6 @@ class MixxxCore(Feature):
                    "src/util/logger.cpp",
                    "src/util/logging.cpp",
                    "src/util/cmdlineargs.cpp",
-                   "src/util/autohidpi.cpp",
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
@@ -1460,6 +1460,7 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
+            build.env.Append(CCFLAGS='-Woverloaded-virtual')
 
             if build.compiler_is_gcc and build.gcc_major_version >= 9:
                 # Avoid many warnings from GCC 9 about implicitly defined copy assignment

@@ -180,10 +180,10 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
             // Ramp to dry, when disabling, this will ramp from dry when enabling as well
             fGain[i] = 1.0;
         } else {
-            fGain[i] = m_pPotGain[i]->value();
+            fGain[i] = static_cast<CSAMPLE_GAIN>(m_pPotGain[i]->value());
         }
-        fQ[i] = m_pPotQ[i]->value();
-        fCenter[i] = m_pPotCenter[i]->value();
+        fQ[i] = static_cast<CSAMPLE_GAIN>(m_pPotQ[i]->value());
+        fCenter[i] = static_cast<CSAMPLE_GAIN>(m_pPotCenter[i]->value());
         if (fGain[i] != pState->m_oldGain[i] ||
                 fQ[i] != pState->m_oldQ[i] ||
                 fCenter[i] != pState->m_oldCenter[i]) {
@@ -192,16 +192,16 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
         }
     }
 
-    if (fGain[0]) {
+    if (fGain[0] != 0) {
         pState->m_bands[0]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
-        if (fGain[1]) {
+        if (fGain[1] != 0) {
             pState->m_bands[1]->process(pOutput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
         }
     } else {
         pState->m_bands[0]->pauseFilter();
-        if (fGain[1]) {
+        if (fGain[1] != 0) {
             pState->m_bands[1]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();

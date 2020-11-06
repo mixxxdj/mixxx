@@ -4,6 +4,7 @@
       <name>Numark NS7</name>
       <author>Anders Gunnarsson</author>
       <description>Numark NS7 controller preliminary mapping, v1.9.0 Requires script v1.9.0</description>
+      <manual>numark_ns7</manual>
    </info>
    <controller id="Numark NS7 MIDI">
       <scriptfiles>

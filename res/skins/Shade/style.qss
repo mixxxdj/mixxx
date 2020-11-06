@@ -431,7 +431,10 @@ WLibrary WColorPicker QPushButton {
   alternate-background-color: #1a1a1a;
   selection-color: #e6e6e6;
   selection-background-color: #666;
-}
+  }
+  QTextBrowser {
+    padding-left: 5px;
+  }
 
 #LibraryContainer QTableView::item:selected,
 #LibraryContainer QTreeView::item:selected,
@@ -872,7 +875,7 @@ QPushButton#pushButtonSkipNext:!enabled {
 QPushButton#pushButtonShuffle {
   image: url(skin:/btn/btn_autodj_shuffle.svg) no-repeat center center;
 }
-QPushButton#pushButtonAddRandom {
+QPushButton#pushButtonAddRandomTrack {
   image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {

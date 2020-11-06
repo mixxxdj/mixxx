@@ -27,9 +27,9 @@
      style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
      id="g862">
     <path
-       d="m 15,3 v 3 l -11,1e-6 v 2 L 15,8 v 3 l 7,-4 z"
+       d="M 15,3 V 6 L 2,6 v 2 h 13 v 3 l 7,-4 z"
        id="path6-3"
-       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round" />
+       style="fill:none;stroke:#000000;stroke-width:1.6;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <g
        style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
        id="g849-6">
@@ -58,7 +58,7 @@
   <path
      style="fill:#928476"
      id="path6"
-     d="m 15,3 v 3 l -11,1e-6 v 2 L 15,8 v 3 l 7,-4 z" />
+     d="M 15,3 V 6 L 2,6 v 2 h 13 v 3 l 7,-4 z" />
   <g
      id="g849">
     <path

@@ -17,6 +17,11 @@
 
 #include <QtDebug>
 
+namespace {
+constexpr int kRateSensitivityMin = 100;
+constexpr int kRateSensitivityMax = 2500;
+} // namespace
+
 // Static default values for rate buttons (percents)
 ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeCoarse;
 ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeFine;
@@ -222,11 +227,11 @@ RateControl::RampMode RateControl::getRateRampMode() {
 void RateControl::setRateRampSensitivity(int sense) {
     // Reverse the actual sensitivity value passed.
     // That way the gui works in an intuitive manner.
-    sense = RATE_SENSITIVITY_MAX - sense + RATE_SENSITIVITY_MIN;
-    if (sense < RATE_SENSITIVITY_MIN) {
-        m_iRateRampSensitivity = RATE_SENSITIVITY_MIN;
-    } else if (sense > RATE_SENSITIVITY_MAX) {
-        m_iRateRampSensitivity = RATE_SENSITIVITY_MAX;
+    sense = kRateSensitivityMax - sense + kRateSensitivityMin;
+    if (sense < kRateSensitivityMin) {
+        m_iRateRampSensitivity = kRateSensitivityMin;
+    } else if (sense > kRateSensitivityMax) {
+        m_iRateRampSensitivity = kRateSensitivityMax;
     } else {
         m_iRateRampSensitivity = sense;
     }
@@ -393,21 +398,21 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     processTempRate(iSamplesPerBuffer);
 
     double rate;
-    double searching = m_pRateSearch->get();
-    if (searching) {
+    const double searching = m_pRateSearch->get();
+    if (searching != 0) {
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->toBool();
-        bool useScratch2Value = m_pScratch2Enable->get() != 0;
+        bool useScratch2Value = m_pScratch2Enable->toBool();
 
         // By default scratch2_enable is enough to determine if the user is
         // scratching or not. Moving platter controllers have to disable
         // "scratch2_indicates_scratching" if they are not scratching,
         // to allow things like key-lock.
-        if (useScratch2Value && m_pScratch2Scratching->get()) {
+        if (useScratch2Value && m_pScratch2Scratching->toBool()) {
             *pReportScratching = true;
         }
 
@@ -475,12 +480,12 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.
-            int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+            int vcmode = m_pVCMode ? static_cast<int>(m_pVCMode->get()) : MIXXX_VCMODE_ABSOLUTE;
             // TODO(owen): Instead of just ignoring reverse mode, should we
             // disable absolute mode instead?
-            if (m_pReverseButton->get()
-                    && !m_pScratch2Enable->get()
-                    && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+            if (m_pReverseButton->toBool() && !m_pScratch2Enable->toBool() &&
+                    (!bVinylControlEnabled ||
+                            vcmode != MIXXX_VCMODE_ABSOLUTE)) {
                 rate = -rate;
                 *pReportReverse = true;
             }

@@ -71,7 +71,7 @@ SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
     }
 
     float positionSecs;
-    uint32_t beatsTillNextMarker;
+    quint32 beatsTillNextMarker;
 
     QDataStream stream(data);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -206,7 +206,7 @@ bool SeratoBeatGrid::parseID3(
 
     if (numMarkers <= 0) {
         kLogger.warning() << "Parsing SeratoBeatGrid failed:"
-                          << "Expected at leat one marker, but found"
+                          << "Expected at least one marker, but found"
                           << numMarkers;
         return false;
     }

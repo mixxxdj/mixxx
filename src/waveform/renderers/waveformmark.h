@@ -30,32 +30,52 @@ class WaveformMark {
 
     int getHotCue() const { return m_iHotCue; };
 
-    //The m_pPointCos related function
-    bool isValid() const { return m_pPointCos && m_pPointCos->valid(); }
+    //The m_pPositionCO related function
+    bool isValid() const {
+        return m_pPositionCO && m_pPositionCO->valid();
+    }
 
     template <typename Receiver, typename Slot>
     void connectSamplePositionChanged(Receiver receiver, Slot slot) const {
-        m_pPointCos->connectValueChanged(receiver, slot, Qt::AutoConnection);
+        m_pPositionCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     };
-    double getSamplePosition() const { return m_pPointCos->get(); }
-    QString getItem() const { return m_pPointCos->getKey().item; }
+    template<typename Receiver, typename Slot>
+    void connectSampleEndPositionChanged(Receiver receiver, Slot slot) const {
+        if (m_pEndPositionCO) {
+            m_pEndPositionCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
+        }
+    };
+    double getSamplePosition() const {
+        return m_pPositionCO->get();
+    }
+    double getSampleEndPosition() const {
+        if (m_pEndPositionCO) {
+            return m_pEndPositionCO->get();
+        }
+        return Cue::kNoPosition;
+    }
+    QString getItem() const {
+        return m_pPositionCO->getKey().item;
+    }
 
-    // The m_pVisibleCos related function
-    bool hasVisible() const { return m_pVisibleCos && m_pVisibleCos->valid(); }
+    // The m_pVisibleCO related function
+    bool hasVisible() const {
+        return m_pVisibleCO && m_pVisibleCO->valid();
+    }
     bool isVisible() const {
         if (!hasVisible()) {
             return true;
         }
-        return m_pVisibleCos->get();
+        return m_pVisibleCO->toBool();
     }
 
     template <typename Receiver, typename Slot>
     void connectVisibleChanged(Receiver receiver, Slot slot) const {
-        m_pVisibleCos->connectValueChanged(receiver, slot, Qt::AutoConnection);
+        m_pVisibleCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     }
 
     // Sets the appropriate mark colors based on the base color
-    void setBaseColor(QColor baseColor);
+    void setBaseColor(QColor baseColor, int dimBrightThreshold);
     QColor fillColor() const {
         return m_fillColor;
     }
@@ -79,8 +99,9 @@ class WaveformMark {
     WaveformMarkLabel m_label;
 
   private:
-    std::unique_ptr<ControlProxy> m_pPointCos;
-    std::unique_ptr<ControlProxy> m_pVisibleCos;
+    std::unique_ptr<ControlProxy> m_pPositionCO;
+    std::unique_ptr<ControlProxy> m_pEndPositionCO;
+    std::unique_ptr<ControlProxy> m_pVisibleCO;
     int m_iHotCue;
     QImage m_image;
 

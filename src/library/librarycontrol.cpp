@@ -4,17 +4,18 @@
 #include <QItemSelectionModel>
 #include <QModelIndex>
 #include <QModelIndexList>
+#include <QWindow>
 #include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "library/library.h"
+#include "library/libraryview.h"
 #include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
-#include "library/library.h"
-#include "library/libraryview.h"
 
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),
@@ -211,6 +212,47 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotTrackColorNext);
 
+    // Control to navigate between widgets (tab/shit+tab button)
+    m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_next"));
+    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_prev"));
+    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "search_history_selector"), false);
+    connect(m_pSelectHistoryNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value >= 1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(1);
+                }
+            });
+    connect(m_pSelectHistoryPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value >= 1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(-1);
+                }
+            });
+    connect(m_pSelectHistorySelect.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (steps >= 1.0 || steps <= -1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
+                }
+            });
+
     /// Deprecated controls
     m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));
     connect(m_pSelectNextTrack.get(),
@@ -275,7 +317,7 @@ void LibraryControl::maybeCreateGroupController(const QString& group) {
 }
 
 void LibraryControl::slotNumDecksChanged(double v) {
-    int iNumDecks = v;
+    int iNumDecks = static_cast<int>(v);
 
     if (iNumDecks < 0) {
         return;
@@ -287,7 +329,7 @@ void LibraryControl::slotNumDecksChanged(double v) {
 }
 
 void LibraryControl::slotNumSamplersChanged(double v) {
-    int iNumSamplers = v;
+    int iNumSamplers = static_cast<int>(v);
 
     if (iNumSamplers < 0) {
         return;
@@ -300,7 +342,7 @@ void LibraryControl::slotNumSamplersChanged(double v) {
 
 
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
-    int iNumPreviewDecks = v;
+    int iNumPreviewDecks = static_cast<int>(v);
 
     if (iNumPreviewDecks < 0) {
         return;
@@ -537,42 +579,62 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+        return;
+    }
     if (!QApplication::focusWindow()) {
         qDebug() << "Mixxx window is not focused, don't send key events";
         return;
     }
 
-    bool keyIsTab = event.key() == static_cast<int>(Qt::Key_Tab);
+    bool keyIsTab = event.key() == Qt::Key_Tab;
+    bool keyIsUpDown = event.key() == Qt::Key_Up || event.key() == Qt::Key_Down;
 
     // If the main window has focus, any widget can receive Tab.
     // Other keys should be sent to library widgets only to not
     // accidentally alter spinboxes etc.
+    // If the searchbox has focus allow only Up/Down to select previous queries.
     if (!keyIsTab && !m_pSidebarWidget->hasFocus()
             && !m_pLibraryWidget->getActiveView()->hasFocus()) {
-        setLibraryFocus();
+        if (keyIsUpDown && !m_pSearchbox->hasFocus()) {
+            setLibraryFocus();
+        }
     }
     if (keyIsTab && !QApplication::focusWidget()){
         setLibraryFocus();
     }
+
     // Send the event pointer to the currently focused widget
     auto focusWidget = QApplication::focusWidget();
-    for (auto i = 0; i < event.count(); ++i) {
-        QApplication::sendEvent(focusWidget, &event);
+    if (focusWidget) {
+        for (auto i = 0; i < event.count(); ++i) {
+            QApplication::sendEvent(focusWidget, &event);
+        }
     }
 }
 
 void LibraryControl::setLibraryFocus() {
-    // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
+    // TODO: Set the focus of the library panel directly instead of sending tab from sidebar
     VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
+    // Try to focus the sidebar.
     m_pSidebarWidget->setFocus();
+
+    // This may have failed, for example when a Cover window still has focus,
+    // so make sure the sidebar is focused or we'll crash.
+    if (!m_pSidebarWidget->hasFocus()) {
+        return;
+    }
+    // Send Tab to move focus to the Tracks table.
+    // Obviously only works as desired if the skin widgets are arranged
+    // accordingly.
     QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
     QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    if (m_pSidebarWidget == NULL) {
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
     if (v > 0) {
@@ -626,7 +688,9 @@ void LibraryControl::slotGoToItem(double v) {
 
     // Focus the library if this is a leaf node in the tree
     if (m_pSidebarWidget->hasFocus()) {
-        // ToDo can't expand Tracks and AutoDJ, always returns false for those root items
+        // Note that Tracks and AutoDJ always return 'false':
+        // expanding those root items via controllers is considered dispensable
+        // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
             return setLibraryFocus();
         } else {
@@ -636,12 +700,25 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Load current track if a LibraryView object has focus
-    if (m_pLibraryWidget->hasFocus()) {
-        return slotLoadSelectedIntoFirstStopped(v);
+    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    if (activeView && activeView->hasFocus()) {
+        return activeView->loadSelectedTrack();
+    }
+
+    // If searchbox has focus jump to the tracks table
+    if (m_pSearchbox->hasFocus()) {
+        return setLibraryFocus();
     }
 
     // Clear the search if the searchbox has focus
     emit clearSearchIfClearButtonHasFocus();
+
+    // If the focused window is a dialog, press Enter
+    auto focusWindow = QApplication::focusWindow();
+    if (focusWindow && (focusWindow->type() & (Qt::Dialog | Qt::Popup))) {
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+        QApplication::sendEvent(focusWindow, &event);
+    }
 
     // TODO(xxx) instead of remote control the widgets individual, we should
     // translate this into Alt+Return and handle it at each library widget
@@ -654,12 +731,22 @@ void LibraryControl::slotSortColumn(double v) {
 }
 
 void LibraryControl::slotSortColumnToggle(double v) {
-    int column = static_cast<int>(v);
-    if (static_cast<int>(m_pSortColumn->get()) == column) {
-        m_pSortOrder->set(!m_pSortOrder->get());
+    int sortColumnId = static_cast<int>(v);
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::CurrentIndex)) {
+        if (!m_pLibraryWidget) {
+            return;
+        }
+        // Get the ID of the column with the cursor
+        sortColumnId =
+                static_cast<int>(m_pLibraryWidget->getActiveView()
+                                         ->getColumnIdFromCurrentIndex());
+    }
+
+    if (static_cast<int>(m_pSortColumn->get()) == sortColumnId) {
+        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
     } else {
-        m_pSortColumn->set(v);
-        m_pSortOrder->set(0);
+        m_pSortColumn->set(sortColumnId);
+        m_pSortOrder->set(0.0);
     }
 }
 

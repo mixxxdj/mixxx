@@ -38,7 +38,7 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
         double slipPosition, double tempoTrackSeconds) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
-    data.m_callbackEntrytoDac = m_dCallbackEntryToDacSecs * 1000000; // s to µs
+    data.m_callbackEntrytoDac = static_cast<int>(m_dCallbackEntryToDacSecs * 1000000); // s to µs
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;

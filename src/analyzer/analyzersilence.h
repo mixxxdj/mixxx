@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZERSILENCE_H
-#define ANALYZER_ANALYZERSILENCE_H
+#pragma once
 
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
@@ -18,11 +17,9 @@ class AnalyzerSilence : public Analyzer {
 
   private:
     UserSettingsPointer m_pConfig;
-    float m_fThreshold;
+    CSAMPLE m_fThreshold;
     int m_iFramesProcessed;
     bool m_bPrevSilence;
     int m_iSignalStart;
     int m_iSignalEnd;
 };
-
-#endif // ANALYZER_ANALYZERSILENCE_H

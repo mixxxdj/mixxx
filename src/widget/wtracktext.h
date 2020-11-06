@@ -5,12 +5,13 @@
 #include <QMouseEvent>
 
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class TrackCollectionManager;
+class Library;
 class WTrackMenu;
 
 class WTrackText : public WLabel, public TrackDropTarget {
@@ -19,7 +20,7 @@ class WTrackText : public WLabel, public TrackDropTarget {
     WTrackText(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             const QString& group);
     ~WTrackText() override;
 

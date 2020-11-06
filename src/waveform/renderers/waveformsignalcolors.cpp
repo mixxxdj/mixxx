@@ -5,7 +5,12 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformSignalColors::WaveformSignalColors() {
+namespace {
+constexpr int kDefaultDimBrightThreshold = 127;
+}
+
+WaveformSignalColors::WaveformSignalColors()
+        : m_dimBrightThreshold(kDefaultDimBrightThreshold) {
 }
 
 bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& context) {
@@ -76,6 +81,12 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     }
     m_bgColor = WSkinColor::getCorrectColor(m_bgColor).toRgb();
 
+    bool okay;
+    m_dimBrightThreshold = context.selectInt(node, QStringLiteral("DimBrightThreshold"), &okay);
+    if (!okay) {
+        m_dimBrightThreshold = kDefaultDimBrightThreshold;
+    }
+
     bool filteredColorValid = m_lowColor.isValid() && m_midColor.isValid() && m_highColor.isValid();
 
     if (m_signalColor.isValid() && filteredColorValid) {
@@ -141,8 +152,8 @@ void WaveformSignalColors::fallBackFromSignalColor() {
 }
 
 void WaveformSignalColors::fallBackDefaultColor() {
-    qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
-                  "skin do not provide valid signal colors ! Default colors is use ...";
+    qWarning() << "WaveformSignalColors::fallBackDefaultColor - "
+                  "Skin does not provide valid signal colors, using default color...";
 
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();
@@ -150,6 +161,6 @@ void WaveformSignalColors::fallBackDefaultColor() {
 }
 
 //NOTE(vRince) this sabilise hue between -1.0 and 2.0 but not more !
-float WaveformSignalColors::stableHue(float hue) const {
+double WaveformSignalColors::stableHue(double hue) const {
     return hue < 0.0 ? hue + 1.0 : hue > 1.0 ? hue - 1.0 : hue;
 }

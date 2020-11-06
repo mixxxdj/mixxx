@@ -301,9 +301,5 @@
       <Template src="skin:../Deere/spacer_v.xml"/>
 
     </Children>
-    <Connection>
-      <ConfigKey>[Master],skin_settings</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

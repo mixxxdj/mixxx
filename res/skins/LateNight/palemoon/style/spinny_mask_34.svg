@@ -5,11 +5,11 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="100"
-   height="100"
-   enable-background="new"
+   id="svg22"
    version="1.1"
-   id="svg22">
+   enable-background="new"
+   height="100"
+   width="100">
   <metadata
      id="metadata26">
     <rdf:RDF>
@@ -25,83 +25,90 @@
   <defs
      id="defs12">
     <radialGradient
-       id="c"
-       cx="50.003"
-       cy="45.492"
-       r="20.077"
+       gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(1.0417 0 0 1.0417 -2.086 2.6121)"
-       gradientUnits="userSpaceOnUse">
+       r="20.077"
+       cy="45.492"
+       cx="50.003"
+       id="c">
       <stop
-         stop-color="#eece33"
+         id="stop2"
          offset="0"
-         id="stop2" />
+         stop-color="#eece33" />
       <stop
-         stop-color="#eece33"
-         stop-opacity="0"
+         id="stop4"
          offset="1"
-         id="stop4" />
+         stop-opacity="0"
+         stop-color="#eece33" />
     </radialGradient>
     <linearGradient
-       id="b"
-       x1="2.625"
-       x2="97.375"
-       y1="50"
-       y2="50"
+       gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(-0.26579674,-0.96388794,0.96650068,-0.26507821,114.97193,111.56218)"
-       gradientUnits="userSpaceOnUse">
+       y2="50"
+       y1="50"
+       x2="97.375"
+       x1="2.625"
+       id="b">
       <stop
-         style="stop-color:#000000;stop-opacity:1"
+         id="stop7"
          offset="0"
-         id="stop7" />
+         style="stop-color:#000000;stop-opacity:1" />
       <stop
-         style="stop-color:#a1a1a1;stop-opacity:0.56862748"
-         stop-color="#dedede"
-         stop-opacity=".5714286"
+         id="stop9"
          offset="1"
-         id="stop9" />
+         stop-opacity=".5714286"
+         stop-color="#dedede"
+         style="stop-color:#a1a1a1;stop-opacity:0.56862748" />
     </linearGradient>
     <radialGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.0417,0,0,1.0417,-82.086,2.6121)"
-       r="20.077"
-       cy="45.492001"
+       id="b-3"
        cx="50.002998"
-       id="b-3">
+       cy="45.492001"
+       r="20.077"
+       gradientTransform="matrix(1.0417,0,0,1.0417,-82.086,2.6121)"
+       gradientUnits="userSpaceOnUse">
       <stop
-         id="stop7-6"
+         stop-color="#09b2ae"
          offset="0"
-         stop-color="#09b2ae" />
+         id="stop7-6" />
       <stop
-         id="stop9-7"
-         offset="1"
+         stop-color="#09b2ae"
          stop-opacity="0"
-         stop-color="#09b2ae" />
+         offset="1"
+         id="stop9-7" />
     </radialGradient>
   </defs>
   <rect
-     style="stroke-width:1.04167;fill:#000000;fill-opacity:0.30000001"
-     x="0"
-     y="0"
-     width="100"
-     height="100"
-     color="#000000"
-     enable-background="accumulate"
+     id="rect2"
      fill="#020202"
-     id="rect2" />
-  <path
-     style="fill:#1e1e20;fill-opacity:1"
-     d="m0 0v100h100v-100zm50 3.125c12.259 0 24.47 5.0688 33.138 13.737 8.6682 8.6682 13.737 20.879 13.737 33.138s-5.0688 24.47-13.737 33.138l-.09766.09766c-8.6622 8.6087-20.828 13.639-33.04 13.639-12.259 0-24.47-5.0688-33.138-13.737l-.09766-.09766c-8.6087-8.6622-13.639-20.828-13.639-33.04 0-12.259 5.0688-24.47 13.737-33.138 8.6682-8.6682 20.879-13.737 33.138-13.737z"
-     color="#000000"
      enable-background="accumulate"
+     color="#000000"
+     height="100"
+     width="100"
+     y="0"
+     x="0"
+     style="stroke-width:1.04167;fill:#000000;fill-opacity:0.30000001" />
+  <path
+     id="path18"
      fill="#1e1e1e"
-     id="path18" />
+     enable-background="accumulate"
+     color="#000000"
+     d="m0 0v100h100v-100zm50 3.125c12.259 0 24.47 5.0688 33.138 13.737 8.6682 8.6682 13.737 20.879 13.737 33.138s-5.0688 24.47-13.737 33.138l-.09766.09766c-8.6622 8.6087-20.828 13.639-33.04 13.639-12.259 0-24.47-5.0688-33.138-13.737l-.09766-.09766c-8.6087-8.6622-13.639-20.828-13.639-33.04 0-12.259 5.0688-24.47 13.737-33.138 8.6682-8.6682 20.879-13.737 33.138-13.737z"
+     style="fill:#1e1e20;fill-opacity:1" />
+  <circle
+     style="fill:#243e42;fill-opacity:1;stroke:none;stroke-width:1.10157;stroke-linecap:round;stroke-linejoin:round"
+     id="path1221-3"
+     cx="50"
+     cy="50"
+     r="15" />
   <circle
      r="15"
      cy="50"
      cx="50"
-     id="path1221-3"
-     style="fill:#56959f;fill-opacity:0.40000001;stroke:none;stroke-width:1.10157;stroke-linecap:round;stroke-linejoin:round" />
+     id="path1221-3-6-6"
+     style="fill:none;fill-opacity:0.4;stroke:#000000;stroke-width:1.102;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   <path
-     d="m52.66891 49.99266a2.6685924 2.6685924 0 0 1-5.337121 0 2.6685924 2.6685924 0 1 1 5.337121 0z"
-     id="path16" />
+     id="path16"
+     d="m 52.66856,50.01315 a 2.6685924,2.6685924 0 0 1 -5.33712,0 2.6685924,2.6685924 0 1 1 5.33712,0 z"
+     style="opacity:0.459307" />
 </svg>

@@ -27,11 +27,9 @@
   <path
      id="rect4195"
      d="m 4,8 v 7 H 17 V 8 Z m 6,2 h 1 v 3 h -1 z"
-     color="#000001"
-     fill="#766d65"
-     style="fill:#988f86;fill-opacity:1" />
+     style="fill:#988f86;fill-opacity:1;stroke:none" />
   <path
      d="M 10.5,2.5 C 8.0147186,2.5 6,4.5147186 6,7 V 8 H 8 V 7 C 8,5.6192881 9.1192881,4.5 10.5,4.5 11.880712,4.5 13,5.6192881 13,7 v 1 h 2 V 7 C 15,4.5147186 12.985281,2.5 10.5,2.5 Z"
-     style="fill:#b9b3ac;fill-opacity:1;stroke:none;stroke-width:1.70255;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:#988f86;fill-opacity:1;stroke:none;stroke-width:1.70255;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path1060" />
 </svg>

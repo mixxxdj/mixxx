@@ -6,7 +6,7 @@
 
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
-#include "preferences/usersettings.h"
+#include "track/macro.h"
 
 class MacroControl : public EngineControl {
     Q_OBJECT

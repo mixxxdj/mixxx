@@ -6,12 +6,13 @@
 
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class TrackCollectionManager;
+class Library;
 class WTrackMenu;
 
 class WTrackProperty : public WLabel, public TrackDropTarget {
@@ -20,7 +21,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     WTrackProperty(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             const QString& group);
     ~WTrackProperty() override = default;
 

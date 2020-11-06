@@ -87,6 +87,11 @@ class ControlObject : public QObject {
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
 
+    /// Returns the boolean interpretation of the ControlObject's value.
+    static bool toBool(const ConfigKey& key) {
+        return ControlObject::get(key) > 0;
+    }
+
     // Sets the ControlObject value. May require confirmation by owner.
     inline void set(double value) {
         if (m_pControl) {

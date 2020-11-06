@@ -19,16 +19,16 @@ class TrackMetadata final {
     //  - read-only
     //  - stored in file tags
     //  - adjusted when opening the audio stream (if available)
-    PROPERTY_SET_BYVAL_GET_BYREF(audio::ChannelCount, channels, ChannelCount)
-    PROPERTY_SET_BYVAL_GET_BYREF(audio::SampleRate, sampleRate, SampleRate)
-    PROPERTY_SET_BYVAL_GET_BYREF(audio::Bitrate, bitrate, Bitrate)
-    PROPERTY_SET_BYVAL_GET_BYREF(Duration, duration, Duration)
+    MIXXX_DECL_PROPERTY(audio::ChannelCount, channels, ChannelCount)
+    MIXXX_DECL_PROPERTY(audio::SampleRate, sampleRate, SampleRate)
+    MIXXX_DECL_PROPERTY(audio::Bitrate, bitrate, Bitrate)
+    MIXXX_DECL_PROPERTY(Duration, duration, Duration)
 
     // Track properties
     //   - read-write
     //   - stored in file tags
-    PROPERTY_SET_BYVAL_GET_BYREF(AlbumInfo, albumInfo, AlbumInfo)
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackInfo, trackInfo, TrackInfo)
+    MIXXX_DECL_PROPERTY(AlbumInfo, albumInfo, AlbumInfo)
+    MIXXX_DECL_PROPERTY(TrackInfo, trackInfo, TrackInfo)
 
   public:
     TrackMetadata() = default;

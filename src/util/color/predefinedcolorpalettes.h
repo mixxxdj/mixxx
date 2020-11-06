@@ -9,6 +9,7 @@ class PredefinedColorPalettes {
     static const ColorPalette kSeratoTrackMetadataHotcueColorPalette;
     static const ColorPalette kSeratoDJProHotcueColorPalette;
 
+    static const ColorPalette kMixxxTrackColorPalette;
     static const ColorPalette kRekordboxTrackColorPalette;
     static const ColorPalette kSeratoDJProTrackColorPalette;
     static const ColorPalette kTraktorProTrackColorPalette;
@@ -19,6 +20,7 @@ class PredefinedColorPalettes {
 
     static const QList<ColorPalette> kPalettes;
     static const mixxx::RgbColor kDefaultCueColor;
+    static const mixxx::RgbColor kDefaultLoopColor;
 };
 
 } // namespace mixxx

@@ -1,12 +1,13 @@
 #include "library/autodj/autodjprocessor.h"
 
-#include "library/trackcollection.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/engine.h"
-#include "util/math.h"
-#include "mixer/playermanager.h"
+#include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "track/track.h"
+#include "util/math.h"
 
 #define kConfigKey "[Auto DJ]"
 namespace {
@@ -122,6 +123,7 @@ AutoDJProcessor::AutoDJProcessor(
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
+    m_pAutoDJTableModel->select();
 
     m_pShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
@@ -132,6 +134,13 @@ AutoDJProcessor::AutoDJProcessor(
             ConfigKey("[AutoDJ]", "skip_next"));
     connect(m_pSkipNext, &ControlObject::valueChanged,
             this, &AutoDJProcessor::controlSkipNext);
+
+    m_pAddRandomTrack = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "add_random_track"));
+    connect(m_pAddRandomTrack,
+            &ControlObject::valueChanged,
+            this,
+            &AutoDJProcessor::controlAddRandomTrack);
 
     m_pFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
@@ -183,6 +192,7 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pCOCrossfaderReverse;
 
     delete m_pSkipNext;
+    delete m_pAddRandomTrack;
     delete m_pShufflePlaylist;
     delete m_pEnabledAutoDJ;
     delete m_pFadeNow;
@@ -575,6 +585,12 @@ void AutoDJProcessor::controlShuffle(double value) {
 void AutoDJProcessor::controlSkipNext(double value) {
     if (value > 0.0) {
         skipNext();
+    }
+}
+
+void AutoDJProcessor::controlAddRandomTrack(double value) {
+    if (value > 0.0) {
+        emit randomTrackRequested(1);
     }
 }
 
@@ -1123,8 +1139,8 @@ double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
 
 double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
     samplePosition /= kChannelCount;
-    double sampleRate = pDeck->sampleRate();
-    if (sampleRate <= 0.0) {
+    mixxx::audio::SampleRate sampleRate = pDeck->sampleRate();
+    if (!sampleRate.isValid()) {
         return 0.0;
     }
     return samplePosition / sampleRate / pDeck->rateRatio();
