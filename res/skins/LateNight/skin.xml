@@ -43,6 +43,16 @@
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <attribute config_key="[Master],skin_settings">0</attribute>
 
+    <!-- Dynamic Skin Settings -->
+      <attribute persist="true" config_key="[Skin],dynamicdecks">0</attribute>
+      <attribute persist="true" config_key="[Skin],dynamicmixer">0</attribute>
+      <attribute persist="true" config_key="[Skin],dynamicwaves">0</attribute>
+
+      <attribute config_key="[Controller],deck1_active">1</attribute>
+      <attribute config_key="[Controller],deck2_active">1</attribute>
+      <attribute config_key="[Controller],deck3_active">0</attribute>
+      <attribute config_key="[Controller],deck4_active">0</attribute>
+
     <!-- Decks -->
       <!-- general -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
@@ -326,6 +336,54 @@
     <!-- Define singletons as early in the skin as possible.
     Note that Singletons don't actually appear here, they are just instantiated
     and configured. -->
+    <SingletonDefinition>
+      <ObjectName>ParallelWaveform_1</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="ChanNum">1</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+          <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+          <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+    
+    <SingletonDefinition>
+      <ObjectName>ParallelWaveform_2</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="ChanNum">2</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+          <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+          <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+    
+    <SingletonDefinition>
+      <ObjectName>ParallelWaveform_3</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="ChanNum">3</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+          <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
+          <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+    
+    <SingletonDefinition>
+      <ObjectName>ParallelWaveform_4</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="ChanNum">4</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+          <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
+          <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
     <SingletonDefinition>
       <ObjectName>Deck1_Src</ObjectName>
       <Children>

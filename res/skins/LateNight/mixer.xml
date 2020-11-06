@@ -19,6 +19,7 @@
             <Children>
               <Template src="skin:/mixer/mixer_2decks.xml"/>
               <Template src="skin:/mixer/mixer_4decks.xml"/>
+              <Template src="skin:/mixer/mixer_dynamic.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_master_head_mixer</ConfigKey>

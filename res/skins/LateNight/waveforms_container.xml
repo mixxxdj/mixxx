@@ -16,58 +16,155 @@
             <Size>100me,40me</Size>
             <Children>
 
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
+              <WidgetGroup> <!-- 2 Decks -->
+                <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Template src="skin:waveform.xml">
-                    <SetVariable name="ChanNum">3</SetVariable>
-                    <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
-                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
-                  </Template>
+
+                  <SingletonContainer> <!-- Deck 1 -->
+                    <ObjectName>ParallelWaveform_1</ObjectName>
+                  </SingletonContainer>
+
+                  <SingletonContainer> <!-- Deck 2 -->
+                    <ObjectName>ParallelWaveform_2</ObjectName>
+                  </SingletonContainer>
+                  
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup>
+              <WidgetGroup> <!-- 4 Decks -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Template src="skin:waveform.xml">
-                    <SetVariable name="ChanNum">1</SetVariable>
-                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
-                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
+                
+                  <WidgetGroup> <!-- Static -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children>
 
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:waveform.xml">
-                    <SetVariable name="ChanNum">2</SetVariable>
-                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
-                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
+                      <SingletonContainer> <!-- Deck 3 -->
+                        <ObjectName>ParallelWaveform_3</ObjectName>
+                      </SingletonContainer>
 
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:waveform.xml">
-                    <SetVariable name="ChanNum">4</SetVariable>
-                    <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
-                  </Template>
+                      <SingletonContainer> <!-- Deck 1 -->
+                        <ObjectName>ParallelWaveform_1</ObjectName>
+                      </SingletonContainer>
+
+                      <SingletonContainer> <!-- Deck 2 -->
+                        <ObjectName>ParallelWaveform_2</ObjectName>
+                      </SingletonContainer>
+
+                      <SingletonContainer> <!-- Deck 4 -->
+                        <ObjectName>ParallelWaveform_4</ObjectName>
+                      </SingletonContainer>
+
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],dynamicwaves</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                
+                  <WidgetGroup> <!-- Dynamic -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children>
+
+                      <!--
+                        1/3 Horizontal container
+                        Horizontal to reduce graphic flashing on switch.
+                      -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+
+                          <WidgetGroup> <!-- Deck 3 -->
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>me,me</SizePolicy>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>ParallelWaveform_3</ObjectName>
+                              </SingletonContainer>
+                            </Children>
+                            <Connection>
+                              <ConfigKey>[Controller],deck1_active</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+
+                          <WidgetGroup> <!-- Deck 1 -->
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>me,me</SizePolicy>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>ParallelWaveform_1</ObjectName>
+                              </SingletonContainer>
+                            </Children>
+                            <Connection>
+                              <ConfigKey>[Controller],deck1_active</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                        
+                        </Children>
+                      </WidgetGroup>
+
+
+                      <!--
+                        2/4 Horizontal container
+                        Horizontal to reduce graphic flashing on switch.
+                      -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+                          <WidgetGroup> <!-- Deck 2 -->
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>me,me</SizePolicy>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>ParallelWaveform_2</ObjectName>
+                              </SingletonContainer>
+                            </Children>
+                            <Connection>
+                              <ConfigKey>[Controller],deck2_active</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+
+                          <WidgetGroup> <!-- Deck 4 -->
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>me,me</SizePolicy>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>ParallelWaveform_4</ObjectName>
+                              </SingletonContainer>
+                            </Children>
+                            <Connection>
+                              <ConfigKey>[Controller],deck2_active</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+
+                        </Children>
+                      </WidgetGroup>
+
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],dynamicwaves</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>

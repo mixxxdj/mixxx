@@ -155,6 +155,7 @@ Description:
                         <Layout>horizontal</Layout>
                         <Size>180min,18f</Size>
                         <Children>
+
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Hotcues</SetVariable>
                             <SetVariable name="Setting">[Skin],show_hotcues</SetVariable>
@@ -499,6 +500,77 @@ Description:
             <ObjectName>SkinSettingsSeparator</ObjectName>
             <Size>1min,6f</Size>
           </WidgetGroup>
+
+          <WidgetGroup><!--  Dynamic -->
+            <ObjectName></ObjectName>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+
+              <WidgetGroup><!-- translucent cover when Library is not maximized -->
+                <ObjectName>SubmenuCover</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Connection>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+            
+                  <Label>
+                    <ObjectName>CategoryLabel</ObjectName>
+                    <Text>Dynamic</Text>
+                    <Size>100f,23f</Size>
+                  </Label>
+
+                  <WidgetGroup>
+                    <ObjectName>SkinSettingsCategory</ObjectName>
+                    <SizePolicy>me,f</SizePolicy>
+                    <Layout>stacked</Layout>
+                    <Children>
+                      <WidgetGroup><!-- translucent cover when using 2 decks -->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Layout>vertical</Layout>
+                        <Children>
+
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="Text">Decks</SetVariable>
+                            <SetVariable name="Setting">[Skin],dynamicdecks</SetVariable>
+                          </Template>
+
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="Text">Mixer</SetVariable>
+                            <SetVariable name="Setting">[Skin],dynamicmixer</SetVariable>
+                          </Template>
+
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="Text">Waveforms</SetVariable>
+                            <SetVariable name="Setting">[Skin],dynamicwaves</SetVariable>
+                          </Template>
+
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- /Dynamic -->
 
           <WidgetGroup><!--  Mixer -->
             <ObjectName></ObjectName>

@@ -151,6 +151,11 @@
                         <ObjectName>VuMeterMaster_Light</ObjectName>
                       </SingletonContainer>
                     </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],dynamicmixer</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
                   </WidgetGroup><!-- VuMeterMaster_4Decks -->
 
                   <WidgetGroup>
