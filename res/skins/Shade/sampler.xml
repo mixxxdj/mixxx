@@ -22,8 +22,10 @@
             <Children>
               <Text>
                 <TooltipId>text</TooltipId>
-                <Style>QLabel { font: bold 12px/14px sans-serif;
-                    font-family: "Open Sans";
+                <Style>QLabel {
+                    font-size: 12px;
+                    line-height: 14px;
+                    font-weight: bold;
                     background-color: transparent;
                     color: #191F24;
                     text-align: left;
@@ -37,8 +39,10 @@
               <!-- Alternative "TITLE ONLY" display
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
-                <Style>QLabel { font: bold 14px/16px sans-serif;
-                    font-family: "Open Sans";
+                <Style>QLabel {
+                    font-size: 14px;
+                    line-height: 16px;
+                    font-weight: bold;
                     background-color: transparent;
                     color: #191F24;
                     text-align: left;
@@ -55,8 +59,9 @@
                 <Children>
                   <Number>
                     <TooltipId>visual_bpm</TooltipId>
-                    <Style>QLabel { font: bold 9px sans-serif;
-                        font-family: "Open Sans";
+                    <Style>QLabel {
+                        font-size: 9px;
+                        font-weight: bold;
                         background-color: transparent;
                         color: #191F24;
                         padding-right: 0;

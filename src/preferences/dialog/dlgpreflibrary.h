@@ -19,10 +19,11 @@
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:
-    enum TrackDoubleClickAction {
-        LOAD_TO_DECK,
-        ADD_TO_AUTODJ_BOTTOM,
-        ADD_TO_AUTODJ_TOP
+    enum class TrackDoubleClickAction : int {
+        LoadToDeck = 0,
+        AddToAutoDJBottom = 1,
+        AddToAutoDJTop = 2,
+        Ignore = 3,
     };
 
     DlgPrefLibrary(

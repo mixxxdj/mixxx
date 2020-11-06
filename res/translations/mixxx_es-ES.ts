@@ -372,7 +372,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="204"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Velocidad de muestreo</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="208"/>
@@ -3242,7 +3242,7 @@ Shortcut: Shift+F9</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="169"/>
         <source>Skip Silence</source>
-        <translation type="unfinished"/>
+        <translation>Saltar silencio</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="125"/>
@@ -4173,7 +4173,7 @@ No pueden haber dos fuentes de emisión hacia el mismo servidor que usen el mism
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="20"/>
         <source>Color Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Preferencias de color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="26"/>
@@ -4204,7 +4204,7 @@ No pueden haber dos fuentes de emisión hacia el mismo servidor que usen el mism
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="90"/>
         <source>Replace…</source>
-        <translation type="unfinished"/>
+        <translation>Reemplazar...</translation>
     </message>
 </context>
 <context>
@@ -4259,7 +4259,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="271"/>
         <source>built-in</source>
-        <translation type="unfinished"/>
+        <translation>Incorporado</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="456"/>
@@ -4269,12 +4269,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="457"/>
         <source>Do you want to save the changes?</source>
-        <translation type="unfinished"/>
+        <translation>Quieres guardar los cambios?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>edited</source>
-        <translation type="unfinished"/>
+        <translation>Editado</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="551"/>
@@ -4707,7 +4707,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="165"/>
         <source>Beginning of track</source>
-        <translation type="unfinished"/>
+        <translation>Principio de la pista</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="216"/>
@@ -4865,7 +4865,7 @@ If this option is disabled, the intro start point is automatically placed at the
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="124"/>
         <source>Track load point</source>
-        <translation type="unfinished"/>
+        <translation>Punto de carga de la pista</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="104"/>
@@ -5682,12 +5682,12 @@ y le permite su afinación para la mezcla armónica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="326"/>
         <source>Show Rekordbox Library</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar la librería de Rekordbox</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="336"/>
         <source>Show Serato Library</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar la librería de Serato</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="353"/>
@@ -6851,7 +6851,7 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="95"/>
         <source>Recording to file:</source>
-        <translation type="unfinished"/>
+        <translation>Grabando al archivo:</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="157"/>
@@ -6885,13 +6885,13 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="56"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="80"/>
         <source>is</source>
-        <translation type="unfinished"/>
+        <translation>es</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="61"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="85"/>
         <source>is not</source>
-        <translation type="unfinished"/>
+        <translation>no es</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="69"/>

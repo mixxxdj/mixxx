@@ -950,6 +950,7 @@ class MixxxCore(Feature):
                    "src/sources/metadatasourcetaglib.cpp",
                    "src/sources/readaheadframebuffer.cpp",
                    "src/sources/soundsource.cpp",
+                   "src/sources/soundsourceprovider.cpp",
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
@@ -1137,7 +1138,6 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/colordelegate.cpp",
-                   "src/library/basecoverartdelegate.cpp",
                    "src/library/coverartdelegate.cpp",
                    "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",
@@ -1337,7 +1337,6 @@ class MixxxCore(Feature):
                    "src/util/logger.cpp",
                    "src/util/logging.cpp",
                    "src/util/cmdlineargs.cpp",
-                   "src/util/autohidpi.cpp",
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",

@@ -192,16 +192,16 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
         }
     }
 
-    if (fGain[0]) {
+    if (fGain[0] != 0) {
         pState->m_bands[0]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
-        if (fGain[1]) {
+        if (fGain[1] != 0) {
             pState->m_bands[1]->process(pOutput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
         }
     } else {
         pState->m_bands[0]->pauseFilter();
-        if (fGain[1]) {
+        if (fGain[1] != 0) {
             pState->m_bands[1]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();

@@ -53,7 +53,7 @@ Variables:
                 <Property>titleInfo</Property>
                 <Alignment>right</Alignment>
                 <Elide>right</Elide>
-                <Size>1me,22f</Size>
+                <Size>1me,21f</Size>
                 <Channel><Variable name="chanNum"/></Channel>
               </TrackProperty>
             </Children>
@@ -66,6 +66,12 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Time + Title -->
 
+      <TrackWidgetGroup>
+        <Size>0me,2f</Size>
+        <Group><Variable name="group"/></Group>
+        <TrackColorAlpha>255</TrackColorAlpha>
+      </TrackWidgetGroup>
+
       <WidgetGroup><!-- Duration + by Artist -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
@@ -75,7 +81,7 @@ Variables:
 
           <TrackProperty>
             <ObjectName>Duration</ObjectName>
-            <Size>80me,22f</Size>
+            <Size>80me,21f</Size>
             <TooltipId>track_duration</TooltipId>
             <Property>durationFormatted</Property>
             <Alignment>left</Alignment>
@@ -84,7 +90,7 @@ Variables:
 
           <Label>
             <ObjectName>TrackBy</ObjectName>
-            <Size>22f,22f</Size>
+            <Size>22f,21f</Size>
             <Text>by </Text>
             <Alignment>left</Alignment>
           </Label>

@@ -74,7 +74,7 @@ Cue::Cue(
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
-    if (length) {
+    if (length != 0) {
         if (position != Cue::kNoPosition) {
             m_sampleEndPosition = position + length;
         } else {

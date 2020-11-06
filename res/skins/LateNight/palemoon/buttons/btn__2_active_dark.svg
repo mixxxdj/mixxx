@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="20"
-   height="24"
+   id="svg6"
    version="1.1"
-   id="svg6">
+   height="24"
+   width="20">
   <metadata
      id="metadata12">
     <rdf:RDF>
@@ -22,37 +22,15 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs10">
-    <filter
-       style="color-interpolation-filters:sRGB"
-       id="filter819"
-       x="-0.73362573"
-       width="2.4672515"
-       y="-0.50755226"
-       height="2.0151045">
-      <feGaussianBlur
-         stdDeviation="2.2460124"
-         id="feGaussianBlur821" />
-    </filter>
-  </defs>
+     id="defs10" />
   <text
-     id="text836"
-     y="17.235025"
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e0d9d1;fill-opacity:1;stroke:none;"
      x="5.8255696"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#666666;fill-opacity:1;stroke:#666666;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter819);"
-     xml:space="preserve"><tspan
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.66666698px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#666666;fill-opacity:1;stroke:#666666;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
-       y="17.235025"
-       x="5.8255696"
-       id="tspan834">2</tspan></text>
-  <text
-     id="text836-5"
      y="17.235025"
-     x="5.8255696"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;"
-     xml:space="preserve"><tspan
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.66666698px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#000000;fill-opacity:1;"
-       y="17.235025"
+     id="text836-5"><tspan
+       id="tspan834-8"
        x="5.8255696"
-       id="tspan834-8">2</tspan></text>
+       y="17.235025"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.66666698px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#e0d9d1;fill-opacity:1;">2</tspan></text>
 </svg>

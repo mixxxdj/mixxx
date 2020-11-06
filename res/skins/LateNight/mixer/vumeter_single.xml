@@ -31,9 +31,9 @@
         <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_level_bg_<Variable name="VuColor"/>.png</PathBack>
         <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_level_active.png</PathVu>
         <Horizontal>false</Horizontal>
-        <PeakHoldSize>5</PeakHoldSize>
+        <PeakHoldSize>4</PeakHoldSize>
         <PeakHoldTime>500</PeakHoldTime>
-        <PeakFallTime>50</PeakFallTime>
+        <PeakFallTime>10</PeakFallTime>
         <PeakFallStep>2</PeakFallStep>
         <Connection>
           <ConfigKey><Variable name="Group"/>,VuMeter</ConfigKey>

@@ -13,15 +13,15 @@ class BalanceGroupState : public EffectState {
     BalanceGroupState(const mixxx::EngineParameters& bufferParameters);
     ~BalanceGroupState();
 
-    void setFilters(int sampleRate, int freq);
+    void setFilters(int sampleRate, double freq);
 
     std::unique_ptr<EngineFilterLinkwitzRiley4Low> m_low;
     std::unique_ptr<EngineFilterLinkwitzRiley4High> m_high;
 
     mixxx::SampleBuffer m_pHighBuf;
 
-    unsigned int m_oldSampleRate;
-    int m_freq;
+    mixxx::audio::SampleRate m_oldSampleRate;
+    double m_freq;
 
     CSAMPLE m_oldBalance;
     CSAMPLE m_oldMidSide;
