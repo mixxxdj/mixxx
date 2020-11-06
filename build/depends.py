@@ -1630,8 +1630,6 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
             lib_path = os.path.join(prefix, build.env.get(
                 'LIBDIR', default='lib'), 'mixxx')
-            build.env.Append(
-                CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
