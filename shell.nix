@@ -66,10 +66,14 @@ let
     cd cbuild
     cmake .. ${lib.escapeShellArgs allCFlags} "$@"
     cd ..
-    if [ ! -e venv/bin/pre-commit ]; then
+    V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
+    # install pre-commit from python for older systems
+    if [ $V == "1.99.99" -a ! -e venv/bin/pre-commit ]; then
       virtualenv -p python3 venv
       ./venv/bin/pip install pre-commit
       ./venv/bin/pre-commit install
+    else
+      pre-commit install
     fi
   '';
 
