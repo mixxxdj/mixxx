@@ -1,37 +1,40 @@
 /* LateNight 2.3 // common layout settings */
 
 /************** font settings *************************************************/
+
 #Mixxx, WWidget,
-WEffect,
-WEffectSelector,
+QToolTip,
+WLabel, QLabel,
+WNumber, WNumberPos,
+WPushButton,
 WKey,
-WLabel, WLibrary QLabel,
-WNumber,
-WNumberPos,
-WPushButton, WLibrary QPushButton,
-WRecordingDuration,
 WTime,
 WTrackText,
 WTrackProperty,
-WBeatSpinBox,
+WRecordingDuration,
 QSpinBox,
-QComboBox,
-WLibrary QHeaderView,
-WLibrary QHeaderView::item,
-QToolTip,
+WBeatSpinBox,
 WOverview #PassthroughLabel,
-#LibraryContainer QMenu,
+WBeatSpinBox QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WOverview /* Hotcue labels in the overview */,
+QComboBox,
+WEffect,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea,
-WLibrary QRadioButton {
+#fadeModeCombobox QAbstractScrollArea
+#LibraryContainer QPushButton,
+#LibraryContainer QLabel,
+#LibraryContainer QRadioButton,
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::item,
+#LibraryContainer QMenu {
   font-family: "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;
@@ -122,7 +125,7 @@ WPushButton, WLibrary QPushButton,
 #SamplerTitleMini,
 #EQKillButton,
 #RateText,
-#SamplerBPM,
+#SamplerBpmMini,
 #PreviewBPM,
 WLibrary QRadioButton {
 	font-size: 12px;
@@ -140,28 +143,29 @@ WEffectSelector QAbstractScrollArea,
 #SkinSettingsButton,
 #SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
-#SkinSettingsText  {
+#SkinSettingsText {
   font-size: 13px;
 }
 
 #PlayPositionTextSmall,
-#SamplerTitleMini,
+#SamplerTitleMini, #SamplerBpm,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #PreviewTitle,
 #PreviewLabel,
 WBeatSpinBox,
-#spinBoxTransition,
-WTime {
+#spinBoxTransition {
   font-size: 14px;
-  text-align: left;
 }
 
 #TitleTextSmall,
 #ArtistTextSmall,
 #PlayPositionText,
-#BpmText, #BpmTextSmall,
+#BpmText,
+#BpmTextSmall,
 #FxUnitLabel,
-#SamplerTitle {
+#SamplerTitle,
+WTime,
+WRecordingDuration {
   font-size: 16px;
 }
 
@@ -176,19 +180,32 @@ WTime {
   font-size: 18px;
 }
 
+#PlayPositionTextSmall,
+#SamplerTitle,
+#SamplerTitleMini,
+#MicAuxLabel,
+#MicAuxLabelUnconfigured,
+#PreviewTitle,
+#PreviewLabel,
+WBeatSpinBox,
+#spinBoxTransition {
+  text-align: left;
+}
+
 #RateText,
 #MicAuxLabel,
 #PreviewBPM,
-WBeatSpinBox, #spinBoxTransition {
+WBeatSpinBox,
+#spinBoxTransition {
   text-align: center;
-}
-WBeatSpinBox, #spinBoxTransition {
-  qproperty-alignment: 'AlignHCenter';
-}
+  }
+  WBeatSpinBox,#spinBoxTransition {
+    qproperty-alignment: 'AlignHCenter';
+  }
 
-#SamplerTitle,
-#SamplerTitleMini {
-  text-align: left;
+#SamplerBpm,
+#SamplerBpmMini {
+  text-align: right;
 }
 
 #KnobLabel,
@@ -419,7 +436,10 @@ WSpinny { /*
   #MasterControls,
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  }
+    }
+    #BoothLabelBox {
+      qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    }
   #MasterHeadphoneSeparator {
   }
 
@@ -569,7 +589,7 @@ WEffectSelector {
     }
 
     #SamplerPitchSlider {
-      qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+      qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
     }
 
 /************** Samplers *****************************************************/

@@ -22,7 +22,7 @@ class MetronomeGroupState final : public EffectState {
     ~MetronomeGroupState() {
     }
 
-    unsigned int m_framesSinceClickStart;
+    SINT m_framesSinceClickStart;
 };
 
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {

@@ -185,8 +185,29 @@ inline bool startsWithADTSHeader(
 
 } // anonymous namespace
 
+//static
+const QString SoundSourceProviderM4A::kDisplayName = QStringLiteral("Nero FAAD2");
+
+//static
+const QStringList SoundSourceProviderM4A::kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+};
+
+QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
+    if (faad2::LibLoader::Instance()->isLoaded()) {
+        return kSupportedFileExtensions;
+    } else {
+        return QStringList(); // none available
+    }
+}
+
+SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceM4A>(url);
+}
+
 SoundSourceM4A::SoundSourceM4A(const QUrl& url)
-        : SoundSource(url, "m4a"),
+        : SoundSource(url),
           m_pFaad(faad2::LibLoader::Instance()),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
@@ -430,12 +451,12 @@ bool SoundSourceM4A::replaceDecoder(
             return false;
         }
     } else {
-        if (m_pFaad->Init2(
+        if (static_cast<signed char>(m_pFaad->Init2(
                     hNewDecoder,
                     m_pMP4ESConfigBuffer,
                     m_sizeofMP4ESConfigBuffer,
                     &sampleRate,
-                    &channelCount) < 0) {
+                    &channelCount)) < 0) {
             free(m_pMP4ESConfigBuffer);
             m_pMP4ESConfigBuffer = nullptr;
             kLogger.warning() << "Failed to initialize the AAC decoder from "
@@ -816,23 +837,6 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     } while (retryAfterReopeningDecoder);
     DEBUG_ASSERT(!"unreachable");
     return {};
-}
-
-QString SoundSourceProviderM4A::getName() const {
-    return "Nero FAAD2";
-}
-
-QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    if (faad2::LibLoader::Instance()->isLoaded()) {
-        supportedFileExtensions.append("m4a");
-        supportedFileExtensions.append("mp4");
-    }
-    return supportedFileExtensions;
-}
-
-SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceM4A>(url);
 }
 
 } // namespace mixxx

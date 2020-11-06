@@ -100,5 +100,9 @@
       </WidgetGroup><!-- 3 / dimmed Master / 4 -->
 
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_vumeters_compact</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

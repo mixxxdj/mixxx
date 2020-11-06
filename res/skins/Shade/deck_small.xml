@@ -39,8 +39,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 13px sans-serif;
-                        font-family: "Open Sans";
+                        font-size: 13px;
+                        font-weight: bold;
                         color: #191F24;
                       }
                     </Style>
@@ -86,10 +86,11 @@
                     </Children>
                   </WidgetGroup>
 
-                  <WidgetGroup>
-                    <Size>1min,1f</Size>
-                    <BackPath>style/style_component_border.png</BackPath>
-                  </WidgetGroup>
+                  <TrackWidgetGroup>
+                    <Size>0e,1f</Size>
+                    <Group><Variable name="group"/></Group>
+                    <TrackColorAlpha>255</TrackColorAlpha>
+                  </TrackWidgetGroup>
 
                   <!-- Artist / Key /BPM -->
                   <WidgetGroup>
@@ -97,8 +98,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 13px sans-serif;
-                        font-family: "Open Sans";
+                        font-size: 13px;
+                        font-weight: bold;
                         color: #191F24;
                       }
                     </Style>
@@ -176,6 +177,7 @@
               <!-- Play -->
               <WidgetGroup>
                 <Size>41f,38f</Size>
+                <BackPath>style/style_bg_deck_blank.png</BackPath>
                 <Children>
                   <PushButton>
                     <Pos>5,8</Pos>

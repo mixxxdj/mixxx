@@ -5,6 +5,7 @@
 
 #include "util/assert.h"
 #include "util/math.h"
+#include "util/thread_affinity.h"
 
 namespace mixxx {
 
@@ -29,7 +30,7 @@ TaskMonitor::~TaskMonitor() {
 }
 
 Task* TaskMonitor::senderTask() const {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     auto* pTask = static_cast<Task*>(sender());
     DEBUG_ASSERT(pTask);
     DEBUG_ASSERT(dynamic_cast<Task*>(sender()));
@@ -57,15 +58,10 @@ void TaskMonitor::slotReportTaskProgress(
             progressMessage);
 }
 
-void TaskMonitor::slotCanceled() {
-    DEBUG_ASSERT(m_pProgressDlg);
-    abortAllTasks();
-}
-
 void TaskMonitor::registerTask(
         Task* pTask,
         const QString& title) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(pTask);
     VERIFY_OR_DEBUG_ASSERT(!m_taskInfos.contains(pTask)) {
         return;
@@ -78,8 +74,7 @@ void TaskMonitor::registerTask(
     m_taskInfos.insert(
             pTask,
             std::move(taskInfo));
-    connect(
-            pTask,
+    connect(pTask,
             &QObject::destroyed,
             this,
             &TaskMonitor::slotUnregisterTask);
@@ -88,7 +83,7 @@ void TaskMonitor::registerTask(
 
 void TaskMonitor::unregisterTask(
         Task* pTask) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(pTask);
     if (m_taskInfos.remove(pTask) > 0) {
         updateProgress();
@@ -99,7 +94,7 @@ void TaskMonitor::reportTaskProgress(
         Task* pTask,
         PercentageOfCompletion estimatedPercentageOfCompletion,
         const QString& progressMessage) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(pTask);
     VERIFY_OR_DEBUG_ASSERT(estimatedPercentageOfCompletion >= kPercentageOfCompletionMin) {
         estimatedPercentageOfCompletion = kPercentageOfCompletionMin;
@@ -123,7 +118,15 @@ void TaskMonitor::reportTaskProgress(
 }
 
 void TaskMonitor::abortAllTasks() {
-    for (auto* pTask : m_taskInfos.keys()) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    const auto toBeAbortedTasks = m_taskInfos.keys();
+    // Detach all monitored tasks before iterating over
+    // them to prevent any kind of side-effects! Aborting
+    // a task may start new tasks in response.
+    m_taskInfos.clear();
+    // Iterator over the detached, immutable copy of
+    // the task list
+    for (auto* pTask : toBeAbortedTasks) {
         QMetaObject::invokeMethod(
                 pTask,
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
@@ -134,13 +137,15 @@ void TaskMonitor::abortAllTasks() {
 #endif
         );
     }
-    m_taskInfos.clear();
+    // Finally update the progress bar, which should have
+    // finished if no new tasks have been started in the
+    // meantime.
     updateProgress();
 }
 
 void TaskMonitor::updateProgress() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
-    DEBUG_ASSERT(thread() == QCoreApplication::instance()->thread());
+    DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_taskInfos.isEmpty()) {
         m_pProgressDlg.reset();
         return;
@@ -158,6 +163,15 @@ void TaskMonitor::updateProgress() {
                 static_cast<int>(kPercentageOfCompletionMax * m_taskInfos.size()));
         m_pProgressDlg->setWindowModality(Qt::ApplicationModal);
         m_pProgressDlg->setMinimumDuration(m_minimumProgressDuration.toIntegerMillis());
+        connect(m_pProgressDlg.get(),
+                &QProgressDialog::canceled,
+                this,
+                [this]() {
+                    VERIFY_OR_DEBUG_ASSERT(m_pProgressDlg) {
+                        return;
+                    }
+                    abortAllTasks();
+                });
     }
     // TODO: Display the title and optional progress message of each
     // task. Maybe also the individual progress and an option to abort
@@ -165,7 +179,7 @@ void TaskMonitor::updateProgress() {
 }
 
 PercentageOfCompletion TaskMonitor::sumEstimatedPercentageOfCompletion() const {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     PercentageOfCompletion sumPercentageOfCompletion = kPercentageOfCompletionMin;
     for (const auto& taskInfo : m_taskInfos) {
         sumPercentageOfCompletion += taskInfo.estimatedPercentageOfCompletion;
@@ -174,7 +188,7 @@ PercentageOfCompletion TaskMonitor::sumEstimatedPercentageOfCompletion() const {
 }
 
 PercentageOfCompletion TaskMonitor::avgEstimatedPercentageOfCompletion() const {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_taskInfos.size() > 0) {
         return sumEstimatedPercentageOfCompletion() / m_taskInfos.size();
     } else {

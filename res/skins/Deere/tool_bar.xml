@@ -281,8 +281,7 @@
                 just displaying the AutoDJ status here.
               -->
               <Template src="skin:statuslight_3state.xml">
-                <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="Tooltip">Auto DJ active</SetVariable>
+                <SetVariable name="TooltipId">autodj_status</SetVariable>
                 <SetVariable name="ObjectName">AutoDjNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>

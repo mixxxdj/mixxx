@@ -1,8 +1,9 @@
 #include "library/basetracktablemodel.h"
 
-#include "library/basecoverartdelegate.h"
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
+#include "library/coverartcache.h"
+#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
 #include "library/previewbuttondelegate.h"
@@ -24,7 +25,8 @@ namespace {
 
 const mixxx::Logger kLogger("BaseTrackTableModel");
 
-const QString kEmptyString = QStringLiteral("");
+constexpr double kRelativeHeightOfCoverartToolTip =
+        0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
 const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_ALBUM,
@@ -378,15 +380,15 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new ColorDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         auto* pCoverArtDelegate =
-                doCreateCoverArtDelegate(pTableView);
-        // WLibraryTableView -> BaseCoverArtDelegate
+                new CoverArtDelegate(pTableView);
+        // WLibraryTableView -> CoverArtDelegate
         connect(pTableView,
                 &WLibraryTableView::onlyCachedCoverArt,
                 pCoverArtDelegate,
-                &BaseCoverArtDelegate::slotInhibitLazyLoading);
-        // BaseCoverArtDelegate -> BaseTrackTableModel
+                &CoverArtDelegate::slotInhibitLazyLoading);
+        // CoverArtDelegate -> BaseTrackTableModel
         connect(pCoverArtDelegate,
-                &BaseCoverArtDelegate::rowsChanged,
+                &CoverArtDelegate::rowsChanged,
                 this,
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;
@@ -463,6 +465,41 @@ bool BaseTrackTableModel::setData(
     return setTrackValueForColumn(pTrack, column, value, role);
 }
 
+QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
+        const QModelIndex& index) const {
+    // Determine height of the cover art image depending on the screen size
+    unsigned int absoluteHeightOfCoverartToolTip;
+    const QScreen* primaryScreen = getPrimaryScreen();
+    if (primaryScreen) {
+        absoluteHeightOfCoverartToolTip = static_cast<int>(
+                primaryScreen->availableGeometry().height() *
+                kRelativeHeightOfCoverartToolTip);
+    } else {
+        VERIFY_OR_DEBUG_ASSERT(primaryScreen) {
+            return QVariant();
+        }
+    }
+    // Get image from cover art cache
+    CoverArtCache* pCache = CoverArtCache::instance();
+    QPixmap pixmap = QPixmap(absoluteHeightOfCoverartToolTip,
+            absoluteHeightOfCoverartToolTip); // Height also used as default for the width, in assumption that covers are squares
+    pixmap = pCache->tryLoadCover(this,
+            getCoverInfo(index),
+            absoluteHeightOfCoverartToolTip,
+            CoverArtCache::Loading::NoSignal);
+    if (pixmap.isNull()) {
+        // Cache miss -> Don't show a tooltip
+        return QVariant();
+    }
+    QByteArray data;
+    QBuffer buffer(&data);
+    pixmap.save(&buffer, "BMP"); // Binary bitmap format, without compression effort
+    QString html = QString(
+            "<img src='data:image/bmp;base64, %0'>")
+                           .arg(QString::fromLatin1(data.toBase64()));
+    return html;
+}
+
 QVariant BaseTrackTableModel::roleValue(
         const QModelIndex& index,
         QVariant&& rawValue,
@@ -474,8 +511,10 @@ QVariant BaseTrackTableModel::roleValue(
     case Qt::ToolTipRole:
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
+            return composeCoverArtToolTipHtml(index);
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-            return kEmptyString;
+            return QVariant();
         }
         M_FALLTHROUGH_INTENDED;
     case Qt::DisplayRole:
