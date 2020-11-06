@@ -1,6 +1,6 @@
-#include <QDir>
-
 #include "sources/soundsourcesndfile.h"
+
+#include <QDir>
 
 #include "util/logger.h"
 
@@ -10,7 +10,62 @@ namespace {
 
 const Logger kLogger("SoundSourceSndFile");
 
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("aif"),
+        QStringLiteral("aiff"),
+        // ALAC/CAF has been added in version 1.0.26
+        // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
+        // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
+        QStringLiteral("caf"),
+        QStringLiteral("flac"),
+        QStringLiteral("ogg"),
+        QStringLiteral("wav"),
+};
+
+// SoundSourceProxyTest fails for version 1.0.30 and OGG files
+#if defined(__APPLE__)
+const QLatin1String kVersionStringWithBrokenOggDecoding = QLatin1String("libsndfile-1.0.30");
+#endif
+
+QStringList getSupportedFileExtensionsFiltered() {
+    auto supportedFileExtensions = kSupportedFileExtensions;
+    // Until now this issue was only confirmed for macOS and libsndfile
+    // installed from Homebrew during the SCons build on Travis CI.
+#if defined(__APPLE__)
+    if (sf_version_string() == kVersionStringWithBrokenOggDecoding) {
+        kLogger.info()
+                << "Disabling OGG decoding for"
+                << kVersionStringWithBrokenOggDecoding;
+        supportedFileExtensions.removeAll(QStringLiteral("ogg"));
+    }
+#endif
+    return supportedFileExtensions;
+};
+
 } // anonymous namespace
+
+//static
+const QString SoundSourceProviderSndFile::kDisplayName = QStringLiteral("libsndfile");
+
+SoundSourceProviderSndFile::SoundSourceProviderSndFile()
+        : m_supportedFileExtensions(getSupportedFileExtensionsFiltered()) {
+}
+
+QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
+    return m_supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
+            supportedFileExtension == QStringLiteral("wav")) {
+        // Default decoder for AIFF and WAV
+        return SoundSourceProviderPriority::Default;
+    } else {
+        // Otherwise only used as fallback
+        return SoundSourceProviderPriority::Lower;
+    }
+}
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
@@ -124,36 +179,6 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
                 IndexRange::between(
                         m_curFrameIndex,
                         m_curFrameIndex));
-    }
-}
-
-QString SoundSourceProviderSndFile::getName() const {
-    return "libsndfile";
-}
-
-QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("aif");
-    supportedFileExtensions.append("aiff");
-    // ALAC/CAF has been added in version 1.0.26
-    // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
-    // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
-    supportedFileExtensions.append("caf");
-    supportedFileExtensions.append("flac");
-    supportedFileExtensions.append("ogg");
-    supportedFileExtensions.append("wav");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    if (supportedFileExtension.startsWith("aif") ||
-            supportedFileExtension == "wav") {
-        // Default decoder for AIFF and WAV
-        return SoundSourceProviderPriority::DEFAULT;
-    } else {
-        // Otherwise only used as fallback
-        return SoundSourceProviderPriority::LOWER;
     }
 }
 

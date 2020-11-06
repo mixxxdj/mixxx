@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCESNDFILE_H
-#define MIXXX_SOUNDSOURCESNDFILE_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 
@@ -36,7 +35,13 @@ class SoundSourceSndFile final : public SoundSource {
 
 class SoundSourceProviderSndFile : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    SoundSourceProviderSndFile();
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 
@@ -46,8 +51,9 @@ class SoundSourceProviderSndFile : public SoundSourceProvider {
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceSndFile>(url);
     }
+
+  private:
+    const QStringList m_supportedFileExtensions;
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCESNDFILE_H
