@@ -924,14 +924,15 @@ Track::ImportStatus Track::importBeats(
     }
     DEBUG_ASSERT(!m_pBeatsImporterPending);
     m_pBeatsImporterPending = pBeatsImporter;
-    if (m_streamInfo) {
+    if (m_pBeatsImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        m_pBeatsImporterPending.reset();
+        return ImportStatus::Complete;
+    } else if (m_streamInfo) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingBeatsMarkDirtyAndUnlock(&lock);
-        return ImportStatus::Complete;
-    } else if (m_pBeatsImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
@@ -998,14 +999,15 @@ Track::ImportStatus Track::importCueInfos(
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
     m_pCueInfoImporterPending = pCueInfoImporter;
-    if (m_streamInfo) {
+    if (m_pCueInfoImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        m_pCueInfoImporterPending.reset();
+        return ImportStatus::Complete;
+    } else if (m_streamInfo) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
-        return ImportStatus::Complete;
-    } else if (m_pCueInfoImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
