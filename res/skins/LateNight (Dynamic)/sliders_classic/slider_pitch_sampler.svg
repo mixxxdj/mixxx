@@ -1,0 +1,40 @@
+<svg width="30" height="65" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<g transform="translate(2)" fill="#050505">
+		<path d="m12 4.999999h2v55.000001h-2z" color="#000000" stroke-width=".99999994"/>
+		<g stroke-width=".99979782">
+			<path d="m4 4.500412h6v.999596h-6z" color="#000000"/>
+			<path d="m4 13.500404h6v.999596h-6z" color="#000000"/>
+			<path d="m2 31.500404h8v.999596h-8z" color="#000000"/>
+			<path d="m4 22.500404h6v.999596h-6z" color="#000000"/>
+			<path d="m4 40.500352h6v.999596h-6z" color="#000000"/>
+			<path d="m4 58.500254h6v.999596h-6z" color="#000000"/>
+			<path d="m4 49.500303h6v.999596h-6z" color="#000000"/>
+			<path d="m22 4.500412h-6v.999596h6z" color="#000000"/>
+			<path d="m22 13.500404h-6v.999596h6z" color="#000000"/>
+			<path d="m24 31.500404h-8v.999596h8z" color="#000000"/>
+			<path d="m22 22.500404h-6v.999596h6z" color="#000000"/>
+			<path d="m22 40.500352h-6v.999596h6z" color="#000000"/>
+			<path d="m22 58.500254h-6v.999596h6z" color="#000000"/>
+			<path d="m22 49.500303h-6v.999596h6z" color="#000000"/>
+		</g>
+	</g>
+	<path d="m13 61h4v-57.000001h-4zm1-1v-55h2v55z" fill="#505050" style="paint-order:fill markers stroke"/>
+	<g transform="translate(2)" fill="#636363" stroke-width=".99979782">
+		<path d="m2 32.000404h8v.999596h-8z" color="#000000"/>
+		<path d="m24 32.000404h-8v.999596h8z" color="#000000"/>
+	</g>
+	<g transform="translate(2)" fill="#404040" stroke-width=".99979782">
+		<path d="m4 5.000412h6v.999596h-6z" color="#000000"/>
+		<path d="m4 14.000404h6v.999596h-6z" color="#000000"/>
+		<path d="m4 23.000404h6v.999596h-6z" color="#000000"/>
+		<path d="m4 41.000352h6v.999596h-6z" color="#000000"/>
+		<path d="m4 59.000254h6v.999596h-6z" color="#000000"/>
+		<path d="m4 50.000303h6v.999596h-6z" color="#000000"/>
+		<path d="m22 5.000412h-6v.999596h6z" color="#000000"/>
+		<path d="m22 14.000404h-6v.999596h6z" color="#000000"/>
+		<path d="m22 23.000404h-6v.999596h6z" color="#000000"/>
+		<path d="m22 41.000352h-6v.999596h6z" color="#000000"/>
+		<path d="m22 59.000254h-6v.999596h6z" color="#000000"/>
+		<path d="m22 50.000303h-6v.999596h6z" color="#000000"/>
+	</g>
+</svg>

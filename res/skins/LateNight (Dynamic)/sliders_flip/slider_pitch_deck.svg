@@ -1,0 +1,47 @@
+<svg width="40" height="113" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<rect x="-1114.678" y="-798.66101" width="2271.4915" height="1907.5933" display="none" fill="#0f0f0e" style="paint-order:fill markers stroke"/>
+	<g fill="#050505" stroke-width=".99979782">
+		<path d="m8 20.500564h8v.999596h-8z" color="#000000"/>
+		<path d="m8 32.500511h8v.999596h-8z" color="#000000"/>
+		<path d="m8 44.500457h8v.999596h-8z" color="#000000"/>
+		<path d="m6 56.500404h10v.999596h-10z" color="#000000"/>
+		<path d="m8 68.500361h8v.999596h-8z" color="#000000"/>
+		<path d="m8 80.500308h8v.999596h-8z" color="#000000"/>
+		<path d="m8 92.500254h8v.999596h-8z" color="#000000"/>
+		<path d="m32 20.500564h-8v.999596h8z" color="#000000"/>
+		<path d="m32 32.500511h-8v.999596h8z" color="#000000"/>
+		<path d="m32 44.500457h-8v.999596h8z" color="#000000"/>
+		<path d="m34 56.500404h-10v.999596h10z" color="#000000"/>
+		<path d="m32 68.500361h-8v.999596h8z" color="#000000"/>
+		<path d="m32 80.500308h-8v.999596h8z" color="#000000"/>
+		<path d="m32 92.500254h-8v.999596h8z" color="#000000"/>
+		<path d="m8 6.500564h8v.999596h-8z" color="#000000"/>
+		<path d="m32 6.500564h-8v.999596h8z" color="#000000"/>
+		<path d="m8 104.50025h8v.9996h-8z" color="#000000"/>
+		<path d="m32 104.50025h-8v.9996h8z" color="#000000"/>
+	</g>
+	<path d="m18 7h4v99h-4z" color="#000000" fill="#050505" stroke-width=".99999994"/>
+	<path d="m17 107h6v-101h-6zm1-1v-98.999999h4v98.999999z" fill="#505050" style="paint-order:fill markers stroke"/>
+	<g fill="#858585" stroke-width=".99979782">
+		<path d="m6 57.000404h10v.999596h-10z" color="#000000"/>
+		<path d="m34 57.000404h-10v.999596h10z" color="#000000"/>
+	</g>
+	<g fill="#505050" stroke-width=".99979782">
+		<path d="m8 21.000564h8v.999596h-8z" color="#000000"/>
+		<path d="m8 33.000511h8v.999596h-8z" color="#000000"/>
+		<path d="m8 45.000457h8v.999596h-8z" color="#000000"/>
+		<path d="m8 69.000361h8v.999596h-8z" color="#000000"/>
+		<path d="m8 81.000308h8v.999596h-8z" color="#000000"/>
+		<path d="m8 93.000254h8v.999596h-8z" color="#000000"/>
+		<path d="m32 21.000564h-8v.999596h8z" color="#000000"/>
+		<path d="m32 33.000511h-8v.999596h8z" color="#000000"/>
+		<path d="m32 45.000457h-8v.999596h8z" color="#000000"/>
+		<path d="m32 69.000361h-8v.999596h8z" color="#000000"/>
+		<path d="m32 81.000308h-8v.999596h8z" color="#000000"/>
+		<path d="m32 93.000254h-8v.999596h8z" color="#000000"/>
+		<path d="m8 7.000564h8v.999596h-8z" color="#000000"/>
+		<path d="m32 7.000564h-8v.999596h8z" color="#000000"/>
+		<path d="m8 105.00025h8v.9996h-8z" color="#000000"/>
+		<path d="m32 105.00025h-8v.9996h8z" color="#000000"/>
+	</g>
+</svg>

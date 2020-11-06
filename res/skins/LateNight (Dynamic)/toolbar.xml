@@ -1,0 +1,298 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>ToolBar</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,min</SizePolicy>
+    <Children>
+
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">maximize_library</SetVariable>
+        <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+        <SetVariable name="Size">84f,20f</SetVariable>
+        <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
+        <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
+        <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <ObjectName>ToolBarSection</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>ToolBarSeparator</ObjectName>
+            <Size>13f,9min</Size>
+          </WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_mixer</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">48f,20f</SetVariable>
+            <SetVariable name="state_0_text">MIXER</SetVariable>
+            <SetVariable name="state_1_text">MIXER</SetVariable>
+            <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_effects</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">59f,20f</SetVariable>
+            <SetVariable name="state_0_text">EFFECTS</SetVariable>
+            <SetVariable name="state_1_text">EFFECTS</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_samplers</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">71f,20f</SetVariable>
+            <SetVariable name="state_0_text">SAMPLERS</SetVariable>
+            <SetVariable name="state_1_text">SAMPLERS</SetVariable>
+            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_microphone</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">61f,20f</SetVariable>
+            <SetVariable name="state_0_text">MIC/AUX</SetVariable>
+            <SetVariable name="state_1_text">MIC/AUX</SetVariable>
+            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+          </Template>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- Spacer -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>me,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Recording button & recording duration label -->
+        <ObjectName>RecBox</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>72f,20f</Size>
+        <!-- minus 1px border
+            = 70x18 available for text -->
+        <Children>
+          <!-- invisible Rec button -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">RecButton</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">68f,20f</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Rec dot + RecDuration -->
+            <Layout>horizontal</Layout>
+            <Size>68f,20f</Size>
+            <Children>
+              <Label>
+                <ObjectName>RecDot</ObjectName>
+                <Size>15f,20f</Size>
+              </Label>
+
+              <RecordingDuration>
+                <ObjectName>RecDuration</ObjectName>
+                <Size>53f,20f</Size>
+                <InactiveText>REC</InactiveText>
+                <Alignment>center</Alignment>
+                <Connection>
+                  <ConfigKey>[Recording],status</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </RecordingDuration>
+            </Children>
+          </WidgetGroup><!-- /Rec dot + RecDuration -->
+
+          <!-- invisible Rec button -->
+          <Template src="skin:button_3state_display.xml">
+            <SetVariable name="ObjectName">RecFeedback</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">72f,20f</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /Recording button & recording duration label -->
+
+      <PushButton>
+        <Size>82f,20f</Size>
+        <TooltipId>skin_settings</TooltipId>
+        <ObjectName>BroadcastButton</ObjectName>
+        <NumberStates>4</NumberStates>
+        <State><!-- Off -->
+          <Number>0</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Connecting...</Text>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Text>ON AIR</Text>
+        </State>
+        <State>
+          <Number>3</Number>
+          <Text>Conn. Failed</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Shoutcast],enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Shoutcast],status</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup>
+        <ObjectName>ToolBarSeparator</ObjectName>
+        <Size>13f,9min</Size>
+      </WidgetGroup>
+
+      <PushButton>
+        <Size>80f,20f</Size>
+        <TooltipId>skin_settings</TooltipId>
+        <ObjectName>SettingsButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>      SETTINGS</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>      SETTINGS</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>7f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <Label>
+        <ObjectName>ToolbarLogo</ObjectName>
+        <Size>72f,24f</Size>
+      </Label>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>7f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>ClockWidget</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Time>
+            <TooltipId>time</TooltipId>
+            <CustomFormat>hh:mm</CustomFormat>
+          </Time>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>9f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Label>
+            <ObjectName>LatencyLabel</ObjectName>
+            <Text>CPU</Text>
+          </Label>
+
+          <VuMeter>
+            <TooltipId>audio_latency_usage</TooltipId>
+            <ObjectName>LatencyMeter</ObjectName>
+            <Size>63f,7f</Size>
+            <PathBack>skin:/style_<Variable name="style_scheme"/>/latency_bg.svg</PathBack>
+            <PathVu>skin:/style_<Variable name="style_scheme"/>/latency_over.svg</PathVu>
+            <Horizontal>true</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>1000</PeakHoldTime>
+            <PeakFallTime>100</PeakFallTime>
+            <PeakFallStep>1</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+            </Connection>
+          </VuMeter>
+
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Battery>
+            <ObjectName>Battery</ObjectName>
+            <Size>24,24</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_charged.svg</PixmapCharged>
+            <NumberStates>8</NumberStates>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+          </Battery>
+        </Children>
+      </WidgetGroup>
+
+      <!-- A hack involving a SizeAwareStack and WidgetStacks
+        that toggles [LateNight],no_spinny_no_cover when both
+        [Skin],show_spinnies and [Skin],show_coverart are 0 -->
+      <WidgetGroup>
+        <Size>0f,3f</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>0f,1f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>0f,1f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- "Toggle" -->
+          <SizeAwareStack>
+            <Children>
+              <WidgetStack>
+                <SizePolicy>f,me</SizePolicy>
+                <MaximumSize>0,1</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+              <WidgetStack>
+                <SizePolicy>f,me</SizePolicy>
+                <MinimumSize>0,2</MinimumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </SizeAwareStack>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,30 @@
+<!-- Description:
+        draws a black line to separate
+        rate controls | big/small spinny
+         
+          Conditions:
+          show_rate_controls
+            AND show_spinny_cover
+ 
+ -->
+<Template>
+  <WidgetGroup>
+    <Size>0min,0me</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>SeparatorLine</ObjectName>
+        <Size><Variable name="SeparatorSize"/>,0me</Size>
+        <Connection>
+          <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

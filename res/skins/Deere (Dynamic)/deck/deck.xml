@@ -1,0 +1,57 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck widget.
+  Variables:
+    i: The deck number (1-indexed)
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Deck<Variable name="i"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <MinimumSize>-1,150</MinimumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckRows</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <Template src="skin:deck/deck_text_row.xml"/>
+          <!--Hides if the stacked waveforms option is activated in the skin settings -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>Spacer22</ObjectName>
+                <Size>0me,1f</Size>
+              </WidgetGroup>
+              <SingletonContainer>
+                <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+          <Template src="skin:deck/deck_overview_row.xml"/>
+          <Template src="skin:deck/deck_controls_row.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckRateSlider</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:deck/deck_tempo_column.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

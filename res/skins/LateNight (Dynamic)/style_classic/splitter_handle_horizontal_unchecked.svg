@@ -1,0 +1,14 @@
+<svg width="1270" height="10" version="1.1" viewBox="0 0 336.02083 2.6458334" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs>
+		<linearGradient id="a" x1="-1.4552071" x2="337.47604" y1="293.825" y2="293.825" gradientUnits="userSpaceOnUse">
+			<stop offset="0"/>
+		</linearGradient>
+	</defs>
+	<g transform="translate(0,-294.35416)">
+		<path d="m156.10417 294.61874h3.96875v1.5875h15.875v-1.5875h161.39583v-3.43958h-338.6666654v3.43958h157.4270854" fill="#1e1e1e"/>
+		<path d="m-1.4550781 291.17969v3.70312h157.5585981l3.70481.00013v1.58789h16.40417v-1.58789l161.26406-.00013v-3.70312zm.2636719.26367h338.4023462v3.17578l-161.26406.00013v1.58789h-15.87292v-1.58789l-3.97044-.00013h-157.2949262z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#a)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+		<rect x="161.39583" y="295.41251" width="13.229167" height=".26458335" style="paint-order:fill markers stroke"/>
+		<rect x="161.39583" y="294.61874" width="13.229167" height=".26458335" style="paint-order:fill markers stroke"/>
+		<path d="m160.07292 294.61874-.26458.26459v1.5875l.26458-.26459z" fill="#333"/>
+	</g>
+</svg>

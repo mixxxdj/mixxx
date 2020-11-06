@@ -1,0 +1,110 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DecksSizer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DecksLeftContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup> <!-- 2 Decks -->
+            <Layout>vertical</Layout>
+            <Connection>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+
+              <Template src="skin:deck.xml">
+                <SetVariable name="channum">1</SetVariable>
+                <SetVariable name="decks_group">12</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup> <!-- 2 Decks -->
+
+          <WidgetGroup> <!-- 4 Decks -->
+            <Layout>vertical</Layout>
+            <Connection>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+
+              <WidgetGroup> <!-- Static -->
+                <Layout>vertical</Layout>
+                <Connection>
+                  <ConfigKey>[Skin],dynamicdecks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+
+                  <Template src="skin:deck.xml"> <!-- Deck 1 -->
+                    <SetVariable name="channum">1</SetVariable>
+                    <SetVariable name="decks_group">12</SetVariable>
+                  </Template> <!-- Deck 1 -->
+
+                  <Template src="skin:deck.xml"> <!-- Deck 3 -->
+                    <SetVariable name="channum">3</SetVariable>
+                    <SetVariable name="decks_group">34</SetVariable>
+                  </Template> <!-- Deck 3 -->
+
+                </Children>
+              </WidgetGroup> <!-- Static -->
+
+              <WidgetGroup> <!-- Dynamic -->
+                <Layout>vertical</Layout>
+                <Connection>
+                  <ConfigKey>[Skin],dynamicdecks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+
+                  <WidgetGroup> <!-- Deck 1 -->
+                    <Layout>vertical</Layout>
+                    <Connection>
+                      <ConfigKey>[Controller],deck1_active</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Children>
+
+                    <Template src="skin:deck.xml">
+                      <SetVariable name="channum">1</SetVariable>
+                      <SetVariable name="decks_group">12</SetVariable>
+                    </Template>
+
+                    </Children>
+                  </WidgetGroup> <!-- Deck 1 -->
+
+                  <WidgetGroup> <!-- Deck 3 -->
+                    <Layout>vertical</Layout>
+                    <Connection>
+                      <ConfigKey>[Controller],deck1_active</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Children>
+
+                    <Template src="skin:deck.xml">
+                      <SetVariable name="channum">3</SetVariable>
+                      <SetVariable name="decks_group">34</SetVariable>
+                    </Template>
+
+                    </Children>
+                  </WidgetGroup> <!-- Deck 3 -->
+
+                </Children>
+              </WidgetGroup> <!-- Dynamic -->
+
+            </Children>
+          </WidgetGroup> <!-- 4 Decks -->
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

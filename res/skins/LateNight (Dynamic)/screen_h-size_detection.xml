@@ -1,0 +1,56 @@
+<!--
+Description:
+  Size-aware container that checks if the screen (Mixxx window) is wide enough
+  to show the Fx unit main controls in one row in order to save vertical space
+  for other skin elements. It's also considered if the Super knobs are shown.
+  This detector is placed below toolbar.xml so it doesn't interfere with other
+  skin elements.
+
+
+Controls:
+  [LateNight],wide_screen
+
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>0me,0f</Size>
+    <Children>
+
+      <WidgetGroup><!-- Super knob, optional -->
+        <Layout>horizontal</Layout>
+        <Size>90f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <SizeAwareStack><!-- Size detector -->
+        <Children>
+          <WidgetStack><!-- Not enough space for stars -->
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>0,0</MinimumSize>
+            <MaximumSize>1269,0</MaximumSize>
+            <Children>
+              <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[LateNight],wide_screen"><Size>1f,20f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+          <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>1270,0</MinimumSize>
+            <MaximumSize>-1,0</MaximumSize>
+            <Children>
+              <WidgetGroup trigger="[LateNight],wide_screen"><Size>1f,20f</Size></WidgetGroup>
+              <WidgetGroup><Size>1f,20f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+        </Children>
+      </SizeAwareStack><!-- /Size detector -->
+
+    </Children>
+  </WidgetGroup>
+</Template>
