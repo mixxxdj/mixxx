@@ -997,7 +997,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 
     // Skip decoding if all data has been read
     auto writableFrameRange = writableSampleFrames.frameIndexRange();
-    DEBUG_ASSERT(writableFrameRange <= frameIndexRange());
+    DEBUG_ASSERT(writableFrameRange.isSubrangeOf(frameIndexRange()));
     if (writableFrameRange.empty()) {
         auto readableRange = IndexRange::between(
                 readableStartIndex, writableFrameRange.start());

@@ -134,7 +134,7 @@ class SoundSourceProxyTest : public MixxxTest {
                                     skipRange.length() - skippedRange.length(),
                                     pAudioSource->getSignalInfo().samples2frames(m_skipSampleBuffer.size())));
             EXPECT_FALSE(nextRange.empty());
-            EXPECT_TRUE(intersect(nextRange, skipRange) == nextRange);
+            EXPECT_TRUE(nextRange.isSubrangeOf(skipRange));
             const auto readRange = pAudioSource->readSampleFrames(
                     mixxx::WritableSampleFrames(
                             nextRange,
@@ -145,11 +145,12 @@ class SoundSourceProxyTest : public MixxxTest {
                 return skippedRange;
             }
             EXPECT_TRUE(readRange.start() == nextRange.start());
-            EXPECT_TRUE(intersect(readRange, skipRange) == readRange);
+            EXPECT_TRUE(readRange.isSubrangeOf(skipRange));
             if (skippedRange.empty()) {
                 skippedRange = readRange;
             } else {
-                skippedRange = span(skippedRange, nextRange);
+                EXPECT_TRUE(skippedRange.end() == nextRange.start());
+                skippedRange.growBack(nextRange.length());
             }
         }
         return skippedRange;
@@ -265,7 +266,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                                         readFrameIndexRange,
                                         mixxx::SampleBuffer::WritableSlice(contReadData)));
                 ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
-                ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
+                ASSERT_TRUE(contSampleFrames.frameIndexRange().isSubrangeOf(readFrameIndexRange));
                 ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
                 contFrameIndex += contSampleFrames.frameLength();
 
@@ -387,7 +388,8 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                                             readFrameIndexRange,
                                             mixxx::SampleBuffer::WritableSlice(contReadData)));
                     ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
-                    ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
+                    ASSERT_TRUE(contSampleFrames.frameIndexRange()
+                                        .isSubrangeOf(readFrameIndexRange));
                     ASSERT_EQ(contSampleFrames.frameIndexRange().start(),
                             readFrameIndexRange.start());
                     contFrameIndex += contSampleFrames.frameLength();
