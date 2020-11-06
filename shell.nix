@@ -73,12 +73,12 @@ let
     fi
   '';
 
-  wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs then
-    "source ${pkgs.wrapQtAppsHook}/nix-support/setup-hook"
+  wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
+    "source ${pkgs.qt5.wrapQtAppsHook}/nix-support/setup-hook"
   else
     "source ${pkgs.makeWrapper}/nix-support/setup-hook");
 
-  wrapperCmd = (if builtins.hasAttr "wrapQtAppsHook" pkgs then
+  wrapperCmd = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
     "wrapQtApp"
   else
     "wrapProgram");
@@ -268,8 +268,8 @@ in stdenv.mkDerivation rec {
     wavpack
     x11
   ]) ++ allLv2Plugins ++ (if enableKeyfinder then [ libkeyfinder ] else [ ])
-    ++ (if builtins.hasAttr "wrapQtAppsHook" pkgs then
-      [ pkgs.wrapQtAppsHook ]
+    ++ (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
+      [ pkgs.qt5.wrapQtAppsHook ]
     else
       [ ]);
 
