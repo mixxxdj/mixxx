@@ -162,7 +162,6 @@ script.deckFromGroup = function(group) {
         // Extract deck number from [QuickEffectRackX_[ChannelY]]              
         deck = group.substring(26, 27);
     }
-
     /*
         else if (group.substring(2,8)=="ampler") {
             // Extract sampler number from the group text
