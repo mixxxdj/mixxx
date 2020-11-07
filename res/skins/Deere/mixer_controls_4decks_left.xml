@@ -1,0 +1,277 @@
+<!DOCTYPE template>
+<!--
+  Description:
+  A 4-deck mixer channel strip.
+  
+  Structure:
+  ⎡ Spacer that centers the level meter
+  | vertically when neither EQs
+  ⎣ nor Vol fader are shown
+
+  [ Gain knob]
+  
+  [ EQs + QuickEffect, optional ]
+  
+  [ Pfl button ]
+  
+  ⎡ with EQs                  ⎤
+  | ⎡ with faders:
+  | |   mono   + Vol
+  | ⎣___meter____fader_____⎦
+  | ⎡ no faders:
+  | ⎣___stereo VU meter____⎦
+  ⎣___________________________⎦
+
+  ⎡ no EQs____________________
+  | ⎡ with faders:
+  | |   stereo VU meter
+  | |    +
+  | ⎣___Vol fader__________⎦
+  | ⎡ no faders:
+  | ⎣___stereo VU meter____⎦
+  ⎣___________________________⎦
+
+  [ xFader button, always visible ]
+
+  ⎡ Spacer that centers the level meter
+  | vertically when neither EQs
+  ⎣ nor Vol fader are shown
+  
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+
+  <SingletonDefinition>
+    <ObjectName>StereoVUMeter<Variable name="i"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <MaximumSize>-1,210</MaximumSize>
+        <Children>
+          <Template src="skin:spacer_h.xml"/>
+          <WidgetGroup>
+            <ObjectName>channel_VuMeter_Group</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <MaximumSize>22,210</MaximumSize>
+            <Children>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup><Size>11f,0min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <WidgetGroup>
+    <ObjectName>MixerStrip_4Decks</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <Template src="skin:mixer_spacer_topbottom.xml" />
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <!-- Expanding spacer to push EQ knob to right side -->
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+          <Template src="skin:knob.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">green</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+          <Template src="skin:mixer_column_eq_left.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MixerButtonContainerLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
+                <SetVariable name="MinimumSize">22,22</SetVariable>
+                <SetVariable name="MaximumSize">22,22</SetVariable>
+                <SetVariable name="SizePolicy">f,f</SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
+
+          <!-- with EQs -->
+          <WidgetGroup>
+            <GroupName>VolFader_VUMeter_4Decks</GroupName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <MaximumSize>60,-1</MaximumSize>
+            <Children>
+              <!-- Faders 
+              Vol fader next to mono VU meter
+                  when EQs are shown -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,180</MaximumSize>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <ObjectName>4DecksMixerMonoMeterLeft</ObjectName>
+                    <Children>
+                      <Template src="skin:vumeter_v.xml">
+                        <SetVariable name="group"><Variable name="group"/></SetVariable>
+                        <SetVariable name="tooltip_meter">channel_VuMeter</SetVariable>
+                        <SetVariable name="tooltip_clip">channel_PeakIndicator</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <SliderComposed>
+                    <TooltipId>channel_volume</TooltipId>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MinimumSize>40,50</MinimumSize>
+                    <MaximumSize>40,-1</MaximumSize>
+                    <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                    <Handle scalemode="STRETCH_ASPECT">handle-vertical-orange.svg</Handle>
+                    <Horizontal>false</Horizontal>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_faders</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <!-- no Faders 
+                  stereo VU meter -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,210</MaximumSize>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>StereoVUMeter<Variable name="i"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_faders</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- with EQs -->
+
+          <!-- no EQs -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <!-- StereoVUMeter -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,210</MaximumSize>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>StereoVUMeter<Variable name="i"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+              
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,180</MaximumSize>
+                <Children>
+                  <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
+                  <SliderComposed>
+                    <TooltipId>channel_volume</TooltipId>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MinimumSize>40,50</MinimumSize>
+                    <MaximumSize>40,-1</MaximumSize>
+                    <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                    <Handle scalemode="STRETCH_ASPECT">handle-vertical-orange.svg</Handle>
+                    <Horizontal>false</Horizontal>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_faders</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- no EQs -->
+
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>MixerButtonContainerLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:crossfader_orientation_button.xml">
+                <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:mixer_spacer_topbottom.xml" />
+
+    </Children>
+  </WidgetGroup>
+</Template>

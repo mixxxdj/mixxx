@@ -4,7 +4,7 @@
     <title>Deere</title>
     <author>RJ Ryan, S.Brandt</author>
     <version>2.3.0.01</version>
-    <description>A flexible skin with stacked or split waveforms, 4 decks and 8 samplers. (Updated to use dynamic decks by Dj Defile)</description>
+    <description>A flexible skin with stacked or split waveforms, 4 decks and 8 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
@@ -13,6 +13,14 @@
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
+      <!-- Dynamic -->
+      <attribute persist="true" config_key="[Skin],dynamicdecks">0</attribute>
+      <attribute persist="true" config_key="[Skin],dynamicmixer">0</attribute>
+      <attribute persist="true" config_key="[Skin],dynamicwaves">0</attribute>
+      <attribute config_key="[Controller],deck1_active">1</attribute>
+      <attribute config_key="[Controller],deck2_active">1</attribute>
+      <attribute config_key="[Controller],deck3_active">0</attribute>
+      <attribute config_key="[Controller],deck4_active">0</attribute>
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
@@ -48,15 +56,6 @@
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
 
-      <!-- Dynamic Mode -->
-      <attribute persist="true" config_key="[Skin],dynamicdecks">1</attribute>
-      <attribute persist="true" config_key="[Skin],dynamicwaveforms">1</attribute>
-      <attribute persist="true" config_key="[Skin],dynamicmixer">1</attribute>
-      <attribute persist="false" config_key="[Controller],deck1_active">1</attribute>
-      <attribute persist="false" config_key="[Controller],deck2_active">1</attribute>
-      <attribute persist="false" config_key="[Controller],deck3_active">0</attribute>
-      <attribute persist="false" config_key="[Controller],deck4_active">0</attribute>
-
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
@@ -87,7 +86,7 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+  <Style src="skin:../Deere/style.qss" src-mac="skin:../Deere/style-mac.qss"/>
 
   <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>
@@ -145,146 +144,42 @@
     main_decks.xml, left_deck.xml, and right_deck.xml, so define them in singletons. This makes
     toggling between 2/4 decks and stacked/split waveforms slower, but it makes Mixxx startup
     and shutdown much faster and saves a lot of memory.-->
-    <SingletonDefinition>
-      <ObjectName>DeckVisualRow1</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_visual_row.xml">
-          <SetVariable name="i">1</SetVariable>
-          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-          <!-- Traditional Blue -->
-          <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
+    <Template src="skin:../Deere/deck_singletons.xml">
+      <SetVariable name="i">1</SetVariable>
+      <!-- Traditional Blue -->
+      <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+    </Template>
 
-    <SingletonDefinition>
-      <ObjectName>DeckVisualRow2</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_visual_row.xml">
-          <SetVariable name="i">2</SetVariable>
-          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-          <!-- Traditional Orange -->
-          <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
+    <Template src="skin:../Deere/deck_singletons.xml">
+      <SetVariable name="i">2</SetVariable>
+      <!-- Traditional Orange -->
+      <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+    </Template>
 
-    <SingletonDefinition>
-      <ObjectName>DeckVisualRow3</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_visual_row.xml">
-          <SetVariable name="i">3</SetVariable>
-          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-          <!-- Violet -->
-          <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
+    <Template src="skin:../Deere/deck_singletons.xml">
+      <SetVariable name="i">3</SetVariable>
+      <!-- Violet -->
+      <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+    </Template>
 
-    <SingletonDefinition>
-      <ObjectName>DeckVisualRow4</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_visual_row.xml">
-          <SetVariable name="i">4</SetVariable>
-          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-          <!-- Lime -->
-          <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckCoverArt1</ObjectName>
-      <Children>
-        <Template src="skin:coverart.xml">
-          <SetVariable name="group">[Channel1]</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckCoverArt2</ObjectName>
-      <Children>
-        <Template src="skin:coverart.xml">
-          <SetVariable name="group">[Channel2]</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckCoverArt3</ObjectName>
-      <Children>
-        <Template src="skin:coverart.xml">
-          <SetVariable name="group">[Channel3]</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckCoverArt4</ObjectName>
-      <Children>
-        <Template src="skin:coverart.xml">
-          <SetVariable name="group">[Channel4]</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckOverview1</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_overview.xml">
-          <SetVariable name="group">[Channel1]</SetVariable>
-          <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckOverview2</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_overview.xml">
-          <SetVariable name="group">[Channel2]</SetVariable>
-          <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckOverview3</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_overview.xml">
-          <SetVariable name="group">[Channel3]</SetVariable>
-          <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckOverview4</ObjectName>
-      <Children>
-        <Template src="skin:deck/deck_overview.xml">
-          <SetVariable name="group">[Channel4]</SetVariable>
-          <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
+    <Template src="skin:../Deere/deck_singletons.xml">
+      <SetVariable name="i">4</SetVariable>
+      <!-- Lime -->
+      <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+    </Template>
 
     <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
-        <Template src="skin:library/library.xml"/>
+        <Template src="skin:../Deere/library.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -293,7 +188,7 @@
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
       <Children>
-        <Template src="skin:tool_bar.xml"/>
+        <Template src="skin:../Deere/tool_bar.xml"/>
 
         <!-- regular or maximized library -->
         <WidgetStack currentpage="[Master],maximize_library">
@@ -306,23 +201,20 @@
               <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
               <SplitSizes>90,540</SplitSizes>
               <Size>-1me,-1me</Size>
-              <Connection>
-                <ConfigKey>[Master],maximize_library</ConfigKey>
-                <BindProperty>visible</BindProperty>
-                <Transform><Not/></Transform>
-              </Connection>
               <Children>
 
-                <Template src="skin:waveform/waveforms.xml"></Template>
+                <!-- Waveforms & spinnies are shown here as stack or
+                  separatley in each deck -->
+                <Template src="skin:../Deere/parallel_waveforms.xml"/>
 
                 <WidgetGroup><!-- Main section -->
                   <Layout>vertical</Layout>
                   <SizePolicy>min,max</SizePolicy>
                   <Children>
-                    <Template src="skin:deck/main_decks.xml"/>
-                    <Template src="skin:effect/effect_rack.xml"/>
-                    <Template src="skin:sampler/sample_decks.xml"/>
-                    <Template src="skin:mic/microphone_rack.xml"/>
+                    <Template src="skin:../Deere/main_decks.xml"/>
+                    <Template src="skin:../Deere/effect_rack.xml"/>
+                    <Template src="skin:sample_decks.xml"/>
+                    <Template src="skin:../Deere/microphone_rack.xml"/>
                     <SingletonContainer>
                       <ObjectName>Library</ObjectName>
                     </SingletonContainer>
@@ -333,15 +225,11 @@
             </Splitter><!-- regular library with decks etc. -->
 
             <!-- maximized Library with minimal decks -->
-            <WidgetGroup>
+            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
               <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
-              <Connection>
-                <ConfigKey>[Master],maximize_library</ConfigKey>
-                <BindProperty>visible</BindProperty>
-              </Connection>
               <Children>
-                <Template src="skin:deck/decks_small.xml"/>
+                <Template src="skin:../Deere/decks_small.xml"/>
                 <SingletonContainer>
                   <ObjectName>Library</ObjectName>
                 </SingletonContainer>
@@ -353,6 +241,16 @@
 
       </Children>
     </WidgetGroup>
-    <Template src="skin:settings/skin_settings.xml"/>
+    <WidgetGroup>
+      <Layout>vertical</Layout>
+      <SizePolicy>min,me</SizePolicy>
+      <Connection>
+        <ConfigKey>[Master],skin_settings</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <Template src="skin:skin_settings.xml"/>
+      </Children>
+    </WidgetGroup>
   </Children>
 </skin>
