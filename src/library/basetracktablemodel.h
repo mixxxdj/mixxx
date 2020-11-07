@@ -9,7 +9,6 @@
 #include "library/trackmodel.h"
 #include "track/track_decl.h"
 
-class BaseCoverArtDelegate;
 class TrackCollectionManager;
 
 class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
@@ -188,8 +187,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     // the internal database.
     virtual TrackId doGetTrackId(
             const TrackPointer& pTrack) const;
-    virtual BaseCoverArtDelegate* doCreateCoverArtDelegate(
-            QTableView* pTableView) const = 0;
+
+    QVariant composeCoverArtToolTipHtml(
+            const QModelIndex& index) const;
 
     Qt::ItemFlags defaultItemFlags(
             const QModelIndex& index) const;

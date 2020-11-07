@@ -22,10 +22,10 @@
         <Children>
 
           <!--4 Samplers -->
-          <Template trigger="[LateNight],show_4samplers" src="skin:/samplers/samplers_4decks.xml"/>
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:/samplers/samplers_4decks.xml"/>
 
           <!--8 Samplers -->
-          <WidgetGroup trigger="[LateNight],show_8samplers">
+          <WidgetGroup trigger="[LateNight],show_8samplers" on_hide_select="0">
             <Layout>vertical</Layout>
             <Children>
               <SingletonContainer trigger="[LateNight],show_8samplers">
@@ -35,7 +35,7 @@
           </WidgetGroup>
 
           <!--16 Samplers -->
-          <WidgetGroup trigger="[LateNight],show_16samplers">
+          <WidgetGroup trigger="[LateNight],show_16samplers" on_hide_select="1">
             <Layout>vertical</Layout>
             <Children>
               <SingletonContainer>

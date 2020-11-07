@@ -69,8 +69,8 @@ EffectManifestPointer BiquadFullKillEQEffect::getManifest() {
 }
 
 BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState(
-      const mixxx::EngineParameters& bufferParameters) :
-          EffectState(bufferParameters),
+        const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
           m_pLowBuf(bufferParameters.samplesPerBuffer()),
           m_pBandBuf(bufferParameters.samplesPerBuffer()),
           m_pHighBuf(bufferParameters.samplesPerBuffer()),
@@ -86,33 +86,41 @@ BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState(
           m_oldHigh(1.0),
           m_loFreqCorner(0),
           m_highFreqCorner(0),
-          m_rampHoldOff(kRampDone),
+          m_rampHoldOff(LVMixEQEffectGroupStateConstants::kRampDone),
           m_groupDelay(0),
           m_oldSampleRate(kStartupSamplerate) {
-
     // Initialize the filters with default parameters
 
     m_lowBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            kStartupSamplerate, kStartupLoFreq, kQBoost);
+            kStartupSamplerate, LVMixEQEffectGroupStateConstants::kStartupLoFreq, kQBoost);
     m_midBoost = std::make_unique<EngineFilterBiquad1Peaking>(
             kStartupSamplerate, kStartupMidFreq, kQBoost);
     m_highBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            kStartupSamplerate, kStartupHiFreq, kQBoost);
-    m_lowKill = std::make_unique<EngineFilterBiquad1LowShelving>(
-            kStartupSamplerate, kStartupLoFreq * 2, kQLowKillShelve);
+            kStartupSamplerate, LVMixEQEffectGroupStateConstants::kStartupHiFreq, kQBoost);
+    m_lowKill =
+            std::make_unique<EngineFilterBiquad1LowShelving>(kStartupSamplerate,
+                    LVMixEQEffectGroupStateConstants::kStartupLoFreq * 2,
+                    kQLowKillShelve);
     m_midKill = std::make_unique<EngineFilterBiquad1Peaking>(
             kStartupSamplerate, kStartupMidFreq, kQKill);
     m_highKill = std::make_unique<EngineFilterBiquad1HighShelving>(
-            kStartupSamplerate, kStartupHiFreq / 2, kQHighKillShelve);
+            kStartupSamplerate,
+            LVMixEQEffectGroupStateConstants::kStartupHiFreq / 2,
+            kQHighKillShelve);
     m_lvMixIso = std::make_unique<
             LVMixEQEffectGroupState<EngineFilterBessel4Low>>(bufferParameters);
 
-    setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
+    setFilters(
+            mixxx::audio::SampleRate(
+                    static_cast<mixxx::audio::SampleRate::value_t>(kStartupSamplerate)),
+            LVMixEQEffectGroupStateConstants::kStartupLoFreq,
+            LVMixEQEffectGroupStateConstants::kStartupHiFreq);
 }
 
 void BiquadFullKillEQEffectGroupState::setFilters(
-        int sampleRate, double lowFreqCorner, double highFreqCorner) {
-
+        mixxx::audio::SampleRate sampleRate,
+        double lowFreqCorner,
+        double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
     double midCenter = getCenterFrequency(lowFreqCorner, highFreqCorner);
     double highCenter = getCenterFrequency(highFreqCorner, kMaximumFrequency);

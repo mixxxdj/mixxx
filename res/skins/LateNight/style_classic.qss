@@ -186,23 +186,27 @@ WSearchLineEdit,
 
 #DeckRateSeparator,
 #DeckRateSeparatorCompact,
-#MasterMixerSeparator {
+#MasterMixerSeparator,
+#SkinSettingsSeparator {
   /* needs a background color to paint the borders */
   background-color: transparent;
   min-width: 0px;
   max-width: 0px;
   }
 
-#FxSlotSeparatorV {
-  min-width: 1px;
-  max-width: 1px;
-  image: url(skin:/classic/style/fx_separator.svg) repeat center center;
-  margin: 2px 1px;
-}
-#FxSlotSeparatorH {
-  min-height: 2px;
-  max-height: 2px;
-}
+  #FxSlotSeparatorV {
+    min-width: 1px;
+    max-width: 1px;
+    image: url(skin:/classic/style/fx_separator.svg) repeat center center;
+    margin: 2px 1px;
+  }
+  #FxSlotSeparatorH {
+    min-height: 2px;
+    max-height: 2px;
+  }
+  #SkinSettingsSeparator {
+    margin: 3px 4px 7px 4px;
+  }
 
 WBeatSpinBox,
 #spinBoxTransition  {
@@ -400,7 +404,7 @@ WLibrary,
 /* All rows in FULL deck */
 #DeckRows12345,
 #DeckRows2345 {
-  margin: 2px 0px 3px 2px;
+  margin: 2px 0px 2px 2px;
   background-color: transparent;
 }
   /* All rows in compact deck */
@@ -658,34 +662,36 @@ WLibrary,
     padding: 0px 0px 0px 1px;
   }
 
-  #CrossfaderButtonContainer_Deck {
+  #CrossfaderButtonContainer_Deck,
+  #CrossfaderButtonContainer_Aux {
     padding: 1px;
     border-bottom: 1px solid #333;
     border-right: 1px solid #333;
     border-bottom-right-radius: 1px;
     }
   #CrossfaderButtonContainer_Aux {
-    padding: 1px 1px 0px 1px;
-    margin-left: 5px;
-    border-right: 1px solid #333;
+    margin-left: 4px;
     }
     #CrossfaderButton[value="1"] {
       background-color: #262626;
     }
 
 #MixerMasterHeadphone {
-  margin: 3px 3px 3px 0px;
+  margin: 2px 2px 2px 0px;
   }
   #MasterControls {
-    padding: 3px;
+    padding: 2px;
     margin-bottom: 2px;
   }
   #MasterHeadphoneSeparator {
-    min-height: 2px;
-    max-height: 2px;
-  }
+    min-height: 0px;
+    max-height: 0px;
+    }
+    #BoothLabelBox {
+      padding: 0px 0px 2px 2px;
+    }
   #HeadphoneControls {
-    padding: 3px;
+    padding: 2px;
   }
 
 /* All VU meter instances */
@@ -816,6 +822,9 @@ WPushButton#FxSuperLinkInvertButton {
   #SamplerPlayBoxMini {
     padding: 1px;
   }
+  #SamplerBpmMini {
+    margin-left: 1px;
+  }
 
 #Sampler {
   padding: 1px 0px 2px 2px;
@@ -823,9 +832,6 @@ WPushButton#FxSuperLinkInvertButton {
   #SamplerTitleRow {
     margin: 0px 1px 0px 0px;
     }
-    #SamplerTitleBox {
-      border-width: 0px 1px 0px 0px;
-      }
     #SamplerTitle {
       padding: 1px 3px 1px 0px;
     }
@@ -833,32 +839,39 @@ WPushButton#FxSuperLinkInvertButton {
       margin-right: 2px;
     }
 
-  #SamplerPlayBox {
-    padding: 0px 2px 1px 0px;
-  }
+  #SamplerRows23 {
+    }
+    #SamplerPlayRow {
+    }
+    #SamplerPlayBox {
+      padding: 0px 2px 1px 0px;
+    }
+    #SamplerSettings {
+      border-width: 1px 1px 0px 0px;
+    }
 
-  #SamplerGain {
-    padding: 0px 0px 0px 2px;
-    border-width: 1px 0px 0px 0px;
-  }
-
-  #SamplerSettings {
-    border-width: 1px 1px 0px 0px;
-  }
   #SamplerButtons {
-    margin-right: 2px;
-  }
-  #SamplerHotcues {
-    padding: 1px 1px 2px 1px;
-  }
-  #SamplerPfl {
-    padding: 0px 2px 2px 6px;
-    border-width: 0px 0px 0px 0px;
-  }
-  #SamplerVU {
-    padding: 2px 3px 0px 3px;
-    border-width: 1px 1px 0px 0px;
-  }
+    }
+    #SamplerHotcues {
+      padding: 1px 1px 2px 1px;
+    }
+
+  #SamplerGainPflVu_Container {
+    }
+    #SamplerGainPflVu {
+      }
+      #SamplerGain {
+        padding: 3px 0px 0px 3px;
+        border-width: 1px 0px 0px 0px;
+      }
+      #SamplerPfl {
+        padding: 0px 4px 2px 4px;
+        border-width: 0px;
+      }
+      #SamplerVU {
+        padding: 2px 3px 0px 3px;
+        border-width: 1px 1px 0px 0px;
+      }
 
   #SamplerRateControls {
     padding: 0px 1px 1px 0px;
@@ -866,6 +879,7 @@ WPushButton#FxSuperLinkInvertButton {
     #SamplerPitchSlider {
       padding: 0px 0px 1px 0px;
     }
+
 
 /************** MicAux *****************************************************/
 
@@ -887,18 +901,19 @@ WPushButton#FxSuperLinkInvertButton {
   #MicAuxLabel {
     padding: 3px 0px 3px 1px;
   }
-  #AuxPlayBox {
+
+  #AuxPlayBox,
+  #MicTalkBox {
     padding: 0px 0px 2px 1px;
   }
-  #MicTalkBox {
-    padding: 0px 0px 7px 1px;
+
+  #MicAuxAddBox {
+    margin: 1px 0px 1px 1px;
   }
+
   #MicAuxVUMeter {
     padding: 2px 1px 3px 0px;
     margin-left: 2px;
-  }
-  #MicAuxAddBox {
-    margin: 1px 0px 1px 1px;
   }
 
 #MicAuxSubControls {
@@ -986,7 +1001,8 @@ WPushButton#FxSuperLinkInvertButton {
 #Deck2 WLabel, #DeckCompact2 WLabel, #DeckMini2 WLabel,
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
 #MicAuxLabel,
-#SamplerTitle, #SamplerTitleMini, #SamplerBpm,
+#SamplerTitle, #SamplerTitleMini,
+#SamplerBpm, #SamplerBpmMini,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
 #CategoryLabel,
 #SkinSettingsLabelButton,
@@ -1177,6 +1193,7 @@ WOverview #PassthroughLabel {
 #DlgAnalysis > QPushButton {
   color: #bbb;
   }
+
 /*****************************************************************************/
 /************** font colors **************************************************/
 
@@ -1290,7 +1307,7 @@ QPushButton#pushButtonRecording:checked {
 #RateControls WPushButton, #SyncDeck,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
-#SamplerContainer WPushButton,
+#Sampler WPushButton,
 #MicAuxRack WPushButton,
 #PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
@@ -1330,7 +1347,7 @@ WPushButton#MixModeButton[displayValue="1"],
 #RateControls WPushButton[displayValue="0"], #SyncDeck[value="0"],
 #MixerContainer WPushButton[displayValue="0"],
 #FxUnitContainer WPushButton[displayValue="0"],
-#SamplerContainer WPushButton[displayValue="0"],
+#Sampler WPushButton[displayValue="0"],
 #MicAuxRack WPushButton[displayValue="0"],
 /* library buttons */
 QPushButton#pushButtonAutoDJ:enabled:!checked,
@@ -1884,7 +1901,7 @@ QPushButton#pushButtonShuffle:enabled {
   image: url(skin:/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
   }
 
-QPushButton#pushButtonAddRandom:enabled {
+QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skin:/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
   }
 
@@ -2482,9 +2499,6 @@ WEffectSelector,
         height: 0px;
         margin: 4px;
       }
-    #SkinSettingsSeparator {
-      margin: 0px 4px 4px 4px;
-    }
   WBeatSpinBox QMenu::item,
   #LibraryContainer QMenu::item,
   WCueMenuPopup QMenu::item,

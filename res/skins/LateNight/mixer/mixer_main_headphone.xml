@@ -1,7 +1,6 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
   <SetVariable name="Group">[Master]</SetVariable>
-  <SetVariable name="Type">master</SetVariable>
   <SetVariable name="KnobBg">master</SetVariable>
   <SetVariable name="KnobIndicator">master</SetVariable>
   <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
@@ -12,7 +11,7 @@
     <Layout>horizontal</Layout>
     <Children>
 
-      <WidgetGroup>
+      <WidgetGroup><!--sized and styled in css -->
         <ObjectName>MasterMixerSeparator</ObjectName>
         <Layout>horizontal</Layout>
         <Children/>
@@ -30,6 +29,12 @@
             <Layout>vertical</Layout>
             <Children>
 
+              <WidgetGroup>
+                <MinimumSize>0,0</MinimumSize>
+                <!-- <MaximumSize>,20</MaximumSize> -->
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
+
               <!-- Master knobs
                   Labels are separate so knobs are spaced equally -->
               <WidgetGroup>
@@ -40,13 +45,14 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_textless.xml">
+                      <Template src="skin:/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">master_gain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">orange</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
                         <SetVariable name="ArcUnipolar">true</SetVariable>
                         <SetVariable name="Control">gain</SetVariable>
+                        <SetVariable name="Label">Main</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -55,39 +61,32 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_textless.xml">
+                      <Template src="skin:/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">balance</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">red</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorMstBal"/></SetVariable>
                         <SetVariable name="Control">balance</SetVariable>
+                        <SetVariable name="Label"> Bal</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
                 </Children>
               </WidgetGroup>
 
-              <!-- Master knob labels -->
               <WidgetGroup>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>,2</MaximumSize>
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>BoothKnobBox</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Alignment>left</Alignment>
-                    <Text> &#8194;main&#8194;&#8194;&#8194; l / r </Text>
-                  </Label>
-                  <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- Booth knob -->
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
-                  <Template src="skin:/controls/knob_textless.xml">
+                  <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+                  <Template src="skin:/controls/knob.xml">
                     <SetVariable name="TooltipId">booth_gain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="KnobColor">orange</SetVariable>
@@ -95,34 +94,54 @@
                     <SetVariable name="ArcUnipolar">true</SetVariable>
                     <SetVariable name="Control">booth_gain</SetVariable>
                   </Template>
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>Booth</Text>
-                  </Label>
+                  <WidgetGroup>
+                    <ObjectName>BoothLabelBox</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Label>
+                        <ObjectName>KnobLabel</ObjectName>
+                        <SizePolicy>max,max</SizePolicy>
+                        <Alignment>left</Alignment>
+                        <Text>Booth</Text>
+                      </Label>
+                    </Children>
+                  </WidgetGroup><!-- BoothLabelBox -->
                 </Children>
                 <Connection>
                   <ConfigKey>[Master],booth_enabled</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- BoothKnobBox -->
 
-              <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+              <WidgetGroup>
+                <MinimumSize>0,2</MinimumSize>
+                <MaximumSize>,20</MaximumSize>
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>AlignCenter</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/fx/assign_buttons.xml"/>
+                  <Template src="skin:/fx/assign_buttons_master.xml">
+                    <SetVariable name="Type">master</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
+
+                  <WidgetGroup>
+                    <MinimumSize>0,10</MinimumSize>
+                    <MaximumSize>,10</MaximumSize>
+                    <SizePolicy>min,me</SizePolicy>
+                  </WidgetGroup>
+
                   <WidgetGroup>
                     <ObjectName>VuMeterMaster_4Decks</ObjectName>
                     <Layout>horizontal</Layout>
@@ -132,7 +151,14 @@
                         <ObjectName>VuMeterMaster_Light</ObjectName>
                       </SingletonContainer>
                     </Children>
+                  </WidgetGroup><!-- VuMeterMaster_4Decks -->
+
+                  <WidgetGroup>
+                    <MinimumSize>0,20</MinimumSize>
+                    <MaximumSize>,20</MaximumSize>
+                    <SizePolicy>min,me</SizePolicy>
                   </WidgetGroup>
+
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
@@ -143,7 +169,7 @@
             </Children>
           </WidgetGroup><!-- MasterControls -->
 
-          <WidgetGroup>
+          <WidgetGroup><!-- sized and styled in css -->
             <ObjectName>MasterHeadphoneSeparator</ObjectName>
             <Layout>horizontal</Layout>
             <Children/>
@@ -151,13 +177,17 @@
 
           <WidgetGroup>
             <ObjectName>HeadphoneControls</ObjectName>
-            <SizePolicy>min,me</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
-              <!-- Headphone knobs
-                  Labels are separate so knobs are spaced equally -->
               <WidgetGroup>
+                <MinimumSize>0,0</MinimumSize>
+                <!-- <MaximumSize>,20</MaximumSize> -->
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- Headphone knobs -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -165,13 +195,14 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_textless.xml">
+                      <Template src="skin:/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">headphone_gain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">orange</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
                         <SetVariable name="ArcUnipolar">true</SetVariable>
                         <SetVariable name="Control">headGain</SetVariable>
+                        <SetVariable name="Label">Head</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -180,42 +211,23 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_textless.xml">
+                      <Template src="skin:/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">headMix</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">red</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorMstBal"/></SetVariable>
                         <SetVariable name="Control">headMix</SetVariable>
+                        <SetVariable name="Label">Mix</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- Headphone knob labels -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Alignment>left</Alignment>
-                    <Text>  Head   </Text>
-                  </Label>
-
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>CUE/MST</Text>
-                  </Label>
-                </Children>
-              </WidgetGroup>
-
               <WidgetGroup>
                 <MinimumSize>0,0</MinimumSize>
                 <MaximumSize>,5</MaximumSize>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
               </WidgetGroup>
 
               <WidgetGroup><!-- HeadSplit button -->
@@ -244,17 +256,37 @@
                     </Connection>
                   </PushButton>
                 </Children>
-              </WidgetGroup><!-- /HeadSplit button -->
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <MinimumSize>0,2</MinimumSize>
+                <MaximumSize>,5</MaximumSize>
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>AlignCenter</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:/fx/assign_buttons_master.xml">
+                    <SetVariable name="Group">[Headphone]</SetVariable>
+                    <SetVariable name="Type">headphones</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- /HeadphoneControls -->
+          </WidgetGroup><!-- HeadphoneControls -->
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- MixerMasterHeadphone -->
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Skin],show_master_head_mixer</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

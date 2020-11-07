@@ -44,8 +44,30 @@ static void safeRelease(T** ppT) {
 
 namespace mixxx {
 
+//static
+const QString SoundSourceProviderMediaFoundation::kDisplayName =
+        QStringLiteral("Microsoft Media Foundation");
+
+//static
+const QStringList SoundSourceProviderMediaFoundation::kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+};
+
+SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // On Windows SoundSourceMediaFoundation is the preferred decoder for all
+    // supported audio formats.
+    return SoundSourceProviderPriority::Higher;
+}
+
+SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceMediaFoundation>(url);
+}
+
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
-        : SoundSource(url, "m4a"),
+        : SoundSource(url),
           m_hrCoInitialize(E_FAIL),
           m_hrMFStartup(E_FAIL),
           m_pSourceReader(nullptr),
@@ -780,21 +802,6 @@ bool SoundSourceMediaFoundation::readProperties() {
     PropVariantClear(&prop);
 
     return true;
-}
-
-QString SoundSourceProviderMediaFoundation::getName() const {
-    return "Microsoft Media Foundation";
-}
-
-QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("m4a");
-    supportedFileExtensions.append("mp4");
-    return supportedFileExtensions;
-}
-
-SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceMediaFoundation>(url);
 }
 
 } // namespace mixxx

@@ -54,7 +54,6 @@ QTWIDGETS = [
     "QDataWidgetMapper",
     "QDateTimeEdit",
     "QDateEdit",
-    "QDesktopWidget",
     "QDial",
     "QDialogButtonBox",
     "QDirModel",

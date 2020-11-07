@@ -5,6 +5,9 @@ set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everythi
 
 # Used for force control of color output
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
+# Option to disable symlinks
+set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
+
 # Support new IN_LIST if() operator
 if(POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
@@ -518,7 +521,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
   src/library/banshee/bansheeplaylistmodel.cpp
-  src/library/basecoverartdelegate.cpp
   src/library/baseexternallibraryfeature.cpp
   src/library/baseexternalplaylistmodel.cpp
   src/library/baseexternaltrackmodel.cpp
@@ -714,6 +716,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/soundsource.cpp
   src/sources/soundsourceflac.cpp
   src/sources/soundsourceoggvorbis.cpp
+  src/sources/soundsourceprovider.cpp
   src/sources/soundsourceproviderregistry.cpp
   src/sources/soundsourceproxy.cpp
   src/sources/soundsourcesndfile.cpp
@@ -753,7 +756,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/taglib/trackmetadata_mp4.cpp
   src/track/taglib/trackmetadata_riff.cpp
   src/track/taglib/trackmetadata_xiph.cpp
-  src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
@@ -988,6 +990,21 @@ target_compile_definitions(mixxx-lib PUBLIC
   $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
+#
+# Installation directories
+#
+set(MIXXX_INSTALL_BINDIR ".")
+set(MIXXX_INSTALL_DATADIR ".")
+set(MIXXX_INSTALL_DOCDIR "./doc")
+set(MIXXX_INSTALL_LICENSEDIR "./doc")
+if (UNIX)
+  include(GNUInstallDirs)
+  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
+  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
+  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
+  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+endif()
+
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
 
@@ -1026,9 +1043,7 @@ elseif(UNIX)
   else()
     target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
     target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx")
-    target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_LIB_PATH="${CMAKE_INSTALL_PREFIX}/lib/mixxx")
+      mixxx-lib PUBLIC UNIX_SHARE_PATH="${MIXXX_INSTALL_DATADIR}")
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
@@ -1045,18 +1060,6 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 # Installation and Packaging
 #
 include(InstallRequiredSystemLibraries)
-set(MIXXX_INSTALL_BINDIR ".")
-set(MIXXX_INSTALL_DATADIR ".")
-set(MIXXX_INSTALL_DOCDIR "./doc")
-set(MIXXX_INSTALL_LICENSEDIR "./doc")
-if (UNIX)
-  include(GNUInstallDirs)
-  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
-  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
-  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
-endif()
-
 install(
   TARGETS
     mixxx
@@ -1284,6 +1287,7 @@ add_executable(mixxx-test
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
   src/test/globaltrackcache_test.cpp
+  src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
   src/test/keyutilstest.cpp
@@ -1376,14 +1380,14 @@ add_custom_target(mixxx-benchmark
 )
 add_dependencies(mixxx-benchmark mixxx-test)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-testdata
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Symlinking test data to build directory..."
   )
 else()
   add_custom_target(mixxx-testdata
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Copying test data to build directory..."
   )
 endif()
@@ -1402,7 +1406,7 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
@@ -1413,11 +1417,11 @@ if(UNIX)
   )
 else()
   add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Copying resources to build directory..."
   )
   add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
     COMMENT "Copying QScriptEngine extensions to build directory..."
   )
 endif()
@@ -1604,10 +1608,11 @@ if(KEYFINDER)
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    ExternalProject_Add(keyfinder
-      GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
-      GIT_TAG v2.2.2
-      GIT_SHALLOW TRUE
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    ExternalProject_Add(libKeyFinder
+      URL "https://github.com/ibsh/libKeyFinder/archive/v2.2.2.zip"
+      URL_HASH SHA256=f04ff63c9710d969e79b71bde18abd720e886f537951a1045cc50cb497a72492
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
         -DBUILD_STATIC_LIBS=ON
@@ -1631,7 +1636,7 @@ if(KEYFINDER)
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
 
     add_library(mixxx-keyfinder STATIC IMPORTED)
-    add_dependencies(mixxx-keyfinder keyfinder)
+    add_dependencies(mixxx-keyfinder libKeyFinder)
     set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
     target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
     target_include_directories(mixxx-keyfinder INTERFACE "${KeyFinder_INSTALL_DIR}/include")

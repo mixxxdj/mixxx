@@ -72,7 +72,7 @@
 
     <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_master_head_mixer">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_main_head_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
@@ -207,16 +207,15 @@
       <SetVariable name="ArcColorFxParameter">#6d6d6d</SetVariable>
       <SetVariable name="ArcColorGainLow">#8d3b11</SetVariable>
       <SetVariable name="ArcColorMstBal">#a00000</SetVariable>
-      <SetVariable name="ArcColorFxMix">#da0606</SetVariable>
-      <!-- Knob pointers
-           = suffix for indicator image url -->
+      <SetVariable name="ArcColorFxMix">#a00000</SetVariable>
+      <!-- Knob pointers = suffix for indicator image url -->
       <SetVariable name="KnobColorEq">grey</SetVariable>
       <SetVariable name="KnobColorQuickEffect">green</SetVariable>
       <SetVariable name="KnobColorFx12">green</SetVariable>
       <SetVariable name="KnobColorFx34">blue</SetVariable>
       <SetVariable name="KnobColorFxParameter">grey</SetVariable>
-      <!-- Size of the small EQ kill indicators
-            svg is 6x6 px, set size to '0f,0f' to hide them -->
+      <!-- Size of the small EQ kill indicators:
+          svg is 6x6 px, set size to '0f,0f' to hide them -->
       <SetVariable name="EqKillDotSize">9f,9f</SetVariable>
 
       <!-- Slider bar settings -->

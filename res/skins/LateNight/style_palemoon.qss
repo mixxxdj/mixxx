@@ -191,6 +191,7 @@ WSearchLineEdit {
   #KeyText,
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
+  #SamplerSettingsContainer,
   #spinBoxTransition,
   /* Prevent cut-off or shifted stars on macOS */
   WStarRating {
@@ -198,12 +199,14 @@ WSearchLineEdit {
     }
     #KeyText,
     #DeckSettingsContainer,
-    #DeckSettingsContainerCompact {
-      border-top: 1px solid #0d0d0d;
+    #DeckSettingsContainerCompact,
+    #SamplerSettingsContainer {
+      border-top: 1px solid #080808;
       border-bottom: 1px solid #2a2a2a;
       }
-      #DeckSettings {
-        border-top: 1px solid #1c1c1c;
+      #DeckSettings,
+      #SamplerSettings {
+        border-top: 1px solid #1f1f1f;
         border-bottom: 1px solid #050505;
       }
 
@@ -272,15 +275,22 @@ WSearchLineEdit {
 #MasterHeadphoneSeparator,
 #FxSlotSeparatorV,
 #FxSlotSeparatorH,
-#SeparatorToolbar {
+#SeparatorToolbar,
+#SkinSettingsSeparator {
   /* needs a background color to paint the borders */
   background-color: transparent;
   }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #FxSlotSeparatorV {
+  #FxSlotSeparatorV,
+  #SkinSettingsSeparator {
     min-width: 0px;
     max-width: 0px;
+  }
+  #DeckRateSeparator,
+  #DeckRateSeparatorCompact,
+  #FxSlotSeparatorV,
+  #FxSlotSeparatorH {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #333;
   }
@@ -288,20 +298,20 @@ WSearchLineEdit {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #222;
   }
+  #FxSlotSeparatorH {
+    border-top: 1px solid #0c0c0c;
+    border-bottom: 1px solid #333;
+  }
+
   #FxSlotSeparatorV {
     margin: 0px 0px 0px 2px;
   }
-
-#FxSlotSeparatorH {
-  min-height: 0px;
-  max-height: 0px;
-  border-top: 1px solid #0c0c0c;
-  border-bottom: 1px solid #333;
-}
-
-#ToolbarSeparator {
-  margin: 0px 5px;
-}
+  #ToolbarSeparator {
+    margin: 0px 5px;
+  }
+  #SkinSettingsSeparator {
+    margin: 3px 4px 7px 4px;
+  }
 
 /* dynamic bottom border in #DeckRow1_ */
 #ExpandingBottomBorder {
@@ -310,9 +320,7 @@ WSearchLineEdit {
   border-bottom: 1px solid #0c0c0c;
 }
 
-#PreviewPlayBox,
-#SamplerTitle, #SamplerPlay, #SamplerSettings,
-#SamplerGain, #SamplerVU, #SamplerPfl {
+#PreviewPlayBox {
   border-style: solid;
   border-color: #0c0c0c;
 }
@@ -578,6 +586,10 @@ WSearchLineEdit {
 #DeckSettingsContainerCompact {
   border-width: 1px 0px 1px 0px;
   }
+  #SamplerSettingsContainer {
+    border-width: 1px 0px 1px 0px;
+    border-bottom-right-radius: 1px;
+  }
 
   #DeckSettings {
     padding: 1px 2px 1px 1px;
@@ -732,7 +744,7 @@ WBeatSpinBox::down-button,
     }
   #CrossfaderButtonContainer_Aux {
     padding: 1px;
-    margin-left: 5px;
+    margin-left: 3px;
     }
 
 #MixerMasterHeadphone {
@@ -743,7 +755,10 @@ WBeatSpinBox::down-button,
   }
   #MasterControls {
     border-radius: 0px 1px 0px 0px;
-  }
+    }
+    #BoothLabelBox {
+      padding: 0px 0px 2px 0px;
+    }
   #HeadphoneControls {
     border-radius: 0px 0px 1px 0px;
   }
@@ -938,54 +953,86 @@ WPushButton#FxSuperLinkInvertButton {
   #SamplerTitleMini {
     padding: 2px 0px 0px 0px;
   }
+  #SamplerBpmMini {
+    margin-left: 2px;
+  }
 
 #Sampler {
-  padding: 1px 0px 2px 1px;
+  padding: 0px 0px 0px 1px;
   }
-  #SamplerTitleBox {
+  #SamplerTitleRow {
     border-width: 0px 1px 0px 0px;
+    padding-right: 2px;
     }
-    #SamplerTitle {
-      padding: 3px 3px 1px 4px;
+    #SamplerTitleBox {
+      }
+      #SamplerTitle {
+        padding: 3px 3px 1px 4px;
+      }
+    #SamplerTitleBpmSeparator {
+      min-width: 0px;
+      max-width: 0px;
+      border-right: 1px solid #292929;
+      border-left: 1px solid #0c0c0c;
+      background: transparent;
     }
-  #SamplerBpm {
-    margin-right: 2px;
 
-  }
-
-  #SamplerPlayBox {
-    padding: 1px 2px 1px 0px;
-  }
-
-  #SamplerSettings {
-    border-width: 1px 1px 1px 0px;
-    padding: 0px 0px 2px 0px;
-  }
-
-  #SamplerHotcues {
-    padding: 1px 0px 0px 0px;
-  }
-
-  #SamplerGain {
-    padding: 0px 0px 0px 2px;
-    border-width: 1px 0px 0px 0px;
-  }
-  #SamplerPfl {
-    border-width: 0px 0px 0px 1px;
-    padding: 0px 5px 0px 6px;
-  }
-
-  #SamplerVU {
-    padding: 2px 3px 0px 1px;
-    border-width: 1px 1px 0px 0px;
-  }
-
-  #SamplerRateControls {
-    padding: 0px 1px 1px 0px;
+  #SamplerRows23 {
     }
-    #SamplerPitchSlider {
-      padding: 0px 0px 1px 0px;
+    #SamplerPlayRow {
     }
+    #SamplerPlayBox {
+      padding: 1px 2px 1px 0px;
+    }
+
+    #Sampler #OverviewBox {
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+
+    #SamplerSettingsContainer {
+      }
+      #SamplerSettings {
+        border-width: 1px 0px 1px 0px;
+        padding: 0px 0px 2px 0px;
+      }
+
+    #SamplerButtons {
+      }
+      #SamplerHotcues {
+        padding: 1px 0px 2px 0px;
+      }
+
+    #SamplerGainPflVu_Container {
+      border-top: 1px solid #0c0c0c;
+      border-right: 1px solid #292929;
+      border-left: 1px solid #0c0c0c;
+      border-top-right-radius: 1px;
+      }
+      #SamplerGainPflVu {
+        border-top: 1px solid #2c2c2c;
+        border-right: 1px solid #0c0c0c;
+        border-left: 1px solid #292929;
+        padding-bottom: 2px;
+        }
+        #SamplerGain {
+          padding: 0px 0px 0px 1px;
+          border-width: 1px 0px 0px 0px;
+        }
+        #SamplerPfl {
+          padding: 0px 5px 0px 6px;
+        }
+        #SamplerVU {
+          padding: 2px 3px 0px 1px;
+          border-width: 1px 1px 0px 0px;
+        }
+
+    #SamplerRateControls {
+      padding: 1px 1px 1px 0px;
+      }
+      #SamplerPitchSlider {
+        padding: 0px 0px 1px 0px;
+      }
 
 
 /************** MicAux **************************************************/
@@ -1008,18 +1055,19 @@ WPushButton#FxSuperLinkInvertButton {
   #MicAuxLabel {
     padding: 3px 0px 3px 1px;
   }
-  #AuxPlayBox {
-    padding: 0px 0px 2px 1px;
-  }
+
+  #AuxPlayBox,
   #MicTalkBox {
-    padding: 0px 0px 5px 1px;
+    padding: 0px 0px 2px 0px;
   }
+
+  #MicAuxAddBox {
+    margin: 1px 0px 1px 1px;
+  }
+
   #MicAuxVUMeter {
     padding: 4px 1px 1px 0px;
     margin-left: 2px;
-  }
-  #MicAuxAddBox {
-    margin: 1px 0px 1px 1px;
   }
 
 #MicAuxSubControls {
@@ -1199,7 +1247,7 @@ WEffectSelector,
   #Deck1 #KeyText,  #DeckCompact1 #KeyText, #DeckMini1 #KeyTextSmall,
   #Deck2 #PlayPositionText, #DeckCompact2 #PlayPositionTextSmall, #DeckMini2 #PlayPositionTextSmall,
   #Deck2 #KeyText,  #DeckCompact2 #KeyText, #DeckMini2 #KeyTextSmall,
-  #SamplerBpm,
+  #SamplerBpm, #SamplerBpmMini,
   #LibraryContainer QHeaderView {
     color: #766b65;
   }
@@ -1263,7 +1311,7 @@ WEffectSelector,
 /* Grey. default for all deck labels */
 #PlayPositionText, #PlayPositionTextSmall,
 #DurationText, #RateText,
-#MasterControls #FxAssignButtons WPushButton[displayValue="0"],
+#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
 #PreviewLabel,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
@@ -1289,6 +1337,7 @@ WLibrary QLabel {
 
 /* Even darker grey for knob labels in master/headphone mixer */
 #MixerMasterHeadphone #KnobLabel,
+#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
 #LatencyLabel {
   color: #444;
 }
@@ -1428,9 +1477,10 @@ WEffectSelector,
   }
   #LibraryContainer QHeaderView::up-arrow,
   #LibraryContainer QHeaderView::down-arrow {
+    /* ToDo: restore image
     outline: none;
     border-width: 1px 2px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
   }
 
   #DlgMissing > QPushButton:!enabled,
@@ -1556,7 +1606,6 @@ WBeatSpinBox::down-button {
   /* brigth buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
-  #MasterControls #FxAssignButtons WPushButton[displayValue="0"],
   #SplitCue[displayValue="0"],
   #PlayPreview[displayValue="0"],
   /* library controls */
@@ -1571,7 +1620,8 @@ WBeatSpinBox::down-button {
     background-color: #222;
   }
   /* dark buttons in toolbar */
-  #ToolBar WPushButton[displayValue="0"] {
+  #ToolBar WPushButton[displayValue="0"],
+  #MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
     background-color: #151517;
   }
 
@@ -1812,81 +1862,145 @@ WPushButton#RecButton[displayValue="1"],
 #Hotcue1 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__1.svg) no-repeat center center;
   }
-  #Hotcue1 WPushButton[displayValue="1"][dark="false"] {
+  #Hotcue1 WPushButton[displayValue="1"][dark="false"],
+  #Hotcue1 WPushButton[displayValue="2"][dark="false"] {
     image: url(skin:/palemoon/buttons/btn__1_active.svg) no-repeat center center;
   }
-  #Hotcue1 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue1 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue1 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
   }
 
 #Hotcue2 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__2.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton[displayValue="1"] {
+  #Hotcue2 WPushButton[displayValue="1"],
+  #Hotcue2 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__2_active.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue2 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
   }
 
 #Hotcue3 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__3.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton[displayValue="1"] {
+  #Hotcue3 WPushButton[displayValue="1"],
+  #Hotcue3 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__3_active.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue3 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
   }
 
 #Hotcue4 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__4.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton[displayValue="1"] {
+  #Hotcue4 WPushButton[displayValue="1"],
+  #Hotcue4 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__4_active.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue4 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
   }
 
 #Hotcue5 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__5.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton[displayValue="1"] {
+  #Hotcue5 WPushButton[displayValue="1"],
+  #Hotcue5 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__5_active.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue5 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
   }
 
 #Hotcue6 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__6.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton[displayValue="1"] {
+  #Hotcue6 WPushButton[displayValue="1"],
+  #Hotcue6 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__6_active.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue6 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
   }
 
 #Hotcue7 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__7.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton[displayValue="1"] {
+  #Hotcue7 WPushButton[displayValue="1"],
+  #Hotcue7 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__7_active.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue7 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
   }
 
 #Hotcue8 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__8.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton[displayValue="1"] {
+  #Hotcue8 WPushButton[displayValue="1"],
+  #Hotcue8 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__8_active.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue8 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
   }
 
 #SpecialCueButton_intro_start WPushButton[displayValue="0"] {
@@ -2312,7 +2426,7 @@ QPushButton#pushButtonShuffle:enabled {
   image: url(skin:/palemoon/buttons/btn__autodj_shuffle.svg) no-repeat center center;
 }
 
-QPushButton#pushButtonAddRandom:enabled {
+QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skin:/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
 }
 
@@ -2420,9 +2534,6 @@ WColorPicker QPushButton[checked="true"] {
 #LibraryContainer QTreeView::item:selected,
 #LibraryContainer QTableView::item:selected,
 #LibraryBPMButton::item:selected {
-/* this doesn't style BPM value in selected row
-#LibraryContainer QTableView::item:selected #LibraryBPMSpinBox::item:selected,
-#LibraryContainer QTableView::item:selected > #LibraryBPMSpinBox::item:selected */
   color: #fff;
   background-color: #2c454f;
 }
@@ -2441,8 +2552,7 @@ WColorPicker QPushButton[checked="true"] {
   margin: 0px;
   padding: 0px;
   }
-  #LibraryContainer QTableView::indicator:checked,
-  #LibraryContainer QTableView::indicator:checked:selected {
+  #LibraryContainer QTableView::indicator:checked {
     image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
     }
   #LibraryContainer QTableView::indicator:unchecked {
@@ -2487,13 +2597,6 @@ WLibrary QLineEdit,
   #LibraryBPMSpinBox::down-button {
     image: url(skin:/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
     }
-
-/* remove OS focus indicator from BPM cell */
-WLibrary QCheckBox,
-#LibraryBPMButton::item:selected,
-WCueMenuPopup QPushButton:focus {
-  outline: none;
-}
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
@@ -2854,10 +2957,17 @@ WEffectSelector::item,
     /* remove OS focus indicator */
     outline: none;
   }
+  /* remove OS focus indicator from some buttons */
+  #LibraryBPMButton::item:selected,
+  WLibrary QCheckBox,
+  WCueMenuPopup QPushButton:focus {
+    outline: none;
+  }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
+  WSearchLineEdit::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
-    background-color: #0a2329;
+    background-color: #2f2f2f;
     color: #fff;
     }
   /* disabled items */
@@ -2953,9 +3063,6 @@ WEffectSelector,
         height: 0px;
         margin: 4px;
       }
-    #SkinSettingsSeparator {
-      margin: 0px 4px 4px 4px;
-    }
   WBeatSpinBox QMenu::item,
   #LibraryContainer QMenu::item,
   WCueMenuPopup QMenu::item,

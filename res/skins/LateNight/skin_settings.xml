@@ -169,7 +169,7 @@ Description:
                             <Size>0me,18f</Size>
                             <Layout>stacked</Layout>
                             <Children>
-                              <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                              <WidgetGroup><!-- translucent cover when hotcues are hidden -->
                                 <ObjectName>SubmenuCover</ObjectName>
                                 <Layout>vertical</Layout>
                                 <SizePolicy>me,min</SizePolicy>
@@ -219,6 +219,8 @@ Description:
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+
                       <!-- Rate Controls -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
@@ -232,7 +234,7 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup>
+                          <WidgetGroup><!-- translucent cover when rate controls are hidden -->
                             <ObjectName>SubmenuCover</ObjectName>
                             <Layout>stacked</Layout>
                             <Size>180min,18f</Size>
@@ -264,6 +266,8 @@ Description:
                         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
                       </Template>
 
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+
                       <!-- Spinny -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_spinny</SetVariable>
@@ -284,7 +288,7 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup>
+                          <WidgetGroup><!-- translucent cover when neither Spinny nor Cover is shown -->
                             <ObjectName>SubmenuCover</ObjectName>
                             <Layout>stacked</Layout>
                             <Size>180min,18f</Size>
@@ -329,6 +333,8 @@ Description:
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+
                       <!-- Loop/Jump Controls in compact decks-->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId"></SetVariable>
@@ -349,7 +355,7 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup>
+                          <WidgetGroup><!-- translucent cover when rate controls are hidden -->
                             <ObjectName>SubmenuCover</ObjectName>
                             <Layout>stacked</Layout>
                             <Size>180min,18f</Size>
@@ -381,11 +387,13 @@ Description:
                         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
                       </Template>
 
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+
                       <!-- Level meters -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                         <SetVariable name="Text">VU meters</SetVariable>
-                        <SetVariable name="Setting">[LateNight],show_vumeters_compact</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_vumeters_compact</SetVariable>
                       </Template>
 
                       <!-- Spinny -->
@@ -408,7 +416,7 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup>
+                          <WidgetGroup><!-- translucent cover when neither Spinny nor Cover are shown -->
                             <ObjectName>SubmenuCover</ObjectName>
                             <Layout>stacked</Layout>
                             <Size>180min,18f</Size>
@@ -440,7 +448,7 @@ Description:
                 <SizePolicy>me,f</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>
-                  <WidgetGroup>
+                  <WidgetGroup><!-- translucent cover when there are no decks above BIG Library-->
                     <ObjectName>SubmenuCover</ObjectName>
                     <SizePolicy>me,min</SizePolicy>
                     <Connection>
@@ -462,7 +470,7 @@ Description:
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
-                      <WidgetGroup><Size>0me,108f</Size></WidgetGroup>
+                      <WidgetGroup><Size>0me,120f</Size></WidgetGroup>
 
                       <!-- Spinny -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -497,7 +505,7 @@ Description:
 <!-- Other skin options -->
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <WidgetGroup><!--  Mixer -->
@@ -505,7 +513,7 @@ Description:
             <SizePolicy>me,f</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <WidgetGroup>
+              <WidgetGroup><!-- translucent cover when Library is not maximized -->
                 <ObjectName>SubmenuCover</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
                 <Connection>
@@ -547,8 +555,8 @@ Description:
                         <Children>
 
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                            <SetVariable name="Text">Master / Headphone Mixer</SetVariable>
-                            <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
+                            <SetVariable name="Text">Main / Headphone Mixer</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_main_head_mixer</SetVariable>
                           </Template>
 
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -561,7 +569,7 @@ Description:
                             <Layout>stacked</Layout>
                             <Size>180min,18f</Size>
                             <Children>
-                              <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                              <WidgetGroup><!-- translucent cover when EQ knobs are hidden -->
                                 <ObjectName>SubmenuCover</ObjectName>
                                 <Layout>vertical</Layout>
                                 <Size>180min,18f</Size>
@@ -594,7 +602,7 @@ Description:
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <WidgetGroup><!-- Effects -->
@@ -602,7 +610,7 @@ Description:
             <SizePolicy>me,f</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <WidgetGroup>
+              <WidgetGroup><!-- translucent cover when Library is not maximized -->
                 <ObjectName>SubmenuCover</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
                 <Connection>
@@ -629,7 +637,7 @@ Description:
                         <SizePolicy>me,f</SizePolicy>
                         <Layout>stacked</Layout>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                          <WidgetGroup><!-- translucent cover when effect rack is hidden -->
                             <ObjectName>SubmenuCover</ObjectName>
                             <Layout>vertical</Layout>
                             <SizePolicy>me,min</SizePolicy>
@@ -641,7 +649,6 @@ Description:
                           </WidgetGroup>
 
                           <WidgetGroup>
-                            <!-- <ObjectName>SamplerLoadSaveBox</ObjectName> -->
                             <Layout>horizontal</Layout>
                             <Size>0me,1min</Size>
                             <Children>
@@ -671,7 +678,7 @@ Description:
                     <SizePolicy>me,f</SizePolicy>
                     <Layout>stacked</Layout>
                     <Children>
-                      <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                      <WidgetGroup><!-- translucent cover when effect rack is hidden -->
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>
@@ -695,7 +702,7 @@ Description:
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <WidgetGroup><!-- Samplers -->
@@ -703,7 +710,7 @@ Description:
             <SizePolicy>me,f</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <WidgetGroup>
+              <WidgetGroup><!-- translucent cover when Library is not maximized -->
                 <ObjectName>SubmenuCover</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
                 <Connection>
@@ -730,7 +737,7 @@ Description:
                         <SizePolicy>me,f</SizePolicy>
                         <Layout>stacked</Layout>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                          <WidgetGroup><!-- translucent cover when samplers are hidden -->
                             <ObjectName>SubmenuCover</ObjectName>
                             <Layout>vertical</Layout>
                             <SizePolicy>me,min</SizePolicy>
@@ -742,7 +749,6 @@ Description:
                           </WidgetGroup>
 
                           <WidgetGroup>
-                            <!-- <ObjectName>SamplerLoadSaveBox</ObjectName> -->
                             <Layout>horizontal</Layout>
                             <Size>0me,1min</Size>
                             <Children>
@@ -778,7 +784,7 @@ Description:
                     <SizePolicy>me,f</SizePolicy>
                     <Layout>stacked</Layout>
                     <Children>
-                      <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                      <WidgetGroup><!-- translucent cover when samplers are hidden -->
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>
@@ -790,54 +796,65 @@ Description:
                       </WidgetGroup>
 
                       <WidgetGroup>
-                        <ObjectName>SamplerLoadSaveBox</ObjectName>
-                        <Layout>horizontal</Layout>
-                        <Size>180min,1min</Size>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
                         <Children>
-                          <PushButton>
-                            <TooltipId>LoadSamplerBank</TooltipId>
-                            <ObjectName>SkinSettingsButton</ObjectName>
-                            <Size>35f,18f</Size>
-                            <NumberStates>1</NumberStates>
-                            <State>
-                              <Number>0</Number>
-                              <Text> Load </Text>
-                              <Alignment>left</Alignment>
-                            </State>
-                            <Connection>
-                              <ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
-                              <ButtonState>LeftButton</ButtonState>
-                            </Connection>
-                          </PushButton>
-                          <Label>
-                            <TooltipId>SaveSamplerBank</TooltipId>
-                            <ObjectName>SkinSettingsText</ObjectName>
-                            <Size>6min,18f</Size>
-                            <Text>/</Text>
-                            <Alignment>center</Alignment>
-                          </Label>
-                          <PushButton>
-                            <TooltipId>SaveSamplerBank</TooltipId>
-                            <ObjectName>SkinSettingsButton</ObjectName>
-                            <Size>35f,18f</Size>
-                            <NumberStates>1</NumberStates>
-                            <State>
-                              <Number>0</Number>
-                              <Text> Save </Text>
-                              <Alignment>left</Alignment>
-                            </State>
-                            <Connection>
-                              <ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
-                              <ButtonState>LeftButton</ButtonState>
-                            </Connection>
-                          </PushButton>
-                          <Label>
-                            <TooltipId>SaveSamplerBank</TooltipId>
-                            <ObjectName>SkinSettingsText</ObjectName>
-                            <Size>140min,18f</Size>
-                            <Text>Sampler Bank</Text>
-                            <Alignment>left</Alignment>
-                          </Label>
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="Text">Fx controls</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_sampler_fx</SetVariable>
+                          </Template>
+
+                          <WidgetGroup>
+                            <ObjectName>SamplerLoadSaveBox</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <Size>180min,1min</Size>
+                            <Children>
+                              <PushButton>
+                                <TooltipId>LoadSamplerBank</TooltipId>
+                                <ObjectName>SkinSettingsButton</ObjectName>
+                                <Size>35f,18f</Size>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text> Load </Text>
+                                  <Alignment>left</Alignment>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                              </PushButton>
+                              <Label>
+                                <TooltipId>SaveSamplerBank</TooltipId>
+                                <ObjectName>SkinSettingsText</ObjectName>
+                                <Size>6min,18f</Size>
+                                <Text>/</Text>
+                                <Alignment>center</Alignment>
+                              </Label>
+                              <PushButton>
+                                <TooltipId>SaveSamplerBank</TooltipId>
+                                <ObjectName>SkinSettingsButton</ObjectName>
+                                <Size>35f,18f</Size>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text> Save </Text>
+                                  <Alignment>left</Alignment>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                              </PushButton>
+                              <Label>
+                                <TooltipId>SaveSamplerBank</TooltipId>
+                                <ObjectName>SkinSettingsText</ObjectName>
+                                <Size>140min,18f</Size>
+                                <Text>Sampler Bank</Text>
+                                <Alignment>left</Alignment>
+                              </Label>
+                            </Children>
+                          </WidgetGroup>
                         </Children>
                       </WidgetGroup>
 
@@ -850,7 +867,7 @@ Description:
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <Label>
