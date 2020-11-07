@@ -153,7 +153,7 @@ script.midiDebug = function(channel, control, value, status, group) {
 script.deckFromGroup = function(group) {
     var deck = 0;
     if (group.substring(2, 8) === "hannel") {
-        // Extract deck number from the group text                             
+        // Extract deck number from the group text
         deck = group.substring(8, group.length - 1);
      } else if (group.substring(18, 24) === "hannel") {
         // Extract deck number from [EqualizerRackX_[ChannelY]_EffectZ]        
