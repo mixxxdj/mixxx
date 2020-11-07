@@ -152,7 +152,7 @@ script.midiDebug = function(channel, control, value, status, group) {
 // Returns the deck number of a "ChannelN" or "SamplerN" group
 script.deckFromGroup = function(group) {
     var deck = 0;
-    if (group.match("hannel.")) {
+    if (group.substring(2, 8) == "hannel") {
         // Extract deck number from the group text                             
         deck = group.match("hannel.")[0].substring(6);
     } else if (group.substring(18, 24) == "hannel") {
