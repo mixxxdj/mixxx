@@ -1,0 +1,95 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The right gutter.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>RightGutter</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup> <!-- 2 Decks -->
+        <Layout>vertical</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck_2</ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup> <!-- 4 Decks -->
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup> <!-- Static --> 
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Deck_2</ObjectName>
+              </SingletonContainer>
+              <SingletonContainer>
+                <ObjectName>Deck_4</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],dynamicdecks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup> <!-- Dynamic --> 
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>Deck_2</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Controller],deck2_active</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>Deck_4</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Controller],deck2_active</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],dynamicdecks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

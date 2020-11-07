@@ -123,7 +123,7 @@
     <Scheme>
       <Name>PaleMoon</Name>
       <!-- Mix any of the existing button, knob, slider or style theme subsets.
-        The button templates for example link to skin:/BtnTheme/buttons/btn_...
+        The button templates for example link to skin:../LateNight/BtnTheme/buttons/btn_...
 
         BtnScheme     borders / background images for pushbuttons, spinboxes,
                       effect selector, AutoDJ fade mode selector.
@@ -180,7 +180,7 @@
            Other buttons that use text (like vinyl controls and Fx assign button) are styled
            in css via
               border-width: 2px;
-              border-image: url(skin:/path/to/btn_icon.svg) 2 2 2 2;
+              border-image: url(skin:../LateNight/path/to/btn_icon.svg) 2 2 2 2;
         Example themes: (in PaleMoon only the embedded style is used)
         * elevated: domed buttons that stand out, with a 3D border and a drop shadow
         * embedded: slightly domed buttons that seem leveled with surface and a surrounding groove
@@ -296,8 +296,8 @@
     QLabel {
       <!-- ToDo ronso0 :: Unfortunately, variables are not considered here, yet ;)
           because the launch screen appears while the skin is parsed.
-      image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
-      image: url(skin:/palemoon/style/mixxx_logo.svg);
+      image: url(skin:../LateNight/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
+      image: url(skin:../LateNight/palemoon/style/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
@@ -307,7 +307,7 @@
       max-height: 40px;
     }
     QProgressBar {
-      background: url(skin:/palemoon/style/progressbar_bg.svg);
+      background: url(skin:../LateNight/palemoon/style/progressbar_bg.svg);
       border: none;
       min-width: 164px;
       min-height: 5px;
@@ -315,7 +315,7 @@
       max-height: 5px;
     }
     QProgressBar::chunk {
-      background: url(skin:/palemoon/style/progressbar.svg);
+      background: url(skin:../LateNight/palemoon/style/progressbar.svg);
     }
   </LaunchImageStyle>
 
@@ -329,7 +329,7 @@
     <SingletonDefinition>
       <ObjectName>Deck1_Src</ObjectName>
       <Children>
-      <Template src="skin:/decks/deck.xml">
+      <Template src="skin:../LateNight/decks/deck.xml">
         <SetVariable name="ChanNum">1</SetVariable>
         <SetVariable name="DeckGroup">12</SetVariable>
         <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -341,7 +341,7 @@
     <SingletonDefinition>
       <ObjectName>Deck2_Src</ObjectName>
       <Children>
-        <Template src="skin:/decks/deck.xml">
+        <Template src="skin:../LateNight/decks/deck.xml">
           <SetVariable name="ChanNum">2</SetVariable>
           <SetVariable name="DeckGroup">12</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -353,7 +353,7 @@
     <SingletonDefinition>
       <ObjectName>Deck3_Src</ObjectName>
       <Children>
-      <Template src="skin:/decks/deck.xml">
+      <Template src="skin:../LateNight/decks/deck.xml">
         <SetVariable name="ChanNum">3</SetVariable>
         <SetVariable name="DeckGroup">34</SetVariable>
         <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -365,7 +365,7 @@
     <SingletonDefinition>
       <ObjectName>Deck4_Src</ObjectName>
       <Children>
-      <Template src="skin:/decks/deck.xml">
+      <Template src="skin:../LateNight/decks/deck.xml">
         <SetVariable name="ChanNum">4</SetVariable>
         <SetVariable name="DeckGroup">34</SetVariable>
         <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -377,18 +377,18 @@
     <SingletonDefinition>
       <ObjectName>DecksLeft_Struct</ObjectName>
       <Children>
-        <Template src="skin:/decks/decks_left.xml"/>
+        <Template src="skin:../LateNight/decks/decks_left.xml"/>
       </Children>
     </SingletonDefinition>
 
     <SingletonDefinition>
       <ObjectName>DecksRight_Struct</ObjectName>
       <Children>
-        <Template src="skin:/decks/decks_right.xml"/>
+        <Template src="skin:../LateNight/decks/decks_right.xml"/>
       </Children>
     </SingletonDefinition>
 
-    <Template src="skin:/mixer/singletons.xml"/>
+    <Template src="skin:../LateNight/mixer/singletons.xml"/>
 
     <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
@@ -407,9 +407,9 @@
           depending on the skin configuration.
           Appearantly putting those here keeps i.e. the deck
           size when [Master],maximize_library is toggled. -->
-        <Template src="skin:/helpers/skin_helper_deck_size.xml"/>
-        <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
-        <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>
+        <Template src="skin:../LateNight/helpers/skin_helper_deck_size.xml"/>
+        <Template src="skin:../LateNight/helpers/skin_helper_mic_ducking.xml"/>
+        <Template src="skin:../LateNight/helpers/skin_helper_spinny-cover.xml"/>
 
         <Template src="skin:toolbar.xml"/>
 
@@ -516,7 +516,7 @@
 
               </Children>
             </WidgetStack>
-            <Template src="skin:/skin_settings.xml"/>
+            <Template src="skin:../LateNight/skin_settings.xml"/>
 
           </Children>
         </WidgetGroup><!-- regular/maximized library + skin settings menu -->
