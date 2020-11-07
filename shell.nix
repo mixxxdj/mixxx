@@ -221,6 +221,7 @@ in stdenv.mkDerivation rec {
       python37Packages.setuptools
       python37Packages.virtualenv
       nodejs
+      nixfmt
       shell-build
       shell-configure
       shell-debug
