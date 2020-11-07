@@ -1,4 +1,6 @@
-#include "macro_test.h"
+#include "track/macro.h"
+
+#include <gtest/gtest.h>
 
 TEST(MacroTest, SerializeMacroActions) {
     QList<MacroAction> actions{MacroAction(0, 1)};

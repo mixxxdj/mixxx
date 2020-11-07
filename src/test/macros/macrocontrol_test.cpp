@@ -118,15 +118,21 @@ TEST_F(MacroControlTest, ControlObjects) {
     ControlProxy play(kChannelGroup, "macro_2_play");
     play.set(0);
     ASSERT_STATUS(MacroControl::Status::Recorded);
+
+    ControlProxy(kChannelGroup, "macro_2_clear").set(1);
+    EXPECT_TRUE(getMacro()->isEmpty());
+    EXPECT_EQ(getMacro()->getLabel(), label);
+    ASSERT_STATUS(MacroControl::Status::Empty);
 }
 
-TEST_F(MacroControlTest, LoadTrackAndPlay) {
+TEST_F(MacroControlTest, LoadTrackAndPlayAndClear) {
     MacroAction jumpAction(40'000, 0);
 
+    QString label = QStringLiteral("test");
     pLoadedTrack->setMacros({{2,
             std::make_shared<Macro>(
                     QList{kAction, jumpAction},
-                    "test",
+                    label,
                     Macro::State())}});
     trackLoaded(pLoadedTrack);
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
@@ -152,4 +158,12 @@ TEST_F(MacroControlTest, LoadTrackAndPlay) {
     EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample()));
     process(0, jumpAction.getSourcePositionSample(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
+
+    // Stop playing
+    slotPlay(0);
+    EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
+    // Clear
+    slotClear();
+    EXPECT_TRUE(getMacro()->isEmpty());
+    EXPECT_EQ(getMacro()->getLabel(), label);
 }
