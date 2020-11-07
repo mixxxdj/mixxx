@@ -154,8 +154,8 @@ script.deckFromGroup = function(group) {
     var deck = 0;
     if (group.substring(2, 8) == "hannel") {
         // Extract deck number from the group text                             
-        deck = group.match("hannel.")[0].substring(6);
-    } else if (group.substring(18, 24) == "hannel") {
+        deck = group.substring(8, group.length - 1)
+     } else if (group.substring(18, 24) == "hannel") {
         // Extract deck number from [EqualizerRackX_[ChannelY]_EffectZ]        
         deck = group.substring(24, 25);
     } else if (group.substring(20, 26) == "hannel") {
