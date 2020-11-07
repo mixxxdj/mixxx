@@ -69,7 +69,7 @@
                     </Children>
                   </WidgetGroup><!-- SearchLineBox -->
 
-                  <Template src="skin:/decks/preview_deck.xml"/>
+                  <Template src="skin:../LateNight/decks/preview_deck.xml"/>
 
                   <Splitter>
                     <ObjectName>SidebarCoverSplitter</ObjectName>

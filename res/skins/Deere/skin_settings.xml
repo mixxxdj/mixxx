@@ -55,43 +55,16 @@
             <SetVariable name="text">Parallel Waveforms</SetVariable>
             <SetVariable name="skinsetting">[Deere],show_parallel_waveforms</SetVariable>
           </Template>
-        </Children>
-      </WidgetGroup>
-
-      <!-- Dynamic Settings -->
-      <Template src="skin:../Deere/skinsettings_category_button.xml">
-        <SetVariable name="TooltipId">show_mixer</SetVariable>
-        <SetVariable name="text">4 Decks</SetVariable>
-        <SetVariable name="skinsetting">[Skin],show_4decks</SetVariable>
-      </Template>
-
-      <WidgetGroup>
-        <ObjectName>h3</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
 
           <Template src="skin:../Deere/skinsettings_button.xml">
-            <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="text">Dynamic Decks</SetVariable>
-            <SetVariable name="skinsetting">[Skin],dynamicdecks</SetVariable>
-          </Template>
-
-          <Template src="skin:../Deere/skinsettings_button.xml">
-            <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="text">Dynamic Mixer</SetVariable>
-            <SetVariable name="skinsetting">[Skin],dynamicmixer</SetVariable>
-          </Template>
-
-          <Template src="skin:../Deere/skinsettings_button.xml">
-            <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="text">Dynamic Waveforms</SetVariable>
-            <SetVariable name="skinsetting">[Skin],dynamicwaves</SetVariable>
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+            <SetVariable name="text">4 Decks</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_4decks</SetVariable>
           </Template>
 
         </Children>
       </WidgetGroup>
-      
+
       <!-- Deck Settings -->
       <Label>
       <ObjectName>h2</ObjectName>

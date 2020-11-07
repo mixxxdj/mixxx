@@ -32,14 +32,14 @@ Description:
                 <Text>Decks</Text>
                 <Size>56f,23f</Size>
               </Label>
-              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
                 <SetVariable name="Text">2</SetVariable>
                 <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
                 <SetVariable name="IsEqual">0</SetVariable>
                 <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                 <SetVariable name="Width">25f</SetVariable>
               </Template>
-              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
                 <SetVariable name="Text">4</SetVariable>
                 <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
                 <SetVariable name="IsEqual">1</SetVariable>
@@ -104,19 +104,19 @@ Description:
                     <Size>0me,18f</Size>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skin:/helpers/skin_settings_numToggle.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_numToggle.xml">
                         <SetVariable name="Setting">[LateNight],deck_size_without_mixer</SetVariable>
                         <SetVariable name="Text">FULL</SetVariable>
                         <SetVariable name="IsEqual">2</SetVariable>
                         <SetVariable name="Width">40f</SetVariable>
                       </Template>
-                      <Template src="skin:/helpers/skin_settings_numToggle.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_numToggle.xml">
                         <SetVariable name="Setting">[LateNight],deck_size_without_mixer</SetVariable>
                         <SetVariable name="Text">Compact</SetVariable>
                         <SetVariable name="IsEqual">1</SetVariable>
                         <SetVariable name="Width">66f</SetVariable>
                       </Template>
-                      <Template src="skin:/helpers/skin_settings_numToggle.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_numToggle.xml">
                         <SetVariable name="Setting">[LateNight],deck_size_without_mixer</SetVariable>
                         <SetVariable name="Text">mini</SetVariable>
                         <SetVariable name="IsEqual">0</SetVariable>
@@ -155,8 +155,7 @@ Description:
                         <Layout>horizontal</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Hotcues</SetVariable>
                             <SetVariable name="Setting">[Skin],show_hotcues</SetVariable>
                             <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
@@ -185,13 +184,13 @@ Description:
                                 <Layout>horizontal</Layout>
                                 <Size>0me,1min</Size>
                                 <Children>
-                                  <Template src="skin:/helpers/skin_settings_numToggle.xml">
+                                  <Template src="skin:../LateNight/helpers/skin_settings_numToggle.xml">
                                     <SetVariable name="Text">4</SetVariable>
                                     <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                                     <SetVariable name="IsEqual">0</SetVariable>
                                     <SetVariable name="Width">20f</SetVariable>
                                   </Template>
-                                  <Template src="skin:/helpers/skin_settings_numToggle.xml">
+                                  <Template src="skin:../LateNight/helpers/skin_settings_numToggle.xml">
                                     <SetVariable name="Text">8</SetVariable>
                                     <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                                     <SetVariable name="IsEqual">1</SetVariable>
@@ -207,21 +206,21 @@ Description:
                       </WidgetGroup><!-- 4/8 Hotcues -->
 
                       <!-- Intro & Outro cues -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
                         <SetVariable name="Text">Intro &amp; Outro Cues</SetVariable>
                         <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
                       </Template>
 
                       <!-- Cue shift buttons in beatgrid editing section -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
                         <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
                       <!-- Rate Controls -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
                         <SetVariable name="Text">Rate Controls</SetVariable>
                         <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
@@ -243,7 +242,7 @@ Description:
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </WidgetGroup>
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">rate_toggle</SetVariable>
                             <SetVariable name="Text">Rate Adjust Buttons</SetVariable>
                             <SetVariable name="Setting">[Skin],show_rate_control_buttons</SetVariable>
@@ -252,28 +251,28 @@ Description:
                       </WidgetGroup>
 
                       <!-- Key Control -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
                         <SetVariable name="Text">Key Controls</SetVariable>
                         <SetVariable name="Setting">[Skin],show_key_controls</SetVariable>
                       </Template>
 
                       <!-- Vinyl Control -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                         <SetVariable name="Text">Vinyl Control</SetVariable>
                         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
                       </Template>
 
                       <!-- Spinny -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_spinny</SetVariable>
                         <SetVariable name="Text">Spinny</SetVariable>
                         <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
                       </Template>
 
                       <!-- Cover Art -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_coverart</SetVariable>
                         <SetVariable name="Text">Cover Art</SetVariable>
                         <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
@@ -295,7 +294,7 @@ Description:
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </WidgetGroup>
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">show_coverart</SetVariable>
                             <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
                             <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
@@ -324,21 +323,21 @@ Description:
                     <Children>
 
                       <!-- Cue shift buttons in beatgrid editing section -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
                         <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
                       <!-- Loop/Jump Controls in compact decks-->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId"></SetVariable>
                         <SetVariable name="Text">Loop / Jump Controls</SetVariable>
                         <SetVariable name="Setting">[LateNight],show_loopjump_controls_compact</SetVariable>
                       </Template>
 
                       <!-- Rate Control -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
                         <SetVariable name="Text">Rate Controls</SetVariable>
                         <SetVariable name="Setting">[Skin],show_rate_controls_compact</SetVariable>
@@ -360,7 +359,7 @@ Description:
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </WidgetGroup>
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">rate_toggle</SetVariable>
                             <SetVariable name="Text">Sync Button</SetVariable>
                             <SetVariable name="Setting">[LateNight],show_sync_button_compact</SetVariable>
@@ -369,35 +368,35 @@ Description:
                       </WidgetGroup>
 
                       <!-- Key Control -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
                         <SetVariable name="Text">Key Controls</SetVariable>
                         <SetVariable name="Setting">[Skin],show_key_controls_compact</SetVariable>
                       </Template>
 
                       <!-- Vinyl Control -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                         <SetVariable name="Text">Vinyl Control</SetVariable>
                         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
                       </Template>
 
                       <!-- Level meters -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                         <SetVariable name="Text">VU meters</SetVariable>
                         <SetVariable name="Setting">[LateNight],show_vumeters_compact</SetVariable>
                       </Template>
 
                       <!-- Spinny -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_spinny</SetVariable>
                         <SetVariable name="Text">Spinny</SetVariable>
                         <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
                       </Template>
 
                       <!-- Cover Art -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_coverart</SetVariable>
                         <SetVariable name="Text">Cover Art</SetVariable>
                         <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
@@ -419,7 +418,7 @@ Description:
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </WidgetGroup>
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">show_coverart</SetVariable>
                             <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
                             <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
@@ -457,7 +456,7 @@ Description:
                     <Children>
 
                       <!-- Cue shift buttons in beatgrid editing section -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
                         <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
@@ -466,14 +465,14 @@ Description:
                       <WidgetGroup><Size>0me,108f</Size></WidgetGroup>
 
                       <!-- Spinny -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_spinny</SetVariable>
                         <SetVariable name="Text">Spinny</SetVariable>
                         <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
                       </Template>
 
                       <!-- Cover Art -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_coverart</SetVariable>
                         <SetVariable name="Text">Cover Art</SetVariable>
                         <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
@@ -501,77 +500,6 @@ Description:
             <Size>1min,6f</Size>
           </WidgetGroup>
 
-          <WidgetGroup><!--  Dynamic -->
-            <ObjectName></ObjectName>
-            <SizePolicy>me,f</SizePolicy>
-            <Layout>stacked</Layout>
-            <Children>
-
-              <WidgetGroup><!-- translucent cover when Library is not maximized -->
-                <ObjectName>SubmenuCover</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],maximize_library</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <SizePolicy>me,min</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-            
-                  <Label>
-                    <ObjectName>CategoryLabel</ObjectName>
-                    <Text>Dynamic</Text>
-                    <Size>100f,23f</Size>
-                  </Label>
-
-                  <WidgetGroup>
-                    <ObjectName>SkinSettingsCategory</ObjectName>
-                    <SizePolicy>me,f</SizePolicy>
-                    <Layout>stacked</Layout>
-                    <Children>
-                      <WidgetGroup><!-- translucent cover when using 2 decks -->
-                        <ObjectName>SubmenuCover</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Connection>
-                          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-                          <Transform><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
-
-                      <WidgetGroup>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Layout>vertical</Layout>
-                        <Children>
-
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                            <SetVariable name="Text">Decks</SetVariable>
-                            <SetVariable name="Setting">[Skin],dynamicdecks</SetVariable>
-                          </Template>
-
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                            <SetVariable name="Text">Mixer</SetVariable>
-                            <SetVariable name="Setting">[Skin],dynamicmixer</SetVariable>
-                          </Template>
-
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                            <SetVariable name="Text">Waveforms</SetVariable>
-                            <SetVariable name="Setting">[Skin],dynamicwaves</SetVariable>
-                          </Template>
-
-                        </Children>
-                      </WidgetGroup>
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- /Dynamic -->
-
           <WidgetGroup><!--  Mixer -->
             <ObjectName></ObjectName>
             <SizePolicy>me,f</SizePolicy>
@@ -590,7 +518,7 @@ Description:
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
+                  <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
                     <SetVariable name="Text">Mixer</SetVariable>
                     <SetVariable name="Setting">[Master],show_mixer</SetVariable>
                     <SetVariable name="TooltipId">show_mixer</SetVariable>
@@ -618,12 +546,12 @@ Description:
                         <Layout>vertical</Layout>
                         <Children>
 
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Master / Headphone Mixer</SetVariable>
                             <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
                           </Template>
 
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">EQ Knobs</SetVariable>
                             <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
                           </Template>
@@ -643,14 +571,14 @@ Description:
                                   <BindProperty>visible</BindProperty>
                                 </Connection>
                               </WidgetGroup>
-                              <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                              <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                                 <SetVariable name="Text">EQ Kill Buttons</SetVariable>
                                 <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
                               </Template>
                             </Children>
                           </WidgetGroup><!-- /EQ Kill -->
 
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Crossfader</SetVariable>
                             <SetVariable name="Setting">[Skin],show_xfader</SetVariable>
                           </Template>
@@ -690,7 +618,7 @@ Description:
                     <Layout>horizontal</Layout>
                     <Size>180min,1min</Size>
                     <Children>
-                      <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
                         <SetVariable name="Text">Effect Units</SetVariable>
                         <SetVariable name="Setting">[EffectRack1],show</SetVariable>
                         <SetVariable name="TooltipId">show_effects</SetVariable>
@@ -716,13 +644,13 @@ Description:
                             <Layout>horizontal</Layout>
                             <Size>0me,1min</Size>
                             <Children>
-                              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+                              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">2</SetVariable>
                                 <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                                 <SetVariable name="IsEqual">0</SetVariable>
                                 <SetVariable name="Width">25f</SetVariable>
                               </Template>
-                              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+                              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">4</SetVariable>
                                 <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                                 <SetVariable name="IsEqual">1</SetVariable>
@@ -753,7 +681,7 @@ Description:
                         </Connection>
                       </WidgetGroup>
 
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="Text">Super Knobs</SetVariable>
                         <SetVariable name="Setting">[Skin],show_superknobs</SetVariable>
                       </Template>
@@ -790,7 +718,7 @@ Description:
                     <Layout>horizontal</Layout>
                     <Size>180min,1min</Size>
                     <Children>
-                      <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
+                      <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
                         <SetVariable name="TooltipId">show_samplers</SetVariable>
                         <SetVariable name="Text">Samplers </SetVariable>
                         <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
@@ -816,19 +744,19 @@ Description:
                             <Layout>horizontal</Layout>
                             <Size>0me,1min</Size>
                             <Children>
-                              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+                              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">4</SetVariable>
                                 <SetVariable name="Setting">[LateNight],show_4samplers</SetVariable>
                                 <SetVariable name="IsEqual">1</SetVariable>
                                 <SetVariable name="Width">25f</SetVariable>
                               </Template>
-                              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+                              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">8</SetVariable>
                                 <SetVariable name="Setting">[LateNight],show_8samplers</SetVariable>
                                 <SetVariable name="IsEqual">1</SetVariable>
                                 <SetVariable name="Width">25f</SetVariable>
                               </Template>
-                              <Template src="skin:/helpers/skin_settings_numToggle_header.xml">
+                              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">16</SetVariable>
                                 <SetVariable name="Setting">[LateNight],show_16samplers</SetVariable>
                                 <SetVariable name="IsEqual">1</SetVariable>
@@ -863,7 +791,7 @@ Description:
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
-                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Fx controls</SetVariable>
                             <SetVariable name="Setting">[Skin],show_sampler_fx</SetVariable>
                           </Template>
@@ -947,14 +875,14 @@ Description:
             <Children>
 
               <!-- Preview Deck -->
-              <Template src="skin:/helpers/skin_settings_button_2state.xml">
+              <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_previewdeck</SetVariable>
                 <SetVariable name="Text">Preview Deck</SetVariable>
                 <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
 
               <!-- Cover Art -->
-              <Template src="skin:/helpers/skin_settings_button_2state.xml">
+              <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_coverart</SetVariable>
                 <SetVariable name="Text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Library],show_coverart</SetVariable>

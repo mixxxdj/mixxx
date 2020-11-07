@@ -9,87 +9,22 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
+      <Template src="skin:deck.xml">
+        <SetVariable name="i">1</SetVariable>
+      </Template>
 
-      <WidgetGroup> <!-- 2 Decks -->
-        <Layout>vertical</Layout>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:deck.xml">
-            <SetVariable name="i">1</SetVariable>
+            <SetVariable name="i">3</SetVariable>
           </Template>
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-
-      <WidgetGroup> <!-- 4 Decks -->
-        <Layout>vertical</Layout>
-        <Children>
-
-          <WidgetGroup> <!-- Static --> 
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:deck.xml">
-                <SetVariable name="i">1</SetVariable>
-              </Template>
-              <Template src="skin:deck.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],dynamicdecks</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup> <!-- Dynamic --> 
-            <Layout>horizontal</Layout>
-            <Children>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:deck.xml">
-                    <SetVariable name="i">1</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Controller],deck1_active</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:deck.xml">
-                    <SetVariable name="i">3</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Controller],deck1_active</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-              
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],dynamicdecks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
     </Children>
   </WidgetGroup>
 </Template>

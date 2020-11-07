@@ -4,87 +4,19 @@
     <ObjectName>DecksRight</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
-    <Children>      
+    <Children>
 
-      <WidgetGroup> <!-- 2 Decks -->
+      <SingletonContainer>
+        <ObjectName>Deck2_Src</ObjectName>
+      </SingletonContainer>
+
+      <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <SingletonContainer>
-            <ObjectName>Deck2_Src</ObjectName>
+            <ObjectName>Deck4_Src</ObjectName>
           </SingletonContainer>
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <WidgetGroup> <!-- 4 Decks -->
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-        
-          <WidgetGroup> <!-- Static -->
-            <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <SingletonContainer>
-                <ObjectName>Deck2_Src</ObjectName>
-              </SingletonContainer>
-              <SingletonContainer>
-                <ObjectName>Deck4_Src</ObjectName>
-              </SingletonContainer>
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],dynamicdecks</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        
-          <WidgetGroup> <!-- Dynamic -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-
-              <WidgetGroup> <!-- Deck 2 -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-                  <SingletonContainer>
-                    <ObjectName>Deck2_Src</ObjectName>
-                  </SingletonContainer>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Controller],deck2_active</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup> <!-- Deck 4 -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-                  <SingletonContainer>
-                    <ObjectName>Deck4_Src</ObjectName>
-                  </SingletonContainer>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Controller],deck2_active</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-              
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],dynamicdecks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_4decks</ConfigKey>

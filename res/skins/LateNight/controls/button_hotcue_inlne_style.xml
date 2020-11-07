@@ -10,10 +10,10 @@
     <Layout>horizontal</Layout>
     <Style>
       #HotcueButton[displayValue="0"] {
-        image: url(skin:/palemoon/buttons/btn__<Variable name="number"/>.svg) no-repeat center center;
+        image: url(skin:../LateNight/palemoon/buttons/btn__<Variable name="number"/>.svg) no-repeat center center;
       }
       #HotcueButton[displayValue="1"] {
-        image: url(skin:/<Variable name="BtnScheme"/>/buttons/btn__1_active.svg) no-repeat center center;
+        image: url(skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn__1_active.svg) no-repeat center center;
       }
     </Style>
     <Children>
@@ -28,13 +28,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_active.svg</Pressed>
         </State>
         <State>
           <Number>1</Number>
-          <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_set.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_set.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_active.svg</Pressed>
         </State>
       </HotcueButton>
     </Children>

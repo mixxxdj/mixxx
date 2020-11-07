@@ -13,14 +13,6 @@
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
-      <!-- Dynamic -->
-      <attribute persist="true" config_key="[Skin],dynamicdecks">0</attribute>
-      <attribute persist="true" config_key="[Skin],dynamicmixer">0</attribute>
-      <attribute persist="true" config_key="[Skin],dynamicwaves">0</attribute>
-      <attribute config_key="[Controller],deck1_active">1</attribute>
-      <attribute config_key="[Controller],deck2_active">1</attribute>
-      <attribute config_key="[Controller],deck3_active">0</attribute>
-      <attribute config_key="[Controller],deck4_active">0</attribute>
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
