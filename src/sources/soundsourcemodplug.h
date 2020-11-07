@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEMODPLUG_H
-#define MIXXX_SOUNDSOURCEMODPLUG_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 
@@ -53,7 +52,11 @@ class SoundSourceModPlug : public SoundSource {
 
 class SoundSourceProviderModPlug : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 
@@ -63,5 +66,3 @@ class SoundSourceProviderModPlug : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEMODPLUG_H

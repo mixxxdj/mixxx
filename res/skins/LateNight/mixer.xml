@@ -21,12 +21,12 @@
               <Template src="skin:/mixer/mixer_4decks.xml"/>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_master_head_mixer</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>
               <BindProperty>highlight</BindProperty>
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:/mixer/mixer_master_headphone.xml"/>
+          <Template src="skin:/mixer/mixer_main_headphone.xml"/>
 
         </Children>
       </WidgetGroup><!-- MixerContainer -->

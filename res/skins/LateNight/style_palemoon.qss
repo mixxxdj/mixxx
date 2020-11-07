@@ -275,15 +275,22 @@ WSearchLineEdit {
 #MasterHeadphoneSeparator,
 #FxSlotSeparatorV,
 #FxSlotSeparatorH,
-#SeparatorToolbar {
+#SeparatorToolbar,
+#SkinSettingsSeparator {
   /* needs a background color to paint the borders */
   background-color: transparent;
   }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #FxSlotSeparatorV {
+  #FxSlotSeparatorV,
+  #SkinSettingsSeparator {
     min-width: 0px;
     max-width: 0px;
+  }
+  #DeckRateSeparator,
+  #DeckRateSeparatorCompact,
+  #FxSlotSeparatorV,
+  #FxSlotSeparatorH {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #333;
   }
@@ -291,20 +298,20 @@ WSearchLineEdit {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #222;
   }
+  #FxSlotSeparatorH {
+    border-top: 1px solid #0c0c0c;
+    border-bottom: 1px solid #333;
+  }
+
   #FxSlotSeparatorV {
     margin: 0px 0px 0px 2px;
   }
-
-#FxSlotSeparatorH {
-  min-height: 0px;
-  max-height: 0px;
-  border-top: 1px solid #0c0c0c;
-  border-bottom: 1px solid #333;
-}
-
-#ToolbarSeparator {
-  margin: 0px 5px;
-}
+  #ToolbarSeparator {
+    margin: 0px 5px;
+  }
+  #SkinSettingsSeparator {
+    margin: 3px 4px 7px 4px;
+  }
 
 /* dynamic bottom border in #DeckRow1_ */
 #ExpandingBottomBorder {
@@ -3056,9 +3063,6 @@ WEffectSelector,
         height: 0px;
         margin: 4px;
       }
-    #SkinSettingsSeparator {
-      margin: 0px 4px 4px 4px;
-    }
   WBeatSpinBox QMenu::item,
   #LibraryContainer QMenu::item,
   WCueMenuPopup QMenu::item,

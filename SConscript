@@ -367,8 +367,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                     env.get('SHAREDIR', default='share'))
                 unix_bin_path = os.path.join(install_root,
                     env.get('BINDIR', default='bin'))
-                unix_lib_path = os.path.join(install_root,
-                    env.get('LIBDIR', default='lib'))
 
                 binary = env.Install(unix_bin_path, binary_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
