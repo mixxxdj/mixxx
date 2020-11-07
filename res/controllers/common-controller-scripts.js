@@ -155,7 +155,14 @@ script.deckFromGroup = function(group) {
     if (group.match("hannel.")) {
         // Extract deck number from the group text                             
         deck = group.match("hannel.")[0].substring(6);
+    } else if (group.substring(18, 24) == "hannel") {
+        // Extract deck number from [EqualizerRackX_[ChannelY]_EffectZ]        
+        deck = group.substring(24, 25);
+    } else if (group.substring(20, 26) == "hannel") {
+        // Extract deck number from [QuickEffectRackX_[ChannelY]]              
+        deck = group.substring(26, 27);
     }
+
     /*
         else if (group.substring(2,8)=="ampler") {
             // Extract sampler number from the group text
