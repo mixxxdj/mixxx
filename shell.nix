@@ -78,15 +78,17 @@ let
   '';
 
   wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
-    "source ${pkgs.qt5.wrapQtAppsHook}/nix-support/setup-hook"
+    "qt5.wrapQtAppsHook"
   else
-    "source ${pkgs.makeWrapper}/nix-support/setup-hook");
+    "pkgs.makeWrapper");
 
   wrapperCmd = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
     "wrapQtApp"
   else
     "wrapProgram");
 
+  # sourceing stdenv/setup and qt5.wrapQtAppsHook does not work
+  # we therefore need to call the wrapper script through a minimal nix-shell
   shell-build = nixroot.writeShellScriptBin "build" ''
     set -e
     if [ ! -d "cbuild" ]; then
@@ -94,13 +96,18 @@ let
       exit 1
     fi
     cd cbuild
-    rm -f .mixxx-wrapped mixxx
+    rm -f .mixxx-wrapped mixxx mixxx-test .mixxx-test-wrapped
     cmake --build . --parallel $NIX_BUILD_CORES "$@"
-    ${wrapper}
-    ${wrapperCmd} mixxx --prefix LV2_PATH : ${
-      lib.makeSearchPath "lib/lv2" allLv2Plugins
-    }
-    ${wrapperCmd} mixxx-test
+    if [ -f ./mixxx ]; then
+      echo "run ${wrapperCmd} mixxx"
+      env shellHook="" nix-shell -p ${wrapper} --command "${wrapperCmd} mixxx --prefix LV2_PATH : ${
+        lib.makeSearchPath "lib/lv2" allLv2Plugins
+      }"
+    fi
+    if [ -f ./mixxx-test ]; then
+      echo "run ${wrapperCmd} mixxx-test"
+      env shellHook="" nix-shell -p ${wrapper} --command "${wrapperCmd} mixxx-test"
+    fi
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
@@ -118,9 +125,9 @@ let
       exit 1
     fi
     cd cbuild
-    exec env LV2_PATH=${
-      lib.makeSearchPath "lib/lv2" allLv2Plugins
-    } gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
+    head -n1 mixxx | grep bash >/dev/null || (echo "mixxx is not wrapped" && exit 1)
+    eval "$(head -n -1 mixxx)"
+    exec gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
   '';
 
   shell-run-tests = nixroot.writeShellScriptBin "run-tests" ''
@@ -213,6 +220,7 @@ in stdenv.mkDerivation rec {
       python37Packages.pip
       python37Packages.setuptools
       python37Packages.virtualenv
+      nodejs
       shell-build
       shell-configure
       shell-debug
