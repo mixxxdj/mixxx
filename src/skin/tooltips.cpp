@@ -631,6 +631,10 @@ void Tooltips::addStandardTooltips() {
                 << tr("disabled, connecting, connected, failure.");
     }
 
+    // AutoDJ status indicator
+    add("autodj_status")
+            << tr("AutoDJ is active");
+
     add("passthrough_enabled")
             << tr("Enable Passthrough")
             << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");

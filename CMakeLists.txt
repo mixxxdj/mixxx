@@ -5,6 +5,9 @@ set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everythi
 
 # Used for force control of color output
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
+# Option to disable symlinks
+set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
+
 # Support new IN_LIST if() operator
 if(POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
@@ -713,6 +716,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/soundsource.cpp
   src/sources/soundsourceflac.cpp
   src/sources/soundsourceoggvorbis.cpp
+  src/sources/soundsourceprovider.cpp
   src/sources/soundsourceproviderregistry.cpp
   src/sources/soundsourceproxy.cpp
   src/sources/soundsourcesndfile.cpp
@@ -986,6 +990,21 @@ target_compile_definitions(mixxx-lib PUBLIC
   $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
+#
+# Installation directories
+#
+set(MIXXX_INSTALL_BINDIR ".")
+set(MIXXX_INSTALL_DATADIR ".")
+set(MIXXX_INSTALL_DOCDIR "./doc")
+set(MIXXX_INSTALL_LICENSEDIR "./doc")
+if (UNIX)
+  include(GNUInstallDirs)
+  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
+  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
+  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
+  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+endif()
+
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
 
@@ -1024,9 +1043,7 @@ elseif(UNIX)
   else()
     target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
     target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx")
-    target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_LIB_PATH="${CMAKE_INSTALL_PREFIX}/lib/mixxx")
+      mixxx-lib PUBLIC UNIX_SHARE_PATH="${MIXXX_INSTALL_DATADIR}")
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
@@ -1043,18 +1060,6 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 # Installation and Packaging
 #
 include(InstallRequiredSystemLibraries)
-set(MIXXX_INSTALL_BINDIR ".")
-set(MIXXX_INSTALL_DATADIR ".")
-set(MIXXX_INSTALL_DOCDIR "./doc")
-set(MIXXX_INSTALL_LICENSEDIR "./doc")
-if (UNIX)
-  include(GNUInstallDirs)
-  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
-  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
-  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
-endif()
-
 install(
   TARGETS
     mixxx
@@ -1375,14 +1380,14 @@ add_custom_target(mixxx-benchmark
 )
 add_dependencies(mixxx-benchmark mixxx-test)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-testdata
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Symlinking test data to build directory..."
   )
 else()
   add_custom_target(mixxx-testdata
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Copying test data to build directory..."
   )
 endif()
@@ -1401,7 +1406,7 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
@@ -1412,11 +1417,11 @@ if(UNIX)
   )
 else()
   add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Copying resources to build directory..."
   )
   add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
     COMMENT "Copying QScriptEngine extensions to build directory..."
   )
 endif()

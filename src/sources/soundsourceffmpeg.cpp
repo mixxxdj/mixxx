@@ -337,6 +337,8 @@ void SoundSourceFFmpeg::SwrContextPtr::close() {
     }
 }
 
+const QString SoundSourceProviderFFmpeg::kDisplayName = QStringLiteral("FFmpeg");
+
 SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
     std::call_once(initFFmpegLibFlag, initFFmpegLib);
 }
@@ -447,6 +449,16 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     }
 
     return list;
+}
+
+SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // TODO: Increase priority to Default or even Higher for all
+    // supported and tested file extension?
+    // Currently it is only used as a fallback after all other
+    // SoundSources failed to open a file or are otherwise unavailable.
+    return SoundSourceProviderPriority::Lowest;
 }
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
@@ -985,7 +997,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 
     // Skip decoding if all data has been read
     auto writableFrameRange = writableSampleFrames.frameIndexRange();
-    DEBUG_ASSERT(writableFrameRange <= frameIndexRange());
+    DEBUG_ASSERT(writableFrameRange.isSubrangeOf(frameIndexRange()));
     if (writableFrameRange.empty()) {
         auto readableRange = IndexRange::between(
                 readableStartIndex, writableFrameRange.start());
@@ -1201,19 +1213,6 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     readableData,
                     getSignalInfo().frames2samples(readableRange.length())));
-}
-
-QString SoundSourceProviderFFmpeg::getName() const {
-    return "FFmpeg";
-}
-
-SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // TODO: Increase priority to HIGHER if FFmpeg should be used as the
-    // default decoder instead of other SoundSources?
-    // Currently it is only used as a fallback after all other SoundSources
-    // failed to open a file or are otherwise unavailable.
-    return SoundSourceProviderPriority::LOWEST;
 }
 
 } // namespace mixxx

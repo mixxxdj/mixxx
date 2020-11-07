@@ -386,10 +386,6 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
 
     std::optional<WritableSampleFrames> clampWritableSampleFrames(
             WritableSampleFrames sampleFrames) const;
-    std::optional<IndexRange> clampFrameIndexRange(
-            IndexRange frameIndexRange) const {
-        return intersect2(frameIndexRange, this->frameIndexRange());
-    }
 
     audio::SignalInfo m_signalInfo;
 

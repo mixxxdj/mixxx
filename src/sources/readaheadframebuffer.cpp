@@ -207,7 +207,7 @@ WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
         return outputBuffer;
     }
     const auto consumableRange = intersect2(bufferedRange(), outputRange);
-    DEBUG_ASSERT(!consumableRange || *consumableRange <= outputRange);
+    DEBUG_ASSERT(!consumableRange || consumableRange->isSubrangeOf(outputRange));
     if (!consumableRange || consumableRange->empty()) {
         // No overlap between buffer and requested data
         return outputBuffer;

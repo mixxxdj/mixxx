@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEMP3_H
-#define MIXXX_SOUNDSOURCEMP3_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 
@@ -77,9 +76,16 @@ class SoundSourceMp3 final : public SoundSource {
 
 class SoundSourceProviderMp3 : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceMp3>(url);
@@ -87,5 +93,3 @@ class SoundSourceProviderMp3 : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEMP3_H
