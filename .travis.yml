@@ -22,6 +22,8 @@ env:
     - CTEST_OUTPUT_ON_FAILURE=1
     # Render analyzer waveform tests to an offscreen buffer
     - QT_QPA_PLATFORM=offscreen
+    # DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD for deploys.
+    - secure: aS40s8gx1mM01oRj2pskFqR+rBID1nnTY7hwSqkT1bgJT+JF0tMZt/SkMjR08bp+3soNbBtqJgZKAhQ6Tts2DtkWQGbUiXgU5QpowUcecTxge/jqxZeWdJWThpB+qWs70Fm0QhzZXIyBPM8EGljWbLum5ncR7AUBEasRboNZ0P8=
 
     # To add a new secret, run:
     # $ travis encrypt MY_SECRET=hunter2 -r mixxxdj/mixxx
