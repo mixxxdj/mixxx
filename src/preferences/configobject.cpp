@@ -205,6 +205,9 @@ bool ConfigObject<ValueType>::save() {
 
     QString group = "";
 
+    // Since it is legit to have a ConfigObject with 0 values, checking
+    // the stream.pos alone will yield wrong warnings. We therefore estimate
+    // a minimum length as an additional safety check.
     qint64 minLength = 0;
     for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
         //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
