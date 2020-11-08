@@ -986,7 +986,14 @@ set(MIXXX_INSTALL_BINDIR ".")
 set(MIXXX_INSTALL_DATADIR ".")
 set(MIXXX_INSTALL_DOCDIR "./doc")
 set(MIXXX_INSTALL_LICENSEDIR "./doc")
-if (UNIX)
+if (APPLE)
+  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
+  set(MACOS_BUNDLE_NAME Mixxx)
+  set(MIXXX_INSTALL_PREFIX "${MACOS_BUNDLE_NAME}.app")
+  set(MIXXX_INSTALL_DATADIR "${MIXXX_INSTALL_PREFIX}/Contents/Resources")
+  set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
+  set(MIXXX_INSTALL_LICENSEDIR "${MIXXX_INSTALL_DATADIR}/licenses")
+elseif (UNIX)
   include(GNUInstallDirs)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
   set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
@@ -1048,22 +1055,37 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
-include(InstallRequiredSystemLibraries)
+if (APPLE)
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/osx/application.icns" DESTINATION ${MIXXX_INSTALL_DATADIR})
+
+    set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
+    set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
+    set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
+    
+    set_target_properties(mixxx PROPERTIES
+        MACOSX_BUNDLE true
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
+        OUTPUT_NAME ${MACOS_BUNDLE_NAME}
+    )
+else()
+    include(InstallRequiredSystemLibraries)
+    install(
+        FILES
+            ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+        DESTINATION
+            "${MIXXX_INSTALL_BINDIR}"
+        COMPONENT
+            Libraries
+    )
+endif()
+
 install(
   TARGETS
     mixxx
   RUNTIME DESTINATION
     "${MIXXX_INSTALL_BINDIR}"
-)
-
-# System Runtime libraries
-install(
-  FILES
-    ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-  DESTINATION
-    "${MIXXX_INSTALL_BINDIR}"
-  COMPONENT
-    Libraries
+  BUNDLE DESTINATION
+    .
 )
 
 # Skins
@@ -1183,36 +1205,6 @@ if(UNIX AND NOT APPLE)
       "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
   )
 endif()
-
-# Packaging
-set(CPACK_PACKAGE_VENDOR "Mixxx Project")
-set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
-set(CPACK_PACKAGE_EXECUTABLES "mixxx" "Mixxx")
-set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
-set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_STRIP_FILES ON)
-set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
-
-set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
-set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer")
-set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5opengl5, libqt5svg5, libqt5xml5, libqt5sql5, libqt5sql5-sqlite")
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-
-set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
-set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
-set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
-set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
-set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
-
-include(CPack)
 
 #
 # Tests
@@ -2406,4 +2398,75 @@ if(WAVPACK)
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
+endif()
+
+# Packaging
+set(CPACK_PACKAGE_VENDOR "Mixxx Project")
+set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
+set(CPACK_PACKAGE_EXECUTABLES "mixxx" "Mixxx")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
+
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
+set(CPACK_STRIP_FILES ON)
+set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
+
+set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer")
+set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5opengl5, libqt5svg5, libqt5xml5, libqt5sql5, libqt5sql5-sqlite")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
+set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
+set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
+set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
+
+include(CPack)
+
+if(APPLE)
+    macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
+        get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
+        if(EXISTS "${_qt_plugin_path}")
+            get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
+            get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
+            get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
+            set(_qt_plugin_dest "${_prefix}/Contents/plugins/${_qt_plugin_type}")
+            install(FILES "${_qt_plugin_path}"
+                DESTINATION "${_qt_plugin_dest}")
+            set(${_qt_plugins_var}
+                "${${_qt_plugins_var}};\$ENV{DEST_DIR}\${CMAKE_INSTALL_PREFIX}/${_qt_plugin_dest}/${_qt_plugin_file}")
+        else()
+            message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
+        endif()
+    endmacro()
+
+    install_qt5_plugin(Qt5::QCocoaIntegrationPlugin QT_PLUGINS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QSQLiteDriverPlugin QT_PLUGINS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QMacStylePlugin QT_PLUGINS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QSvgPlugin QT_PLUGINS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QSvgIconPlugin QT_PLUGINS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QJpegPlugin QT_PLUGINS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QGifPlugin QT_PLUGINS "${MIXXX_INSTALL_PREFIX}")
+
+    set(LIB_DIRS "${CMAKE_PREFIX_PATH}/lib")
+    list(APPEND LIB_DIRS "${Qt5Widgets_DIR}/../..")
+
+    install(CODE "
+        include(BundleUtilities)
+          #fixup_bundle tries to copy system libraries without this. Wtf?
+          function(gp_resolved_file_type_override file type)
+            if(file MATCHES \"^(/usr/lib)\")
+              set(type \"system\" PARENT_SCOPE)
+            endif()
+          endfunction()
+        set(BU_CHMOD_BUNDLE_ITEMS ON)
+        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_PREFIX}\" \"${QT_PLUGINS}\" \"${LIB_DIRS}\")
+    ")
 endif()
