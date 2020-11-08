@@ -244,7 +244,7 @@ class EngineBuffer : public EngineObject {
     void processSyncRequests();
     void processSeek(bool paused);
 
-    bool updateIndicatorsAndModifyPlay(bool newPlay);
+    bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
