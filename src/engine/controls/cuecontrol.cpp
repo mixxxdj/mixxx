@@ -1805,13 +1805,14 @@ void CueControl::outroEndActivate(double value) {
 }
 
 bool CueControl::updateIndicatorsAndModifyPlay(
-        bool newPlay, bool playPossible) {
+        bool newPlay, bool oldPlay, bool playPossible) {
     //qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible
     //        << m_iCurrentlyPreviewingHotcues << m_bPreviewing;
     QMutexLocker lock(&m_mutex);
     CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));
-    if ((cueMode == CueMode::Denon || cueMode == CueMode::Numark) && newPlay &&
-            playPossible && !m_pPlay->toBool() && !m_bypassCueSetByPlay) {
+    if ((cueMode == CueMode::Denon || cueMode == CueMode::Numark) &&
+            newPlay && !oldPlay && playPossible &&
+            !m_bypassCueSetByPlay) {
         // in Denon mode each play from pause moves the cue point
         // if not previewing
         cueSet(1.0);
@@ -1822,7 +1823,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(
     // (play = 0.0) is used for latching play.
     bool previewing = false;
     if (m_bPreviewing || m_iCurrentlyPreviewingHotcues) {
-        if (!newPlay) {
+        if (!newPlay && oldPlay) {
             // play latch request: stop previewing and go into normal play mode.
             m_bPreviewing = false;
             m_iCurrentlyPreviewingHotcues = 0;
