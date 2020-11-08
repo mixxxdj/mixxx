@@ -854,14 +854,13 @@ void CueControl::playStutter(double v) {
     }
 }
 
-bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) {
+bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible) {
     //qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible
     //        << m_iCurrentlyPreviewingHotcues << m_bPreviewing;
     QMutexLocker lock(&m_mutex);
     double cueMode = m_pCueMode->get();
     if ((cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) &&
-        newPlay && playPossible &&
-        !m_pPlay->toBool() &&
+        newPlay && !oldPlay && playPossible &&
         !m_bypassCueSetByPlay) {
         // in Denon mode each play from pause moves the cue point
         // if not previewing
@@ -873,7 +872,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     // (play = 0.0) is used for latching play.
     bool previewing = false;
     if (m_bPreviewing || m_iCurrentlyPreviewingHotcues) {
-        if (!newPlay) {
+        if (!newPlay && oldPlay) {
             // play latch request: stop previewing and go into normal play mode.
             m_bPreviewing = false;
             m_iCurrentlyPreviewingHotcues = 0;
