@@ -16,7 +16,7 @@ class VinylControlManager;
 class EffectsManager;
 class RecordingManager;
 class LaunchImage;
-class WMainMenuBar;
+class WMainMenu;
 
 class SkinLoader {
   public:
@@ -32,7 +32,7 @@ class SkinLoader {
             VinylControlManager* pVCMan,
             EffectsManager* pEffectsManager,
             RecordingManager* pRecordingManager,
-            WMainMenuBar* pMainMenu);
+            WMainMenu* pMainMenu);
 
     LaunchImage* loadLaunchImage(QWidget* pParent);
 

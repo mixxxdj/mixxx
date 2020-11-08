@@ -4,8 +4,8 @@
 #include <QList>
 #include <QMenu>
 #include <QMenuBar>
-#include <QObject>
 #include <QScopedPointer>
+#include <QWidget>
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
@@ -18,12 +18,13 @@ typedef std::function<void(QMenu*, QAction*, bool)> FnAddMenu;
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
   public:
-    VisibilityControlConnection(QObject* pParent, QAction* pAction,
-                                const ConfigKey& key);
+    VisibilityControlConnection(QObject* pParent, QAction* pAction, const ConfigKey& key);
     double value();
+    bool valid();
 
   public slots:
     void slotClearControl();
+  private slots:
     void slotReconnectControl();
 
   private slots:
@@ -36,18 +37,19 @@ class VisibilityControlConnection : public QObject {
     QAction* m_pAction;
 };
 
-class WMainMenuBar : public QMenuBar {
+class WMainMenu : public QWidget {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                 ConfigObject<ConfigValueKbd>* pKbdConfig);
+    WMainMenu(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig);
     void createMenu(FnAddMenu fnAddMenu, bool isMainMenu = false);
-    void rebuild();
-    void setVisible(bool visible) override;
+    QMenuBar* createMainMenuBar(QWidget* parent, bool native = true);
+    /// Should the mainMenuBar be visible
+    bool shouldBeVisible();
+    /// Cleanup connections and remove controlproxies
+    void finalize();
 
-    bool shouldBeVisible() {
-        return m_pMenubarConnection ? m_pMenubarConnection->value() > 0.0 : true;
-    }
   public slots:
     void onLibraryScanStarted();
     void onLibraryScanFinished();
@@ -75,6 +77,7 @@ class WMainMenuBar : public QMenuBar {
     void toggleBroadcasting(bool toggle);
     void toggleRecording(bool enabled);
     void toggleVinylControl(int deck);
+    void toggleMenubarVisible(bool visible);
     void visitUrl(const QString& url);
     void quit();
 
@@ -100,6 +103,34 @@ class WMainMenuBar : public QMenuBar {
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
+    QList<VisibilityControlConnection*> m_visibilityConnections;
+    QAction* m_pFileQuit;
+    QAction* m_pLibraryRescan;
+    QAction* m_pLibraryCreatePlaylist;
+    QAction* m_pLibraryCreateCrate;
+    QAction* m_pViewShowSkinSettings;
+    QAction* m_pViewShowMicrophone;
+    QAction* m_pViewShowCoverArt;
+    QAction* m_pViewShowPreviewDeck;
+    QAction* m_pViewShowMenuBar;
+    QAction* m_pViewVinylControl;
+    QAction* m_pViewFullScreen;
+    QAction* m_pViewMaximizeLibrary;
+    QAction* m_pOptionsRecord;
+    QAction* m_pOptionsBroadcasting;
+    QAction* m_pOptionsKeyboard;
+    QAction* m_pOptionsPreferences;
+    QAction* m_pDeveloperReloadSkin;
+    QAction* m_pDeveloperTools;
+    QAction* m_pDeveloperStatsExperiment;
+    QAction* m_pDeveloperStatsBase;
+    QAction* m_pDeveloperDebugger;
+    QAction* m_pHelpSupport;
+    QAction* m_pHelpManual;
+    QAction* m_pHelpShortcuts;
+    QAction* m_pHelpFeedback;
+    QAction* m_pHelpTranslation;
+    QAction* m_pHelpAboutApp;
 
     unsigned int m_lastNumPlayers;
     VisibilityControlConnection* m_pMenubarConnection;

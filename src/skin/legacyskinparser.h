@@ -26,7 +26,7 @@ class WLabel;
 class ControlObject;
 class LaunchImage;
 class WWidgetGroup;
-class WMainMenuBar;
+class WMainMenu;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
@@ -41,7 +41,7 @@ class LegacySkinParser : public QObject, public SkinParser {
             VinylControlManager* pVCMan,
             EffectsManager* pEffectsManager,
             RecordingManager* pRecordingManager,
-            WMainMenuBar* pMenuBar);
+            WMainMenu* pMenuBar);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -157,7 +157,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
     RecordingManager* m_pRecordingManager;
-    WMainMenuBar* m_pMainMenuBar;
+    WMainMenu* m_pMainMenu;
     QWidget* m_pParent;
     std::unique_ptr<SkinContext> m_pContext;
     QString m_style;

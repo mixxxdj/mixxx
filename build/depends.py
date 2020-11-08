@@ -1011,7 +1011,7 @@ class MixxxCore(Feature):
                    "src/widget/wcolorpickeraction.cpp",
                    "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
-                   "src/widget/wmainmenubar.cpp",
+                   "src/widget/wmainmenu.cpp",
 
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",

@@ -15,17 +15,17 @@
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
-class WMainMenuBar;
+class WMainMenu;
 
 class WMainMenuBarButton : public QPushButton, public WBaseWidget {
     Q_OBJECT
   public:
     WMainMenuBarButton(QWidget* pParent,
-            WMainMenuBar* pMainMenu,
+            WMainMenu* pMainMenu,
             ConfigObject<ConfigValueKbd>* pKbdConfig);
 
   private:
-    void initialize(WMainMenuBar* pMainMenu);
+    void initialize(WMainMenu* pMainMenu);
 
     const UserSettingsPointer m_pConfig;
     const parented_ptr<QMenu> m_pMenu;

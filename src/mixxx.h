@@ -35,7 +35,7 @@ class SoundManager;
 class TrackCollectionManager;
 class VinylControlManager;
 class VisualsManager;
-class WMainMenuBar;
+class WMainMenu;
 
 /// This Class is the base class for Mixxx.
 /// It sets up the main window providing a menubar.
@@ -50,7 +50,7 @@ class MixxxMainWindow : public QMainWindow {
     void finalize();
 
     /// creates the menu_bar and inserts the file Menu
-    void createMenuBar();
+    void createMenuBar(bool force = false);
     void connectMenuBar();
     void setInhibitScreensaver(mixxx::ScreenSaverPreference inhibit);
     mixxx::ScreenSaverPreference getInhibitScreensaver();
@@ -96,6 +96,9 @@ class MixxxMainWindow : public QMainWindow {
     /// Event filter to block certain events (eg. tooltips if tooltips are disabled)
     bool eventFilter(QObject *obj, QEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+
+  private slots:
+    void slotMenubarToggled(bool visible);
 
   private:
     void initialize(QApplication *app, const CmdlineArgs& args);
@@ -156,7 +159,7 @@ class MixxxMainWindow : public QMainWindow {
 
     Library* m_pLibrary;
 
-    parented_ptr<WMainMenuBar> m_pMenuBar;
+    WMainMenu* m_pMainMenu;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 

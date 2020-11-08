@@ -3,10 +3,10 @@
 #include <QAction>
 #include <QMenu>
 
-#include "widget/wmainmenubar.h"
+#include "widget/wmainmenu.h"
 
 WMainMenuBarButton::WMainMenuBarButton(QWidget* pParent,
-        WMainMenuBar* pMainMenu,
+        WMainMenu* pMainMenu,
         ConfigObject<ConfigValueKbd>* pKbdConfig)
         : QPushButton("...", pParent),
           WBaseWidget(this),
@@ -20,7 +20,7 @@ WMainMenuBarButton::WMainMenuBarButton(QWidget* pParent,
             tr("Shortcut") + ": " + shortcut.toString(QKeySequence::NativeText));
 }
 
-void WMainMenuBarButton::initialize(WMainMenuBar* pMainMenu) {
+void WMainMenuBarButton::initialize(WMainMenu* pMainMenu) {
     setMenu(m_pMenu);
     pMainMenu->createMenu([this](QMenu* menu, QAction* action, bool separator) {
         if (menu) {

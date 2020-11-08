@@ -162,7 +162,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pVCManager(nullptr),
           m_pEffectsManager(nullptr),
           m_pRecordingManager(nullptr),
-          m_pMainMenuBar(nullptr),
+          m_pMainMenu(nullptr),
           m_pParent(nullptr) {
 }
 
@@ -175,7 +175,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         EffectsManager* pEffectsManager,
         RecordingManager* pRecordingManager,
-        WMainMenuBar* pMenuBar)
+        WMainMenu* pMainMenu)
         : m_pConfig(pConfig),
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
@@ -185,7 +185,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pRecordingManager(pRecordingManager),
-          m_pMainMenuBar(pMenuBar),
+          m_pMainMenu(pMainMenu),
           m_pParent(NULL) {
     DEBUG_ASSERT(m_pSkinCreatedControls);
 }
@@ -1127,7 +1127,7 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseMainMenuButton(const QDomElement& node) {
     WMainMenuBarButton* pMainmenu = new WMainMenuBarButton(
-            m_pParent, m_pMainMenuBar, m_pKeyboard->getKeyboardConfig());
+            m_pParent, m_pMainMenu, m_pKeyboard->getKeyboardConfig());
     commonWidgetSetup(node, pMainmenu);
 
     return pMainmenu;
