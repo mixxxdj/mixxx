@@ -826,11 +826,11 @@ int VinylControlXwax::getPitchQuality(double& pitch) {
         return pitchQualityPercent; // First value - but at least two values needed for calculation
     }
 
-    float pitchDifference = pitch - m_dQualityLastPitch;
+    double pitchDifference = pitch - m_dQualityLastPitch;
     m_dQualityLastPitch = pitch;
 
     if (pitchDifference != 0) {
-        float pitchStability = std::fabs(pitch / pitchDifference);
+        double pitchStability = std::fabs(pitch / pitchDifference);
 
         if (pitchStability < 3.0) {
             // Unlikely that this pitch difference is from a proper set up control vinyl
@@ -855,7 +855,7 @@ void VinylControlXwax::establishQuality(double& pitch) {
             static_cast<float>(std::accumulate(
                     m_iQualityRing, m_iQualityRing + m_iQualityRingFilled, 0)) /
             2.0 / 100.0 /
-            m_iQualityRingFilled; // Two information in percent per datapoint
+            static_cast<float>(m_iQualityRingFilled); // Two information in percent per datapoint
 
     if (m_iQualityRingFilled < QUALITY_RING_SIZE) {
         m_iQualityRingFilled++;
