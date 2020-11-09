@@ -851,7 +851,11 @@ int VinylControlXwax::getPitchQuality(double& pitch) {
 
 void VinylControlXwax::establishQuality(double& pitch) {
     m_iQualityRing[m_iQualityRingIndex] = getPositionQuality() + getPitchQuality(pitch);
-    m_fTimecodeQuality = static_cast<float>(std::accumulate(m_iQualityRing, m_iQualityRing + m_iQualityRingFilled, 0)) / 2.0 / 100.0 / m_iQualityRingFilled; // Two information in percent per datapoint
+    m_fTimecodeQuality =
+            static_cast<float>(std::accumulate(
+                    m_iQualityRing, m_iQualityRing + m_iQualityRingFilled, 0)) /
+            2.0 / 100.0 /
+            m_iQualityRingFilled; // Two information in percent per datapoint
 
     if (m_iQualityRingFilled < QUALITY_RING_SIZE) {
         m_iQualityRingFilled++;
