@@ -169,7 +169,7 @@ template <class ValueType> class ConfigObject {
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
     void reopen(const QString& file);
-    void save();
+    bool save();
 
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.
