@@ -315,8 +315,9 @@ void SoundManager::queryDevicesPortaudio() {
             PaTime  defaultHighOutputLatency
             double  defaultSampleRate
          */
+        const auto deviceTypeId = paApiIndexToTypeId.value(deviceInfo->hostApi);
         auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
-                m_pConfig, this, deviceInfo, i, paApiIndexToTypeId));
+                m_pConfig, this, deviceInfo, deviceTypeId, i));
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
