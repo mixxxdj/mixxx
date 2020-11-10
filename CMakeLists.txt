@@ -1055,7 +1055,8 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
-if (APPLE AND MACOS_BUNDLE)
+if (APPLE)
+  if (MACOS_BUNDLE)
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/osx/application.icns" DESTINATION ${MIXXX_INSTALL_DATADIR})
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
@@ -1066,6 +1067,11 @@ if (APPLE AND MACOS_BUNDLE)
         MACOSX_BUNDLE true
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
     )
+  else()
+    get_filename_component(QT_PLUGIN_DIR "${Qt5_DIR}/../../../plugins/" ABSOLUTE)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/run-mixxx.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh" @ONLY)
+    execute_process(COMMAND chmod +x "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh")
+  endif()
 else()
     include(InstallRequiredSystemLibraries)
     install(
