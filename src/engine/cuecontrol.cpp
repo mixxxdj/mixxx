@@ -854,10 +854,10 @@ void CueControl::playStutter(double v) {
     }
 }
 
+// This is also called from the engine thread. No locking allowed.
 bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible) {
     //qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible
     //        << m_iCurrentlyPreviewingHotcues << m_bPreviewing;
-    QMutexLocker lock(&m_mutex);
     double cueMode = m_pCueMode->get();
     if ((cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) &&
         newPlay && !oldPlay && playPossible &&
