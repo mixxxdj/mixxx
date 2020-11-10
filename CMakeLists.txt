@@ -986,7 +986,7 @@ set(MIXXX_INSTALL_BINDIR ".")
 set(MIXXX_INSTALL_DATADIR ".")
 set(MIXXX_INSTALL_DOCDIR "./doc")
 set(MIXXX_INSTALL_LICENSEDIR "./doc")
-if (APPLE)
+if (APPLE AND MACOS_BUNDLE)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
   set(MACOS_BUNDLE_NAME Mixxx)
   set(MIXXX_INSTALL_PREFIX "${MACOS_BUNDLE_NAME}.app")
@@ -1055,7 +1055,7 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
-if (APPLE)
+if (APPLE AND MACOS_BUNDLE)
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/osx/application.icns" DESTINATION ${MIXXX_INSTALL_DATADIR})
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
@@ -2246,6 +2246,7 @@ if(APPLE)
   if(MACAPPSTORE)
     target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
   endif()
+  option(MACOS_BUNDLE "Install files to proper locations to make an .app bundle" OFF)
 endif()
 
 # Media Foundation AAC Decoder Plugin
@@ -2430,7 +2431,7 @@ set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp
 
 include(CPack)
 
-if(APPLE)
+if(APPLE AND MACOS_BUNDLE)
     macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
         get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
         if(EXISTS "${_qt_plugin_path}")
