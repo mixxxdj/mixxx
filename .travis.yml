@@ -159,7 +159,7 @@ jobs:
             - ccache
       env: >-
         MIXXX_ENVPATH="${HOME}/buildenv"
-        CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DHSS1394=ON"
+        CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON"
         PATH="/usr/local/opt/ccache/bin:$PATH"
         CMAKE_BUILD_PARALLEL_LEVEL=4
         CTEST_PARALLEL_LEVEL=1
