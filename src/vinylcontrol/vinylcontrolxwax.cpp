@@ -854,7 +854,7 @@ void VinylControlXwax::establishQuality(double& pitch) {
     m_fTimecodeQuality =
             static_cast<float>(std::accumulate(
                     m_iQualityRing, m_iQualityRing + m_iQualityRingFilled, 0)) /
-            2.0 / 100.0 /
+            static_cast<float>(2.0) / static_cast<float>(100.0) /
             static_cast<float>(m_iQualityRingFilled); // Two information in percent per datapoint
 
     if (m_iQualityRingFilled < QUALITY_RING_SIZE) {
