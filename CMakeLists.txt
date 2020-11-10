@@ -1038,8 +1038,11 @@ elseif(UNIX)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
     target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
+    # UNIX_SHARE_PATH should equal MIXXX_INSTALL_DATADIR, but
+    # ${MIXXX_INSTALL_DATADIR} seems to be empty when evaluated
+    # at this point!?
     target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_SHARE_PATH="${MIXXX_INSTALL_DATADIR}")
+      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx")
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
@@ -1061,7 +1064,7 @@ if (APPLE)
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
-    
+
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
