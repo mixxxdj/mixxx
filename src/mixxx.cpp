@@ -522,6 +522,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
         m_pWidgetParent = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
+    } else {
+        m_pMenuBar->setStyleSheet(m_pWidgetParent->styleSheet());
     }
 
     // Fake a 100 % progress here.
@@ -1111,6 +1113,9 @@ void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
     m_pMenuBar = make_parented<WMainMenuBar>(this, m_pSettingsManager->settings(), m_pKbdConfig);
+    if (m_pWidgetParent) {
+        m_pMenuBar->setStyleSheet(m_pWidgetParent->styleSheet());
+    }
     setMenuBar(m_pMenuBar);
 }
 
@@ -1475,6 +1480,7 @@ void MixxxMainWindow::rebootMixxxView() {
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
+    m_pMenuBar->setStyleSheet(m_pWidgetParent->styleSheet());
 
     setCentralWidget(m_pWidgetParent);
 #ifdef __LINUX__
