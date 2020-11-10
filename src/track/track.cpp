@@ -1102,7 +1102,7 @@ bool Track::importPendingCueInfosWhileLocked() {
     cuePoints.reserve(m_pCueInfoImporterPending->size());
     for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                  getLocation(), m_streamInfo->getSignalInfo())) {
-        CuePointer pCue(new Cue(cueInfo, sampleRate));
+        CuePointer pCue(new Cue(cueInfo, sampleRate, true));
         // While this method could be called from any thread,
         // associated Cue objects should always live on the
         // same thread as their host, namely this->thread().
