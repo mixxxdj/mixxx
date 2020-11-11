@@ -89,7 +89,6 @@ Cue::Cue(
         const mixxx::CueInfo& cueInfo,
         mixxx::audio::SampleRate sampleRate,
         bool setDirty)
-        // Mark imported cues dirty before storing them in the database
         : m_bDirty(setDirty),
           m_iId(-1),
           m_type(cueInfo.getType()),
