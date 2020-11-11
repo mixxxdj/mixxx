@@ -227,6 +227,7 @@ in stdenv.mkDerivation rec {
       shell-debug
       shell-run
       shell-run-tests
+      nix
     ])
   else
     [ ]);
@@ -235,6 +236,7 @@ in stdenv.mkDerivation rec {
 
   buildInputs = (with pkgs; [
     chromaprint
+    faad2
     ffmpeg
     fftw
     flac
