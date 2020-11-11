@@ -979,6 +979,15 @@ target_compile_definitions(mixxx-lib PUBLIC
   $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
+# Mac-specific options
+if(APPLE)
+  option(MACOS_BUNDLE "Install files to proper locations to make an .app bundle" OFF)
+  option(MACAPPSTORE "Build for Mac App Store" OFF)
+  if(MACAPPSTORE)
+    target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
+  endif()
+endif()
+
 #
 # Installation directories
 #
@@ -1062,7 +1071,7 @@ if (APPLE)
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
-    
+
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
@@ -2244,15 +2253,6 @@ if(MAD)
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcemp3.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __MAD__)
   target_link_libraries(mixxx-lib PUBLIC MAD::MAD ID3Tag::ID3Tag)
-endif()
-
-# Mac App Store
-if(APPLE)
-  option(MACAPPSTORE "Build for Mac App Store" OFF)
-  if(MACAPPSTORE)
-    target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
-  endif()
-  option(MACOS_BUNDLE "Install files to proper locations to make an .app bundle" OFF)
 endif()
 
 # Media Foundation AAC Decoder Plugin
