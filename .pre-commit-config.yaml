@@ -127,11 +127,10 @@ repos:
   - id: xmlformat
     name: xmlformat
     description: Reformat XML files.
-    entry: tools/xmlformat.py
+    entry: xmlformat --preserve SetVariable,Style,Text,Transform --blanks --selfclose --overwrite
     language: python
     additional_dependencies:
-    - six==1.15.0
-    - css-beautify==1.10.3
+    - git+https://github.com/Holzhaus/xmlformatter.git
     types: [text]
     files: ^.*\.xml$
     stages:
