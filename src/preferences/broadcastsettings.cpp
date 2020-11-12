@@ -212,7 +212,8 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     }
 
     // Step 2: add new profiles
-    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+    const QList<BroadcastProfilePtr> existingProfiles = pModel->profiles();
+    for (auto profileCopy : existingProfiles) {
         // Check if profile already exists in settings
         BroadcastProfilePtr existingProfile =
                 m_profiles.value(profileCopy->getProfileName());
@@ -226,7 +227,8 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     }
 
     // Step 3: update existing profiles
-    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+    const QList<BroadcastProfilePtr> allProfiles = pModel->profiles();
+    for (BroadcastProfilePtr profileCopy : allProfiles) {
         BroadcastProfilePtr actualProfile =
                 m_profiles.value(profileCopy->getProfileName());
         if (actualProfile) {
