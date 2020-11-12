@@ -151,7 +151,7 @@ void AcoustIdLookupTask::onFinished(
     const QJsonArray results = jsonObject.value(QLatin1String("results")).toArray();
     double maxScore = -1.0; // uninitialized (< 0)
     // Results are expected to be ordered by score (descending)
-    for (const auto result : results) {
+    for (const auto& result : results) {
         DEBUG_ASSERT(result.isObject());
         const auto resultObject = result.toObject();
         const auto resultId =
@@ -194,7 +194,7 @@ void AcoustIdLookupTask::onFinished(
                         << "with score"
                         << score;
             }
-            for (const auto recording : recordingsArray) {
+            for (const auto& recording : recordingsArray) {
                 DEBUG_ASSERT(recording.isObject());
                 const auto recordingObject = recording.toObject();
                 const auto recordingId =

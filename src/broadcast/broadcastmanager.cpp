@@ -43,7 +43,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
 
     // Initialize connections list from the current state of BroadcastSettings
     QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
-    for(BroadcastProfilePtr profile : profiles) {
+    for (const BroadcastProfilePtr& profile : profiles) {
         addConnection(profile);
     }
 
@@ -99,7 +99,7 @@ void BroadcastManager::slotControlEnabled(double v) {
     if (v > 0.0) {
         bool atLeastOneEnabled = false;
         QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
-        for(BroadcastProfilePtr profile : profiles) {
+        for (const BroadcastProfilePtr& profile : profiles) {
             if (profile->getEnabled()) {
                 atLeastOneEnabled = true;
                 break;
@@ -138,7 +138,7 @@ void BroadcastManager::slotProfileRemoved(BroadcastProfilePtr profile) {
 
 void BroadcastManager::slotProfilesChanged() {
     QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
-    for(NetworkOutputStreamWorkerPtr pWorker : workers) {
+    for (const NetworkOutputStreamWorkerPtr& pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
         if (connection) {
             BroadcastProfilePtr profile = connection->profile();
@@ -197,7 +197,7 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
 
 ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePtr profile) {
     QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
-    for(NetworkOutputStreamWorkerPtr pWorker : workers) {
+    for (const NetworkOutputStreamWorkerPtr& pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
         if (connection.isNull())
             continue;

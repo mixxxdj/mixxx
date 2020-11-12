@@ -22,7 +22,7 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
                 Qt::QueuedConnection);
     }
 
-    for (const auto& priorConnection: m_scriptConnections) {
+    for (const auto& priorConnection : qAsConst(m_scriptConnections)) {
         if (conn == priorConnection) {
             qWarning() << "Connection " + conn.id.toString() +
                           " already connected to (" +

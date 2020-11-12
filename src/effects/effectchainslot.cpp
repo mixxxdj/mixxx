@@ -240,7 +240,7 @@ void EffectChainSlot::updateRoutingSwitches() {
     VERIFY_OR_DEBUG_ASSERT(m_pEffectChain) {
         return;
     }
-    for (const ChannelInfo* pChannelInfo : m_channelInfoByName) {
+    for (const ChannelInfo* pChannelInfo : qAsConst(m_channelInfoByName)) {
         if (pChannelInfo->pEnabled->toBool()) {
             m_pEffectChain->enableForInputChannel(pChannelInfo->handleGroup);
         } else {
@@ -273,7 +273,7 @@ void EffectChainSlot::clear() {
     if (m_pEffectChain) {
         m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
                                          m_iChainSlotNumber);
-        for (EffectSlotPointer pSlot : m_slots) {
+        for (EffectSlotPointer pSlot : qAsConst(m_slots)) {
             pSlot->clear();
         }
         m_pEffectChain->disconnect(this);
@@ -392,7 +392,7 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
         v = math_clamp(v, 0.0, 1.0);
         m_pControlChainSuperParameter->set(v);
     }
-    for (const auto& pSlot : m_slots) {
+    for (const auto& pSlot : qAsConst(m_slots)) {
         pSlot->setMetaParameter(v, force);
     }
 }
