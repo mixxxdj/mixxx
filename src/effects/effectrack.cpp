@@ -19,8 +19,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
           m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
           m_controlClearRack(ConfigKey(m_group, "clear")) {
-    connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotClearRack(double)));
+    connect(&m_controlClearRack, &ControlObject::valueChanged, this, &EffectRack::slotClearRack);
     m_controlNumEffectChainSlots.setReadOnly();
     addToEngine();
 }

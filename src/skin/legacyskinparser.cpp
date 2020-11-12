@@ -917,8 +917,10 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
         overviewWidget = new WOverviewRGB(group, m_pPlayerManager, m_pConfig, m_pParent);
     }
 
-    connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
-            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(overviewWidget,
+            &WOverview::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadToPlayer);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -929,10 +931,8 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     overviewWidget->Init();
 
     // Connect the player's load and unload signals to the overview widget.
-    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-            overviewWidget, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-            overviewWidget, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, overviewWidget, &WOverview::slotTrackLoaded);
+    connect(pPlayer, &BaseTrackPlayer::loadingTrack, overviewWidget, &WOverview::slotLoadingTrack);
 
     // just in case track already loaded
     overviewWidget->slotLoadingTrack(pPlayer->getLoadedTrack(), TrackPointer());
