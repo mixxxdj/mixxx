@@ -69,7 +69,8 @@ MixxxTest::MixxxTest() {
 MixxxTest::~MixxxTest() {
     // Mixxx leaks a ton of COs normally. To make new tests not affected by
     // previous tests, we clear our all COs after every MixxxTest completion.
-    for (auto pControl : ControlDoublePrivate::takeAllInstances()) {
+    const auto controls = ControlDoublePrivate::takeAllInstances();
+    for (auto pControl : controls) {
         pControl->deleteCreatorCO();
     }
 }

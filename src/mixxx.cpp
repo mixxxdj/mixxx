@@ -808,7 +808,7 @@ void MixxxMainWindow::finalize() {
 
     // Check for leaked ControlObjects and give warnings.
     {
-        QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
                 ControlDoublePrivate::takeAllInstances();
         if (!leakedControls.isEmpty()) {
             qWarning()
