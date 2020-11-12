@@ -49,7 +49,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     int stopped_deck_count = 0;
     int playing_deck_count = 0;
 
-    for (const auto& pSyncable : m_syncables) {
+    for (const auto& pSyncable : qAsConst(m_syncables)) {
         if (pSyncable->getBaseBpm() <= 0.0) {
             continue;
         }
@@ -477,7 +477,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
-    for (Syncable* theSyncable : m_syncables) {
+    for (Syncable* theSyncable : qAsConst(m_syncables)) {
         bool isSynchonized = theSyncable->isSynchronized();
         if (theSyncable->getGroup() == group) {
             if (!isSynchonized) {

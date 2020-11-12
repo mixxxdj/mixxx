@@ -60,7 +60,7 @@ void DlgPrefEffects::slotUpdate() {
 }
 
 void DlgPrefEffects::slotApply() {
-    for (EffectProfilePtr profile : m_availableEffectsModel.profiles()) {
+    for (const EffectProfilePtr& profile : m_availableEffectsModel.profiles()) {
         EffectManifestPointer pManifest = profile->pManifest;
         m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
 

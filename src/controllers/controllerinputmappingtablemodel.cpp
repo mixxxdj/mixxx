@@ -19,7 +19,7 @@ void ControllerInputMappingTableModel::apply() {
         // Clear existing input mappings and insert all the input mappings in
         // the table into the preset.
         QMultiHash<uint16_t, MidiInputMapping> mappings;
-        for (const MidiInputMapping& mapping : m_midiInputMappings) {
+        for (const MidiInputMapping& mapping : qAsConst(m_midiInputMappings)) {
             // There can be multiple input mappings for the same input
             // MidiKey, so we need to use a QMultiHash here.
             mappings.insert(mapping.key.key, mapping);

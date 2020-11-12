@@ -265,7 +265,7 @@ void SoundDeviceNetwork::writeProcess() {
 
     QVector<NetworkOutputStreamWorkerPtr> workers =
             m_pNetworkStream->outputWorkers();
-    for(auto pWorker : workers) {
+    for (const auto& pWorker : workers) {
         if (pWorker.isNull()) {
             continue;
         }

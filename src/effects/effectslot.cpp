@@ -177,13 +177,12 @@ void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
             addEffectButtonParameterSlot();
         }
 
-        for (const auto& pParameter : m_parameters) {
+        for (const auto& pParameter : qAsConst(m_parameters)) {
             pParameter->loadEffect(pEffect);
         }
-        for (const auto& pParameter : m_buttonParameters) {
+        for (const auto& pParameter : qAsConst(m_buttonParameters)) {
             pParameter->loadEffect(pEffect);
         }
-
 
         if (adoptMetaknobPosition) {
             slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
@@ -208,10 +207,10 @@ void EffectSlot::clear() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
-    for (const auto& pParameter : m_parameters) {
+    for (const auto& pParameter : qAsConst(m_parameters)) {
         pParameter->clear();
     }
-    for (const auto& pParameter : m_buttonParameters) {
+    for (const auto& pParameter : qAsConst(m_buttonParameters)) {
         pParameter->clear();
     }
     m_pEffect.clear();
@@ -245,7 +244,7 @@ void EffectSlot::slotClear(double v) {
 }
 
 void EffectSlot::syncSofttakeover() {
-    for (const auto& pParameterSlot : m_parameters) {
+    for (const auto& pParameterSlot : qAsConst(m_parameters)) {
         pParameterSlot->syncSofttakeover();
     }
 }
@@ -275,7 +274,7 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     if (!m_pControlEnabled->toBool()) {
         force = true;
     }
-    for (const auto& pParameterSlot : m_parameters) {
+    for (const auto& pParameterSlot : qAsConst(m_parameters)) {
         pParameterSlot->onEffectMetaParameterChanged(v, force);
     }
 }
@@ -358,13 +357,13 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
     }
 
     QMap<QString, EffectParameterSlotBasePointer> parametersById;
-    for (const auto& pParameter : m_parameters) {
+    for (const auto& pParameter : qAsConst(m_parameters)) {
         EffectManifestParameterPointer manifest = pParameter->getManifest();
         if (manifest) {
             parametersById.insert(manifest->id(), pParameter);
         }
     }
-    for (const auto& pParameter : m_buttonParameters) {
+    for (const auto& pParameter : qAsConst(m_buttonParameters)) {
         EffectManifestParameterPointer manifest = pParameter->getManifest();
         if (manifest) {
             parametersById.insert(manifest->id(), pParameter);

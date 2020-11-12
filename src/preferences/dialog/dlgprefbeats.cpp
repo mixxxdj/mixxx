@@ -18,7 +18,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
     setupUi(this);
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
-    for (const auto& info : m_availablePlugins) {
+    for (const auto& info : qAsConst(m_availablePlugins)) {
         comboBoxBeatPlugin->addItem(info.name, info.id);
     }
 
