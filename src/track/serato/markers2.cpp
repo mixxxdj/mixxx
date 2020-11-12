@@ -693,7 +693,8 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     }
 
     // Append CUE entries
-    for (const auto& cueInfo : cueMap.values()) {
+    for (auto it = cueMap.constBegin(); it != cueMap.constEnd(); ++it) {
+        const CueInfo& cueInfo = it.value();
         auto pEntry = std::make_shared<SeratoMarkers2CueEntry>(
                 *cueInfo.getHotCueNumber(),
                 *cueInfo.getStartPositionMillis(),
@@ -703,7 +704,8 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     }
 
     // Append LOOP entries
-    for (const auto& cueInfo : loopMap.values()) {
+    for (auto it = loopMap.constBegin(); it != loopMap.constEnd(); ++it) {
+        const CueInfo& cueInfo = it.value();
         auto pEntry = std::make_shared<SeratoMarkers2LoopEntry>(
                 *cueInfo.getHotCueNumber(),
                 *cueInfo.getStartPositionMillis(),

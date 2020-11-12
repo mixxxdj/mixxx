@@ -231,14 +231,20 @@ bool SoundManagerConfig::writeToDisk() const {
         if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
             devElement.setAttribute(xmlAttributeAlsaHwDevice, deviceId.alsaHwDevice);
         }
-        for (const AudioInput& in : m_inputs.values(deviceId)) {
+
+        for (auto it = m_inputs.constFind(deviceId);
+                it != m_inputs.constEnd() && it.key() == deviceId;
+                ++it) {
             QDomElement inElement(doc.createElement(xmlElementInput));
-            in.toXML(&inElement);
+            it.value().toXML(&inElement);
             devElement.appendChild(inElement);
         }
-        for (const AudioOutput& out : m_outputs.values(deviceId)) {
+
+        for (auto it = m_outputs.constFind(deviceId);
+                it != m_outputs.constEnd() && it.key() == deviceId;
+                ++it) {
             QDomElement outElement(doc.createElement(xmlElementOutput));
-            out.toXML(&outElement);
+            it.value().toXML(&outElement);
             devElement.appendChild(outElement);
         }
         docElement.appendChild(devElement);
