@@ -59,6 +59,7 @@ void ClementineFeature::activate() {
                 tr("Clementine database file not found at\n") +
                         databaseFile);
         qInfo() << "Clementine database file" << databaseFile << "does not exist";
+        return;
     }
 
     if (!m_connection->open(databaseFile)) {
