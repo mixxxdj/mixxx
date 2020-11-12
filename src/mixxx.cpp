@@ -580,7 +580,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         QSet<QString>::fromList(prev_plugins_list);
 #endif
 
-    QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
+    const QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
     QSet<QString> curr_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
@@ -589,8 +589,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
-    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-            QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
+    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"), curr_plugins_list.join(","));
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
