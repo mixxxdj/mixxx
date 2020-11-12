@@ -792,7 +792,7 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
         return;
     }
     double frames = m_streamInfo->getSignalInfo().millis2frames(milliseconds);
-    for (const CuePointer& pCue : m_cuePoints) {
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
 
@@ -1030,12 +1030,12 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
     DEBUG_ASSERT(cuePoints.isEmpty() || !m_pCueInfoImporterPending ||
             m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
-    for (const auto& pCue: m_cuePoints) {
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
         disconnect(pCue.get(), 0, this, 0);
     }
     m_cuePoints = cuePoints;
     // connect new cue points
-    for (const auto& pCue: m_cuePoints) {
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
         DEBUG_ASSERT(pCue->thread() == thread());
         // Start listening to cue point updatess AFTER setting
         // the track id. Otherwise we would receive unwanted
@@ -1087,7 +1087,7 @@ bool Track::importPendingCueInfosWhileLocked() {
     cuePoints.reserve(m_pCueInfoImporterPending->size());
     for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                  getLocation(), m_streamInfo->getSignalInfo())) {
-        CuePointer pCue(new Cue(cueInfo, sampleRate));
+        CuePointer pCue(new Cue(cueInfo, sampleRate, true));
         // While this method could be called from any thread,
         // associated Cue objects should always live on the
         // same thread as their host, namely this->thread().

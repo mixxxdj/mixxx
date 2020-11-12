@@ -417,7 +417,8 @@ void WTrackMenu::setupActions() {
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
 
-        for (const auto& updateInExternalTrackCollection : m_updateInExternalTrackCollections) {
+        for (const auto& updateInExternalTrackCollection :
+                qAsConst(m_updateInExternalTrackCollections)) {
             ExternalTrackCollection* externalTrackCollection =
                     updateInExternalTrackCollection.externalTrackCollection;
             if (externalTrackCollection) {

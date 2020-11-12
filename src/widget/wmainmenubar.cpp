@@ -679,11 +679,11 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
 
 void WMainMenuBar::onNumberOfDecksChanged(int decks) {
     int deck = 0;
-    for (QAction* pVinylControlEnabled : m_vinylControlEnabledActions) {
+    for (QAction* pVinylControlEnabled : qAsConst(m_vinylControlEnabledActions)) {
         pVinylControlEnabled->setVisible(deck++ < decks);
     }
     deck = 0;
-    for (QAction* pLoadToDeck : m_loadToDeckActions) {
+    for (QAction* pLoadToDeck : qAsConst(m_loadToDeckActions)) {
         pLoadToDeck->setVisible(deck++ < decks);
     }
 }

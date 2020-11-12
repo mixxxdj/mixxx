@@ -182,7 +182,7 @@ bool SoundManagerConfig::readFromDisk() {
             AudioOutput out(AudioOutput::fromXML(outElement));
             if (out.getType() == AudioPath::INVALID) continue;
             bool dupe(false);
-            for (const AudioOutput& otherOut : m_outputs) {
+            for (const AudioOutput& otherOut : qAsConst(m_outputs)) {
                 if (out == otherOut
                         && out.getChannelGroup() == otherOut.getChannelGroup()) {
                     dupe = true;
@@ -199,7 +199,7 @@ bool SoundManagerConfig::readFromDisk() {
             AudioInput in(AudioInput::fromXML(inElement));
             if (in.getType() == AudioPath::INVALID) continue;
             bool dupe(false);
-            for (const AudioInput& otherIn : m_inputs) {
+            for (const AudioInput& otherIn : qAsConst(m_inputs)) {
                 if (in == otherIn
                         && in.getChannelGroup() == otherIn.getChannelGroup()) {
                     dupe = true;

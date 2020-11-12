@@ -62,7 +62,7 @@ class SoundSourceProxyTest : public MixxxTest {
                 << ".wv";
 
         QStringList supportedFileNameSuffixes;
-        for (const auto& fileNameSuffix: availableFileNameSuffixes) {
+        for (const auto& fileNameSuffix : qAsConst(availableFileNameSuffixes)) {
             // We need to check for the whole file name here!
             if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
                 supportedFileNameSuffixes << fileNameSuffix;
