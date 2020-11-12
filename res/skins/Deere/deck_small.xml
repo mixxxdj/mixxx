@@ -49,7 +49,7 @@
 
                   <WidgetGroup><!-- Title/*** / PlayPos -->
                     <Layout>horizontal</Layout>
-                    <Size>200min,24f</Size>
+                    <Size>200min,23f</Size>
                     <Children>
 
                       <WidgetGroup>
@@ -103,10 +103,16 @@
                     </Children>
                   </WidgetGroup><!-- Title/*** / PlayPos -->
 
+                  <TrackWidgetGroup>
+                    <Size>0me,2f</Size>
+                    <Group><Variable name="group"/></Group>
+                    <TrackColorAlpha>255</TrackColorAlpha>
+                  </TrackWidgetGroup>
+
                   <WidgetGroup><!-- Artist / Key / BPM -->
                     <ObjectName>ArtistKeyBpmGutterSmall</ObjectName>
                     <Layout>horizontal</Layout>
-                    <Size>200min,22f</Size>
+                    <Size>200min,21f</Size>
                     <Children>
                       <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
                           display just a label with asterixes instead. -->
@@ -163,7 +169,7 @@
                       </NumberBpm>
 
                     </Children>
-                  </WidgetGroup><!-- PositionKeyBpmGutter -->
+                  </WidgetGroup><!-- ArtistKeyBpmGutterSmall -->
 
                 </Children>
               </WidgetGroup><!-- DeckTextRowSmall -->
@@ -189,7 +195,7 @@
                     <SetVariable name="left_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- PlayGutterSmall -->
 
             </Children>
           </WidgetGroup>

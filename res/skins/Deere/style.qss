@@ -1001,10 +1001,19 @@ WBeatSpinBox,
 
 #ArtistGutter, #TitleGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px;
-}
+  }
+  #TitleGutter {
+    padding: 2px 2px 1px 2px;
+  }
+  #ArtistGutter {
+    padding: 1px 2px 2px 2px;
+  }
 #TitleGutterSmall {
   padding: 0px;
+}
+
+#TrackColorWrapper {
+  margin-right: 2px;
 }
 
 #ArtistKeyBpmGutterSmall {

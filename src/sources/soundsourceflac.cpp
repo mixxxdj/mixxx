@@ -67,7 +67,7 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 
 // end callbacks
 
-const unsigned kBitsPerSampleDefault = 0;
+const SINT kBitsPerSampleDefault = 0;
 
 } // namespace
 
@@ -488,7 +488,8 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         0,
                         metadata->data.stream_info.total_samples));
 
-        const unsigned bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        const SINT bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        DEBUG_ASSERT(bitsPerSample > 0);
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
@@ -507,15 +508,19 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << bitsPerSample << " <> " << m_bitsPerSample;
             }
         }
-        m_maxBlocksize = metadata->data.stream_info.max_blocksize;
-        if (0 >= m_maxBlocksize) {
+        DEBUG_ASSERT(m_maxBlocksize >= 0);
+        m_maxBlocksize = math_max(
+                m_maxBlocksize,
+                static_cast<SINT>(metadata->data.stream_info.max_blocksize));
+        if (m_maxBlocksize > 0) {
+            const SINT sampleBufferCapacity =
+                    m_maxBlocksize * getSignalInfo().getChannelCount();
+            if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+                m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+            }
+        } else {
             kLogger.warning()
                     << "Invalid max. blocksize" << m_maxBlocksize;
-        }
-        const SINT sampleBufferCapacity =
-                m_maxBlocksize * getSignalInfo().getChannelCount();
-        if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
-            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
         }
         break;
     }

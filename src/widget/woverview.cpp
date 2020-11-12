@@ -534,8 +534,13 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 }
             }
             if (pHoveredCue != nullptr) {
-                m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
-                m_pCueMenuPopup->popup(e->globalPos());
+                if (e->modifiers().testFlag(Qt::ShiftModifier)) {
+                    m_pCurrentTrack->removeCue(pHoveredCue);
+                    return;
+                } else {
+                    m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
+                    m_pCueMenuPopup->popup(e->globalPos());
+                }
             }
         }
     }

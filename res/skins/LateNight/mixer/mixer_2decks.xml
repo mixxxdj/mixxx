@@ -1,8 +1,5 @@
 <Template>
-  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
-
   <WidgetGroup>
-    <ObjectName>MixerDecks</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,min</SizePolicy>
     <Children>
@@ -16,23 +13,6 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-
-          <!-- Channel 3 -->
-          <WidgetGroup>
-            <SizePolicy>max,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:/mixer/channel_4decks.xml">
-                <SetVariable name="ChanNum">3</SetVariable>
-                <SetVariable name="xfaderLeft">default</SetVariable>
-                <SetVariable name="xfaderRight">warning</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
 
           <Template src="skin:/mixer/channel_left.xml">
             <SetVariable name="ChanNum">1</SetVariable>
@@ -90,11 +70,6 @@
                 </Children>
               </WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform><Invert/><Not/></Transform>
-            </Connection>
           </WidgetGroup>
 
           <Template src="skin:/mixer/channel_right.xml">
@@ -102,24 +77,6 @@
             <SetVariable name="xfaderLeft">warning</SetVariable>
             <SetVariable name="xfaderRight">default</SetVariable>
           </Template>
-
-          <!-- Channel 4 -->
-          <WidgetGroup>
-            <SizePolicy>max,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:/mixer/channel_4decks.xml">
-                <SetVariable name="ChanNum">4</SetVariable>
-                <SetVariable name="xfaderLeft">warning</SetVariable>
-                <SetVariable name="xfaderRight">default</SetVariable>
-              </Template>
-              <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
 
         </Children>
       </WidgetGroup><!-- /Channel controls -->
@@ -164,11 +121,6 @@
               </Template>
               <WidgetGroup><Size>min,me</Size></WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup><!-- /Channel1 xfader switch -->
 
           <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
@@ -183,71 +135,45 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <!-- 4 decks -->
-              <WidgetGroup>
+
+              <WidgetGroup><!-- with EQ knobs -->
                 <Layout>horizontal</Layout>
+                <SizePolicy>max,min</SizePolicy>
                 <Children>
                   <SingletonContainer>
                     <ObjectName>CrossfaderSingleton</ObjectName>
                   </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
 
-              <!-- 2 decks -->
-              <WidgetGroup>
-                <ObjectName>AlignCenter</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
 
-                  <WidgetGroup><!-- with EQ knobs -->
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>max,min</SizePolicy>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>CrossfaderSingleton</ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-
-                  <SliderComposed><!-- without EQ knobs -->
-                    <TooltipId>crossfader</TooltipId>
-                    <Size>85f,40f</Size>
-                    <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
-                    <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_crossfader_small.svg</Slider>
-                    <Horizontal>true</Horizontal>
-                    <BarColor><Variable name="BarColorCrossfader"/></BarColor>
-                    <BarWidth><Variable name="BarWidth"/></BarWidth>
-                    <BarMargins><Variable name="BarMarginCrossfader"/></BarMargins>
-                    <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
-                    <BarRoundCaps>true</BarRoundCaps>
-                    <BarAxisPos>19.0</BarAxisPos>
-                    <BarUnipolar>false</BarUnipolar>
-                    <Connection>
-                      <ConfigKey>[Master],crossfader</ConfigKey>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
-                  </SliderComposed>
-                </Children>
+              <SliderComposed><!-- without EQ knobs -->
+                <TooltipId>crossfader</TooltipId>
+                <Size>85f,40f</Size>
+                <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_crossfader_small.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <BarColor><Variable name="BarColorCrossfader"/></BarColor>
+                <BarWidth><Variable name="BarWidth"/></BarWidth>
+                <BarMargins><Variable name="BarMarginCrossfader"/></BarMargins>
+                <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
+                <BarRoundCaps>true</BarRoundCaps>
+                <BarAxisPos>19.0</BarAxisPos>
+                <BarUnipolar>false</BarUnipolar>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
                 </Connection>
-              </WidgetGroup><!-- 2 decks -->
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </SliderComposed>
+
             </Children>
           </WidgetGroup><!-- CrossfaderContainer -->
 
@@ -267,11 +193,6 @@
               </Template>
               <WidgetGroup><Size>min,me</Size></WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup><!-- /Channel2 xfader switch -->
 
           <!-- center xfader buttons below EQ knobs -->
@@ -307,8 +228,9 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Skin],show_master_head_mixer</ConfigKey>
-      <BindProperty>highlight</BindProperty>
+      <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- MixerDecks -->
 </Template>
