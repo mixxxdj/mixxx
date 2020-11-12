@@ -384,7 +384,7 @@ void DlgReplaceCueColor::slotApply() {
     bool canceled = false;
 
     QMultiMap<TrackPointer, int> cues;
-    for (const auto& row : rows) {
+    for (const auto& row : qAsConst(rows)) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
             canceled = true;

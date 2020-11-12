@@ -49,7 +49,7 @@ void BroadcastSettings::loadProfiles() {
         kLogger.info() << "Found" << files.size() << "profile(s)";
 
         // Load profiles from filesystem
-        for(QFileInfo fileInfo : files) {
+        for (const QFileInfo& fileInfo : files) {
             BroadcastProfilePtr profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
@@ -157,7 +157,7 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for (const auto& kv : m_profiles) {
+    for (const auto& kv : qAsConst(m_profiles)) {
         saveProfile(kv);
     }
     emit profilesChanged();

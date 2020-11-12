@@ -111,7 +111,7 @@ DlgPrefRecord::~DlgPrefRecord()
 {
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
-    for (QRadioButton* button : m_formatButtons) {
+    for (QRadioButton* button : qAsConst(m_formatButtons)) {
         if (LosslessEncLayout->indexOf(button) != -1) {
             LosslessEncLayout->removeWidget(button);
         } else {
@@ -119,7 +119,7 @@ DlgPrefRecord::~DlgPrefRecord()
         }
         button->deleteLater();
     }
-    for (QAbstractButton* widget : m_optionWidgets) {
+    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
         OptionGroupsLayout->removeWidget(widget);
         widget->deleteLater();
     }
@@ -253,7 +253,7 @@ void DlgPrefRecord::setupEncoderUI() {
         TextCompression->setVisible(false);
     }
 
-    for (QAbstractButton* widget : m_optionWidgets) {
+    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
@@ -272,7 +272,7 @@ void DlgPrefRecord::setupEncoderUI() {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
-        for (const QString& name : group.controlNames) {
+        for (const QString& name : qAsConst(group.controlNames)) {
             QAbstractButton* widget;
             if (group.controlNames.size() == 1) {
                 QCheckBox* button = new QCheckBox(name, this);
@@ -317,7 +317,7 @@ void DlgPrefRecord::updateTextQuality() {
     if (m_selFormat.internalName == ENCODING_MP3) {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        for (const QAbstractButton* widget : m_optionWidgets) {
+        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
                     isVbr = true;
@@ -406,7 +406,7 @@ void DlgPrefRecord::saveEncoding() {
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        for (const QAbstractButton* widget : m_optionWidgets) {
+        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked) {
                     settings->setGroupOption(group.groupCode, i);

@@ -799,7 +799,7 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
         return;
     }
     double frames = m_streamInfo->getSignalInfo().millis2frames(milliseconds);
-    for (const CuePointer& pCue : m_cuePoints) {
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
 
@@ -1041,13 +1041,13 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
     DEBUG_ASSERT(cuePoints.isEmpty() || !m_pCueInfoImporterPending ||
             m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
-    for (const auto& pCue: m_cuePoints) {
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
         disconnect(pCue.get(), 0, this, 0);
         pCue->setTrackId(TrackId());
     }
     m_cuePoints = cuePoints;
     // connect new cue points
-    for (const auto& pCue: m_cuePoints) {
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
         DEBUG_ASSERT(pCue->thread() == thread());
         // Ensure that the track IDs are correct
         pCue->setTrackId(m_record.getId());

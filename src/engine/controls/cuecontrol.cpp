@@ -344,7 +344,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        for (const auto& pControl : m_hotcueControls) {
+        for (const auto& pControl : qAsConst(m_hotcueControls)) {
             detachCue(pControl);
         }
 
@@ -905,7 +905,7 @@ void CueControl::hintReader(HintVector* pHintList) {
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
-    for (const auto& pControl: m_hotcueControls) {
+    for (const auto& pControl : qAsConst(m_hotcueControls)) {
         double position = pControl->getPosition();
         if (position != Cue::kNoPosition) {
             cue_hint.frame = SampleUtil::floorPlayPosToFrame(position);

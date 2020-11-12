@@ -279,7 +279,7 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
 
 int WTrackTableViewHeader::hiddenCount() {
     int count = 0;
-    for (const auto& pAction : m_columnActions) {
+    for (const auto& pAction : qAsConst(m_columnActions)) {
         if (!pAction->isChecked()) {
             count += 1;
         }
