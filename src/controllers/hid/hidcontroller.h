@@ -56,9 +56,10 @@ class HidController final : public Controller {
     int close() override;
 
     bool poll() override;
-    bool isPolling() const override;
 
   private:
+    bool isPolling() const override;
+
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     void send(QByteArray data) override;
