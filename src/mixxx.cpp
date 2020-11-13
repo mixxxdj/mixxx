@@ -1422,7 +1422,6 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
     }
 }
 
-
 void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     pConfig->set(ConfigKey("[Controls]","Tooltips"),

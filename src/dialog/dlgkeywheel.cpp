@@ -9,7 +9,6 @@ using namespace mixxx::track::io::key;
 namespace {
 auto kKeywheelSVG = QStringLiteral("images/keywheel/keywheel.svg");
 const KeyUtils::KeyNotation kNotationHidden[]{
-        KeyUtils::KeyNotation::Traditional,
         KeyUtils::KeyNotation::OpenKeyAndTraditional,
         KeyUtils::KeyNotation::LancelotAndTraditional};
 } // namespace
@@ -40,10 +39,7 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, UserSettingsPointer pConfig)
     auto pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
     m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(pKeyNotation->get()));
     // we skip the TRADITIONAL display, because it shows redundant informations only
-    if (m_notation == KeyUtils::KeyNotation::Traditional) {
-        m_notation = KeyUtils::KeyNotation::OpenKey;
-    }
-    updateDisplay();
+    switchDisplay(0);
 }
 
 bool DlgKeywheel::eventFilter(QObject* obj, QEvent* event) {
@@ -87,6 +83,10 @@ bool DlgKeywheel::isHiddenNotation(KeyUtils::KeyNotation notation) {
 void DlgKeywheel::switchDisplay(int step) {
     KeyUtils::KeyNotation newNotation = static_cast<KeyUtils::KeyNotation>(
             static_cast<int>(m_notation) + step);
+    // step 0 is used to update the notation to a valid one on init
+    if (step == 0) {
+        step = 1;
+    }
     // we skip variants with redundant information
     while (newNotation <= KeyUtils::KeyNotation::Invalid ||
             newNotation >= KeyUtils::KeyNotation::NumKeyNotations ||
@@ -109,16 +109,21 @@ void DlgKeywheel::updateDisplay() {
     QDomElement topElement = m_domDocument.documentElement();
     QDomNode domNode = topElement.firstChild();
 
+    bool hideTraditional = m_notation == KeyUtils::KeyNotation::Traditional;
     QDomElement domElement;
 
-    QDomNodeList node_list = m_domDocument.elementsByTagName(QString("text"));
+    QDomNodeList node_list = m_domDocument.elementsByTagName(QStringLiteral("text"));
     for (int i = 0; i < node_list.count(); i++) {
         QDomNode node = node_list.at(i);
         domElement = node.toElement();
         QString id = domElement.attribute("id", "UNKNOWN");
-        // we identify the text node by the id und use the suffix to lookup the
-        // chromakey id
-        if (id.startsWith("k_")) {
+
+        if (id.startsWith("t_")) {
+            domElement.setAttribute("visibility",
+                    hideTraditional ? "hidden" : "visible");
+        } else if (id.startsWith("k_")) {
+            // we identify the text node by the id und use the suffix to lookup the
+            // chromakey id
             // in this svg the text is inside a span which we need to look up first
             QDomNode tspan = node.firstChild();
             QDomNode text = tspan.firstChild();
@@ -127,9 +132,6 @@ void DlgKeywheel::updateDisplay() {
                 QDomText textNode = text.toText();
                 ChromaticKey key = static_cast<ChromaticKey>(id.midRef(2).toInt());
                 QString keyString = KeyUtils::keyToString(key, m_notation);
-                if (keyString.length() > 4) {
-                    keyString.replace(QChar(' '), QChar('\n'));
-                }
                 textNode.setData(keyString);
             }
         }
