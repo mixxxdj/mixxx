@@ -1107,8 +1107,10 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotFileLoadSongPlayer);
 
-    connect(m_pMenuBar, SIGNAL(showKeywheel(bool)),
-            this, SLOT(slotShowKeywheel(bool)));
+    connect(m_pMenuBar,
+            &WMainMenuBar::showKeywheel,
+            this,
+            &MixxxMainWindow::slotShowKeywheel);
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -1406,8 +1408,11 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
     if (m_pKeywheel == nullptr) {
         UserSettingsPointer pConfig = m_pSettingsManager->settings();
         m_pKeywheel = new DlgKeywheel(this, pConfig);
-        connect(m_pKeywheel, SIGNAL(finished(int)),
-                m_pMenuBar, SLOT(onKeywheelChange(int)));
+        // uncheck the menu item on window close
+        connect(m_pKeywheel,
+                &DlgKeywheel::finished,
+                m_pMenuBar,
+                &WMainMenuBar::onKeywheelChange);
     }
     if (toggle) {
         m_pKeywheel->show();
