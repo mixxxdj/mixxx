@@ -122,7 +122,7 @@ class BaseTrackCache : public QObject {
 
     const std::unique_ptr<SearchQueryParser> m_pQueryParser;
 
-    const StringCollator m_collator;
+    const mixxx::StringCollator m_collator;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;

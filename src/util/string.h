@@ -1,16 +1,17 @@
-#ifndef MIXXX_STRING_H
-#define MIXXX_STRING_H
+#pragma once
 
-#include <QLocale>
 #include <QCollator>
+#include <QLocale>
 #include <QString>
 #include <QStringRef>
+
+namespace mixxx {
 
 // The default comparison of strings for sorting.
 class StringCollator {
   public:
     explicit StringCollator(QLocale locale = QLocale())
-        : m_collator(std::move(locale)) {
+            : m_collator(std::move(locale)) {
         m_collator.setCaseSensitivity(Qt::CaseInsensitive);
     }
 
@@ -26,4 +27,5 @@ class StringCollator {
     QCollator m_collator;
 };
 
-#endif // MIXXX_STRING_H
+
+} // namespace mixxx
