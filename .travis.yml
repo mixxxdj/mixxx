@@ -149,7 +149,7 @@ jobs:
             - ccache
       env: >-
         MIXXX_ENVPATH="${HOME}/buildenv"
-        CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON"
+        CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DHSS1394=ON"
         PATH="/usr/local/opt/ccache/bin:$PATH"
         CMAKE_BUILD_PARALLEL_LEVEL=4
         CTEST_PARALLEL_LEVEL=1
@@ -182,7 +182,7 @@ jobs:
       install:
         - mkdir cmake_build
         - cd cmake_build
-        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY} ..
+        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DMACOS_BUNDLE=ON -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY} ..
         - cmake --build .
         - cpack -G DragNDrop -V
         # cpack codesigns the Mixxx.app inside the DMG package, but the DMG package also needs to be signed

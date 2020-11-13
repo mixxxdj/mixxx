@@ -25,7 +25,7 @@ void EffectSettingsModel::resetFromEffectManager(EffectsManager* pEffectsManager
         m_profiles.clear();
     }
 
-    for (EffectManifestPointer pManifest : pEffectsManager->getAvailableEffectManifests()) {
+    for (const EffectManifestPointer& pManifest : pEffectsManager->getAvailableEffectManifests()) {
         const bool visibility = pEffectsManager->getEffectVisibility(pManifest);
         addProfileToModel(EffectProfilePtr(new EffectProfile(pManifest, visibility)));
     }

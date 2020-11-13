@@ -1613,7 +1613,7 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
-    for (const auto& pDeck : m_decks) {
+    for (const auto& pDeck : qAsConst(m_decks)) {
         if (pDeck->isFromDeck) {
             return pDeck;
         }

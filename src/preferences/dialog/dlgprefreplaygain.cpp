@@ -23,20 +23,35 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
     m_analysisButtonGroup.addButton(radioButtonRG2);
     m_analysisButtonGroup.addButton(radioButtonDisable);
 
-    connect(EnableGain, SIGNAL(stateChanged(int)),
-            this, SLOT(slotSetRGEnabled()));
-    connect(&m_analysisButtonGroup, SIGNAL(buttonClicked(int)),
-            this, SLOT(slotSetRGAnalyzerChanged()));
-    connect(SliderReplayGainBoost, SIGNAL(valueChanged(int)),
-            this, SLOT(slotUpdateReplayGainBoost()));
-    connect(SliderReplayGainBoost, SIGNAL(sliderReleased()),
-            this, SLOT(slotApply()));
-    connect(SliderDefaultBoost, SIGNAL(valueChanged(int)),
-            this, SLOT(slotUpdateDefaultBoost()));
-    connect(SliderDefaultBoost, SIGNAL(sliderReleased()),
-            this, SLOT(slotApply()));
-    connect(checkBoxReanalyze, SIGNAL(stateChanged(int)),
-            this, SLOT(slotSetReanalyze()));
+    connect(EnableGain, &QCheckBox::stateChanged, this, &DlgPrefReplayGain::slotSetRGEnabled);
+    connect(&m_analysisButtonGroup,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            &QButtonGroup::idClicked,
+#else
+            QOverload<int>::of(&QButtonGroup::buttonClicked),
+#endif
+            this,
+            &DlgPrefReplayGain::slotSetRGAnalyzerChanged);
+    connect(SliderReplayGainBoost,
+            &QAbstractSlider::valueChanged,
+            this,
+            &DlgPrefReplayGain::slotUpdateReplayGainBoost);
+    connect(SliderReplayGainBoost,
+            &QAbstractSlider::sliderReleased,
+            this,
+            &DlgPrefReplayGain::slotApply);
+    connect(SliderDefaultBoost,
+            &QAbstractSlider::valueChanged,
+            this,
+            &DlgPrefReplayGain::slotUpdateDefaultBoost);
+    connect(SliderDefaultBoost,
+            &QAbstractSlider::sliderReleased,
+            this,
+            &DlgPrefReplayGain::slotApply);
+    connect(checkBoxReanalyze,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefReplayGain::slotSetReanalyze);
 
     loadSettings();
 }

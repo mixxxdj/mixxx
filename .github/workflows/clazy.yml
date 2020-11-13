@@ -1,0 +1,25 @@
+name: clazy
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  clazy:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install build dependencies
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libavformat-dev libchromaprint-dev libebur128-dev libfftw3-dev libflac-dev libid3tag0-dev liblilv-dev libmad0-dev libmodplug-dev libmp3lame-dev libopus-dev libopusfile-dev libportmidi-dev libprotobuf-dev libqt5opengl5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev librubberband-dev libshout3-dev libsndfile1-dev libsoundtouch-dev libsqlite3-dev libtag1-dev libupower-glib-dev libusb-1.0-0-dev libwavpack-dev portaudio19-dev protobuf-compiler qt5-default qtscript5-dev qt5keychain-dev clazy cmake
+    - name: Build
+      run: |
+        mkdir cmake_build
+        cd cmake_build
+        # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
+        cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_FATAL=ON -DOPTIMIZE=off -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON ..
+        cmake --build . -j $(nproc)
+      env:
+        LD: clang++
+        CC: clang
+        CXX: clazy
+        CLAZY_CHECKS: range-loop

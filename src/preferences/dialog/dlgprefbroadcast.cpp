@@ -202,7 +202,8 @@ void DlgPrefBroadcast::slotApply() {
 
     // Check for Icecast connections with identical mountpoints on the same host
     QMap<QString, QString> mountpoints;
-    for(BroadcastProfilePtr profile : m_pSettingsModel->profiles()) {
+    const QList<BroadcastProfilePtr> broadcastProfiles = m_pSettingsModel->profiles();
+    for (const auto& profile : broadcastProfiles) {
         if (profile->getServertype() != BROADCAST_SERVER_ICECAST2) {
             continue;
         }

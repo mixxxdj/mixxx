@@ -24,7 +24,8 @@ class Cue : public QObject {
     Cue();
     Cue(
             const mixxx::CueInfo& cueInfo,
-            mixxx::audio::SampleRate sampleRate);
+            mixxx::audio::SampleRate sampleRate,
+            bool setDirty);
     Cue(
             int id,
             TrackId trackId,

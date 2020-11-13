@@ -62,7 +62,7 @@ class SoundSourceProxyTest : public MixxxTest {
                 << ".wv";
 
         QStringList supportedFileNameSuffixes;
-        for (const auto& fileNameSuffix: availableFileNameSuffixes) {
+        for (const auto& fileNameSuffix : qAsConst(availableFileNameSuffixes)) {
             // We need to check for the whole file name here!
             if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
                 supportedFileNameSuffixes << fileNameSuffix;
@@ -77,7 +77,8 @@ class SoundSourceProxyTest : public MixxxTest {
 
     static QStringList getFilePaths() {
         QStringList filePaths;
-        for (const auto& fileNameSuffix: getFileNameSuffixes()) {
+        const QStringList fileNameSuffixes = getFileNameSuffixes();
+        for (const auto& fileNameSuffix : fileNameSuffixes) {
             filePaths.append(kTestDir.absoluteFilePath("cover-test" + fileNameSuffix));
         }
         return filePaths;
@@ -166,11 +167,13 @@ class SoundSourceProxyTest : public MixxxTest {
 
 TEST_F(SoundSourceProxyTest, open) {
     // This test piggy-backs off of the cover-test files.
-    for (const auto& filePath : getFilePaths()) {
+    const QStringList filePaths = getFilePaths();
+    for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
         const auto fileUrl = QUrl::fromLocalFile(filePath);
-        for (const auto& providerRegistration :
-                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl)) {
+        const auto providerRegistrations =
+                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        for (const auto& providerRegistration : providerRegistrations) {
             mixxx::AudioSourcePointer pAudioSource = openAudioSource(
                     filePath,
                     providerRegistration.getProvider());
@@ -189,7 +192,8 @@ TEST_F(SoundSourceProxyTest, open) {
 }
 
 TEST_F(SoundSourceProxyTest, openEmptyFile) {
-    for (const auto& fileNameSuffix: getFileNameSuffixes()) {
+    const QStringList fileNameSuffixes = getFileNameSuffixes();
+    for (const auto& fileNameSuffix : fileNameSuffixes) {
         const auto tmpFileName =
                 mixxxtest::createEmptyTemporaryFile("emptyXXXXXX" + fileNameSuffix);
         const mixxxtest::FileRemover tmpFileRemover(tmpFileName);
@@ -230,13 +234,15 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
 TEST_F(SoundSourceProxyTest, seekForwardBackward) {
     const SINT kReadFrameCount = 10000;
 
-    for (const auto& filePath : getFilePaths()) {
+    const QStringList filePaths = getFilePaths();
+    for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
         qDebug() << "Seek forward/backward test:" << filePath;
 
         const auto fileUrl = QUrl::fromLocalFile(filePath);
-        for (const auto& providerRegistration :
-                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl)) {
+        const auto providerRegistrations =
+                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        for (const auto& providerRegistration : providerRegistrations) {
             mixxx::AudioSourcePointer pContReadSource = openAudioSource(
                     filePath,
                     providerRegistration.getProvider());
@@ -319,13 +325,15 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
 TEST_F(SoundSourceProxyTest, skipAndRead) {
     for (auto kReadFrameCount : kBufferSizes) {
-        for (const auto& filePath : getFilePaths()) {
+        const QStringList filePaths = getFilePaths();
+        for (const auto& filePath : filePaths) {
             ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
             qDebug() << "Skip and read test:" << filePath;
 
             const auto fileUrl = QUrl::fromLocalFile(filePath);
-            for (const auto& providerRegistration :
-                    SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl)) {
+            const auto providerRegistrations =
+                    SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+            for (const auto& providerRegistration : providerRegistrations) {
                 mixxx::AudioSourcePointer pContReadSource = openAudioSource(
                         filePath,
                         providerRegistration.getProvider());
@@ -435,13 +443,15 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 
 TEST_F(SoundSourceProxyTest, seekBoundaries) {
     const SINT kReadFrameCount = 1000;
-    for (const auto& filePath : getFilePaths()) {
+    const QStringList filePaths = getFilePaths();
+    for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
         qDebug() << "Seek boundaries test:" << filePath;
 
         const auto fileUrl = QUrl::fromLocalFile(filePath);
-        for (const auto& providerRegistration :
-                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl)) {
+        const auto providerRegistrations =
+                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        for (const auto& providerRegistration : providerRegistrations) {
             mixxx::AudioSourcePointer pSeekReadSource = openAudioSource(
                     filePath,
                     providerRegistration.getProvider());
@@ -546,14 +556,15 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 
 TEST_F(SoundSourceProxyTest, readBeyondEnd) {
     const SINT kReadFrameCount = 1000;
-
-    for (const auto& filePath : getFilePaths()) {
+    const QStringList filePaths = getFilePaths();
+    for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
         qDebug() << "read beyond end test:" << filePath;
 
         const auto fileUrl = QUrl::fromLocalFile(filePath);
-        for (const auto& providerRegistration :
-                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl)) {
+        const auto providerRegistrations =
+                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        for (const auto& providerRegistration : providerRegistrations) {
             mixxx::AudioSourcePointer pAudioSource = openAudioSource(
                     filePath,
                     providerRegistration.getProvider());
@@ -612,14 +623,15 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
     // seek/read loop in SoundSourceMediaFoundation. Unfortunately this
     // test doesn't fail even prior to fixing the reported bug.
     // https://github.com/mixxxdj/mixxx/pull/1317#issuecomment-349674161
-
+    const QStringList filePaths = getFilePaths();
     for (auto kReadFrameCount : kBufferSizes) {
-        for (const auto& filePath : getFilePaths()) {
+        for (const auto& filePath : filePaths) {
             ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
             const auto fileUrl = QUrl::fromLocalFile(filePath);
-            for (const auto& providerRegistration :
-                    SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl)) {
+            const auto providerRegistrations =
+                    SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+            for (const auto& providerRegistration : providerRegistrations) {
                 mixxx::AudioSourcePointer pAudioSource = openAudioSource(
                         filePath,
                         providerRegistration.getProvider());

@@ -19,8 +19,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
           m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
           m_controlClearRack(ConfigKey(m_group, "clear")) {
-    connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotClearRack(double)));
+    connect(&m_controlClearRack, &ControlObject::valueChanged, this, &EffectRack::slotClearRack);
     m_controlNumEffectChainSlots.setReadOnly();
     addToEngine();
 }
@@ -204,7 +203,7 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
     rackElement.appendChild(groupElement);
 
     QDomElement chainsElement = doc->createElement("Chains");
-    for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
+    for (const EffectChainSlotPointer& pChainSlot : m_effectChainSlots) {
         QDomElement chain = pChainSlot->toXml(doc);
         chainsElement.appendChild(chain);
     }
@@ -213,7 +212,7 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
 }
 
 void EffectRack::refresh() {
-    for (const auto& pChainSlot: m_effectChainSlots) {
+    for (const auto& pChainSlot : qAsConst(m_effectChainSlots)) {
         EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
         pChain->refreshAllEffects();
     }

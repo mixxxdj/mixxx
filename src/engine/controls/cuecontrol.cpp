@@ -341,7 +341,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        for (const auto& pControl : m_hotcueControls) {
+        for (const auto& pControl : qAsConst(m_hotcueControls)) {
             detachCue(pControl);
         }
 
@@ -372,7 +372,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             Qt::DirectConnection);
 
     CuePointer pMainCue;
-    for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
+    const QList<CuePointer> cuePoints = m_pLoadedTrack->getCuePoints();
+    for (const CuePointer& pCue : cuePoints) {
         if (pCue->getType() == mixxx::CueType::MainCue) {
             DEBUG_ASSERT(!pMainCue);
             pMainCue = pCue;
@@ -475,10 +476,12 @@ void CueControl::loadCuesFromTrack() {
     QSet<int> active_hotcues;
     CuePointer pLoadCue, pIntroCue, pOutroCue;
 
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
-    for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
+    const QList<CuePointer> cues = m_pLoadedTrack->getCuePoints();
+    for (const auto& pCue : cues) {
         switch (pCue->getType()) {
         case mixxx::CueType::MainCue:
             DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
@@ -902,7 +905,7 @@ void CueControl::hintReader(HintVector* pHintList) {
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
-    for (const auto& pControl: m_hotcueControls) {
+    for (const auto& pControl : qAsConst(m_hotcueControls)) {
         double position = pControl->getPosition();
         if (position != Cue::kNoPosition) {
             cue_hint.frame = SampleUtil::floorPlayPosToFrame(position);
@@ -1520,10 +1523,10 @@ void CueControl::outroEndActivate(double value) {
     }
 }
 
+// This is also called from the engine thread. No locking allowed.
 bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible) {
     //qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible
     //        << m_iCurrentlyPreviewingHotcues << m_bPreviewing;
-    QMutexLocker lock(&m_mutex);
     CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));
     if ((cueMode == CueMode::Denon || cueMode == CueMode::Numark) &&
             newPlay && !oldPlay && playPossible &&
