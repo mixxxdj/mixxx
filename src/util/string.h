@@ -40,6 +40,10 @@ class StringCollator {
 inline QString convertWCStringToQString(
         const wchar_t* wcs,
         std::size_t len) {
+    if (!wcs) {
+        DEBUG_ASSERT(len == 0);
+        return QString();
+    }
     DEBUG_ASSERT(wcsnlen(wcs, len) == len);
     const auto ilen = static_cast<int>(len);
     DEBUG_ASSERT(ilen >= 0); // unsigned -> signed
