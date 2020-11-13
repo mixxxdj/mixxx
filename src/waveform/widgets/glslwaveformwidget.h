@@ -9,10 +9,15 @@ class GLSLWaveformRendererSignal;
 class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
+    enum class GlslType {
+        Filtered,
+        RGB,
+        RGB3Band,
+    };
     GLSLWaveformWidget(
             const QString& group,
             QWidget* parent,
-            bool rgbRenderer);
+            GlslType type);
     ~GLSLWaveformWidget() override = default;
 
     void resize(int width, int height) override;
@@ -57,4 +62,31 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
     static inline bool developerOnly() { return false; }
+};
+
+class GLSLRGB3BandWaveformWidget : public GLSLWaveformWidget {
+    Q_OBJECT
+  public:
+    GLSLRGB3BandWaveformWidget(const QString& group, QWidget* parent);
+    ~GLSLRGB3BandWaveformWidget() override = default;
+
+    WaveformWidgetType::Type getType() const override {
+        return WaveformWidgetType::GLSLRGB3BandWaveform;
+    }
+
+    static inline QString getWaveformWidgetName() {
+        return tr("RGB 3Band");
+    }
+    static inline bool useOpenGl() {
+        return true;
+    }
+    static inline bool useOpenGles() {
+        return false;
+    }
+    static inline bool useOpenGLShaders() {
+        return true;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
 };

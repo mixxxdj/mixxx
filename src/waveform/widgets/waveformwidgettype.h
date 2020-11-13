@@ -22,6 +22,7 @@ class WaveformWidgetType {
         QtVSyncTest,
         QtHSVWaveform,
         QtRGBWaveform,
+        GLSLRGB3BandWaveform,
         Count_WaveformwidgetType // Also used as invalid value
     };
 };

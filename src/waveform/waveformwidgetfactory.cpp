@@ -818,6 +818,13 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = GLSLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLSLRGBWaveformWidget::developerOnly();
             break;
+        case WaveformWidgetType::GLSLRGB3BandWaveform:
+            widgetName = GLSLRGB3BandWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLSLRGB3BandWaveformWidget::useOpenGl();
+            useOpenGles = GLSLRGB3BandWaveformWidget::useOpenGles();
+            useOpenGLShaders = GLSLRGB3BandWaveformWidget::useOpenGLShaders();
+            developerOnly = GLSLRGB3BandWaveformWidget::developerOnly();
+            break;
         case WaveformWidgetType::GLVSyncTest:
             widgetName = GLVSyncTestWidget::getWaveformWidgetName();
             useOpenGl = GLVSyncTestWidget::useOpenGl();
@@ -943,6 +950,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::GLSLRGBWaveform:
             widget = new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLSLRGB3BandWaveform:
+            widget = new GLSLRGB3BandWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::GLVSyncTest:
             widget = new GLVSyncTestWidget(viewer->getGroup(), viewer);
