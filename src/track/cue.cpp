@@ -74,7 +74,7 @@ Cue::Cue(
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
-    if (length) {
+    if (length != 0) {
         if (position != Cue::kNoPosition) {
             m_sampleEndPosition = position + length;
         } else {
@@ -87,8 +87,9 @@ Cue::Cue(
 
 Cue::Cue(
         const mixxx::CueInfo& cueInfo,
-        mixxx::audio::SampleRate sampleRate)
-        : m_bDirty(false),
+        mixxx::audio::SampleRate sampleRate,
+        bool setDirty)
+        : m_bDirty(setDirty),
           m_iId(-1),
           m_type(cueInfo.getType()),
           m_sampleStartPosition(

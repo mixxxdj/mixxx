@@ -1,12 +1,13 @@
 #include "library/autodj/autodjprocessor.h"
 
-#include "library/trackcollection.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/engine.h"
-#include "util/math.h"
-#include "mixer/playermanager.h"
+#include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "track/track.h"
+#include "util/math.h"
 
 #define kConfigKey "[Auto DJ]"
 namespace {
@@ -122,6 +123,7 @@ AutoDJProcessor::AutoDJProcessor(
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
+    m_pAutoDJTableModel->select();
 
     m_pShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
@@ -1123,8 +1125,8 @@ double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
 
 double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
     samplePosition /= kChannelCount;
-    double sampleRate = pDeck->sampleRate();
-    if (sampleRate <= 0.0) {
+    mixxx::audio::SampleRate sampleRate = pDeck->sampleRate();
+    if (!sampleRate.isValid()) {
         return 0.0;
     }
     return samplePosition / sampleRate / pDeck->rateRatio();
@@ -1611,7 +1613,7 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
-    for (const auto& pDeck : m_decks) {
+    for (const auto& pDeck : qAsConst(m_decks)) {
         if (pDeck->isFromDeck) {
             return pDeck;
         }

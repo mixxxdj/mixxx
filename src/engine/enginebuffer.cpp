@@ -306,7 +306,7 @@ EngineBuffer::~EngineBuffer() {
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     double fFractionalPlaypos = 0.0;
-    if (m_trackSamplesOld) {
+    if (m_trackSamplesOld != 0) {
         fFractionalPlaypos = math_min<double>(absolutePlaypos, m_trackSamplesOld);
         fFractionalPlaypos /= m_trackSamplesOld;
     }
@@ -577,7 +577,7 @@ void EngineBuffer::ejectTrack() {
 }
 
 void EngineBuffer::slotPassthroughChanged(double enabled) {
-    if (enabled) {
+    if (enabled != 0) {
         // If passthrough was enabled, stop playing the current track.
         slotControlStop(1.0);
     }
@@ -619,7 +619,7 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     queueNewPlaypos(new_playpos, seekType);
 }
 
-bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
+bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
@@ -632,12 +632,12 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
         playPossible = false;
     }
 
-    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, oldPlay, playPossible);
 }
 
 void EngineBuffer::verifyPlay() {
     bool play = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(play, play);
     if (play != verifiedPlay) {
         m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
@@ -645,7 +645,7 @@ void EngineBuffer::verifyPlay() {
 
 void EngineBuffer::slotControlPlayRequest(double v) {
     bool oldPlay = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
         if (m_pQuantize->toBool()
@@ -791,7 +791,7 @@ void EngineBuffer::processTrackLocked(
     } else {
         // We might have have temporary speed change, so adjust pitch if not locked
         // Note: This will not update key and tempo widgets
-        if (tempoRatio) {
+        if (tempoRatio != 0) {
             pitchRatio *= (speed / tempoRatio);
         }
 
@@ -813,7 +813,7 @@ void EngineBuffer::processTrackLocked(
         // Do not switch scaler when we have no transport
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                 iBufferSize);
-    } else if (m_speed_old && !is_scratching) {
+    } else if (m_speed_old != 0 && !is_scratching) {
         // we are stopping, collect samples for fade out
         readToCrossfadeBuffer(iBufferSize);
         // Clear the scaler information
@@ -1238,7 +1238,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (!m_trackSampleRateOld) {
+    if (m_trackSampleRateOld == 0) {
         // This happens if Deck Passthrough is active but no track is loaded.
         // We skip indicator updates.
         return;

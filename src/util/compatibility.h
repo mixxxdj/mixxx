@@ -5,11 +5,13 @@
 #include <QList>
 #include <QScreen>
 #include <QUuid>
-#include <QWindow>
 #include <QWidget>
-#include <QList>
+#include <QWindow>
 
 #include "util/assert.h"
+#if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
+#include "util/widgethelper.h"
+#endif
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
 
@@ -69,36 +71,15 @@ struct QOverload : QConstOverload<Args...>, QNonConstOverload<Args...>
 inline qreal getDevicePixelRatioF(const QWidget* widget) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     return widget->devicePixelRatioF();
+#else
+    const QWindow* const pWindow =
+            mixxx::widgethelper::getWindow(*widget);
+    VERIFY_OR_DEBUG_ASSERT(pWindow) {
+        // return integer value as last resort
+        return widget->devicePixelRatio();
+    }
+    return pWindow->devicePixelRatio();
 #endif
-
-    // Crawl up to the window and return qreal value
-    QWindow* window = widget->window()->windowHandle();
-    if (window) {
-        return window->devicePixelRatio();
-    }
-
-    // return integer value as last resort
-    return widget->devicePixelRatio();
-}
-
-inline QScreen* getPrimaryScreen() {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
-    VERIFY_OR_DEBUG_ASSERT(app) {
-        qWarning() << "Unable to get applications QCoreApplication instance, cannot determine primary screen!";
-    } else {
-        return app->primaryScreen();
-    }
-#endif
-    const QList<QScreen*> screens = QGuiApplication::screens();
-    VERIFY_OR_DEBUG_ASSERT(!screens.isEmpty()) {
-        qWarning() << "No screens found, cannot determine primary screen!";
-    } else {
-        return screens.first();
-    }
-
-    // All attempts to find primary screen failed, return nullptr
-    return nullptr;
 }
 
 inline
@@ -122,6 +103,29 @@ QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
     } else {
         return uuidToStringWithoutBraces(uuid);
     }
+}
+
+inline QScreen* getPrimaryScreen() {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
+    VERIFY_OR_DEBUG_ASSERT(app) {
+        qWarning() << "Unable to get applications QCoreApplication instance, "
+                      "cannot determine primary screen!";
+    }
+    else {
+        return app->primaryScreen();
+    }
+#endif
+    const QList<QScreen*> screens = QGuiApplication::screens();
+    VERIFY_OR_DEBUG_ASSERT(!screens.isEmpty()) {
+        qWarning() << "No screens found, cannot determine primary screen!";
+    }
+    else {
+        return screens.first();
+    }
+
+    // All attempts to find primary screen failed, return nullptr
+    return nullptr;
 }
 
 template <typename T>

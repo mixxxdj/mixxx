@@ -28,7 +28,6 @@
 }
 
 #CrossfaderContainer {
-  padding: 3px 3px 0px 3px;
 }
 
 #DeckTextRow {
@@ -89,7 +88,7 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 3px 0 3px;
+  padding: 0 2px 0 3px;
 }
 
 #ControlsRow {
@@ -810,17 +809,51 @@ WEffectSelector QAbstractScrollArea::corner,
 
 #Mixxx {
   background-color: black;
-  font-family: "Open Sans";
 }
 
 #WaveformSplitter {
   background-color: #222;
 }
 
+#Mixxx, WWidget,
+QToolTip,
+WLabel, QLabel,
+WNumber, WNumberPos,
+WPushButton,
+WKey,
+WTime,
+WTrackText,
+WTrackProperty,
+WRecordingDuration,
+QSpinBox,
+WBeatSpinBox,
+WOverview #PassthroughLabel,
+WBeatSpinBox QMenu,
+WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
+WCoverArtMenu,
+WTrackMenu,
+WTrackMenu QMenu,
+WOverview /* Hotcue labels in the overview */,
+QComboBox,
+WEffect,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea
+#LibraryContainer QPushButton,
+#LibraryContainer QLabel,
+#LibraryContainer QRadioButton,
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::item,
+#LibraryContainer QMenu {
+  font-family: "Open Sans";
+}
+
 WWidget,
 WLibrary QLabel,
 WLibrary QPushButton {
-  font-family: "Open Sans";
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
@@ -879,6 +912,7 @@ WOverview #PassthroughLabel {
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
+#PlayCueContainer,
 #HotcueGrid,
 #VinylControlsGrid {
   padding: 1px;
@@ -1001,10 +1035,19 @@ WBeatSpinBox,
 
 #ArtistGutter, #TitleGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px;
-}
+  }
+  #TitleGutter {
+    padding: 2px 2px 1px 2px;
+  }
+  #ArtistGutter {
+    padding: 1px 2px 2px 2px;
+  }
 #TitleGutterSmall {
   padding: 0px;
+}
+
+#TrackColorWrapper {
+  margin-right: 2px;
 }
 
 #ArtistKeyBpmGutterSmall {
@@ -1257,6 +1300,10 @@ WBeatSpinBox,
   qproperty-alignment: 'AlignHCenter';
   font: 10px;
   margin-top: 1px;
+}
+
+#Crossfader {
+  margin-top: 3px;
 }
 
 #Crossfader[highlight="0"] {

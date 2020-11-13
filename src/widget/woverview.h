@@ -89,7 +89,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_pixmapDone;
     float m_waveformPeak;
 
-    int m_diffGain;
+    float m_diffGain;
     qreal m_devicePixelRatio;
 
   private slots:
@@ -178,6 +178,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_passthroughOverlayColor;
     QColor m_playedOverlayColor;
     QColor m_lowColor;
+    int m_dimBrightThreshold;
     QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks

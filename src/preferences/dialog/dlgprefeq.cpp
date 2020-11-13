@@ -215,7 +215,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     const QList<EffectManifestPointer> availableQuickEffects =
         m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
 
-    for (QComboBox* box : m_deckEqEffectSelectors) {
+    for (QComboBox* box : qAsConst(m_deckEqEffectSelectors)) {
         // Populate comboboxes with all available effects
         // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
@@ -244,7 +244,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         box->setCurrentIndex(currentIndex);
     }
 
-    for (QComboBox* box : m_deckQuickEffectSelectors) {
+    for (QComboBox* box : qAsConst(m_deckQuickEffectSelectors)) {
         // Populate comboboxes with all available effects
         // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
@@ -443,7 +443,7 @@ void DlgPrefEQ::applySelections() {
     int deck = 0;
     QString firstEffectId;
     int firstEffectIndex = 0;
-    for (QComboBox* box : m_deckEqEffectSelectors) {
+    for (QComboBox* box : qAsConst(m_deckEqEffectSelectors)) {
         QString effectId = box->itemData(box->currentIndex()).toString();
         if (deck == 0) {
             firstEffectId = effectId;
@@ -486,7 +486,7 @@ void DlgPrefEQ::applySelections() {
     }
 
     deck = 0;
-    for (QComboBox* box : m_deckQuickEffectSelectors) {
+    for (QComboBox* box : qAsConst(m_deckQuickEffectSelectors)) {
         QString effectId = box->itemData(box->currentIndex()).toString();
         QString group = PlayerManager::groupForDeck(deck);
 
@@ -602,7 +602,7 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue) {
     }
     double dsliderPos = (eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
     dsliderPos = pow(dsliderPos, 1.0 / 4.0) * (maxValue - minValue) + minValue;
-    return dsliderPos;
+    return static_cast<int>(dsliderPos);
 }
 
 void DlgPrefEQ::slotApply() {
@@ -638,7 +638,7 @@ void DlgPrefEQ::slotBypass(int state) {
         // Disable effect processing for all decks by setting the appropriate
         // controls to 0 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        for (const auto& box: m_deckEqEffectSelectors) {
+        for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 0);
             m_filterWaveformEnableCOs[deck]->set(0);
@@ -650,7 +650,7 @@ void DlgPrefEQ::slotBypass(int state) {
         // Enable effect processing for all decks by setting the appropriate
         // controls to 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        for (const auto& box: m_deckEqEffectSelectors) {
+        for (const auto& box : qAsConst(m_deckEqEffectSelectors)) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 1);
             m_filterWaveformEnableCOs[deck]->set(m_filterWaveformEffectLoaded[deck]);
@@ -752,10 +752,10 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
 
                     QSlider* slider = new QSlider(this);
-                    slider->setMinimum(param->getMinimum() * 100);
-                    slider->setMaximum(param->getMaximum() * 100);
+                    slider->setMinimum(static_cast<int>(param->getMinimum() * 100));
+                    slider->setMaximum(static_cast<int>(param->getMaximum() * 100));
                     slider->setSingleStep(1);
-                    slider->setValue(param->getDefault() * 100);
+                    slider->setValue(static_cast<int>(param->getDefault() * 100));
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
@@ -847,7 +847,7 @@ void DlgPrefEQ::setMasterEQParameter(int i, double value) {
         EffectParameter* param = effect->getKnobParameterForSlot(i);
         if (param) {
             param->setValue(value);
-            m_masterEQSliders[i]->setValue(value * 100);
+            m_masterEQSliders[i]->setValue(static_cast<int>(value * 100));
 
             QLabel* valueLabel = m_masterEQValues[i];
             QString valueText = QString::number(value);

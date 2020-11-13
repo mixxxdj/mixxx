@@ -1,9 +1,10 @@
-#include <QMessageBox>
-
 #include "library/autodj/dlgautodj.h"
+
+#include <QMessageBox>
 
 #include "library/playlisttablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -154,6 +155,12 @@ DlgAutoDJ::DlgAutoDJ(
     spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
     labelTransitionAppendix->setToolTip(labelTransitionTooltip);
     fadeModeCombobox->setToolTip(fadeModeTooltip);
+
+    // Prevent the interactive widgets from being focused with Tab or Shift+Tab
+    fadeModeCombobox->setFocusPolicy(Qt::ClickFocus);
+    spinBoxTransition->setFocusPolicy(Qt::ClickFocus);
+    // work around QLineEdit being protected
+    spinBoxTransition->findChild<QLineEdit*>()->setFocusPolicy(Qt::ClickFocus);
 
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),

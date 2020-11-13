@@ -1,32 +1,10 @@
-/***************************************************************************
-                          sounddeviceportaudio.cpp
-                             -------------------
-    begin                : Sun Aug 15, 2007 (Stardate -315378.5417935057)
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/sounddeviceportaudio.h"
 
-#include <portaudio.h>
 #include <float.h>
 
-#include <QtDebug>
 #include <QRegularExpression>
 #include <QThread>
-
-#ifdef __LINUX__
-#include <QLibrary>
-#endif
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -34,21 +12,28 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/denormalsarezero.h"
+#include "util/fifo.h"
+#include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
+#ifdef __LINUX__
+// for PaAlsa_EnableRealtimeScheduling
+#include <pa_linux_alsa.h>
+#endif
 
 namespace {
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-const int kDriftReserve = 1;
+constexpr int kDriftReserve = 1;
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-const int kFifoSize = 2 * kDriftReserve + 1;
+constexpr int kFifoSize = 2 * kDriftReserve + 1;
+
+constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 
 // We warn only at invalid timing 3, since the first two
 // callbacks can be always wrong due to a setup/open jitter
@@ -88,16 +73,15 @@ const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))
 
 } // anonymous namespace
 
-
-
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
-                                           SoundManager* sm,
-                                           const PaDeviceInfo* deviceInfo,
-                                           unsigned int devIndex,
-                                           QHash<PaHostApiIndex, PaHostApiTypeId> apiIndexToTypeId)
+        SoundManager* sm,
+        const PaDeviceInfo* deviceInfo,
+        PaHostApiTypeId deviceTypeId,
+        unsigned int devIndex)
         : SoundDevice(config, sm),
           m_pStream(NULL),
           m_deviceInfo(deviceInfo),
+          m_deviceTypeId(deviceTypeId),
           m_outputFifo(NULL),
           m_inputFifo(NULL),
           m_outputDrift(false),
@@ -110,7 +94,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
-    if (apiIndexToTypeId.value(deviceInfo->hostApi) == paALSA) {
+    if (m_deviceTypeId == paALSA) {
         // PortAudio gives the device name including the ALSA hw device. The
         // ALSA hw device is an only somewhat reliable identifier; it may change
         // when an audio interface is unplugged or Linux is restarted. Separating
@@ -209,7 +193,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // in stereo and only take the first channel.
     // TODO(rryan): Remove once PortAudio has a solution built in (and
     // released).
-    if (m_deviceInfo->hostApi == paALSA) {
+    if (m_deviceTypeId == paALSA) {
         // Only engage workaround if the device has enough input and output
         // channels.
         if (m_deviceInfo->maxInputChannels >= 2 &&
@@ -221,7 +205,6 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             m_outputParams.channelCount = 2;
         }
     }
-
 
     // Sample rate
     if (m_dSampleRate <= 0) {
@@ -352,20 +335,10 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
 
 
 #ifdef __LINUX__
-    //Attempt to dynamically load and resolve stuff in the PortAudio library
-    //in order to enable RT priority with ALSA.
-    QLibrary portaudio("libportaudio.so.2");
-    if (!portaudio.load())
-       qWarning() << "Failed to dynamically load PortAudio library";
-    else
-       qDebug() << "Dynamically loaded PortAudio library";
-
-    EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve(
-            "PaAlsa_EnableRealtimeScheduling");
-    if (enableRealtime) {
-        enableRealtime(pStream, 1);
+    if (m_deviceTypeId == paALSA) {
+        qInfo() << "Enabling ALSA real-time scheduling";
+        PaAlsa_EnableRealtimeScheduling(pStream, 1);
     }
-    portaudio.unload();
 #endif
 
     // Start stream
@@ -1074,8 +1047,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 void SoundDevicePortAudio::updateAudioLatencyUsage(
         const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate
-            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_pMasterAudioLatencyUsage->set(
                 secInAudioCb

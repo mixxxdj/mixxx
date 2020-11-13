@@ -53,7 +53,7 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
     bool processingOccured = false;
     if (pIn == pOut) {
         // Effects are applied to the buffer in place
-        for (EngineEffectChain* pChain : m_chains) {
+        for (EngineEffectChain* pChain : qAsConst(m_chains)) {
             if (pChain != nullptr) {
                 if (pChain->process(inputHandle, outputHandle,
                                     pIn, pOut,
@@ -67,7 +67,7 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput;
 
-        for (EngineEffectChain* pChain : m_chains) {
+        for (EngineEffectChain* pChain : qAsConst(m_chains)) {
             if (pChain != nullptr) {
                 // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {

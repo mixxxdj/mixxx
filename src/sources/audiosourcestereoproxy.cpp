@@ -104,8 +104,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
         return readableSampleFrames;
     }
     DEBUG_ASSERT(
-            readableSampleFrames.frameIndexRange() <=
-            sampleFrames.frameIndexRange());
+            readableSampleFrames.frameIndexRange().isSubrangeOf(sampleFrames.frameIndexRange()));
     DEBUG_ASSERT(
             readableSampleFrames.frameIndexRange().start() >=
             sampleFrames.frameIndexRange().start());

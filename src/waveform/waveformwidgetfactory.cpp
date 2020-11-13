@@ -422,7 +422,7 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
     if (m_vsyncThread) {
-        m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+        m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
     }
 }
 
@@ -518,7 +518,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         //previousWidget->hold();
         double previousZoom = previousWidget->getZoomFactor();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
-        double previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
+        int previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -674,7 +674,7 @@ void WaveformWidgetFactory::render() {
         emit waveformUpdateTick();
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
-        m_frameCnt += 1.0;
+        m_frameCnt += 1.0f;
         mixxx::Duration timeCnt = m_time.elapsed();
         if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
@@ -991,9 +991,9 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
     m_vsyncThread = new VSyncThread(this);
-
+    m_vsyncThread->setObjectName(QStringLiteral("VSync"));
     m_vsyncThread->setVSyncType(m_vSyncType);
-    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+    m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
 
     connect(m_vsyncThread,
             &VSyncThread::vsyncRender,

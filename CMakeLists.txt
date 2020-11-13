@@ -5,6 +5,9 @@ set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everythi
 
 # Used for force control of color output
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
+# Option to disable symlinks
+set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
+
 # Support new IN_LIST if() operator
 if(POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
@@ -510,7 +513,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
   src/library/banshee/bansheeplaylistmodel.cpp
-  src/library/basecoverartdelegate.cpp
   src/library/baseexternallibraryfeature.cpp
   src/library/baseexternalplaylistmodel.cpp
   src/library/baseexternaltrackmodel.cpp
@@ -701,9 +703,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/audiosource.cpp
   src/sources/audiosourcestereoproxy.cpp
   src/sources/metadatasourcetaglib.cpp
+  src/sources/readaheadframebuffer.cpp
   src/sources/soundsource.cpp
   src/sources/soundsourceflac.cpp
   src/sources/soundsourceoggvorbis.cpp
+  src/sources/soundsourceprovider.cpp
   src/sources/soundsourceproviderregistry.cpp
   src/sources/soundsourceproxy.cpp
   src/sources/soundsourcesndfile.cpp
@@ -743,7 +747,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/taglib/trackmetadata_mp4.cpp
   src/track/taglib/trackmetadata_riff.cpp
   src/track/taglib/trackmetadata_xiph.cpp
-  src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
@@ -942,7 +945,7 @@ if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /W3)
   endif()
 else()
-  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra)
+  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Wfloat-conversion)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
@@ -975,6 +978,37 @@ target_compile_definitions(mixxx-lib PUBLIC
   # in release mode.
   $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
+
+# Mac-specific options
+if(APPLE)
+  option(MACOS_BUNDLE "Install files to proper locations to make an .app bundle" OFF)
+  option(MACAPPSTORE "Build for Mac App Store" OFF)
+  if(MACAPPSTORE)
+    target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
+  endif()
+endif()
+
+#
+# Installation directories
+#
+set(MIXXX_INSTALL_BINDIR ".")
+set(MIXXX_INSTALL_DATADIR ".")
+set(MIXXX_INSTALL_DOCDIR "./doc")
+set(MIXXX_INSTALL_LICENSEDIR "./doc")
+if (APPLE AND MACOS_BUNDLE)
+  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
+  set(MACOS_BUNDLE_NAME Mixxx)
+  set(MIXXX_INSTALL_PREFIX "${MACOS_BUNDLE_NAME}.app")
+  set(MIXXX_INSTALL_DATADIR "${MIXXX_INSTALL_PREFIX}/Contents/Resources")
+  set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
+  set(MIXXX_INSTALL_LICENSEDIR "${MIXXX_INSTALL_DATADIR}/licenses")
+elseif (UNIX)
+  include(GNUInstallDirs)
+  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
+  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
+  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
+  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+endif()
 
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
@@ -1013,10 +1047,10 @@ elseif(UNIX)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
     target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
+    # UNIX_SHARE_PATH must be set to the absolute path
+    # including the install prefix!
     target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx")
-    target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_LIB_PATH="${CMAKE_INSTALL_PREFIX}/lib/mixxx")
+      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}")
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
@@ -1032,17 +1066,33 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
-include(InstallRequiredSystemLibraries)
-set(MIXXX_INSTALL_BINDIR ".")
-set(MIXXX_INSTALL_DATADIR ".")
-set(MIXXX_INSTALL_DOCDIR "./doc")
-set(MIXXX_INSTALL_LICENSEDIR "./doc")
-if (UNIX)
-  include(GNUInstallDirs)
-  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
-  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
-  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+if (APPLE)
+  if (MACOS_BUNDLE)
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/osx/application.icns" DESTINATION ${MIXXX_INSTALL_DATADIR})
+
+    set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
+    set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
+    set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
+
+    set_target_properties(mixxx PROPERTIES
+        MACOSX_BUNDLE true
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
+    )
+  else()
+    get_filename_component(QT_PLUGIN_DIR "${Qt5_DIR}/../../../plugins/" ABSOLUTE)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/run-mixxx.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh" @ONLY)
+    execute_process(COMMAND chmod +x "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh")
+  endif()
+else()
+    include(InstallRequiredSystemLibraries)
+    install(
+        FILES
+            ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+        DESTINATION
+            "${MIXXX_INSTALL_BINDIR}"
+        COMPONENT
+            Libraries
+    )
 endif()
 
 install(
@@ -1050,16 +1100,8 @@ install(
     mixxx
   RUNTIME DESTINATION
     "${MIXXX_INSTALL_BINDIR}"
-)
-
-# System Runtime libraries
-install(
-  FILES
-    ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-  DESTINATION
-    "${MIXXX_INSTALL_BINDIR}"
-  COMPONENT
-    Libraries
+  BUNDLE DESTINATION
+    .
 )
 
 # Skins
@@ -1179,36 +1221,6 @@ if(UNIX AND NOT APPLE)
       "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
   )
 endif()
-
-# Packaging
-set(CPACK_PACKAGE_VENDOR "Mixxx Project")
-set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
-set(CPACK_PACKAGE_EXECUTABLES "mixxx" "Mixxx")
-set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
-set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_STRIP_FILES ON)
-set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
-
-set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
-set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer")
-set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5opengl5, libqt5svg5, libqt5xml5, libqt5sql5, libqt5sql5-sqlite")
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-
-set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
-set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
-set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
-set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
-set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
-
-include(CPack)
 
 #
 # Tests
@@ -1363,14 +1375,14 @@ add_custom_target(mixxx-benchmark
 )
 add_dependencies(mixxx-benchmark mixxx-test)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-testdata
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Symlinking test data to build directory..."
   )
 else()
   add_custom_target(mixxx-testdata
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Copying test data to build directory..."
   )
 endif()
@@ -1389,7 +1401,7 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 
-if(UNIX)
+if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
@@ -1400,11 +1412,11 @@ if(UNIX)
   )
 else()
   add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Copying resources to build directory..."
   )
   add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
     COMMENT "Copying QScriptEngine extensions to build directory..."
   )
 endif()
@@ -1529,10 +1541,11 @@ if(KEYFINDER)
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    ExternalProject_Add(keyfinder
-      GIT_REPOSITORY https://github.com/ibsh/libKeyFinder.git
-      GIT_TAG faa563f0898b3cbfbd2ed0696deebc8a9b0c9af6
-      GIT_SHALLOW TRUE
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    ExternalProject_Add(libKeyFinder
+      URL "https://github.com/ibsh/libKeyFinder/archive/v2.2.2.zip"
+      URL_HASH SHA256=f04ff63c9710d969e79b71bde18abd720e886f537951a1045cc50cb497a72492
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
         -DBUILD_STATIC_LIBS=ON
@@ -1556,7 +1569,7 @@ if(KEYFINDER)
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
 
     add_library(mixxx-keyfinder STATIC IMPORTED)
-    add_dependencies(mixxx-keyfinder keyfinder)
+    add_dependencies(mixxx-keyfinder libKeyFinder)
     set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
     target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
     target_include_directories(mixxx-keyfinder INTERFACE "${KeyFinder_INSTALL_DIR}/include")
@@ -2007,6 +2020,7 @@ if(NOT CLANG_SANITIZERS STREQUAL "")
   endif()
   list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
   target_compile_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
+  target_link_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
 endif()
 
 # CoreAudio MP3/AAC Decoder
@@ -2243,14 +2257,6 @@ if(MAD)
   target_link_libraries(mixxx-lib PUBLIC MAD::MAD ID3Tag::ID3Tag)
 endif()
 
-# Mac App Store
-if(APPLE)
-  option(MACAPPSTORE "Build for Mac App Store" OFF)
-  if(MACAPPSTORE)
-    target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
-  endif()
-endif()
-
 # Media Foundation AAC Decoder Plugin
 find_package(MediaFoundation)
 cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" ON "MediaFoundation_FOUND" OFF)
@@ -2400,4 +2406,69 @@ if(WAVPACK)
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
+endif()
+
+# Packaging
+set(CPACK_PACKAGE_VENDOR "Mixxx Project")
+set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
+set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
+set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_BRANCH}-r${GIT_COMMIT_COUNT}-${GIT_COMMIT_HASH}")
+
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
+set(CPACK_STRIP_FILES ON)
+set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
+
+set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer")
+set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5opengl5, libqt5svg5, libqt5xml5, libqt5sql5, libqt5sql5-sqlite")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
+set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
+set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
+set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
+
+include(CPack)
+
+if(APPLE AND MACOS_BUNDLE)
+    macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
+        get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
+        if(EXISTS "${_qt_plugin_path}")
+            get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
+            get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
+            get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
+            set(_qt_plugin_dest "${_prefix}/Contents/plugins/${_qt_plugin_type}")
+            install(FILES "${_qt_plugin_path}"
+                DESTINATION "${_qt_plugin_dest}")
+            set(${_qt_plugins_var}
+                "${${_qt_plugins_var}};\$ENV{DEST_DIR}\${CMAKE_INSTALL_PREFIX}/${_qt_plugin_dest}/${_qt_plugin_file}")
+        else()
+            message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
+        endif()
+    endmacro()
+
+
+    install_qt5_plugin(Qt5::QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QSvgIconPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt5::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+
+    set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
+    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib;${Qt5Widgets_DIR}/../..")
+    set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/build/osx/entitlements.plist")
+
+    configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
+    install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()

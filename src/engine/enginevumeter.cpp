@@ -1,25 +1,22 @@
-/***************************************************************************
-                          enginevumeter.cpp  -  description
-                             -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include "engine/enginevumeter.h"
 
 #include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
 #include "util/math.h"
 #include "util/sample.h"
+
+namespace {
+
+// Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
+constexpr int kVuUpdateRate = 30;  // in 1/s, fits to display frame rate
+constexpr int kPeakDuration = 500; // in ms
+
+// Smoothing Factors
+// Must be from 0-1 the lower the factor, the more smoothing that is applied
+constexpr CSAMPLE kAttackSmoothing = 1.0f; // .85
+constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
+
+} // namespace
 
 EngineVuMeter::EngineVuMeter(QString group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
@@ -68,7 +65,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     m_iSamplesCalculated += iBufferSize / 2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (sampleRate / VU_UPDATE_RATE)) {
+    if (m_iSamplesCalculated > (sampleRate / kVuUpdateRate)) {
         doSmooth(m_fRMSvolumeL,
                 log10(SHRT_MAX * m_fRMSvolumeSumL
                                 / (m_iSamplesCalculated * 1000) + 1));
@@ -99,7 +96,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_ctrlPeakIndicatorL->set(1.);
-        m_peakDurationL = PEAK_DURATION * sampleRate / iBufferSize / 2000;
+        m_peakDurationL = kPeakDuration * sampleRate / iBufferSize / 2000;
     } else if (m_peakDurationL <= 0) {
         m_ctrlPeakIndicatorL->set(0.);
     } else {
@@ -108,22 +105,25 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_ctrlPeakIndicatorR->set(1.);
-        m_peakDurationR = PEAK_DURATION * sampleRate / iBufferSize / 2000;
+        m_peakDurationR = kPeakDuration * sampleRate / iBufferSize / 2000;
     } else if (m_peakDurationR <= 0) {
         m_ctrlPeakIndicatorR->set(0.);
     } else {
         --m_peakDurationR;
     }
 
-    m_ctrlPeakIndicator->set(m_ctrlPeakIndicatorR->get() || m_ctrlPeakIndicatorL->get());
+    m_ctrlPeakIndicator->set(
+            (m_ctrlPeakIndicatorR->toBool() || m_ctrlPeakIndicatorL->toBool())
+                    ? 1.0
+                    : 0.0);
 }
 
 void EngineVuMeter::doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume)
 {
     if (currentVolume > newVolume)
-        currentVolume -= DECAY_SMOOTHING * (currentVolume - newVolume);
+        currentVolume -= kDecaySmoothing * (currentVolume - newVolume);
     else
-        currentVolume += ATTACK_SMOOTHING * (newVolume - currentVolume);
+        currentVolume += kAttackSmoothing * (newVolume - currentVolume);
     if (currentVolume < 0)
         currentVolume=0;
     if (currentVolume > 1.0)

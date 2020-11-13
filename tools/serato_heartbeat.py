@@ -117,10 +117,14 @@ def main(argv=None):
 
     stop_event = threading.Event()
     t1 = threading.Thread(
-        target=serato_keepalive, args=(q, stop_event), daemon=True,
+        target=serato_keepalive,
+        args=(q, stop_event),
+        daemon=True,
     )
     t2 = threading.Thread(
-        target=send_midi_messages, args=(q, port), daemon=True,
+        target=send_midi_messages,
+        args=(q, port),
+        daemon=True,
     )
     t1.start()
     t2.start()

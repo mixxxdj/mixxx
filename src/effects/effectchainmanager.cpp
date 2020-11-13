@@ -144,13 +144,13 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
 }
 
 void EffectChainManager::refeshAllRacks() {
-    for (const auto& pRack: m_standardEffectRacks) {
+    for (const auto& pRack : qAsConst(m_standardEffectRacks)) {
         pRack->refresh();
     }
-    for (const auto& pRack: m_equalizerEffectRacks) {
+    for (const auto& pRack : qAsConst(m_equalizerEffectRacks)) {
         pRack->refresh();
     }
-    for (const auto& pRack: m_quickEffectRacks) {
+    for (const auto& pRack : qAsConst(m_quickEffectRacks)) {
         pRack->refresh();
     }
 }
@@ -166,7 +166,7 @@ bool EffectChainManager::saveEffectChains() {
 
     QDomElement rootNode = doc.documentElement();
 
-    for (EffectRackPointer pRack : m_standardEffectRacks) {
+    for (const StandardEffectRackPointer& pRack : qAsConst(m_standardEffectRacks)) {
         rootNode.appendChild(pRack->toXml(&doc));
     }
     // TODO? Save QuickEffects in effects.xml too, or keep stored in ConfigObjects?

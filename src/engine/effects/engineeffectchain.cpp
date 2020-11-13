@@ -77,7 +77,7 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
 bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     // TODO(rryan): Parameter interpolation.
     m_mixMode = message.SetEffectChainParameters.mix_mode;
-    m_dMix = message.SetEffectChainParameters.mix;
+    m_dMix = static_cast<CSAMPLE>(message.SetEffectChainParameters.mix);
 
     if (m_enableState != EffectEnableState::Disabled && !message.SetEffectParameters.enabled) {
         m_enableState = EffectEnableState::Disabling;
@@ -212,7 +212,7 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputCh
     for (auto&& outputChannelStatus : outputMap) {
         outputChannelStatus.enableState = EffectEnableState::Disabled;
     }
-    for (EngineEffect* pEffect : m_effects) {
+    for (EngineEffect* pEffect : qAsConst(m_effects)) {
         if (pEffect != nullptr) {
             pEffect->deleteStatesForInputChannel(inputChannel);
         }
@@ -265,7 +265,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         CSAMPLE* pIntermediateOutput;
         bool firstAddDryToWetEffectProcessed = false;
 
-        for (EngineEffect* pEffect: m_effects) {
+        for (EngineEffect* pEffect : qAsConst(m_effects)) {
             if (pEffect != nullptr) {
                 // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {
@@ -315,15 +315,23 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                 // Dry/Wet mode: output = (input * (1-mix knob)) + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
                         pOut,
-                        pIn, 1.0 - lastCallbackMixKnob, 1.0 - currentMixKnob,
-                        pIntermediateInput, lastCallbackMixKnob, currentMixKnob,
+                        pIn,
+                        1.0f - lastCallbackMixKnob,
+                        1.0f - currentMixKnob,
+                        pIntermediateInput,
+                        lastCallbackMixKnob,
+                        currentMixKnob,
                         numSamples);
             } else {
                 // Dry+Wet mode: output = input + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
                         pOut,
-                        pIn, 1.0, 1.0,
-                        pIntermediateInput, lastCallbackMixKnob, currentMixKnob,
+                        pIn,
+                        1.0f,
+                        1.0f,
+                        pIntermediateInput,
+                        lastCallbackMixKnob,
+                        currentMixKnob,
                         numSamples);
             }
         }

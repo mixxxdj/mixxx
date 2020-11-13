@@ -18,7 +18,6 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
-#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QGLFormat>
 #include <QGLWidget>
@@ -61,7 +60,6 @@
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
 #include "util/experiment.h"
@@ -75,6 +73,7 @@
 #include "util/timer.h"
 #include "util/translations.h"
 #include "util/version.h"
+#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
@@ -179,6 +178,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
 
     initializeKeyboard();
+    installEventFilter(m_pKeyboard);
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(
@@ -233,7 +233,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
                 static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
-    setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
@@ -581,7 +580,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         QSet<QString>::fromList(prev_plugins_list);
 #endif
 
-    QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
+    const QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
     QSet<QString> curr_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
@@ -590,8 +589,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
-    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-            QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
+    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"), curr_plugins_list.join(","));
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
@@ -810,7 +808,7 @@ void MixxxMainWindow::finalize() {
 
     // Check for leaked ControlObjects and give warnings.
     {
-        QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
                 ControlDoublePrivate::takeAllInstances();
         if (!leakedControls.isEmpty()) {
             qWarning()
@@ -1438,15 +1436,8 @@ void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
-    QPoint initPosition = pos();
-    // frameSize()  : Window size including all borders and only if the window manager works.
-    // size() : Window without the borders nor title, but including the Menu!
-    // centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize;
-    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
-    if (pWidget) {
-        initSize = centralWidget()->size();
-    }
+    // safe geometry for later restoration
+    const QRect initGeometry = geometry();
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1498,19 +1489,16 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else if (!initSize.isEmpty()) {
-        // Not all OSs and/or window managers keep the window inside of the screen, so force it.
-        int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
-        int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
-
-        const QScreen* primaryScreen = getPrimaryScreen();
-        if (primaryScreen) {
-            newX = std::max(0, std::min(newX, primaryScreen->geometry().width() - m_pWidgetParent->width()));
-            newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pWidgetParent->height()));
-            move(newX,newY);
-        } else {
-            qWarning() << "Unable to move window inside screen borders.";
-        }
+    } else {
+        // Programatic placement at this point is very problematic.
+        // The screen() method returns stale data (primary screen)
+        // until the user interacts with mixxx again. Keyboard shortcuts
+        // do not count, moving window, opening menu etc does
+        // Therefore the placement logic was removed by a simple geometry restore.
+        // If the minimum size of the new skin is larger then the restored
+        // geometry, the window will be enlarged right & bottom which is
+        // safe as the menu is still reachable.
+        setGeometry(initGeometry);
     }
 
     qDebug() << "rebootMixxxView DONE";
@@ -1534,26 +1522,6 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     }
     // standard event processing
     return QObject::eventFilter(obj, event);
-}
-
-bool MixxxMainWindow::event(QEvent* e) {
-    switch(e->type()) {
-    case QEvent::TouchBegin:
-    case QEvent::TouchUpdate:
-    case QEvent::TouchEnd:
-    {
-        // If the touch event falls through to the main widget, no touch widget
-        // was touched, so we resend it as a mouse event.
-        // We have to accept it here, so QApplication will continue to deliver
-        // the following events of this touch point as well.
-        QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
-        touchEvent->accept();
-        return true;
-    }
-    default:
-        break;
-    }
-    return QWidget::event(e);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
@@ -1604,15 +1572,15 @@ bool MixxxMainWindow::confirmExit() {
     unsigned int deckCount = m_pPlayerManager->numDecks();
     unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
-        if (ControlObject::get(
-                ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
+        if (ControlObject::toBool(
+                    ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
     for (unsigned int i = 0; i < samplerCount; ++i) {
-        if (ControlObject::get(
-                ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
+        if (ControlObject::toBool(
+                    ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;
             break;
         }

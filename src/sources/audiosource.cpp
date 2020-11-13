@@ -201,11 +201,10 @@ bool AudioSource::verifyReadable() {
             frameIndexRange().splitAndShrinkFront(numSampleFrames),
             SampleBuffer::WritableSlice(sampleBuffer));
     auto readableSampleFrames = readSampleFrames(writableSampleFrames);
-    DEBUG_ASSERT(
-            readableSampleFrames.frameIndexRange() <=
-            writableSampleFrames.frameIndexRange());
-    if (readableSampleFrames.frameIndexRange() <
-            writableSampleFrames.frameIndexRange()) {
+    DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(
+            writableSampleFrames.frameIndexRange()));
+    if (readableSampleFrames.frameIndexRange().length() <
+            writableSampleFrames.frameIndexRange().length()) {
         kLogger.warning()
                 << "Read test failed:"
                 << "expected ="
@@ -217,10 +216,16 @@ bool AudioSource::verifyReadable() {
     return true;
 }
 
-WritableSampleFrames AudioSource::clampWritableSampleFrames(
+std::optional<WritableSampleFrames> AudioSource::clampWritableSampleFrames(
         WritableSampleFrames sampleFrames) const {
-    const auto readableFrameIndexRange =
-            clampFrameIndexRange(sampleFrames.frameIndexRange());
+    const auto clampedFrameIndexRange =
+            intersect2(sampleFrames.frameIndexRange(), frameIndexRange());
+
+    if (!clampedFrameIndexRange) {
+        return std::nullopt;
+    }
+    const auto readableFrameIndexRange = *clampedFrameIndexRange;
+
     // adjust offset and length of the sample buffer
     DEBUG_ASSERT(
             sampleFrames.frameIndexRange().start() <=
@@ -271,8 +276,16 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
 
 ReadableSampleFrames AudioSource::readSampleFrames(
         WritableSampleFrames sampleFrames) {
-    const auto writable =
+    const auto clamped =
             clampWritableSampleFrames(sampleFrames);
+    if (!clamped) {
+        // result is undefined
+        // TODO: Changing the return type to std::optional<ReadableSampleFrames>
+        // and instead returning std::nullopt here would be more appropriate
+        return ReadableSampleFrames(
+                IndexRange::forward(sampleFrames.frameIndexRange().start(), 0));
+    }
+    const auto writable = *clamped;
     if (writable.frameIndexRange().empty()) {
         // result is empty
         return ReadableSampleFrames(writable.frameIndexRange());
@@ -280,7 +293,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
         // forward clamped request
         ReadableSampleFrames readable = readSampleFramesClamped(writable);
         DEBUG_ASSERT(readable.frameIndexRange().empty() ||
-                readable.frameIndexRange() <= writable.frameIndexRange());
+                readable.frameIndexRange().isSubrangeOf(writable.frameIndexRange()));
         if (readable.frameIndexRange() != writable.frameIndexRange()) {
             kLogger.warning()
                     << "Failed to read sample frames:"
@@ -309,7 +322,8 @@ ReadableSampleFrames AudioSource::readSampleFrames(
                             readable.frameIndexRange().end());
                 }
             }
-            DEBUG_ASSERT(shrinkedFrameIndexRange < m_frameIndexRange);
+            DEBUG_ASSERT(shrinkedFrameIndexRange.isSubrangeOf(m_frameIndexRange) &&
+                    shrinkedFrameIndexRange.length() < m_frameIndexRange.length());
             kLogger.info()
                     << "Shrinking readable frame index range:"
                     << "before =" << m_frameIndexRange
@@ -328,7 +342,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
 
 void AudioSource::adjustFrameIndexRange(
         IndexRange frameIndexRange) {
-    DEBUG_ASSERT(frameIndexRange <= m_frameIndexRange);
+    DEBUG_ASSERT(frameIndexRange.isSubrangeOf(m_frameIndexRange));
     m_frameIndexRange = frameIndexRange;
 }
 

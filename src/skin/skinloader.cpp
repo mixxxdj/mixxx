@@ -4,7 +4,6 @@
 #include "skin/skinloader.h"
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QString>
 #include <QtDebug>
@@ -50,7 +49,8 @@ QList<QDir> SkinLoader::getSkinSearchPaths() const {
 }
 
 QString SkinLoader::getSkinPath(const QString& skinName) const {
-    for (QDir dir : getSkinSearchPaths()) {
+    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+    for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
             return dir.absolutePath();
         }

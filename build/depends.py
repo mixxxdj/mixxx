@@ -948,7 +948,9 @@ class MixxxCore(Feature):
                    "src/sources/audiosource.cpp",
                    "src/sources/audiosourcestereoproxy.cpp",
                    "src/sources/metadatasourcetaglib.cpp",
+                   "src/sources/readaheadframebuffer.cpp",
                    "src/sources/soundsource.cpp",
+                   "src/sources/soundsourceprovider.cpp",
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
@@ -1136,7 +1138,6 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/colordelegate.cpp",
-                   "src/library/basecoverartdelegate.cpp",
                    "src/library/coverartdelegate.cpp",
                    "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",
@@ -1336,7 +1337,6 @@ class MixxxCore(Feature):
                    "src/util/logger.cpp",
                    "src/util/logging.cpp",
                    "src/util/cmdlineargs.cpp",
-                   "src/util/autohidpi.cpp",
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
@@ -1631,8 +1631,6 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
             lib_path = os.path.join(prefix, build.env.get(
                 'LIBDIR', default='lib'), 'mixxx')
-            build.env.Append(
-                CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,

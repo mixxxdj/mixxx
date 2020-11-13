@@ -24,6 +24,7 @@
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/qt.h"
@@ -384,7 +385,8 @@ void WTrackMenu::setupActions() {
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
 
-        for (const auto& updateInExternalTrackCollection : m_updateInExternalTrackCollections) {
+        for (const auto& updateInExternalTrackCollection :
+                qAsConst(m_updateInExternalTrackCollections)) {
             ExternalTrackCollection* externalTrackCollection =
                     updateInExternalTrackCollection.externalTrackCollection;
             if (externalTrackCollection) {
@@ -781,6 +783,8 @@ std::unique_ptr<mixxx::TrackPointerIterator> WTrackMenu::newTrackPointerIterator
         if (m_trackIndexList.isEmpty()) {
             return nullptr;
         }
+        // m_pTrackModel must not be modified during the iteration,
+        // neither directly nor indirectly through signals!!!
         return std::make_unique<mixxx::TrackPointerModelIterator>(
                 m_pTrackModel,
                 m_trackIndexList);
@@ -1480,6 +1484,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
             m_pTrackModel);
     connect(m_pDlgTrackInfo.get(),
             &QDialog::finished,
+            this,
             [this]() {
                 if (m_pDlgTrackInfo.get() == sender()) {
                     m_pDlgTrackInfo.release()->deleteLater();
@@ -1503,6 +1508,7 @@ void WTrackMenu::slotShowDlgTagFetcher() {
             m_pTrackModel);
     connect(m_pDlgTagFetcher.get(),
             &QDialog::finished,
+            this,
             [this]() {
                 if (m_pDlgTagFetcher.get() == sender()) {
                     m_pDlgTagFetcher.release()->deleteLater();

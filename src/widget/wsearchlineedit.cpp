@@ -163,9 +163,9 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
                 << "Invisible foreground color - using default color as fallback";
         foregroundColor = defaultForegroundColor;
     }
-    kLogger.debug()
-            << "Foreground color:"
-            << foregroundColor;
+    //kLogger.debug()
+    //        << "Foreground color:"
+    //        << foregroundColor;
 
     QPalette pal = palette();
     DEBUG_ASSERT(backgroundColor != foregroundColor);
@@ -174,9 +174,9 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     auto placeholderColor = foregroundColor;
     placeholderColor.setAlpha(placeholderColor.alpha() * 3 / 4); // 75% opaque
-    kLogger.debug()
-            << "Placeholder color:"
-            << placeholderColor;
+    //kLogger.debug()
+    //        << "Placeholder color:"
+    //        << placeholderColor;
     pal.setBrush(QPalette::PlaceholderText, placeholderColor);
 #endif
     setPalette(pal);

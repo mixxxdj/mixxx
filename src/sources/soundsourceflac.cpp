@@ -13,7 +13,7 @@ const Logger kLogger("SoundSourceFLAC");
 // The maximum number of retries to fix seek errors. On a seek error
 // the next seek will start one (or more) sample blocks before the
 // position of the preceding seek operation that has failed.
-const int kSeekErrorMaxRetryCount = 3;
+constexpr int kSeekErrorMaxRetryCount = 3;
 
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
 
@@ -67,12 +67,28 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 
 // end callbacks
 
-const unsigned kBitsPerSampleDefault = 0;
+const SINT kBitsPerSampleDefault = 0;
 
 } // namespace
 
+//static
+const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
+
+//static
+const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+        QStringLiteral("flac"),
+};
+
+SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
+
 SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
-        : SoundSource(url, "flac"),
+        : SoundSource(url),
           m_file(getLocalFileName()),
           m_decoder(nullptr),
           m_maxBlocksize(0),
@@ -488,7 +504,8 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         0,
                         metadata->data.stream_info.total_samples));
 
-        const unsigned bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        const SINT bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        DEBUG_ASSERT(bitsPerSample > 0);
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
@@ -507,15 +524,19 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << bitsPerSample << " <> " << m_bitsPerSample;
             }
         }
-        m_maxBlocksize = metadata->data.stream_info.max_blocksize;
-        if (0 >= m_maxBlocksize) {
+        DEBUG_ASSERT(m_maxBlocksize >= 0);
+        m_maxBlocksize = math_max(
+                m_maxBlocksize,
+                static_cast<SINT>(metadata->data.stream_info.max_blocksize));
+        if (m_maxBlocksize > 0) {
+            const SINT sampleBufferCapacity =
+                    m_maxBlocksize * getSignalInfo().getChannelCount();
+            if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+                m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+            }
+        } else {
             kLogger.warning()
                     << "Invalid max. blocksize" << m_maxBlocksize;
-        }
-        const SINT sampleBufferCapacity =
-                m_maxBlocksize * getSignalInfo().getChannelCount();
-        if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
-            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
         }
         break;
     }
@@ -549,23 +570,6 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
     // will bail. libFLAC docs say to not close the decoder here -- bkgood
-}
-
-QString SoundSourceProviderFLAC::getName() const {
-    return "Xiph.org libFLAC";
-}
-
-QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("flac");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

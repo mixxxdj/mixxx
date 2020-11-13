@@ -78,7 +78,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
     m_inputStreamStartTimeUs = getNetworkTimeUs();
     m_inputStreamFramesWritten = 0;
 
-    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }
@@ -90,7 +90,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
 void EngineNetworkStream::stopStream() {
     m_inputStreamStartTimeUs = -1;
 
-    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }
@@ -121,7 +121,8 @@ void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
 }
 
 qint64 EngineNetworkStream::getInputStreamTimeFrames() {
-    return static_cast<double>(getInputStreamTimeUs()) * m_sampleRate / 1000000.0;
+    return static_cast<qint64>(static_cast<double>(getInputStreamTimeUs()) *
+            m_sampleRate / 1000000.0);
 }
 
 qint64 EngineNetworkStream::getInputStreamTimeUs() {

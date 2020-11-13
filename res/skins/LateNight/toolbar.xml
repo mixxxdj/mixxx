@@ -120,12 +120,24 @@
 
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
-      <Label>
-        <ObjectName>ToolbarLogo</ObjectName>
-        <Size>74f,24f</Size>
-      </Label>
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><Size>7f,min</Size></WidgetGroup>
+      <StatusLight>
+        <TooltipId>autodj_status</TooltipId>
+        <ObjectName>AutoDjStatus</ObjectName>
+        <Size>30f,22f</Size>
+        <NumberPos>3</NumberPos>
+        <PathStatusLight1>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight1>
+        <PathStatusLight2>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight2>
+        <PathStatusLight3>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight3>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+        </Connection>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </StatusLight>
 
       <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
@@ -141,23 +153,12 @@
 
       <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>BatteryBox</ObjectName>
-        <Layout>horizontal</Layout>
-        <Children>
-          <Battery>
-            <ObjectName>Battery</ObjectName>
-            <Size>24,24</Size>
-            <SizePolicy>f,f</SizePolicy>
-            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
-            <NumberStates>8</NumberStates>
-            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
-            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
-          </Battery>
-        </Children>
-      </WidgetGroup><!-- BatteryBox -->
+      <Label>
+        <ObjectName>ToolbarLogo</ObjectName>
+        <Size>74f,24f</Size>
+      </Label>
 
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>7f,min</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>LatencyBatteryContainer</ObjectName>
@@ -203,7 +204,25 @@
         </Children>
       </WidgetGroup><!-- LatencyBatteryContainer -->
 
-      <WidgetGroup><Size>12f,min</Size></WidgetGroup>
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>BatteryBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Battery>
+            <ObjectName>Battery</ObjectName>
+            <Size>24,24</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charged.svg</PixmapCharged>
+            <NumberStates>8</NumberStates>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+          </Battery>
+        </Children>
+      </WidgetGroup><!-- BatteryBox -->
+
+      <WidgetGroup><Size>9f,min</Size></WidgetGroup>
 
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>

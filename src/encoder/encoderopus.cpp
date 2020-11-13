@@ -168,6 +168,9 @@ int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
         return -1;
     }
     m_samplerate = samplerate;
+    DEBUG_ASSERT(m_samplerate == 8000 || m_samplerate == 12000 ||
+            m_samplerate == 16000 || m_samplerate == 24000 ||
+            m_samplerate == 48000);
 
     int createResult = 0;
     m_pOpus = opus_encoder_create(m_samplerate, m_channels, OPUS_APPLICATION_AUDIO, &createResult);
@@ -197,10 +200,7 @@ int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
         opus_encoder_ctl(m_pOpus, OPUS_SET_VBR_CONSTRAINT(0)); // Unconstrained VBR
     }
 
-    double samplingPeriodMs = ( 1.0 / ((double)m_samplerate) ) * 1000.0;
-    double samplesPerChannel = kOpusFrameMs / samplingPeriodMs;
-
-    m_readRequired = samplesPerChannel * m_channels;
+    m_readRequired = m_samplerate * kOpusFrameMs;
     m_pFifoChunkBuffer = std::make_unique<mixxx::SampleBuffer>(m_readRequired);
     initStream();
 
@@ -244,7 +244,7 @@ void EncoderOpus::pushHeaderPacket() {
     frame.append(0x01);
 
     // Channel count (1 byte)
-    frame.append((unsigned char)m_channels);
+    frame.append(static_cast<unsigned char>(m_channels));
 
     // Pre-skip (2 bytes, little-endian)
     int preskip = 0;

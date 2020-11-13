@@ -19,7 +19,7 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
     Qt::Alignment hflags;
     Qt::Alignment vflags;
 
-    for (auto stringFlag : stringFlags) {
+    for (const auto& stringFlag : stringFlags) {
         if (stringFlag == "center") {
             hflags |= Qt::AlignHCenter;
             vflags |= Qt::AlignVCenter;
@@ -80,7 +80,8 @@ WaveformMark::WaveformMark(const QString& group,
     } else {
         color = WSkinColor::getCorrectColor(color);
     }
-    setBaseColor(color);
+    int dimBrightThreshold = signalColors.getDimBrightThreshold();
+    setBaseColor(color, dimBrightThreshold);
 
     m_textColor = context.selectString(node, "TextColor");
     if (!m_textColor.isValid()) {
@@ -103,11 +104,14 @@ WaveformMark::WaveformMark(const QString& group,
     }
 }
 
-void WaveformMark::setBaseColor(QColor baseColor) {
+void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
     m_image = QImage();
     m_fillColor = baseColor;
-    m_borderColor = Color::chooseContrastColor(baseColor);
-    m_labelColor = Color::chooseColorByBrightness(baseColor, QColor(255,255,255,255), QColor(0,0,0,255));
+    m_borderColor = Color::chooseContrastColor(baseColor, dimBrightThreshold);
+    m_labelColor = Color::chooseColorByBrightness(baseColor,
+            QColor(255, 255, 255, 255),
+            QColor(0, 0, 0, 255),
+            dimBrightThreshold);
 };
 
 bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {

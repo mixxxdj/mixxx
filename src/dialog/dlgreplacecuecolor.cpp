@@ -24,7 +24,7 @@ const QString kColorButtonStyleSheetDark = QStringLiteral(
 void setButtonColor(QPushButton* button, const QColor& color) {
     button->setText(color.name());
     button->setStyleSheet(
-            (Color::isDimmColor(color)
+            (Color::isDimColor(color)
                             ? kColorButtonStyleSheetDark
                             : kColorButtonStyleSheetLight)
                     .arg(color.name()));
@@ -98,6 +98,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     m_pNewColorPickerAction->setSelectedColor(firstColor);
     connect(m_pNewColorPickerAction,
             &WColorPickerAction::colorPicked,
+            this,
             [this](mixxx::RgbColor::optional_t color) {
                 if (color) {
                     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(*color));
@@ -130,6 +131,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
+            this,
             [this](mixxx::RgbColor::optional_t color) {
                 if (color) {
                     setButtonColor(pushButtonCurrentColor,
@@ -153,6 +155,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     connect(buttonBox,
             &QDialogButtonBox::clicked,
+            this,
             [this](QAbstractButton* button) {
                 switch (buttonBox->buttonRole(button)) {
                 case QDialogButtonBox::RejectRole:
@@ -381,7 +384,7 @@ void DlgReplaceCueColor::slotApply() {
     bool canceled = false;
 
     QMultiMap<TrackPointer, int> cues;
-    for (const auto& row : rows) {
+    for (const auto& row : qAsConst(rows)) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
             canceled = true;

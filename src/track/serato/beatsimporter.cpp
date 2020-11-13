@@ -68,7 +68,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
     beatPositionMillis =
             static_cast<double>(m_pTerminalMarker->positionSecs()) * 1000 +
             timingOffsetMillis;
-    beatLengthMillis = 60'000.0 / static_cast<double>(m_pTerminalMarker->bpm());
+    beatLengthMillis = 60000.0 / static_cast<double>(m_pTerminalMarker->bpm());
     VERIFY_OR_DEBUG_ASSERT(m_pTerminalMarker->positionSecs() >= 0 && beatLengthMillis > 0) {
         return {};
     }

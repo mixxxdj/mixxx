@@ -17,9 +17,14 @@ const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;
 const double WaveformWidgetRenderer::s_waveformDefaultZoom = 3.0;
 const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
+namespace {
+constexpr int kDefaultDimBrightThreshold = 127;
+}
+
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         : m_group(group),
           m_orientation(Qt::Horizontal),
+          m_dimBrightThreshold(kDefaultDimBrightThreshold),
           m_height(-1),
           m_width(-1),
           m_devicePixelRatio(1.0f),
@@ -98,8 +103,8 @@ bool WaveformWidgetRenderer::init() {
 
 void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     // For a valid track to render we need
-    m_trackSamples = m_pTrackSamplesControlObject->get();
-    if (m_trackSamples <= 0.0) {
+    m_trackSamples = static_cast<int>(m_pTrackSamplesControlObject->get());
+    if (m_trackSamples <= 0) {
         return;
     }
 
@@ -128,15 +133,15 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
-    if (m_audioSamplePerPixel && truePlayPos != -1) {
+    if (m_audioSamplePerPixel != 0 && truePlayPos != -1) {
         // Track length in pixels.
         m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
 
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount;
-        m_totalVSamples = m_trackPixelCount * m_visualSamplePerPixel;
-        m_playPosVSample = m_playPos * m_totalVSamples;
+        m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
+        m_playPosVSample = static_cast<int>(m_playPos * m_totalVSamples);
 
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;
@@ -229,8 +234,8 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
-    const int lineX = m_width * m_playMarkerPosition;
-    const int lineY = m_height * m_playMarkerPosition;
+    const int lineX = static_cast<int>(m_width * m_playMarkerPosition);
+    const int lineY = static_cast<int>(m_height * m_playMarkerPosition);
 
     // draw dim outlines to increase playpos/waveform contrast
     painter->setOpacity(0.5);
@@ -318,6 +323,12 @@ void WaveformWidgetRenderer::setup(
         m_orientation = Qt::Horizontal;
     }
 
+    bool okay;
+    m_dimBrightThreshold = context.selectInt(node, QStringLiteral("DimBrightThreshold"), &okay);
+    if (!okay) {
+        m_dimBrightThreshold = kDefaultDimBrightThreshold;
+    }
+
     m_colors.setup(node, context);
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->setScaleFactor(m_scaleFactor);
@@ -345,8 +356,13 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
 }
 
 WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) const {
-    for (const auto& pMark : m_markPositions.keys()) {
-        int markImagePositionInWidgetSpace = m_markPositions[pMark];
+    for (auto it = m_markPositions.constBegin(); it != m_markPositions.constEnd(); ++it) {
+        WaveformMarkPointer pMark = it.key();
+        VERIFY_OR_DEBUG_ASSERT(pMark) {
+            continue;
+        }
+
+        int markImagePositionInWidgetSpace = it.value();
         QPoint pointInImageSpace;
         if (getOrientation() == Qt::Horizontal) {
             pointInImageSpace = QPoint(point.x() - markImagePositionInWidgetSpace, point.y());

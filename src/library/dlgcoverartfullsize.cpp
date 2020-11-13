@@ -1,13 +1,14 @@
-#include <QDesktopWidget>
+#include "library/dlgcoverartfullsize.h"
+
 #include <QRect>
 #include <QScreen>
 #include <QStyle>
 #include <QWheelEvent>
 
-#include "library/dlgcoverartfullsize.h"
-#include "library/coverartutils.h"
 #include "library/coverartcache.h"
-#include "util/compatibility.h"
+#include "library/coverartutils.h"
+#include "track/track.h"
+#include "util/widgethelper.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
@@ -45,10 +46,27 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
     setupUi(this);
 }
 
+void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
+    if (parentWidget()) {
+        // Since the widget has a parent, this instance will be reused again.
+        // We need to prevent qt from destroying it's children
+        hide();
+        slotLoadTrack(nullptr);
+        event->ignore();
+    } else {
+        QDialog::closeEvent(event);
+    }
+}
+
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
+    // The real size will be calculated later.
+    // If you zoom in so the window is larger then the desktop, close the
+    // window and reopen, the window will not be resized correctly
+    // by slotCoverFound. Setting a small fixed size before show fixes this
+    resize(100, 100);
     show();
     raise();
     activateWindow();
@@ -114,6 +132,8 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
     if (m_pLoadedTrack) {
         CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
+    } else {
+        coverArt->setPixmap(QPixmap());
     }
 }
 
@@ -143,21 +163,27 @@ void DlgCoverArtFullSize::slotCoverFound(
     // whitespace appearing on the side when resizing a window whose
     // borders touch the edges of the screen.
     QSize dialogSize = m_pixmap.size();
-
-    const QScreen* primaryScreen = getPrimaryScreen();
-    QRect availableScreenGeometry;
-    if (primaryScreen) {
-        availableScreenGeometry = primaryScreen->availableGeometry();
-    } else {
-        qWarning() << "Assuming screen size of 800x600px.";
-        availableScreenGeometry = QRect(0, 0, 800, 600);
+    QWidget* centerOverWidget = parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
+        qWarning() << "DlgCoverArtFullSize does not have a parent.";
+        centerOverWidget = this;
     }
 
-    const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+    QRect screenGeometry;
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        qWarning() << "Assuming screen size of 800x600px.";
+        screenGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        screenGeometry = pScreen->geometry();
+    }
+
+    const QSize availableScreenSpace = screenGeometry.size() * 0.9;
     if (dialogSize.height() > availableScreenSpace.height()) {
-        dialogSize.scale(dialogSize.width(), availableScreenSpace.height(), Qt::KeepAspectRatio);
-    } else if (dialogSize.width() > availableScreenSpace.width()) {
-        dialogSize.scale(availableScreenSpace.width(), dialogSize.height(), Qt::KeepAspectRatio);
+        dialogSize.scale(dialogSize.width(), screenGeometry.height(), Qt::KeepAspectRatio);
+    } else if (dialogSize.width() > screenGeometry.width()) {
+        dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
     }
     QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
             Qt::KeepAspectRatio,
@@ -170,7 +196,7 @@ void DlgCoverArtFullSize::slotCoverFound(
             Qt::LeftToRight,
             Qt::AlignCenter,
             dialogSize,
-            availableScreenGeometry));
+            screenGeometry));
 }
 
 // slots to handle signals from the context menu

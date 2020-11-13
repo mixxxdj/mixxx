@@ -52,6 +52,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
     }
+    m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
@@ -261,7 +262,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 
 CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) const {
     if (pMark && pMark->getHotCue() != Cue::kNoHotCue) {
-        QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
+        const QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
         for (const auto& pCue : cueList) {
             if (pCue->getHotCue() == pMark->getHotCue()) {
                 return pCue;
@@ -272,15 +273,16 @@ CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) 
 }
 
 void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
-    QColor highlightColor = Color::chooseContrastColor(pMark->fillColor());
-    pMark->setBaseColor(highlightColor);
+    QColor highlightColor = Color::chooseContrastColor(pMark->fillColor(),
+            m_dimBrightThreshold);
+    pMark->setBaseColor(highlightColor, m_dimBrightThreshold);
 }
 
 void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
     QColor originalColor = mixxx::RgbColor::toQColor(getCuePointerFromCueMark(pMark)->getColor());
-    pMark->setBaseColor(originalColor);
+    pMark->setBaseColor(originalColor, m_dimBrightThreshold);
 }
 
 bool WWaveformViewer::isPlaying() const {
-    return m_pPlayEnabled->get();
+    return m_pPlayEnabled->toBool();
 }

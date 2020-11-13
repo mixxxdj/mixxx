@@ -799,7 +799,7 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
         return;
     }
     double frames = m_streamInfo->getSignalInfo().millis2frames(milliseconds);
-    for (const CuePointer& pCue : m_cuePoints) {
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
 
@@ -924,14 +924,15 @@ Track::ImportStatus Track::importBeats(
     }
     DEBUG_ASSERT(!m_pBeatsImporterPending);
     m_pBeatsImporterPending = pBeatsImporter;
-    if (m_streamInfo) {
+    if (m_pBeatsImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        m_pBeatsImporterPending.reset();
+        return ImportStatus::Complete;
+    } else if (m_streamInfo) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingBeatsMarkDirtyAndUnlock(&lock);
-        return ImportStatus::Complete;
-    } else if (m_pBeatsImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
@@ -998,14 +999,15 @@ Track::ImportStatus Track::importCueInfos(
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
     m_pCueInfoImporterPending = pCueInfoImporter;
-    if (m_streamInfo) {
+    if (m_pCueInfoImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        m_pCueInfoImporterPending.reset();
+        return ImportStatus::Complete;
+    } else if (m_streamInfo) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
-        return ImportStatus::Complete;
-    } else if (m_pCueInfoImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
@@ -1039,13 +1041,13 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
     DEBUG_ASSERT(cuePoints.isEmpty() || !m_pCueInfoImporterPending ||
             m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
-    for (const auto& pCue: m_cuePoints) {
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
         disconnect(pCue.get(), 0, this, 0);
         pCue->setTrackId(TrackId());
     }
     m_cuePoints = cuePoints;
     // connect new cue points
-    for (const auto& pCue: m_cuePoints) {
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
         DEBUG_ASSERT(pCue->thread() == thread());
         // Ensure that the track IDs are correct
         pCue->setTrackId(m_record.getId());
@@ -1098,9 +1100,11 @@ bool Track::importPendingCueInfosWhileLocked() {
     const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size());
-    for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
-                 getLocation(), m_streamInfo->getSignalInfo())) {
-        CuePointer pCue(new Cue(cueInfo, sampleRate));
+    const auto cueInfos =
+            m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
+                    getLocation(), m_streamInfo->getSignalInfo());
+    for (const auto& cueInfo : cueInfos) {
+        CuePointer pCue(new Cue(cueInfo, sampleRate, true));
         // While this method could be called from any thread,
         // associated Cue objects should always live on the
         // same thread as their host, namely this->thread().

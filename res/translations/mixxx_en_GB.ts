@@ -2878,7 +2878,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="118"/>
         <source>Export Track Files</source>
-        <translation>Esporta Track Files</translation>
+        <translation>Export Track Files</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="74"/>
@@ -7015,7 +7015,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="60"/>
         <source>Album Artist</source>
-        <translation>Artista Album</translation>
+        <translation>Album Artist</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="115"/>
@@ -9843,7 +9843,7 @@ Fully right: end of the effect period</translation>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="989"/>
         <source>Crates</source>
-        <translation>Cesta</translation>
+        <translation>Crates</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="992"/>
@@ -13263,7 +13263,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="103"/>
         <source>Crates</source>
-        <translation>Cesta</translation>
+        <translation>Crates</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="109"/>
@@ -13319,7 +13319,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="157"/>
         <source>Remove</source>
-        <translation>Rimuovi</translation>
+        <translation>Remove</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="160"/>
@@ -13485,7 +13485,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
         <location filename="../../src/widget/wtrackmenu.cpp" line="844"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="866"/>
         <source>Create New Playlist</source>
-        <translation>Creare Nuova Playlist</translation>
+        <translation>Create New Playlist</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="867"/>
@@ -13495,14 +13495,14 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</t
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="869"/>
         <source>New Playlist</source>
-        <translation>Nuova Playlist</translation>
+        <translation>New Playlist</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="877"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="881"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="890"/>
         <source>Playlist Creation Failed</source>
-        <translation>Creazione della Playlist Fallita</translation>
+        <translation>Playlist Creation Failed</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="878"/>

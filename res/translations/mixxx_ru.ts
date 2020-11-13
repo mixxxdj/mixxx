@@ -8645,7 +8645,7 @@ Default: flat top</source>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="37"/>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="38"/>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>Скорость</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="64"/>
@@ -8722,7 +8722,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="20"/>
         <source>Metronome</source>
-        <translation type="unfinished"/>
+        <translation>Метроном</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="23"/>

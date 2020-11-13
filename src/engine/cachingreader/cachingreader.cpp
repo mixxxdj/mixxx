@@ -461,7 +461,7 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                     // finally fill the remaining buffer with silence.
                     break;
                 }
-                DEBUG_ASSERT(bufferedFrameIndexRange <= remainingFrameIndexRange);
+                DEBUG_ASSERT(bufferedFrameIndexRange.isSubrangeOf(remainingFrameIndexRange));
                 if (remainingFrameIndexRange.start() < bufferedFrameIndexRange.start()) {
                     const auto paddingFrameIndexRange =
                             mixxx::IndexRange::between(
