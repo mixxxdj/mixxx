@@ -158,6 +158,7 @@ BpmControl::~BpmControl() {
     delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
     delete m_pTranslateBeatsLater;
+    delete m_pLockBeatgrid;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
 }
