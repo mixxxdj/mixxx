@@ -1085,8 +1085,10 @@ bool Track::importPendingCueInfosWhileLocked() {
             m_record.getMetadata().getSampleRate());
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size());
-    for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
-                 getLocation(), m_streamInfo->getSignalInfo())) {
+    const auto cueInfos =
+            m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
+                    getLocation(), m_streamInfo->getSignalInfo());
+    for (const auto& cueInfo : cueInfos) {
         CuePointer pCue(new Cue(cueInfo, sampleRate, true));
         // While this method could be called from any thread,
         // associated Cue objects should always live on the

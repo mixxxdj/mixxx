@@ -382,8 +382,8 @@ SoundDeviceError SoundManager::setupDevices() {
         pDevice->clearInputs();
         pDevice->clearOutputs();
         m_pErrorDevice = pDevice;
-        for (const auto& in:
-                 m_config.getInputs().values(pDevice->getDeviceId())) {
+        const auto inputs = m_config.getInputs().values(pDevice->getDeviceId());
+        for (const auto& in : inputs) {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig

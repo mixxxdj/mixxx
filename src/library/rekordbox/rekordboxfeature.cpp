@@ -790,7 +790,8 @@ void setHotCue(TrackPointer track, double startPosition, double endPosition, int
     CuePointer pCue;
     bool hotCueFound = false;
 
-    for (const CuePointer& trackCue : track->getCuePoints()) {
+    const QList<CuePointer> cuePoints = track->getCuePoints();
+    for (const CuePointer& trackCue : cuePoints) {
         if (trackCue->getHotCue() == id) {
             pCue = trackCue;
             hotCueFound = true;
