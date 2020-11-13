@@ -204,7 +204,7 @@ EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     if (effectId.isEmpty()) {
         return EffectPointer();
     }
-    for (const auto& pBackend: m_effectsBackends) {
+    for (const auto& pBackend : qAsConst(m_effectsBackends)) {
         if (pBackend->canInstantiateEffect(effectId)) {
             return pBackend->instantiateEffect(this, effectId);
         }

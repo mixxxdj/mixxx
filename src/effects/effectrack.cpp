@@ -204,7 +204,7 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
     rackElement.appendChild(groupElement);
 
     QDomElement chainsElement = doc->createElement("Chains");
-    for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
+    for (const EffectChainSlotPointer& pChainSlot : m_effectChainSlots) {
         QDomElement chain = pChainSlot->toXml(doc);
         chainsElement.appendChild(chain);
     }
@@ -213,7 +213,7 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
 }
 
 void EffectRack::refresh() {
-    for (const auto& pChainSlot: m_effectChainSlots) {
+    for (const auto& pChainSlot : qAsConst(m_effectChainSlots)) {
         EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
         pChain->refreshAllEffects();
     }

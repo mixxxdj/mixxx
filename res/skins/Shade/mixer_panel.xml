@@ -44,6 +44,27 @@
 
               <!--
               **********************************************
+              Status icon for AutoDJ
+              **********************************************
+              -->
+              <StatusLight>
+                <TooltipId>autodj_status</TooltipId>
+                <Pos>120,180</Pos>
+                <NumberPos>3</NumberPos>
+                <PathStatusLight1>style/style_icon_autodj.png</PathStatusLight1>
+                <PathStatusLight2>style/style_icon_autodj.png</PathStatusLight2>
+                <PathStatusLight3>style/style_icon_autodj.png</PathStatusLight3>
+                <Connection>
+                  <ConfigKey>[AutoDJ],enabled</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[AutoDJ],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </StatusLight>
+
+              <!--
+              **********************************************
               Slider- Crossfader
               **********************************************
               -->
@@ -416,8 +437,8 @@
                 <TooltipId>time</TooltipId>
                 <Style>
                   QLabel {
-                    font: bold 10px sans-serif;
-                    font-family: "Open Sans";
+                    font-size: 10px;
+                    font-weight: bold;
                     background-color: transparent;
                     color: #191F24;
                     text-align:center;
@@ -501,16 +522,16 @@
                 <TooltipId>master_gain</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>217,15</Pos>
+                <Pos>164,15</Pos>
                 <Connection>
                   <ConfigKey>[Master],gain</ConfigKey>
                 </Connection>
               </Knob>
               <Knob>
                 <TooltipId>balance</TooltipId>
-                <NumberStates>63</NumberStates>
+                <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>151,15</Pos>
+                <Pos>197,15</Pos>
                 <Connection>
                   <ConfigKey>[Master],balance</ConfigKey>
                 </Connection>
@@ -522,21 +543,21 @@
               **********************************************
               -->
               <Knob>
-                <TooltipId>headphone_gain</TooltipId>
-                <NumberStates>64</NumberStates>
-                <Path>knobs_no_center/knob_rotary_s%1.png</Path>
-                <Pos>11,15</Pos>
-                <Connection>
-                  <ConfigKey>[Master],headGain</ConfigKey>
-                </Connection>
-              </Knob>
-              <Knob>
                 <TooltipId>headMix</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>76,15</Pos>
+                <Pos>45,15</Pos>
                 <Connection>
                   <ConfigKey>[Master],headMix</ConfigKey>
+                </Connection>
+              </Knob>
+              <Knob>
+                <TooltipId>headphone_gain</TooltipId>
+                <NumberStates>64</NumberStates>
+                <Path>knobs_no_center/knob_rotary_s%1.png</Path>
+                <Pos>78,15</Pos>
+                <Connection>
+                  <ConfigKey>[Master],headGain</ConfigKey>
                 </Connection>
               </Knob>
 
@@ -558,7 +579,7 @@
                   <Pressed>skin:/btn/btn_headsplit_overdown.png</Pressed>
                   <Unpressed>skin:/btn/btn_headsplit_over.png</Unpressed>
                 </State>
-                <Pos>42,18</Pos>
+                <Pos>11,18</Pos>
                 <Connection>
                   <ConfigKey>[Master],headSplit</ConfigKey>
                 </Connection>

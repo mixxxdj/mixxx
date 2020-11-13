@@ -140,7 +140,24 @@ Description:
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
+          <StatusLight>
+            <TooltipId>autodj_status</TooltipId>
+            <ObjectName>AutoDjStatus</ObjectName>
+            <Size>14f,22f</Size>
+            <NumberPos>3</NumberPos>
+            <PathStatusLight1>skin:graphics/autodj_status.svg</PathStatusLight1>
+            <PathStatusLight2>skin:graphics/autodj_status.svg</PathStatusLight2>
+            <PathStatusLight3>skin:graphics/autodj_status.svg</PathStatusLight3>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+            </Connection>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </StatusLight>
+
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Skin toggles, hidden with maximized library -->
             <Layout>horizontal</Layout>
@@ -269,7 +286,7 @@ Description:
             </Children>
           </WidgetGroup><!-- /Recording button & recording duration label -->
 
-          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_5state_display.xml">
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>

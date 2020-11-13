@@ -22,6 +22,14 @@ env:
     - CTEST_OUTPUT_ON_FAILURE=1
     # Render analyzer waveform tests to an offscreen buffer
     - QT_QPA_PLATFORM=offscreen
+    # DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD for deploys.
+    - secure: aS40s8gx1mM01oRj2pskFqR+rBID1nnTY7hwSqkT1bgJT+JF0tMZt/SkMjR08bp+3soNbBtqJgZKAhQ6Tts2DtkWQGbUiXgU5QpowUcecTxge/jqxZeWdJWThpB+qWs70Fm0QhzZXIyBPM8EGljWbLum5ncR7AUBEasRboNZ0P8=
+    # Code signing secrets:
+    - MACOS_CODESIGN_CERTIFICATE=cmake/macos_developer_id_codesign_certificate.p12
+    # MACOS_CODESIGN_CERTIFICATE_PASSWORD:
+    - secure: MnQzTJBkeHsRkNov7yoNIlEM5Exo6JvdmRS+z6OPQFuJn+yc8WyeUrW2JhVtVsGFO/fCqcIyymIOSFIEz78eoRj1PL0w2tj3ptBqUAJWupP2mmobKcPY3NYTOhOmOsv8rqlJbPdLxop1pyLaLBFWyGKOgI2xJz8LPHGN5ZINfCY=
+    # MACOS_CODESIGN_OPENSSL_PASSWORD:
+    - secure: NJegC0Dag0V8hotFB7u3rSPGnGQzp0JQpRTH1qL8bveUmrTOL26viPeX4vLXwn/RJKZkuUsDBxDSFy/sfVvfaLdAgd5USOV9QLF7lc3z1+t4BWbZ4xDBXCYOWuaQlgqE1k5W7s9wl1DgDFNxBSc46X04h9BZNonz1z0A9IAhn+k=
 
     # To add a new secret, run:
     # $ travis encrypt MY_SECRET=hunter2 -r mixxxdj/mixxx
@@ -168,19 +176,35 @@ jobs:
         - find "${MIXXX_ENVPATH}" -name "*.pc" -or -path "*/bin/taglib-config" -exec sed -i".orig" -e "s|/Users/mixxx/bs-2.3-mac/amd64/environment/${MIXXX_ENVNAME}|${MIXXX_ENVPATH}|g" {} \;
         - export QT_DIR="$(find "${MIXXX_ENVPATH}" -type d -path "*/cmake/Qt5")"
         - export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${MIXXX_ENVPATH}" -type d -path "*/plugins")"
+        - |
+          if [ "$TRAVIS_REPO_SLUG" = "mixxxdj/mixxx" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+            # Create a temporary keychain for the certificate and import it.
+            openssl enc -aes-256-cbc -d -md sha512 -k ${MACOS_CODESIGN_OPENSSL_PASSWORD} -in ${MACOS_CODESIGN_CERTIFICATE}.enc -out ${MACOS_CODESIGN_CERTIFICATE};
+            security create-keychain -p mixxx Mixxx.keychain;
+            security unlock-keychain -p mixxx Mixxx.keychain;
+            security import ${MACOS_CODESIGN_CERTIFICATE} -k Mixxx.keychain -P ${MACOS_CODESIGN_CERTIFICATE_PASSWORD} -T /usr/bin/codesign;
+            security set-key-partition-list -S apple-tool:,apple: -k mixxx Mixxx.keychain
+            # Add keychain to search list
+            security list-keychains -s Mixxx.keychain;
+            export APPLE_CODESIGN_IDENTITY=2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870;
+          fi
+
       install:
         - mkdir cmake_build
         - cd cmake_build
-        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} ..
+        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DMACOS_BUNDLE=ON -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY} ..
         - cmake --build .
-        - cpack -G DragNDrop
+        - cpack -G DragNDrop -V
+        # cpack codesigns the Mixxx.app inside the DMG package, but the DMG package also needs to be signed
+        - |
+          if ! [ -z $APPLE_CODESIGN_IDENTITY ]; then
+            codesign --verbose=4 --deep --force --options runtime --sign $APPLE_CODESIGN_IDENTITY --entitlements ../build/osx/entitlements.plist *.dmg;
+          fi
       script:
         # Run tests and benchmarks
         - ctest --timeout 45
         - cmake --build . --target benchmark
       before_cache:
-        # Avoid indefinite cache growth
-        - brew cleanup
         # Cache only .git files under "/usr/local/Homebrew" so "brew update"
         # does not take 5min every build
         # Source: https://discourse.brew.sh/t/best-practice-for-homebrew-on-travis-brew-update-is-5min-to-build-time/5215/12

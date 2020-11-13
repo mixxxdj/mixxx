@@ -19,7 +19,7 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
     Qt::Alignment hflags;
     Qt::Alignment vflags;
 
-    for (auto stringFlag : stringFlags) {
+    for (const auto& stringFlag : stringFlags) {
         if (stringFlag == "center") {
             hflags |= Qt::AlignHCenter;
             vflags |= Qt::AlignVCenter;
@@ -56,20 +56,26 @@ WaveformMark::WaveformMark(const QString& group,
                            const WaveformSignalColors& signalColors,
                            int hotCue)
         : m_iHotCue(hotCue) {
-    QString control;
+    QString positionControl;
+    QString endPositionControl;
     if (hotCue != Cue::kNoHotCue) {
-        control = "hotcue_" + QString::number(hotCue + 1) + "_position";
+        positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
+        endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
     } else {
-        control = context.selectString(node, "Control");
+        positionControl = context.selectString(node, "Control");
     }
-    if (!control.isEmpty()) {
-        m_pPointCos = std::make_unique<ControlProxy>(group, control);
+
+    if (!positionControl.isEmpty()) {
+        m_pPositionCO = std::make_unique<ControlProxy>(group, positionControl);
+    }
+    if (!endPositionControl.isEmpty()) {
+        m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
     }
 
     QString visibilityControl = context.selectString(node, "VisibilityControl");
     if (!visibilityControl.isEmpty()) {
         ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
-        m_pVisibleCos = std::make_unique<ControlProxy>(key);
+        m_pVisibleCO = std::make_unique<ControlProxy>(key);
     }
 
     QColor color(context.selectString(node, "Color"));

@@ -1,11 +1,21 @@
 #include "widget/wsearchrelatedtracksmenu.h"
 
+#include <QScreen>
+
 #include "track/track.h"
+#include "util/math.h"
 #include "util/qt.h"
+#include "util/widgethelper.h"
 
 namespace {
 
+// Occupying up to 20% of the screen's width has been considered
+// a viable upper bound for the context menu.
+constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
+
 constexpr double kRelativeBpmRange = 0.06; // +/-6 %
+
+const QString kActionTextPrefixSuffixSeparator = QStringLiteral(" | ");
 
 inline int bpmLowerBound(double bpm) {
     return static_cast<int>(std::floor((1 - kRelativeBpmRange) * bpm));
@@ -13,6 +23,10 @@ inline int bpmLowerBound(double bpm) {
 
 inline int bpmUpperBound(double bpm) {
     return static_cast<int>(std::ceil((1 + kRelativeBpmRange) * bpm));
+}
+
+inline QString quoteSearchQueryText(const QString& text) {
+    return QChar('"') + text + QChar('"');
 }
 
 QString extractCalendarYearNumberFromReleaseDate(
@@ -49,19 +63,55 @@ WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
 
 void WSearchRelatedTracksMenu::addTriggerSearchAction(
         bool* /*in/out*/ pAddSeparatorBeforeNextAction,
-        const QString& actionText,
-        QString /*!by-value-because-captured-by-lambda!*/ searchQuery) {
+        QString /*!by-value-because-captured-by-lambda!*/ searchQuery,
+        const QString& actionTextPrefix,
+        const QString& elidableTextSuffix) {
     DEBUG_ASSERT(pAddSeparatorBeforeNextAction);
     if (*pAddSeparatorBeforeNextAction) {
         addSeparator();
     }
     // Reset the flag before adding the next action
     *pAddSeparatorBeforeNextAction = false;
+    const auto elidedActionText =
+            elideActionText(
+                    actionTextPrefix,
+                    elidableTextSuffix);
     addAction(
-            mixxx::escapeTextPropertyWithoutShortcuts(actionText),
+            mixxx::escapeTextPropertyWithoutShortcuts(elidedActionText),
             [this, searchQuery]() {
                 emit triggerSearch(searchQuery);
             });
+}
+
+QString WSearchRelatedTracksMenu::elideActionText(
+        const QString& actionTextPrefix,
+        const QString& elidableTextSuffix) const {
+    if (elidableTextSuffix.isEmpty()) {
+        return actionTextPrefix;
+    }
+    const auto* const pScreen =
+            mixxx::widgethelper::getScreen(*this);
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        // This should never fail
+        return actionTextPrefix;
+    }
+    const auto actionTextPrefixWithSeparator =
+            actionTextPrefix + kActionTextPrefixSuffixSeparator;
+    const auto prefixWidthInPixels =
+            fontMetrics().boundingRect(actionTextPrefixWithSeparator).width();
+    const auto maxWidthInPixels =
+            math_max(
+                    static_cast<int>(std::ceil(
+                            pScreen->availableSize().width() *
+                            kMaxMenuToAvailableScreenWidthRatio)),
+                    prefixWidthInPixels);
+    const auto elidedTextSuffix =
+            fontMetrics().elidedText(
+                    elidableTextSuffix,
+                    // TODO: Customize the suffix elision?
+                    Qt::ElideMiddle,
+                    maxWidthInPixels - prefixWidthInPixels);
+    return actionTextPrefixWithSeparator + elidedTextSuffix;
 }
 
 void WSearchRelatedTracksMenu::addActionsForTrack(
@@ -75,16 +125,14 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
     {
         const auto keyText = track.getKeyText();
         if (!keyText.isEmpty()) {
-            const auto actionText =
-                    tr("Key: Harmonic with \"%1\"").arg(keyText);
             const QString searchQuery =
-                    QStringLiteral("~key:\"") +
-                    keyText +
-                    QChar('"');
+                    QStringLiteral("~key:") +
+                    quoteSearchQueryText(keyText);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Key"),
+                    tr("harmonic with %1").arg(keyText));
         }
     }
     {
@@ -92,8 +140,6 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         if (bpm > 0) {
             const auto minBpmNumber = QString::number(bpmLowerBound(bpm));
             const auto maxBpmNumber = QString::number(bpmUpperBound(bpm));
-            const auto actionText =
-                    tr("BPM: Between %1 and %2").arg(minBpmNumber, maxBpmNumber);
             const QString searchQuery =
                     QStringLiteral("bpm:>=") +
                     minBpmNumber +
@@ -101,8 +147,9 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     maxBpmNumber;
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("BPM"),
+                    tr("between %1 and %2").arg(minBpmNumber, maxBpmNumber));
         }
     }
 
@@ -130,68 +177,66 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         if (!primaryArtist.isEmpty()) {
             // Search tracks with similar artist(s)
             {
-                const auto actionText =
-                        tr("Artist: \"%1\"").arg(primaryArtist);
-                const QString searchQuery =
-                        QStringLiteral("artist:\"") +
-                        primaryArtist +
-                        QChar('"');
-                addTriggerSearchAction(
-                        &addSeparatorBeforeNextAction,
-                        actionText,
-                        searchQuery);
-            }
-            if (!secondaryArtist.isEmpty()) {
-                const auto actionText =
-                        tr("Artist: \"%1\"").arg(secondaryArtist);
-                const QString searchQuery =
-                        QStringLiteral("artist:\"") +
-                        secondaryArtist +
-                        QChar('"');
-                addTriggerSearchAction(
-                        &addSeparatorBeforeNextAction,
-                        actionText,
-                        searchQuery);
+                const auto actionTextPrefix = tr("Artist");
+                const auto searchQueryPrefix = QStringLiteral("artist:");
+                {
+                    const QString searchQuery =
+                            searchQueryPrefix +
+                            quoteSearchQueryText(primaryArtist);
+                    addTriggerSearchAction(
+                            &addSeparatorBeforeNextAction,
+                            searchQuery,
+                            actionTextPrefix,
+                            primaryArtist);
+                }
+                if (!secondaryArtist.isEmpty()) {
+                    const QString searchQuery =
+                            searchQueryPrefix +
+                            quoteSearchQueryText(secondaryArtist);
+                    addTriggerSearchAction(
+                            &addSeparatorBeforeNextAction,
+                            searchQuery,
+                            actionTextPrefix,
+                            secondaryArtist);
+                }
             }
             {
-                const auto actionText =
-                        tr("Album Artist: \"%1\"").arg(primaryArtist);
-                const QString searchQuery =
-                        QStringLiteral("album_artist:\"") +
-                        primaryArtist +
-                        QChar('"');
-                addTriggerSearchAction(
-                        &addSeparatorBeforeNextAction,
-                        actionText,
-                        searchQuery);
-            }
-            if (!secondaryArtist.isEmpty()) {
-                const auto actionText =
-                        tr("Album Artist: \"%1\"").arg(secondaryArtist);
-                const QString searchQuery =
-                        QStringLiteral("album_artist:\"") +
-                        secondaryArtist +
-                        QChar('"');
-                addTriggerSearchAction(
-                        &addSeparatorBeforeNextAction,
-                        actionText,
-                        searchQuery);
+                const auto actionTextPrefix = tr("Album Artist");
+                const auto searchQueryPrefix = QStringLiteral("album_artist:");
+                {
+                    const QString searchQuery =
+                            searchQueryPrefix +
+                            quoteSearchQueryText(primaryArtist);
+                    addTriggerSearchAction(
+                            &addSeparatorBeforeNextAction,
+                            searchQuery,
+                            actionTextPrefix,
+                            primaryArtist);
+                }
+                if (!secondaryArtist.isEmpty()) {
+                    const QString searchQuery =
+                            searchQueryPrefix +
+                            quoteSearchQueryText(secondaryArtist);
+                    addTriggerSearchAction(
+                            &addSeparatorBeforeNextAction,
+                            searchQuery,
+                            actionTextPrefix,
+                            secondaryArtist);
+                }
             }
         }
     }
     {
         const auto composer = track.getComposer();
         if (!composer.isEmpty()) {
-            const auto actionText =
-                    tr("Composer: \"%1\"").arg(composer);
             const QString searchQuery =
-                    QStringLiteral("composer:\"") +
-                    composer +
-                    QChar('"');
+                    QStringLiteral("composer:") +
+                    quoteSearchQueryText(composer);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Composer"),
+                    composer);
         }
     }
 
@@ -200,46 +245,40 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
     {
         const auto title = track.getTitle();
         if (!title.isEmpty()) {
-            const auto actionText =
-                    tr("Title: \"%1\"").arg(title);
             const QString searchQuery =
-                    QStringLiteral("title:\"") +
-                    title +
-                    QChar('"');
+                    QStringLiteral("title:") +
+                    quoteSearchQueryText(title);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Title"),
+                    title);
         }
     }
     {
         const auto album = track.getAlbum();
         if (!album.isEmpty()) {
-            const auto actionText =
-                    tr("Album: \"%1\"").arg(album);
             const QString searchQuery =
-                    QStringLiteral("album:\"") +
-                    album +
-                    QChar('"');
+                    QStringLiteral("album:") +
+                    quoteSearchQueryText(album);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Album"),
+                    album);
         }
     }
     {
         const auto grouping = track.getGrouping();
         if (!grouping.isEmpty()) {
-            const auto actionText =
-                    tr("Grouping: \"%1\"").arg(grouping);
             const QString searchQuery =
-                    QStringLiteral("grouping:\"") +
-                    grouping +
-                    QChar('"');
+                    QStringLiteral("grouping:") +
+                    quoteSearchQueryText(grouping);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Grouping"),
+                    grouping);
         }
     }
 
@@ -249,45 +288,46 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto releaseYearNumber =
                 extractCalendarYearNumberFromReleaseDate(track.getYear());
         if (!releaseYearNumber.isEmpty()) {
-            const auto actionText =
-                    tr("Year: %1").arg(releaseYearNumber);
             const QString searchQuery =
                     QStringLiteral("year:") +
                     releaseYearNumber;
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Year"),
+                    releaseYearNumber);
         }
     }
     {
         const auto genre = track.getGenre();
         if (!genre.isEmpty()) {
-            const auto actionText =
-                    tr("Genre: \"%1\"").arg(genre);
             const QString searchQuery =
-                    QStringLiteral("genre:\"") +
-                    genre +
-                    QChar('"');
+                    QStringLiteral("genre:") +
+                    quoteSearchQueryText(genre);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Genre"),
+                    genre);
         }
     }
     {
         const auto locationPath = track.getFileInfo().directory();
         if (!locationPath.isEmpty()) {
-            const auto actionText =
-                    tr("Folder: \"%1\"").arg(locationPath);
+            // Search folder and all subfolders, i.e. for "path/to/folder"
+            // also find files in "path/to/folder/subfolder" but not in
+            // "path/to/folder copy".
+            DEBUG_ASSERT(!locationPath.endsWith(QChar('/')));
+            const auto locationPathWithTerminator =
+                    locationPath + QChar('/');
             const QString searchQuery =
-                    QStringLiteral("location:\"") +
-                    locationPath +
-                    QChar('"');
+                    QStringLiteral("location:") +
+                    quoteSearchQueryText(locationPathWithTerminator);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
-                    actionText,
-                    searchQuery);
+                    searchQuery,
+                    tr("Folder"),
+                    locationPathWithTerminator);
         }
     }
 }

@@ -289,7 +289,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
 
-    for (const auto& feature : m_features) {
+    for (const auto& feature : qAsConst(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
     }
 }
@@ -341,7 +341,7 @@ void Library::bindLibraryWidget(
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
 
-    for (const auto& feature : m_features) {
+    for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }
 

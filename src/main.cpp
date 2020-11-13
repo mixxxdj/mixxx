@@ -38,21 +38,24 @@
 
 namespace {
 
+// Exit codes
+constexpr int kFatalErrorOnStartupExitCode = 1;
+constexpr int kParseCmdlineArgsErrorExitCode = 2;
+
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    int result = -1;
     MixxxMainWindow mainWindow(app, args);
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
         mainWindow.finalize();
+        return kFatalErrorOnStartupExitCode;
     } else {
         qDebug() << "Displaying main window";
         mainWindow.show();
 
         qDebug() << "Running Mixxx";
-        result = app->exec();
+        return app->exec();
     }
-    return result;
 }
 
 } // anonymous namespace
@@ -89,7 +92,7 @@ int main(int argc, char * argv[]) {
     CmdlineArgs& args = CmdlineArgs::Instance();
     if (!args.Parse(argc, argv)) {
         args.printUsage();
-        return 0;
+        return kParseCmdlineArgsErrorExitCode;
     }
 
     // If you change this here, you also need to change it in
@@ -108,7 +111,10 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-    SoundSourceProxy::registerSoundSourceProviders();
+    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
+        qCritical() << "Failed to register any SoundSource providers";
+        return kFatalErrorOnStartupExitCode;
+    }
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());
@@ -130,11 +136,11 @@ int main(int argc, char * argv[]) {
     // When the last window is closed, terminate the Qt event loop.
     QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
 
-    int result = runMixxx(&app, args);
+    int exitCode = runMixxx(&app, args);
 
-    qDebug() << "Mixxx shutdown complete with code" << result;
+    qDebug() << "Mixxx shutdown complete with code" << exitCode;
 
     mixxx::Logging::shutdown();
 
-    return result;
+    return exitCode;
 }
