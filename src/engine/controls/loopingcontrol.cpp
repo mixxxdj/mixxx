@@ -823,10 +823,10 @@ void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
         return;
     }
 
-    if (value) {
+    if (value > 0.0) {
         // Requested to set loop_enabled to 1
         if (m_bLoopingEnabled) {
-            VERIFY_OR_DEBUG_ASSERT(m_pCOLoopEnabled->get()) {
+            VERIFY_OR_DEBUG_ASSERT(m_pCOLoopEnabled->toBool()) {
                 m_pCOLoopEnabled->setAndConfirm(1.0);
             }
         } else {
@@ -852,7 +852,7 @@ void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
             // setAndConfirm is called by setLoopingEnabled
             setLoopingEnabled(false);
         } else {
-            VERIFY_OR_DEBUG_ASSERT(!m_pCOLoopEnabled->get()) {
+            VERIFY_OR_DEBUG_ASSERT(!m_pCOLoopEnabled->toBool()) {
                 m_pCOLoopEnabled->setAndConfirm(0.0);
             }
         }
