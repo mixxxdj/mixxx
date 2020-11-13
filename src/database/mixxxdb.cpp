@@ -1,17 +1,15 @@
 #include "database/mixxxdb.h"
 
 #include "database/schemamanager.h"
-
 #include "util/assert.h"
 #include "util/logger.h"
-
 
 // The schema XML is baked into the binary via Qt resources.
 //static
 const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
 
 //static
-const int MixxxDb::kRequiredSchemaVersion = 33;
+const int MixxxDb::kRequiredSchemaVersion = 35;
 
 namespace {
 

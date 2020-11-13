@@ -15,6 +15,7 @@
 #include "util/class.h"
 #include "util/memory.h"
 
+class FwdSqlQuery;
 class SqlTransaction;
 class PlaylistDAO;
 class AnalysisDao;
@@ -68,6 +69,11 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     // Only used by friend class TrackCollection, but public for testing!
     void saveTrack(Track* pTrack) const;
+
+    /// Update the play counter properties according to the corresponding
+    /// aggregated properties obtained from the played history.
+    bool updatePlayCounterFromPlayedHistory(
+            const QSet<TrackId> trackIds) const;
 
   signals:
     // Forwarded from Track object
@@ -160,7 +166,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
 
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
 
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationInsert;
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationSelect;
