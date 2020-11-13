@@ -392,7 +392,6 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
     // Check if qobject_cast was successful
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckEqEffectSelectors.indexOf(c);
-        QString effectId = c->itemData(effectIndex).toString();
 
         // If we are in single-effect mode and the first effect was changed,
         // change the others as well.
@@ -416,7 +415,6 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     // Check if qobject_cast was successful
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckQuickEffectSelectors.indexOf(c);
-        QString effectId = c->itemData(effectIndex).toString();
 
         // If we are in single-effect mode and the first effect was changed,
         // change the others as well.

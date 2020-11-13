@@ -2021,9 +2021,6 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
 }
 
 void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidget) {
-    // For each connection
-    QDomNode con = m_pContext->selectNode(node, "Connection");
-
     ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
 
     for (QDomNode con = m_pContext->selectNode(node, "Connection");

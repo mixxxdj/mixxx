@@ -24,7 +24,6 @@ QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
             mixxx::SoundSource::getFileExtensionFromUrl(QUrl::fromLocalFile(filePath));
     const mixxx::SoundSourceProviderPointer pPrimaryProvider =
             SoundSourceProxy::getPrimaryProviderForFileExtension(fileExtension);
-    QString decoderName;
     if (pPrimaryProvider) {
         return pPrimaryProvider->getDisplayName();
     } else {
