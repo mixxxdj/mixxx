@@ -25,13 +25,18 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
         m_profiles.clear();
     }
 
-    for(BroadcastProfilePtr profile : pSettings->profiles()) {
+    const QList<BroadcastProfilePtr> profiles = pSettings->profiles();
+    for (BroadcastProfilePtr profile : profiles) {
         BroadcastProfilePtr copy = profile->valuesCopy();
         copy->setConnectionStatus(profile->connectionStatus());
-        connect(profile.data(), SIGNAL(statusChanged(bool)),
-                copy.data(), SLOT(relayStatus(bool)));
-        connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-                copy.data(), SLOT(relayConnectionStatus(int)));
+        connect(profile.data(),
+                &BroadcastProfile::statusChanged,
+                copy.data(),
+                &BroadcastProfile::relayStatus);
+        connect(profile.data(),
+                &BroadcastProfile::connectionStatusChanged,
+                copy.data(),
+                &BroadcastProfile::relayConnectionStatus);
         addProfileToModel(copy);
     }
 }
@@ -48,10 +53,14 @@ bool BroadcastSettingsModel::addProfileToModel(BroadcastProfilePtr profile) {
     // at risk of being manually deleted.
     // However it's fine with Qt's connect because it can be trusted that
     // it won't delete the pointer.
-    connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
-            this, SLOT(onProfileNameChanged(QString,QString)));
-    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-            this, SLOT(onConnectionStatusChanged(int)));
+    connect(profile.data(),
+            &BroadcastProfile::profileNameChanged,
+            this,
+            &BroadcastSettingsModel::onProfileNameChanged);
+    connect(profile.data(),
+            &BroadcastProfile::connectionStatusChanged,
+            this,
+            &BroadcastSettingsModel::onConnectionStatusChanged);
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
     endInsertRows();

@@ -424,7 +424,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             Qt::DirectConnection);
 
     CuePointer pMainCue;
-    for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
+    const QList<CuePointer> cuePoints = m_pLoadedTrack->getCuePoints();
+    for (const CuePointer& pCue : cuePoints) {
         if (pCue->getType() == mixxx::CueType::MainCue) {
             DEBUG_ASSERT(!pMainCue);
             pMainCue = pCue;
@@ -532,7 +533,8 @@ void CueControl::loadCuesFromTrack() {
         return;
     }
 
-    for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
+    const QList<CuePointer> cues = m_pLoadedTrack->getCuePoints();
+    for (const auto& pCue : cues) {
         switch (pCue->getType()) {
         case mixxx::CueType::MainCue:
             DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue

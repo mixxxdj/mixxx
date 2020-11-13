@@ -37,6 +37,7 @@
 #include "util/file.h"
 #include "util/logger.h"
 #include "util/math.h"
+#include "util/qt.h"
 #include "util/timer.h"
 
 namespace {
@@ -303,7 +304,7 @@ void TrackDAO::saveTrack(Track* pTrack) const {
         // not receive any signals that are usually forwarded to
         // BaseTrackCache.
         DEBUG_ASSERT(!pTrack->isDirty());
-        emit trackClean(trackId);
+        emit mixxx::thisAsNonConst(this)->trackClean(trackId);
     }
 }
 
@@ -1485,7 +1486,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             this,
             [this](TrackId trackId) {
                 // Adapt and forward signal
-                emit tracksChanged(QSet<TrackId>{trackId});
+                emit mixxx::thisAsNonConst(this)->tracksChanged(QSet<TrackId>{trackId});
             });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
@@ -1493,9 +1494,9 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // track modifications above have been sent before the TrackDAO has been
     // connected to the track's signals and need to be replayed manually.
     if (pTrack->isDirty()) {
-        emit trackDirty(trackId);
+        emit mixxx::thisAsNonConst(this)->trackDirty(trackId);
     } else {
-        emit trackClean(trackId);
+        emit mixxx::thisAsNonConst(this)->trackClean(trackId);
     }
 
     return pTrack;
@@ -2207,6 +2208,6 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // TODO: DAOs should be passive and simply execute queries. They
     // should neither make assumptions about transaction boundaries
     // nor receive or emit any signals.
-    emit tracksChanged(trackIds);
+    emit mixxx::thisAsNonConst(this)->tracksChanged(trackIds);
     return true;
 }

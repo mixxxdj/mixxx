@@ -457,8 +457,7 @@ bool BroadcastProfile::setSecurePassword(const QString& login, const QString& pa
     writeJob.setTextData(password);
 
     QEventLoop loop;
-    writeJob.connect(&writeJob, SIGNAL(finished(QKeychain::Job*)),
-                     &loop, SLOT(quit()));
+    writeJob.connect(&writeJob, &WritePasswordJob::finished, &loop, &QEventLoop::quit);
     writeJob.start();
     loop.exec();
 
@@ -488,8 +487,7 @@ QString BroadcastProfile::getSecurePassword(const QString& login) {
     readJob.setKey(login);
 
     QEventLoop loop;
-    readJob.connect(&readJob, SIGNAL(finished(QKeychain::Job*)),
-                    &loop, SLOT(quit()));
+    readJob.connect(&readJob, &ReadPasswordJob::finished, &loop, &QEventLoop::quit);
     readJob.start();
     loop.exec();
 
