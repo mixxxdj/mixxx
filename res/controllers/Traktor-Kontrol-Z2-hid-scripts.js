@@ -29,7 +29,10 @@ var TraktorZ2 = new function() {
     this.browseKnobEncoderState = 0;
 
     this.displayBrightness = [];
-
+    
+    this.pregainCh3Timer = 0;
+    this.pregainCh4Timer = 0;
+    
     this.chTimer = [];
     for (var chidx = 1; chidx <= 2; chidx++) {
         var ch = "[Channel" + chidx + "]";
@@ -420,6 +423,24 @@ TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
     TraktorZ2.displayLoopCount(this.activeChannel);
 };
 
+TraktorZ2.crossfaderReverseHandler = function(field) {
+    HIDDebug("TraktorZ2: LibraryFocusHandler");
+    if (field.value) {
+        TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", LedBright,  true);
+        if (engine.getValue("[Channel1]", "orientation") === 0) {engine.setValue("[Channel1]", "orientation", 2);}
+        if (engine.getValue("[Channel3]", "orientation") === 0) {engine.setValue("[Channel3]", "orientation", 2);}
+        if (engine.getValue("[Channel2]", "orientation") === 2) {engine.setValue("[Channel2]", "orientation", 0);}
+        if (engine.getValue("[Channel4]", "orientation") === 2) {engine.setValue("[Channel4]", "orientation", 0);}
+        
+    } else {
+        TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", LedOff,  true);
+        if (engine.getValue("[Channel1]", "orientation") === 2) {engine.setValue("[Channel1]", "orientation", 0);}
+        if (engine.getValue("[Channel3]", "orientation") === 2) {engine.setValue("[Channel3]", "orientation", 0);}
+        if (engine.getValue("[Channel2]", "orientation") === 0) {engine.setValue("[Channel2]", "orientation", 2);}
+        if (engine.getValue("[Channel4]", "orientation") === 0) {engine.setValue("[Channel4]", "orientation", 2);}
+    }
+};
+
 TraktorZ2.buttonHandler = function(field) {
     HIDDebug("TraktorZ2: buttonHandler");
     if (field.value === 0) {
@@ -482,6 +503,8 @@ TraktorZ2.registerInputPackets = function() {
 
     this.registerInputButton(messageShort, "[EffectRack1_EffectUnit1]", "!enabled", 0x05, 0x02, this.fxOnClickHandler);
     this.registerInputButton(messageShort, "[EffectRack1_EffectUnit2]", "!enabled", 0x08, 0x01, this.fxOnClickHandler);
+        
+    this.registerInputButton(messageShort, "Master", "!crossfaderReverse", 0x08, 0x80, this.crossfaderReverseHandler);
 
 
     this.controller.registerInputPacket(messageShort);
@@ -496,14 +519,14 @@ TraktorZ2.registerInputPackets = function() {
 
     this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x2D, 0xFFFF, this.faderHandler); // Fader Deck A
     this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x2F, 0xFFFF, this.faderHandler); // Fader Deck B
-    this.registerInputScaler(messageLong, "[Channel3]", "volume", 0x29, 0xFFFF, this.parameterHandler); // Rotary knob Deck C
-    this.registerInputScaler(messageLong, "[Channel4]", "volume", 0x2B, 0xFFFF, this.parameterHandler); // Rotary knob Deck D
 
     this.registerInputScaler(messageLong, "[Master]", "duckStrengh", 0x03, 0xFFFF, this.parameterHandler); // Mic/Aux Tone knob, where no 1:1 mapping is available
     this.registerInputScaler(messageLong, "[Microphone]", "pregain", 0x01, 0xFFFF, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1F, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xFFFF, this.pregainHandler); // Rotary knob Deck A
+    this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1F, 0xFFFF, this.pregainHandler); // Rotary knob Deck B
+    this.registerInputScaler(messageLong, "[Channel3]", "pregain", 0x29, 0xFFFF, this.pregainHandler); // Rotary knob Deck C
+    this.registerInputScaler(messageLong, "[Channel4]", "pregain", 0x2B, 0xFFFF, this.pregainHandler); // Rotary knob Deck D
 
     this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xFFFF, this.parameterHandler); // High
     this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xFFFF, this.parameterHandler); // Mid
@@ -616,6 +639,31 @@ TraktorZ2.shiftHandler = function(field) {
 TraktorZ2.parameterHandler = function(field) {
     HIDDebug("TraktorZ2: parameterHandler");
     engine.setParameter(field.group, field.name, field.value / 4095);
+};
+
+TraktorZ2.pregainHandler = function(field) {
+    HIDDebug("TraktorZ2: pregainHandler");
+    engine.setParameter(field.group, field.name, field.value / 4095);
+    if ((field.group === "[Channel1]")  && (TraktorZ2.pregainCh3Timer !== 0)) {        
+            engine.stopTimer(TraktorZ2.pregainCh3Timer);
+            TraktorZ2.pregainCh3Timer = 0;
+    }
+    if (field.group === "[Channel3]") {  
+        engine.stopTimer(TraktorZ2.pregainCh3Timer);
+        TraktorZ2.pregainCh3Timer = engine.beginTimer(2500, function() {
+            TraktorZ2.pregainCh3Timer = 0;
+        }, true);
+    }
+    if ((field.group === "[Channel2]")  && (TraktorZ2.pregainCh4Timer !== 0)) {        
+            engine.stopTimer(TraktorZ2.pregainCh4Timer);
+            TraktorZ2.pregainCh4Timer = 0;
+    }
+    if (field.group === "[Channel4]") {  
+        engine.stopTimer(TraktorZ2.pregainCh4Timer);
+        TraktorZ2.pregainCh4Timer = engine.beginTimer(2500, function() {
+            TraktorZ2.pregainCh4Timer = 0;
+        }, true);
+    }
 };
 
 TraktorZ2.faderHandler = function(field) {
@@ -1151,7 +1199,16 @@ TraktorZ2.registerOutputPackets = function() {
     // engine.connectControl("[Channel2]", "passthrough", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 
     outputB.addOutput("[Master]", "!usblight", 0x27, "B", 0x70);
+    
+    
+    outputB.addOutput("[Master]", "!vulabelChA", 0x01, "B", 0x70);
+    outputB.addOutput("[Master]", "!vulabelChB", 0x09, "B", 0x70);
+    outputB.addOutput("[Master]", "!vulabelChC", 0x11, "B", 0x70);
+    outputB.addOutput("[Master]", "!vulabelChD", 0x19, "B", 0x70);
+    outputB.addOutput("[Master]", "!vulabelMst", 0x21, "B", 0x70);
+    outputB.addOutput("[Master]", "!crossfaderReverse", 0x28, "B", 0x70);
 
+    
     var VuOffsets = {
         "[Channel1]": 0x02, // ChA
         "[Channel2]": 0x0A, // ChB
@@ -1178,14 +1235,39 @@ TraktorZ2.displayVuMeter = function() {
         "[Channel3]": "VuMeterL", // ChC/MasterL
         "[Channel4]": "VuMeterR"  // ChD_MasterR
     };
-
+    
+    if (TraktorZ2.pregainCh3Timer !== 0) {
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChA", LedOff, false);
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChC", LedBright, false);
+    }
+    else
+    {
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChA", LedBright, false);
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChC", LedOff, false);
+    }
+    if (TraktorZ2.pregainCh4Timer !== 0) {
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChB", LedOff, false);
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChD", LedBright, false);
+    }
+    else
+    {
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChB", LedBright, false);
+        TraktorZ2.controller.setOutput("[Master]", "!vulabelChD", LedOff, false);
+    }
+    
     for (var ch in VuMeters) {
 
         var VuValue;
         if  (ch === "[Channel3]" || ch === "[Channel4]") {
             VuValue = engine.getValue("[Master]", VuMeters[ch]) * 6;
-        } else {
+        } else if  ((ch === "[Channel1]") && (TraktorZ2.pregainCh3Timer === 0)) {
             VuValue = engine.getValue(ch, VuMeters[ch]) * 6;
+        } else if  ((ch === "[Channel1]") && (TraktorZ2.pregainCh3Timer !== 0)) {
+            VuValue = engine.getValue("[Channel3]", VuMeters["[Channel3]"]) * 6;
+        } else if  ((ch === "[Channel2]") && (TraktorZ2.pregainCh4Timer === 0)) {
+            VuValue = engine.getValue(ch, VuMeters[ch]) * 6;
+        } else if  ((ch === "[Channel2]") && (TraktorZ2.pregainCh4Timer !== 0)) {
+            VuValue = engine.getValue("[Channel4]", VuMeters["[Channel4]"]) * 6;
         }
 
         for (var i = 0; i < 6; i++) {
@@ -1259,9 +1341,11 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.controller.setOutput("[Channel3]", "!deck", LedOff,       true);
     TraktorZ2.deckSwitchHandler["[Channel4]"] = 0;
     TraktorZ2.controller.setOutput("[Channel4]", "!deck", LedOff,       true);
-
+    
+    TraktorZ2.controller.setOutput("[Master]", "!vulabelMst", LedBright, false);
+    
     TraktorZ2.hotcueOutputHandler();
     HIDDebug("TraktorZ2: Init done!");
 
-    this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
+ //   this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
 };
