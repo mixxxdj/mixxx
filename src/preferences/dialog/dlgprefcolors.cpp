@@ -89,7 +89,8 @@ void DlgPrefColors::loadSettings() {
                 paletteIcon);
     }
 
-    for (const auto& paletteName : m_colorPaletteSettings.getColorPaletteNames()) {
+    const QSet<QString> colorPaletteNames = m_colorPaletteSettings.getColorPaletteNames();
+    for (const auto& paletteName : colorPaletteNames) {
         QIcon paletteIcon = drawPalettePreview(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
         comboBoxHotcueColors->setItemIcon(

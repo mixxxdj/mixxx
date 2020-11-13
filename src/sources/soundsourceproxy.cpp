@@ -76,7 +76,8 @@ void registerReferenceSoundSourceProvider(
     }
     // Verify that the provider is the primary provider for all
     // supported file extensions
-    for (const auto& fileExtension : pProvider->getSupportedFileExtensions()) {
+    const QStringList supportedFileExtensions = pProvider->getSupportedFileExtensions();
+    for (const auto& fileExtension : supportedFileExtensions) {
         const auto pPrimaryProvider =
                 pProviderRegistry->getPrimaryProviderForFileExtension(fileExtension);
         VERIFY_OR_DEBUG_ASSERT(pPrimaryProvider == pProvider) {

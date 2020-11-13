@@ -25,7 +25,8 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
         m_profiles.clear();
     }
 
-    for(BroadcastProfilePtr profile : pSettings->profiles()) {
+    const QList<BroadcastProfilePtr> profiles = pSettings->profiles();
+    for (BroadcastProfilePtr profile : profiles) {
         BroadcastProfilePtr copy = profile->valuesCopy();
         copy->setConnectionStatus(profile->connectionStatus());
         connect(profile.data(), SIGNAL(statusChanged(bool)),
