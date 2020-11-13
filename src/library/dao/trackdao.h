@@ -71,13 +71,13 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
   signals:
     // Forwarded from Track object
-    void trackDirty(TrackId trackId) const;
-    void trackClean(TrackId trackId) const;
+    void trackDirty(TrackId trackId);
+    void trackClean(TrackId trackId);
 
     // Multiple tracks
-    void tracksAdded(QSet<TrackId> trackIds) const;
-    void tracksChanged(QSet<TrackId> trackIds) const;
-    void tracksRemoved(QSet<TrackId> trackIds) const;
+    void tracksAdded(QSet<TrackId> trackIds);
+    void tracksChanged(QSet<TrackId> trackIds);
+    void tracksRemoved(QSet<TrackId> trackIds);
 
     void progressVerifyTracksOutside(QString path);
     void progressCoverArt(QString file);

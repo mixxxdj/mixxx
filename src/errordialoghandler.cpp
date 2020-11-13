@@ -78,8 +78,7 @@ void ErrorDialogHandler::setEnabled(bool enabled) {
 
 ErrorDialogHandler::ErrorDialogHandler() {
     m_errorCondition = false;
-    connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)),
-            this, SLOT(errorDialog(ErrorDialogProperties*)));
+    connect(this, &ErrorDialogHandler::showErrorDialog, this, &ErrorDialogHandler::errorDialog);
 }
 
 ErrorDialogHandler::~ErrorDialogHandler() {
