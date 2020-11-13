@@ -4,6 +4,7 @@
 #include <QLocale>
 #include <QString>
 #include <QStringRef>
+#include <cstring>
 #include <cwchar>
 
 #include "util/assert.h"
@@ -29,6 +30,24 @@ class StringCollator {
   private:
     QCollator m_collator;
 };
+
+inline std::size_t nullable_strnlen(
+        const char* str,
+        std::size_t len) {
+    if (!str) {
+        return 0;
+    }
+    return strnlen(str, len);
+}
+
+inline std::size_t nullable_wcsnlen(
+        const wchar_t* wcs,
+        std::size_t len) {
+    if (!wcs) {
+        return 0;
+    }
+    return wcsnlen(wcs, len);
+}
 
 /// Convert a wide-character C string to QString.
 ///
