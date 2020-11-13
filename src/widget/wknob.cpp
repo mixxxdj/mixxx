@@ -26,8 +26,9 @@ WKnob::WKnob(QWidget* pParent)
         : WDisplay(pParent),
           m_renderTimer(mixxx::Duration::fromMillis(20),
                         mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer, SIGNAL(update()),
-            this, SLOT(update()));
+    connect(&m_renderTimer, &WidgetRenderTimer::update, this, [this]() {
+        update();
+    });
     setFocusPolicy(Qt::NoFocus);
 }
 

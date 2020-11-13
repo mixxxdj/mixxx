@@ -10,8 +10,9 @@ WBattery::WBattery(QWidget* parent)
           m_pBattery(Battery::getBattery(this)) {
     setVisible(false);
     if (m_pBattery) {
-        connect(m_pBattery.data(), SIGNAL(stateChanged()),
-                this, SLOT(update()));
+        connect(m_pBattery.data(), &Battery::stateChanged, this, [this]() {
+            update();
+        });
     }
 }
 
