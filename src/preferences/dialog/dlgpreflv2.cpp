@@ -61,7 +61,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
         button->setProperty("id", QVariant(pEffectManifest->id()));
         connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
     }
-    effectNameLabel->setText(QStringLiteral(""));
+    effectNameLabel->setText(QLatin1String(""));
 }
 
 DlgPrefLV2::~DlgPrefLV2() {

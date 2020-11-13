@@ -19,7 +19,7 @@ const mixxx::Logger kLogger("WSearchLineEdit");
 
 const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
-const QString kEmptySearch = QStringLiteral("");
+const QString kEmptySearch = QLatin1String("");
 
 const QString kDisabledText = QStringLiteral("- - -");
 

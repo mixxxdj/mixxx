@@ -20,7 +20,7 @@ namespace {
 const mixxx::Logger kLogger = mixxx::Logger("CueDAO");
 
 // The label column is not nullable!
-const QVariant kEmptyLabel = QVariant(QStringLiteral(""));
+const QVariant kEmptyLabel = QVariant(QLatin1String(""));
 
 inline const QVariant labelToQVariant(const QString& label) {
     if (label.isNull()) {
