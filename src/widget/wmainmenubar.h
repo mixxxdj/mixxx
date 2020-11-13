@@ -5,7 +5,6 @@
 #include <QList>
 #include <QMenuBar>
 #include <QObject>
-#include <QAction>
 #include <QScopedPointer>
 
 #include "control/controlproxy.h"
@@ -88,7 +87,7 @@ class WMainMenuBar : public QMenuBar {
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;
-    QAction *m_pViewKeywheel;
+    QAction* m_pViewKeywheel;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;

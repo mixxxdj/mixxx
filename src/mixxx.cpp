@@ -12,8 +12,8 @@
 #include <QtDebug>
 
 #include "dialog/dlgabout.h"
-#include "dialog/dlgkeywheel.h"
 #include "dialog/dlgdevelopertools.h"
+#include "dialog/dlgkeywheel.h"
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
