@@ -67,9 +67,9 @@ void AnalysisFeature::resetTitle() {
 
 void AnalysisFeature::setTitleProgress(int currentTrackNumber, int totalTracksCount) {
     m_title = QString("%1 (%2 / %3)")
-            .arg(m_baseTitle)
-            .arg(QString::number(currentTrackNumber))
-            .arg(QString::number(totalTracksCount));
+                      .arg(m_baseTitle,
+                              QString::number(currentTrackNumber),
+                              QString::number(totalTracksCount));
     emit featureIsLoading(this, false);
 }
 
