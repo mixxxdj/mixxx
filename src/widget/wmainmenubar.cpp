@@ -258,24 +258,7 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
-    QString keywheelTitle = tr("Show Keywheel");
-    QString keywheelText = tr("Show keywheel");
-    m_pViewKeywheel = new QAction(keywheelTitle, this);
-    m_pViewKeywheel->setCheckable(true);
-    m_pViewKeywheel->setShortcut(
-        QKeySequence(m_pKbdConfig->getValue(
-                ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
-                tr("F12", "Menubar|View|Show Keywheel"))));
-    m_pViewKeywheel->setStatusTip(keywheelText);
-    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
-    connect(m_pViewKeywheel, SIGNAL(triggered(bool)),
-            this, SIGNAL(showKeywheel(bool)));
-    //connect(this, SIGNAL(internalKeywheelStateChanged(bool)),
-    //        pViewKeywheel, SLOT(setChecked(bool)));
-    pViewMenu->addAction(m_pViewKeywheel);
-
     pViewMenu->addSeparator();
-
 
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
@@ -530,6 +513,20 @@ void WMainMenuBar::initialize() {
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
 
     QString externalLinkSuffix = " =>";
+
+    QString keywheelTitle = tr("Show Keywheel");
+    QString keywheelText = tr("Show keywheel");
+    m_pViewKeywheel = new QAction(keywheelTitle, this);
+    m_pViewKeywheel->setCheckable(true);
+    m_pViewKeywheel->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
+                    tr("F2", "Menubar|View|Show Keywheel"))));
+    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewKeywheel->setStatusTip(keywheelText);
+    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
+    connect(m_pViewKeywheel, SIGNAL(triggered(bool)), this, SIGNAL(showKeywheel(bool)));
+    pHelpMenu->addAction(m_pViewKeywheel);
 
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");

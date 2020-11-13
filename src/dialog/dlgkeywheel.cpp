@@ -1,8 +1,8 @@
+#include "dialog/dlgkeywheel.h"
+
 #include <QDir>
 #include <QKeyEvent>
 #include <QMouseEvent>
-
-#include "dialog/dlgkeywheel.h"
 
 using namespace mixxx::track::io::key;
 
@@ -14,11 +14,10 @@ const KeyUtils::KeyNotation kNotationHidden[]{
         KeyUtils::KeyNotation::LancelotAndTraditional};
 } // namespace
 
-DlgKeywheel::DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig) :
-    QDialog(parent),
-    ui(new Ui::DlgKeywheel),
-    m_pConfig(pConfig)
-{
+DlgKeywheel::DlgKeywheel(QWidget* parent, UserSettingsPointer pConfig)
+        : QDialog(parent),
+          ui(new Ui::DlgKeywheel),
+          m_pConfig(pConfig) {
     ui->setupUi(this);
     QDir resourceDir(m_pConfig->getResourcePath());
     auto svgPath = resourceDir.filePath(kKeywheelSVG);
@@ -47,11 +46,10 @@ DlgKeywheel::DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig) :
     updateDisplay();
 }
 
-bool DlgKeywheel::eventFilter(QObject *obj, QEvent *event)
-{
+bool DlgKeywheel::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         // we handle TAB + Shift TAB to cycle through the display types
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Tab) {
             switchDisplay(+1);
             return true;
@@ -60,13 +58,21 @@ bool DlgKeywheel::eventFilter(QObject *obj, QEvent *event)
             return true;
         }
     } else if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         // first button forward, other buttons backward cycle
         switchDisplay(mouseEvent->button() == Qt::LeftButton ? +1 : -1);
         return true;
     }
     // standard event processing
     return QObject::eventFilter(obj, event);
+}
+
+void DlgKeywheel::resizeEvent(QResizeEvent* ev) {
+    QSize newSize = ev->size();
+    int size = qMin(ui->graphic->size().height(), ui->graphic->size().width());
+    newSize = QSize(size, size);
+
+    ui->graphic->resize(newSize);
 }
 
 bool DlgKeywheel::isHiddenNotation(KeyUtils::KeyNotation notation) {
@@ -127,7 +133,6 @@ void DlgKeywheel::updateDisplay() {
                 textNode.setData(keyString);
             }
         }
-
     }
 
     QString str;
@@ -138,7 +143,6 @@ void DlgKeywheel::updateDisplay() {
     ui->graphic->load(str.toUtf8());
 }
 
-DlgKeywheel::~DlgKeywheel()
-{
+DlgKeywheel::~DlgKeywheel() {
     delete ui;
 }
