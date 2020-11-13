@@ -102,11 +102,11 @@ let
       echo "run ${wrapperCmd} mixxx"
       env shellHook="" nix-shell -p ${wrapper} --command "${wrapperCmd} mixxx --prefix LV2_PATH : ${
         lib.makeSearchPath "lib/lv2" allLv2Plugins
-      }"
+      } --prefix LD_LIBRARY_PATH ${pkgs.faad2}/lib"
     fi
     if [ -f ./mixxx-test ]; then
       echo "run ${wrapperCmd} mixxx-test"
-      env shellHook="" nix-shell -p ${wrapper} --command "${wrapperCmd} mixxx-test"
+      env shellHook="" nix-shell -p ${wrapper} --command "${wrapperCmd} mixxx-test --prefix LD_LIBRARY_PATH : ${pkgs.faad2}/lib"
     fi
   '';
 
@@ -140,7 +140,7 @@ let
     if [ -z "$QT_PLUGIN_PATH" ]; then
       export QT_PLUGIN_PATH=${pkgs.qt5.qtbase}/${pkgs.qt5.qtbase.qtPluginPrefix}
     fi
-    exec env LV2_PATH=${lib.makeSearchPath "lib/lv2" allLv2Plugins} ./mixxx-test
+    ./mixxx-test
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then
@@ -293,7 +293,7 @@ in stdenv.mkDerivation rec {
   postInstall = (if releaseMode then ''
     ${wrapperCmd} $out/bin/mixxx --prefix LV2_PATH : ${
       lib.makeSearchPath "lib/lv2" allLv2Plugins
-    }
+    } --prefix LD_LIBRARY_PATH ${pkgs.faad2}/lib
   '' else
     "");
 
