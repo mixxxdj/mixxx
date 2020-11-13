@@ -2381,6 +2381,7 @@ cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAP
 if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
+    src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
     src/controllers/hid/hidcontrollerpreset.cpp
     src/controllers/hid/hidcontrollerpresetfilehandler.cpp
