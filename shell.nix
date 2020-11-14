@@ -1,10 +1,14 @@
 { nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
 , releaseMode ? false, enableKeyfinder ? true, buildType ? "auto", cFlags ? [ ]
-}:
+, useClang ? true }:
 let
   inherit (nixroot)
-    stdenv pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
+    pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
     nix-gitignore python3 python37Packages;
+
+  llvm_packages = pkgs.llvmPackages_10;
+
+  stdenv = if useClang then llvm_packages.stdenv else pkgs.stdenv;
 
   cmakeBuildType = if buildType == "auto" then
     (if releaseMode then "RelWithDebInfo" else "Debug")
@@ -16,7 +20,7 @@ let
     ("-DCMAKE_BUILD_TYPE=" + cmakeBuildType)
   ];
 
-  git-clang-format = stdenv.mkDerivation {
+  git-clang-format = pkgs.stdenv.mkDerivation {
     name = "git-clang-format";
     version = "2019-06-21";
     src = fetchurl {
@@ -37,10 +41,30 @@ let
     '';
   };
 
+  clazy = stdenv.mkDerivation rec {
+    shortname = "clazy";
+    version = "1.7";
+    name = "${shortname}-${version}";
+    src = fetchurl {
+      url = "https://github.com/KDE/clazy/archive/v${version}.tar.gz";
+      sha256 =
+        "01d595bc584e6b37be0a9b3db22a67aae6249dc5a05df10f50cb12ccbc3fc9a3";
+    };
+    cmakeFlags = [ "-DCMAKE_MODULE_PATH=${llvm_packages.clang}" ];
+    nativeBuildInputs = [
+      cmake
+      makeWrapper
+      llvm_packages.llvm
+      llvm_packages.clang
+      llvm_packages.clang-unwrapped
+    ];
+    buildInputs = [ clang-tools cmake ];
+  };
+
   libkeyfinder = if builtins.hasAttr "libkeyfinder" pkgs then
     pkgs.libkeyfinder
   else
-    stdenv.mkDerivation {
+    pkgs.stdenv.mkDerivation {
       name = "libkeyfinder";
       version = "2.2.1-dev";
 
@@ -61,21 +85,29 @@ let
       '';
     };
 
-  shell-configure = nixroot.writeShellScriptBin "configure" ''
+  shell-configure = nixroot.writeShellScriptBin "configure" (''
     mkdir -p cbuild
     cd cbuild
-    cmake .. ${lib.escapeShellArgs allCFlags} "$@"
-    cd ..
-    V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
-    # install pre-commit from python for older systems
-    if [ $V == "1.99.99" -a ! -e venv/bin/pre-commit ]; then
-      virtualenv -p python3 venv
-      ./venv/bin/pip install pre-commit
-      ./venv/bin/pre-commit install
-    else
-      pre-commit install
+  '' + (if useClang then ''
+    VERSION=($(cat ../src/_version.h | sed -e 's/[^"]*\"\([0-9]*\)\.\([0-9]*\)\..*/\1\n\2/'))
+    if [ ''${VERSION[0]} -ge 2 -a ''${VERSION[1]} -ge 4 ]; then
+      echo "use clazy"
+      CXX=clazy
     fi
-  '';
+  '' else
+    "") + ''
+      cmake .. ${lib.escapeShellArgs allCFlags} "$@"
+      cd ..
+      V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
+      # install pre-commit from python for older systems
+      if [ $V == "1.99.99" -a ! -e venv/bin/pre-commit ]; then
+        virtualenv -p python3 venv
+        ./venv/bin/pip install pre-commit
+        ./venv/bin/pre-commit install
+      else
+        pre-commit install
+      fi
+    '');
 
   wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
     "qt5.wrapQtAppsHook"
@@ -208,27 +240,28 @@ in stdenv.mkDerivation rec {
     null;
 
   nativeBuildInputs = [ pkgs.cmake ] ++ (if !releaseMode then
-    (with pkgs; [
-      ccache
-      clang-tools
-      gdb
-      git-clang-format
-      glibcLocales
-      # for pre-commit installation since nixpkg.pre-commit may be to old
-      pre-commit
-      python3
-      python37Packages.pip
-      python37Packages.setuptools
-      python37Packages.virtualenv
-      nodejs
-      nixfmt
-      shell-build
-      shell-configure
-      shell-debug
-      shell-run
-      shell-run-tests
-      nix
-    ])
+    (with pkgs;
+      [
+        ccache
+        clang-tools
+        gdb
+        git-clang-format
+        glibcLocales
+        # for pre-commit installation since nixpkg.pre-commit may be to old
+        pre-commit
+        python3
+        python37Packages.pip
+        python37Packages.setuptools
+        python37Packages.virtualenv
+        nodejs
+        nixfmt
+        shell-build
+        shell-configure
+        shell-debug
+        shell-run
+        shell-run-tests
+        nix
+      ] ++ (if useClang then [ clazy ] else [ ]))
   else
     [ ]);
 
