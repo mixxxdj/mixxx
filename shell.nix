@@ -91,7 +91,7 @@ let
   '' + (if useClang then ''
     VERSION=($(cat ../src/_version.h | sed -e 's/[^"]*\"\([0-9]*\)\.\([0-9]*\)\..*/\1\n\2/'))
     if [ ''${VERSION[0]} -ge 2 -a ''${VERSION[1]} -ge 4 ]; then
-      echo "use clazy"
+      echo "Using clazy"
       CXX=clazy
     fi
   '' else
@@ -126,6 +126,9 @@ let
     if [ ! -d "cbuild" ]; then
       >&2 echo "First you have to run configure."
       exit 1
+    fi
+    if [ -z "$CLAZY_CHECKS" -a -e .github/workflows/clazy.yml ]; then
+      export CLAZY_CHECKS=$(grep CLAZY_CHECKS ./.github/workflows/clazy.yml | sed "s/\s*CLAZY_CHECKS:\s*//")
     fi
     cd cbuild
     rm -f .mixxx-wrapped mixxx mixxx-test .mixxx-test-wrapped
