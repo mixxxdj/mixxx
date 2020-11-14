@@ -94,7 +94,7 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
-    void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
+    void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit);
     void slotChainNameChanged(const QString& name);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
