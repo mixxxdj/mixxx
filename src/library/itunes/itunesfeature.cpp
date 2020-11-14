@@ -693,9 +693,6 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
     bool isSystemPlaylist = false;
     bool isPlaylistItemsStarted = false;
 
-    QString key;
-
-
     //We process and iterate the <dict> tags holding playlist summary information here
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
