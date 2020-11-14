@@ -33,6 +33,8 @@ var TraktorZ2 = new function() {
     this.pregainCh3Timer = 0;
     this.pregainCh4Timer = 0;
     
+    this.eqValueStorage = [];
+
     this.chTimer = [];
     for (var chidx = 1; chidx <= 4; chidx++) {
         var ch = "[Channel" + chidx + "]";
@@ -528,16 +530,16 @@ TraktorZ2.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[Channel3]", "pregain", 0x29, 0xFFFF, this.pregainHandler); // Rotary knob Deck C
     this.registerInputScaler(messageLong, "[Channel4]", "pregain", 0x2B, 0xFFFF, this.pregainHandler); // Rotary knob Deck D
 
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xFFFF, this.parameterHandler); // High
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xFFFF, this.parameterHandler); // Mid
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xFFFF, this.parameterHandler); // Low
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xFFFF, this.eqKnobHandler); // High
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xFFFF, this.eqKnobHandler); // Mid
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xFFFF, this.eqKnobHandler); // Low
 
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, 0xFFFF, this.parameterHandler); // High
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, 0xFFFF, this.parameterHandler); // Mid
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x25, 0xFFFF, this.parameterHandler); // Low
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x21, 0xFFFF, this.eqKnobHandler); // High
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x23, 0xFFFF, this.eqKnobHandler); // Mid
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x25, 0xFFFF, this.eqKnobHandler); // Low
 
-    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x27, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xFFFF, this.eqKnobHandler);
+    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x27, 0xFFFF, this.eqKnobHandler);
 
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x31, 0xFFFF, this.faderHandler);
     this.registerInputScaler(messageLong, "[Master]", "gain", 0x09, 0xFFFF, this.parameterHandler);
@@ -633,12 +635,67 @@ TraktorZ2.shiftHandler = function(field) {
             }
             HIDDebug("TraktorZ2: back to static shift state: " + TraktorZ2.shiftState);
         }
+        // Apply stored EQ and filter settings
+         var eqGroups = {
+            "1" : "[EqualizerRack1_[Channel1]_Effect1]",
+            "2" : "[EqualizerRack1_[Channel1]_Effect1]",
+            "3" : "[EqualizerRack1_[Channel1]_Effect1]",
+            "4" : "[QuickEffectRack1_[Channel1]]",
+            "5" : "[EqualizerRack1_[Channel2]_Effect1]",
+            "6" : "[EqualizerRack1_[Channel2]_Effect1]",
+            "7" : "[EqualizerRack1_[Channel2]_Effect1]",
+            "8" : "[QuickEffectRack1_[Channel2]]"
+        };
+        var eqParameters = {
+            "1" : "parameter1",
+            "2" : "parameter2",
+            "3" : "parameter3",
+            "4" : "super1",
+            "5" : "parameter1",
+            "6" : "parameter2",
+            "7" : "parameter3",
+            "8" : "super1"
+        };
+
+        for (var idx in eqGroups) {
+            
+            if (TraktorZ2.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "changed"] === true) {
+                TraktorZ2.eqExecute(eqGroups[idx], eqParameters[idx], TraktorZ2.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "value"]);
+            }
+        }
     }
 };
 
 TraktorZ2.parameterHandler = function(field) {
     HIDDebug("TraktorZ2: parameterHandler");
     engine.setParameter(field.group, field.name, field.value / 4095);
+};
+
+TraktorZ2.eqKnobHandler = function(field) {
+    HIDDebug("TraktorZ2: eqKnobHandler");
+    
+    if (TraktorZ2.shiftPressed === false) {
+        TraktorZ2.eqExecute(field.group, field.name, field.value);
+    } else {
+        // Store value until Shift button will be released
+        TraktorZ2.eqValueStorage[field.group + field.name + "changed"] = true;
+        TraktorZ2.eqValueStorage[field.group + field.name + "value"] = field.value;
+    }
+}
+
+TraktorZ2.eqExecute = function(group, name, value) {
+    HIDDebug("TraktorZ2: eqExecute");
+    if ((group === "[EqualizerRack1_[Channel1]_Effect1]") ||
+         (group === "[QuickEffectRack1_[Channel1]]")) {        
+            engine.stopTimer(TraktorZ2.pregainCh3Timer);
+            TraktorZ2.pregainCh3Timer = 0;
+    } else if ((group === "[EqualizerRack1_[Channel2]_Effect1]") ||
+        (group === "[QuickEffectRack1_[Channel2]]")) {        
+            engine.stopTimer(TraktorZ2.pregainCh4Timer);
+            TraktorZ2.pregainCh4Timer = 0;
+    }
+    engine.setParameter(group, name, value / 4095);
+    TraktorZ2.eqValueStorage[group + name + "changed"] = false;
 };
 
 TraktorZ2.pregainHandler = function(field) {
@@ -1340,7 +1397,8 @@ TraktorZ2.init = function(_id) {
     // 0xF1 9n 40  -> Bit 0x04 of n means  MasterCh (internal) mixing
     // 0xF1 9n 40  -> Bit 0x08 of n means  Mic/Aux (internal) mixing
 
-    var data = [0xFF, 0x40];
+    var data
+    data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF1);
     data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF3);
