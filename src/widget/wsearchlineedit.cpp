@@ -19,8 +19,6 @@ const mixxx::Logger kLogger("WSearchLineEdit");
 
 const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
-const QString kEmptySearch = QLatin1String("");
-
 const QString kDisabledText = QStringLiteral("- - -");
 
 inline QString clearButtonStyleSheet(int pxPaddingRight) {
@@ -63,9 +61,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
       WBaseWidget(this),
       m_clearButton(make_parented<QToolButton>(this)) {
-    DEBUG_ASSERT(kEmptySearch.isEmpty());
-    DEBUG_ASSERT(!kEmptySearch.isNull());
-
     setAcceptDrops(false);
 
     //: Shown in the library search bar when it is empty.
@@ -330,7 +325,7 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
     DEBUG_ASSERT(isEnabled());
 
     if (text.isEmpty()) {
-        setTextBlockSignals(kEmptySearch);
+        setTextBlockSignals(QString());
     } else {
         setTextBlockSignals(text);
     }
@@ -379,7 +374,7 @@ void WSearchLineEdit::slotClearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
-    setText(kEmptySearch);
+    clear();
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }
