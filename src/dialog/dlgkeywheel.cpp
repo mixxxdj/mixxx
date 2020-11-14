@@ -81,30 +81,31 @@ bool DlgKeywheel::isHiddenNotation(KeyUtils::KeyNotation notation) {
 }
 
 void DlgKeywheel::switchDisplay(int step) {
-    KeyUtils::KeyNotation newNotation = static_cast<KeyUtils::KeyNotation>(
-            static_cast<int>(m_notation) + step);
-    // step 0 is used to update the notation to a valid one on init
+    const int invalidNotations = static_cast<int>(KeyUtils::KeyNotation::Invalid);
+    const int numNotations = static_cast<int>(KeyUtils::KeyNotation::NumKeyNotations);
+
+    int newNotation = static_cast<int>(m_notation) + step;
+
     if (step == 0) {
         step = 1;
     }
     // we skip variants with redundant information
-    while (newNotation <= KeyUtils::KeyNotation::Invalid ||
-            newNotation >= KeyUtils::KeyNotation::NumKeyNotations ||
-            isHiddenNotation(newNotation)) {
-        newNotation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(newNotation) + step);
-        if (newNotation >= KeyUtils::KeyNotation::NumKeyNotations) {
-            newNotation = KeyUtils::KeyNotation::Custom;
-        } else if (newNotation <= KeyUtils::KeyNotation::Invalid) {
-            newNotation = static_cast<KeyUtils::KeyNotation>(
-                    static_cast<int>(KeyUtils::KeyNotation::NumKeyNotations) - 1);
+    while (newNotation <= invalidNotations ||
+            newNotation >= numNotations ||
+            isHiddenNotation(static_cast<KeyUtils::KeyNotation>(newNotation))) {
+        newNotation = newNotation + step;
+        if (newNotation >= numNotations) {
+            newNotation = invalidNotations + 1;
+        } else if (newNotation <= invalidNotations) {
+            newNotation = numNotations - 1;
         }
     }
-    m_notation = newNotation;
+    m_notation = static_cast<KeyUtils::KeyNotation>(newNotation);
     // we update the SVG nodes with the new value
-    updateDisplay();
+    updateSvg();
 }
 
-void DlgKeywheel::updateDisplay() {
+void DlgKeywheel::updateSvg() {
     /* update the svg with new values to display, then cause a an update on the widget */
     QDomElement topElement = m_domDocument.documentElement();
     QDomNode domNode = topElement.firstChild();

@@ -19,7 +19,7 @@ class DlgKeywheel : public QDialog {
   public:
     explicit DlgKeywheel(QWidget* parent, UserSettingsPointer pConfig);
     void switchDisplay(int dir = 1);
-    void updateDisplay();
+    void updateSvg();
     ~DlgKeywheel();
 
   protected:
