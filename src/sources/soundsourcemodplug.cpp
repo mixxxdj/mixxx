@@ -119,7 +119,7 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
-    return MetadataSource::importTrackMetadataAndCoverImage(nullptr, pCoverArt);
+    return MetadataSourceTagLib::importTrackMetadataAndCoverImage(nullptr, pCoverArt);
 }
 
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(

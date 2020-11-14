@@ -193,7 +193,6 @@ class AutoDJProcessor : public QObject {
 
     bool nextTrackLoaded();
 
-  public slots:
     void setTransitionTime(int seconds);
 
     void setTransitionMode(TransitionMode newMode);
