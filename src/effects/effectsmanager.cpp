@@ -91,11 +91,15 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
     std::sort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
 
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
-            this, SLOT(slotBackendRegisteredEffect(EffectManifestPointer)));
+    connect(pBackend,
+            &EffectsBackend::effectRegistered,
+            this,
+            &EffectsManager::slotBackendRegisteredEffect);
 
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
-            this, SIGNAL(availableEffectsUpdated(EffectManifestPointer)));
+    connect(pBackend,
+            &EffectsBackend::effectRegistered,
+            this,
+            &EffectsManager::availableEffectsUpdated);
 }
 
 void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest) {
