@@ -721,7 +721,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     double cueEndPosition = Cue::kNoPosition;
     mixxx::CueType cueType = mixxx::CueType::Invalid;
 
-    bool loopEnabled = m_pLoopEnabled->get();
+    bool loopEnabled = m_pLoopEnabled->toBool();
     if (mode == HotcueSetMode::Auto) {
         mode = loopEnabled ? HotcueSetMode::Loop : HotcueSetMode::Cue;
     }
@@ -974,7 +974,8 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
         // mapping the CUE LOOP mode labeled on some controllers.
         setCurrentSavedLoopControlAndActivate(nullptr);
         double startPosition = pCue->getPosition();
-        bool loopActive = m_pLoopEnabled->get() && (startPosition == m_pLoopStartPosition->get());
+        bool loopActive = m_pLoopEnabled->toBool() &&
+                (startPosition == m_pLoopStartPosition->get());
         setBeatLoop(startPosition, !loopActive);
         break;
     }
