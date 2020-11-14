@@ -1,5 +1,11 @@
 ## HIDAPI library for Windows, Linux, FreeBSD and macOS
 
+| CI instance          | Status |
+|----------------------|--------|
+| `macOS master`       | [![Build Status](https://travis-ci.org/libusb/hidapi.svg?branch=master)](https://travis-ci.org/libusb/hidapi) |
+| `Windows master` | [![Build status](https://ci.appveyor.com/api/projects/status/r482aevuigmi86rk/branch/master?svg=true)](https://ci.appveyor.com/project/Youw/hidapi/branch/master) |
+| `Linux/BSD, last build (branch/PR)` | [![builds.sr.ht status](https://builds.sr.ht/~qbicz/hidapi.svg)](https://builds.sr.ht/~qbicz/hidapi?) |
+
 HIDAPI is a multi-platform library which allows an application to interface
 with USB and Bluetooth HID-Class devices on Windows, Linux, FreeBSD, and macOS.
 HIDAPI can be either built as a shared library (`.so`, `.dll` or `.dylib`) or
@@ -43,13 +49,13 @@ tradeoffs, and the functionality supported is slightly different.
 
 __Linux/hidraw__ (`linux/hid.c`):
 
-This back-end uses the hidraw interface in the Linux kernel.  While this
-back-end will support both USB and Bluetooth, it has some limitations on
-kernels prior to 2.6.39, including the inability to send or receive feature
-reports.  In addition, it will only communicate with devices which have
-hidraw nodes associated with them.  Keyboards, mice, and some other devices
-which are blacklisted from having hidraw nodes will not work. Fortunately,
-for nearly all the uses of hidraw, this is not a problem.
+This back-end uses the hidraw interface in the Linux kernel, and supports
+both USB and Bluetooth HID devices. It requires kernel version at least 2.6.39
+to build. In addition, it will only communicate with devices which have hidraw
+nodes associated with them.
+Keyboards, mice, and some other devices which are blacklisted from having
+hidraw nodes will not work. Fortunately, for nearly all the uses of hidraw,
+this is not a problem.
 
 __Linux/FreeBSD/libusb__ (`libusb/hid.c`):
 
@@ -62,11 +68,14 @@ which HIDAPI supports.  Since it relies on a 3rd party library, building it
 is optional but recommended because it is so useful when debugging hardware.
 
 ## What Does the API Look Like?
-The API provides the the most commonly used HID functions including sending
-and receiving of input, output, and feature reports.  The sample program,
+The API provides the most commonly used HID functions including sending
+and receiving of input, output, and feature reports. The sample program,
 which communicates with a heavily hacked up version of the Microchip USB
 Generic HID sample looks like this (with error checking removed for
 simplicity):
+
+**Warning: Only run the code you understand, and only when it conforms to the
+device spec. Writing data at random to your HID devices can break them.**
 
 ```c
 #ifdef WIN32
@@ -126,12 +135,19 @@ int main(int argc, char* argv[])
 	for (i = 0; i < 4; i++)
 		printf("buf[%d]: %d\n", i, buf[i]);
 
+	// Close the device
+	hid_close(handle);
+
 	// Finalize the hidapi library
 	res = hid_exit();
 
 	return 0;
 }
 ```
+
+You can also use [hidtest/test.c](hidtest/test.c)
+as a starting point for your applications.
+
 
 ## License
 HIDAPI may be used by one of three licenses as outlined in [LICENSE.txt](LICENSE.txt).

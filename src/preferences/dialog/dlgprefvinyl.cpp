@@ -95,24 +95,34 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     LeadinTime3->setSuffix(" s");
     LeadinTime4->setSuffix(" s");
 
-    TroubleshootingLink->setText(QString("<a href='%1%2'>Troubleshooting</a>")
-                                         .arg(MIXXX_MANUAL_URL)
-                                         .arg("/chapters/vinyl_control.html#troubleshooting"));
+    TroubleshootingLink->setText(
+            QString("<a href='%1%2'>Troubleshooting</a>")
+                    .arg(MIXXX_MANUAL_URL,
+                            "/chapters/vinyl_control.html#troubleshooting"));
 
-    connect(VinylGain, SIGNAL(sliderReleased()),
-            this, SLOT(slotVinylGainApply()));
-    connect(VinylGain, SIGNAL(valueChanged(int)),
-            this, SLOT(slotUpdateVinylGain()));
+    connect(VinylGain, &QSlider::sliderReleased, this, &DlgPrefVinyl::slotVinylGainApply);
+    connect(VinylGain,
+            QOverload<int>::of(&QSlider::valueChanged),
+            this,
+            &DlgPrefVinyl::slotUpdateVinylGain);
 
     // No real point making this a mapper since the combos aren't indexed.
-    connect(ComboBoxVinylType1, SIGNAL(currentIndexChanged(QString)),
-            this, SLOT(slotVinylType1Changed(QString)));
-    connect(ComboBoxVinylType2, SIGNAL(currentIndexChanged(QString)),
-            this, SLOT(slotVinylType2Changed(QString)));
-    connect(ComboBoxVinylType3, SIGNAL(currentIndexChanged(QString)),
-            this, SLOT(slotVinylType3Changed(QString)));
-    connect(ComboBoxVinylType4, SIGNAL(currentIndexChanged(QString)),
-            this, SLOT(slotVinylType4Changed(QString)));
+    connect(ComboBoxVinylType1,
+            &QComboBox::currentTextChanged,
+            this,
+            &DlgPrefVinyl::slotVinylType1Changed);
+    connect(ComboBoxVinylType2,
+            &QComboBox::currentTextChanged,
+            this,
+            &DlgPrefVinyl::slotVinylType2Changed);
+    connect(ComboBoxVinylType3,
+            &QComboBox::currentTextChanged,
+            this,
+            &DlgPrefVinyl::slotVinylType3Changed);
+    connect(ComboBoxVinylType4,
+            &QComboBox::currentTextChanged,
+            this,
+            &DlgPrefVinyl::slotVinylType4Changed);
 
     for (int i = 0; i < kMaxNumberOfDecks; ++i) {
         setDeckWidgetsVisible(i, false);
