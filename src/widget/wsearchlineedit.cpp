@@ -77,9 +77,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_clearButton(make_parented<QToolButton>(this)) {
-    DEBUG_ASSERT(kEmptySearch.isEmpty());
-    DEBUG_ASSERT(!kEmptySearch.isNull());
-
     setAcceptDrops(false);
     setEditable(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
