@@ -19,18 +19,17 @@ namespace {
 
 const mixxx::Logger kLogger = mixxx::Logger("CueDAO");
 
-// The label column is not nullable!
-const QVariant kEmptyLabel = QVariant(QStringLiteral(""));
-
+/// Wrap a `QString` label in a `QVariant`. The label column is not nullable,
+/// so this function also makes sure that the label an empty string, not null.
 inline const QVariant labelToQVariant(const QString& label) {
     if (label.isNull()) {
-        return kEmptyLabel; // null -> empty
+        return QLatin1String(""); // null -> empty
     } else {
         return label;
     }
 }
 
-// Empty labels are read as null strings
+/// Empty labels are read as null strings
 inline QString labelFromQVariant(const QVariant& value) {
     const auto label = value.toString();
     if (label.isEmpty()) {
