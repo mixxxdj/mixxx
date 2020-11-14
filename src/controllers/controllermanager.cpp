@@ -120,7 +120,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
 
     // Signal that we should run slotInitialize once our event loop has started
     // up.
-    emit requestInitialize();
+    emit requestInitialize(); // clazy:exclude=incorrect-emit
 }
 
 ControllerManager::~ControllerManager() {
