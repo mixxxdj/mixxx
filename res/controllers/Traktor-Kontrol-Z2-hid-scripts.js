@@ -1200,27 +1200,23 @@ TraktorZ2.registerOutputPackets = function() {
 
     outputB.addOutput("[Master]", "!usblight", 0x27, "B", 0x70);
     
-    
-    outputB.addOutput("[Master]", "!vulabelChA", 0x01, "B", 0x70);
-    outputB.addOutput("[Master]", "!vulabelChB", 0x09, "B", 0x70);
-    outputB.addOutput("[Master]", "!vulabelChC", 0x11, "B", 0x70);
-    outputB.addOutput("[Master]", "!vulabelChD", 0x19, "B", 0x70);
-    outputB.addOutput("[Master]", "!vulabelMst", 0x21, "B", 0x70);
+    outputB.addOutput("[Master]", "!VuLabelMst", 0x21, "B", 0x70);
     outputB.addOutput("[Master]", "!crossfaderReverse", 0x28, "B", 0x70);
 
     
     var VuOffsets = {
-        "[Channel1]": 0x02, // ChA
-        "[Channel2]": 0x0A, // ChB
-        "[Channel3]": 0x12, // ChC/MasterL
-        "[Channel4]": 0x1A  // ChD_MasterR
+        "[Channel1]": 0x01, // ChA
+        "[Channel2]": 0x09, // ChB
+        "[Channel3]": 0x11, // ChC/MasterL
+        "[Channel4]": 0x19  // ChD_MasterR
     };
 
     for (ch in VuOffsets) {
+        outputB.addOutput(ch, "!VuLabel", VuOffsets[ch], "B", 0x70);
         for (var i = 0; i < 6; i++) {
-            outputB.addOutput(ch, "!" + "VuMeter" + i, VuOffsets[ch] + i, "B", 0x70);
+            outputB.addOutput(ch, "!VuMeter" + i, VuOffsets[ch] + i + 0x01, "B", 0x70);
         }
-        outputB.addOutput(ch, "PeakIndicator", VuOffsets[ch] + 0x06, "B", 0x70);
+        outputB.addOutput(ch, "!PeakIndicator", VuOffsets[ch] + 0x07, "B", 0x70);
     }
 
     this.controller.registerOutputPacket(outputB);
@@ -1230,44 +1226,49 @@ TraktorZ2.registerOutputPackets = function() {
 TraktorZ2.displayVuMeter = function() {
 
     var VuMeters = {
-        "[Channel1]": "VuMeter", // ChA
-        "[Channel2]": "VuMeter", // ChB
-        "[Channel3]": "VuMeterL", // ChC/MasterL
-        "[Channel4]": "VuMeterR"  // ChD_MasterR
+        "[Channel1]": "", // ChA
+        "[Channel2]": "", // ChB
+        "[Channel3]": "", // ChC/MasterL
+        "[Channel4]": ""  // ChD_MasterR
     };
-    
-    if (TraktorZ2.pregainCh3Timer !== 0) {
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChA", LedOff, false);
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChC", LedBright, false);
-    }
-    else
-    {
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChA", LedBright, false);
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChC", LedOff, false);
-    }
-    if (TraktorZ2.pregainCh4Timer !== 0) {
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChB", LedOff, false);
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChD", LedBright, false);
-    }
-    else
-    {
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChB", LedBright, false);
-        TraktorZ2.controller.setOutput("[Master]", "!vulabelChD", LedOff, false);
-    }
-    
+
     for (var ch in VuMeters) {
 
         var VuValue;
-        if  (ch === "[Channel3]" || ch === "[Channel4]") {
-            VuValue = engine.getValue("[Master]", VuMeters[ch]) * 6;
+        var PeakIndicator;
+
+        if  (ch === "[Channel3]") {
+            // MasterL
+            VuValue = engine.getValue("[Master]", "VuMeterL") * 6;
+            PeakIndicator = engine.getValue("[Master]", "PeakIndicatorL");
+        } else if  (ch === "[Channel4]") {
+            // MasterR
+            VuValue = engine.getValue("[Master]", "VuMeterR") * 6;
+            PeakIndicator = engine.getValue("[Master]", "PeakIndicatorR");
         } else if  ((ch === "[Channel1]") && (TraktorZ2.pregainCh3Timer === 0)) {
-            VuValue = engine.getValue(ch, VuMeters[ch]) * 6;
+            // ChA
+            VuValue = engine.getValue(ch, "VuMeter") * 6;
+            PeakIndicator = engine.getValue(ch, "PeakIndicator");
+            TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", LedBright, false);
+            TraktorZ2.controller.setOutput("[Channel3]", "!VuLabel", LedOff, false);
         } else if  ((ch === "[Channel1]") && (TraktorZ2.pregainCh3Timer !== 0)) {
-            VuValue = engine.getValue("[Channel3]", VuMeters["[Channel3]"]) * 6;
+            // ChC
+            VuValue = engine.getValue("[Channel3]", "VuMeter") * 6;
+            PeakIndicator = engine.getValue("[Channel3]", "PeakIndicator");
+            TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", LedOff, false);
+            TraktorZ2.controller.setOutput("[Channel3]", "!VuLabel", LedBright, false);
         } else if  ((ch === "[Channel2]") && (TraktorZ2.pregainCh4Timer === 0)) {
-            VuValue = engine.getValue(ch, VuMeters[ch]) * 6;
+            // ChB
+            VuValue = engine.getValue(ch, "VuMeter") * 6;
+            PeakIndicator = engine.getValue(ch, "PeakIndicator");
+            TraktorZ2.controller.setOutput("[Channel2]", "!VuLabel", LedBright, false);
+            TraktorZ2.controller.setOutput("[Channel4]", "!VuLabel", LedOff, false);
         } else if  ((ch === "[Channel2]") && (TraktorZ2.pregainCh4Timer !== 0)) {
-            VuValue = engine.getValue("[Channel4]", VuMeters["[Channel4]"]) * 6;
+            // ChD
+            VuValue = engine.getValue("[Channel4]", "VuMeter") * 6;
+            PeakIndicator = engine.getValue("[Channel4]", "PeakIndicator");
+            TraktorZ2.controller.setOutput("[Channel2]", "!VuLabel", LedOff, false);
+            TraktorZ2.controller.setOutput("[Channel4]", "!VuLabel", LedBright, false);
         }
 
         for (var i = 0; i < 6; i++) {
@@ -1278,31 +1279,13 @@ TraktorZ2.displayVuMeter = function() {
             if (brightness > LedBright) {
                 brightness = LedBright;
             }
-            TraktorZ2.controller.setOutput(ch, "!" + "VuMeter" + i, brightness, false);
+            TraktorZ2.controller.setOutput(ch, "!VuMeter" + i, brightness, false);
         }
 
-
-
-        if  (ch === "[Channel1]" ||ch === "[Channel2]") {
-            if (engine.getValue(ch, "PeakIndicator")) {
-                TraktorZ2.controller.setOutput(ch, "PeakIndicator", LedBright, false);
-            } else {
-                TraktorZ2.controller.setOutput(ch, "PeakIndicator", LedOff,    false);
-            }
-        }
-        if  (ch === "[Channel3]") {
-            if (engine.getValue("[Master]", "PeakIndicatorL")) {
-                TraktorZ2.controller.setOutput(ch, "PeakIndicator", LedBright, false);
-            } else {
-                TraktorZ2.controller.setOutput(ch, "PeakIndicator", LedOff,    false);
-            }
-        }
-        if  (ch === "[Channel4]") {
-            if (engine.getValue("[Master]", "PeakIndicatorR")) {
-                TraktorZ2.controller.setOutput(ch, "PeakIndicator", LedBright,  true);
-            } else {
-                TraktorZ2.controller.setOutput(ch, "PeakIndicator", LedOff,     true);
-            }
+        if (PeakIndicator) {
+            TraktorZ2.controller.setOutput(ch, "!PeakIndicator", LedBright, (ch === "[Channel4]"));
+        } else {
+            TraktorZ2.controller.setOutput(ch, "!PeakIndicator", LedOff,    (ch === "[Channel4]"));
         }
     }
 };
@@ -1341,11 +1324,11 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.controller.setOutput("[Channel3]", "!deck", LedOff,       true);
     TraktorZ2.deckSwitchHandler["[Channel4]"] = 0;
     TraktorZ2.controller.setOutput("[Channel4]", "!deck", LedOff,       true);
-    
-    TraktorZ2.controller.setOutput("[Master]", "!vulabelMst", LedBright, false);
-    
+
+    TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", LedBright, false);
+
     TraktorZ2.hotcueOutputHandler();
     HIDDebug("TraktorZ2: Init done!");
 
- //   this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
+    this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.displayVuMeter);
 };
