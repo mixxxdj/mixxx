@@ -16,6 +16,11 @@
 #include "mixer/playermanager.h"
 #include "track/track.h"
 
+#if !defined(VERBOSE_DEBUG_LOG)
+// set to true for verbose debug logs
+#define VERBOSE_DEBUG_LOG false
+#endif
+
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"
 #define AUTODJCRATESTABLE_TIMESPLAYED "timesplayed"
@@ -139,35 +144,38 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
         return;
     }
 
-    // Fill out the first three columns.
-    // Supply default values for the last two.
-    // INSERT INTO temp_autodj_crates (
-    //     track_id, craterefs, timesplayed, autodjrefs, lastplayed)
-    // SELECT crate_tracks.track_id, COUNT (*), library.timesplayed, 0, ""
-    // FROM crate_tracks, library
-    // WHERE crate_tracks.crate_id IN (
-    //     SELECT id
-    //     FROM crates
-    //     WHERE autodj = 1)
-    // AND crate_tracks.track_id = library.id
-    // AND library.mixxx_deleted = 0
-    // GROUP BY crate_tracks.track_id, library.timesplayed;
-    strQuery = QString("INSERT INTO " AUTODJCRATES_TABLE
-            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS ", "
-            AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS ", "
-            AUTODJCRATESTABLE_LASTPLAYED ") SELECT " CRATE_TRACKS_TABLE
-            ".%1 , COUNT (*), " LIBRARY_TABLE ".%2, 0, \"\" FROM "
-            CRATE_TRACKS_TABLE ", " LIBRARY_TABLE " WHERE " CRATE_TRACKS_TABLE
-            ".%4 IN (SELECT %5 FROM " CRATE_TABLE " WHERE %6 = 1) AND "
-            CRATE_TRACKS_TABLE ".%1 = " LIBRARY_TABLE ".%7 AND " LIBRARY_TABLE
-            ".%3 == 0 GROUP BY " CRATE_TRACKS_TABLE ".%1, " LIBRARY_TABLE ".%2")
-                .arg(CRATETRACKSTABLE_TRACKID, // %1
-                     LIBRARYTABLE_TIMESPLAYED, // %2
-                     LIBRARYTABLE_MIXXXDELETED, // %3
-                     CRATETRACKSTABLE_CRATEID, // %4
-                     CRATETABLE_ID, // %5
-                     CRATETABLE_AUTODJ_SOURCE, // %6
-                     LIBRARYTABLE_ID); // %7
+    strQuery = QStringLiteral(
+            "INSERT INTO " AUTODJCRATES_TABLE "(" AUTODJCRATESTABLE_TRACKID
+            "," AUTODJCRATESTABLE_CRATEREFS "," AUTODJCRATESTABLE_TIMESPLAYED
+            "," AUTODJCRATESTABLE_LASTPLAYED "," AUTODJCRATESTABLE_AUTODJREFS
+            ") SELECT " CRATE_TRACKS_TABLE
+            ".%5,"               // TRACKID
+            "COUNT(*),"          // CRATEREFS
+            LIBRARY_TABLE ".%2," // TIMESPLAYED
+            LIBRARY_TABLE
+            ".%3," // LASTPLAYED
+            "0"    // AUTODJREFS = default
+            " FROM " CRATE_TRACKS_TABLE
+            " INNER JOIN " LIBRARY_TABLE " ON " LIBRARY_TABLE ".%1=" CRATE_TRACKS_TABLE
+            ".%5"
+            " WHERE " LIBRARY_TABLE
+            ".%4=0"
+            " AND " CRATE_TRACKS_TABLE ".%6 IN (SELECT %7 FROM " CRATE_TABLE
+            " WHERE %8=1)"
+            " GROUP BY " CRATE_TRACKS_TABLE ".%5")
+                       .arg(LIBRARYTABLE_ID,                // %1
+                               LIBRARYTABLE_TIMESPLAYED,    // %2
+                               LIBRARYTABLE_LAST_PLAYED_AT, // %3
+                               LIBRARYTABLE_MIXXXDELETED,   // %4
+                               CRATETRACKSTABLE_TRACKID,    // %5
+                               CRATETRACKSTABLE_CRATEID,    // %6
+                               CRATETABLE_ID,               // %7
+                               CRATETABLE_AUTODJ_SOURCE);   // %8
+#if !defined(VERBOSE_DEBUG_LOG)
+    qDebug().noquote()
+            << "Populating " AUTODJCRATES_TABLE " using the following SQL query:"
+            << strQuery;
+#endif
     oQuery.prepare(strQuery);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);

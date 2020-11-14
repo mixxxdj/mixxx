@@ -131,7 +131,9 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
     if (ControllerDebug::enabled()) {
         // Formatted packet display
         QString message = QString("%1: t:%2, %3 bytes:\n")
-                .arg(m_sDeviceName).arg(timestamp.formatMillisWithUnit()).arg(length);
+                                  .arg(m_sDeviceName,
+                                          timestamp.formatMillisWithUnit(),
+                                          QString::number(length));
         for(int i=0; i<length; i++) {
             QString spacer=" ";
             if ((i+1) % 4 == 0) spacer="  ";

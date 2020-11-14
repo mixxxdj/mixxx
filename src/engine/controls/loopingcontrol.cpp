@@ -1352,7 +1352,8 @@ void LoopingControl::slotBeatJump(double beats) {
         // If inside an active loop, move loop
         slotLoopMove(beats);
     } else {
-        seekAbs(pBeats->findNBeatsFromSample(currentSample, beats));
+        // seekExact bypasses Quantize, because a beat jump is implicit quantized
+        seekExact(pBeats->findNBeatsFromSample(currentSample, beats));
     }
 }
 

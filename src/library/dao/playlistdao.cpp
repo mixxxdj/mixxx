@@ -172,6 +172,13 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     //qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
 
+    QSet<TrackId> playedTrackIds;
+    if (getHiddenType(playlistId) == PLHT_SET_LOG) {
+        for (const auto& trackId : getTrackIds(playlistId)) {
+            playedTrackIds.insert(trackId);
+        }
+    }
+
     // Get the playlist id for this
     QSqlQuery query(m_database);
 
@@ -206,6 +213,9 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 
     emit deleted(playlistId);
+    if (!playedTrackIds.isEmpty()) {
+        emit tracksRemovedFromPlayedHistory(playedTrackIds);
+    }
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
@@ -516,7 +526,11 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     }
 
     m_playlistsTrackIsIn.remove(trackId, playlistId);
+
     emit trackRemoved(playlistId, trackId, position);
+    if (getHiddenType(playlistId) == PLHT_SET_LOG) {
+        emit tracksRemovedFromPlayedHistory({trackId});
+    }
 }
 
 bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId, int position) {
