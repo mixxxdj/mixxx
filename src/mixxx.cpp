@@ -163,6 +163,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
 
     initializeKeyboard();
+    installEventFilter(m_pKeyboard);
 
     // Menubar depends on translations.
     mixxx::Translations::initializeTranslations(
@@ -552,7 +553,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         QSet<QString>::fromList(prev_plugins_list);
 #endif
 
-    QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
+    const QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
     QSet<QString> curr_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
@@ -561,8 +562,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
-    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-            QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
+    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"), curr_plugins_list.join(","));
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
@@ -781,7 +781,7 @@ void MixxxMainWindow::finalize() {
 
     // Check for leaked ControlObjects and give warnings.
     {
-        QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
                 ControlDoublePrivate::takeAllInstances();
         if (!leakedControls.isEmpty()) {
             qWarning()
@@ -1074,9 +1074,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     if (pTrack) {
         QString trackInfo = pTrack->getInfo();
         if (!trackInfo.isEmpty()) {
-            appTitle = QString("%1 | %2")
-                    .arg(trackInfo)
-                    .arg(appTitle);
+            appTitle = QString("%1 | %2").arg(trackInfo, appTitle);
         }
     }
     this->setWindowTitle(appTitle);
@@ -1432,15 +1430,8 @@ void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
-    QPoint initPosition = pos();
-    // frameSize()  : Window size including all borders and only if the window manager works.
-    // size() : Window without the borders nor title, but including the Menu!
-    // centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize;
-    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
-    if (pWidget) {
-        initSize = centralWidget()->size();
-    }
+    // safe geometry for later restoration
+    const QRect initGeometry = geometry();
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1481,24 +1472,16 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else if (!initSize.isEmpty()) {
-        // Not all OSs and/or window managers keep the window inside of the screen, so force it.
-        int newX = initPosition.x() + (initSize.width() - m_pCentralWidget->width()) / 2;
-        int newY = initPosition.y() + (initSize.height() - m_pCentralWidget->height()) / 2;
-
-        const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
-        VERIFY_OR_DEBUG_ASSERT(pScreen) {
-            qWarning() << "Unable to move window inside screen borders.";
-        }
-        else {
-            const auto windowMarginWidth =
-                    pScreen->geometry().width() - m_pCentralWidget->width();
-            const auto windowMarginHeight =
-                    pScreen->geometry().height() - m_pCentralWidget->height();
-            newX = std::max(0, std::min(newX, windowMarginWidth));
-            newY = std::max(0, std::min(newY, windowMarginHeight));
-            move(newX, newY);
-        }
+    } else {
+        // Programatic placement at this point is very problematic.
+        // The screen() method returns stale data (primary screen)
+        // until the user interacts with mixxx again. Keyboard shortcuts
+        // do not count, moving window, opening menu etc does
+        // Therefore the placement logic was removed by a simple geometry restore.
+        // If the minimum size of the new skin is larger then the restored
+        // geometry, the window will be enlarged right & bottom which is
+        // safe as the menu is still reachable.
+        setGeometry(initGeometry);
     }
 
     qDebug() << "rebootMixxxView DONE";

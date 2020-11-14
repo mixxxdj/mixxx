@@ -246,7 +246,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     for (const auto& trackId: trackIds) {
         QSet<int> playlistIds;
         m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
-        for (const auto& playlistId: playlistIds) {
+        for (const auto& playlistId : qAsConst(playlistIds)) {
             if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
                 allPlaylistIds.insert(playlistId);
             }

@@ -13,7 +13,7 @@ const Logger kLogger("SoundSourceFLAC");
 // The maximum number of retries to fix seek errors. On a seek error
 // the next seek will start one (or more) sample blocks before the
 // position of the preceding seek operation that has failed.
-const int kSeekErrorMaxRetryCount = 3;
+constexpr int kSeekErrorMaxRetryCount = 3;
 
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
 
@@ -71,8 +71,24 @@ const SINT kBitsPerSampleDefault = 0;
 
 } // namespace
 
+//static
+const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
+
+//static
+const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+        QStringLiteral("flac"),
+};
+
+SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
+
 SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
-        : SoundSource(url, "flac"),
+        : SoundSource(url),
           m_file(getLocalFileName()),
           m_decoder(nullptr),
           m_maxBlocksize(0),
@@ -554,23 +570,6 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
     // will bail. libFLAC docs say to not close the decoder here -- bkgood
-}
-
-QString SoundSourceProviderFLAC::getName() const {
-    return "Xiph.org libFLAC";
-}
-
-QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("flac");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

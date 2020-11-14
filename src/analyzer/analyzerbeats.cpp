@@ -25,8 +25,9 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
 
 // static
 mixxx::AnalyzerPluginInfo AnalyzerBeats::defaultPlugin() {
-    DEBUG_ASSERT(availablePlugins().size() > 0);
-    return availablePlugins().at(0);
+    const auto plugins = availablePlugins();
+    DEBUG_ASSERT(!plugins.isEmpty());
+    return plugins.at(0);
 }
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
@@ -72,10 +73,11 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    if (availablePlugins().size() > 0) {
+    const auto plugins = availablePlugins();
+    if (!plugins.isEmpty()) {
         m_pluginId = defaultPlugin().id;
         QString pluginId = m_bpmSettings.getBeatPluginId();
-        for (const auto& info : availablePlugins()) {
+        for (const auto& info : plugins) {
             if (info.id == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;

@@ -790,7 +790,8 @@ void setHotCue(TrackPointer track, double startPosition, double endPosition, int
     CuePointer pCue;
     bool hotCueFound = false;
 
-    for (const CuePointer& trackCue : track->getCuePoints()) {
+    const QList<CuePointer> cuePoints = track->getCuePoints();
+    for (const CuePointer& trackCue : cuePoints) {
         if (trackCue->getHotCue() == id) {
             pCue = trackCue;
             hotCueFound = true;
@@ -1267,8 +1268,14 @@ RekordboxFeature::RekordboxFeature(
     createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
     transaction.commit();
 
-    connect(&m_devicesFutureWatcher, SIGNAL(finished()), this, SLOT(onRekordboxDevicesFound()));
-    connect(&m_tracksFutureWatcher, SIGNAL(finished()), this, SLOT(onTracksFound()));
+    connect(&m_devicesFutureWatcher,
+            &QFutureWatcher<QList<TreeItem*>>::finished,
+            this,
+            &RekordboxFeature::onRekordboxDevicesFound);
+    connect(&m_tracksFutureWatcher,
+            &QFutureWatcher<QString>::finished,
+            this,
+            &RekordboxFeature::onTracksFound);
     // initialize the model
     m_childModel.setRootItem(TreeItem::newRoot(this));
 }
@@ -1294,7 +1301,7 @@ void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)), this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
     libraryWidget->registerView("REKORDBOXHOME", edit);
 }
 
@@ -1354,7 +1361,7 @@ QString RekordboxFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (const auto& item : items) {
+    for (const auto& item : qAsConst(items)) {
         html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));

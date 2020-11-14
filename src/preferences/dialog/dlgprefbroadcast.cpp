@@ -202,7 +202,8 @@ void DlgPrefBroadcast::slotApply() {
 
     // Check for Icecast connections with identical mountpoints on the same host
     QMap<QString, QString> mountpoints;
-    for(BroadcastProfilePtr profile : m_pSettingsModel->profiles()) {
+    const QList<BroadcastProfilePtr> broadcastProfiles = m_pSettingsModel->profiles();
+    for (const auto& profile : broadcastProfiles) {
         if (profile->getServertype() != BROADCAST_SERVER_ICECAST2) {
             continue;
         }
@@ -221,11 +222,13 @@ void DlgPrefBroadcast::slotApply() {
                     == profile->getHost().toLower()
                     && profileWithSameMountpoint->getPort()
                     == profile->getPort() ) {
-                    QMessageBox::warning(
-                        this, tr("Action failed"),
-                        tr("'%1' has the same Icecast mountpoint as '%2'.\n"
-                           "Two source connections to the same server can't have the same mountpoint.")
-                        .arg(profileName).arg(profileNameWithSameMountpoint));
+                    QMessageBox::warning(this,
+                            tr("Action failed"),
+                            tr("'%1' has the same Icecast mountpoint as '%2'.\n"
+                               "Two source connections to the same server "
+                               "can't have the same mountpoint.")
+                                    .arg(profileName,
+                                            profileNameWithSameMountpoint));
                     return;
                 }
             }
@@ -592,9 +595,10 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                 getValuesFromProfile(m_pProfileListSelection);
             } else {
                 // Requested name different from current name but already used
-                QMessageBox::warning(this, tr("Action failed"),
+                QMessageBox::warning(this,
+                        tr("Action failed"),
                         tr("Can't rename '%1' to '%2': name already in use")
-                        .arg(profileName).arg(newName));
+                                .arg(profileName, newName));
             }
         }
     }

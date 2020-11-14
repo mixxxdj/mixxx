@@ -49,7 +49,7 @@ void BroadcastSettings::loadProfiles() {
         kLogger.info() << "Found" << files.size() << "profile(s)";
 
         // Load profiles from filesystem
-        for(QFileInfo fileInfo : files) {
+        for (const QFileInfo& fileInfo : files) {
             BroadcastProfilePtr profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
@@ -85,10 +85,14 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
     // at risk of being manually deleted.
     // However it's fine with Qt's connect because it can be trusted that
     // it won't delete the pointer.
-    connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
-            this, SLOT(onProfileNameChanged(QString,QString)));
-    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-            this, SLOT(onConnectionStatusChanged(int)));
+    connect(profile.data(),
+            &BroadcastProfile::profileNameChanged,
+            this,
+            &BroadcastSettings::onProfileNameChanged);
+    connect(profile.data(),
+            &BroadcastProfile::connectionStatusChanged,
+            this,
+            &BroadcastSettings::onConnectionStatusChanged);
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
     emit profileAdded(profile);
@@ -157,7 +161,7 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for (const auto& kv : m_profiles) {
+    for (const auto& kv : qAsConst(m_profiles)) {
         saveProfile(kv);
     }
     emit profilesChanged();
@@ -212,7 +216,8 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     }
 
     // Step 2: add new profiles
-    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+    const QList<BroadcastProfilePtr> existingProfiles = pModel->profiles();
+    for (auto profileCopy : existingProfiles) {
         // Check if profile already exists in settings
         BroadcastProfilePtr existingProfile =
                 m_profiles.value(profileCopy->getProfileName());
@@ -226,7 +231,8 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     }
 
     // Step 3: update existing profiles
-    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+    const QList<BroadcastProfilePtr> allProfiles = pModel->profiles();
+    for (BroadcastProfilePtr profileCopy : allProfiles) {
         BroadcastProfilePtr actualProfile =
                 m_profiles.value(profileCopy->getProfileName());
         if (actualProfile) {

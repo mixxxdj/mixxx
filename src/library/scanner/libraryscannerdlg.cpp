@@ -73,9 +73,7 @@ void LibraryScannerDlg::slotUpdateCover(QString path) {
     }
 
     if (isVisible()) {
-        QString status = QString("%1: %2")
-                .arg(tr("Scanning cover art (safe to cancel)"))
-                .arg(path);
+        QString status = QString("%1: %2").arg(tr("Scanning cover art (safe to cancel)"), path);
         emit progress(status);
     }
 }

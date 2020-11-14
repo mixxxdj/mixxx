@@ -42,7 +42,15 @@ int main(int argc, char* argv[])
 #endif
 
 	struct hid_device_info *devs, *cur_dev;
-	
+
+	printf("hidapi test/example tool. Compiled with hidapi version %s, runtime version %s.\n", HID_API_VERSION_STR, hid_version_str());
+	if (hid_version()->major == HID_API_VERSION_MAJOR && hid_version()->minor == HID_API_VERSION_MINOR && hid_version()->patch == HID_API_VERSION_PATCH) {
+		printf("Compile-time version matches runtime version of hidapi.\n\n");
+	}
+	else {
+		printf("Compile-time version is different than runtime version of hidapi.\n]n");
+	}
+
 	if (hid_init())
 		return -1;
 
@@ -55,6 +63,7 @@ int main(int argc, char* argv[])
 		printf("  Product:      %ls\n", cur_dev->product_string);
 		printf("  Release:      %hx\n", cur_dev->release_number);
 		printf("  Interface:    %d\n",  cur_dev->interface_number);
+		printf("  Usage (page): 0x%hx (0x%hx)\n", cur_dev->usage, cur_dev->usage_page);
 		printf("\n");
 		cur_dev = cur_dev->next;
 	}
@@ -107,7 +116,7 @@ int main(int argc, char* argv[])
 	// Set the hid_read() function to be non-blocking.
 	hid_set_nonblocking(handle, 1);
 	
-	// Try to read from the device. There shoud be no
+	// Try to read from the device. There should be no
 	// data here, but execution should not block.
 	res = hid_read(handle, buf, 17);
 

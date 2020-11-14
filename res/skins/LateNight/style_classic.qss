@@ -186,23 +186,27 @@ WSearchLineEdit,
 
 #DeckRateSeparator,
 #DeckRateSeparatorCompact,
-#MasterMixerSeparator {
+#MasterMixerSeparator,
+#SkinSettingsSeparator {
   /* needs a background color to paint the borders */
   background-color: transparent;
   min-width: 0px;
   max-width: 0px;
   }
 
-#FxSlotSeparatorV {
-  min-width: 1px;
-  max-width: 1px;
-  image: url(skin:/classic/style/fx_separator.svg) repeat center center;
-  margin: 2px 1px;
-}
-#FxSlotSeparatorH {
-  min-height: 2px;
-  max-height: 2px;
-}
+  #FxSlotSeparatorV {
+    min-width: 1px;
+    max-width: 1px;
+    image: url(skin:/classic/style/fx_separator.svg) repeat center center;
+    margin: 2px 1px;
+  }
+  #FxSlotSeparatorH {
+    min-height: 2px;
+    max-height: 2px;
+  }
+  #SkinSettingsSeparator {
+    margin: 3px 4px 7px 4px;
+  }
 
 WBeatSpinBox,
 #spinBoxTransition  {
@@ -1897,7 +1901,7 @@ QPushButton#pushButtonShuffle:enabled {
   image: url(skin:/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
   }
 
-QPushButton#pushButtonAddRandom:enabled {
+QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skin:/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
   }
 
@@ -2495,9 +2499,6 @@ WEffectSelector,
         height: 0px;
         margin: 4px;
       }
-    #SkinSettingsSeparator {
-      margin: 0px 4px 4px 4px;
-    }
   WBeatSpinBox QMenu::item,
   #LibraryContainer QMenu::item,
   WCueMenuPopup QMenu::item,

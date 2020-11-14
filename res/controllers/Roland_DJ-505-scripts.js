@@ -496,8 +496,8 @@ DJ505.Deck = function(deckNumbers, offset) {
 
     this.loopActive = new components.Button({
         midi: [0x94 + offset, 0x32],
-        inKey: "reloop_toggle",
-        outKey: "loop_enabled",
+        key: "loop_enabled",
+        type: components.Button.prototype.types.toggle,
     });
     this.reloopExit = new components.Button({
         midi: [0x94 + offset, 0x33],
@@ -1113,6 +1113,7 @@ DJ505.PadSection = function(deck, offset) {
         "roll": new DJ505.RollMode(deck, offset),
         "sampler": new DJ505.SamplerMode(deck, offset),
         "velocitysampler": new DJ505.VelocitySamplerMode(deck, offset),
+        "loop": new DJ505.SavedLoopMode(deck, offset),
         "pitchplay": new DJ505.PitchPlayMode(deck, offset),
     };
     this.offset = offset;
@@ -1167,11 +1168,9 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
     case DJ505.PadMode.VELOCITYSAMPLER:
         mode = this.modes.velocitysampler;
         break;
-    // FIXME: Loop mode can be added as soon as Saved Loops are
-    // implemented: https://bugs.launchpad.net/mixxx/+bug/692926
-    //case DJ505.PadMode.LOOP:
-    //    mode = this.modes.loop;
-    //    break;
+    case DJ505.PadMode.LOOP:
+        mode = this.modes.loop;
+        break;
     case DJ505.PadMode.PITCHPLAY:
         mode = this.modes.pitchplay;
         break;
@@ -1293,6 +1292,9 @@ DJ505.HotcueMode = function(deck, offset) {
             off: this.color + DJ505.PadColor.DIM_MODIFIER,
             colorMapper: DJ505.PadColorMap,
             outConnect: false,
+            unshift: function() {
+                this.inKey = "hotcue_" + this.number + "_activatecue";
+            },
         });
     }
     this.paramMinusButton = new components.Button({
@@ -1345,47 +1347,10 @@ DJ505.CueLoopMode = function(deck, offset) {
         colorMapper: DJ505.PadColorMap,
         outConnect: false,
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
-                if (value) {
-                    var hotcueEnabled = true;
-                    if (!engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
-                        // set a new cue point and loop
-                        hotcueEnabled = false;
-                        script.triggerControl(group, "hotcue_" + this.number + "_activate");
-                    }
-                    // jump to existing cue and loop
-                    var startpos = engine.getValue(group, "hotcue_" + this.number + "_position");
-                    var loopseconds = engine.getValue(group, "beatloop_size") * (1 / (engine.getValue(group, "bpm") / 60));
-                    var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
-                    var endpos = startpos + loopsamples;
-
-                    // disable loop if currently enabled
-                    if (engine.getValue(group, "loop_enabled")) {
-                        if (hotcueEnabled &&
-                                engine.getValue(group, "loop_start_position") === startpos &&
-                                engine.getValue(group, "loop_end_position") === endpos) {
-                            script.triggerControl(group, "loop_in_goto", 1);
-                            return;
-                        } else {
-                            // disable active loop
-                            script.triggerControl(group, "reloop_toggle", 1);
-                        }
-                    }
-
-                    // set start and endpoints
-                    engine.setValue(group, "loop_start_position", startpos);
-                    engine.setValue(group, "loop_end_position", endpos);
-                    // enable loop
-                    script.triggerControl(group, "reloop_toggle", 1);
-                    if (hotcueEnabled) {
-                        script.triggerControl(group, "loop_in_goto", 1);
-                    }
-                }
-            };
+            this.inKey = "hotcue_" + this.number + "_cueloop";
         },
         shift: function() {
-            this.inKey = "hotcue_" + this.number + "_clear";
-            this.input = components.Button.prototype.input;
+            this.inKey = "hotcue_" + this.number + "_gotoandloop";
         },
         output: components.HotcueButton.prototype.output,
         outputColor: components.HotcueButton.prototype.outputColor,
@@ -1597,6 +1562,120 @@ DJ505.RollMode.prototype.setLoopSize = function(loopSize) {
     }
     this.reconnectComponents();
 };
+
+DJ505.SavedLoopMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = DJ505.PadMode.ROLL;
+    this.color = DJ505.PadColor.GREEN;
+
+    this.PerformancePad = function(n) {
+        this.midi = [0x94 + offset, 0x14 + n];
+        this.number = n + 8 + 1;
+        this.outKey = "hotcue_" + this.number + "_enabled";
+        this.colorKey = "hotcue_" + this.number + "_color";
+
+        components.Button.call(this);
+    };
+    this.PerformancePad.prototype = new components.Button({
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        outConnect: false,
+        on: this.color,
+        longPressTimeout: 500,
+        colorMapper: DJ505.PadColorMap,
+        blinkTimer: 0,
+        blinkTimeout: 250,
+        blinkStateOn: false,
+        unshift: function() {
+            this.inKey = "hotcue_" + this.number + "_activateloop";
+            this.input = components.Button.prototype.input;
+        },
+
+        shift: function() {
+            this.inKey = "hotcue_" + this.number + "_gotoandloop";
+            this.input = function(_channel, _control, value, _status, _group) {
+                this.inSetValue(value);
+
+                if (value) {
+                    this.longPressTimer = engine.beginTimer(
+                        this.longPressTimeout, function() {
+                            engine.setValue(this.group, "hotcue_" + this.number + "_clear", 1);
+                        }.bind(this));
+                } else {
+                    if (this.longPressTimer !== 0) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
+                    }
+                }
+            }.bind(this);
+        },
+        stopBlinking: function() {
+            if (this.blinkTimer !== 0) {
+                engine.stopTimer(this.blinkTimer);
+                this.blinkTimer = 0;
+            }
+        },
+        output: function(value, _group, _control) {
+            this.stopBlinking();
+            if (value === 2) {
+                this.blinkTimer = engine.beginTimer(
+                    this.blinkTimeout, function() {
+                        var colorValue = this.colorMapper.getValueForNearestColor(
+                            engine.getValue(this.group, this.colorKey));
+                        if (this.blinkStateOn) {
+                            this.send(colorValue + DJ505.PadColor.DIM_MODIFIER);
+                            this.blinkStateOn = false;
+                        } else {
+                            this.send(colorValue);
+                            this.blinkStateOn = true;
+                        }
+                    }.bind(this));
+            } else if (value === 1) {
+                var colorValue = this.colorMapper.getValueForNearestColor(
+                    engine.getValue(this.group, this.colorKey));
+                this.send(colorValue);
+            } else {
+                this.send(this.on + DJ505.PadColor.DIM_MODIFIER);
+            }
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
+                    if (engine.getValue(this.group, this.outKey) === 1) {
+                        var colorValue = this.colorMapper.getValueForNearestColor(color);
+                        this.send(colorValue);
+                    }
+                }.bind(this));
+            }
+        },
+        disconnect: function() {
+            components.Button.prototype.disconnect.call(this); // call parent connect
+            this.stopBlinking();
+        },
+    });
+
+    this.pads = new components.ComponentContainer();
+    for (var n = 0; n <= 7; n++) {
+        this.pads[n] = new this.PerformancePad(n);
+    }
+
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_prev",
+        inKey: "hotcue_focus_color_prev",
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_next",
+        inKey: "hotcue_focus_color_next",
+    });
+};
+DJ505.SavedLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 DJ505.SamplerMode = function(deck, offset) {
     components.ComponentContainer.call(this);

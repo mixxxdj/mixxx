@@ -29,21 +29,18 @@ DlgPrefCrossfader::DlgPrefCrossfader(
 
     loadSettings();
 
-    connect(SliderXFader, SIGNAL(valueChanged(int)), this,
-            SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderMoved(int)), this,
-            SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderReleased()), this,
-            SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderReleased()), this,
-            SLOT(slotApply()));
+    connect(SliderXFader,
+            QOverload<int>::of(&QSlider::valueChanged),
+            this,
+            &DlgPrefCrossfader::slotUpdateXFader);
+    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefCrossfader::slotUpdateXFader);
+    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefCrossfader::slotUpdateXFader);
+    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefCrossfader::slotApply);
 
     // Update the crossfader curve graph and other settings when the
     // crossfader mode is changed.
-    connect(radioButtonAdditive, SIGNAL(clicked(bool)), this,
-            SLOT(slotUpdate()));
-    connect(radioButtonConstantPower, SIGNAL(clicked(bool)), this,
-            SLOT(slotUpdate()));
+    connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefCrossfader::slotUpdate);
+    connect(radioButtonConstantPower, &QRadioButton::clicked, this, &DlgPrefCrossfader::slotUpdate);
 }
 
 DlgPrefCrossfader::~DlgPrefCrossfader() {

@@ -13,16 +13,15 @@ class FakeOverwriteAnswerer : public QObject {
     Q_OBJECT
   public:
     FakeOverwriteAnswerer(TrackExportWorker* worker) : m_worker(worker) {
-        connect(m_worker, SIGNAL(progress(QString, int, int)), this,
-            SLOT(slotProgress(QString, int, int)));
+        connect(m_worker, &TrackExportWorker::progress, this, &FakeOverwriteAnswerer::slotProgress);
         connect(m_worker,
-            SIGNAL(askOverwriteMode(
-                    QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
-            this,
-            SLOT(slotAskOverwriteMode(
-                    QString,
-                    std::promise<TrackExportWorker::OverwriteAnswer>*)));
-        connect(m_worker, SIGNAL(canceled()), this, SLOT(cancelButtonClicked()));
+                &TrackExportWorker::askOverwriteMode,
+                this,
+                &FakeOverwriteAnswerer::slotAskOverwriteMode);
+        connect(m_worker,
+                &TrackExportWorker::canceled,
+                this,
+                &FakeOverwriteAnswerer::cancelButtonClicked);
     }
     virtual ~FakeOverwriteAnswerer();
 

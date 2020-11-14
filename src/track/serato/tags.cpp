@@ -2,6 +2,16 @@
 
 #include <mp3guessenc.h>
 
+#include "sources/soundsourceproxy.h"
+#if defined(__COREAUDIO__)
+#include "sources/soundsourcecoreaudio.h"
+#endif
+#if defined(__FFMPEG__)
+#include "sources/soundsourceffmpeg.h"
+#endif
+#if defined(__MAD__)
+#include "sources/soundsourcemp3.h"
+#endif
 #include "track/serato/beatsimporter.h"
 #include "track/serato/cueinfoimporter.h"
 #include "track/taglib/trackmetadata_file.h"
@@ -9,15 +19,18 @@
 
 namespace {
 
-#ifdef __COREAUDIO__
-const QString kDecoderName(QStringLiteral("CoreAudio"));
-#elif defined(__MAD__)
-const QString kDecoderName(QStringLiteral("MAD"));
-#elif defined(__FFMPEG__)
-const QString kDecoderName(QStringLiteral("FFMPEG"));
-#else
-const QString kDecoderName(QStringLiteral("Unknown"));
-#endif
+QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
+    const QString fileExtension =
+            mixxx::SoundSource::getFileExtensionFromUrl(QUrl::fromLocalFile(filePath));
+    const mixxx::SoundSourceProviderPointer pPrimaryProvider =
+            SoundSourceProxy::getPrimaryProviderForFileExtension(fileExtension);
+    QString decoderName;
+    if (pPrimaryProvider) {
+        return pPrimaryProvider->getDisplayName();
+    } else {
+        return QString(); // unknown
+    }
+}
 
 /// In Serato, loops and hotcues are kept separate, i. e. you can
 /// have a loop and a hotcue with the same number. In Mixxx, loops
@@ -153,49 +166,93 @@ double SeratoTags::guessTimingOffsetMillis(
     // used to determine which case the MP3 is classified in. See the following
     // PR for more detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
-
     double timingOffset = 0;
     if (taglib::getFileTypeFromFileName(filePath) == taglib::FileType::MP3) {
-#if defined(__COREAUDIO__)
-        Q_UNUSED(signalInfo);
-
-        int timingShiftCase = mp3guessenc_timing_shift_case(filePath.toStdString().c_str());
-
-        // TODO: Find missing timing offsets
-        switch (timingShiftCase) {
-        case EXIT_CODE_CASE_A:
-            timingOffset = -12;
-            break;
-        case EXIT_CODE_CASE_B:
-            timingOffset = -40;
-            break;
-        case EXIT_CODE_CASE_C:
-        case EXIT_CODE_CASE_D:
-            timingOffset = -60;
-            break;
+        const QString primaryDecoderName =
+                getPrimaryDecoderNameForFilePath(filePath);
+        // There should always be an MP3 decoder available
+        VERIFY_OR_DEBUG_ASSERT(!primaryDecoderName.isEmpty()) {
+            return 0;
         }
-#elif defined(__MAD__) || defined(__FFMPEG__)
-        switch (signalInfo.getSampleRate()) {
-        case 48000:
-            timingOffset = -24;
-            break;
-        case 44100:
-            // This is an estimate and tracks will vary unpredictably within ~1 ms
-            timingOffset = -26;
-            break;
-        default:
-            qWarning()
-                    << "Unknown timing offset for Serato tags with sample rate"
-                    << signalInfo.getSampleRate();
+        bool timingOffsetGuessed = false;
+#if defined(__COREAUDIO__)
+        if (primaryDecoderName == mixxx::SoundSourceProviderCoreAudio::kDisplayName) {
+            DEBUG_ASSERT(!timingOffsetGuessed);
+            DEBUG_ASSERT(timingOffset == 0);
+
+            Q_UNUSED(signalInfo)
+            int timingShiftCase = mp3guessenc_timing_shift_case(filePath.toStdString().c_str());
+
+            // TODO: Find missing timing offsets
+            switch (timingShiftCase) {
+            case EXIT_CODE_CASE_A:
+                timingOffset = -12;
+                timingOffsetGuessed = true;
+                break;
+            case EXIT_CODE_CASE_B:
+                timingOffset = -40;
+                timingOffsetGuessed = true;
+                break;
+            case EXIT_CODE_CASE_C:
+            case EXIT_CODE_CASE_D:
+                timingOffset = -60;
+                timingOffsetGuessed = true;
+                break;
+            }
         }
 #endif
-        qDebug()
-                << "Detected timing offset "
-                << timingOffset
-                << "("
-                << kDecoderName
-                << ") for MP3 file:"
-                << filePath;
+#if defined(__MAD__) || defined(__FFMPEG__)
+        bool usingMadOrFFmpeg = false;
+#if defined(__MAD__)
+        if (primaryDecoderName == mixxx::SoundSourceProviderMp3::kDisplayName) {
+            DEBUG_ASSERT(!usingMadOrFFmpeg);
+            usingMadOrFFmpeg = true;
+        }
+#endif
+#if defined(__FFMPEG__)
+        if (primaryDecoderName == mixxx::SoundSourceProviderFFmpeg::kDisplayName) {
+            DEBUG_ASSERT(!usingMadOrFFmpeg);
+            usingMadOrFFmpeg = true;
+        }
+#endif
+        if (usingMadOrFFmpeg) {
+            DEBUG_ASSERT(!timingOffsetGuessed);
+            DEBUG_ASSERT(timingOffset == 0);
+
+            switch (signalInfo.getSampleRate()) {
+            case 48000:
+                timingOffset = -24;
+                timingOffsetGuessed = true;
+                break;
+            case 44100:
+                // This is an estimate and tracks will vary unpredictably within ~1 ms
+                timingOffset = -26;
+                timingOffsetGuessed = true;
+                break;
+            default:
+                qWarning()
+                        << "Unknown timing offset for Serato tags with sample rate"
+                        << signalInfo.getSampleRate();
+            }
+        }
+#endif
+        if (timingOffsetGuessed) {
+            qDebug()
+                    << "Detected timing offset"
+                    << timingOffset
+                    << "using"
+                    << primaryDecoderName
+                    << "for MP3 file"
+                    << filePath;
+        } else {
+            qDebug()
+                    << "Unknown timing offset"
+                    << timingOffset
+                    << "using"
+                    << primaryDecoderName
+                    << "for MP3 file"
+                    << filePath;
+        }
     }
 
     return timingOffset;
@@ -221,7 +278,8 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     // Serato will use the values from "Serato Markers_").
 
     QMap<int, CueInfo> cueMap;
-    for (const CueInfo& cueInfo : m_seratoMarkers2.getCues()) {
+    const QList<CueInfo> cuesMarkers2 = m_seratoMarkers2.getCues();
+    for (const CueInfo& cueInfo : cuesMarkers2) {
         std::optional<int> index = findIndexForCueInfo(cueInfo);
         if (!index) {
             continue;
@@ -256,7 +314,8 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         unsetCuesInMarkersTag.insert(i);
     }
 
-    for (const CueInfo& cueInfo : m_seratoMarkers.getCues()) {
+    const QList<CueInfo> cuesMarkers = m_seratoMarkers.getCues();
+    for (const CueInfo& cueInfo : cuesMarkers) {
         std::optional<int> index = findIndexForCueInfo(cueInfo);
         if (!index) {
             continue;

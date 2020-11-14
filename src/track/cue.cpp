@@ -85,8 +85,9 @@ Cue::Cue(
 
 Cue::Cue(
         const mixxx::CueInfo& cueInfo,
-        mixxx::audio::SampleRate sampleRate)
-        : m_bDirty(false),
+        mixxx::audio::SampleRate sampleRate,
+        bool setDirty)
+        : m_bDirty(setDirty),
           m_iId(-1),
           m_type(cueInfo.getType()),
           m_sampleStartPosition(

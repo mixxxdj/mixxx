@@ -2,7 +2,6 @@
 
 
 #include <portaudio.h>
-#include <QHash>
 #include <QString>
 
 #include "soundio/sounddevice.h"
@@ -15,8 +14,10 @@ class ControlProxy;
 class SoundDevicePortAudio : public SoundDevice {
   public:
     SoundDevicePortAudio(UserSettingsPointer config,
-                         SoundManager* sm, const PaDeviceInfo* deviceInfo,
-                         unsigned int devIndex, QHash<PaHostApiIndex, PaHostApiTypeId> apiIndexToTypeId);
+            SoundManager* sm,
+            const PaDeviceInfo* deviceInfo,
+            PaHostApiTypeId deviceTypeId,
+            unsigned int devIndex);
     ~SoundDevicePortAudio() override;
 
     SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
@@ -57,6 +58,7 @@ class SoundDevicePortAudio : public SoundDevice {
     // Struct containing information about this device. Don't free() it, it
     // belongs to PortAudio.
     const PaDeviceInfo* m_deviceInfo;
+    const PaHostApiTypeId m_deviceTypeId;
     // Description of the output stream going to the soundcard.
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
@@ -78,4 +80,3 @@ class SoundDevicePortAudio : public SoundDevice {
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
 };
-
