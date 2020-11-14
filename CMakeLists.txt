@@ -2327,6 +2327,10 @@ if(HID)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
     elseif(APPLE)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
+        find_library(APPKIT_LIBRARY AppKit REQUIRED)
+        target_link_libraries(mixxx-lib PUBLIC
+          ${APPKIT_LIBRARY}
+        )
     elseif(UNIX)
       if(NOT LibUSB_FOUND)
         message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")

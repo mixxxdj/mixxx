@@ -57,8 +57,7 @@ void WCoverArtMenu::slotChange() {
     for (auto&& extension : extensions) {
         extension.prepend("*.");
     }
-    QString supportedText = QString("%1 (%2)").arg(tr("Image Files"))
-            .arg(extensions.join(" "));
+    QString supportedText = QString("%1 (%2)").arg(tr("Image Files"), extensions.join(" "));
 
     // open file dialog
     QString selectedCoverPath = QFileDialog::getOpenFileName(

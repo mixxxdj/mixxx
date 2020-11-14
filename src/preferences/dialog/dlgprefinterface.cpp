@@ -96,7 +96,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (lang == "C") { // Ugly hack to remove the non-resolving locales
             continue;
         }
-        lang = QString("%1 (%2)").arg(lang).arg(country);
+        lang = QString("%1 (%2)").arg(lang, country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
     }
     ComboBoxLocale->model()->sort(0); // Sort languages list
