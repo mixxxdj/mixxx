@@ -22,4 +22,4 @@ jobs:
         LD: clang++
         CC: clang
         CXX: clazy
-        CLAZY_CHECKS: const-signal-or-slot,range-loop,qstring-arg,qfileinfo-exists
+        CLAZY_CHECKS: const-signal-or-slot,range-loop,qfileinfo-exists,qstring-arg,qstring-ref,qstring-insensitive-allocation,empty-qstringliteralexists,unused-non-trivial-variable

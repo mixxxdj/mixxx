@@ -22,8 +22,10 @@ void WEffectParameterKnobComposed::setEffectParameterSlot(
         EffectParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
-        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
+        connect(m_pEffectParameterSlot.data(),
+                &EffectParameterSlot::updated,
+                this,
+                &WEffectParameterKnobComposed::parameterUpdated);
     }
     parameterUpdated();
 }

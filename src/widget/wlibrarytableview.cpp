@@ -44,8 +44,10 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SIGNAL(scrollValueChanged(int)));
+    connect(verticalScrollBar(),
+            &QScrollBar::valueChanged,
+            this,
+            &WLibraryTableView::scrollValueChanged);
 
     setTabKeyNavigation(false);
 }
