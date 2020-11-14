@@ -524,7 +524,9 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "StarRating") {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
-        result = wrapWidget(parseStandardWidget<WVuMeter>(node, true));
+        WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
+        WaveformWidgetFactory::instance()->addTimerListener(pVuMeterWidget);
+        result = wrapWidget(pVuMeterWidget);
     } else if (nodeName == "StatusLight") {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
@@ -861,13 +863,9 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     return bg;
 }
 
-template <class T>
-QWidget* LegacySkinParser::parseStandardWidget(const QDomElement& element,
-                                               bool timerListener) {
+template<class T>
+T* LegacySkinParser::parseStandardWidget(const QDomElement& element) {
     T* pWidget = new T(m_pParent);
-    if (timerListener) {
-        WaveformWidgetFactory::instance()->addTimerListener(pWidget);
-    }
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
