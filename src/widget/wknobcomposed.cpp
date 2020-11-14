@@ -21,9 +21,10 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_arcPenCap(Qt::FlatCap),
           m_renderTimer(mixxx::Duration::fromMillis(20),
                         mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer, &WidgetRenderTimer::update, this, [this]() {
-        update();
-    });
+    connect(&m_renderTimer,
+            &WidgetRenderTimer::update,
+            this,
+            QOverload<>::of(&QWidget::update));
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {

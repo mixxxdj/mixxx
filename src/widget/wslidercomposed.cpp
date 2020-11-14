@@ -49,9 +49,10 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_pHandle(nullptr),
       m_renderTimer(mixxx::Duration::fromMillis(20),
                     mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer, &WidgetRenderTimer::update, this, [this]() {
-        update();
-    });
+    connect(&m_renderTimer,
+            &WidgetRenderTimer::update,
+            this,
+            QOverload<>::of(&QWidget::update));
 }
 
 WSliderComposed::~WSliderComposed() {
