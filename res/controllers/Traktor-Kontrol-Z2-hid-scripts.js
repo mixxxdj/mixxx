@@ -34,7 +34,7 @@ var TraktorZ2 = new function() {
     this.pregainCh4Timer = 0;
     
     this.chTimer = [];
-    for (var chidx = 1; chidx <= 2; chidx++) {
+    for (var chidx = 1; chidx <= 4; chidx++) {
         var ch = "[Channel" + chidx + "]";
 
         this.displayBrightness[ch] = LedDimmed;
@@ -833,8 +833,8 @@ TraktorZ2.debugLights = function() {
 
         0x00,  // 0x21 3 bits (0x40, 0x20, 0x10) control VU meter label "MST"  (white)
         0x00,  // 0x22 3 bits (0x40, 0x20, 0x10) control Microphone-Button (orange)
-        0x00,  // 0x23 3 bits (0x40, 0x20, 0x10) control Headphon-Button A (blue)
-        0x00,  // 0x24 3 bits (0x40, 0x20, 0x10) control Headphon-Button B (blue)
+        0x00,  // 0x23 3 bits (0x40, 0x20, 0x10) control Headphone-Button A (blue)
+        0x00,  // 0x24 3 bits (0x40, 0x20, 0x10) control Headphone-Button B (blue)
         0x00,  // 0x25 3 bits (0x40, 0x20, 0x10) control Traktor-Button ChA (orange)
         0x00,  // 0x26 3 bits (0x40, 0x20, 0x10) control Traktor-Button ChB (orange)
         0x00,  // 0x27 3 bits (0x40, 0x20, 0x10) control USB-symbol on top (orange)
@@ -910,6 +910,22 @@ TraktorZ2.hotcueOutputHandler = function() {
     }
 };
 
+TraktorZ2.trackLoadedHandler = function(value, group) {
+    if (value === 0) {
+        // Stop runnig beat timer for the unloaded deck
+        for (var timerIdx = 1; timerIdx <= 2; timerIdx++) {
+            if (TraktorZ2.chTimer[group][timerIdx] !== -1) {
+                engine.stopTimer(TraktorZ2.chTimer[group][timerIdx]);
+            }
+        }
+        TraktorZ2.displayBrightness[group] = LedOff;
+        TraktorZ2.displayBeatLeds(group);
+    } else {
+        TraktorZ2.displayBrightness[group] = 0x02;
+        TraktorZ2.displayBeatLeds(group);
+    }
+}
+
 TraktorZ2.beatOutputHandler = function(value, group) {
     if (value === 1) {
         for (var timerIdx = 1; timerIdx <= 2; timerIdx++) {
@@ -919,7 +935,7 @@ TraktorZ2.beatOutputHandler = function(value, group) {
         }
 
         TraktorZ2.displayBrightness[group] = 0x07; //LedBright
-        TraktorZ2.displayLoopCount(group);
+        TraktorZ2.displayBeatLeds(group);
 
         var beatPeriodMillis = 60 / engine.getValue(group, "bpm") * 1000;
 
@@ -933,17 +949,17 @@ TraktorZ2.beatOutputHandler = function(value, group) {
                 if (TraktorZ2.chTimer[group][1] === -1) {
                     if (TraktorZ2.displayBrightness[group] === 0x02) {
                         TraktorZ2.displayBrightness[group] = 0x07;
-                        TraktorZ2.displayLoopCount(group);
+                        TraktorZ2.displayBeatLeds(group);
                     } else {
                         TraktorZ2.displayBrightness[group] = 0x02;
-                        TraktorZ2.displayLoopCount(group);
+                        TraktorZ2.displayBeatLeds(group);
                     }
                 }
             }, false);
         } else {
             TraktorZ2.chTimer[group][1] = engine.beginTimer(0.25 * beatPeriodMillis / 5 * 1, function() {
                 TraktorZ2.displayBrightness[group]--;
-                TraktorZ2.displayLoopCount(group);
+                TraktorZ2.displayBeatLeds(group);
                 if (TraktorZ2.displayBrightness[group] <= 0x02) {
                     engine.stopTimer(TraktorZ2.chTimer[group][1]);
                     TraktorZ2.chTimer[group][1] = -1;
@@ -952,6 +968,14 @@ TraktorZ2.beatOutputHandler = function(value, group) {
         }
     }
 };
+
+TraktorZ2.displayBeatLeds = function(group) {
+    if ((group === "[Channel1]") || (group === "[Channel2]")) {
+        TraktorZ2.displayLoopCount(group);
+    } else {
+        TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], true);
+    }
+}
 
 TraktorZ2.displayLoopCount = function(group) {
     // @param group may be either[Channel1] or [Channel2]
@@ -981,6 +1005,8 @@ TraktorZ2.displayLoopCount = function(group) {
         } else {
             displayBrightness = LedDimmed;
         }
+    } else if (engine.getValue(group, "track_loaded") === 0) {
+        displayBrightness = LedOff;
     } else {
         displayBrightness = LedBright;
     }
@@ -1116,6 +1142,9 @@ TraktorZ2.registerOutputPackets = function() {
     outputA.addOutput("[Channel3]", "!deck", 0x09, "B", 0x70);
     outputA.addOutput("[Channel4]", "!deck", 0x0A, "B", 0x70);
 
+    outputA.addOutput("[Channel3]", "!beatIndicator", 0x0B, "B", 0x70);
+    outputA.addOutput("[Channel4]", "!beatIndicator", 0x0C, "B", 0x70);
+
     outputA.addOutput("[EffectRack1_EffectUnit1]", "!On", 0x0D, "B", 0x70);
     engine.connectControl("[EffectRack1_EffectUnit1_Effect1]", "enabled", TraktorZ2.bind(this.fxOnLedHandler, this));
     engine.connectControl("[EffectRack1_EffectUnit1_Effect1]", "loaded", TraktorZ2.bind(this.fxOnLedHandler, this));
@@ -1160,6 +1189,13 @@ TraktorZ2.registerOutputPackets = function() {
 
     engine.connectControl("[Channel1]", "beat_active", TraktorZ2.bind(TraktorZ2.beatOutputHandler, this));
     engine.connectControl("[Channel2]", "beat_active", TraktorZ2.bind(TraktorZ2.beatOutputHandler, this));
+    engine.connectControl("[Channel3]", "beat_active", TraktorZ2.bind(TraktorZ2.beatOutputHandler, this));
+    engine.connectControl("[Channel4]", "beat_active", TraktorZ2.bind(TraktorZ2.beatOutputHandler, this));
+
+    engine.connectControl("[Channel1]", "track_loaded", TraktorZ2.bind(TraktorZ2.trackLoadedHandler, this));
+    engine.connectControl("[Channel2]", "track_loaded", TraktorZ2.bind(TraktorZ2.trackLoadedHandler, this));
+    engine.connectControl("[Channel3]", "track_loaded", TraktorZ2.bind(TraktorZ2.trackLoadedHandler, this));
+    engine.connectControl("[Channel4]", "track_loaded", TraktorZ2.bind(TraktorZ2.trackLoadedHandler, this));
 
     var ledChannelOffsets = {
         "[Channel1]": 0x35,
