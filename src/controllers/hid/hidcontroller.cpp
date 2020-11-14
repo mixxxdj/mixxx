@@ -72,13 +72,12 @@ HidController::HidController(const hid_device_info& deviceInfo)
     // which is which
     if (hid_interface_number < 0) {
         setDeviceName(
-            QString("%1 %2").arg(hid_product)
-            .arg(hid_serial.right(4)));
+                QString("%1 %2").arg(hid_product, hid_serial.right(4)));
     } else {
-        setDeviceName(
-            QString("%1 %2_%3").arg(hid_product)
-            .arg(hid_serial.right(4))
-            .arg(QString::number(hid_interface_number)));
+        setDeviceName(QString("%1 %2_%3")
+                              .arg(hid_product,
+                                      hid_serial.right(4),
+                                      QString::number(hid_interface_number)));
         m_sUID.append(QString::number(hid_interface_number));
     }
 
