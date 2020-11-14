@@ -41,6 +41,13 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
   set(LLVM_CLANG true)
+  message("LLVM ${CMAKE_CXX_COMPILER_VERSION}")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND
+     CMAKE_SYSTEM_NAME STREQUAL Linux)
+    message(WARNING "Found LLVM < 10 which has known optimization bugs with \
+    certain glibc versions. In case your build fails with linking errors. \
+    Use -DOPTIMIZE=off - See https://bugs.llvm.org/show_bug.cgi?id=45034")
+  endif()
 else()
   set(LLVM_CLANG false)
 endif()
@@ -1078,6 +1085,7 @@ if (APPLE)
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
+    set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
