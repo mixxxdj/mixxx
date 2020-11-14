@@ -182,12 +182,7 @@ WSearchLineEdit {
   #OverviewBoxMini[highlight="1"] {
     background-color: #151515;
   }
-  WBeatSpinBox[highlight="0"] {
-    background-color: #171719;
-    }
-    WBeatSpinBox[highlight="1"] {
-      background-color: #121213;
-    }
+
   #KeyText,
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
@@ -1252,7 +1247,8 @@ WEffectSelector,
     color: #766b65;
   }
 
-  WBeatSpinBox, #spinBoxTransition {
+  WBeatSpinBox,
+  #spinBoxTransition {
     color: #a7998b;
   }
 
@@ -1566,7 +1562,7 @@ WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#PlaySampler[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
-/* Beatsize up/down buttons */
+WBeatSpinBox,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button {
   background-color: #121213;
