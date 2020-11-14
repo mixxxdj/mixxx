@@ -31,22 +31,30 @@ class StringCollator {
     QCollator m_collator;
 };
 
-inline std::size_t nullable_strnlen(
+/// A nullptr-safe variant of the corresponding standard C function.
+///
+/// Treats nullptr like an empty string and returns 0.
+inline std::size_t strnlen(
         const char* str,
         std::size_t len) {
-    if (!str) {
+    if (str == nullptr) {
         return 0;
     }
-    return strnlen(str, len);
+    // Invoke the global function
+    return ::strnlen(str, len);
 }
 
-inline std::size_t nullable_wcsnlen(
+/// A nullptr-safe variant of the corresponding standard C function.
+///
+/// Treats nullptr like an empty string and returns 0.
+inline std::size_t wcsnlen(
         const wchar_t* wcs,
         std::size_t len) {
-    if (!wcs) {
+    if (wcs == nullptr) {
         return 0;
     }
-    return wcsnlen(wcs, len);
+    // Invoke the global function
+    return ::wcsnlen(wcs, len);
 }
 
 /// Convert a wide-character C string to QString.

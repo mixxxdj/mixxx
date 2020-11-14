@@ -36,16 +36,16 @@ DeviceInfo::DeviceInfo(
           vendor_id(device_info.vendor_id),
           product_id(device_info.product_id),
           release_number(device_info.release_number),
-          m_pathRaw(device_info.path, mixxx::nullable_strnlen(device_info.path, PATH_MAX)),
+          m_pathRaw(device_info.path, mixxx::strnlen(device_info.path, PATH_MAX)),
           m_serialNumberRaw(device_info.serial_number,
-                  mixxx::nullable_wcsnlen(device_info.serial_number,
+                  mixxx::wcsnlen(device_info.serial_number,
                           kDeviceInfoStringMaxLength)),
           m_manufacturerName(mixxx::convertWCStringToQString(
                   device_info.manufacturer_string,
-                  mixxx::nullable_wcsnlen(device_info.manufacturer_string,
+                  mixxx::wcsnlen(device_info.manufacturer_string,
                           kDeviceInfoStringMaxLength))),
           m_productName(mixxx::convertWCStringToQString(device_info.product_string,
-                  mixxx::nullable_wcsnlen(device_info.product_string,
+                  mixxx::wcsnlen(device_info.product_string,
                           kDeviceInfoStringMaxLength))),
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
