@@ -190,7 +190,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
 #endif
 
     // Find accept and apply buttons
-    for (QAbstractButton* button : buttonBox->buttons()) {
+    const auto buttons = buttonBox->buttons();
+    for (QAbstractButton* button : buttons) {
         QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(button);
         if (role == QDialogButtonBox::ButtonRole::ApplyRole) {
             m_pApplyButton = button;
@@ -254,7 +255,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         return;
     }
 
-    for (PreferencesPage page : m_allPages) {
+    for (PreferencesPage page : qAsConst(m_allPages)) {
         if (current == page.pTreeItem) {
             switchToPage(page.pDlg);
             break;
