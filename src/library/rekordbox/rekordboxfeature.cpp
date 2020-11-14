@@ -1136,7 +1136,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     int timingOffset = 0;
 
-    if (location.toLower().endsWith(".mp3")) {
+    if (location.endsWith(".mp3", Qt::CaseInsensitive)) {
         int timingShiftCase = mp3guessenc_timing_shift_case(location.toStdString().c_str());
 
         qDebug() << "Timing shift case:" << timingShiftCase << "for MP3 file:" << location;

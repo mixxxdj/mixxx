@@ -69,8 +69,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Parsers for each node
 
     // Most widgets can use parseStandardWidget.
-    template <class T>
-    QWidget* parseStandardWidget(const QDomElement& element, bool timerListener=false);
+    template<class T>
+    T* parseStandardWidget(const QDomElement& element);
 
     // Label widgets.
     template <class T>
