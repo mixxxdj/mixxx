@@ -22,4 +22,4 @@ jobs:
         LD: clang++
         CC: clang
         CXX: clazy
-        CLAZY_CHECKS: range-loop,unused-non-trivial-variable
+        CLAZY_CHECKS: range-loop,qstring-arg,unused-non-trivial-variable
