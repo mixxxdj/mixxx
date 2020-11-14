@@ -22,4 +22,4 @@ jobs:
         LD: clang++
         CC: clang
         CXX: clazy
-        CLAZY_CHECKS: range-loop,qstring-arg
+        CLAZY_CHECKS: range-loop,qstring-arg,qfileinfo-exists
