@@ -242,8 +242,6 @@ jobs:
       env: *nix_env
       script:
         - nix-shell --arg enableKeyfinder true --arg defaultLv2Plugins true --command "configure && build && run-tests"
-        - test -e cbuild/mixxx -a -e cbuild/.mixxx-wrapped
-        - cd cbuild && ./mixxx --help
 
 git:
   depth: 1
