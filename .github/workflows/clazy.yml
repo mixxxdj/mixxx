@@ -57,4 +57,4 @@ jobs:
         LD: clang++
         CC: clang
         CXX: clazy
-        CLAZY_CHECKS: const-signal-or-slot,range-loop,qfileinfo-exists,qstring-arg,qstring-ref,qstring-insensitive-allocation,empty-qstringliteralexists,unused-non-trivial-variable
+        CLAZY_CHECKS: level1,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast

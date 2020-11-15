@@ -119,6 +119,9 @@ class MidiController : public Controller {
     friend class MidiOutputHandler;
     friend class MidiControllerTest;
     friend class MidiControllerJSProxy;
+
+    // MIDI learning assistant
+    friend class DlgControllerLearning;
 };
 
 class MidiControllerJSProxy : public ControllerJSProxy {
