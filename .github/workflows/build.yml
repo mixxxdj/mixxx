@@ -1,0 +1,83 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ubuntu-gcc:
+    name: Ubuntu 18.04 / gcc
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+          libavformat-dev \
+          libchromaprint-dev \
+          libebur128-dev \
+          libfaad-dev \
+          libfftw3-dev \
+          libflac-dev \
+          libid3tag0-dev \
+          liblilv-dev \
+          libmad0-dev \
+          libmodplug-dev \
+          libmp3lame-dev \
+          libmp4v2-dev \
+          libopus-dev \
+          libopusfile-dev \
+          libportmidi-dev \
+          libprotobuf-dev \
+          libqt5opengl5-dev \
+          libqt5sql5-sqlite \
+          libqt5svg5-dev \
+          libqt5x11extras5-dev \
+          librubberband-dev \
+          libshout3-dev \
+          libsndfile1-dev \
+          libsoundtouch-dev \
+          libsqlite3-dev \
+          libtag1-dev \
+          libupower-glib-dev \
+          libusb-1.0-0-dev \
+          libwavpack-dev \
+          portaudio19-dev \
+          protobuf-compiler \
+          qt5-default \
+          qt5keychain-dev \
+          qtscript5-dev \
+    - name: Set up cmake
+      uses: jwlawson/actions-setup-cmake@v1.4
+      with:
+        cmake-version: '3.13.x'
+    - name: Create build directory
+      run: mkdir cmake_build
+    - name: Configure
+      # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
+      run: |
+        cmake \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DWARNINGS_FATAL=ON \
+          -DBATTERY=ON \
+          -DBROADCAST=ON \
+          -DBULK=ON \
+          -DHID=ON \
+          -DLILV=ON \
+          -DOPUS=ON \
+          -DQTKEYCHAIN=ON \
+          -DVINYLCONTROL=ON \
+          -DFAAD=ON \
+          -DKEYFINDER=ON \
+          -DLOCALECOMPARE=ON \
+          -DMAD=ON \
+          -DMODPLUG=ON \
+          -DWAVPACK=ON \
+          ..
+      working-directory: cmake_build
+    - name: Set up problem matcher
+      uses: ammaraskar/gcc-problem-matcher@master
+    - name: Build
+      run: cmake --build . -j $(nproc)
+      working-directory: cmake_build
