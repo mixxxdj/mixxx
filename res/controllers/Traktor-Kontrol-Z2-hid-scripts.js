@@ -455,6 +455,19 @@ TraktorZ2.buttonHandler = function(field) {
     script.toggleControl(field.group, field.name);
 };
 
+TraktorZ2.quantizeHandler = function(field) {
+    HIDDebug("TraktorZ2: quantizeHandler");
+    if (field.value === 0) {
+        return; // Button released
+    }
+    if (TraktorZ2.shiftState !== 0) {
+        // Adjust Beatgrid
+        engine.setValue(field.group, "beats_translate_curpos", field.value);
+    } else {
+        script.toggleControl(field.group, "quantize");
+    }
+};
+
 TraktorZ2.pflButtonHandler = function(field) {
     HIDDebug("TraktorZ2: pflButtonHandler");
     if (field.value === 0) {
@@ -508,8 +521,8 @@ TraktorZ2.registerInputPackets = function() {
 
     this.registerInputButton(messageShort, "[Master]", "skin_settings", 0x03, 0x08, this.buttonHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "quantize", 0x03, 0x04, this.buttonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "quantize", 0x03, 0x10, this.buttonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "quantize", 0x03, 0x04, this.quantizeHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "quantize", 0x03, 0x10, this.quantizeHandler);
 
     // Mic button
     this.registerInputButton(messageShort, "[Microphone]", "talkover", 0x05, 0x01, this.buttonHandler);
