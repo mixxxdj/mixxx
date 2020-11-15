@@ -87,18 +87,14 @@ WSpinny::WSpinny(
     }
 
     if (m_pPlayer != nullptr) {
-        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotLoadTrack(TrackPointer)));
-        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+        connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WSpinny::slotLoadTrack);
+        connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WSpinny::slotLoadingTrack);
         // just in case a track is already loaded
         slotLoadTrack(m_pPlayer->getLoadedTrack());
     }
 
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-        this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-        this, SLOT(slotReloadCoverArt()));
+    connect(m_pCoverMenu, &WCoverArtMenu::coverInfoSelected, this, &WSpinny::slotCoverInfoSelected);
+    connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WSpinny::slotReloadCoverArt);
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -237,16 +233,20 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
 
 void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WSpinny::slotTrackCoverArtUpdated);
     }
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                this, SLOT(slotTrackCoverArtUpdated()));
+        connect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WSpinny::slotTrackCoverArtUpdated);
     }
 
     slotTrackCoverArtUpdated();
@@ -255,8 +255,10 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
 void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pNewTrack);
     if (m_loadedTrack && pOldTrack == m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WSpinny::slotTrackCoverArtUpdated);
     }
     m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();

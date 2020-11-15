@@ -109,8 +109,7 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
         if (column == kColumnEnabled) {
             if (role == Qt::CheckStateRole) {
                 return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
-            }
-            else if (role == Qt::TextAlignmentRole) {
+            } else if (role == Qt::TextAlignmentRole) {
                 return Qt::AlignCenter;
             }
         }
@@ -120,11 +119,12 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
         else if (column == kColumnStatus) {
             if (role == Qt::DisplayRole) {
                 return connectionStatusString(profile);
-            }
-            else if (role == Qt::BackgroundRole) {
-                return QBrush(connectionStatusColor(profile));
-            }
-            else if (role == Qt::TextAlignmentRole) {
+            } else if (role == Qt::BackgroundRole) {
+                return QBrush(connectionStatusBgColor(profile));
+            } else if (role == Qt::ForegroundRole &&
+                    profile->connectionStatus() != BroadcastProfile::STATUS_UNCONNECTED) {
+                return QBrush(Qt::black);
+            } else if (role == Qt::TextAlignmentRole) {
                 return Qt::AlignCenter;
             }
         }
@@ -202,13 +202,10 @@ QString BroadcastSettingsModel::connectionStatusString(BroadcastProfilePtr profi
     }
 }
 
-QColor BroadcastSettingsModel::connectionStatusColor(BroadcastProfilePtr profile) {
+QColor BroadcastSettingsModel::connectionStatusBgColor(BroadcastProfilePtr profile) {
     // Manual colors below were picked using Google's color picker (query: colorpicker)
-    //
     int status = profile->connectionStatus();
         switch(status) {
-            case BroadcastProfile::STATUS_UNCONNECTED:
-                return Qt::white;
             case BroadcastProfile::STATUS_CONNECTING:
                 return QColor(25, 224, 255); // turquoise blue
             case BroadcastProfile::STATUS_CONNECTED:
@@ -217,7 +214,7 @@ QColor BroadcastSettingsModel::connectionStatusColor(BroadcastProfilePtr profile
                 return QColor(255, 228, 56); // toned-down yellow
 
             default:
-                return Qt::white;
+                return Qt::transparent;
         }
 }
 

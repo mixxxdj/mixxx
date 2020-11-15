@@ -54,7 +54,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this,
             &DlgPrefWaveform::slotSetBeatGridAlpha);
     connect(frameRateSlider,
-            QOverload<int>::of(&QSlider::valueChanged),
+            &QSlider::valueChanged,
             frameRateSpinBox,
             &QSpinBox::setValue);
     connect(frameRateSpinBox,
@@ -62,7 +62,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             frameRateSlider,
             &QSlider::setValue);
     connect(endOfTrackWarningTimeSlider,
-            QOverload<int>::of(&QSlider::valueChanged),
+            &QSlider::valueChanged,
             endOfTrackWarningTimeSpinBox,
             &QSpinBox::setValue);
     connect(endOfTrackWarningTimeSpinBox,
@@ -70,7 +70,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             endOfTrackWarningTimeSlider,
             &QSlider::setValue);
     connect(beatGridAlphaSlider,
-            QOverload<int>::of(&QSlider::valueChanged),
+            &QSlider::valueChanged,
             beatGridAlphaSpinBox,
             &QSpinBox::setValue);
     connect(beatGridAlphaSpinBox,
@@ -107,7 +107,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this,
             &DlgPrefWaveform::slotSetVisualGainHigh);
     connect(normalizeOverviewCheckBox,
-            &QCheckBox::clicked,
+            &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetNormalizeOverview);
     connect(factory,
@@ -123,11 +123,11 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             &DlgPrefWaveform::slotSetWaveformOverviewType);
 #endif
     connect(clearCachedWaveforms,
-            &QPushButton::clicked,
+            &QAbstractButton::clicked,
             this,
             &DlgPrefWaveform::slotClearCachedWaveforms);
     connect(playMarkerPositionSlider,
-            QOverload<int>::of(&QSlider::valueChanged),
+            &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
 }

@@ -34,7 +34,7 @@ class DirectoryDAOTest : public LibraryTest {
         if (SoundSourceProxy::isFileExtensionSupported(defaultFileExt)) {
             return defaultFileExt;
         } else {
-            return SoundSourceProxy::getSupportedFileExtensions().first();
+            return SoundSourceProxy::getSupportedFileExtensions().constFirst();
         }
     }
 };

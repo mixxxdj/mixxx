@@ -20,6 +20,8 @@
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
 
+class DlgControllerLearning;
+
 class MidiController : public Controller {
     Q_OBJECT
   public:
@@ -115,6 +117,9 @@ class MidiController : public Controller {
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;
     friend class MidiControllerTest;
+
+    // MIDI learning assistant
+    friend class DlgControllerLearning;
 };
 
 #endif
