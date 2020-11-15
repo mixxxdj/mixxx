@@ -5,7 +5,7 @@
 #include <QObject>
 #include <string>
 
-class ProductInfo;
+struct ProductInfo;
 
 namespace mixxx {
 
