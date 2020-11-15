@@ -375,35 +375,39 @@ TraktorZ2.Deck.prototype.defineButton = function(msg, name, deckOffset, deckBitm
 TraktorZ2.Deck.prototype.selectLoopHandler = function(field) {
     HIDDebug("TraktorZ2: selectLoopHandler");
 
-    // If shift mode is locked
-    if (TraktorZ2.shiftState === 0x02) {
-        // Adjust beatjump size
-        var beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
-        if ((field.value + 1) % 16  === this.moveKnobEncoderState) {
-            engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize * 2);
-        } else {
-            engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize / 2);
-        }
-        // } else {
-        // if (delta < 0) {
-        // script.triggerControl(this.activeChannel, "beatjump_backward");
-        // } else {
-        // script.triggerControl(this.activeChannel, "beatjump_forward");
-        // }
-        // }
-
-        this.moveKnobEncoderState = field.value;
-    } else {
-        // Adjust loop size
+    if (TraktorZ2.shiftState === 0x00) {
+        // Shift mode not set, and shift button not pressed -> Adjust loop size
         if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
             script.triggerControl(this.activeChannel, "loop_halve");
         } else {
             script.triggerControl(this.activeChannel, "loop_double");
         }
-        this.loopKnobEncoderState = field.value;
-
-        TraktorZ2.displayLoopCount(this.activeChannel);
+        TraktorZ2.displayLoopCount(this.activeChannel, true);
+    } else if (TraktorZ2.shiftState === 0x01) {
+        // Shift mode not set, but shift button is pressed ->  Move loop
+        if ((field.value + 1) % 16  === this.loopKnobEncoderState) {
+            engine.setValue(this.activeChannel, "loop_move", engine.getValue(this.activeChannel, "beatloop_size") * -1);
+        } else {
+            engine.setValue(this.activeChannel, "loop_move", engine.getValue(this.activeChannel, "beatloop_size"));
+        }
+    } else if (TraktorZ2.shiftState === 0x02) {
+        // Shift mode is set, but shift button not pressed ->  Adjust beatjump size
+        var beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
+        if ((field.value + 1) % 16  === this.loopKnobEncoderState) {
+            engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize / 2);
+        } else {
+            engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize * 2);
+        }
+        TraktorZ2.displayLoopCount(this.activeChannel, true);
+    } else if (TraktorZ2.shiftState === 0x03) {
+        // Shift mode is set, and shift button is pressed ->  Move beatjump
+        if ((field.value + 1) % 16  === this.loopKnobEncoderState) {
+            engine.setValue(this.activeChannel, "beatjump", engine.getValue(this.activeChannel, "beatjump_size") * -1);
+        } else {
+            engine.setValue(this.activeChannel, "beatjump", engine.getValue(this.activeChannel, "beatjump_size"));
+        }
     }
+    this.loopKnobEncoderState = field.value;
 };
 
 TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
@@ -422,7 +426,7 @@ TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
             }
         }
     }
-    TraktorZ2.displayLoopCount(this.activeChannel);
+    TraktorZ2.displayLoopCount(this.activeChannel, true);
 };
 
 TraktorZ2.crossfaderReverseHandler = function(field) {
@@ -627,6 +631,9 @@ TraktorZ2.shiftHandler = function(field) {
             if (TraktorZ2.shiftPressedTimer !== 0) {
                 TraktorZ2.shiftPressedTimer = 0;
             }
+            // Change display values to beatloopsize
+            TraktorZ2.displayLoopCount("[Channel1]", false);
+            TraktorZ2.displayLoopCount("[Channel2]", true);
             HIDDebug("TraktorZ2: shift unlocked");
         }, true);
 
@@ -646,6 +653,9 @@ TraktorZ2.shiftHandler = function(field) {
                 TraktorZ2.controller.setOutput("[Master]", "shift",  LedDimmed,  true);
             }
             engine.stopTimer(TraktorZ2.shiftPressedTimer);
+            // Change display values beatjumpsize / beatloopsize
+            TraktorZ2.displayLoopCount("[Channel1]", false);
+            TraktorZ2.displayLoopCount("[Channel2]", true);
             HIDDebug("TraktorZ2: static shift state changed to: "  + TraktorZ2.shiftState);
         } else {
             if (TraktorZ2.shiftState & 0x02) {
@@ -1050,15 +1060,20 @@ TraktorZ2.beatOutputHandler = function(value, group) {
 
 TraktorZ2.displayBeatLeds = function(group) {
     if ((group === "[Channel1]") || (group === "[Channel2]")) {
-        TraktorZ2.displayLoopCount(group);
+        TraktorZ2.displayLoopCount(group, false);
     }
     TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], true);
 };
 
-TraktorZ2.displayLoopCount = function(group) {
+TraktorZ2.displayLoopCount = function(group, sendMessage) {
     // @param group may be either[Channel1] or [Channel2]
     // @param TraktorZ2.displayBrightness[group] may be aninteger value from 0x00 to 0x07
-    var beatloopSize = engine.getValue(group, "beatloop_size");
+    var numberToDisplay;
+    if (TraktorZ2.shiftState & 0x02) {
+        numberToDisplay = engine.getValue(group, "beatjump_size");
+    } else {
+        numberToDisplay = engine.getValue(group, "beatloop_size");
+    }
 
     var led2DigitModulus = {
         "[Digit3]": 10,
@@ -1073,7 +1088,7 @@ TraktorZ2.displayLoopCount = function(group) {
 
     var displayBrightness;
 
-    if (engine.getValue(group, "loop_enabled")) {
+    if (engine.getValue(group, "loop_enabled") && !(TraktorZ2.shiftState & 0x02)) {
         var playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
         if (
             (playposition >= engine.getValue(group, "loop_start_position")) &&
@@ -1089,41 +1104,45 @@ TraktorZ2.displayLoopCount = function(group) {
         displayBrightness = LedBright;
     }
 
-    if (beatloopSize < 1) {
+    if (numberToDisplay < 1) {
         // Fraction of a beat
-        var beatloopSizeRemainder = 1 / beatloopSize;
+        var numberToDisplayRemainder = 1 / numberToDisplay;
         for (var digit in led2DigitModulus) {
-            var leastSignificiantDigit = (beatloopSizeRemainder % 10);
-            beatloopSizeRemainder = beatloopSizeRemainder - leastSignificiantDigit;
-            //HIDDebug(leastSignificiantDigit + " " + beatloopSizeRemainder + " " + group + " " + digit);
-            if (digit === "[Digit2]" && beatloopSize > .1) {
-                leastSignificiantDigit = -1; // Leading ero -> Show special symbol of number 1 and the fraction stroke combined in left digit
+            var leastSignificiantDigit = (numberToDisplayRemainder % 10);
+            numberToDisplayRemainder = numberToDisplayRemainder - leastSignificiantDigit;
+            //HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group + " " + digit);
+            if (digit === "[Digit2]" && numberToDisplay > .1) {
+                leastSignificiantDigit = -1; // Leading zero -> Show special symbol of number 1 and the fraction stroke combined in left digit
             }
-            TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
-            beatloopSizeRemainder /= 10;
+            TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness, false);
+            numberToDisplayRemainder /= 10;
         }
-        if (beatloopSize > .1) {
-            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -2, displayBrightness);  // Leading ero -> Blank
+        if (numberToDisplay > .1) {
+            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -2, displayBrightness, sendMessage);  // Leading zero -> Blank
         } else {
-            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -1, displayBrightness); // Show special symbol of number 1 and the fraction stroke combined in left digit
+            TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -1, displayBrightness, sendMessage); // Show special symbol of number 1 and the fraction stroke combined in left digit
         }
     } else {
         // Beat integer
-        beatloopSizeRemainder = beatloopSize;
+        numberToDisplayRemainder = numberToDisplay;
         for (digit in led3DigitModulus) {
-            leastSignificiantDigit = (beatloopSizeRemainder % 10);
-            beatloopSizeRemainder = beatloopSizeRemainder - leastSignificiantDigit;
-            //HIDDebug(leastSignificiantDigit + " " + beatloopSizeRemainder + " " + group + " " + digit);
-            if ((digit === "[Digit1]" && beatloopSize < 100) || (digit === "[Digit2]" && beatloopSize < 10)) {
-                leastSignificiantDigit = -2; // Leading ero -> Blank
+            leastSignificiantDigit = (numberToDisplayRemainder % 10);
+            numberToDisplayRemainder = numberToDisplayRemainder - leastSignificiantDigit;
+            //HIDDebug(leastSignificiantDigit + " " + numberToDisplayRemainder + " " + group + " " + digit);
+            if ((digit === "[Digit1]" && numberToDisplay < 100) || (digit === "[Digit2]" && numberToDisplay < 10)) {
+                leastSignificiantDigit = -2; // Leading zero -> Blank
             }
-            TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness);
-            beatloopSizeRemainder /= 10;
+            if (digit !== "[Digit1]") {
+                TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness, false);
+            } else {
+                TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness, sendMessage);
+            }
+            numberToDisplayRemainder /= 10;
         }
     }
 };
 
-TraktorZ2.displayLoopCountDigit = function(group, digit, brightness) {
+TraktorZ2.displayLoopCountDigit = function(group, digit, brightness, sendMessage) {
     // @param offset of the first LED (center horizontal bar) of the digit
     // @param digit to display (-2 represents all OFF, -1 represents "1/" )
     // @param brightness may be aninteger value from 0x00 to 0x07
@@ -1173,9 +1192,9 @@ TraktorZ2.displayLoopCountDigit = function(group, digit, brightness) {
 
     // Segment g (center horizontal bar)
     if (digit === 2 || digit === 3  || digit === 4 || digit === 5 || digit === 6 || digit === 8 || digit === 9) {
-        TraktorZ2.controller.setOutput(group, "segment_g", brightness, false); // ON
+        TraktorZ2.controller.setOutput(group, "segment_g", brightness, sendMessage); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_g", LedOff,     false); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_g", LedOff,     sendMessage); // OFF
     }
 };
 
