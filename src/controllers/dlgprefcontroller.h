@@ -31,6 +31,8 @@ class DlgPrefController : public DlgPreferencePage {
                       UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
+    QUrl helpUrl() const override;
+
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
@@ -38,8 +40,6 @@ class DlgPrefController : public DlgPreferencePage {
     void slotApply() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
-
-    QUrl helpUrl() const override;
 
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);

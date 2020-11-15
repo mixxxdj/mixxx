@@ -46,9 +46,11 @@ class WVuMeter : public WWidget  {
             double scaleFactor);
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
+  public slots:
+    void maybeUpdate();
+
   protected slots:
     void updateState(mixxx::Duration elapsed);
-    void maybeUpdate();
 
   private:
     void paintEvent(QPaintEvent * /*unused*/) override;

@@ -1072,7 +1072,7 @@ if (APPLE)
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
-    set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
+    set(MACOS_BUNDLE_MINOSVERSION "10.12.0")
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
@@ -2327,6 +2327,10 @@ if(HID)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
     elseif(APPLE)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
+        find_library(APPKIT_LIBRARY AppKit REQUIRED)
+        target_link_libraries(mixxx-lib PUBLIC
+          ${APPKIT_LIBRARY}
+        )
     elseif(UNIX)
       if(NOT LibUSB_FOUND)
         message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")

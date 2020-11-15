@@ -1,40 +1,41 @@
-#include <QStringList>
-#include <QTime>
-#include <QWidget>
-#include <QtDebug>
+#include "waveform/waveformwidgetfactory.h"
+
 #include <QGLFormat>
 #include <QGLShaderProgram>
 #include <QGuiApplication>
-#include <QWindow>
 #include <QOpenGLFunctions>
-
-#include "waveform/waveformwidgetfactory.h"
+#include <QStringList>
+#include <QTime>
+#include <QWidget>
+#include <QWindow>
+#include <QtDebug>
 
 #include "control/controlpotmeter.h"
-#include "waveform/sharedglcontext.h"
-#include "waveform/widgets/emptywaveformwidget.h"
-#include "waveform/widgets/softwarewaveformwidget.h"
-#include "waveform/widgets/hsvwaveformwidget.h"
-#include "waveform/widgets/rgbwaveformwidget.h"
-#include "waveform/widgets/qthsvwaveformwidget.h"
-#include "waveform/widgets/qtrgbwaveformwidget.h"
-#include "waveform/widgets/glrgbwaveformwidget.h"
-#include "waveform/widgets/glwaveformwidget.h"
-#include "waveform/widgets/glsimplewaveformwidget.h"
-#include "waveform/widgets/qtwaveformwidget.h"
-#include "waveform/widgets/qtsimplewaveformwidget.h"
-#include "waveform/widgets/glslwaveformwidget.h"
-#include "waveform/widgets/glvsynctestwidget.h"
-#include "waveform/widgets/qtvsynctestwidget.h"
-#include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wwaveformviewer.h"
-#include "waveform/guitick.h"
-#include "waveform/visualsmanager.h"
-#include "waveform/vsyncthread.h"
 #include "util/cmdlineargs.h"
+#include "util/math.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
-#include "util/math.h"
+#include "waveform/guitick.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/vsyncthread.h"
+#include "waveform/widgets/emptywaveformwidget.h"
+#include "waveform/widgets/glrgbwaveformwidget.h"
+#include "waveform/widgets/glsimplewaveformwidget.h"
+#include "waveform/widgets/glslwaveformwidget.h"
+#include "waveform/widgets/glvsynctestwidget.h"
+#include "waveform/widgets/glwaveformwidget.h"
+#include "waveform/widgets/hsvwaveformwidget.h"
+#include "waveform/widgets/qthsvwaveformwidget.h"
+#include "waveform/widgets/qtrgbwaveformwidget.h"
+#include "waveform/widgets/qtsimplewaveformwidget.h"
+#include "waveform/widgets/qtvsynctestwidget.h"
+#include "waveform/widgets/qtwaveformwidget.h"
+#include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wvumeter.h"
+#include "widget/wwaveformviewer.h"
 
 namespace {
 // Returns true if the given waveform should be rendered.
@@ -355,15 +356,16 @@ void WaveformWidgetFactory::destroyWidgets() {
     m_waveformWidgetHolders.clear();
 }
 
-void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
+void WaveformWidgetFactory::addTimerListener(WVuMeter* pWidget) {
     // Do not hold the pointer to of timer listeners since they may be deleted.
     // We don't activate update() or repaint() directly so listener widgets
     // can decide whether to paint or not.
-    connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(maybeUpdate()),
+    connect(this,
+            &WaveformWidgetFactory::waveformUpdateTick,
+            pWidget,
+            &WVuMeter::maybeUpdate,
             Qt::DirectConnection);
 }
-
 
 void WaveformWidgetFactory::slotSkinLoaded() {
     setWidgetTypeFromConfig();

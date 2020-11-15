@@ -87,7 +87,7 @@ BulkController::BulkController(UserSettingsPointer pConfig,
 
     setDeviceCategory(tr("USB Controller"));
 
-    setDeviceName(QString("%1 %2").arg(product).arg(m_sUID));
+    setDeviceName(QString("%1 %2").arg(product, m_sUID));
 
     setInputDevice(true);
     setOutputDevice(true);

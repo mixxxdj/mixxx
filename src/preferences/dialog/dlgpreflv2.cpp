@@ -59,9 +59,9 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
 
         lv2EffectsList->addWidget(button);
         button->setProperty("id", QVariant(pEffectManifest->id()));
-        connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
+        connect(button, &QAbstractButton::clicked, this, &DlgPrefLV2::slotDisplayParameters);
     }
-    effectNameLabel->setText(QStringLiteral(""));
+    effectNameLabel->clear();
 }
 
 DlgPrefLV2::~DlgPrefLV2() {
@@ -107,8 +107,7 @@ void DlgPrefLV2::slotDisplayParameters() {
             }
             lv2EffectParametersList->addWidget(entry);
             m_pluginParameters.append(entry);
-            connect(entry, SIGNAL(stateChanged(int)),
-                    this, SLOT(slotUpdateOnParameterCheck(int)));
+            connect(entry, &QCheckBox::stateChanged, this, &DlgPrefLV2::slotUpdateOnParameterCheck);
         }
         int parameterListSize = parameterList.size();
         m_iCheckedParameters = parameterListSize < 8 ? parameterListSize : 8;

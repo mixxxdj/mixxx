@@ -91,7 +91,7 @@ class HID(Feature):
             if build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
                 raise Exception('Did not find the setupapi library, exiting.')
             elif build.platform_is_osx:
-                build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
+                build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation', 'AppKit'])
 
         build.env.Append(CPPDEFINES='__HID__')
         if self.INTERNAL_LINK:
