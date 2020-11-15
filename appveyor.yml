@@ -104,7 +104,6 @@ for:
     # Split cache in half with Ubuntu ccache and underestimate compression ratio a little to
     # avoid going over the limit.
     - ccache -M 4G
-    - ccache -s
 
   build_script:
     - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
@@ -142,6 +141,7 @@ for:
   after_test:
     - xsltproc -o ctest-to-junit-results.xml ../cmake/ctest-to-junit.xsl Testing/*/Test.xml
     - curl -F 'file=@ctest-to-junit-results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+    - ccache -s
 
 ########## END UBUNTU SPECIFIC CONFIGURATION ##########
 
@@ -161,7 +161,8 @@ for:
   clone_folder: c:\projects\mixxx
 
   cache:
-    - C:\mixxx-buildserver
+    # The Windows build environment is bigger than the 1 GB cache AppVeyor gives us for free.
+    #- C:\mixxx-buildserver
     - C:\Users\appveyor\clcache
 
   environment:
@@ -212,10 +213,12 @@ for:
     - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
     - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
     - cd %APPVEYOR_BUILD_FOLDER%
-     # Limit cache size to 100 MB
-    - clcache -M 100000000
-    - clcache -c
-    - clcache -s
+    # Limit cache size to 4 GB.
+    # AppVeyor allows 1 GB cache for the free plan but stores it compressed.
+    # Compression ratio is ~80%, so we could have ~10 GB uncompressed total cache.
+    # Split cache in half with Ubuntu ccache and underestimate compression ratio a little to
+    # avoid going over the limit.
+    - clcache -M 4294967296
     # Improve clcache performance
     - set CLCACHE_SERVER=1
     - set CLCACHE_HARDLINK=1
@@ -252,7 +255,7 @@ for:
       -DSTATIC_DEPS=ON
       -G "Ninja"
       ..
-    - cmake --build .
+    - cmake --build . -v
     - cmake --build . --target install
     - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
       If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
@@ -289,10 +292,9 @@ for:
         $XSLInputElement.Transform((Resolve-Path $ctest_xml), (Join-Path (Resolve-Path .) "ctest-to-junit-results.xml"))
         $wc = New-Object 'System.Net.WebClient'
         $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\ctest-to-junit-results.xml))
-
+    - clcache -s
 
   artifacts:
-    - path: 'cmake_build/*.exe'
     - path: 'cmake_build/*.msi'
 
   on_finish:
