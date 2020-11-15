@@ -1002,8 +1002,8 @@ TraktorZ2.trackLoadedHandler = function(value, group) {
     } else {
         TraktorZ2.displayBrightness[group] = 0x02;
         TraktorZ2.displayBeatLeds(group);
-    };
-}
+    }
+};
 
 TraktorZ2.beatOutputHandler = function(value, group) {
     if (value === 1) {
@@ -1053,7 +1053,7 @@ TraktorZ2.displayBeatLeds = function(group) {
         TraktorZ2.displayLoopCount(group);
     };
     TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], true);
-}
+};
 
 TraktorZ2.displayLoopCount = function(group) {
     // @param group may be either[Channel1] or [Channel2]
