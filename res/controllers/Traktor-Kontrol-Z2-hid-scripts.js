@@ -1029,9 +1029,8 @@ TraktorZ2.beatOutputHandler = function(value, group) {
 TraktorZ2.displayBeatLeds = function(group) {
     if ((group === "[Channel1]") || (group === "[Channel2]")) {
         TraktorZ2.displayLoopCount(group);
-    } else {
-        TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], true);
-    }
+    } 
+    TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], true);
 }
 
 TraktorZ2.displayLoopCount = function(group) {
@@ -1150,14 +1149,11 @@ TraktorZ2.displayLoopCountDigit = function(group, digit, brightness) {
         TraktorZ2.controller.setOutput(group, "segment_f", LedOff,     false); // OFF
     }
 
-    // Send HID packet at last digit of last digit
-    var batching = (group === "[Channel1][Digit1]" || group === "[Channel2][Digit1]");
-
     // Segment g (center horizontal bar)
     if (digit === 2 || digit === 3  || digit === 4 || digit === 5 || digit === 6 || digit === 8 || digit === 9) {
-        TraktorZ2.controller.setOutput(group, "segment_g", brightness, batching); // ON
+        TraktorZ2.controller.setOutput(group, "segment_g", brightness, false); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_g", LedOff,     batching); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_g", LedOff,     false); // OFF
     }
 };
 
@@ -1199,8 +1195,10 @@ TraktorZ2.registerOutputPackets = function() {
     outputA.addOutput("[Channel3]", "!deck", 0x09, "B", 0x70);
     outputA.addOutput("[Channel4]", "!deck", 0x0A, "B", 0x70);
 
-    outputA.addOutput("[Channel3]", "!beatIndicator", 0x0B, "B", 0x70);
-    outputA.addOutput("[Channel4]", "!beatIndicator", 0x0C, "B", 0x70);
+    outputA.addOutput("[Channel1]", "!beatIndicator", 0x11, "B", 0x70); // Load/Duplicate ChA
+    outputA.addOutput("[Channel2]", "!beatIndicator", 0x19, "B", 0x70); // Load/Duplicate ChB
+    outputA.addOutput("[Channel3]", "!beatIndicator", 0x0B, "B", 0x70); // Text label Deck C
+    outputA.addOutput("[Channel4]", "!beatIndicator", 0x0C, "B", 0x70); // Text label Deck D
 
     outputA.addOutput("[EffectRack1_EffectUnit1]", "!On", 0x0D, "B", 0x70);
     engine.connectControl("[EffectRack1_EffectUnit1_Effect1]", "enabled", TraktorZ2.bind(this.fxOnLedHandler, this));
