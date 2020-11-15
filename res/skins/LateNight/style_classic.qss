@@ -1838,7 +1838,8 @@ WPushButton#SamplerExpand[displayValue="0"],
 #RecDot[highlight="0"] {
   image: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
   }
-  #RecDot[highlight="1"], #RecDot[highlight="2"] {
+  #RecDot[highlight="1"],
+  #RecDot[highlight="2"] {
     image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
@@ -1945,16 +1946,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /************** Library *******************************************************/
 
 #LibraryContainer {
-  /* ToDo (ronso0)
-  Check, may be obsolete since tollbar is at the top now.
-
-  make a smooth transition from toolbar at the bottom to
-  darker skin background at the top.
-  Splitter handles should be translucent for this to work.
-
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #080808,
-    stop:1 #1e1e1e); */
 }
 
 WLibrary,

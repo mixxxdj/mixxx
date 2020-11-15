@@ -845,7 +845,7 @@ CuePointer Track::findCueByType(mixxx::CueType type) const {
     return CuePointer();
 }
 
-CuePointer Track::findCueById(int id) const {
+CuePointer Track::findCueById(DbId id) const {
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue : m_cuePoints) {
         if (pCue->getId() == id) {
