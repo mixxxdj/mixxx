@@ -174,9 +174,18 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
 
     QSet<TrackId> playedTrackIds;
     if (getHiddenType(playlistId) == PLHT_SET_LOG) {
-        for (const auto& trackId : getTrackIds(playlistId)) {
-            playedTrackIds.insert(trackId);
-        }
+        const QList<TrackId> trackIds = getTrackIds(playlistId);
+
+        // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+        // replaced with QSet<T>(list.begin(), list.end()).
+        // However, the proposed alternative has just been introduced in Qt
+        // 5.14. Until the minimum required Qt version of Mixxx is increased,
+        // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        playedTrackIds = QSet<TrackId>(trackIds.constBegin(), trackIds.constEnd());
+#else
+        playedTrackIds = QSet<TrackId>::fromList(trackIds);
+#endif
     }
 
     // Get the playlist id for this
