@@ -989,7 +989,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         // TODO: The following use of QList<T>::swap(int, int) is deprecated
         // and should be replaced with QList<T>::swapItemsAt(int, int)
         // However, the proposed alternative has just been introduced in Qt
-        // 5.13. Until the minimum required Qt version of Mixx is increased,
+        // 5.13. Until the minimum required Qt version of Mixxx is increased,
         // we need a version check here.
         #if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
         newPositions.swap(newPositions.indexOf(trackAPosition),
