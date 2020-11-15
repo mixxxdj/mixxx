@@ -1051,7 +1051,7 @@ TraktorZ2.beatOutputHandler = function(value, group) {
 TraktorZ2.displayBeatLeds = function(group) {
     if ((group === "[Channel1]") || (group === "[Channel2]")) {
         TraktorZ2.displayLoopCount(group);
-    };
+    }
     TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], true);
 };
 
