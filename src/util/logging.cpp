@@ -318,7 +318,7 @@ void Logging::initialize(
 
     s_debugAssertBreak = debugAssertBreak;
 
-    if (qgetenv("QT_MESSAGE_PATTERN").isEmpty()) {
+    if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
         qSetMessagePattern(kDefaultMessagePattern);
     }
 
