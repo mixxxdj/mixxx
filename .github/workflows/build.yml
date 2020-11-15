@@ -14,6 +14,7 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+          ccache \
           libavformat-dev \
           libchromaprint-dev \
           libebur128-dev \
@@ -54,6 +55,19 @@ jobs:
         cmake-version: '3.13.x'
     - name: Create build directory
       run: mkdir cmake_build
+    - name: Prepare ccache timestamp
+      id: ccache_cache_timestamp
+      shell: cmake -P {0}
+      run: |
+        string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
+        message("::set-output name=timestamp::${current_date}")
+    - name: Set up ccache cache
+      uses: actions/cache@v1.1.0
+      with:
+        path: .cache/ccache
+        key: ${{ github.job }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
+        restore-keys: |
+            ${{ github.job }}-ccache-
     - name: Configure
       # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
       run: |
