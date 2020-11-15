@@ -138,11 +138,11 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     ASSERT_TRUE(tempDir2.isValid());
 
     //create temp dirs
-    QString testdir(tempDir1.path() + "/TestDir");
+    QString testdir(tempDir1.filePath("TestDir"));
     ASSERT_TRUE(QDir(tempDir1.path()).mkpath(testdir));
-    QString test2(tempDir2.path() + "/TestDir2");
+    QString test2(tempDir2.filePath("TestDir2"));
     ASSERT_TRUE(QDir(tempDir2.path()).mkpath(test2));
-    QString testnew(tempDir2.path() + "/TestDirNew");
+    QString testnew(tempDir2.filePath("TestDirNew"));
     ASSERT_TRUE(QDir(tempDir2.path()).mkpath(testnew));
 
     const DirectoryDAO& dao = internalCollection()->getDirectoryDAO();
