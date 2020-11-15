@@ -78,6 +78,7 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
                     elidableTextSuffix);
     addAction(
             mixxx::escapeTextPropertyWithoutShortcuts(elidedActionText),
+            this,
             [this, searchQuery]() {
                 emit triggerSearch(searchQuery);
             });
