@@ -4,7 +4,7 @@
 #include "library/dao/playlistdao.h"
 
 
- ColumnCache::ColumnCache(const QStringList& columns) {
+ColumnCache::ColumnCache() {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
@@ -12,16 +12,11 @@
     // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
     // KeyUtils::CUSTOM as Mixxx is starting.
 
-    setColumns(columns);
-}
-
-void ColumnCache::setColumns(const QStringList& columns) {
-    m_columnsByIndex.clear();
+    QStringList columns = TrackSchema::GetColumnNames();
     m_columnsByIndex.append(columns);
-
-    m_columnIndexByName.clear();
     for (int i = 0; i < columns.size(); ++i) {
         QString column = columns[i];
+        qDebug() << "col: " << column;
         m_columnIndexByName[column] = i;
     }
 

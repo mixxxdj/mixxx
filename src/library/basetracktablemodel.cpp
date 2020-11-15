@@ -115,7 +115,6 @@ BaseTrackTableModel::BaseTrackTableModel(
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
         const QStringList& tableColumns) {
-    m_columnCache.setColumns(tableColumns);
     if (m_columnHeaders.size() < tableColumns.size()) {
         m_columnHeaders.resize(tableColumns.size());
     }
@@ -241,6 +240,7 @@ void BaseTrackTableModel::setHeaderProperties(
         m_columnHeaders.resize(section + 1);
     }
     m_columnHeaders[section].column = column;
+    qDebug() << "col: " << m_columnCache.columnName(column);
     setHeaderData(
             section,
             Qt::Horizontal,

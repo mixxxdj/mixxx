@@ -2,6 +2,7 @@
 #define MIXXX_TRACKSCHEMA_H
 
 #include <QString>
+#include <QStringList>
 
 #define LIBRARY_TABLE "library"
 
@@ -53,5 +54,16 @@ const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
+
+// Simple static-only class for getting the ordered subset of columns used in the track headers.
+class TrackSchema {
+public:
+    // GetColumns returns a QStringList of all the relevant columns that can be displayed to the
+    // user.
+    static QStringList GetColumnNames();
+
+    // TableForColumn returns the name of the table that contains the named column.
+    static QString TableForColumn(const QString& columnName);
+};
 
 #endif //MIXXX_TRACKSCHEMA_H

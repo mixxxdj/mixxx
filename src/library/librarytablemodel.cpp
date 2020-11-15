@@ -41,17 +41,14 @@ void LibraryTableModel::setTableModel(int id) {
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
             "WHERE (" + kDefaultLibraryFilter + ")";
+    qDebug() << "LibraryTableModel::setTableModel" << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
-    QStringList tableColumns;
-    tableColumns << LIBRARYTABLE_ID;
-    tableColumns << LIBRARYTABLE_PREVIEW;
-    tableColumns << LIBRARYTABLE_COVERART;
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    QStringList tableColumns = TrackSchema::GetColumnNames();
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns, m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 

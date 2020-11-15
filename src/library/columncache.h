@@ -72,9 +72,7 @@ class ColumnCache : public QObject {
         NUM_COLUMNS
     };
 
-    explicit ColumnCache(const QStringList& columns = QStringList());
-
-    void setColumns(const QStringList& columns);
+    ColumnCache();
 
     inline int fieldIndex(Column column) const {
         if (column < 0 || column >= NUM_COLUMNS) {
@@ -84,6 +82,7 @@ class ColumnCache : public QObject {
     }
 
     inline int fieldIndex(const QString& columnName) const {
+        qDebug() << "fieldIndex" << columnName << m_columnIndexByName.value(columnName, -1);
         return m_columnIndexByName.value(columnName, -1);
     }
 
