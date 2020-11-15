@@ -464,22 +464,29 @@ bool BaseTrackTableModel::setData(
         const QVariant& value,
         int role) {
     const int column = index.column();
-
-    // Override sets to TIMESPLAYED and redirect them to PLAYED
     if (role == Qt::CheckStateRole) {
-        const auto val = value.toInt() > 0;
-        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
+            return false;
+        }
+        const auto checked = value.toInt() > 0;
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED: {
+            // Override sets to TIMESPLAYED and redirect them to PLAYED
             QModelIndex playedIndex = index.sibling(
                     index.row(),
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED));
-            return setData(playedIndex, val, Qt::EditRole);
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+            return setData(playedIndex, checked, Qt::EditRole);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             QModelIndex bpmLockedIndex = index.sibling(
                     index.row(),
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
-            return setData(bpmLockedIndex, val, Qt::EditRole);
+            return setData(bpmLockedIndex, checked, Qt::EditRole);
         }
-        return false;
+        default:
+            return false;
+        }
     }
 
     TrackPointer pTrack = getTrack(index);
