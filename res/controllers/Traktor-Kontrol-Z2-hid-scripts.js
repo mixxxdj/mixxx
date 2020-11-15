@@ -446,9 +446,31 @@ TraktorZ2.crossfaderReverseHandler = function(field) {
 TraktorZ2.buttonHandler = function(field) {
     HIDDebug("TraktorZ2: buttonHandler");
     if (field.value === 0) {
-        return;
+        return; // Button released
     }
     script.toggleControl(field.group, field.name);
+};
+
+TraktorZ2.pflButtonHandler = function(field) {
+    HIDDebug("TraktorZ2: pflButtonHandler");
+    if (field.value === 0) {
+        return; // Button released
+    }
+
+    var group;
+    if (TraktorZ2.shiftState !== 0) {
+        // Shift mode on  -> DeckC / DeckD
+        if (field.group == "[Channel1]") {
+            group =  "[Channel3]";
+        } else {
+            group =  "[Channel4]";
+        }
+    } else {
+        // Shift mode off -> DeckA / DeckB
+        group = field.group;
+    }
+
+    script.toggleControl(group, field.name);
 };
 
 TraktorZ2.traktorbuttonHandler = function(field) {
@@ -489,8 +511,8 @@ TraktorZ2.registerInputPackets = function() {
     this.registerInputButton(messageShort, "[Microphone]", "talkover", 0x05, 0x01, this.buttonHandler);
 
     // Headphone buttons
-    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x04, 0x04, this.buttonHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x04, 0x08, this.buttonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "pfl", 0x04, 0x04, this.pflButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "pfl", 0x04, 0x08, this.pflButtonHandler);
 
     this.registerInputButton(messageShort, "[Master]", "shift", 0x07, 0x01, this.shiftHandler);
 
