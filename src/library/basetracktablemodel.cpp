@@ -535,16 +535,21 @@ QVariant BaseTrackTableModel::roleValue(
     }
     switch (role) {
     case Qt::ToolTipRole:
-        if (field == ColumnCache::COLUMN_LIBRARYTABLE_COLOR) {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_COVERART) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_COVERART:
             return composeCoverArtToolTipHtml(index);
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
             return QVariant();
+        default:
+            // Same value as for Qt::DisplayRole (see below)
+            break;
         }
         M_FALLTHROUGH_INTENDED;
     case Qt::DisplayRole:
-        if (field == ColumnCache::COLUMN_LIBRARYTABLE_DURATION) {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_DURATION: {
             if (rawValue.isNull()) {
                 return QVariant();
             }
@@ -559,7 +564,8 @@ QVariant BaseTrackTableModel::roleValue(
             return mixxx::Duration::formatTime(
                     duration,
                     mixxx::Duration::Precision::SECONDS);
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_RATING) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING: {
             if (rawValue.isNull()) {
                 return QVariant();
             }
@@ -572,7 +578,8 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return QVariant::fromValue(StarRating(starCount));
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED: {
             if (rawValue.isNull()) {
                 return QVariant();
             }
@@ -585,13 +592,14 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return QString("(%1)").arg(timesPlayed);
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED ||
-                field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
             return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_BPM) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
             if (!rawValue.isNull()) {
                 if (rawValue.canConvert<mixxx::Bpm>()) {
@@ -613,7 +621,8 @@ QVariant BaseTrackTableModel::roleValue(
             } else {
                 return QChar('-');
             }
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_YEAR) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_YEAR: {
             if (rawValue.isNull()) {
                 return QVariant();
             }
@@ -626,7 +635,8 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return year;
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
             if (rawValue.isNull()) {
                 return QVariant();
             }
@@ -650,7 +660,8 @@ QVariant BaseTrackTableModel::roleValue(
                     return QVariant();
                 }
             }
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             // If we know the semantic key via the LIBRARYTABLE_KEY_ID
             // column (as opposed to the string representation of the key
             // currently stored in the DB) then lookup the key and render it
@@ -677,7 +688,8 @@ QVariant BaseTrackTableModel::roleValue(
             }
             // Render the key with the user-provided notation
             return KeyUtils::keyToString(key);
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
                 return QVariant();
             }
@@ -691,26 +703,33 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return mixxx::ReplayGain::ratioToString(gainValue);
         }
-        // Otherwise, just use the column value
+        default:
+            // Otherwise, just use the column value
+            break;
+        }
         break;
     case Qt::EditRole:
-        if (field == ColumnCache::COLUMN_LIBRARYTABLE_BPM) {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
             return ok ? bpmValue : mixxx::Bpm().getValue();
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) {
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(
                                 index.row(),
                                 fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED))
                     .data()
                     .toBool();
-        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_RATING) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
                 return QVariant();
             }
             return QVariant::fromValue(StarRating(rawValue.toInt()));
+        default:
+            // Otherwise, just use the column value
+            break;
         }
-        // Otherwise, just use the column value
         break;
     case Qt::CheckStateRole: {
         QVariant boolValue;
