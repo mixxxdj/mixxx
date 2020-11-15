@@ -29,10 +29,10 @@ var TraktorZ2 = new function() {
     this.browseKnobEncoderState = 0;
 
     this.displayBrightness = [];
-    
+
     this.pregainCh3Timer = 0;
     this.pregainCh4Timer = 0;
-    
+
     this.eqValueStorage = [];
 
     this.chTimer = [];
@@ -429,17 +429,17 @@ TraktorZ2.crossfaderReverseHandler = function(field) {
     HIDDebug("TraktorZ2: LibraryFocusHandler");
     if (field.value) {
         TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", LedBright,  true);
-        if (engine.getValue("[Channel1]", "orientation") === 0) {engine.setValue("[Channel1]", "orientation", 2);}
-        if (engine.getValue("[Channel3]", "orientation") === 0) {engine.setValue("[Channel3]", "orientation", 2);}
-        if (engine.getValue("[Channel2]", "orientation") === 2) {engine.setValue("[Channel2]", "orientation", 0);}
-        if (engine.getValue("[Channel4]", "orientation") === 2) {engine.setValue("[Channel4]", "orientation", 0);}
-        
+        if (engine.getValue("[Channel1]", "orientation") === 0) { engine.setValue("[Channel1]", "orientation", 2); }
+        if (engine.getValue("[Channel3]", "orientation") === 0) { engine.setValue("[Channel3]", "orientation", 2); }
+        if (engine.getValue("[Channel2]", "orientation") === 2) { engine.setValue("[Channel2]", "orientation", 0); }
+        if (engine.getValue("[Channel4]", "orientation") === 2) { engine.setValue("[Channel4]", "orientation", 0); }
+
     } else {
         TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", LedOff,  true);
-        if (engine.getValue("[Channel1]", "orientation") === 2) {engine.setValue("[Channel1]", "orientation", 0);}
-        if (engine.getValue("[Channel3]", "orientation") === 2) {engine.setValue("[Channel3]", "orientation", 0);}
-        if (engine.getValue("[Channel2]", "orientation") === 0) {engine.setValue("[Channel2]", "orientation", 2);}
-        if (engine.getValue("[Channel4]", "orientation") === 0) {engine.setValue("[Channel4]", "orientation", 2);}
+        if (engine.getValue("[Channel1]", "orientation") === 2) { engine.setValue("[Channel1]", "orientation", 0); }
+        if (engine.getValue("[Channel3]", "orientation") === 2) { engine.setValue("[Channel3]", "orientation", 0); }
+        if (engine.getValue("[Channel2]", "orientation") === 0) { engine.setValue("[Channel2]", "orientation", 2); }
+        if (engine.getValue("[Channel4]", "orientation") === 0) { engine.setValue("[Channel4]", "orientation", 2); }
     }
 };
 
@@ -460,7 +460,7 @@ TraktorZ2.pflButtonHandler = function(field) {
     var group;
     if (TraktorZ2.shiftState !== 0) {
         // Shift mode on  -> DeckC / DeckD
-        if (field.group == "[Channel1]") {
+        if (field.group === "[Channel1]") {
             group =  "[Channel3]";
         } else {
             group =  "[Channel4]";
@@ -527,7 +527,7 @@ TraktorZ2.registerInputPackets = function() {
 
     this.registerInputButton(messageShort, "[EffectRack1_EffectUnit1]", "!enabled", 0x05, 0x02, this.fxOnClickHandler);
     this.registerInputButton(messageShort, "[EffectRack1_EffectUnit2]", "!enabled", 0x08, 0x01, this.fxOnClickHandler);
-        
+
     this.registerInputButton(messageShort, "Master", "!crossfaderReverse", 0x08, 0x80, this.crossfaderReverseHandler);
 
 
@@ -658,29 +658,29 @@ TraktorZ2.shiftHandler = function(field) {
             HIDDebug("TraktorZ2: back to static shift state: " + TraktorZ2.shiftState);
         }
         // Apply stored EQ and filter settings
-         var eqGroups = {
-            "1" : "[EqualizerRack1_[Channel1]_Effect1]",
-            "2" : "[EqualizerRack1_[Channel1]_Effect1]",
-            "3" : "[EqualizerRack1_[Channel1]_Effect1]",
-            "4" : "[QuickEffectRack1_[Channel1]]",
-            "5" : "[EqualizerRack1_[Channel2]_Effect1]",
-            "6" : "[EqualizerRack1_[Channel2]_Effect1]",
-            "7" : "[EqualizerRack1_[Channel2]_Effect1]",
-            "8" : "[QuickEffectRack1_[Channel2]]"
+        var eqGroups = {
+            "1": "[EqualizerRack1_[Channel1]_Effect1]",
+            "2": "[EqualizerRack1_[Channel1]_Effect1]",
+            "3": "[EqualizerRack1_[Channel1]_Effect1]",
+            "4": "[QuickEffectRack1_[Channel1]]",
+            "5": "[EqualizerRack1_[Channel2]_Effect1]",
+            "6": "[EqualizerRack1_[Channel2]_Effect1]",
+            "7": "[EqualizerRack1_[Channel2]_Effect1]",
+            "8": "[QuickEffectRack1_[Channel2]]"
         };
         var eqParameters = {
-            "1" : "parameter1",
-            "2" : "parameter2",
-            "3" : "parameter3",
-            "4" : "super1",
-            "5" : "parameter1",
-            "6" : "parameter2",
-            "7" : "parameter3",
-            "8" : "super1"
+            "1": "parameter1",
+            "2": "parameter2",
+            "3": "parameter3",
+            "4": "super1",
+            "5": "parameter1",
+            "6": "parameter2",
+            "7": "parameter3",
+            "8": "super1"
         };
 
         for (var idx in eqGroups) {
-            
+
             if (TraktorZ2.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "changed"] === true) {
                 TraktorZ2.eqExecute(eqGroups[idx], eqParameters[idx], TraktorZ2.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "value"]);
             }
@@ -695,7 +695,7 @@ TraktorZ2.parameterHandler = function(field) {
 
 TraktorZ2.eqKnobHandler = function(field) {
     HIDDebug("TraktorZ2: eqKnobHandler");
-    
+
     if (TraktorZ2.shiftPressed === false) {
         TraktorZ2.eqExecute(field.group, field.name, field.value);
     } else {
@@ -703,18 +703,18 @@ TraktorZ2.eqKnobHandler = function(field) {
         TraktorZ2.eqValueStorage[field.group + field.name + "changed"] = true;
         TraktorZ2.eqValueStorage[field.group + field.name + "value"] = field.value;
     }
-}
+};
 
 TraktorZ2.eqExecute = function(group, name, value) {
     HIDDebug("TraktorZ2: eqExecute");
     if ((group === "[EqualizerRack1_[Channel1]_Effect1]") ||
-         (group === "[QuickEffectRack1_[Channel1]]")) {        
-            engine.stopTimer(TraktorZ2.pregainCh3Timer);
-            TraktorZ2.pregainCh3Timer = 0;
+         (group === "[QuickEffectRack1_[Channel1]]")) {
+        engine.stopTimer(TraktorZ2.pregainCh3Timer);
+        TraktorZ2.pregainCh3Timer = 0;
     } else if ((group === "[EqualizerRack1_[Channel2]_Effect1]") ||
-        (group === "[QuickEffectRack1_[Channel2]]")) {        
-            engine.stopTimer(TraktorZ2.pregainCh4Timer);
-            TraktorZ2.pregainCh4Timer = 0;
+        (group === "[QuickEffectRack1_[Channel2]]")) {
+        engine.stopTimer(TraktorZ2.pregainCh4Timer);
+        TraktorZ2.pregainCh4Timer = 0;
     }
     engine.setParameter(group, name, value / 4095);
     TraktorZ2.eqValueStorage[group + name + "changed"] = false;
@@ -723,21 +723,21 @@ TraktorZ2.eqExecute = function(group, name, value) {
 TraktorZ2.pregainHandler = function(field) {
     HIDDebug("TraktorZ2: pregainHandler");
     engine.setParameter(field.group, field.name, field.value / 4095);
-    if ((field.group === "[Channel1]")  && (TraktorZ2.pregainCh3Timer !== 0)) {        
-            engine.stopTimer(TraktorZ2.pregainCh3Timer);
-            TraktorZ2.pregainCh3Timer = 0;
+    if ((field.group === "[Channel1]")  && (TraktorZ2.pregainCh3Timer !== 0)) {
+        engine.stopTimer(TraktorZ2.pregainCh3Timer);
+        TraktorZ2.pregainCh3Timer = 0;
     }
-    if (field.group === "[Channel3]") {  
+    if (field.group === "[Channel3]") {
         engine.stopTimer(TraktorZ2.pregainCh3Timer);
         TraktorZ2.pregainCh3Timer = engine.beginTimer(2500, function() {
             TraktorZ2.pregainCh3Timer = 0;
         }, true);
     }
-    if ((field.group === "[Channel2]")  && (TraktorZ2.pregainCh4Timer !== 0)) {        
-            engine.stopTimer(TraktorZ2.pregainCh4Timer);
-            TraktorZ2.pregainCh4Timer = 0;
+    if ((field.group === "[Channel2]")  && (TraktorZ2.pregainCh4Timer !== 0)) {
+        engine.stopTimer(TraktorZ2.pregainCh4Timer);
+        TraktorZ2.pregainCh4Timer = 0;
     }
-    if (field.group === "[Channel4]") {  
+    if (field.group === "[Channel4]") {
         engine.stopTimer(TraktorZ2.pregainCh4Timer);
         TraktorZ2.pregainCh4Timer = engine.beginTimer(2500, function() {
             TraktorZ2.pregainCh4Timer = 0;
@@ -1002,7 +1002,7 @@ TraktorZ2.trackLoadedHandler = function(value, group) {
     } else {
         TraktorZ2.displayBrightness[group] = 0x02;
         TraktorZ2.displayBeatLeds(group);
-    }
+    };
 }
 
 TraktorZ2.beatOutputHandler = function(value, group) {
@@ -1051,7 +1051,7 @@ TraktorZ2.beatOutputHandler = function(value, group) {
 TraktorZ2.displayBeatLeds = function(group) {
     if ((group === "[Channel1]") || (group === "[Channel2]")) {
         TraktorZ2.displayLoopCount(group);
-    } 
+    };
     TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], true);
 }
 
@@ -1312,11 +1312,11 @@ TraktorZ2.registerOutputPackets = function() {
     // engine.connectControl("[Channel2]", "passthrough", TraktorZ2.bind(TraktorZ2.basicOutputHandler, this));
 
     outputB.addOutput("[Master]", "!usblight", 0x27, "B", 0x70);
-    
+
     outputB.addOutput("[Master]", "!VuLabelMst", 0x21, "B", 0x70);
     outputB.addOutput("[Master]", "!crossfaderReverse", 0x28, "B", 0x70);
 
-    
+
     var VuOffsets = {
         "[Channel1]": 0x01, // ChA
         "[Channel2]": 0x09, // ChB
@@ -1417,7 +1417,7 @@ TraktorZ2.init = function(_id) {
     // 0xF1 9n 40  -> Bit 0x04 of n means  MasterCh (internal) mixing
     // 0xF1 9n 40  -> Bit 0x08 of n means  Mic/Aux (internal) mixing
 
-    var data
+    var data;
     data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF1);
     data = [0xFF, 0x40];
