@@ -150,6 +150,7 @@ QAbstractScrollArea::corner {
 #WaveformsFrame,
 #OverviewBox,
 #OverviewBoxMini,
+#KeyText,
 WSearchLineEdit,
 WCueMenuPopup #CueLabelEdit {
   border-top: 1px solid #0d0d0d;
@@ -182,6 +183,9 @@ WSearchLineEdit {
   #OverviewBoxMini[highlight="1"] {
     background-color: #151515;
   }
+  #KeyText {
+    border-width: 1px 0px 1px 0px;
+  }
 
   #KeyText,
   #DeckSettingsContainer,
@@ -192,7 +196,6 @@ WSearchLineEdit {
   WStarRating {
     background-color: #19191a;
   }
-    #KeyText,
     #DeckSettingsContainer,
     #DeckSettingsContainerCompact,
     #SamplerSettingsContainer {
