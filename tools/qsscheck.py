@@ -228,7 +228,7 @@ def get_skins(path):
 
 
 def get_global_names(mixxx_path):
-    """Returns 2 sets with all class and object names in the Mixx codebase."""
+    """Returns 2 sets with all class and object names in the Mixxx codebase."""
     classnames = set()
     objectnames = set()
     for root, dirs, fnames in os.walk(os.path.join(mixxx_path, "src")):
