@@ -1004,6 +1004,24 @@ TraktorZ2.hotcueOutputHandler = function() {
             var red =   ((colorCode & 0xFF0000) >> 16) / 0x20;
             var green = ((colorCode & 0x00FF00) >>  8) / 0x20;
             var blue =  ((colorCode & 0x0000FF)) / 0x20;
+            // Scale color up to 100% brightness
+            if ((red > green) && (red > blue)) {
+                var brightnessCorrectionFactor = 0x07 / red;
+            } else if ((green > red) && (green > blue)) {
+                brightnessCorrectionFactor = 0x07 / green;
+            } else if ((blue > red) && (blue > green)) {
+                brightnessCorrectionFactor = 0x07 / blue;
+            }
+            red *= brightnessCorrectionFactor;
+            green *= brightnessCorrectionFactor;
+            blue *= brightnessCorrectionFactor;
+
+            // Scale color down to 30% if a saved loop is assigned
+            if (engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_type") === 4) {
+                red = Math.ceil(red * 0.3);
+                green = Math.ceil(green * 0.3);
+                blue = Math.ceil(blue * 0.25); // Blue LED is dominant -> dim it slightly
+            }
             //HIDDebug("Channel: " + ch + " Hotcue: " + i + " Colorcode: " + colorCode + " Red: " + red + " Green: " + green + " Blue: " + blue);
             TraktorZ2.controller.setOutput(ch, "Hotcue" + i + "Red",   red,   false);
             TraktorZ2.controller.setOutput(ch, "Hotcue" + i + "Green", green, false);
