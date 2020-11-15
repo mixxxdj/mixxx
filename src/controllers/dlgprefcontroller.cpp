@@ -98,35 +98,35 @@ DlgPrefController::DlgPrefController(
 
     // Input mappings
     connect(m_ui.btnAddInputMapping,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(addInputMapping()));
+            &DlgPrefController::addInputMapping);
     connect(m_ui.btnRemoveInputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(removeInputMappings()));
+            &DlgPrefController::removeInputMappings);
     connect(m_ui.btnLearningWizard,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(showLearningWizard()));
+            &DlgPrefController::showLearningWizard);
     connect(m_ui.btnClearAllInputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(clearAllInputMappings()));
+            &DlgPrefController::clearAllInputMappings);
 
     // Output mappings
     connect(m_ui.btnAddOutputMapping,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(addOutputMapping()));
+            &DlgPrefController::addOutputMapping);
     connect(m_ui.btnRemoveOutputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(removeOutputMappings()));
+            &DlgPrefController::removeOutputMappings);
     connect(m_ui.btnClearAllOutputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(clearAllOutputMappings()));
+            &DlgPrefController::clearAllOutputMappings);
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -162,31 +162,31 @@ void DlgPrefController::showLearningWizard() {
             m_pControllerManager->getControllerLearningEventFilter();
     pControllerLearning->startListening();
     connect(pControllerLearning,
-            SIGNAL(controlClicked(ControlObject*)),
+            &ControllerLearningEventFilter::controlClicked,
             m_pDlgControllerLearning,
-            SLOT(controlClicked(ControlObject*)));
+            &DlgControllerLearning::controlClicked);
     connect(m_pDlgControllerLearning,
-            SIGNAL(listenForClicks()),
+            &DlgControllerLearning::listenForClicks,
             pControllerLearning,
-            SLOT(startListening()));
+            &ControllerLearningEventFilter::startListening);
     connect(m_pDlgControllerLearning,
-            SIGNAL(stopListeningForClicks()),
+            &DlgControllerLearning::stopListeningForClicks,
             pControllerLearning,
-            SLOT(stopListening()));
+            &ControllerLearningEventFilter::stopListening);
     connect(m_pDlgControllerLearning,
-            SIGNAL(stopLearning()),
+            &DlgControllerLearning::stopLearning,
             this,
-            SLOT(show()));
+            &DlgPrefController::show);
     connect(m_pDlgControllerLearning,
-            SIGNAL(inputMappingsLearned(MidiInputMappings)),
+            &DlgControllerLearning::inputMappingsLearned,
             this,
-            SLOT(midiInputMappingsLearned(MidiInputMappings)));
+            &DlgPrefController::midiInputMappingsLearned);
 
     emit mappingStarted();
     connect(m_pDlgControllerLearning,
-            SIGNAL(stopLearning()),
+            &DlgControllerLearning::stopLearning,
             this,
-            SIGNAL(mappingEnded()));
+            &DlgPrefController::mappingEnded);
 }
 
 void DlgPrefController::midiInputMappingsLearned(

@@ -165,7 +165,7 @@ void WHotcueButton::slotTypeChanged(double type) {
     const mixxx::CueType cueType = static_cast<mixxx::CueType>(static_cast<int>(type));
     switch (cueType) {
     case mixxx::CueType::Invalid:
-        m_type = QStringLiteral("");
+        m_type = QLatin1String("");
         break;
     case mixxx::CueType::HotCue:
         m_type = QStringLiteral("hotcue");
@@ -193,7 +193,7 @@ void WHotcueButton::slotTypeChanged(double type) {
         break;
     default:
         DEBUG_ASSERT(!"Unknown cue type!");
-        m_type = QStringLiteral("");
+        m_type = QLatin1String("");
     }
     restyleAndRepaint();
 }

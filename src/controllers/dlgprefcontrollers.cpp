@@ -26,7 +26,10 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     });
 
     // Connections
-    connect(m_pControllerManager, &ControllerManager::devicesChanged, this, &DlgPrefControllers::rescanControllers);
+    connect(m_pControllerManager,
+            &ControllerManager::devicesChanged,
+            this,
+            &DlgPrefControllers::rescanControllers);
 }
 
 DlgPrefControllers::~DlgPrefControllers() {
@@ -125,14 +128,21 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         DlgPrefController* controllerDlg = new DlgPrefController(
                 this, pController, m_pControllerManager, m_pConfig);
-        connect(controllerDlg, &DlgPrefController::mappingStarted, m_pDlgPreferences, &DlgPreferences::hide);
-        connect(controllerDlg, &DlgPrefController::mappingEnded, m_pDlgPreferences, &DlgPreferences::show);
+        connect(controllerDlg,
+                &DlgPrefController::mappingStarted,
+                m_pDlgPreferences,
+                &DlgPreferences::hide);
+        connect(controllerDlg,
+                &DlgPrefController::mappingEnded,
+                m_pDlgPreferences,
+                &DlgPreferences::show);
 
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(DlgPreferences::PreferencesPage(controllerDlg, controllerWindowLink));
 
         connect(pController,
                 &Controller::openChanged,
+                this,
                 [this, controllerDlg](bool bOpen) {
                     slotHighlightDevice(controllerDlg, bOpen);
                 });

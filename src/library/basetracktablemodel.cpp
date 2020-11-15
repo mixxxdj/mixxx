@@ -81,8 +81,6 @@ QSqlDatabase cloneDatabase(
             pTrackCollectionManager->internalCollection()) {
         return QSqlDatabase();
     }
-    const auto connectionName =
-            uuidToStringWithoutBraces(QUuid::createUuid());
     return cloneDatabase(
             pTrackCollectionManager->internalCollection()->database());
 }

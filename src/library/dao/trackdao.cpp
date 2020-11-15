@@ -877,7 +877,7 @@ void TrackDAO::afterHidingTracks(
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
     // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     emit tracksRemoved(QSet<TrackId>(trackIds.begin(), trackIds.end()));
@@ -910,7 +910,7 @@ void TrackDAO::afterUnhidingTracks(
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
     // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     emit tracksAdded(QSet<TrackId>(trackIds.begin(), trackIds.end()));
@@ -1026,11 +1026,10 @@ bool TrackDAO::onPurgingTracks(
 
 void TrackDAO::afterPurgingTracks(
         const QList<TrackId>& trackIds) {
-
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
     // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
