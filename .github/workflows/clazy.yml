@@ -22,4 +22,4 @@ jobs:
         LD: clang++
         CC: clang
         CXX: clazy
-        CLAZY_CHECKS: level1,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast,no-old-style-connect,no-connect-not-normalized
+        CLAZY_CHECKS: level1,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast
