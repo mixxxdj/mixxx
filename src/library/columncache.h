@@ -89,7 +89,7 @@ class ColumnCache : public QObject {
     }
 
     inline QString columnName(Column column) const {
-        return columnNameForFieldIndex(fieldIndex(column));
+        return m_columnNameByEnum[column];
     }
 
     inline QString columnNameForFieldIndex(int index) const {
@@ -108,6 +108,7 @@ class ColumnCache : public QObject {
     QStringList m_columnsByIndex;
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
+    QMap<Column, QString> m_columnNameByEnum;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 
