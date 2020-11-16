@@ -30,21 +30,21 @@ namespace hid {
 
 DeviceInfo::DeviceInfo(
         const hid_device_info& device_info)
-        : usage_page(device_info.usage_page),
-          usage(device_info.usage),
-          interface_number(device_info.interface_number),
-          vendor_id(device_info.vendor_id),
+        : vendor_id(device_info.vendor_id),
           product_id(device_info.product_id),
           release_number(device_info.release_number),
+          usage_page(device_info.usage_page),
+          usage(device_info.usage),
+          interface_number(device_info.interface_number),
           m_pathRaw(device_info.path, mixxx::strnlen(device_info.path, PATH_MAX)),
           m_serialNumberRaw(device_info.serial_number,
                   mixxx::wcsnlen(device_info.serial_number,
                           kDeviceInfoStringMaxLength)),
-          m_manufacturerName(mixxx::convertWCStringToQString(
+          m_manufacturerString(mixxx::convertWCStringToQString(
                   device_info.manufacturer_string,
                   mixxx::wcsnlen(device_info.manufacturer_string,
                           kDeviceInfoStringMaxLength))),
-          m_productName(mixxx::convertWCStringToQString(device_info.product_string,
+          m_productString(mixxx::convertWCStringToQString(device_info.product_string,
                   mixxx::wcsnlen(device_info.product_string,
                           kDeviceInfoStringMaxLength))),
           m_serialNumber(mixxx::convertWCStringToQString(
@@ -58,15 +58,26 @@ QString DeviceInfo::formatInterface() const {
     return QChar('#') + QString::number(interface_number);
 }
 
+QString DeviceInfo::formatVID() const {
+    return QStringLiteral("%1").arg(vendor_id, 4, 16, QLatin1Char('0'));
+}
+
+QString DeviceInfo::formatPID() const {
+    return QStringLiteral("%1").arg(product_id, 4, 16, QLatin1Char('0'));
+}
+
+QString DeviceInfo::formatReleaseNumber() const {
+    return QString::number(releaseNumberBCD(), 16);
+}
+
 QString DeviceInfo::formatUsage() const {
     if (usage_page == 0 && usage == 0) {
         DEBUG_ASSERT(!formatInterface().isEmpty());
         return QString();
     }
-    return QStringLiteral("0x") +
-            QString::number(usage_page, 16) +
-            QStringLiteral("/0x") +
-            QString::number(usage, 16);
+    return QStringLiteral("%1").arg(usage_page, 4, 16, QLatin1Char('0')) +
+            QLatin1Char(':') +
+            QStringLiteral("%1").arg(usage, 4, 16, QLatin1Char('0'));
 }
 
 QString DeviceInfo::formatName() const {
@@ -75,13 +86,13 @@ QString DeviceInfo::formatName() const {
     // track of which is which
     const auto serialSuffix = serialNumber().right(4);
     if (interface_number >= 0) {
-        return productName() +
+        return productString() +
                 QChar(' ') +
                 serialSuffix +
                 QChar('_') +
                 QString::number(interface_number);
     } else {
-        return productName() +
+        return productString() +
                 QChar(' ') +
                 serialSuffix;
     }
@@ -90,6 +101,12 @@ QString DeviceInfo::formatName() const {
 QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     QStringList parts;
     parts.reserve(8);
+    // "VID:PID vReleaseNumber"
+    parts.append(deviceInfo.formatVID() +
+            QLatin1Char(':') +
+            deviceInfo.formatPID() +
+            QLatin1String(" r") +
+            deviceInfo.formatReleaseNumber());
     const QString usage = deviceInfo.formatUsage();
     if (!usage.isEmpty()) {
         parts.append(QStringLiteral("Usage: ") + usage);
@@ -98,15 +115,11 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     if (!interface.isEmpty()) {
         parts.append(QStringLiteral("Interface: ") + interface);
     }
-    parts.append(QStringLiteral("Vendor ID: 0x") + QString::number(deviceInfo.vendorId(), 16));
-    parts.append(QStringLiteral("Product ID: 0x") + QString::number(deviceInfo.productId(), 16));
-    parts.append(QStringLiteral("Release/Version: ") +
-            QString::number(deviceInfo.releaseNumberBCD(), 16));
-    if (!deviceInfo.manufacturerName().isEmpty()) {
-        parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.manufacturerName());
+    if (!deviceInfo.manufacturerString().isEmpty()) {
+        parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.manufacturerString());
     }
-    if (!deviceInfo.productName().isEmpty()) {
-        parts.append(QStringLiteral("Product: ") + deviceInfo.productName());
+    if (!deviceInfo.productString().isEmpty()) {
+        parts.append(QStringLiteral("Product: ") + deviceInfo.productString());
     }
     if (!deviceInfo.serialNumber().isEmpty()) {
         parts.append(QStringLiteral("S/N: ") + deviceInfo.serialNumber());

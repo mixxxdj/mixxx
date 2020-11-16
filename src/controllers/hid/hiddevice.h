@@ -36,20 +36,23 @@ class DeviceInfo final {
         return m_serialNumberRaw.c_str();
     }
 
-    const QString& manufacturerName() const {
-        return m_manufacturerName;
+    const QString& manufacturerString() const {
+        return m_manufacturerString;
     }
-    const QString& productName() const {
-        return m_productName;
+    const QString& productString() const {
+        return m_productString;
     }
     const QString& serialNumber() const {
         return m_serialNumber;
     }
 
     bool isValid() const {
-        return !productName().isNull() && !serialNumber().isNull();
+        return !productString().isNull() && !serialNumber().isNull();
     }
 
+    QString formatVID() const;
+    QString formatPID() const;
+    QString formatReleaseNumber() const;
     QString formatInterface() const;
     QString formatUsage() const;
     QString formatName() const;
@@ -64,18 +67,18 @@ class DeviceInfo final {
             const DeviceInfo& deviceInfo);
 
     // members from hid_device_info
-    unsigned short usage_page;
-    unsigned short usage;
-    int interface_number;
     unsigned short vendor_id;
     unsigned short product_id;
     unsigned short release_number;
+    unsigned short usage_page;
+    unsigned short usage;
+    int interface_number;
 
     std::string m_pathRaw;
     std::wstring m_serialNumberRaw;
 
-    QString m_manufacturerName;
-    QString m_productName;
+    QString m_manufacturerString;
+    QString m_productString;
     QString m_serialNumber;
 };
 
