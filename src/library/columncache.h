@@ -72,7 +72,9 @@ class ColumnCache : public QObject {
         NUM_COLUMNS
     };
 
-    ColumnCache();
+    explicit ColumnCache(const QStringList& columns = QStringList());
+
+    void setColumns(const QStringList& columns);
 
     inline int fieldIndex(Column column) const {
         if (column < 0 || column >= NUM_COLUMNS) {

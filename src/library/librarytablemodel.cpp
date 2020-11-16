@@ -47,8 +47,12 @@ void LibraryTableModel::setTableModel(int id) {
         LOG_FAILED_QUERY(query);
     }
 
-    QStringList tableColumns = TrackSchema::GetColumnNames();
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns, m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
+    tableColumns << LIBRARYTABLE_PREVIEW;
+    tableColumns << LIBRARYTABLE_COVERART;
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
+             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 

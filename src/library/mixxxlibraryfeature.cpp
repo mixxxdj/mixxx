@@ -34,7 +34,9 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pHiddenView(nullptr) {
     QStringList columns = TrackSchema::GetColumnNames();
     QStringList columnsWithTables;
+    qDebug() << "THIS PART----------------------";
     for (const auto& col : columns) {
+        qDebug() << QString("%1.%2").arg(TrackSchema::TableForColumn(col), col);
         columnsWithTables.append(QString("%1.%2").arg(TrackSchema::TableForColumn(col), col));
     }
 
@@ -45,6 +47,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             "SELECT %2 FROM library "
             "INNER JOIN track_locations ON library.location = track_locations.id")
                                     .arg(tableName, columnsWithTables.join(","));
+    qDebug() << "and well" << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
