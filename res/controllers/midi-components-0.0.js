@@ -749,6 +749,7 @@
         this.setCurrentUnit = function(newNumber) {
             this.currentUnitNumber = newNumber;
             this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
+
             if (allowFocusWhenParametersHidden) {
                 engine.setValue(this.group, "show_focus", 0);
             } else {
@@ -866,6 +867,7 @@
         };
         this.EffectUnitKnob.prototype = new Pot({
             group: this.group,
+            number: this.currentUnitNumber,
             unshift: function() {
                 this.input = function(channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {
