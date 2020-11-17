@@ -4,6 +4,8 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 
+#include "control/controlobject.h"
+
 using namespace mixxx::track::io::key;
 
 namespace {
@@ -36,9 +38,9 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, UserSettingsPointer pConfig)
     ui->graphic->installEventFilter(this);
 
     // load the user configured setting as default
-    auto pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
-    m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(pKeyNotation->get()));
-    // we skip the TRADITIONAL display, because it shows redundant informations only
+    m_notation = static_cast<KeyUtils::KeyNotation>(ControlObject::get(
+            ConfigKey("[Library]", "key_notation")));
+    // Select a valid display and update
     switchDisplay(0);
 }
 

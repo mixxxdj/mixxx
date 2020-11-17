@@ -23,7 +23,7 @@ class DlgKeywheel : public QDialog {
     ~DlgKeywheel();
 
   protected:
-    bool eventFilter(QObject* obj, QEvent* event);
+    bool eventFilter(QObject* obj, QEvent* event) override;
     void resizeEvent(QResizeEvent* ev) override;
 
   private:
