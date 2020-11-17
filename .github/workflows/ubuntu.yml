@@ -1,0 +1,93 @@
+name: build Mixxx
+
+on: [pull_request, push]
+
+env:
+  #TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
+  CMAKEFLAGS: -DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON
+  # GitHub Actions automatically zstd compresses caches
+  CCACHE_NOCOMPRESS: true
+  GTEST_COLOR: 1
+  CTEST_OUTPUT_ON_FAILURE: 1
+  # Render analyzer waveform tests to an offscreen buffer
+  QT_QPA_PLATFORM: offscreen
+
+jobs:
+  build-ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-18.04
+    steps:
+    - name: clone Git repository
+      uses: actions/checkout@v2
+    - name: install dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+          libavformat-dev \
+          libchromaprint-dev \
+          libebur128-dev \
+          libfftw3-dev \
+          libflac-dev \
+          libid3tag0-dev \
+          liblilv-dev \
+          libmad0-dev \
+          libmodplug-dev \
+          libmp3lame-dev \
+          libopus-dev \
+          libopusfile-dev \
+          libportmidi-dev \
+          libprotobuf-dev \
+          libqt5opengl5-dev \
+          libqt5sql5-sqlite \
+          libqt5svg5-dev \
+          libqt5x11extras5-dev \
+          librubberband-dev \
+          libshout3-dev \
+          libsndfile1-dev \
+          libsoundtouch-dev \
+          libsqlite3-dev \
+          libtag1-dev \
+          libupower-glib-dev \
+          libusb-1.0-0-dev \
+          libwavpack-dev \
+          portaudio19-dev \
+          protobuf-compiler \
+          qt5-default \
+          qtscript5-dev \
+          qt5keychain-dev \
+          cmake \
+          ccache
+    - name: ccache
+      uses: actions/cache@v2
+      env:
+        cache-name: ccache
+      with:
+        path: /home/runner/.ccache
+        key: ${{ env.cache-name }}-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_number }}
+        restore-keys: |
+          ${{ env.cache-name }}-${{ runner.os }}-${{ github.head_ref }}
+          ${{ env.cache-name }}-${{ runner.os }}
+    - name: build
+      run: |
+        mkdir cmake_build
+        cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -S . -B cmake_build
+        cmake --build cmake_build --parallel $(nproc)
+        ccache -s
+    - name: run tests and benchmark
+      run: |
+        cd cmake_build
+        ctest --timeout 45
+    - name: run benchmarks
+      run: |
+        cd cmake_build
+        cmake --build . --target benchmark
+    - name: build Ubuntu package
+      run: |
+        pwd
+        cd cmake_build
+        cpack -G DEB
+    # TODO: upload to Ubuntu PPA
+    - name: upload Ubuntu package artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Ubuntu deb
+        path: cmake_build/*.deb
