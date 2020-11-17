@@ -15,8 +15,7 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     WPushButton::setup(node, context);
 
     m_pButtonMenu = new QMenu(this);
-    connect(m_pButtonMenu, SIGNAL(triggered(QAction*)),
-            this, SLOT(slotActionChosen(QAction*)));
+    connect(m_pButtonMenu, &QMenu::triggered, this, &WEffectPushButton::slotActionChosen);
     setFocusPolicy(Qt::NoFocus);
 }
 
@@ -35,8 +34,10 @@ void WEffectPushButton::setEffectParameterSlot(
         EffectButtonParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
-        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
+        connect(m_pEffectParameterSlot.data(),
+                &EffectParameterSlot::updated,
+                this,
+                &WEffectPushButton::parameterUpdated);
     }
     parameterUpdated();
 }

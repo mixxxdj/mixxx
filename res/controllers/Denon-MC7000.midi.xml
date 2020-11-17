@@ -3,11 +3,12 @@
     <info>
     	<name>Denon MC7000</name>
     	<author>OsZ</author>
-    	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI page.</description>
-    	<forums>https://www.mixxx.org/forums/</forums>
+    	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI</description>
+    	<forums>https://mixxx.discourse.group/t/denon-mc7000-mapping/18235</forums>
+    	<wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-MC7000</wiki>
         <manual>denon_mc7000</manual>
     </info>
-    <controller id="DENON">
+    <controller id="DENON MC7000">
         <scriptfiles>
             <file filename="Denon-MC7000-scripts.js" functionprefix="MC7000"/>
         </scriptfiles>
@@ -410,6 +411,46 @@
                 <description>Pad Mode HotCues</description>
                 <status>0x97</status>
                 <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MC7000.shiftButton</key>
+                <description>Shift Button</description>
+                <status>0x90</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MC7000.shiftButton</key>
+                <description>Shift Button</description>
+                <status>0x91</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>MC7000.shiftButton</key>
+                <description>Shift Button</description>
+                <status>0x92</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>MC7000.shiftButton</key>
+                <description>Shift Button</description>
+                <status>0x93</status>
+                <midino>0x32</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1842,11 +1883,11 @@
                     <normal/>
                 </options>
             </control>
-<!-- BEAT AND LOOP JUMP -->
+<!-- PARAMETER BUTTONS -->
 			<control>
                 <group>[Channel1]</group>
-                <key>beatjump_8_backward</key>
-                <description>MIDI Learned from 10 messages.</description>
+                <key>stars_down</key>
+                <description></description>
                 <status>0x94</status>
                 <midino>0x28</midino>
                 <options>
@@ -1855,8 +1896,8 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatjump_8_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>stars_up</key>
+                <description></description>
                 <status>0x94</status>
                 <midino>0x29</midino>
                 <options>
@@ -1864,9 +1905,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>beatjump_32_backward</key>
-                <description>MIDI Learned from 8 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_prev</key>
+                <description></description>
                 <status>0x94</status>
                 <midino>0x2A</midino>
                 <options>
@@ -1874,9 +1915,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>beatjump_32_forward</key>
-                <description>MIDI Learned from 6 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_next</key>
+                <description></description>
                 <status>0x94</status>
                 <midino>0x2B</midino>
                 <options>
@@ -1885,8 +1926,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatjump_8_backward</key>
-                <description>MIDI Learned from 10 messages.</description>
+                <key>stars_down</key>
+                <description></description>
                 <status>0x95</status>
                 <midino>0x28</midino>
                 <options>
@@ -1895,8 +1936,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatjump_8_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>stars_up</key>
+                <description></description>
                 <status>0x95</status>
                 <midino>0x29</midino>
                 <options>
@@ -1904,9 +1945,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>beatjump_32_backward</key>
-                <description>MIDI Learned from 8 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_prev</key>
+                <description></description>
                 <status>0x95</status>
                 <midino>0x2A</midino>
                 <options>
@@ -1914,9 +1955,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>beatjump_32_forward</key>
-                <description>MIDI Learned from 6 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_next</key>
+                <description></description>
                 <status>0x95</status>
                 <midino>0x2B</midino>
                 <options>
@@ -1925,8 +1966,8 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatjump_8_backward</key>
-                <description>MIDI Learned from 10 messages.</description>
+                <key>stars_down</key>
+                <description></description>
                 <status>0x96</status>
                 <midino>0x28</midino>
                 <options>
@@ -1935,8 +1976,8 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatjump_8_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>stars_up</key>
+                <description></description>
                 <status>0x96</status>
                 <midino>0x29</midino>
                 <options>
@@ -1944,9 +1985,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>beatjump_32_backward</key>
-                <description>MIDI Learned from 8 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_prev</key>
+                <description></description>
                 <status>0x96</status>
                 <midino>0x2A</midino>
                 <options>
@@ -1954,9 +1995,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>beatjump_32_forward</key>
-                <description>MIDI Learned from 6 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_next</key>
+                <description></description>
                 <status>0x96</status>
                 <midino>0x2B</midino>
                 <options>
@@ -1965,8 +2006,8 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatjump_8_backward</key>
-                <description>MIDI Learned from 10 messages.</description>
+                <key>stars_down</key>
+                <description></description>
                 <status>0x97</status>
                 <midino>0x28</midino>
                 <options>
@@ -1975,8 +2016,8 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatjump_8_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>stars_up</key>
+                <description></description>
                 <status>0x97</status>
                 <midino>0x29</midino>
                 <options>
@@ -1984,9 +2025,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
-                <key>beatjump_32_backward</key>
-                <description>MIDI Learned from 8 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_prev</key>
+                <description></description>
                 <status>0x97</status>
                 <midino>0x2A</midino>
                 <options>
@@ -1994,9 +2035,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
-                <key>beatjump_32_forward</key>
-                <description>MIDI Learned from 6 messages.</description>
+                <group>[Library]</group>
+                <key>track_color_next</key>
+                <description></description>
                 <status>0x97</status>
                 <midino>0x2B</midino>
                 <options>
@@ -2026,42 +2067,42 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>MC7000.loadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>MC7000.loadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>LoadSelectedTrack</key>
+                <key>MC7000.loadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>LoadSelectedTrack</key>
+                <key>MC7000.loadButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9F</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2079,7 +2120,7 @@
                 <key>MoveFocusForward</key>
                 <description>change active panel</description>
                 <status>0x9F</status>
-                <midino>0x06</midino>
+                <midino>0x07</midino>
                 <options>
                     <normal/>
                 </options>
@@ -2089,7 +2130,7 @@
                 <key>MoveFocusBackward</key>
                 <description>change active panel</description>
                 <status>0x9F</status>
-                <midino>0x07</midino>
+                <midino>0x06</midino>
                 <options>
                     <normal/>
                 </options>
@@ -2593,42 +2634,42 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reverse</key>
+                <key>MC7000.reverse</key>
                 <description>Reverse Ch1</description>
                 <status>0x90</status>
                 <midino>0x11</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverse</key>
+                <key>MC7000.reverse</key>
                 <description>Reverse Ch2</description>
                 <status>0x91</status>
                 <midino>0x11</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reverse</key>
+                <key>MC7000.reverse</key>
                 <description>Reverse Ch3</description>
                 <status>0x92</status>
                 <midino>0x11</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>reverse</key>
+                <key>MC7000.reverse</key>
                 <description>Reverse Ch4</description>
                 <status>0x93</status>
                 <midino>0x11</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
 <!-- KEYs -->
@@ -2714,42 +2755,42 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reset_key</key>
+                <key>MC7000.keyReset</key>
                 <description>Default Key</description>
                 <status>0x90</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reset_key</key>
+                <key>MC7000.keyReset</key>
                 <description>Default Key</description>
                 <status>0x91</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reset_key</key>
+                <key>MC7000.keyReset</key>
                 <description>Default Key</description>
                 <status>0x92</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>reset_key</key>
+                <key>MC7000.keyReset</key>
                 <description>Default Key</description>
                 <status>0x93</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
 <!-- Pitch Bend -->

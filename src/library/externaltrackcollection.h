@@ -116,7 +116,7 @@ Q_OBJECT
     }
 
   signals:
-    void connectionStateChanged(ConnectionState state);
+    void connectionStateChanged(ExternalTrackCollection::ConnectionState state);
 
   protected:
     explicit ExternalTrackCollection(QObject* parent = nullptr)

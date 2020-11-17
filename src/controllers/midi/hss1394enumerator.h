@@ -16,7 +16,7 @@ class Hss1394Enumerator : public MidiEnumerator {
     explicit Hss1394Enumerator(UserSettingsPointer pConfig);
     virtual ~Hss1394Enumerator();
 
-    QList<Controller*> queryDevices();
+    QList<Controller*> queryDevices() override;
 
   private:
     UserSettingsPointer m_pConfig;

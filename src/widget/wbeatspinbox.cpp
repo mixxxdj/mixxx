@@ -30,8 +30,10 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
     lineEdit()->setFocusPolicy(Qt::ClickFocus);
 
     setValue(m_valueControl.get());
-    connect(this, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSpinboxValueChanged(double)));
+    connect(this,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &WBeatSpinBox::slotSpinboxValueChanged);
     m_valueControl.connectValueChanged(this, &WBeatSpinBox::slotControlValueChanged);
 }
 

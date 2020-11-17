@@ -229,7 +229,7 @@ void DragAndDropHelper::handleTrackDropEvent(
     if (allowLoadToPlayer(group, pConfig)) {
         if (allowDeckCloneAttempt(*event, group)) {
             event->accept();
-            emit target.cloneDeck(event->mimeData()->text(), group);
+            target.emitCloneDeck(event->mimeData()->text(), group);
             return;
         } else {
             QList<TrackFile> files = dropEventFiles(
