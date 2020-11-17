@@ -13,25 +13,41 @@ namespace hid {
 
 constexpr unsigned short kAppleVendorId = 0x5ac;
 
+/// Detached copy of `struct hid_device_info`.
+///
+/// Stores a detached copy of hid_device_info and its contents.
+///
+/// All instances of hid_device_info are returned by the HIDAPI
+/// library as a linked list. The memory of both the members
+/// of this list as well as their contents are managed by the
+/// library and freed immediately after iterating through this
+/// list.
+///
+/// Includes some basic validations and implicit conversion to
+/// QString if needed.
 class DeviceInfo final {
   public:
     explicit DeviceInfo(
             const hid_device_info& device_info);
 
+    // The VID.
     unsigned short vendorId() const {
         return vendor_id;
     }
+    // The PID.
     unsigned short productId() const {
         return product_id;
     }
-    /// The release number is stored as a binary-coded decimal (BCD)
+    /// The release number as a binary-coded decimal (BCD).
     unsigned short releaseNumberBCD() const {
         return release_number;
     }
 
+    /// The raw path, needed for subsequent HIDAPI requests.
     const char* pathRaw() const {
         return m_pathRaw.c_str();
     }
+    /// The raw serial number, needed for subsequent HIDAPI requests.
     const wchar_t* serialNumberRaw() const {
         return m_serialNumberRaw.c_str();
     }
