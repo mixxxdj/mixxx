@@ -110,7 +110,6 @@ void DlgKeywheel::switchDisplay(int step) {
 void DlgKeywheel::updateSvg() {
     /* update the svg with new values to display, then cause a an update on the widget */
     QDomElement topElement = m_domDocument.documentElement();
-    QDomNode domNode = topElement.firstChild();
 
     bool hideTraditional = m_notation == KeyUtils::KeyNotation::Traditional;
     QDomElement domElement;
