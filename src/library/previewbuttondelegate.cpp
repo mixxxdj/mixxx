@@ -15,6 +15,8 @@ namespace {
 
 constexpr int kPreviewDeckIndex = 0;
 
+const QString kPreviewDeckGroup = PlayerManager::groupForPreviewDeck(kPreviewDeckIndex);
+
 inline TrackModel* trackModel(QTableView* pTableView) {
     VERIFY_OR_DEBUG_ASSERT(pTableView) {
         return nullptr;
@@ -30,9 +32,9 @@ PreviewButtonDelegate::PreviewButtonDelegate(
         : TableItemDelegate(parent),
           m_column(column),
           m_pPreviewDeckPlay(make_parented<ControlProxy>(
-                  PlayerManager::groupForPreviewDeck(kPreviewDeckIndex), "play", this)),
+                  kPreviewDeckGroup, QStringLiteral("play"), this)),
           m_pCueGotoAndPlay(make_parented<ControlProxy>(
-                  PlayerManager::groupForPreviewDeck(kPreviewDeckIndex), "cue_gotoandplay", this)),
+                  kPreviewDeckGroup, QStringLiteral("cue_gotoandplay"), this)),
           m_pButton(make_parented<LibraryPreviewButton>(parent)) {
     DEBUG_ASSERT(m_column >= 0);
 
@@ -194,12 +196,11 @@ void PreviewButtonDelegate::buttonClicked() {
         return;
     }
 
-    QString group = PlayerManager::groupForPreviewDeck(kPreviewDeckIndex);
-    TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(group);
+    TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(kPreviewDeckGroup);
 
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
-        emit loadTrackToPlayer(pTrack, group, true);
+        emit loadTrackToPlayer(pTrack, kPreviewDeckGroup, true);
     } else if (pTrack == pOldTrack && !isPreviewDeckPlaying()) {
         // Since the Preview deck might be hidden
         // Starting at cue is a predictable behavior
@@ -218,8 +219,7 @@ void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
     VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return;
     }
-    QString group = PlayerManager::groupForPreviewDeck(kPreviewDeckIndex);
-    TrackPointer pPreviewTrack = PlayerInfo::instance().getTrackInfo(group);
+    TrackPointer pPreviewTrack = PlayerInfo::instance().getTrackInfo(kPreviewDeckGroup);
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack == pPreviewTrack) {
         emit buttonSetChecked(v > 0.0);

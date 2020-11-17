@@ -147,17 +147,17 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
-        return QString("[Sampler%1]").arg(i+1);
+        return QStringLiteral("[Sampler%1]").arg(i + 1);
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
-        return QString("[Channel%1]").arg(i+1);
+        return QStringLiteral("[Channel%1]").arg(i + 1);
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
-        return QString("[PreviewDeck%1]").arg(i+1);
+        return QStringLiteral("[PreviewDeck%1]").arg(i + 1);
     }
 
     // Returns the group for the ith Microphone where i is zero indexed
