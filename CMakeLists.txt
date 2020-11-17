@@ -82,6 +82,7 @@ endif()
 # Optimizations
 #
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
+set(FAST_MATH true CACHE BOOL "Use -fast-math optimization")
 message(STATUS "Optimization level: ${OPTIMIZE}")
 if(NOT OPTIMIZE STREQUAL "off")
   if(MSVC)
@@ -154,9 +155,13 @@ if(NOT OPTIMIZE STREQUAL "off")
     # faster, measured on a Atom CPU.
     add_compile_options(
       -O3
-      -ffast-math
       -funroll-loops
     )
+    if(FAST_MATH)
+      add_compile_options(
+        -ffast-math
+      )
+    endif()
 
     # set -fomit-frame-pointer when we don't profile and are not using
     # Clang sanitizers.

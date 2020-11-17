@@ -7,6 +7,16 @@ let
     nix-gitignore python3 python37Packages;
 
   llvm_packages = pkgs.llvmPackages_10;
+  clangVersion = builtins.map builtins.fromJSON
+    (lib.versions.splitVersion llvm_packages.clang.version);
+  glibcVersion = builtins.map builtins.fromJSON
+    (lib.versions.splitVersion pkgs.glibc.version);
+
+  # llvm < 10.0.2 and glibc >= 2.31 do not work with -fast-math
+  fastMathBug = (builtins.elemAt clangVersion 0) <= 10
+    && (builtins.elemAt clangVersion 1) <= 0 && (builtins.elemAt clangVersion 2)
+    < 2 && (builtins.elemAt glibcVersion 0) <= 2
+    && (builtins.elemAt glibcVersion 1) >= 31;
 
   stdenv = if useClang then llvm_packages.stdenv else pkgs.stdenv;
 
@@ -18,7 +28,7 @@ let
   allCFlags = cFlags ++ [
     ("-DKEYFINDER=" + (if enableKeyfinder then "ON" else "OFF"))
     ("-DCMAKE_BUILD_TYPE=" + cmakeBuildType)
-  ];
+  ] ++ (if useClang && fastMathBug then [ "-DFAST_MATH=off" ] else [ ]);
 
   git-clang-format = pkgs.stdenv.mkDerivation {
     name = "git-clang-format";
@@ -85,29 +95,28 @@ let
       '';
     };
 
-  shell-configure = nixroot.writeShellScriptBin "configure" (''
-    mkdir -p cbuild
-    cd cbuild
-  '' + (if useClang then ''
-    VERSION=($(cat ../src/_version.h | sed -e 's/[^"]*\"\([0-9]*\)\.\([0-9]*\)\..*/\1\n\2/'))
-    if [ ''${VERSION[0]} -ge 2 -a ''${VERSION[1]} -ge 4 ]; then
-      echo "Using clazy"
-      CXX=clazy
-    fi
-  '' else
-    "") + ''
-      cmake .. ${lib.escapeShellArgs allCFlags} "$@"
-      cd ..
-      V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
-      # install pre-commit from python for older systems
-      if [ $V == "1.99.99" -a ! -e venv/bin/pre-commit ]; then
-        virtualenv -p python3 venv
-        ./venv/bin/pip install pre-commit
-        ./venv/bin/pre-commit install
-      else
-        pre-commit install
+  shell-configure = nixroot.writeShellScriptBin "configure"
+    ((if useClang then ''
+      if [ -e .github/workflows/clazy.yml ]; then
+        echo "Using clazy"
+        CXX=clazy
       fi
-    '');
+    '' else
+      "") + ''
+        mkdir -p cbuild
+        cd cbuild
+        cmake .. ${lib.escapeShellArgs allCFlags} "$@"
+        cd ..
+        V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
+        # install pre-commit from python for older systems
+        if [ $V == "1.99.99" -a ! -e venv/bin/pre-commit ]; then
+          virtualenv -p python3 venv
+          ./venv/bin/pip install pre-commit
+          ./venv/bin/pre-commit install
+        else
+          pre-commit install
+        fi
+      '');
 
   wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
     "qt5.wrapQtAppsHook"
