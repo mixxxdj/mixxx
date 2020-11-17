@@ -223,7 +223,7 @@ CueControl::CueControl(QString group,
     m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
 
     m_pHotcueFocus = new ControlObject(ConfigKey(group, "hotcue_focus"));
-    m_pHotcueFocus->set(Cue::kNoHotCue);
+    m_pHotcueFocus->set(Cue::kNoHotCue + 1);
 
     m_pHotcueFocusColorPrev = new ControlObject(ConfigKey(group, "hotcue_focus_color_prev"));
     connect(m_pHotcueFocusColorPrev,
@@ -358,7 +358,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(Cue::kNoPosition);
         m_pOutroEndEnabled->forceSet(0.0);
-        m_pHotcueFocus->set(Cue::kNoHotCue);
+        m_pHotcueFocus->set(Cue::kNoHotCue + 1);
         m_pLoadedTrack.reset();
         m_usedSeekOnLoadPosition.setValue(kDefaultLoadPosition);
     }
@@ -647,15 +647,16 @@ void CueControl::quantizeChanged(double v) {
 void CueControl::hotcueSet(HotcueControl* pControl, double value) {
     //qDebug() << "CueControl::hotcueSet" << value;
 
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
-    int hotcue = pControl->getHotcueNumber();
+    int hotcueIndex = pControl->getHotcueIndex();
     // Note: the cue is just detached from the hotcue control
     // It remains in the database for later use
     // TODO: find a rule, that allows us to delete the cue as well
@@ -665,14 +666,14 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value) {
     CuePointer pCue(m_pLoadedTrack->createAndAddCue());
     double cuePosition = getQuantizedCurrentPosition();
     pCue->setStartPosition(cuePosition);
-    pCue->setHotCue(hotcue);
+    pCue->setHotCue(hotcueIndex);
     pCue->setLabel();
     pCue->setType(mixxx::CueType::HotCue);
 
     const ColorPalette hotcueColorPalette =
             m_colorPaletteSettings.getHotcueColorPalette();
     if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
-        pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
+        pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcueIndex));
     } else {
         int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
         if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= hotcueColorPalette.size()) {
@@ -816,7 +817,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value) {
         }
     }
 
-    m_pHotcueFocus->set(pControl->getHotcueNumber());
+    m_pHotcueFocus->set(pControl->getHotcueIndex() + 1);
 }
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
@@ -861,7 +862,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
 }
 
 void CueControl::hotcueClear(HotcueControl* pControl, double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -876,7 +877,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
     }
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
-    m_pHotcueFocus->set(Cue::kNoHotCue);
+    m_pHotcueFocus->set(Cue::kNoHotCue + 1);
 }
 
 void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPosition) {
@@ -1764,12 +1765,12 @@ void CueControl::hotcueFocusColorPrev(double value) {
         return;
     }
 
-    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
-    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+    int hotcueIndex = static_cast<int>(m_pHotcueFocus->get()) - 1;
+    if (hotcueIndex < 0 || hotcueIndex >= m_hotcueControls.size()) {
         return;
     }
 
-    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    HotcueControl* pControl = m_hotcueControls.at(hotcueIndex);
     if (!pControl) {
         return;
     }
@@ -1793,12 +1794,12 @@ void CueControl::hotcueFocusColorNext(double value) {
         return;
     }
 
-    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
-    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+    int hotcueIndex = static_cast<int>(m_pHotcueFocus->get()) - 1;
+    if (hotcueIndex < 0 || hotcueIndex >= m_hotcueControls.size()) {
         return;
     }
 
-    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    HotcueControl* pControl = m_hotcueControls.at(hotcueIndex);
     if (!pControl) {
         return;
     }
@@ -1817,88 +1818,96 @@ void CueControl::hotcueFocusColorNext(double value) {
     pCue->setColor(colorPalette.nextColor(*color));
 }
 
-ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
+ConfigKey HotcueControl::keyForControl(const QString& name) {
     ConfigKey key;
     key.group = m_group;
     // Add one to hotcue so that we don't have a hotcue_0
-    key.item = QLatin1String("hotcue_") % QString::number(hotcue+1) % "_" % name;
+    key.item =
+            QStringLiteral("hotcue_") + QString::number(m_hotcueIndex + 1) + QChar('_') + name;
     return key;
 }
 
-HotcueControl::HotcueControl(QString group, int i)
+HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
         : m_group(group),
-          m_iHotcueNumber(i),
-          m_pCue(NULL),
+          m_hotcueIndex(hotcueIndex),
+          m_pCue(nullptr),
           m_bPreviewing(false),
           m_previewingPosition(-1) {
-    m_hotcuePosition = new ControlObject(keyForControl(i, "position"));
-    connect(m_hotcuePosition, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcuePositionChanged,
+    m_hotcuePosition = std::make_unique<ControlObject>(keyForControl(QStringLiteral("position")));
+    connect(m_hotcuePosition.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcuePositionChanged,
             Qt::DirectConnection);
     m_hotcuePosition->set(Cue::kNoPosition);
 
-    m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
+    m_hotcueEnabled = std::make_unique<ControlObject>(keyForControl(QStringLiteral("enabled")));
     m_hotcueEnabled->setReadOnly();
 
     // The rgba value  of the color assigned to this color.
-    m_hotcueColor = new ControlObject(keyForControl(i, "color"));
+    m_hotcueColor = std::make_unique<ControlObject>(keyForControl(QStringLiteral("color")));
     m_hotcueColor->connectValueChangeRequest(
             this,
             &HotcueControl::slotHotcueColorChangeRequest,
             Qt::DirectConnection);
-    connect(m_hotcueColor,
+    connect(m_hotcueColor.get(),
             &ControlObject::valueChanged,
             this,
             &HotcueControl::slotHotcueColorChanged,
             Qt::DirectConnection);
 
-    m_hotcueSet = new ControlPushButton(keyForControl(i, "set"));
-    connect(m_hotcueSet, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueSet,
+    m_hotcueSet = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("set")));
+    connect(m_hotcueSet.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueSet,
             Qt::DirectConnection);
 
-    m_hotcueGoto = new ControlPushButton(keyForControl(i, "goto"));
-    connect(m_hotcueGoto, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueGoto,
+    m_hotcueGoto = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("goto")));
+    connect(m_hotcueGoto.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueGoto,
             Qt::DirectConnection);
 
-    m_hotcueGotoAndPlay = new ControlPushButton(keyForControl(i, "gotoandplay"));
-    connect(m_hotcueGotoAndPlay, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueGotoAndPlay,
+    m_hotcueGotoAndPlay = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("gotoandplay")));
+    connect(m_hotcueGotoAndPlay.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueGotoAndPlay,
             Qt::DirectConnection);
 
-    m_hotcueGotoAndStop = new ControlPushButton(keyForControl(i, "gotoandstop"));
-    connect(m_hotcueGotoAndStop, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueGotoAndStop,
+    m_hotcueGotoAndStop = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("gotoandstop")));
+    connect(m_hotcueGotoAndStop.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueGotoAndStop,
             Qt::DirectConnection);
 
-    m_hotcueActivate = new ControlPushButton(keyForControl(i, "activate"));
-    connect(m_hotcueActivate, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueActivate,
+    m_hotcueActivate = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("activate")));
+    connect(m_hotcueActivate.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueActivate,
             Qt::DirectConnection);
 
-    m_hotcueActivatePreview = new ControlPushButton(keyForControl(i, "activate_preview"));
-    connect(m_hotcueActivatePreview, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueActivatePreview,
+    m_hotcueActivatePreview = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("activate_preview")));
+    connect(m_hotcueActivatePreview.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueActivatePreview,
             Qt::DirectConnection);
 
-    m_hotcueClear = new ControlPushButton(keyForControl(i, "clear"));
-    connect(m_hotcueClear, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueClear,
+    m_hotcueClear = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("clear")));
+    connect(m_hotcueClear.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueClear,
             Qt::DirectConnection);
-}
-
-HotcueControl::~HotcueControl() {
-    delete m_hotcuePosition;
-    delete m_hotcueEnabled;
-    delete m_hotcueColor;
-    delete m_hotcueSet;
-    delete m_hotcueGoto;
-    delete m_hotcueGotoAndPlay;
-    delete m_hotcueGotoAndStop;
-    delete m_hotcueActivate;
-    delete m_hotcueActivatePreview;
-    delete m_hotcueClear;
 }
 
 void HotcueControl::slotHotcueSet(double v) {
