@@ -131,7 +131,8 @@ bool EngineDeck::isActive() {
     return active;
 }
 
-void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {
+void EngineDeck::receiveBuffer(
+        const AudioInput& input, const CSAMPLE* pBuffer, unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     // Skip receiving audio input if passthrough is not active
@@ -143,7 +144,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
     }
 }
 
-void EngineDeck::onInputConfigured(AudioInput input) {
+void EngineDeck::onInputConfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
@@ -153,7 +154,7 @@ void EngineDeck::onInputConfigured(AudioInput input) {
     m_sampleBuffer =  NULL;
 }
 
-void EngineDeck::onInputUnconfigured(AudioInput input) {
+void EngineDeck::onInputUnconfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";

@@ -23,7 +23,7 @@ class SetlogFeature : public BasePlaylistFeature {
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithPrevious();
     void slotGetNewPlaylist();
 
@@ -36,7 +36,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId) override;
     void slotPlaylistContentChanged(QSet<int> playlistIds) override;
-    void slotPlaylistTableRenamed(int playlistId, QString newName) override;
+    void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
 
   private:
     void reloadChildModel(int playlistId);

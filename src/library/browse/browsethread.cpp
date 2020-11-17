@@ -93,9 +93,9 @@ namespace {
 
 class YearItem: public QStandardItem {
 public:
-    explicit YearItem(QString year):
-        QStandardItem(year) {
-    }
+  explicit YearItem(const QString& year)
+          : QStandardItem(year) {
+  }
 
     QVariant data(int role) const {
         switch (role) {

@@ -58,7 +58,7 @@ class DlgControllerLearning : public QDialog,
 
   public slots:
     // Triggered when the user picks a control from the menu.
-    void controlPicked(ConfigKey control);
+    void controlPicked(const ConfigKey& control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
     void comboboxIndexChanged(int index);
@@ -83,7 +83,7 @@ class DlgControllerLearning : public QDialog,
 #endif
 
   private:
-    void loadControl(const ConfigKey& key, QString title, QString description);
+    void loadControl(const ConfigKey& key, const QString& title, QString description);
     void startListening();
     void commitMapping();
     void resetWizard(bool keepCurrentControl = false);

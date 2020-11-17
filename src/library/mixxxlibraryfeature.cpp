@@ -167,7 +167,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(true);
 }
 
-bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
+bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
@@ -177,7 +177,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     }
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
+bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }

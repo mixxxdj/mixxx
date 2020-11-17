@@ -6,7 +6,7 @@ PreviewDeck::PreviewDeck(QObject* pParent,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
-        QString group)
+        const QString& group)
         : BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager, pVisualsManager, defaultOrientation, group, /*defaultMaster*/ false,
                   /*defaultHeadphones*/ true,
                   /*primaryDeck*/ false) {

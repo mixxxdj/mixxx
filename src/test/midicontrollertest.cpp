@@ -22,7 +22,7 @@ class MockMidiController : public MidiController {
     MOCK_METHOD3(sendShortMsg, void(unsigned char status,
                                     unsigned char byte1,
                                     unsigned char byte2));
-    MOCK_METHOD1(send, void(QByteArray data));
+    MOCK_METHOD1(send, void(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
 };
 
@@ -32,7 +32,7 @@ class MidiControllerTest : public MixxxTest {
         m_pController.reset(new MockMidiController(config()));
     }
 
-    void addMapping(MidiInputMapping mapping) {
+    void addMapping(const MidiInputMapping& mapping) {
         m_preset.addInputMapping(mapping.key.key, mapping);
     }
 

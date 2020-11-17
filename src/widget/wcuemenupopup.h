@@ -23,7 +23,7 @@ class WCueMenuPopup : public QWidget {
         delete m_pDeleteCue;
     }
 
-    void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
+    void setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue);
 
     void setColorPalette(const ColorPalette& palette) {
         if (m_pColorPicker != nullptr) {

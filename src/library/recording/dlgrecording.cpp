@@ -139,7 +139,7 @@ void DlgRecording::slotAddToAutoDJReplace() {
     m_pTrackTableView->slotAddToAutoDJReplace();
 }
 
-void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgRecording::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
@@ -178,7 +178,7 @@ void DlgRecording::slotBytesRecorded(int bytes) {
 }
 
 // gets recorded duration and update label
-void DlgRecording::slotDurationRecorded(QString durationRecorded) {
+void DlgRecording::slotDurationRecorded(const QString& durationRecorded) {
     m_durationRecordedStr = durationRecorded;
     refreshLabels();
 }

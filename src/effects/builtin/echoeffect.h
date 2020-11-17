@@ -18,13 +18,13 @@ class EchoGroupState : public EffectState {
     // 40 BPM.
     static constexpr int kMaxDelaySeconds = 3;
 
-    EchoGroupState(const mixxx::EngineParameters bufferParameters)
-           : EffectState(bufferParameters) {
+    EchoGroupState(const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters) {
         audioParametersChanged(bufferParameters);
        clear();
     }
 
-    void audioParametersChanged(const mixxx::EngineParameters bufferParameters) {
+    void audioParametersChanged(const mixxx::EngineParameters& bufferParameters) {
         delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds
                 * bufferParameters.sampleRate() * bufferParameters.channelCount());
     };

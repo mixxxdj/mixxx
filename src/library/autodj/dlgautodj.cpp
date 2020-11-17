@@ -222,7 +222,7 @@ DlgAutoDJ::~DlgAutoDJ() {
 
 void DlgAutoDJ::setupActionButton(QPushButton* pButton,
         void (DlgAutoDJ::*pSlot)(bool),
-        QString fallbackText) {
+        const QString& fallbackText) {
     connect(pButton, &QPushButton::clicked, this, pSlot);
     if (m_bShowButtonText) {
         pButton->setText(fallbackText);
@@ -243,7 +243,7 @@ void DlgAutoDJ::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 

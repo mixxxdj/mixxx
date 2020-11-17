@@ -39,8 +39,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
+    virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
-    virtual void slotPlaylistTableRenamed(int playlistId, QString newName) = 0;
     void slotCreatePlaylist();
 
   protected slots:
@@ -73,7 +73,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
-    int playlistIdFromIndex(QModelIndex index);
+    int playlistIdFromIndex(const QModelIndex& index);
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);

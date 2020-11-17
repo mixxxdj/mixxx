@@ -48,7 +48,7 @@ const double kMinSignal = 75.0 / SAMPLE_MAX;
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
 
-VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, QString group)
+VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& group)
         : VinylControl(pConfig, group),
           m_dVinylPositionOld(0.0),
           m_pWorkBuffer(new short[MAX_BUFFER_LEN]),

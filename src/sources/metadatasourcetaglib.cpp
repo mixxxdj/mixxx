@@ -75,8 +75,7 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
-inline
-QDateTime getMetadataSynchronized(QFileInfo fileInfo) {
+inline QDateTime getMetadataSynchronized(const QFileInfo& fileInfo) {
     return fileInfo.lastModified();
 }
 
