@@ -4,7 +4,7 @@
     <name>Traktor Kontrol S3</name>
     <author>Owen Williams</author>
     <description>HID Mapping for Traktor Kontrol S3</description>
-    <wiki>https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_s3</wiki>
+    <wiki>https://github.com/mixxxdj/mixxx/wiki/Native-Instruments-Traktor-Kontrol-S3</wiki>
     <forums></forums>
     <devices>
       <product protocol="hid" vendor_id="0x17cc" product_id="0x1900" usage_page="0xff01" usage="0x1" interface_number="0x3" />
