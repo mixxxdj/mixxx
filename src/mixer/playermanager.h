@@ -148,19 +148,19 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
         DEBUG_ASSERT(i >= 0);
-        return "[Sampler" + QString::number(i + 1) + ']';
+        return QStringLiteral("[Sampler") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
         DEBUG_ASSERT(i >= 0);
-        return "[Channel" + QString::number(i + 1) + ']';
+        return QStringLiteral("[Channel") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
         DEBUG_ASSERT(i >= 0);
-        return "[PreviewDeck" + QString::number(i + 1) + ']';
+        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith Microphone where i is zero indexed
@@ -170,7 +170,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         // the group [Microphone]. For backwards compatibility we keep it that
         // way.
         if (i > 0) {
-            return "[Microphone" + QString::number(i + 1) + ']';
+            return QStringLiteral("[Microphone") + QString::number(i + 1) + ']';
         } else {
             return QStringLiteral("[Microphone]");
         }
@@ -179,7 +179,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the group for the ith Auxiliary where i is zero indexed
     static QString groupForAuxiliary(int i) {
         DEBUG_ASSERT(i >= 0);
-        return "[Auxiliary" + QString::number(i + 1) + ']';
+        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
     }
 
     static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
