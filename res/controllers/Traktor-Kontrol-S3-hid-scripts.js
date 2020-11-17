@@ -315,13 +315,13 @@ TraktorS3.Deck.prototype.syncHandler = function(field) {
         if (engine.getValue(this.activeChannel, "sync_enabled") === 0) {
             script.triggerControl(this.activeChannel, "beatsync");
             // Start timer to measure how long button is pressed
-            this.syncPressedTimer = engine.beginTimer(300, function() {
+            this.syncPressedTimer = engine.beginTimer(300, TraktorS3.bind(function() {
                 engine.setValue(this.activeChannel, "sync_enabled", 1);
                 // Reset sync button timer state if active
                 if (this.syncPressedTimer !== 0) {
                     this.syncPressedTimer = 0;
                 }
-            }, true);
+            }, this), true);
 
             // Light corresponding LED when button is pressed
             this.colorOutput(1, "sync_enabled");
@@ -703,7 +703,8 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
 };
 
 TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
-    var value = field.value / 4095;
+    // Adapt midi value to rate control range.
+    var value = -1.0 + ((field.value / 4095) * 2.0);
     if (TraktorS3.PitchSliderRelativeMode) {
         if (this.pitchSliderLastValue === -1) {
             this.pitchSliderLastValue = value;
@@ -716,21 +717,24 @@ TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
 
             var relVal;
             if (this.keylockPressed) {
-                relVal = 1.0 - engine.getParameter(this.activeChannel, "pitch_adjust");
+                relVal = 1.0 - engine.getValue(this.activeChannel, "pitch_adjust");
             } else {
-                relVal = engine.getParameter(this.activeChannel, "rate");
+                relVal = engine.getValue(this.activeChannel, "rate");
             }
+            // This can result in values outside -1 to 1, but that is valid for the
+            // rate control. This means the entire swing of the rate slider can be
+            // outside the range of the widget, but that's ok because the slider still
+            // works.
             relVal += value - this.pitchSliderLastValue;
             this.pitchSliderLastValue = value;
-            value = Math.max(0.0, Math.min(1.0, relVal));
 
             if (this.keylockPressed) {
                 // To match the pitch change from adjusting the rate, flip the pitch
                 // adjustment.
-                engine.setParameter(this.activeChannel, "pitch_adjust", 1.0 - value);
+                engine.setValue(this.activeChannel, "pitch_adjust", 1.0 - relVal);
                 this.keyAdjusted = true;
             } else {
-                engine.setParameter(this.activeChannel, "rate", value);
+                engine.setValue(this.activeChannel, "rate", relVal);
             }
         }
         return;
@@ -739,9 +743,9 @@ TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
     if (this.shiftPressed) {
         // To match the pitch change from adjusting the rate, flip the pitch
         // adjustment.
-        engine.setParameter(this.activeChannel, "pitch_adjust", 1.0 - value);
+        engine.setValue(this.activeChannel, "pitch_adjust", 1.0 - value);
     } else {
-        engine.setParameter(this.activeChannel, "rate", value);
+        engine.setValue(this.activeChannel, "rate", value);
     }
 };
 
