@@ -213,34 +213,40 @@
 #LibraryContainer QTableView,
 #LibraryContainer QTreeView {
   color: #d2d2d2;
-  background-color: #1F1F1F;
-  selection-background-color: #006596;
-  selection-color: #D6D6D6;
   border: 1px solid #1A1A1A;
-  gridline-color: red;
-  /* Suppresses that selected sidebar item's branch indicator shows wrong color
-     when out of focus, see lp:880588 */
-  show-decoration-selected: 1;
-}
-#LibraryContainer QTableView {
+  background-color: #1F1F1F;
   alternate-background-color: #1A1A1A;
+/* In selected library rows this sets the color of
+  * shapes in star rating delegate
+  * focus border of Cover Art and Color delegates
+   > See src/library/coverartdelegate.cpp: "option.palette.highlightedText().color();" */
+  selection-color: #D6D6D6;
+  /* background of Color delegate in selected row */
+  selection-background-color: #006596;
+}
+
+/* Selected rows in Tree and Tracks table */
+#LibraryContainer QTableView::item:selected,
+#LibraryContainer QTreeView::item:selected,
+#LibraryBPMButton::item:selected {
+  color: #D6D6D6;
+  background-color: #006596;
+}
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
+}
+/* Use the native focus decoration */
+/* This is for all cells including Played and Location */
+#LibraryContainer QTableView,
+/* This is for the BPM cell */
+#LibraryContainer QTableView QCheckBox:focus {
+  outline: 1px solid #D6D6D6;
 }
 
 #LibraryContainer QTableView:focus,
 #LibraryContainer QTreeView:focus,
 #LibraryContainer QTextBrowser:focus {
   border: 1px solid #FF6600;
-}
-
-/* Colors aren't applied to selected items, define them manually */
-#LibraryContainer QTableView::item:selected,
-#LibraryContainer QTreeView::item:selected,
-#LibraryBPMButton::item:selected,
-#LibraryContainer QTreeView::branch:selected,
-/* This won't style the Preview button */
-#LibraryPreviewButton::item:selected {
-  color: #D6D6D6;
-  background-color: #006596;
 }
 
 /* Table cell in edit mode */
@@ -414,8 +420,10 @@ WSearchLineEdit {
   qproperty-layoutSpacing: 0;
 }
 
+#LibraryContainer QTreeView,
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
 /* Spacing between treeview and preview deck/search bar */
-#LibraryContainer QTreeView {
   margin: 0px;
 }
 
