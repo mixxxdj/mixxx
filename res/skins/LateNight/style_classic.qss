@@ -1999,6 +1999,12 @@ WLibrary,
 #LibraryContainer QTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  qproperty-focusBorderColor: #fff;
+}
 
 #LibraryContainer QTreeView {
   show-decoration-selected: 0;

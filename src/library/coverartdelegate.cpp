@@ -141,7 +141,26 @@ void CoverArtDelegate::paintItem(
             // Cache hit
             pixmap.setDevicePixelRatio(scaleFactor);
             painter->drawPixmap(option.rect.topLeft(), pixmap);
-            return;
         }
+    }
+
+    // Draw a border if the cover art cell has focus
+    if (option.state & QStyle::State_HasFocus) {
+        // This uses a color from the stylesheet:
+        // WTrackTableView {
+        //   qproperty-focusBorderColor: red;
+        // }
+        QPen borderPen(
+                m_pFocusBorderColor,
+                1,
+                Qt::SolidLine,
+                Qt::SquareCap);
+        painter->setPen(borderPen);
+        painter->setBrush(QBrush(Qt::transparent));
+        painter->drawRect(
+                option.rect.left(),
+                option.rect.top(),
+                option.rect.width() - 1,
+                option.rect.height() - 1);
     }
 }

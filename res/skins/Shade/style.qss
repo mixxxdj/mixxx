@@ -486,6 +486,12 @@ QTextBrowser {
 #LibraryContainer QTableView QCheckBox:focus {
   outline: 1px solid #c9c9c9;
 }
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  qproperty-focusBorderColor: #c9c9c9;
+}
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
