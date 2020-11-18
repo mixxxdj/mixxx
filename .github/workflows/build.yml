@@ -100,7 +100,6 @@ jobs:
     name: macOS 10.15
     runs-on: macos-10.15
     env:
-      MIXXX_ENVNAME: 2.3-1db6c06-sdk10.15-macosminimum10.12-x86_64
       # macOS 10.12 is the minimum requirement for Qt 5.12.
       # Check the minimum requirement when updating to a build environment
       # with an updated Qt version.
@@ -119,13 +118,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ccache-${{ github.head_ref }}
           ${{ runner.os }}-ccache
+    - name: read build environment file
+      id: read_build_environment_file
+      run: |
+        read -r MIXXX_ENVNAME < cmake/macos_build_environment_name
+        echo "::set-output name=buildenv_name::$MIXXX_ENVNAME"
     - name: macOS build environment cache
       uses: actions/cache@v2
       env:
         cache-name: macOS build environment
       with:
         path: /Users/runner/buildenv
-        key: macOS-build-environment-${{ env.MIXXX_ENVNAME }}
+        key: macOS-build-environment-${{ steps.read_build_environment_file.outputs.buildenv_name }}
     - name: import code signing identity
       env:
         MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
@@ -178,6 +182,7 @@ jobs:
         ccache -s
       env:
         CMAKEFLAGS_MACOS: -DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON
+        MIXXX_ENVNAME: ${{ steps.read_build_environment_file.outputs.buildenv_name }}
     - name: package app bundle
       working-directory: cmake_build
       run: |
