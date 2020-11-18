@@ -52,6 +52,8 @@ jobs:
     - name: Set up cmake
       uses: jwlawson/actions-setup-cmake@v1.4
       with:
+        # This should always match the mininum required version in
+        # our CMakeLists.txt
         cmake-version: '3.13.x'
     - name: Create build directory
       run: mkdir cmake_build
