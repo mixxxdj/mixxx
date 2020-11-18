@@ -571,7 +571,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
     // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
     QSet<QString> prev_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -1101,9 +1101,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     if (pTrack) {
         QString trackInfo = pTrack->getInfo();
         if (!trackInfo.isEmpty()) {
-            appTitle = QString("%1 | %2")
-                    .arg(trackInfo)
-                    .arg(appTitle);
+            appTitle = QString("%1 | %2").arg(trackInfo, appTitle);
         }
     }
     this->setWindowTitle(appTitle);

@@ -47,8 +47,7 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
 // override
 void WWidgetStack::Init() {
     WBaseWidget::Init();
-    connect(this, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentPageChanged(int)));
+    connect(this, &WWidgetStack::currentChanged, this, &WWidgetStack::onCurrentPageChanged);
 }
 
 QSize WWidgetStack::sizeHint() const {

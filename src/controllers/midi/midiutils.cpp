@@ -129,9 +129,9 @@ QString MidiUtils::formatSysexMessage(const QString& controllerName, const QByte
     } else {
       msg2 = QString("t:%1").arg(timestamp.formatMillisWithUnit());
     }
-    QString message = QString("%1: %2 %3 byte sysex: [")
-            .arg(controllerName).arg(msg2)
-            .arg(data.size());
+    QString message =
+            QString("%1: %2 %3 byte sysex: [")
+                    .arg(controllerName, msg2, QString::number(data.size()));
     for (int i = 0; i < data.size(); ++i) {
         message += QString("%1%2").arg(
             QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),

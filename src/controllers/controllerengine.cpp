@@ -283,8 +283,10 @@ bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileI
 
     m_lastScriptFiles = scripts;
 
-    connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
-            this, SLOT(scriptHasChanged(QString)));
+    connect(&m_scriptWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerEngine::scriptHasChanged);
 
     bool success = result && m_scriptErrors.isEmpty();
     if (!success) {
@@ -301,8 +303,10 @@ void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
     qDebug() << "ControllerEngine: Reloading Scripts";
     ControllerPresetPointer pPreset = m_pController->getPreset();
 
-    disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
-               this, SLOT(scriptHasChanged(QString)));
+    disconnect(&m_scriptWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerEngine::scriptHasChanged);
 
     gracefulShutdown();
     uninitializeScriptEngine();
@@ -627,8 +631,10 @@ void ControllerEngine::scriptErrorDialog(
 
     if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
         // Enable custom handling of the dialog buttons
-        connect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
-                this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
+        connect(ErrorDialogHandler::instance(),
+                &ErrorDialogHandler::stdButtonClicked,
+                this,
+                &ControllerEngine::errorDialogButton);
     }
 }
 
@@ -642,9 +648,9 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
 
     // Something was clicked, so disable this signal now
     disconnect(ErrorDialogHandler::instance(),
-               SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
-               this,
-               SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
+            &ErrorDialogHandler::stdButtonClicked,
+            this,
+            &ControllerEngine::errorDialogButton);
 
     if (button == QMessageBox::Retry) {
         emit resetController();

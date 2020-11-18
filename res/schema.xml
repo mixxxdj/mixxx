@@ -472,7 +472,7 @@ METADATA
     <sql>
       <!-- No Color becomes Orange (not in default palette) -->
       UPDATE cues SET color=0xFF8C00 WHERE color=0;
-      <!-- Mixx Hotcue Color Palette (also defined in src/util/color/colorpalette.h) -->
+      <!-- Mixxx Hotcue Color Palette (also defined in src/util/color/colorpalette.h) -->
       <!-- Red -->
       UPDATE cues SET color=0xC50A08 WHERE color=1;
       <!-- Green -->

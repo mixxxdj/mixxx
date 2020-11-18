@@ -1035,6 +1035,8 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
+    # needed for clcache
+    target_compile_options(mixxx-lib PUBLIC /c)
     if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
@@ -1072,7 +1074,7 @@ if (APPLE)
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
-    set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
+    set(MACOS_BUNDLE_MINOSVERSION "10.12.0")
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
@@ -1543,8 +1545,8 @@ if(KEYFINDER)
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
     ExternalProject_Add(libKeyFinder
-      URL "https://github.com/ibsh/libKeyFinder/archive/v2.2.2.zip"
-      URL_HASH SHA256=f04ff63c9710d969e79b71bde18abd720e886f537951a1045cc50cb497a72492
+      URL "https://github.com/mixxxdj/libKeyFinder/archive/v2.2.3.zip"
+      URL_HASH SHA256=56887e7b51834223d4264f4ea9acf16f0b6a0c706c218478afbaf89ad1f9c6ea
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
@@ -1922,9 +1924,8 @@ else()
 endif()
 
 # TagLib
-find_package(Taglib REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${TAGLIB_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
+find_package(TagLib REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
 endif()
@@ -2327,6 +2328,10 @@ if(HID)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
     elseif(APPLE)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
+        find_library(APPKIT_LIBRARY AppKit REQUIRED)
+        target_link_libraries(mixxx-lib PUBLIC
+          ${APPKIT_LIBRARY}
+        )
     elseif(UNIX)
       if(NOT LibUSB_FOUND)
         message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")

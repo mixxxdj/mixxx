@@ -855,8 +855,6 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 beats << (sampleRateKhz * static_cast<double>(time));
             }
 
-            QHash<QString, QString> extraVersionInfo;
-
             auto pBeats = new mixxx::BeatMap(*track, static_cast<SINT>(sampleRate), beats);
             pBeats->setSubVersion(mixxx::rekordboxconstants::beatsSubversion);
             track->setBeats(mixxx::BeatsPointer(pBeats));
@@ -1138,7 +1136,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     int timingOffset = 0;
 
-    if (location.toLower().endsWith(".mp3")) {
+    if (location.endsWith(".mp3", Qt::CaseInsensitive)) {
         int timingShiftCase = mp3guessenc_timing_shift_case(location.toStdString().c_str());
 
         qDebug() << "Timing shift case:" << timingShiftCase << "for MP3 file:" << location;
@@ -1271,8 +1269,14 @@ RekordboxFeature::RekordboxFeature(
     createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
     transaction.commit();
 
-    connect(&m_devicesFutureWatcher, SIGNAL(finished()), this, SLOT(onRekordboxDevicesFound()));
-    connect(&m_tracksFutureWatcher, SIGNAL(finished()), this, SLOT(onTracksFound()));
+    connect(&m_devicesFutureWatcher,
+            &QFutureWatcher<QList<TreeItem*>>::finished,
+            this,
+            &RekordboxFeature::onRekordboxDevicesFound);
+    connect(&m_tracksFutureWatcher,
+            &QFutureWatcher<QString>::finished,
+            this,
+            &RekordboxFeature::onTracksFound);
     // initialize the model
     m_childModel.setRootItem(TreeItem::newRoot(this));
 }
@@ -1298,7 +1302,7 @@ void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)), this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
     libraryWidget->registerView("REKORDBOXHOME", edit);
 }
 
@@ -1335,11 +1339,15 @@ TreeItemModel* RekordboxFeature::getChildModel() {
 QString RekordboxFeature::formatRootViewHtml() const {
     QString title = tr("Rekordbox");
     QString summary = tr(
-            "Reads databases for Pioneer CDJ / XDJ players. <br/>"
-            "The database has to be exported to a USB or SD device <br/>"
-            "with a FAT or HFS file system using the Rekordbox Export mode. <br/>"
-            "Not supported are databases that have been moved to an external device via <br/>"
-            "Preferences > Advanced > Database management. <br/>"
+            "Reads databases exported for Pioneer CDJ / XDJ players using "
+            "the Rekordbox Export mode.<br/>"
+            "Rekordbox can only export to USB or SD devices with a FAT or "
+            "HFS file system.<br/>"
+            "Mixxx can read a database from any device that contains the "
+            "database folders (<tt>PIONEER</tt> and <tt>Contents</tt>).<br/>"
+            "Not supported are Rekordbox databases that have been moved to "
+            "an external device via<br/>"
+            "<i>Preferences > Advanced > Database management</i>.<br/>"
             "<br/>"
             "The following data is read:");
 
