@@ -467,7 +467,7 @@ DJ505.Deck = function(deckNumbers, offset) {
      *
      * TODO: Add proper bar support for the LED indicators
      *
-     * Mixx currently does not support bar detection, so we don't know which
+     * Mixxx currently does not support bar detection, so we don't know which
      * of the 4 beats in a we are on. This has been worked around by counting
      * beats manually, but this is error prone and does not support moving
      * backwards in a track, has problems with loops, does not detect hotcue

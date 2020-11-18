@@ -150,6 +150,7 @@ QAbstractScrollArea::corner {
 #WaveformsFrame,
 #OverviewBox,
 #OverviewBoxMini,
+#KeyText,
 WSearchLineEdit,
 WCueMenuPopup #CueLabelEdit {
   border-top: 1px solid #0d0d0d;
@@ -182,12 +183,10 @@ WSearchLineEdit {
   #OverviewBoxMini[highlight="1"] {
     background-color: #151515;
   }
-  WBeatSpinBox[highlight="0"] {
-    background-color: #171719;
-    }
-    WBeatSpinBox[highlight="1"] {
-      background-color: #121213;
-    }
+  #KeyText {
+    border-width: 1px 0px 1px 0px;
+  }
+
   #KeyText,
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
@@ -196,8 +195,7 @@ WSearchLineEdit {
   /* Prevent cut-off or shifted stars on macOS */
   WStarRating {
     background-color: #19191a;
-    }
-    #KeyText,
+  }
     #DeckSettingsContainer,
     #DeckSettingsContainerCompact,
     #SamplerSettingsContainer {
@@ -1252,7 +1250,8 @@ WEffectSelector,
     color: #766b65;
   }
 
-  WBeatSpinBox, #spinBoxTransition {
+  WBeatSpinBox,
+  #spinBoxTransition {
     color: #a7998b;
   }
 
@@ -1566,7 +1565,7 @@ WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#PlaySampler[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
-/* Beatsize up/down buttons */
+WBeatSpinBox,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button {
   background-color: #121213;
@@ -2435,12 +2434,6 @@ WColorPicker QPushButton[checked="true"] {
 }
 
 #LibraryContainer {
-  /* make a smooth transition from toolbar at the bottom to
-    darker skin background at the top.
-    Splitter handles should be translucent for this to work.
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #080808,
-    stop:1 #1e1e1e); */
 }
 
 #LibraryContainer QTableView,
@@ -2654,7 +2647,6 @@ WSearchLineEdit {
     background-color: #161617;
     color: #161617;
   }
-  /* Clear button: see /skins/default.qss */
 
 /************ splitters ***********************/
 /* HorizontalSplitter (the splitter itself is horizontal)

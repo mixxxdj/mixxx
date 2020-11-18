@@ -25,8 +25,10 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this, [this, presetsPath] { slotOpenLocalFile(presetsPath); });
 
     // Connections
-    connect(m_pControllerManager, SIGNAL(devicesChanged()),
-            this, SLOT(rescanControllers()));
+    connect(m_pControllerManager,
+            &ControllerManager::devicesChanged,
+            this,
+            &DlgPrefControllers::rescanControllers);
 }
 
 DlgPrefControllers::~DlgPrefControllers() {
@@ -111,10 +113,14 @@ void DlgPrefControllers::setupControllerWidgets() {
     foreach (Controller* pController, controllerList) {
         DlgPrefController* controllerDlg = new DlgPrefController(
             this, pController, m_pControllerManager, m_pConfig);
-        connect(controllerDlg, SIGNAL(mappingStarted()),
-                m_pDlgPreferences, SLOT(hide()));
-        connect(controllerDlg, SIGNAL(mappingEnded()),
-                m_pDlgPreferences, SLOT(show()));
+        connect(controllerDlg,
+                &DlgPrefController::mappingStarted,
+                m_pDlgPreferences,
+                &DlgPreferences::hide);
+        connect(controllerDlg,
+                &DlgPrefController::mappingEnded,
+                m_pDlgPreferences,
+                &DlgPreferences::show);
 
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(controllerDlg);
