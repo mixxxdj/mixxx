@@ -58,7 +58,7 @@ QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
 SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
         const QString& supportedFileExtension) const {
     if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
-            supportedFileExtension == QStringLiteral("wav")) {
+            supportedFileExtension == QLatin1String("wav")) {
         // Default decoder for AIFF and WAV
         return SoundSourceProviderPriority::Default;
     } else {
