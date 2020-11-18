@@ -62,12 +62,15 @@ jobs:
         string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
         message("::set-output name=timestamp::${current_date}")
     - name: Set up ccache cache
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v2
+      env:
+        cache-name: ccache
       with:
         path: .cache/ccache
-        key: ${{ github.job }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
+        key: ${{ env.cache-name }}-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-            ${{ github.job }}-ccache-
+          ${{ env.cache-name }}-${{ runner.os }}-${{ github.head_ref }}
+          ${{ env.cache-name }}-${{ runner.os }}
     - name: Configure
       # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
       run: |
