@@ -57,14 +57,12 @@ jobs:
       run: mkdir cmake_build
     - name: Set up ccache cache
       uses: actions/cache@v2
-      env:
-        cache-name: ccache
       with:
-        path: .cache/ccache
-        key: ${{ env.cache-name }}-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_number }}
+        path: ~/.ccache
+        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ env.cache-name }}-${{ runner.os }}-${{ github.head_ref }}
-          ${{ env.cache-name }}-${{ runner.os }}
+          ${{ runner.os }}-ccache-${{ github.head_ref }}
+          ${{ runner.os }}-ccache
     - name: Configure
       # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
       run: |
