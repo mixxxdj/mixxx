@@ -32,12 +32,13 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibraryTableModel(nullptr),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
-    QStringList columns = TrackSchema::GetColumnNames();
-    QStringList columnsWithTables;
+    QStringList columns = DEFAULT_COLUMNS;
+    QStringList qualifiedTableColumns;
     qDebug() << "THIS PART----------------------";
     for (const auto& col : columns) {
-        qDebug() << QString("%1.%2").arg(TrackSchema::TableForColumn(col), col);
-        columnsWithTables.append(QString("%1.%2").arg(TrackSchema::TableForColumn(col), col));
+        qDebug() << (mixxx::TrackSchema::tableForColumn(col) + QLatin1Char('.') + col);
+        qualifiedTableColumns.append(mixxx::TrackSchema::tableForColumn(col) +
+                QLatin1Char('.') + col);
     }
 
     QSqlQuery query(m_pTrackCollection->database());
@@ -46,7 +47,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
             "SELECT %2 FROM library "
             "INNER JOIN track_locations ON library.location = track_locations.id")
-                                    .arg(tableName, columnsWithTables.join(","));
+                                  .arg(tableName, qualifiedTableColumns.join(","));
     qDebug() << "and well" << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
