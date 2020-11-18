@@ -18,13 +18,13 @@ void ColorDelegate::paintItem(
         const QModelIndex& index) const {
     const auto color = mixxx::RgbColor::fromQVariant(index.data());
 
-    if (!color) {
+    if (color) {
+        painter->fillRect(option.rect, mixxx::RgbColor::toQColor(color));
+    } else {
         // Filter out track color that is hidden
         if (option.state & QStyle::State_Selected) {
             painter->fillRect(option.rect, option.palette.highlight());
         }
-    } else {
-        painter->fillRect(option.rect, mixxx::RgbColor::toQColor(color));
     }
 
     // Draw a border if the color cell has focus
