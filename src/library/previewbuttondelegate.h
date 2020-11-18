@@ -74,7 +74,7 @@ class PreviewButtonDelegate : public TableItemDelegate {
 
   private:
     QTableView* parentTableView() const {
-        return static_cast<QTableView*>(parent());
+        return qobject_cast<QTableView*>(parent());
     }
     bool isPreviewDeckPlaying() const;
     bool isTrackLoadedInPreviewDeck(
