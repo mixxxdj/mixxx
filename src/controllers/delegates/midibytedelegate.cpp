@@ -30,7 +30,7 @@ QString MidiByteDelegate::displayText(const QVariant& value,
 void MidiByteDelegate::setEditorData(QWidget* editor,
                                      const QModelIndex& index) const {
     int control = index.data(Qt::EditRole).toInt();
-    HexSpinBox* pSpinBox = dynamic_cast<HexSpinBox*>(editor);
+    HexSpinBox* pSpinBox = qobject_cast<HexSpinBox*>(editor);
     if (pSpinBox == NULL) {
         return;
     }
@@ -40,7 +40,7 @@ void MidiByteDelegate::setEditorData(QWidget* editor,
 void MidiByteDelegate::setModelData(QWidget* editor,
                                     QAbstractItemModel* model,
                                     const QModelIndex& index) const {
-    HexSpinBox* pSpinBox = dynamic_cast<HexSpinBox*>(editor);
+    HexSpinBox* pSpinBox = qobject_cast<HexSpinBox*>(editor);
     if (pSpinBox == NULL) {
         return;
     }
