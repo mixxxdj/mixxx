@@ -38,8 +38,9 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, UserSettingsPointer pConfig)
     ui->graphic->installEventFilter(this);
 
     // load the user configured setting as default
-    m_notation = static_cast<KeyUtils::KeyNotation>(ControlObject::get(
+    const int notation = static_cast<int>(ControlObject::get(
             ConfigKey("[Library]", "key_notation")));
+    m_notation = static_cast<KeyUtils::KeyNotation>(notation);
     // Select a valid display and update
     switchDisplay(0);
 }
