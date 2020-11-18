@@ -100,10 +100,6 @@ jobs:
     name: macOS 10.15
     runs-on: macos-10.15
     env:
-      # macOS 10.12 is the minimum requirement for Qt 5.12.
-      # Check the minimum requirement when updating to a build environment
-      # with an updated Qt version.
-      MACOSX_DEPLOYMENT_TARGET: 10.12
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
     steps:
     - name: clone Git repository
@@ -153,6 +149,13 @@ jobs:
         fi
     - name: build
       run: |
+        if [[ $MIXXX_ENVNAME =~ .*macosminimum([0-9]*\.[0-9]*).* ]]; then
+          export MACOSX_DEPLOYMENT_TARGET=${BASH_REMATCH[1]}
+        else
+          echo "Build environment did not match expected pattern. Check cmake/macos_build_environment_name file."
+          exit
+        fi
+
         mkdir -p /Users/runner/buildenv
         export MIXXX_ENVPATH="/Users/runner/buildenv/$MIXXX_ENVNAME"
         if [ ! -d "$MIXXX_ENVPATH" ]; then
