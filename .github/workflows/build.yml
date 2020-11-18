@@ -95,3 +95,18 @@ jobs:
     - name: Build
       run: cmake --build . -j $(nproc)
       working-directory: cmake_build
+    - name: Test
+      run: ctest --timeout 45
+      working-directory: cmake_build
+      env:
+        GTEST_COLOR: 1
+        CTEST_OUTPUT_ON_FAILURE: 1
+        QT_QPA_PLATFORM: offscreen
+    - name: Package
+      run: cpack -G DEB
+      working-directory: cmake_build
+    - name: Deploy artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Ubuntu DEB
+        path: cmake_build/*.deb
