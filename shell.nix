@@ -184,7 +184,7 @@ let
     if [ -z "$QT_PLUGIN_PATH" ]; then
       export QT_PLUGIN_PATH=${pkgs.qt5.qtbase}/${pkgs.qt5.qtbase.qtPluginPrefix}
     fi
-    ./mixxx-test
+    ./mixxx-test "$@"
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then
