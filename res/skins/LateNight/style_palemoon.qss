@@ -1520,7 +1520,7 @@ WEffectSelector,
 #BeatgridControls WPushButton, #BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 #PlayDeck, #PlayIndicator, #PlayBg,
-#CueDeck, #PlayCueMini WPushButton,
+#CueDeck,
 #LoopActivate,
 #RateControls WPushButton,
 #SyncDeck, #SyncSampler,
@@ -1556,7 +1556,7 @@ WPushButton#CrossfaderButton,
 
 /* top-level buttons in transport, fx, micaux and others */
 #DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
-#PlayBg, #PlayCueMini WPushButton[displayValue="0"],
+#PlayBg,
 #CueDeck[displayValue="0"], #LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
@@ -1626,7 +1626,6 @@ WBeatSpinBox::down-button {
 
 /* Orange for 'active' status */
 WPushButton#PlayDeck[displayValue="1"],
-WPushButton#PlayDeckMini[displayValue="1"],
 WPushButton#PlaySampler[displayValue="1"],
 WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
@@ -1804,7 +1803,6 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 /* Special flat/invisible buttons */
 #BeatgridControlsToggle,
 WPushButton#PlayDeck[displayValue="0"],
-WPushButton#PlayDeckMini[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
 WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
@@ -1829,17 +1827,17 @@ WPushButton#RecButton[displayValue="1"],
     image: url(skin:/palemoon/buttons/btn__play_deck_active.svg) no-repeat center center;
   }
 
-#PlayDeckMini[value="0"] {
+#PlayDeckMini[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__play_deck_mini.svg) no-repeat center center;
   }
-  #PlayDeckMini[value="1"] {
+  #PlayDeckMini[displayValue="1"] {
     image: url(skin:/palemoon/buttons/btn__pause_deck_mini.svg) no-repeat center center;
   }
-#PlaySampler[value="0"],
+#PlaySampler[displayValue="0"],
 #PlayPreview[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__play_sampler.svg) no-repeat center center;
   }
-  #PlaySampler[value="1"],
+  #PlaySampler[displayValue="1"],
   #PlayPreview[displayValue="1"] {
     image: url(skin:/palemoon/buttons/btn__pause_sampler.svg) no-repeat center center;
   }

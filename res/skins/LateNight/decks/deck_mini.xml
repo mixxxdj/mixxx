@@ -60,7 +60,7 @@
                     <Layout>stacked</Layout>
                     <Size>42f,26f</Size>
                     <Children>
-                      <Template src="skin:/controls/button_2state_right_display.xml">
+                      <Template src="skin:/controls/button_2state_right.xml">
                         <SetVariable name="TooltipId">play_cue_default</SetVariable>
                         <SetVariable name="ObjectName">PlayDeckMini</SetVariable>
                         <SetVariable name="Size">42f,26f</SetVariable>

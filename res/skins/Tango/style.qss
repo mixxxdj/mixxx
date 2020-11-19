@@ -896,12 +896,11 @@ WLabel#TrackComment {
  #######  Play, Cue and HotCue buttons  #########################
 ##############################################################*/
 
-/* Actual Play button. Receives click events, turns red
-  when playing regularly, not from Cue or HotCue */
-#PlayCue[displayValue="0"],
-#PlayCue[displayValue="0"]:hover {
+/* Actual Play button. Chanegs the play/pause icon only */
+#PlayCue {
   background-color: transparent;
-  }
+  border-color: transparent;
+}
 
 #SamplerPlayCue[displayValue="0"] {
   /* different than decks' Play button, this has some soft shadow to distinguish
@@ -924,7 +923,6 @@ WLabel#TrackComment {
   image: url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
 }
 
-#PlayCue[displayValue="0"]:hover,
 #SamplerPlayCue[displayValue="0"]:hover,
 #MicTalkover[displayValue="0"]:hover,
 #AuxEnable[displayValue="0"]:hover,
@@ -935,11 +933,9 @@ WLabel#TrackComment {
     background-color: rgba(255, 128, 0, 210);
   }
 
-#PlayCue[displayValue="1"],
 #SamplerPlayCue[displayValue="1"] { /*
   image: url(skin:/buttons/btn_pause.svg) no-repeat center center;  */
 }
-#PlayCue[value="1"],
 #PlayIndicator[value="1"],
 #SamplerPlayCue[displayValue="1"],
 #MicTalkover[displayValue="1"],
@@ -949,7 +945,6 @@ WLabel#TrackComment {
   background-color: #ff8000;
   border: 1px solid #ff9900;
 }
-  #PlayCue[displayValue="1"]:hover,
   #SamplerPlayCue[displayValue="1"]:hover,
   #MicTalkover[displayValue="1"]:hover,
   #AuxEnable[displayValue="1"]:hover {
