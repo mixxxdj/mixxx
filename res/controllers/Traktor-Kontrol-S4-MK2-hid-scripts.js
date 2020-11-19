@@ -182,7 +182,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("[EffectRack1_EffectUnit2]","group_[Channel4]_enable", 0x10, "B", 0x10);
   MessageShort.addControl("[Channel4]", "pregain_set_default", 0x11, "B", 0x80);
 
-  MessageShort.addControl("[Playlist]", "LoadSelectedIntoFirstStopped", 0x13, "B", 0x04);
+  MessageShort.addControl("[Library]", "GoToItem",  0x13, "B", 0x04);
   MessageShort.addControl("[PreviewDeck1]", "!previewdeck", 0x0F, "B", 0x01);
   MessageShort.addControl("[Recording]", "toggle_recording", 0x0F, "B", 0x04);
   MessageShort.addControl("[Master]", "!play_shifter", 0x0F, "B", 0x06);
