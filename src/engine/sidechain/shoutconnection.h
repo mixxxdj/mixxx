@@ -74,7 +74,7 @@ class ShoutConnection
     }
 
     void setStatus(int newState) {
-        return m_pProfile->setConnectionStatus(newState);
+        m_pProfile->setConnectionStatus(newState);
     }
     int getStatus() {
         return m_pProfile->connectionStatus();

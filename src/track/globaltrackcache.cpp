@@ -147,7 +147,7 @@ void GlobalTrackCacheLocker::relocateCachedTracks(
 
 void GlobalTrackCacheLocker::purgeTrackId(const TrackId& trackId) {
     DEBUG_ASSERT(m_pInstance);
-    return m_pInstance->purgeTrackId(trackId);
+    m_pInstance->purgeTrackId(trackId);
 }
 
 void GlobalTrackCacheLocker::deactivateCache() const {
