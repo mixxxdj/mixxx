@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.2.4+">
+  <info>
+    <name>Behringer BCR2000</name>
+    <author>Christian</author>
+    <description>Mixxx controller preset for a Behringer B-Control BCR2000 controller.</description>
+  </info>
+  <controller id="BCR2000">
+    <scriptfiles>
+      <file filename="lodash.mixxx.js"/>
+      <file filename="midi-components-0.0.js"/>
+      <file filename="midi-components-extension.js" />
+      <file filename="Behringer-BCR2000-core-scripts.js" functionprefix="BCR2000" />
+      <file filename="Behringer-BCR2000-preset-scripts.js" />
+      <file filename="Behringer-BCR2000-configuration-scripts.js" />
+    </scriptfiles>
+    <controls>
+
+      <!-- Deck 1 -->
+      <control>
+        <description>Pushbutton G1.1 Button</description>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.1 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.2 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.3 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.4 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C1</description>
+        <status>0xB0</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C2</description>
+        <status>0xB0</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C3</description>
+        <status>0xB0</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C4</description>
+        <status>0xB0</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+
+      <!-- Deck 2 -->
+      <control>
+        <description>Pushbutton G1.5 Button</description>
+        <status>0xB0</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.5 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.6 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.7 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G1.8 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C5</description>
+        <status>0xB0</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C6</description>
+        <status>0xB0</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C7</description>
+        <status>0xB0</status>
+        <midino>0x47</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R1C8</description>
+        <status>0xB0</status>
+        <midino>0x48</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+
+      <!-- Effect Unit 1 -->
+      <control>
+        <description>Button R2C1</description>
+        <status>0xB0</status>
+        <midino>0x49</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R2C2</description>
+        <status>0xB0</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R2C3</description>
+        <status>0xB0</status>
+        <midino>0x4B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R2C4</description>
+        <status>0xB0</status>
+        <midino>0x4C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C1</description>
+        <status>0xB0</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C2</description>
+        <status>0xB0</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C3</description>
+        <status>0xB0</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C4</description>
+        <status>0xB0</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+
+      <!-- Effect Unit 2 -->
+      <control>
+        <description>Button R2C5</description>
+        <status>0xB0</status>
+        <midino>0x4D</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R2C6</description>
+        <status>0xB0</status>
+        <midino>0x4E</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R2C7</description>
+        <status>0xB0</status>
+        <midino>0x4F</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button R2C8</description>
+        <status>0xB0</status>
+        <midino>0x50</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C5</description>
+        <status>0xB0</status>
+        <midino>0x55</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C6</description>
+        <status>0xB0</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C7</description>
+        <status>0xB0</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Encoder R1C8</description>
+        <status>0xB0</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+
+      <!-- Effect Assignment Buttons -->
+      <control>
+        <description>Button Box Top Left</description>
+        <status>0xB0</status>
+        <midino>0x69</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button Box Top Right</description>
+        <status>0xB0</status>
+        <midino>0x6A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button Box Bottom Left</description>
+        <status>0xB0</status>
+        <midino>0x6B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Button Box Bottom Right</description>
+        <status>0xB0</status>
+        <midino>0x6C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+
+    </controls>
+  </controller>
+</MixxxControllerPreset>
