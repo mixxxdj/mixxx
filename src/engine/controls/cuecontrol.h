@@ -200,6 +200,8 @@ class CueControl : public EngineControl {
     double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
     void seekOnLoad(double seekOnLoadPosition);
+    void setHotcueFocusIndex(int hotcueIndex);
+    int getHotcueFocusIndex() const;
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;

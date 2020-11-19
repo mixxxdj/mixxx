@@ -44,6 +44,14 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
     return mixxx::RgbColor::optional(colorCode);
 }
 
+inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
+    return hotcueIndex + 1;
+}
+
+inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
+    return hotcueNumber - 1;
+}
+
 } // namespace
 
 CueControl::CueControl(QString group,
@@ -223,7 +231,7 @@ CueControl::CueControl(QString group,
     m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
 
     m_pHotcueFocus = new ControlObject(ConfigKey(group, "hotcue_focus"));
-    m_pHotcueFocus->set(Cue::kNoHotCue + 1);
+    setHotcueFocusIndex(Cue::kNoHotCue);
 
     m_pHotcueFocusColorPrev = new ControlObject(ConfigKey(group, "hotcue_focus_color_prev"));
     connect(m_pHotcueFocusColorPrev,
@@ -358,7 +366,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(Cue::kNoPosition);
         m_pOutroEndEnabled->forceSet(0.0);
-        m_pHotcueFocus->set(Cue::kNoHotCue + 1);
+        setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
         m_usedSeekOnLoadPosition.setValue(kDefaultLoadPosition);
     }
@@ -817,7 +825,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value) {
         }
     }
 
-    m_pHotcueFocus->set(pControl->getHotcueIndex() + 1);
+    setHotcueFocusIndex(pControl->getHotcueIndex());
 }
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
@@ -877,7 +885,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
     }
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
-    m_pHotcueFocus->set(Cue::kNoHotCue + 1);
+    setHotcueFocusIndex(Cue::kNoHotCue);
 }
 
 void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPosition) {
@@ -1765,7 +1773,7 @@ void CueControl::hotcueFocusColorPrev(double value) {
         return;
     }
 
-    int hotcueIndex = static_cast<int>(m_pHotcueFocus->get()) - 1;
+    int hotcueIndex = getHotcueFocusIndex();
     if (hotcueIndex < 0 || hotcueIndex >= m_hotcueControls.size()) {
         return;
     }
@@ -1794,7 +1802,7 @@ void CueControl::hotcueFocusColorNext(double value) {
         return;
     }
 
-    int hotcueIndex = static_cast<int>(m_pHotcueFocus->get()) - 1;
+    int hotcueIndex = getHotcueFocusIndex();
     if (hotcueIndex < 0 || hotcueIndex >= m_hotcueControls.size()) {
         return;
     }
@@ -1818,12 +1826,21 @@ void CueControl::hotcueFocusColorNext(double value) {
     pCue->setColor(colorPalette.nextColor(*color));
 }
 
+void CueControl::setHotcueFocusIndex(int hotcueIndex) {
+    m_pHotcueFocus->set(hotcueIndexToHotcueNumber(hotcueIndex));
+}
+
+int CueControl::getHotcueFocusIndex() const {
+    return hotcueNumberToHotcueIndex(static_cast<int>(m_pHotcueFocus->get()));
+}
+
 ConfigKey HotcueControl::keyForControl(const QString& name) {
     ConfigKey key;
     key.group = m_group;
     // Add one to hotcue so that we don't have a hotcue_0
-    key.item =
-            QStringLiteral("hotcue_") + QString::number(m_hotcueIndex + 1) + QChar('_') + name;
+    key.item = QStringLiteral("hotcue_") +
+            QString::number(hotcueIndexToHotcueNumber(m_hotcueIndex)) +
+            QChar('_') + name;
     return key;
 }
 
