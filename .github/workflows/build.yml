@@ -57,6 +57,7 @@ jobs:
           protobuf-compiler \
           qt5-default \
           qt5keychain-dev \
+          qtdeclarative5-dev \
           qtscript5-dev \
     - name: Set up cmake
       uses: jwlawson/actions-setup-cmake@v1.4
