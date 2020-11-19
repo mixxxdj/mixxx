@@ -35,7 +35,7 @@
  */
 
 /* Globally available objects are declared as variables to avoid linter errors */
-var components = components, BCR2000 = BCR2000;
+var BCR2000 = BCR2000;
 
 BCR2000.userConfig = function() {
 

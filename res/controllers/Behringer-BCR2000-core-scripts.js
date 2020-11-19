@@ -2,9 +2,6 @@
  * Core functions for the mapping of a Behringer B-Control BCR2000 controller.
  */
 
-/* Globally available objects are declared as variables to avoid linter errors */
-var components = components, _ = _;
-
 /* BCR2000 is a ComponentContainer to be used as target for (un)shift operations */
 var BCR2000 = new components.ComponentContainer();
 
