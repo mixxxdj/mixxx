@@ -32,7 +32,7 @@ class WCueMenuPopup : public QWidget {
     }
 
     void popup(const QPoint& p) {
-        auto parentWidget = static_cast<QWidget*>(parent());
+        auto parentWidget = qobject_cast<QWidget*>(parent());
         QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
         move(topLeft);
         show();
