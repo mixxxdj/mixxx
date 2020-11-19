@@ -715,13 +715,6 @@ void WMainMenu::onLibraryScanFinished() {
 }
 
 void WMainMenu::onNewSkinLoaded() {
-    auto pControl = ControlProxy("[Skin]", "show_menubar", nullptr, ControlFlag::NoAssertIfMissing);
-    // if the newly loaded skin does not have a menubar or safemode is active
-    if (!pControl.valid()) {
-        setVisible(true);
-    } else {
-        setVisible(pControl.toBool());
-    }
     emit internalOnNewSkinLoaded();
     // The skin defines if it supports hiding the menubar
     emit toggleMenubarVisible(shouldBeVisible());
