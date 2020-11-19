@@ -697,7 +697,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value) {
 }
 
 void CueControl::hotcueGoto(HotcueControl* pControl, double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -720,7 +720,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double value) {
 }
 
 void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -743,7 +743,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double value) {
 }
 
 void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -788,7 +788,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value) {
     lock.unlock();
 
     if (pCue) {
-        if (value != 0) {
+        if (value > 0) {
             if (pCue->getPosition() == Cue::kNoPosition) {
                 hotcueSet(pControl, value);
             } else {
@@ -805,7 +805,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value) {
         }
     } else {
         // The cue is non-existent ...
-        if (value != 0) {
+        if (value > 0) {
             // set it to the current position
             hotcueSet(pControl, value);
         } else if (m_iCurrentlyPreviewingHotcues) {
@@ -827,7 +827,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
     }
     CuePointer pCue(pControl->getCue());
 
-    if (value != 0) {
+    if (value > 0) {
         if (pCue && pCue->getPosition() != Cue::kNoPosition) {
             m_iCurrentlyPreviewingHotcues++;
             double position = pCue->getPosition();
@@ -923,7 +923,7 @@ void CueControl::hintReader(HintVector* pHintList) {
 // Moves the cue point to current position or to closest beat in case
 // quantize is enabled
 void CueControl::cueSet(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -941,7 +941,7 @@ void CueControl::cueSet(double value) {
 }
 
 void CueControl::cueClear(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -956,7 +956,7 @@ void CueControl::cueClear(double value) {
 }
 
 void CueControl::cueGoto(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -971,7 +971,7 @@ void CueControl::cueGoto(double value) {
 }
 
 void CueControl::cueGotoAndPlay(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -989,7 +989,7 @@ void CueControl::cueGotoAndPlay(double value) {
 }
 
 void CueControl::cueGotoAndStop(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1006,7 +1006,7 @@ void CueControl::cueGotoAndStop(double value) {
 void CueControl::cuePreview(double value) {
     QMutexLocker lock(&m_mutex);
 
-    if (value != 0) {
+    if (value > 0) {
         m_bPreviewing = true;
         m_bypassCueSetByPlay = true;
         m_pPlay->set(1.0);
@@ -1037,7 +1037,7 @@ void CueControl::cueCDJ(double value) {
     const auto freely_playing = m_pPlay->toBool() && !getEngineBuffer()->getScratching();
     TrackAt trackAt = getTrackAt();
 
-    if (value != 0) {
+    if (value > 0) {
         if (m_iCurrentlyPreviewingHotcues) {
             // we are already previewing by hotcues
             // just jump to cue point and continue previewing
@@ -1104,7 +1104,7 @@ void CueControl::cueDenon(double value) {
     bool playing = (m_pPlay->toBool());
     TrackAt trackAt = getTrackAt();
 
-    if (value != 0) {
+    if (value > 0) {
         if (m_iCurrentlyPreviewingHotcues) {
             // we are already previewing by hotcues
             // just jump to cue point and continue previewing
@@ -1150,7 +1150,7 @@ void CueControl::cuePlay(double value) {
     TrackAt trackAt = getTrackAt();
 
     // pressed
-    if (value != 0) {
+    if (value > 0) {
         if (freely_playing) {
             m_bPreviewing = false;
             m_pPlay->set(0.0);
@@ -1216,7 +1216,7 @@ void CueControl::playStutter(double v) {
 }
 
 void CueControl::introStartSet(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1257,7 +1257,7 @@ void CueControl::introStartSet(double value) {
 }
 
 void CueControl::introStartClear(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1294,7 +1294,7 @@ void CueControl::introStartActivate(double value) {
 }
 
 void CueControl::introEndSet(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1335,7 +1335,7 @@ void CueControl::introEndSet(double value) {
 }
 
 void CueControl::introEndClear(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1372,7 +1372,7 @@ void CueControl::introEndActivate(double value) {
 }
 
 void CueControl::outroStartSet(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1413,7 +1413,7 @@ void CueControl::outroStartSet(double value) {
 }
 
 void CueControl::outroStartClear(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1434,7 +1434,7 @@ void CueControl::outroStartClear(double value) {
 }
 
 void CueControl::outroStartActivate(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1450,7 +1450,7 @@ void CueControl::outroStartActivate(double value) {
 }
 
 void CueControl::outroEndSet(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1491,7 +1491,7 @@ void CueControl::outroEndSet(double value) {
 }
 
 void CueControl::outroEndClear(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1512,7 +1512,7 @@ void CueControl::outroEndClear(double value) {
 }
 
 void CueControl::outroEndActivate(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1761,7 +1761,7 @@ SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
 }
 
 void CueControl::hotcueFocusColorPrev(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
@@ -1790,7 +1790,7 @@ void CueControl::hotcueFocusColorPrev(double value) {
 }
 
 void CueControl::hotcueFocusColorNext(double value) {
-    if (value == 0) {
+    if (value <= 0) {
         return;
     }
 
