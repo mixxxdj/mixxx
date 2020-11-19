@@ -66,7 +66,7 @@ void MidiOptionsDelegate::setEditorData(QWidget* editor,
                                         const QModelIndex& index) const {
     MidiOptions options = index.data(Qt::EditRole).value<MidiOptions>();
 
-    QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
     if (pComboBox == NULL) {
         return;
     }

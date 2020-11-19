@@ -137,34 +137,39 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
-        return QString("[Sampler%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Sampler") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
-        return QString("[Channel%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Channel") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
-        return QString("[PreviewDeck%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith Microphone where i is zero indexed
     static QString groupForMicrophone(int i) {
+        DEBUG_ASSERT(i >= 0);
         // Before Mixxx had multiple microphone support the first microphone had
         // the group [Microphone]. For backwards compatibility we keep it that
         // way.
-        QString group("[Microphone]");
         if (i > 0) {
-            group = QString("[Microphone%1]").arg(i + 1);
+            return QStringLiteral("[Microphone") + QString::number(i + 1) + ']';
+        } else {
+            return QStringLiteral("[Microphone]");
         }
-        return group;
     }
 
     // Returns the group for the ith Auxiliary where i is zero indexed
     static QString groupForAuxiliary(int i) {
-        return QString("[Auxiliary%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
     }
 
     static QAtomicPointer<ControlProxy> m_pCOPNumDecks;

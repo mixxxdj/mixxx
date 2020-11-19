@@ -4,8 +4,8 @@
 
 #include "track/keyutils.h"
 
-const char* kNegatePrefix = "-";
-const char* kFuzzyPrefix = "~";
+constexpr char kNegatePrefix[] = "-";
+constexpr char kFuzzyPrefix[] = "~";
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     : m_pTrackCollection(pTrackCollection) {

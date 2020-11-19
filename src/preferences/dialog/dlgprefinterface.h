@@ -57,7 +57,8 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetScaleFactorAuto(bool checked);
 
   private:
-    void notifyRebootNecessary();
+    void notifyLocaleRebootNecessary();
+    void notifySkinRebootNecessary();
     void loadTooltipPreferenceFromConfig();
 
     // Because the CueDefault list is out of order, we have to set the combo
