@@ -44,12 +44,17 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
     return mixxx::RgbColor::optional(colorCode);
 }
 
+/// Convert 0-based hot cue index to 1-based number
 inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
+    DEBUG_ASSERT(hotcueIndex == Cue::kNoHotCue || hotcueIndex >= 0);
     return hotcueIndex + 1;
 }
 
+/// Convert 1-based hot cue number to 0-based index
 inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
-    return hotcueNumber - 1;
+    int hotcueIndex = hotcueNumber - 1;
+    DEBUG_ASSERT(hotcueIndex == Cue::kNoHotCue || hotcueIndex >= 0);
+    return hotcueIndex;
 }
 
 } // namespace

@@ -50,7 +50,7 @@ class HotcueControl : public QObject {
         return m_hotcueIndex;
     }
 
-    CuePointer getCue() {
+    CuePointer getCue() const {
         return m_pCue;
     }
     double getPosition() const;
