@@ -2,7 +2,7 @@
  * Mixxx controller mapping for a Behringer B-Control BCR2000 controller.
  *
  * The BCR2000 is a general purpose controller that allows different mappings.
- * The mapping may be * configured in `BCR2000.userConfig` which is structured as follows:
+ * The mapping may be configured in `BCR2000.userConfig` which is structured as follows:
  *
  * userConfig
  * |
