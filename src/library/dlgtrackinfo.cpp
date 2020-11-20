@@ -31,6 +31,8 @@ constexpr int kMinBpm = 30;
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 
+int DlgTrackInfo::s_lastTabOpened = 0;
+
 DlgTrackInfo::DlgTrackInfo(
         const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
@@ -62,6 +64,7 @@ void DlgTrackInfo::init() {
     starsLayout->insertWidget(0, m_pWStarRating.get());
     // This is necessary to pass on mouseMove events to WStarRating
     m_pWStarRating->setMouseTracking(true);
+    tabWidget->setCurrentIndex(DlgTrackInfo::s_lastTabOpened);
 
     if (m_pTrackModel) {
         connect(btnNext,
@@ -167,6 +170,13 @@ void DlgTrackInfo::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotOpenInFileBrowser);
+
+    connect(tabWidget,
+            &QTabWidget::currentChanged,
+            [this](int index) {
+                Q_UNUSED(this);
+                DlgTrackInfo::s_lastTabOpened = index;
+            });
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {

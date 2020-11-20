@@ -112,4 +112,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WStarRating> m_pWStarRating;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+    // Saves the last last tab used so new windows start at that one
+    static int s_lastTabOpened;
 };
