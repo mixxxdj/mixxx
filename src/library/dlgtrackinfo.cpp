@@ -95,6 +95,13 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotCancel);
 
+    connect(btnRevert,
+            &QPushButton::clicked,
+            this,
+            [this]() {
+                populateFields(*m_pLoadedTrack);
+            });
+
     connect(bpmDouble,
             &QPushButton::clicked,
             this,
