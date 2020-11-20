@@ -142,7 +142,8 @@ void BrowseThread::populateModel() {
 
         if (thisPath.dir() != newPath.dir()) {
             qDebug() << "Abort populateModel()";
-            return populateModel();
+            populateModel();
+            return;
         }
 
         QList<QStandardItem*> row_data;

@@ -414,7 +414,7 @@ QDateTime Track::getDateAdded() const {
 
 void Track::setDateAdded(const QDateTime& dateAdded) {
     QMutexLocker lock(&m_qMutex);
-    return m_record.setDateAdded(dateAdded);
+    m_record.setDateAdded(dateAdded);
 }
 
 void Track::setDuration(mixxx::Duration duration) {
