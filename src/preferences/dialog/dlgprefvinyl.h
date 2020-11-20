@@ -50,10 +50,10 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
 
   private slots:
     void slotNumDecksChanged(double);
-    void slotVinylType1Changed(QString);
-    void slotVinylType2Changed(QString);
-    void slotVinylType3Changed(QString);
-    void slotVinylType4Changed(QString);
+    void slotVinylType1Changed(const QString&);
+    void slotVinylType2Changed(const QString&);
+    void slotVinylType3Changed(const QString&);
+    void slotVinylType4Changed(const QString&);
 
   private:
     void setDeckWidgetsVisible(int deck, bool visible);
@@ -61,9 +61,8 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     void setDeck2WidgetsVisible(bool visible);
     void setDeck3WidgetsVisible(bool visible);
     void setDeck4WidgetsVisible(bool visible);
-    void verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QString vinyl_type);
-    int getDefaultLeadIn(QString vinyl_type) const;
-
+    void verifyAndSaveLeadInTime(QSpinBox* widget, const QString& group, const QString& vinyl_type);
+    int getDefaultLeadIn(const QString& vinyl_type) const;
 
     QList<VinylControlSignalWidget*> m_signalWidgets;
 

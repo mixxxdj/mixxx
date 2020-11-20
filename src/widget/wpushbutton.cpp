@@ -257,8 +257,11 @@ void WPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
-                            Paintable::DrawMode mode, double scaleFactor) {
+void WPushButton::setPixmap(int iState,
+        bool bPressed,
+        const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -279,9 +282,9 @@ void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
     pixmaps.replace(iState, pPixmap);
 }
 
-void WPushButton::setPixmapBackground(PixmapSource source,
-                                      Paintable::DrawMode mode,
-                                      double scaleFactor) {
+void WPushButton::setPixmapBackground(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!source.isEmpty() &&

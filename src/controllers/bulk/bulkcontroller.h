@@ -28,7 +28,7 @@ class BulkReader : public QThread {
     void stop();
 
   signals:
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
+    void incomingData(const QByteArray& data, mixxx::Duration timestamp);
 
   protected:
     void run();
@@ -81,7 +81,7 @@ class BulkController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
+    void send(const QByteArray& data) override;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.

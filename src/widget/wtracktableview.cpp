@@ -755,7 +755,7 @@ void WTrackTableView::loadSelectedTrack() {
     }
 }
 
-void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
     auto indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         // If the track load override is disabled, check to see if a track is

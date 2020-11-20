@@ -62,17 +62,17 @@ class RateIIFilter {
     double m_last_rate;
 };
 
-PositionScratchController::PositionScratchController(QString group)
-    : m_group(group),
-      m_bScratching(false),
-      m_bEnableInertia(false),
-      m_dLastPlaypos(0),
-      m_dPositionDeltaSum(0),
-      m_dTargetDelta(0),
-      m_dStartScratchPosition(0),
-      m_dRate(0),
-      m_dMoveDelay(0),
-      m_dMouseSampeTime(0) {
+PositionScratchController::PositionScratchController(const QString& group)
+        : m_group(group),
+          m_bScratching(false),
+          m_bEnableInertia(false),
+          m_dLastPlaypos(0),
+          m_dPositionDeltaSum(0),
+          m_dTargetDelta(0),
+          m_dStartScratchPosition(0),
+          m_dRate(0),
+          m_dMoveDelay(0),
+          m_dMouseSampeTime(0) {
     m_pScratchEnable = new ControlObject(ConfigKey(group, "scratch_position_enable"));
     m_pScratchPosition = new ControlObject(ConfigKey(group, "scratch_position"));
     m_pMasterSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));

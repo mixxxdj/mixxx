@@ -24,7 +24,7 @@ ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
 ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
 ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 
-EnginePregain::EnginePregain(QString group)
+EnginePregain::EnginePregain(const QString& group)
         : m_dSpeed(1.0),
           m_dOldSpeed(1.0),
           m_dNonScratchSpeed(1.0),

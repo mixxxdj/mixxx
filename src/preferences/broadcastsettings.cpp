@@ -167,7 +167,7 @@ void BroadcastSettings::saveAll() {
     emit profilesChanged();
 }
 
-void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
+void BroadcastSettings::onProfileNameChanged(const QString& oldName, const QString& newName) {
     if (!m_profiles.contains(oldName))
         return;
 

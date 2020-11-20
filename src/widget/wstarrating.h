@@ -18,7 +18,7 @@ class ControlPushButton;
 class WStarRating : public WWidget {
     Q_OBJECT
   public:
-    WStarRating(QString group, QWidget* pParent);
+    WStarRating(const QString& group, QWidget* pParent);
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     QSize sizeHint() const override;

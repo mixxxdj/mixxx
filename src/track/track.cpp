@@ -140,7 +140,7 @@ void Track::relocate(
 
 void Track::importMetadata(
         mixxx::TrackMetadata importedMetadata,
-        QDateTime metadataSynchronized) {
+        const QDateTime& metadataSynchronized) {
     // Safe some values that are needed after move assignment and unlocking(see below)
     const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();

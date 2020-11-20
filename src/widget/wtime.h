@@ -22,7 +22,7 @@ class WTime: public WLabel {
     void refreshTime();
 
   private:
-    void setTimeFormat(QDomNode node, const SkinContext& context);
+    void setTimeFormat(const QDomNode& node, const SkinContext& context);
 
     QTimer* m_pTimer;
     QString m_sTimeFormat;

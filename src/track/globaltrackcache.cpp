@@ -35,7 +35,7 @@ TrackRef createTrackRef(const Track& track) {
 }
 
 TrackRef validateAndCanonicalizeRequestedTrackRef(
-        const TrackRef requestedTrackRef,
+        const TrackRef& requestedTrackRef,
         const Track& cachedTrack) {
     const auto cachedTrackRef = createTrackRef(cachedTrack);
     // If an id has been provided the caller expects that if a track
@@ -697,7 +697,7 @@ void GlobalTrackCache::resolve(
 
 TrackRef GlobalTrackCache::initTrackId(
         const TrackPointer& strongPtr,
-        TrackRef trackRef,
+        const TrackRef& trackRef,
         TrackId trackId) {
     DEBUG_ASSERT(strongPtr);
     DEBUG_ASSERT(!trackRef.getId().isValid());

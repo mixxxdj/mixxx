@@ -1,11 +1,11 @@
 
 #include "control/controlaudiotaperpot.h"
 
-ControlAudioTaperPot::ControlAudioTaperPot(ConfigKey key,
-                                           double minDB, double maxDB,
-                                           double neutralParameter)
+ControlAudioTaperPot::ControlAudioTaperPot(const ConfigKey& key,
+        double minDB,
+        double maxDB,
+        double neutralParameter)
         : ControlPotmeter(key) {
-
     // Override ControlPotmeters default value of 0.5
     setDefaultValue(1.0);
     set(1.0);

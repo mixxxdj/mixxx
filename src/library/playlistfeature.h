@@ -28,17 +28,19 @@ class PlaylistFeature : public BasePlaylistFeature {
 
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
+    bool dropAcceptChild(const QModelIndex& index,
+            const QList<QUrl>& urls,
+            QObject* pSource) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
   private slots:
     void slotPlaylistTableChanged(int playlistId) override;
     void slotPlaylistContentChanged(QSet<int> playlistIds) override;
-    void slotPlaylistTableRenamed(int playlistId, QString newName) override;
+    void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
 
   protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;

@@ -69,7 +69,7 @@ class FakeController : public Controller {
     }
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID) {
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
         Q_UNUSED(data);
         Q_UNUSED(length);
         Q_UNUSED(reportID);
@@ -84,10 +84,10 @@ class FakeController : public Controller {
     }
 
   private:
-    void send(QByteArray data) override {
+    void send(const QByteArray& data) override {
         Q_UNUSED(data);
     }
-    virtual void send(QByteArray data, unsigned int reportID) {
+    virtual void send(const QByteArray& data, unsigned int reportID) {
         Q_UNUSED(data);
         Q_UNUSED(reportID);
     }

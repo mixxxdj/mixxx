@@ -116,7 +116,7 @@ void DlgAnalysis::loadSelectedTrack() {
     m_pAnalysisLibraryTableView->loadSelectedTrack();
 }
 
-void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgAnalysis::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 

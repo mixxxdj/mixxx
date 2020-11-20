@@ -530,7 +530,7 @@ SINT SoundSourceMp3::findSeekFrameIndex(
 }
 
 ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if ((m_curFrameIndex != firstFrameIndex)) {

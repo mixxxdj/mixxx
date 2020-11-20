@@ -19,12 +19,14 @@
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
-                                 bool allowOutOfBounds,
-                                 bool bIgnoreNops,
-                                 bool bTrack,
-                                 bool bPersist,
-                                 double defaultValue)
+ControlPotmeter::ControlPotmeter(const ConfigKey& key,
+        double dMinValue,
+        double dMaxValue,
+        bool allowOutOfBounds,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
         : ControlObject(key, bIgnoreNops, bTrack, bPersist, defaultValue),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);

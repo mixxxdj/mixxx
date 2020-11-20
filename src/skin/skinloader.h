@@ -41,7 +41,7 @@ class SkinLoader {
     QList<QDir> getSkinSearchPaths() const;
 
   private:
-    QString pickResizableSkin(QString oldSkin) const;
+    QString pickResizableSkin(const QString& oldSkin) const;
 
     UserSettingsPointer m_pConfig;
 };

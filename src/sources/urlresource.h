@@ -19,7 +19,7 @@ class UrlResource {
     }
 
   protected:
-    explicit UrlResource(QUrl url)
+    explicit UrlResource(const QUrl& url)
             : m_url(url) {
     }
 

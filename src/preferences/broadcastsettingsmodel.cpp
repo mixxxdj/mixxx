@@ -218,7 +218,7 @@ QColor BroadcastSettingsModel::connectionStatusBgColor(BroadcastProfilePtr profi
         }
 }
 
-void BroadcastSettingsModel::onProfileNameChanged(QString oldName, QString newName) {
+void BroadcastSettingsModel::onProfileNameChanged(const QString& oldName, const QString& newName) {
     if (!m_profiles.contains(oldName))
         return;
 

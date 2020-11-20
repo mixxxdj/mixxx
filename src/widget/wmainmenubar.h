@@ -64,7 +64,7 @@ class WMainMenuBar : public QMenuBar {
     void toggleBroadcasting(bool toggle);
     void toggleRecording(bool enabled);
     void toggleVinylControl(int deck);
-    void visitUrl(QString url);
+    void visitUrl(const QString& url);
     void quit();
 
     void internalRecordingStateChange(bool recording);

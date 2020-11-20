@@ -97,7 +97,7 @@ class CachingReaderWorker : public EngineWorker {
 
   public:
     // Construct a CachingReader with the given group.
-    CachingReaderWorker(QString group,
+    CachingReaderWorker(const QString& group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
     ~CachingReaderWorker() override = default;
@@ -115,7 +115,7 @@ class CachingReaderWorker : public EngineWorker {
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
-    void trackLoadFailed(TrackPointer pTrack, QString reason);
+    void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:
     const QString m_group;

@@ -520,7 +520,7 @@ void PlayerManager::addAuxiliaryInner() {
     m_auxiliaries.append(pAuxiliary);
 }
 
-BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
+BaseTrackPlayer* PlayerManager::getPlayer(const QString& group) const {
     QMutexLocker locker(&m_mutex);
     if (m_players.contains(group)) {
         return m_players[group];
@@ -578,7 +578,7 @@ Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
     return m_auxiliaries[auxiliary - 1];
 }
 
-void PlayerManager::slotCloneDeck(QString source_group, QString target_group) {
+void PlayerManager::slotCloneDeck(const QString& source_group, const QString& target_group) {
     BaseTrackPlayer* pPlayer = getPlayer(target_group);
 
     if (pPlayer == nullptr) {
@@ -589,7 +589,7 @@ void PlayerManager::slotCloneDeck(QString source_group, QString target_group) {
     pPlayer->slotCloneFromGroup(source_group);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
@@ -629,21 +629,21 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     m_lastLoadedPlayer = group;
 }
 
-void PlayerManager::slotLoadToPlayer(QString location, QString group) {
+void PlayerManager::slotLoadToPlayer(const QString& location, const QString& group) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
     emit loadLocationToPlayer(location, group);
 }
 
-void PlayerManager::slotLoadToDeck(QString location, int deck) {
+void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
     slotLoadToPlayer(location, groupForDeck(deck-1));
 }
 
-void PlayerManager::slotLoadToPreviewDeck(QString location, int previewDeck) {
+void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
     slotLoadToPlayer(location, groupForPreviewDeck(previewDeck-1));
 }
 
-void PlayerManager::slotLoadToSampler(QString location, int sampler) {
+void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
     slotLoadToPlayer(location, groupForSampler(sampler-1));
 }
 
