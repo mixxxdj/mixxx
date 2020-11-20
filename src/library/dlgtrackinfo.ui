@@ -989,37 +989,38 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>tabWidget</tabstop>
+  <tabstop>txtTrackName</tabstop>
+  <tabstop>txtArtist</tabstop>
+  <tabstop>txtAlbum</tabstop>
+  <tabstop>txtAlbumArtist</tabstop>
+  <tabstop>txtComposer</tabstop>
+  <tabstop>txtGenre</tabstop>
+  <tabstop>txtGrouping</tabstop>
+  <tabstop>txtComment</tabstop>
+  <tabstop>txtYear</tabstop>
+  <tabstop>txtKey</tabstop>
+  <tabstop>txtTrackNumber</tabstop>
+  <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
+  <tabstop>btnImportMetadataFromFile</tabstop>
+  <tabstop>btnOpenFileBrowser</tabstop>
+  <tabstop>btnPrev</tabstop>
+  <tabstop>btnNext</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>btnRevert</tabstop>
+  <tabstop>btnApply</tabstop>
+  <tabstop>btnOK</tabstop>
   <tabstop>beatgridLock</tabstop>
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmRound</tabstop>
   <tabstop>bpmConst</tabstop>
-  <tabstop>bpmTap</tabstop>
   <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
   <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>bpmTap</tabstop>
   <tabstop>bpmClear</tabstop>
-  <tabstop>btnPrev</tabstop>
-  <tabstop>btnNext</tabstop>
-  <tabstop>btnCancel</tabstop>
-  <tabstop>btnApply</tabstop>
-  <tabstop>btnOK</tabstop>
-  <tabstop>txtComposer</tabstop>
-  <tabstop>txtGenre</tabstop>
-  <tabstop>txtTrackNumber</tabstop>
-  <tabstop>txtComment</tabstop>
-  <tabstop>txtYear</tabstop>
-  <tabstop>txtGrouping</tabstop>
-  <tabstop>txtKey</tabstop>
-  <tabstop>btnImportMetadataFromFile</tabstop>
-  <tabstop>btnOpenFileBrowser</tabstop>
-  <tabstop>txtTrackName</tabstop>
-  <tabstop>txtAlbumArtist</tabstop>
-  <tabstop>txtAlbum</tabstop>
-  <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
-  <tabstop>txtArtist</tabstop>
  </tabstops>
  <resources/>
  <connections/>
