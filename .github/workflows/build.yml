@@ -14,8 +14,8 @@ env:
   CCACHE_NOCOMPRESS: true
 
 jobs:
-  build-ubuntu-gcc:
-    name: ${{ matrix.os }} / gcc
+  build-ubuntu:
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
         matrix:
