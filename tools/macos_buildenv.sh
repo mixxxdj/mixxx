@@ -58,6 +58,15 @@ case "$COMMAND" in
         QT_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
         QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
 
+        echo "Environent Variables:"
+        echo "- PATH=${PATH}"
+        echo "- QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
+        echo "- MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
+        echo ""
+        echo "CMake Configuration:"
+        echo "- CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
+        echo "- Qt5_DIR=${QT_PATH}"
+
         if [ "$1" = "--ghactions" ]
         then
             echo "::set-output name=macosx_deployment_target::${MACOSX_DEPLOYMENT_TARGET}"
