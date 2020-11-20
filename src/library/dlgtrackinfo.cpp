@@ -286,7 +286,9 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
 
     m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
     bpmConst->setChecked(!m_trackHasBeatMap);
+    bpmConst->setEnabled(m_trackHasBeatMap);
 
+    m_beatsChanged = false;
     beatgridLock->setChecked(track.isBpmLocked());
 }
 
@@ -321,7 +323,6 @@ void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
     }
 
     m_pLoadedTrack = pTrack;
-    m_beatsChanged = false;
 
     populateFields(*m_pLoadedTrack);
     m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
@@ -425,7 +426,6 @@ void DlgTrackInfo::saveTrack() {
     if (m_beatsChanged) {
         m_pLoadedTrack->setBeats(m_pBeatsClone);
         reloadTrackBeats(*m_pLoadedTrack);
-        m_beatsChanged = false;
     }
 
     // If the user is editing the key and hits enter to close DlgTrackInfo, the
@@ -599,6 +599,7 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
         // try to reload BeatMap from the Track
         reloadTrackBeats(*m_pLoadedTrack);
     }
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
@@ -618,6 +619,7 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     if (value <= 0) {
         m_pBeatsClone.clear();
+        m_beatsChanged = true;
         return;
     }
 
