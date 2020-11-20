@@ -560,16 +560,25 @@ QVariant BaseTrackTableModel::roleValue(
             if (rawValue.isNull()) {
                 return QVariant();
             }
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
-                return QVariant();
-            }
-            bool ok;
-            const auto duration = rawValue.toDouble(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && duration >= 0) {
-                return QVariant();
+            double durationInSeconds;
+            if (rawValue.canConvert<mixxx::Duration>()) {
+                const auto duration = rawValue.value<mixxx::Duration>();
+                VERIFY_OR_DEBUG_ASSERT(duration >= mixxx::Duration::empty()) {
+                    return QVariant();
+                }
+                durationInSeconds = duration.toDoubleSeconds();
+            } else {
+                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
+                    return QVariant();
+                }
+                bool ok;
+                durationInSeconds = rawValue.toDouble(&ok);
+                VERIFY_OR_DEBUG_ASSERT(ok && durationInSeconds >= 0) {
+                    return QVariant();
+                }
             }
             return mixxx::Duration::formatTime(
-                    duration,
+                    durationInSeconds,
                     mixxx::Duration::Precision::SECONDS);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING: {
@@ -700,16 +709,33 @@ QVariant BaseTrackTableModel::roleValue(
             if (rawValue.isNull()) {
                 return QVariant();
             }
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
-                return QVariant();
+            double rgRatio;
+            if (rawValue.canConvert<mixxx::ReplayGain>()) {
+                rgRatio = rawValue.value<mixxx::ReplayGain>().getRatio();
+            } else {
+                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
+                    return QVariant();
+                }
+                bool ok;
+                rgRatio = rawValue.toDouble(&ok);
+                VERIFY_OR_DEBUG_ASSERT(ok) {
+                    return QVariant();
+                }
             }
-            bool ok;
-            const auto gainValue = rawValue.toDouble(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok) {
-                return QVariant();
-            }
-            return mixxx::ReplayGain::ratioToString(gainValue);
+            return mixxx::ReplayGain::ratioToString(rgRatio);
         }
+        case ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS:
+            // Not yet supported
+            DEBUG_ASSERT(rawValue.isNull());
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE:
+            // Not yet supported
+            DEBUG_ASSERT(rawValue.isNull());
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_URL:
+            // Not yet supported
+            DEBUG_ASSERT(rawValue.isNull());
+            break;
         default:
             // Otherwise, just use the column value
             break;
