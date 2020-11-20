@@ -139,7 +139,7 @@ class AnalyzerWaveform : public Analyzer {
   public:
     AnalyzerWaveform(
             UserSettingsPointer pConfig,
-            QSqlDatabase dbConnection);
+            const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;

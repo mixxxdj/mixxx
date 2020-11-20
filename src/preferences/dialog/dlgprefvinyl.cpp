@@ -150,19 +150,19 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
     }
 }
 
-void DlgPrefVinyl::slotVinylType1Changed(QString text) {
+void DlgPrefVinyl::slotVinylType1Changed(const QString& text) {
     LeadinTime1->setValue(getDefaultLeadIn(text));
 }
 
-void DlgPrefVinyl::slotVinylType2Changed(QString text) {
+void DlgPrefVinyl::slotVinylType2Changed(const QString& text) {
     LeadinTime2->setValue(getDefaultLeadIn(text));
 }
 
-void DlgPrefVinyl::slotVinylType3Changed(QString text) {
+void DlgPrefVinyl::slotVinylType3Changed(const QString& text) {
     LeadinTime3->setValue(getDefaultLeadIn(text));
 }
 
-void DlgPrefVinyl::slotVinylType4Changed(QString text) {
+void DlgPrefVinyl::slotVinylType4Changed(const QString& text) {
     LeadinTime4->setValue(getDefaultLeadIn(text));
 }
 
@@ -281,7 +281,8 @@ void DlgPrefVinyl::slotUpdate() {
     }
 }
 
-void DlgPrefVinyl::verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QString vinyl_type) {
+void DlgPrefVinyl::verifyAndSaveLeadInTime(
+        QSpinBox* widget, const QString& group, const QString& vinyl_type) {
     QString strLeadIn = widget->text();
     bool isInteger;
     strLeadIn.toInt(&isInteger);
@@ -293,7 +294,7 @@ void DlgPrefVinyl::verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QStr
     }
 }
 
-int DlgPrefVinyl::getDefaultLeadIn(QString vinyl_type) const {
+int DlgPrefVinyl::getDefaultLeadIn(const QString& vinyl_type) const {
     if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
         return MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {

@@ -58,7 +58,7 @@ QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
 SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
         const QString& supportedFileExtension) const {
     if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
-            supportedFileExtension == QStringLiteral("wav")) {
+            supportedFileExtension == QLatin1String("wav")) {
         // Default decoder for AIFF and WAV
         return SoundSourceProviderPriority::Default;
     } else {
@@ -142,7 +142,7 @@ void SoundSourceSndFile::close() {
 }
 
 ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {

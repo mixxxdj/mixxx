@@ -18,7 +18,7 @@ class WRecordingDuration: public WLabel {
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
-    void refreshLabel(QString);
+    void refreshLabel(const QString&);
     void slotRecordingInactive(bool);
 
   private:

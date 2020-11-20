@@ -140,7 +140,7 @@ void Track::relocate(
 
 void Track::importMetadata(
         mixxx::TrackMetadata importedMetadata,
-        QDateTime metadataSynchronized) {
+        const QDateTime& metadataSynchronized) {
     // Safe some values that are needed after move assignment and unlocking(see below)
     const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();
@@ -853,7 +853,7 @@ CuePointer Track::findCueByType(mixxx::CueType type) const {
     return CuePointer();
 }
 
-CuePointer Track::findCueById(int id) const {
+CuePointer Track::findCueById(DbId id) const {
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue : m_cuePoints) {
         if (pCue->getId() == id) {

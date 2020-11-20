@@ -32,7 +32,7 @@ RGBWaveformWidget::~RGBWaveformWidget() {
 }
 
 void RGBWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(this);
+    m_widget = this;
 }
 
 void RGBWaveformWidget::paintEvent(QPaintEvent* event) {

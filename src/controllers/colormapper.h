@@ -13,7 +13,7 @@
 class ColorMapper final {
   public:
     ColorMapper() = delete;
-    explicit ColorMapper(QMap<QRgb, QVariant> availableColors)
+    explicit ColorMapper(const QMap<QRgb, QVariant>& availableColors)
             : m_availableColors(availableColors) {
         DEBUG_ASSERT(!m_availableColors.isEmpty());
     }

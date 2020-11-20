@@ -3,14 +3,14 @@
 #include <QColor>
 #include <QMutex>
 #include <QObject>
+#include <memory>
 
 #include "audio/types.h"
 #include "track/cueinfo.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
-#include "util/memory.h"
+#include "util/db/dbid.h"
 
-class CuePosition;
 class CueDAO;
 class Track;
 
@@ -26,19 +26,20 @@ class Cue : public QObject {
             const mixxx::CueInfo& cueInfo,
             mixxx::audio::SampleRate sampleRate,
             bool setDirty);
+    /// Load entity from database.
     Cue(
-            int id,
+            DbId id,
             TrackId trackId,
             mixxx::CueType type,
             double position,
             double length,
             int hotCue,
-            QString label,
+            const QString& label,
             mixxx::RgbColor color);
     ~Cue() override = default;
 
     bool isDirty() const;
-    int getId() const;
+    DbId getId() const;
     TrackId getTrackId() const;
 
     mixxx::CueType getType() const;
@@ -59,7 +60,7 @@ class Cue : public QObject {
 
     QString getLabel() const;
     void setLabel(
-            QString label = QString());
+            const QString& label = QString());
 
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);
@@ -75,13 +76,13 @@ class Cue : public QObject {
   private:
     void setDirty(bool dirty);
 
-    void setId(int id);
+    void setId(DbId dbId);
     void setTrackId(TrackId trackId);
 
     mutable QMutex m_mutex;
 
     bool m_bDirty;
-    int m_iId;
+    DbId m_dbId;
     TrackId m_trackId;
     mixxx::CueType m_type;
     double m_sampleStartPosition;

@@ -23,11 +23,11 @@ class MusicBrainzRecordingsTask : public network::WebTask {
 
   signals:
     void succeeded(
-            QList<musicbrainz::TrackRelease> trackReleases);
+            const QList<musicbrainz::TrackRelease>& trackReleases);
     void failed(
-            network::WebResponse response,
+            const network::WebResponse& response,
             int errorCode,
-            QString errorMessage);
+            const QString& errorMessage);
 
   private slots:
     void slotNetworkReplyFinished();

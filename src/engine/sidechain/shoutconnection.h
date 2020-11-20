@@ -100,8 +100,8 @@ class ShoutConnection
     void updateMetaData();
     // Common error dialog creation code for run-time exceptions. Notify user
     // when connected or disconnected and so on
-    void errorDialog(QString text, QString detailedError);
-    void infoDialog(QString text, QString detailedError);
+    void errorDialog(const QString& text, const QString& detailedError);
+    void infoDialog(const QString& text, const QString& detailedError);
 
     void serverWrite(unsigned char *header, unsigned char *body,
                int headerLen, int bodyLen);

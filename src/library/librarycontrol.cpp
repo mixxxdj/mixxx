@@ -363,7 +363,7 @@ void LibraryControl::searchboxWidgetDeleted() {
     m_pSearchbox = nullptr;
 }
 
-void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
+void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
     if (!m_pLibraryWidget) {
         return;
     }

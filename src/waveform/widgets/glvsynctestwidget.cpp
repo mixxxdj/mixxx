@@ -50,7 +50,7 @@ GLVSyncTestWidget::~GLVSyncTestWidget() {
 }
 
 void GLVSyncTestWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {

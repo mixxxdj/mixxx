@@ -15,7 +15,7 @@ class EngineNetworkStream;
 
 class SoundDeviceNotFound : public SoundDevice {
   public:
-    SoundDeviceNotFound(QString name)
+    SoundDeviceNotFound(const QString& name)
             : SoundDevice(UserSettingsPointer(), nullptr) {
         m_deviceId.name = name;
         m_strDisplayName = name;

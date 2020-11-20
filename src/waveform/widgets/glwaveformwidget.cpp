@@ -47,7 +47,7 @@ GLWaveformWidget::~GLWaveformWidget() {
 }
 
 void GLWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void GLWaveformWidget::paintEvent(QPaintEvent* event) {

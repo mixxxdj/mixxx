@@ -73,7 +73,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
 
 WTrackTableView::~WTrackTableView() {
     WTrackTableViewHeader* pHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
         pHeader->saveHeaderState();
     }
@@ -170,7 +170,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
 
     // Save the previous track model's header state
     WTrackTableViewHeader* oldHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (oldHeader) {
         oldHeader->saveHeaderState();
     }
@@ -755,7 +755,7 @@ void WTrackTableView::loadSelectedTrack() {
     }
 }
 
-void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
     auto indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         // If the track load override is disabled, check to see if a track is

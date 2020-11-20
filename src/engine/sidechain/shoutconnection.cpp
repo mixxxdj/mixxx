@@ -865,7 +865,7 @@ void ShoutConnection::updateMetaData() {
     }
 }
 
-void ShoutConnection::errorDialog(QString text, QString detailedError) {
+void ShoutConnection::errorDialog(const QString& text, const QString& detailedError) {
     qWarning() << "Streaming error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
@@ -881,7 +881,7 @@ void ShoutConnection::errorDialog(QString text, QString detailedError) {
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
-void ShoutConnection::infoDialog(QString text, QString detailedInfo) {
+void ShoutConnection::infoDialog(const QString& text, const QString& detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
     props->setTitle(tr("Connection message"));
