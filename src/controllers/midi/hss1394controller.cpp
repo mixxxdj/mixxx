@@ -27,8 +27,6 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
     // If multiple three-byte messages arrive right next to each other, handle them all
     while (i < uBufferSize) {
         unsigned char status = pBuffer[i];
-        unsigned char opcode = status & 0xF0;
-        unsigned char channel = status & 0x0F;
         unsigned char note;
         unsigned char velocity;
         switch (status & 0xF0) {
@@ -195,25 +193,16 @@ void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
                                      unsigned char byte2) {
     unsigned char data[3] = { status, byte1, byte2 };
 
-    int bytesSent = m_pChannel->SendChannelBytes(data, 3);
+    m_pChannel->SendChannelBytes(data, 3);
     controllerDebug(MidiUtils::formatMidiMessage(getName(),
                                                  status, byte1, byte2,
                                                  MidiUtils::channelFromStatus(status),
                                                  MidiUtils::opCodeFromStatus(status)));
-
-    //if (bytesSent != 3) {
-    //    qDebug()<<"ERROR: Sent" << bytesSent << "of 3 bytes:" << message;
-    //    //m_pChannel->Flush();
-    //}
 }
 
 void Hss1394Controller::send(QByteArray data) {
-    int bytesSent = m_pChannel->SendChannelBytes(
-        (unsigned char*)data.constData(), data.size());
+    m_pChannel->SendChannelBytes(
+            (unsigned char*)data.constData(), data.size());
 
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data));
-    //if (bytesSent != length) {
-    //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";
-    //    //m_pChannel->Flush();
-    //}
 }
