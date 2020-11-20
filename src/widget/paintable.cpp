@@ -152,7 +152,8 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         return;
     }
 
-    if (m_drawMode == FIXED) {
+    switch (m_drawMode) {
+    case FIXED: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -160,7 +161,9 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         QRectF adjustedTarget(targetRect.topLeft(), fixedSize);
         QRectF adjustedSource(sourceRect.topLeft(), fixedSize);
         drawInternal(adjustedTarget, pPainter, adjustedSource);
-    } else if (m_drawMode == STRETCH_ASPECT) {
+        break;
+    }
+    case STRETCH_ASPECT: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -175,16 +178,21 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         } else {
             drawInternal(targetRect, pPainter, sourceRect);
         }
-    } else if (m_drawMode == STRETCH) {
+        break;
+    }
+    case STRETCH:
         drawInternal(targetRect, pPainter, sourceRect);
-    } else if (m_drawMode == TILE) {
+        break;
+    case TILE:
         drawInternal(targetRect, pPainter, sourceRect);
+        break;
     }
 }
 
 void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
-    if (m_drawMode == FIXED) {
+    switch (m_drawMode) {
+    case FIXED: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -195,7 +203,9 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
                                       -adjustedSource.height() / 2.0),
                               fixedSize);
         drawInternal(adjustedTarget, pPainter, adjustedSource);
-    } else if (m_drawMode == STRETCH_ASPECT) {
+        break;
+    }
+    case STRETCH_ASPECT: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -210,12 +220,16 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
         } else {
             drawInternal(targetRect, pPainter, sourceRect);
         }
-    } else if (m_drawMode == STRETCH) {
+        break;
+    }
+    case STRETCH:
         drawInternal(targetRect, pPainter, sourceRect);
-    } else if (m_drawMode == TILE) {
+        break;
+    case TILE:
         // TODO(XXX): What's the right behavior here? Draw the first tile at the
         // center point and then tile all around it based on that?
         drawInternal(targetRect, pPainter, sourceRect);
+        break;
     }
 }
 
