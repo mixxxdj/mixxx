@@ -138,10 +138,10 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{ matrix.ccache_path }}
-        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        key: ${{ matrix.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.head_ref }}
-          ${{ runner.os }}-ccache
+          ${{ matrix.os }}-ccache-${{ github.head_ref }}
+          ${{ matrix.os }}-ccache
 
     - name: "Create build directory"
       run: mkdir cmake_build
