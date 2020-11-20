@@ -14,20 +14,23 @@ env:
   CCACHE_NOCOMPRESS: true
 
 jobs:
-  build-ubuntu-gcc:
-    name: Ubuntu 18.04 (gcc)
-    runs-on: ubuntu-18.04
+  build-ubuntu:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+        matrix:
+            os: [ubuntu-18.04, ubuntu-20.04]
     steps:
     - name: Check out repository
       uses: actions/checkout@v2
-    - name: Install build dependencies
+
+    - name: Install common build dependencies
       run: |
         sudo apt-get update && sudo apt-get install -y --no-install-recommends \
           ccache \
           libavformat-dev \
           libchromaprint-dev \
           libebur128-dev \
-          libfaad-dev \
           libfftw3-dev \
           libflac-dev \
           libid3tag0-dev \
@@ -35,7 +38,6 @@ jobs:
           libmad0-dev \
           libmodplug-dev \
           libmp3lame-dev \
-          libmp4v2-dev \
           libopus-dev \
           libopusfile-dev \
           libportmidi-dev \
@@ -58,47 +60,79 @@ jobs:
           qt5-default \
           qt5keychain-dev \
           qtscript5-dev \
+
+    - name: Install Ubuntu 18.04 build dependencies
+      if: matrix.os == 'ubuntu-18.04'
+      run: |
+        sudo apt-get install -y --no-install-recommends \
+          libfaad-dev \
+          libmp4v2-dev
+    - name: Install Ubuntu 20.04 build dependencies
+      if: matrix.os == 'ubuntu-20.04'
+      run: |
+        sudo apt-get install -y --no-install-recommends \
+          libavcodec-dev \
+          libavutil-dev
+
     - name: Set up cmake
       uses: jwlawson/actions-setup-cmake@v1.4
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
         cmake-version: '3.13.x'
+
     - name: Create build directory
       run: mkdir cmake_build
+
     - name: Set up ccache cache
       uses: actions/cache@v2
       with:
         path: ~/.ccache
-        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        key: ${{ matrix.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.head_ref }}
-          ${{ runner.os }}-ccache
+          ${{ matrix.os }}-ccache-${{ github.head_ref }}
+          ${{ matrix.os }}-ccache
+
+    - name: Preconfigure Ubuntu 18.04
+      if: matrix.os == 'ubuntu-18.04'
+      run: echo "CMAKE_FLAGS_UBUNTU_EXTRA=-DFAAD=ON" >> $GITHUB_ENV
+
+    - name: Preconfigure Ubuntu 20.04
+      if: matrix.os == 'ubuntu-20.04'
+      run: echo "CMAKE_FLAGS_UBUNTU_EXTRA=-DFFMPEG=ON" >> $GITHUB_ENV
+
     - name: Configure
-      run: cmake $CMAKE_FLAGS_COMMON $CMAKE_FLAGS_UBUNTU -S . -B cmake_build
+      run: cmake $CMAKE_FLAGS_COMMON $CMAKE_FLAGS_UBUNTU $CMAKE_FLAGS_UBUNTU_EXTRA -S . -B cmake_build
       env:
-         # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
-         CMAKE_FLAGS_UBUNTU: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+         CMAKE_FLAGS_UBUNTU: -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+
     - name: Set up problem matcher
       uses: ammaraskar/gcc-problem-matcher@master
+
     - name: Build
       run: cmake --build . -j $(nproc)
       working-directory: cmake_build
+
     - name: Test
       run: ctest --timeout 45
       working-directory: cmake_build
-    - name: Package
+
+    - name: Create Debian package
       run: cpack -G DEB
       working-directory: cmake_build
-    - name: Deploy artifacts
+
+    - name: Deploy Debian package
       uses: actions/upload-artifact@v2
       with:
         name: Ubuntu DEB
         path: cmake_build/*.deb
 
-  build-mac:
-    name: macOS 10.15
-    runs-on: macos-10.15
+  build-macos:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+        matrix:
+            os: [macos-10.15]
     env:
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
     steps:
@@ -110,10 +144,10 @@ jobs:
         cache-name: ccache
       with:
         path: /Users/runner/Library/Caches/ccache
-        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        key: ${{ matrix.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.head_ref }}
-          ${{ runner.os }}-ccache
+          ${{ matrix.os }}-ccache-${{ github.head_ref }}
+          ${{ matrix.os }}-ccache
     - name: read build environment file
       id: read_build_environment_file
       run: |
