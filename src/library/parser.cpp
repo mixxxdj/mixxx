@@ -38,7 +38,7 @@ long Parser::countParsed() {
     return (long)m_sLocations.count();
 }
 
-bool Parser::isBinary(QString filename) {
+bool Parser::isBinary(const QString& filename) {
     char firstByte;
     QFile file(filename);
     if (file.open(QIODevice::ReadOnly) && file.getChar(&firstByte)) {

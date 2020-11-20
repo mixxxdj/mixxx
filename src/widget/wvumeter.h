@@ -36,11 +36,11 @@ class WVuMeter : public WWidget  {
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void setPixmaps(
-            PixmapSource source,
+            const PixmapSource& source,
             bool bHorizontal,
             Paintable::DrawMode mode,
             double scaleFactor);

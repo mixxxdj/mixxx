@@ -40,7 +40,7 @@ constexpr int kLocalBpmSpan = 4;
 constexpr SINT kSamplesPerFrame = 2;
 }
 
-BpmControl::BpmControl(QString group,
+BpmControl::BpmControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),

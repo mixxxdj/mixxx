@@ -460,7 +460,7 @@ double MidiController::computeValue(
     return newmidivalue;
 }
 
-void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
+void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
 
     MidiKey mappingKey(data.at(0), 0xFF);

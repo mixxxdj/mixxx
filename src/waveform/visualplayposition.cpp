@@ -112,7 +112,7 @@ void VisualPlayPosition::slotAudioBufferSizeChanged(double sizeMillis) {
 }
 
 //static
-QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QString group) {
+QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(const QString& group) {
     QSharedPointer<VisualPlayPosition> vpp = m_listVisualPlayPosition.value(group);
     if (vpp.isNull()) {
         vpp = QSharedPointer<VisualPlayPosition>(new VisualPlayPosition(group));

@@ -45,7 +45,7 @@ mixxx::Logger kLogger("TrackDAO");
 
 enum { UndefinedRecordIndex = -2 };
 
-void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory) {
+void markTrackLocationsAsDeleted(const QSqlDatabase& database, const QString& directory) {
     //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(database);
     query.prepare("UPDATE track_locations "
@@ -290,13 +290,13 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     }
 }
 
-void TrackDAO::slotDatabaseTracksChanged(QSet<TrackId> changedTrackIds) {
+void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
     if (!changedTrackIds.isEmpty()) {
         emit tracksChanged(changedTrackIds);
     }
 }
 
-void TrackDAO::slotDatabaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
+void TrackDAO::slotDatabaseTracksRelocated(const QList<RelocatedTrack>& relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
     for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
@@ -493,7 +493,10 @@ namespace {
         pTrackLibraryQuery->bindValue(":key_id", static_cast<int>(key));
     }
 
-    bool insertTrackLibrary(QSqlQuery* pTrackLibraryInsert, const Track& track, DbId trackLocationId, QDateTime trackDateAdded) {
+    bool insertTrackLibrary(QSqlQuery* pTrackLibraryInsert,
+            const Track& track,
+            DbId trackLocationId,
+            const QDateTime& trackDateAdded) {
         bindTrackLibraryValues(pTrackLibraryInsert, track);
 
         if (!track.getDateAdded().isNull()) {

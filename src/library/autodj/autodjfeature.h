@@ -41,8 +41,8 @@ class AutoDJFeature : public LibraryFeature {
     QVariant title() override;
     QIcon getIcon() override;
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAccept(QUrl url) override;
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dragMoveAccept(const QUrl& url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
@@ -58,7 +58,7 @@ class AutoDJFeature : public LibraryFeature {
     void activate() override;
 
     // Temporary, until WCrateTableView can be written.
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
   private:
     TrackCollection* const m_pTrackCollection;

@@ -234,7 +234,7 @@ void BulkController::send(QList<int> data, unsigned int length) {
     send(temp);
 }
 
-void BulkController::send(QByteArray data) {
+void BulkController::send(const QByteArray& data) {
     int ret;
     int transferred;
 

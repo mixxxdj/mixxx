@@ -51,9 +51,9 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   signals:
     void apply();
     void scanLibrary();
-    void requestAddDir(QString dir);
-    void requestRemoveDir(QString dir, Library::RemovalType removalType);
-    void requestRelocateDir(QString currentDir, QString newDir);
+    void requestAddDir(const QString& dir);
+    void requestRemoveDir(const QString& dir, Library::RemovalType removalType);
+    void requestRelocateDir(const QString& currentDir, const QString& newDir);
 
   private slots:
     void slotRowHeightValueChanged(int);
