@@ -668,7 +668,7 @@
         outValueScale: function(_value) {
             /*
              * We ignore the argument and use the parameter (0..1) instead because value scale is
-             * arbitrary and thus cannot be mapped * to MIDI values (0..127) properly.
+             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
              */
             return convertToMidiValue.call(this, this.outGetParameter());
         },
