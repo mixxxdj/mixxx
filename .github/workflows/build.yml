@@ -127,9 +127,12 @@ jobs:
         name: Ubuntu DEB
         path: cmake_build/*.deb
 
-  build-mac:
-    name: macOS 10.15
-    runs-on: macos-10.15
+  build-macos:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+        matrix:
+            os: [macos-10.15]
     env:
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
     steps:
