@@ -88,10 +88,10 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.ccache
-        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        key: ${{ matrix.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.head_ref }}
-          ${{ runner.os }}-ccache
+          ${{ matrix.os }}-ccache-${{ github.head_ref }}
+          ${{ matrix.os }}-ccache
 
     - name: Preconfigure Ubuntu 18.04
       if: matrix.os == 'ubuntu-18.04'
@@ -144,10 +144,10 @@ jobs:
         cache-name: ccache
       with:
         path: /Users/runner/Library/Caches/ccache
-        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        key: ${{ matrix.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.head_ref }}
-          ${{ runner.os }}-ccache
+          ${{ matrix.os }}-ccache-${{ github.head_ref }}
+          ${{ matrix.os }}-ccache
     - name: read build environment file
       id: read_build_environment_file
       run: |
