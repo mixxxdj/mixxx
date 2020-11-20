@@ -4,6 +4,7 @@
 #ifndef CUECONTROL_H
 #define CUECONTROL_H
 
+#include <QAtomicInt>
 #include <QList>
 #include <QMutex>
 
@@ -98,7 +99,8 @@ class HotcueControl : public QObject {
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
-    // Used for caching the preview state of this hotcue control.
+    // Used for caching the preview state of this hotcue control
+    // for the case the cue is deleted during preview.
     mixxx::CueType getPreviewingType() const {
         return m_previewingType;
     }
@@ -215,6 +217,7 @@ class CueControl : public EngineControl {
     void hotcueCueLoop(HotcueControl* pControl, double v);
     void hotcueActivate(HotcueControl* pControl, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pControl, double v);
+    void updateCurrentlyPreviewingIndex(int hotcueIndex);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
     void hotcueEndPositionChanged(HotcueControl* pControl, double newEndPosition);
@@ -270,10 +273,9 @@ class CueControl : public EngineControl {
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
-    bool m_bPreviewing;
+    QAtomicInt m_currentlyPreviewingIndex;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
-    int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pClosestBeat;
     parented_ptr<ControlProxy> m_pLoopStartPosition;
