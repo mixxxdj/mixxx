@@ -11,7 +11,7 @@ jobs:
         include:
           - name: Ubuntu 18.04 (gcc)
             os: ubuntu-18.04
-            cmake_args: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+            cmake_args: -G Ninja -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
             ctest_args:
             ccache_path: ~/.ccache
             cpack_generator: DEB
@@ -20,7 +20,7 @@ jobs:
             artifacts_path: cmake_build/*.deb
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
-            cmake_args: -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+            cmake_args: -G Ninja -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
             ctest_args:
             ccache_path: ~/.ccache
             cpack_generator: DEB

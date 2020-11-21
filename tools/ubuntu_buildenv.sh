@@ -33,6 +33,7 @@ case "$COMMAND" in
             sudo apt-get update
             sudo apt-get install -y --no-install-recommends \
                 ccache \
+                ninja-build \
                 libavformat-dev \
                 libchromaprint-dev \
                 libebur128-dev \
