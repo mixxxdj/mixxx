@@ -11,4 +11,8 @@ protobuf_generate_cpp(
 )
 
 add_library(mixxx-proto STATIC ${PROTO_SOURCES} ${PROTO_HEADERS})
-target_link_libraries(mixxx-proto PUBLIC protobuf::libprotobuf-lite)
+if(TARGET protobuf::libprotobuf-lite)
+    target_link_libraries(mixxx-proto PUBLIC protobuf::libprotobuf-lite)
+else()
+    target_link_libraries(mixxx-proto PUBLIC protobuf::libprotobuf)
+endif()
