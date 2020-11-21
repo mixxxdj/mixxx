@@ -87,7 +87,6 @@ CueControl::CueControl(const QString& group,
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_bypassCueSetByPlay(false),
           m_iNumHotCues(NUM_HOT_CUES),
-          m_pLoadedTrack(),
           m_pCurrentSavedLoopControl(nullptr),
           m_mutex(QMutex::Recursive) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
@@ -457,39 +456,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
 
-    CuePointer pMainCue;
-    const QList<CuePointer> cuePoints = m_pLoadedTrack->getCuePoints();
-    for (const CuePointer& pCue : cuePoints) {
-        if (pCue->getType() == mixxx::CueType::MainCue) {
-            DEBUG_ASSERT(!pMainCue);
-            pMainCue = pCue;
-        }
-    }
-
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
     // Use pNewTrack from now, because m_pLoadedTrack might have been reset
     // immediately after leaving the locking scope!
-
-    // Because of legacy, we store the (load) cue point twice and need to
-    // sync both values.
-    // The mixxx::CueType::MainCue from getCuePoints() has the priority
-    CuePosition mainCuePoint;
-    if (pMainCue) {
-        mainCuePoint.setPosition(pMainCue->getPosition());
-        // adjust the track cue accordingly
-        pNewTrack->setCuePoint(mainCuePoint);
-    } else {
-        // If no load cue point is stored, read from track
-        // Note: This is 0:00 for new tracks
-        mainCuePoint = pNewTrack->getCuePoint();
-        // Than add the load cue to the list of cue
-        CuePointer pCue(pNewTrack->createAndAddCue());
-        pCue->setStartPosition(mainCuePoint.getPosition());
-        pCue->setHotCue(Cue::kNoHotCue);
-        pCue->setType(mixxx::CueType::MainCue);
-    }
-    m_pCuePoint->set(mainCuePoint.getPosition());
 
     // Update COs with cues from track.
     loadCuesFromTrack();
@@ -560,19 +530,21 @@ void CueControl::cueUpdated() {
 
 void CueControl::loadCuesFromTrack() {
     QMutexLocker lock(&m_mutex);
-    QSet<int> active_hotcues;
-    CuePointer pLoadCue, pIntroCue, pOutroCue;
-
     if (!m_pLoadedTrack) {
         return;
     }
+
+    QSet<int> active_hotcues;
+    CuePointer pMainCue;
+    CuePointer pIntroCue;
+    CuePointer pOutroCue;
 
     const QList<CuePointer> cues = m_pLoadedTrack->getCuePoints();
     for (const auto& pCue : cues) {
         switch (pCue->getType()) {
         case mixxx::CueType::MainCue:
-            DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
-            pLoadCue = pCue;
+            DEBUG_ASSERT(!pMainCue); // There should be only one MainCue cue
+            pMainCue = pCue;
             break;
         case mixxx::CueType::Intro:
             DEBUG_ASSERT(!pIntroCue); // There should be only one Intro cue
@@ -618,6 +590,14 @@ void CueControl::loadCuesFromTrack() {
         }
     }
 
+    // Detach all hotcues that are no longer present
+    for (int hotCue = 0; hotCue < m_iNumHotCues; ++hotCue) {
+        if (!active_hotcues.contains(hotCue)) {
+            HotcueControl* pControl = m_hotcueControls.at(hotCue);
+            detachCue(pControl);
+        }
+    }
+
     if (pIntroCue) {
         double startPosition = pIntroCue->getPosition();
         double endPosition = pIntroCue->getEndPosition();
@@ -652,20 +632,26 @@ void CueControl::loadCuesFromTrack() {
         m_pOutroEndEnabled->forceSet(0.0);
     }
 
-    if (pLoadCue) {
-        double position = pLoadCue->getPosition();
-        m_pCuePoint->set(quantizeCuePoint(position));
+    // Because of legacy, we store the main cue point twice and need to
+    // sync both values.
+    // The mixxx::CueType::MainCue from getCuePoints() has the priority
+    CuePosition mainCuePoint;
+    if (pMainCue) {
+        double position = pMainCue->getPosition();
+        mainCuePoint.setPosition(position);
+        // adjust the track cue accordingly
+        m_pLoadedTrack->setCuePoint(mainCuePoint);
     } else {
-        m_pCuePoint->set(Cue::kNoPosition);
+        // If no load cue point is stored, read from track
+        // Note: This is 0:00 for new tracks
+        mainCuePoint = m_pLoadedTrack->getCuePoint();
+        // Than add the load cue to the list of cue
+        CuePointer pCue(m_pLoadedTrack->createAndAddCue());
+        pCue->setType(mixxx::CueType::MainCue);
+        pCue->setStartPosition(mainCuePoint.getPosition());
+        pCue->setHotCue(Cue::kNoHotCue);
     }
-
-    // Detach all hotcues that are no longer present
-    for (int hotCue = 0; hotCue < m_iNumHotCues; ++hotCue) {
-        if (!active_hotcues.contains(hotCue)) {
-            HotcueControl* pControl = m_hotcueControls.at(hotCue);
-            detachCue(pControl);
-        }
-    }
+    m_pCuePoint->set(quantizeCuePoint(mainCuePoint.getPosition()));
 }
 
 void CueControl::trackAnalyzed() {

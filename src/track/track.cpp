@@ -825,8 +825,7 @@ CuePointer Track::createAndAddCue() {
             this,
             &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
-    markDirtyAndUnlock(&lock);
-    emit cuesUpdated();
+    // don't emit cuesUpdated() here, because the cue is still invalid.
     return pCue;
 }
 
