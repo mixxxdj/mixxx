@@ -1,15 +1,15 @@
 /**
- * Core functions for the mapping of a Behringer B-Control BCR2000 controller.
+ * Core functions for the mapping of a generic MIDI controller.
  */
 
-/* BCR2000 is a ComponentContainer to be used as target for (un)shift operations */
-var BCR2000 = new components.ComponentContainer();
+/* GenericMidiController is a ComponentContainer to be used as target for (un)shift operations */
+var GenericMidiController = new components.ComponentContainer();
 
 /*
- * Contains all decks and effect units so that a (un)shift operation on BCR2000
+ * Contains all decks and effect units so that a (un)shift operation on GenericMidiController
  * is delegated to the decks, effect units and their children.
  */
-BCR2000.componentContainers = [];
+GenericMidiController.componentContainers = [];
 
 /**
  * Initialize the controller mapping.
@@ -19,19 +19,19 @@ BCR2000.componentContainers = [];
  * @param {boolean} debug Is the application in debug mode?
  * @public
  */
-BCR2000.init = function(controllerId, debug) {
+GenericMidiController.init = function(controllerId, debug) {
     this.controllerId = controllerId;
     this.debug = debug;
-    if (!this.userConfig) {
+    if (typeof this.userConfig !== "function") {
         print(this.controllerId + ": ERROR: Missing configuration. "
-        + "Please check if the configuration file 'Behringer-BCR2000-configuration-scripts.js' "
-        + "exists and contains the object 'BCR2000.userConfig'.");
+        + "Please check if the configuration file "
+        + "'generic-midi-controller-configuration.js' "
+        + "exists and contains the function 'GenericMidiController.userConfig'.");
         return;
     }
     this.config = this.userConfig();
-
-    if (BCR2000.preset && this.config.presets.onInit) {
-        BCR2000.preset.setPreset(this.config.presets.onInit);
+    if (typeof this.config.init === "function") {
+        this.config.init(controllerId, debug);
     }
     this.layerManager = this.createLayerManager(
         this.config.decks, this.config.effectUnits, this.componentContainers);
@@ -46,12 +46,11 @@ BCR2000.init = function(controllerId, debug) {
  *
  * @public
  */
-BCR2000.shutdown = function() {
+GenericMidiController.shutdown = function() {
     this.layerManager.destroy();
-    if (BCR2000.preset && this.config.presets.onShutdown) {
-        BCR2000.preset.setPreset(this.config.presets.onShutdown);
+    if (typeof this.config.shutdown === "function") {
+        this.config.shutdown();
     }
-
     this.log("shutdown() completed.");
 };
 
@@ -67,7 +66,7 @@ BCR2000.shutdown = function() {
  * @param {string} group Group of the component (ignored, taken from the component instead)
  * @public
  */
-BCR2000.input = function(channel, control, value, status, group) {
+GenericMidiController.input = function(channel, control, value, status, group) {
     return this.layerManager.input(channel, control, value, status, group);
 };
 
@@ -81,7 +80,7 @@ BCR2000.input = function(channel, control, value, status, group) {
  * @see `components.extension.LayerManager`
  * @private
  */
-BCR2000.createLayerManager = function(deckDefinitions, effectUnitDefinitions, componentContainers) {
+GenericMidiController.createLayerManager = function(deckDefinitions, effectUnitDefinitions, componentContainers) {
     var layerManager = new components.extension.LayerManager({debug: this.debug});
     [
         {definitions: deckDefinitions, factory: this.createDeck},
@@ -104,7 +103,7 @@ BCR2000.createLayerManager = function(deckDefinitions, effectUnitDefinitions, co
  * @return {object} The new deck
  * @private
  */
-BCR2000.createDeck = function(deckDefinition) {
+GenericMidiController.createDeck = function(deckDefinition) {
     var deck = new components.Deck(deckDefinition.deckNumbers);
     deckDefinition.components.forEach(function(componentDefinition, index) {
         var options = _.merge({
@@ -126,7 +125,7 @@ BCR2000.createDeck = function(deckDefinition) {
  * @return {object} The new effect unit
  * @private
  */
-BCR2000.createEffectUnit = function(effectUnitDefinition) {
+GenericMidiController.createEffectUnit = function(effectUnitDefinition) {
     var unit = new components.EffectUnit(effectUnitDefinition.unitNumbers, true);
 
     /* Convert MIDI addresses (number array) to objects containing a 'midi' property */
@@ -164,7 +163,7 @@ BCR2000.createEffectUnit = function(effectUnitDefinition) {
  * @param {components.Component|components.ComponentContainer} Implementation of a component
  * @private
  */
-BCR2000.registerComponents = function(layerManager, definition, implementation) {
+GenericMidiController.registerComponents = function(layerManager, definition, implementation) {
     if (implementation instanceof components.Component) {
         layerManager.register(implementation, definition.shift === true);
     } else if (implementation instanceof components.ComponentContainer) {
@@ -180,7 +179,7 @@ BCR2000.registerComponents = function(layerManager, definition, implementation) 
  * @param {string} message Message
  * @private
  */
-BCR2000.log = function(message) {
+GenericMidiController.log = function(message) {
     if (this.debug) {
         print(this.controllerId + ": " + message);
     }

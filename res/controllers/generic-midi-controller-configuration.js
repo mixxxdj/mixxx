@@ -1,14 +1,13 @@
 /**
- * Mixxx controller mapping for a Behringer B-Control BCR2000 controller.
+ * Mixxx controller mapping for a generic MIDI controller.
  *
- * The BCR2000 is a general purpose controller that allows different mappings.
- * The mapping may be configured in `BCR2000.userConfig` which is structured as follows:
+ * The mapping may be configured in the object  `GenericMidiController.userConfig` which is
+ * structured as follows:
  *
  * userConfig
  * |
- * +- presets
- * |  +- onInit: Number of the BCR2000 preset that is activated when Mixxx is started
- * |  +- onShutdown: Number of the BCR2000 preset that is activated when Mixxx is shutting down
+ * +- init: function that is called when Mixxx is started
+ * +- shutdown: function that is called when Mixxx is shutting down
  * |
  * +- decks: an array of deck definitions
  * |  +- deck:
@@ -35,28 +34,29 @@
  */
 
 /* Globally available objects are declared as variables to avoid linter errors */
-var BCR2000 = BCR2000;
+var GenericMidiController = GenericMidiController, BCR2000 = BCR2000;
 
-BCR2000.userConfig = function() {
+GenericMidiController.userConfig = function() {
 
     /* Shortcut variables */
-    var p = BCR2000.preset;
     var c = components;
     var e = components.extension;
+    var p = BCR2000;
     var status = p.STATUS_CONTROL_CHANGE;
 
     return {
-        presets: {
-            onInit: 1,
-            onShutdown: 31,
+        init: function() {
+            p.setPreset(1);
         },
-
+        shutdown: function() {
+            p.setPreset(31);
+        },
         decks: [{
             deckNumbers: [1],
             components: [
                 {
                     type: e.ShiftButton, midi: [status, p.buttonRow1[3]],
-                    options: {key: "touch_shift", group: "[Controls]", target: BCR2000}
+                    options: {key: "touch_shift", group: "[Controls]", target: GenericMidiController}
                 },
                 {
                     type: e.RangeAwareEncoder, midi: [status, p.pushEncoderGroup1[0].encoder],
@@ -117,7 +117,7 @@ BCR2000.userConfig = function() {
             components: [
                 {
                     type: e.ShiftButton, midi: [status, p.buttonRow1[7]],
-                    options: {key: "touch_shift", group: "[Controls]", target: BCR2000}
+                    options: {key: "touch_shift", group: "[Controls]", target: GenericMidiController}
                 },
                 {
                     type: e.RangeAwareEncoder, midi: [status, p.pushEncoderGroup1[4].encoder],

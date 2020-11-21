@@ -10,9 +10,9 @@
       <file filename="lodash.mixxx.js"/>
       <file filename="midi-components-0.0.js"/>
       <file filename="midi-components-extension.js" />
-      <file filename="Behringer-BCR2000-core-scripts.js" functionprefix="BCR2000" />
       <file filename="Behringer-BCR2000-preset-scripts.js" />
-      <file filename="Behringer-BCR2000-configuration-scripts.js" />
+      <file filename="generic-midi-controller-scripts.js" functionprefix="GenericMidiController" />
+      <file filename="generic-midi-controller-configuration.js" />
     </scriptfiles>
     <controls>
 
@@ -24,7 +24,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.1 Encoder</description>
@@ -33,7 +33,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.2 Encoder</description>
@@ -42,7 +42,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.3 Encoder</description>
@@ -51,7 +51,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.4 Encoder</description>
@@ -60,7 +60,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C1</description>
@@ -69,7 +69,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C2</description>
@@ -78,7 +78,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C3</description>
@@ -87,7 +87,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C4</description>
@@ -96,7 +96,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
 
       <!-- Deck 2 -->
@@ -107,7 +107,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.5 Encoder</description>
@@ -116,7 +116,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.6 Encoder</description>
@@ -125,7 +125,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.7 Encoder</description>
@@ -134,7 +134,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Pushbutton G1.8 Encoder</description>
@@ -143,7 +143,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C5</description>
@@ -152,7 +152,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C6</description>
@@ -161,7 +161,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C7</description>
@@ -170,7 +170,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R1C8</description>
@@ -179,7 +179,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
 
       <!-- Effect Unit 1 -->
@@ -190,7 +190,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R2C2</description>
@@ -199,7 +199,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R2C3</description>
@@ -208,7 +208,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R2C4</description>
@@ -217,7 +217,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C1</description>
@@ -226,7 +226,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C2</description>
@@ -235,7 +235,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C3</description>
@@ -244,7 +244,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C4</description>
@@ -253,7 +253,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
 
       <!-- Effect Unit 2 -->
@@ -264,7 +264,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R2C6</description>
@@ -273,7 +273,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R2C7</description>
@@ -282,7 +282,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button R2C8</description>
@@ -291,7 +291,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C5</description>
@@ -300,7 +300,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C6</description>
@@ -309,7 +309,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C7</description>
@@ -318,7 +318,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Encoder R1C8</description>
@@ -327,7 +327,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
 
       <!-- Effect Assignment Buttons -->
@@ -338,7 +338,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button Box Top Right</description>
@@ -347,7 +347,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button Box Bottom Left</description>
@@ -356,7 +356,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
       <control>
         <description>Button Box Bottom Right</description>
@@ -365,7 +365,7 @@
         <options>
           <script-binding />
         </options>
-        <key>BCR2000.input</key>
+        <key>GenericMidiController.input</key>
       </control>
 
     </controls>

@@ -144,5 +144,5 @@
     exports.encoderRow2           = encoderRows[1];
     exports.encoderRow3           = encoderRows[2];
     exports.buttonBox             = buttonBox;
-    global.BCR2000.preset = exports;
+    global.BCR2000 = exports;
 })(this);
