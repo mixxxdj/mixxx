@@ -97,7 +97,7 @@ jobs:
       env:
         BUILDENV_BASEPATH: ${{ github.workspace }}/buildenv
 
-    - name: "Set up ccache"
+    - name: "Set ccache size limit"
       run: ccache -M 5G
       env:
         PATH: ${{ steps.buildenv.outputs.path }}
