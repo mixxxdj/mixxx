@@ -10,9 +10,9 @@
 // resources of prepared statements until the next execution.
 class SqlQueryFinisher final {
 public:
-    explicit SqlQueryFinisher(QSqlQuery query)
-        : m_query(query) { // implicitly shared (not copied)
-    }
+  explicit SqlQueryFinisher(const QSqlQuery& query)
+          : m_query(query) { // implicitly shared (not copied)
+  }
     SqlQueryFinisher(SqlQueryFinisher&& other)
         : m_query(std::move(other.m_query)) { // implicitly shared (not moved)
         other.release();

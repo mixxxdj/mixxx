@@ -75,8 +75,7 @@ bool TrackMetadata::updateAudioPropertiesFromStream(
     return changed;
 }
 
-
-int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
+int TrackMetadata::parseCalendarYear(const QString& year, bool* pValid) {
     const QDateTime dateTime(parseDateTime(year));
     if (0 < dateTime.date().year()) {
         if (pValid) {
@@ -104,7 +103,7 @@ int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     }
 }
 
-QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
+QString TrackMetadata::formatCalendarYear(const QString& year, bool* pValid) {
     bool calendarYearValid = false;
     int calendarYear = parseCalendarYear(year, &calendarYearValid);
     if (pValid) {
@@ -117,7 +116,7 @@ QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
     }
 }
 
-QString TrackMetadata::reformatYear(QString year) {
+QString TrackMetadata::reformatYear(const QString& year) {
     const QDateTime dateTime(parseDateTime(year));
     if (dateTime.isValid()) {
         // date/time

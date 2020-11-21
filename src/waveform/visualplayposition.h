@@ -55,7 +55,7 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must only be called from the main
     // thread.
-    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
+    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(const QString& group);
 
     // This is called by SoundDevicePortAudio just after the callback starts.
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);

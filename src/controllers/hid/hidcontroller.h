@@ -50,9 +50,14 @@ class HidController final : public Controller {
 
     // For devices which only support a single report, reportID must be set to
     // 0x0.
+<<<<<<< HEAD
     void sendBytes(const QByteArray& data) override;
     void sendBytesReport(QByteArray data, unsigned int reportID);
     void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
+=======
+    void send(const QByteArray& data) override;
+    void virtual send(QByteArray data, unsigned int reportID);
+>>>>>>> upstream/2.3
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.

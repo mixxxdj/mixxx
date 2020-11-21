@@ -313,7 +313,7 @@ class Track : public QObject {
     // Set/get track metadata and cover art (optional) all at once.
     void importMetadata(
             mixxx::TrackMetadata importedMetadata,
-            QDateTime metadataSynchronized = QDateTime());
+            const QDateTime& metadataSynchronized = QDateTime());
     // Merge additional metadata that is not (yet) stored in the database
     // and only available from file tags.
     void mergeImportedMetadata(

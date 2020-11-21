@@ -30,7 +30,7 @@ mixxx::AnalyzerPluginInfo AnalyzerKey::defaultPlugin() {
     return plugins.at(0);
 }
 
-AnalyzerKey::AnalyzerKey(KeyDetectionSettings keySettings)
+AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
         : m_keySettings(keySettings),
           m_iSampleRate(0),
           m_iTotalSamples(0),
@@ -185,7 +185,7 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
 
 // static
 QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
-        QString pluginId, bool bPreferencesFastAnalysis) {
+        const QString& pluginId, bool bPreferencesFastAnalysis) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
     if (bPreferencesFastAnalysis) {

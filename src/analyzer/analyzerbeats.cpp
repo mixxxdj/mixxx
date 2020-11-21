@@ -293,7 +293,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
 
 // static
 QHash<QString, QString> AnalyzerBeats::getExtraVersionInfo(
-        QString pluginId, bool bPreferencesFastAnalysis) {
+        const QString& pluginId, bool bPreferencesFastAnalysis) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
     if (bPreferencesFastAnalysis) {

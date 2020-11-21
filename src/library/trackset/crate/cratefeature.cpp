@@ -208,8 +208,31 @@ void CrateFeature::updateTreeItemForCrateSummary(
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 }
 
+<<<<<<< HEAD:src/library/trackset/crate/cratefeature.cpp
 bool CrateFeature::dropAcceptChild(
         const QModelIndex& index, QList<QUrl> urls, QObject* pSource) {
+=======
+namespace {
+
+void updateTreeItemForTrackSelection(
+        TreeItem* pTreeItem,
+        TrackId selectedTrackId,
+        const std::vector<CrateId>& sortedTrackCrates) {
+    DEBUG_ASSERT(pTreeItem != nullptr);
+    bool crateContainsSelectedTrack =
+            selectedTrackId.isValid() &&
+            std::binary_search(
+                    sortedTrackCrates.begin(),
+                    sortedTrackCrates.end(),
+                    CrateId(pTreeItem->getData()));
+    pTreeItem->setBold(crateContainsSelectedTrack);
+}
+
+} // anonymous namespace
+
+bool CrateFeature::dropAcceptChild(
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+>>>>>>> upstream/2.3:src/library/crate/cratefeature.cpp
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
@@ -229,7 +252,7 @@ bool CrateFeature::dropAcceptChild(
     return true;
 }
 
-bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
         return false;
@@ -317,8 +340,12 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     menu.exec(globalPos);
 }
 
+<<<<<<< HEAD:src/library/trackset/crate/cratefeature.cpp
 void CrateFeature::onRightClickChild(
         const QPoint& globalPos, QModelIndex index) {
+=======
+void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
+>>>>>>> upstream/2.3:src/library/crate/cratefeature.cpp
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     CrateId crateId(crateIdFromIndex(index));

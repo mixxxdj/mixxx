@@ -1262,7 +1262,7 @@ void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
     hide();
 }
 
-void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
+void WTrackMenu::loadSelectionToGroup(const QString& group, bool play) {
     TrackPointer pTrack = getFirstTrackPointer();
     if (!pTrack) {
         return;

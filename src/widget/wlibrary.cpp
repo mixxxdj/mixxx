@@ -33,7 +33,7 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
             kMaxTrackTableBackgroundColorOpacity);
 }
 
-bool WLibrary::registerView(QString name, QWidget* view) {
+bool WLibrary::registerView(const QString& name, QWidget* view) {
     QMutexLocker lock(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;

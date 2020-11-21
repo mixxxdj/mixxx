@@ -68,12 +68,25 @@ ControllerEngine::~ControllerEngine() {
     uninitializeScriptEngine();
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 bool ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
         const QString& function,
         QJSValueList args,
         bool bFatalError) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return false;
+=======
+/* -------- ------------------------------------------------------
+Purpose: Calls the same method on a list of JS Objects
+Input:   -
+Output:  -
+-------- ------------------------------------------------------ */
+void ControllerEngine::callFunctionOnObjects(const QList<QString>& scriptFunctionPrefixes,
+        const QString& function,
+        const QScriptValueList& args) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine) {
+        return;
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     }
 
     const QJSValue global = m_pScriptEngine->globalObject();
@@ -376,10 +389,119 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     }
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList args) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pScriptEngine) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: Validate script syntax, then evaluate() it so the
+            functions are registered & available for use.
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+bool ControllerEngine::evaluate(const QString& filepath) {
+    return evaluate(QFileInfo(filepath));
+}
+
+bool ControllerEngine::syntaxIsValid(const QString& scriptCode, const QString& filename) {
+    if (m_pEngine == nullptr) {
+        return false;
+    }
+
+    QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
+
+    // Note: Do not translate the error messages that go into the "details"
+    // part of the error dialog. These serve as starting point for mapping
+    // developers and might not always be fluent in the language of mapping
+    // user.
+    QString error;
+    switch (result.state()) {
+        case (QScriptSyntaxCheckResult::Valid): break;
+        case (QScriptSyntaxCheckResult::Intermediate):
+            error = QStringLiteral("Incomplete code");
+            break;
+        case (QScriptSyntaxCheckResult::Error):
+            error = QStringLiteral("Syntax error");
+            break;
+    }
+
+    // If we didn't encounter an error, exit early
+    if (error.isEmpty()) {
+        return true;
+    }
+
+    if (filename.isEmpty()) {
+        error = QString("%1 at line %2, column %3")
+                        .arg(error,
+                                QString::number(result.errorLineNumber()),
+                                QString::number(result.errorColumnNumber()));
+    } else {
+        error = QString("%1 at line %2, column %3 in file %4")
+                        .arg(error,
+                                QString::number(result.errorLineNumber()),
+                                QString::number(result.errorColumnNumber()),
+                                filename);
+    }
+
+    QString errorMessage = result.errorMessage();
+    if (!errorMessage.isEmpty()) {
+        error += QStringLiteral("\n\nError:  \n") + errorMessage;
+    }
+
+    if (filename.isEmpty()) {
+        error += QStringLiteral("\n\nCode:\n") + scriptCode;
+    }
+
+    qWarning() << "ControllerEngine:" << error;
+    scriptErrorDialog(error, error, true);
+    return false;
+}
+
+/* -------- ------------------------------------------------------
+Purpose: Evaluate & run script code
+Input:   'this' object if applicable, Code string
+Output:  false if an exception
+-------- ------------------------------------------------------ */
+bool ControllerEngine::internalExecute(
+        const QScriptValue& thisObject, const QString& scriptCode) {
+    // A special version of safeExecute since we're evaluating strings, not actual functions
+    //  (execute() would print an error that it's not a function every time a timer fires.)
+    if (m_pEngine == nullptr) {
+        return false;
+    }
+
+    if (!syntaxIsValid(scriptCode)) {
+        return false;
+    }
+
+    QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode);
+
+    if (checkException()) {
+        qDebug() << "Exception evaluating:" << scriptCode;
+        return false;
+    }
+
+    if (!scriptFunction.isFunction()) {
+        // scriptCode was plain code called in evaluate above
+        return false;
+    }
+
+    return internalExecute(thisObject, scriptFunction, QScriptValueList());
+}
+
+/* -------- ------------------------------------------------------
+Purpose: Evaluate & run script code
+Input:   'this' object if applicable, Code string
+Output:  false if an exception
+-------- ------------------------------------------------------ */
+bool ControllerEngine::internalExecute(const QScriptValue& thisObject,
+        QScriptValue functionObject,
+        const QScriptValueList& args) {
+    if (m_pEngine == nullptr) {
+        qDebug() << "ControllerEngine::execute: No script engine exists!";
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
         return false;
     }
 
@@ -406,10 +528,22 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList arg
     return true;
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray& data) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pScriptEngine) {
+=======
+bool ControllerEngine::execute(const QScriptValue& functionObject,
+        unsigned char channel,
+        unsigned char control,
+        unsigned char value,
+        unsigned char status,
+        const QString& group,
+        mixxx::Duration timestamp) {
+    Q_UNUSED(timestamp);
+    if (m_pEngine == nullptr) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
         return false;
     }
     QJSValueList args;
@@ -418,9 +552,18 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray
     return executeFunction(functionObject, args);
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QString& fileName, int lineNumber) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return QJSValue::UndefinedValue;
+=======
+bool ControllerEngine::execute(const QScriptValue& function,
+        const QByteArray& data,
+        mixxx::Duration timestamp) {
+    Q_UNUSED(timestamp);
+    if (m_pEngine == nullptr) {
+        return false;
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     }
     return m_pScriptEngine->evaluate(program, fileName, lineNumber);
 }
@@ -571,7 +714,16 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
     return coScript;
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 double ControllerEngine::getValue(QString group, QString name) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: Returns the current value of a Mixxx control (for scripts)
+   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
+   Output:  The value
+   -------- ------------------------------------------------------ */
+double ControllerEngine::getValue(const QString& group, const QString& name) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -580,7 +732,16 @@ double ControllerEngine::getValue(QString group, QString name) {
     return coScript->get();
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 void ControllerEngine::setValue(QString group, QString name, double newValue) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: Sets new value of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+void ControllerEngine::setValue(const QString& group, const QString& name, double newValue) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     if (isnan(newValue)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                    << "] to NotANumber, ignoring.";
@@ -598,7 +759,16 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
     }
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 double ControllerEngine::getParameter(QString group, QString name) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: Returns the normalized value of a Mixxx control (for scripts)
+   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
+   Output:  The value
+   -------- ------------------------------------------------------ */
+double ControllerEngine::getParameter(const QString& group, const QString& name) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -607,7 +777,17 @@ double ControllerEngine::getParameter(QString group, QString name) {
     return coScript->getParameter();
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 void ControllerEngine::setParameter(QString group, QString name, double newParameter) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: Sets new normalized parameter of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+void ControllerEngine::setParameter(
+        const QString& group, const QString& name, double newParameter) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     if (isnan(newParameter)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                    << "] to NotANumber, ignoring.";
@@ -625,7 +805,17 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
     }
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 double ControllerEngine::getParameterForValue(QString group, QString name, double value) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: normalize a value of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+double ControllerEngine::getParameterForValue(
+        const QString& group, const QString& name, double value) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     if (isnan(value)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                    << "] to NotANumber, ignoring.";
@@ -642,14 +832,32 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
     return coScript->getParameterForValue(value);
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 void ControllerEngine::reset(QString group, QString name) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: Resets the value of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+void ControllerEngine::reset(const QString& group, const QString& name) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->reset();
     }
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 double ControllerEngine::getDefaultValue(QString group, QString name) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: default value of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+double ControllerEngine::getDefaultValue(const QString& group, const QString& name) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -660,7 +868,16 @@ double ControllerEngine::getDefaultValue(QString group, QString name) {
     return coScript->getDefault();
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 double ControllerEngine::getDefaultParameter(QString group, QString name) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: default parameter of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+double ControllerEngine::getDefaultParameter(const QString& group, const QString& name) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -671,6 +888,7 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
     return coScript->getParameterForValue(coScript->getDefault());
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 void ControllerEngine::log(QString message) {
     controllerDebug(message);
 }
@@ -678,6 +896,29 @@ void ControllerEngine::log(QString message) {
 QJSValue ControllerEngine::makeConnection(QString group, QString name, const QJSValue callback) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
         return QJSValue();
+=======
+/* -------- ------------------------------------------------------
+   Purpose: qDebugs script output so it ends up in mixxx.log
+   Input:   String to log
+   Output:  -
+   -------- ------------------------------------------------------ */
+void ControllerEngine::log(const QString& message) {
+    controllerDebug(message);
+}
+
+// Purpose: Connect a ControlObject's valueChanged() signal to a script callback function
+// Input:   Control group (e.g. '[Channel1]'), Key name (e.g. 'pfl'), script callback
+// Output:  a ScriptConnectionInvokableWrapper turned into a QtScriptValue.
+//          The script should store this object to call its
+//          'disconnect' and 'trigger' methods as needed.
+//          If unsuccessful, returns undefined.
+QScriptValue ControllerEngine::makeConnection(const QString& group,
+        const QString& name,
+        const QScriptValue& callback) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+        qWarning() << "Tried to connect script callback, but there is no script engine!";
+        return QScriptValue();
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     }
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
@@ -710,7 +951,33 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name, const QJS
     return QJSValue();
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+=======
+/* -------- ------------------------------------------------------
+   Purpose: Execute a ScriptConnection's callback
+   Input:   the value of the connected ControlObject to pass to the callback
+   -------- ------------------------------------------------------ */
+void ScriptConnection::executeCallback(double value) const {
+    QScriptValueList args;
+    args << QScriptValue(value);
+    args << QScriptValue(key.group);
+    args << QScriptValue(key.item);
+    QScriptValue func = callback; // copy function because QScriptValue::call is not const
+    QScriptValue result = func.call(context, args);
+    if (result.isError()) {
+        qWarning() << "ControllerEngine: Invocation of connection " << id.toString()
+                   << "connected to (" + key.group + ", " + key.item + ") failed:"
+                   << result.toString();
+    }
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: (Dis)connects a ScriptConnection
+   Input:   the ScriptConnection to disconnect
+   -------- ------------------------------------------------------ */
+bool ControllerEngine::removeScriptConnection(const ScriptConnection& connection) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
             connection.key.item);
 
@@ -721,8 +988,24 @@ bool ControllerEngine::removeScriptConnection(const ScriptConnection connection)
     return coScript->removeScriptConnection(connection);
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
+=======
+bool ScriptConnectionInvokableWrapper::disconnect() {
+    // if the removeScriptConnection succeeded, the connection has been successfully disconnected
+    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+    m_isConnected = !success;
+    return success;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Triggers the callback function of a ScriptConnection
+   Input:   the ScriptConnection to trigger
+   -------- ------------------------------------------------------ */
+void ControllerEngine::triggerScriptConnection(const ScriptConnection& connection) {
+    if (m_pEngine == nullptr) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
         return;
     }
 
@@ -743,8 +1026,15 @@ void ControllerEngine::triggerScriptConnection(const ScriptConnection connection
 // it is disconnected.
 // WARNING: These behaviors are quirky and confusing, so if you change this function,
 // be sure to run the ControllerEngineTest suite to make sure you do not break old scripts.
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 QJSValue ControllerEngine::connectControl(
         QString group, QString name, QJSValue passedCallback, bool disconnect) {
+=======
+QScriptValue ControllerEngine::connectControl(const QString& group,
+        const QString& name,
+        const QScriptValue& passedCallback,
+        bool disconnect) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
     QJSValue actualCallbackFunction;
@@ -847,7 +1137,18 @@ QJSValue ControllerEngine::connectControl(
     return makeConnection(group, name, actualCallbackFunction);
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 void ControllerEngine::trigger(QString group, QString name) {
+=======
+/* -------- ------------------------------------------------------
+   DEPRECATED: Use ScriptConnectionInvokableWrapper::trigger instead
+   Purpose: Emits valueChanged() so all ScriptConnections held by a
+            ControlObjectScript have their callback executed
+   Input:   -
+   Output:  -
+   -------- ------------------------------------------------------ */
+void ControllerEngine::trigger(const QString& group, const QString& name) {
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->emitValueChanged();
@@ -911,6 +1212,7 @@ bool ControllerEngine::evaluateScriptFile(const QFileInfo& scriptFile) {
     return true;
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
 int ControllerEngine::beginTimer(int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
         timerCallback = evaluateCodeString(timerCallback.toString());
@@ -922,6 +1224,24 @@ int ControllerEngine::beginTimer(int intervalMillis, QJSValue timerCallback, boo
             sErrorMessage.append("\n" + timerCallback.toString());
         }
         throwJSError(sErrorMessage);
+=======
+bool ControllerEngine::hasErrors(const QString& filename) {
+    bool ret = m_scriptErrors.contains(filename);
+    return ret;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Creates & starts a timer that runs some script code
+                on timeout
+   Input:   Number of milliseconds, script function to call,
+                whether it should fire just once
+   Output:  The timer's ID, 0 if starting it failed
+   -------- ------------------------------------------------------ */
+int ControllerEngine::beginTimer(int interval, const QScriptValue& timerCallback, bool oneShot) {
+    if (!timerCallback.isFunction() && !timerCallback.isString()) {
+        qWarning() << "Invalid timer callback provided to beginTimer."
+                   << "Valid callbacks are strings and functions.";
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
         return 0;
     }
 
@@ -1236,6 +1556,57 @@ bool ControllerEngine::isScratching(int deck) {
     return getValue(group, "scratch2_enable") > 0;
 }
 
+<<<<<<< HEAD:src/controllers/engine/controllerengine.cpp
+=======
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables soft-takeover status for a particular ControlObject
+    Input:   ControlObject group and key values,
+                whether to set the soft-takeover status or not
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::softTakeover(const QString& group, const QString& name, bool set) {
+    ConfigKey key = ConfigKey(group, name);
+    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
+    if (!pControl) {
+        qWarning() << "Failed to" << (set ? "enable" : "disable")
+                   << "softTakeover for invalid control" << key;
+        return;
+    }
+    if (set) {
+        m_st.enable(pControl);
+    } else {
+        m_st.disable(pControl);
+    }
+}
+
+/*  -------- ------------------------------------------------------
+     Purpose: Ignores the next value for the given ControlObject
+                This should be called before or after an absolute physical
+                control (slider or knob with hard limits) is changed to operate
+                on a different ControlObject, allowing it to sync up to the
+                soft-takeover state without an abrupt jump.
+     Input:   ControlObject group and key values
+     Output:  -
+     -------- ------------------------------------------------------ */
+void ControllerEngine::softTakeoverIgnoreNextValue(
+        const QString& group, const QString& name) {
+    ConfigKey key = ConfigKey(group, name);
+    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
+    if (!pControl) {
+        qWarning() << "Failed to call softTakeoverIgnoreNextValue for invalid control" << key;
+        return;
+    }
+
+    m_st.ignoreNext(pControl);
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables spinback effect for the channel
+    Input:   deck, activate/deactivate, factor (optional),
+             rate (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+>>>>>>> upstream/2.3:src/controllers/controllerengine.cpp
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
     // defaults for args set in header file
     brake(deck, activate, factor, rate);

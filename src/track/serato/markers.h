@@ -158,7 +158,7 @@ class SeratoMarkers final {
     const QList<SeratoMarkersEntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(QList<SeratoMarkersEntryPointer> entries) {
+    void setEntries(const QList<SeratoMarkersEntryPointer>& entries) {
         m_entries = entries;
     }
 

@@ -32,8 +32,13 @@ class PlayerManagerInterface {
   public:
     virtual ~PlayerManagerInterface() = default;
 
+<<<<<<< HEAD
     virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
     virtual BaseTrackPlayer* getPlayer(const ChannelHandle& channelHandle) const = 0;
+=======
+    // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
+    virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
+>>>>>>> upstream/2.3
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
@@ -117,6 +122,18 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return numPreviewDecks();
     }
 
+<<<<<<< HEAD
+=======
+    // Get a BaseTrackPlayer (i.e. a Deck, Sampler or PreviewDeck) by its
+    // group. Auxiliaries and microphones are not players.
+    BaseTrackPlayer* getPlayer(const QString& group) const override;
+
+    // Get the deck by its deck number. Decks are numbered starting with 1.
+    Deck* getDeck(unsigned int player) const override;
+
+    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const override;
+
+>>>>>>> upstream/2.3
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const override;
     // Return the number of samplers. Thread-safe.
@@ -178,21 +195,21 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void slotLoadToPlayer(QString location, QString group);
-    void slotCloneDeck(QString source_group, QString target_group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void slotLoadToPlayer(const QString& location, const QString& group);
+    void slotCloneDeck(const QString& source_group, const QString& target_group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
     // Loads the location to the deck. deckNumber is 1-indexed
-    void slotLoadToDeck(QString location, int deckNumber);
+    void slotLoadToDeck(const QString& location, int deckNumber);
 
     // Loads the location to the preview deck. previewDeckNumber is 1-indexed
-    void slotLoadToPreviewDeck(QString location, int previewDeckNumber);
+    void slotLoadToPreviewDeck(const QString& location, int previewDeckNumber);
     // Slots for loading tracks to samplers
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
     // Loads the location to the sampler. samplerNumber is 1-indexed
-    void slotLoadToSampler(QString location, int samplerNumber);
+    void slotLoadToSampler(const QString& location, int samplerNumber);
 
     void slotChangeNumDecks(double v);
     void slotChangeNumSamplers(double v);
@@ -207,7 +224,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void onTrackAnalysisFinished();
 
   signals:
-    void loadLocationToPlayer(QString location, QString group);
+    void loadLocationToPlayer(const QString& location, const QString& group);
 
     // Emitted when the user tries to enable a microphone talkover control when
     // there is no input configured.

@@ -95,7 +95,7 @@ void Controller::stopLearning() {
 
 }
 
-void Controller::send(QList<int> data, unsigned int length) {
+void Controller::send(const QList<int>& data, unsigned int length) {
     // If you change this implementation, also change it in HidController (That
     // function is required due to HID devices having report IDs)
 
@@ -117,8 +117,7 @@ void Controller::triggerActivity()
         m_userActivityInhibitTimer.start();
     }
 }
-void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
-
+void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     if (m_pEngine == NULL) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as

@@ -70,9 +70,10 @@ void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
-void WStatusLight::setPixmap(int iState, PixmapSource source,
-                             Paintable::DrawMode mode,
-                             double scaleFactor) {
+void WStatusLight::setPixmap(int iState,
+        const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     if (iState < 0 || iState >= m_pixmaps.size()) {
         return;
     }

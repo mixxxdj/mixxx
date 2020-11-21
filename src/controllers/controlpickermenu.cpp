@@ -1168,10 +1168,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 ControlPickerMenu::~ControlPickerMenu() {
 }
 
-void ControlPickerMenu::addSingleControl(QString group, QString control,
-                                         QString title, QString description,
-                                         QMenu* pMenu, QString prefix,
-                                         QString actionTitle) {
+void ControlPickerMenu::addSingleControl(const QString& group,
+        const QString& control,
+        const QString& title,
+        const QString& description,
+        QMenu* pMenu,
+        const QString& prefix,
+        const QString& actionTitle) {
     int controlIndex;
 
     if (prefix.isEmpty()) {
@@ -1182,21 +1185,19 @@ void ControlPickerMenu::addSingleControl(QString group, QString control,
         controlIndex = addAvailableControl(ConfigKey(group, control), prefixedTitle, prefixedDescription);
     }
 
-    if (actionTitle.isEmpty()) {
-        actionTitle = title;
-    }
-
-    auto pAction = make_parented<QAction>(actionTitle, pMenu);
+    auto pAction = make_parented<QAction>(actionTitle.isEmpty() ? title : actionTitle, pMenu);
     connect(pAction, &QAction::triggered,
             this, [this, controlIndex] { controlChosen(controlIndex); });
     pMenu->addAction(pAction);
 }
 
-void ControlPickerMenu::addControl(QString group, QString control, QString title,
-                                   QString description,
-                                   QMenu* pMenu,
-                                   bool addReset,
-                                   QString prefix) {
+void ControlPickerMenu::addControl(const QString& group,
+        const QString& control,
+        const QString& title,
+        const QString& description,
+        QMenu* pMenu,
+        bool addReset,
+        const QString& prefix) {
     addSingleControl(group, control, title, description, pMenu, prefix);
 
     if (addReset) {
@@ -1208,12 +1209,14 @@ void ControlPickerMenu::addControl(QString group, QString control, QString title
     }
 }
 
-void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
-                                         QString controlDescription,
-                                         QMenu* pMenu,
-                                         bool deckControls, bool samplerControls,
-                                         bool previewdeckControls,
-                                         bool addReset) {
+void ControlPickerMenu::addPlayerControl(const QString& control,
+        const QString& controlTitle,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool deckControls,
+        bool samplerControls,
+        bool previewdeckControls,
+        bool addReset) {
     const int iNumSamplers = static_cast<int>(
             ControlObject::get(ConfigKey("[Master]", "num_samplers")));
     const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
@@ -1301,13 +1304,13 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
     }
 }
 
-void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
-                                                   QString controlTitle,
-                                                   QString controlDescription,
-                                                   QMenu* pMenu,
-                                                   bool microphoneControls,
-                                                   bool auxControls,
-                                                   bool addReset) {
+void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
+        const QString& controlTitle,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool microphoneControls,
+        bool auxControls,
+        bool addReset) {
     parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
 
@@ -1356,51 +1359,51 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     }
 }
 
-void ControlPickerMenu::addDeckAndSamplerControl(QString control,
-                                                 QString title,
-                                                 QString controlDescription,
-                                                 QMenu* pMenu,
-                                                 bool addReset) {
+void ControlPickerMenu::addDeckAndSamplerControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, true, false, addReset);
 }
 
-void ControlPickerMenu::addDeckAndPreviewDeckControl(QString control,
-                                                     QString title,
-                                                     QString controlDescription,
-                                                     QMenu* pMenu,
-                                                     bool addReset) {
+void ControlPickerMenu::addDeckAndPreviewDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, false, true, addReset);
 }
 
-void ControlPickerMenu::addDeckAndSamplerAndPreviewDeckControl(QString control,
-                                                               QString title,
-                                                               QString controlDescription,
-                                                               QMenu* pMenu,
-                                                               bool addReset) {
+void ControlPickerMenu::addDeckAndSamplerAndPreviewDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, true, true, addReset);
 }
 
-void ControlPickerMenu::addDeckControl(QString control,
-                                       QString title,
-                                       QString controlDescription,
-                                       QMenu* pMenu,
-                                       bool addReset) {
+void ControlPickerMenu::addDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, false, false, addReset);
 }
 
-void ControlPickerMenu::addSamplerControl(QString control,
-                                          QString title,
-                                          QString controlDescription,
-                                          QMenu* pMenu,
-                                          bool addReset) {
+void ControlPickerMenu::addSamplerControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, false, true, false, addReset);
 }
 
-void ControlPickerMenu::addPreviewDeckControl(QString control,
-                                              QString title,
-                                              QString controlDescription,
-                                              QMenu* pMenu,
-                                              bool addReset) {
+void ControlPickerMenu::addPreviewDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, false, false, true, addReset);
 }
 
@@ -1420,9 +1423,9 @@ void ControlPickerMenu::controlChosen(int controlIndex) {
     emit controlPicked(m_controlsAvailable[controlIndex]);
 }
 
-int ControlPickerMenu::addAvailableControl(ConfigKey key,
-                                           QString title,
-                                           QString description) {
+int ControlPickerMenu::addAvailableControl(const ConfigKey& key,
+        const QString& title,
+        const QString& description) {
     m_controlsAvailable.append(key);
     m_descriptionsByKey.insert(key, description);
     m_titlesByKey.insert(key, title);
@@ -1431,14 +1434,14 @@ int ControlPickerMenu::addAvailableControl(ConfigKey key,
     return m_controlsAvailable.size() - 1;
 }
 
-bool ControlPickerMenu::controlExists(ConfigKey key) const {
+bool ControlPickerMenu::controlExists(const ConfigKey& key) const {
     return m_titlesByKey.contains(key);
 }
 
-QString ControlPickerMenu::descriptionForConfigKey(ConfigKey key) const {
+QString ControlPickerMenu::descriptionForConfigKey(const ConfigKey& key) const {
     return m_descriptionsByKey.value(key, QString());
 }
 
-QString ControlPickerMenu::controlTitleForConfigKey(ConfigKey key) const {
+QString ControlPickerMenu::controlTitleForConfigKey(const ConfigKey& key) const {
     return m_titlesByKey.value(key, QString());
 }

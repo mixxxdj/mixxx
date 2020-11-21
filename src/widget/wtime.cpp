@@ -24,7 +24,7 @@ void WTime::setup(const QDomNode& node, const SkinContext& context) {
     refreshTime();
 }
 
-void WTime::setTimeFormat(QDomNode node, const SkinContext& context) {
+void WTime::setTimeFormat(const QDomNode& node, const SkinContext& context) {
     // if a custom format is defined, all other formatting flags are ignored
     QString customFormat;
     if (context.hasNodeSelectString(node, "CustomFormat", &customFormat)) {

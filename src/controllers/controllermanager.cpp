@@ -64,7 +64,7 @@ QFileInfo findPresetFile(const QString& pathOrFilename, const QStringList& paths
 } // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
-                               const QString originalFilename) {
+        const QString& originalFilename) {
     QString filename = originalFilename;
     int i = 1;
     while (filenames.contains(filename)) {
@@ -223,7 +223,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-QString ControllerManager::getConfiguredPresetFileForDevice(QString name) {
+QString ControllerManager::getConfiguredPresetFileForDevice(const QString& name) {
     return m_pConfig->getValueString(ConfigKey("[ControllerPreset]", sanitizeDeviceName(name)));
 }
 

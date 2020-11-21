@@ -1080,8 +1080,8 @@ void AutoDJCratesDAO::slotPlaylistTrackRemoved(int playlistId,
 }
 
 // Signaled by the PlayerInfo singleton when a track is loaded to a deck.
-void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(QString a_strGroup,
-                                                TrackPointer a_pTrack) {
+void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(const QString& a_strGroup,
+        TrackPointer a_pTrack) {
     // This gets called with a null track during an unload.  Filter that out.
     if (a_pTrack == NULL) {
         return;
@@ -1111,8 +1111,8 @@ void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(QString a_strGroup,
 }
 
 // Signaled by the PlayerInfo singleton when a track is unloaded from a deck.
-void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
-                                                  TrackPointer pTrack) {
+void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(const QString& group,
+        TrackPointer pTrack) {
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
     TrackId trackId(pTrack->getId());

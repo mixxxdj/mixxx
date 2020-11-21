@@ -55,7 +55,8 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 }
 
-void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BaseExternalLibraryFeature::onRightClickChild(
+        const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QMenu menu(m_pSidebarWidget);

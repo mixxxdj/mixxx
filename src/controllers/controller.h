@@ -88,7 +88,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
-    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
+    virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     /// Apply the preset to the controller.
     /// @brief Initializes both controller engine and static output mappings.
@@ -105,11 +105,15 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   protected:
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
+<<<<<<< HEAD
     virtual void send(QList<int> data, unsigned int length = 0);
 
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
     virtual void sendBytes(const QByteArray& data) = 0;
+=======
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0);
+>>>>>>> upstream/2.3
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
@@ -125,10 +129,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     inline ControllerEngine* getEngine() const {
         return m_pEngine;
     }
-    inline void setDeviceName(QString deviceName) {
+    inline void setDeviceName(const QString& deviceName) {
         m_sDeviceName = deviceName;
     }
-    inline void setDeviceCategory(QString deviceCategory) {
+    inline void setDeviceCategory(const QString& deviceCategory) {
         m_sDeviceCategory = deviceCategory;
     }
     inline void setOutputDevice(bool outputDevice) {
@@ -157,6 +161,13 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     }
 
   private:
+<<<<<<< HEAD
+=======
+    // This must be reimplemented by sub-classes desiring to send raw bytes to a
+    // controller.
+    virtual void send(const QByteArray& data) = 0;
+
+>>>>>>> upstream/2.3
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     virtual ControllerPreset* preset() = 0;

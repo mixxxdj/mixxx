@@ -31,13 +31,13 @@ class MockPortMidiController : public PortMidiController {
         PortMidiController::sendShortMsg(status, byte1, byte2);
     }
 
-    void sendSysexMsg(QList<int> data, unsigned int length) {
+    void sendSysexMsg(const QList<int>& data, unsigned int length) {
         PortMidiController::sendSysexMsg(data, length);
     }
 
     MOCK_METHOD4(receive, void(unsigned char, unsigned char, unsigned char,
                                mixxx::Duration));
-    MOCK_METHOD2(receive, void(const QByteArray, mixxx::Duration));
+    MOCK_METHOD2(receive, void(const QByteArray&, mixxx::Duration));
 };
 
 class MockPortMidiDevice : public PortMidiDevice {

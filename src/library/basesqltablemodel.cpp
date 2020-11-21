@@ -801,7 +801,7 @@ CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     return coverInfo;
 }
 
-void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
+void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }

@@ -164,7 +164,7 @@ void EncoderMp3::initStream() {
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
 }
 
-int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
+int EncoderMp3::initEncoder(int samplerate, QString& errorMessage) {
     unsigned long samplerate_in = samplerate;
     // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
