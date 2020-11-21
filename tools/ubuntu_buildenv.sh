@@ -18,10 +18,10 @@ case "$COMMAND" in
         source /etc/lsb-release 2>/dev/null
         case "${DISTRIB_CODENAME}" in
             bionic)
-                PACKAGES_EXTRA=libfaad-dev libmp4v2-dev
+                PACKAGES_EXTRA="libfaad-dev libmp4v2-dev"
                 ;;
             focal)
-                PACKAGES_EXTRA=libavcodec-dev libavutil-dev
+                PACKAGES_EXTRA="libavcodec-dev libavutil-dev"
                 ;;
             *)
                 echo "Failed to detect a supported Ubuntu version, dependency installation will be skipped." >&2
@@ -65,7 +65,7 @@ case "$COMMAND" in
                 qt5-default \
                 qt5keychain-dev \
                 qtscript5-dev \
-                $PACKAGES_EXTRA
+                ${PACKAGES_EXTRA}
         fi
 
         if [ "$1" = "--ghactions" ]
