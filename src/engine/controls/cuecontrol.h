@@ -337,24 +337,14 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocusColorNext;
     ControlObject* m_pHotcueFocusColorPrev;
 
-    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
     HotcueControl* m_pCurrentSavedLoopControl;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
 
-    // TODO(daschuer): It looks like the whole m_mutex is broken. Originally it
-    // ensured that the main cue really belongs to the loaded track. Now that
-    // we have hot cues that are altered outsite this guard this guarantee has
-    // become void.
-    //
-    // We have multiple cases where it locks m_pLoadedTrack and
-    // pControl->getCue(). This guards the hotcueClear() that could detach the
-    // cue call, but doesn't protect from cue changes via loadCuesFromTrack()
-    // which is called outside the mutex lock.
-    //
-    // We need to repair this.
-    QMutex m_mutex;
+    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
+    // Must be locked when using the m_pLoadedTrack and it's properties
+    QMutex m_trackMutex;
 
     friend class HotcueControlTest;
 };
