@@ -130,7 +130,7 @@ void SoundSourceOggVorbis::close() {
 }
 
 ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {

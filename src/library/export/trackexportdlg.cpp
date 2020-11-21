@@ -50,7 +50,7 @@ void TrackExportDlg::showEvent(QShowEvent* event) {
     m_worker->start();
 }
 
-void TrackExportDlg::slotProgress(QString filename, int progress, int count) {
+void TrackExportDlg::slotProgress(const QString& filename, int progress, int count) {
     if (progress == count) {
         statusLabel->setText(tr("Export finished"));
         finish();
@@ -63,7 +63,7 @@ void TrackExportDlg::slotProgress(QString filename, int progress, int count) {
 }
 
 void TrackExportDlg::slotAskOverwriteMode(
-        QString filename,
+        const QString& filename,
         std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     QMessageBox question_box(
             QMessageBox::Warning,

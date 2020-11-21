@@ -376,6 +376,39 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
 
+    connect(SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::valueChanged),
+            SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::setValue));
+    connect(SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::setValue));
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            labelSpeedRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SliderRateRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SpinBoxRateRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            labelSpeedTemporary,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateCoarse,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateFine,
+            &QWidget::setEnabled);
+
     slotUpdate();
 }
 

@@ -12,12 +12,11 @@
 #include "widget/wwidget.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-                                     UserSettingsPointer pConfig,
-                                     ConfigKey vScrollBarPosKey)
+        UserSettingsPointer pConfig,
+        const ConfigKey& vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
-
     loadVScrollBarPosState();
 
     // Setup properties for table

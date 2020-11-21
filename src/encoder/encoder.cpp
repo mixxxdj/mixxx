@@ -64,8 +64,7 @@ Encoder::Format EncoderFactory::getSelectedFormat(UserSettingsPointer pConfig) c
 {
     return getFormatFor(pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding")));
 }
-Encoder::Format EncoderFactory::getFormatFor(QString formatText) const
-{
+Encoder::Format EncoderFactory::getFormatFor(const QString& formatText) const {
     for (const auto& format : m_formats) {
         if (format.internalName == formatText) {
             return format;
@@ -77,8 +76,8 @@ Encoder::Format EncoderFactory::getFormatFor(QString formatText) const
 }
 
 EncoderPointer EncoderFactory::createRecordingEncoder(
-        Encoder::Format format,
-        UserSettingsPointer pConfig, 
+        const Encoder::Format& format,
+        UserSettingsPointer pConfig,
         EncoderCallback* pCallback) const {
     EncoderRecordingSettingsPointer pSettings =
             getEncoderRecordingSettings(format, pConfig);

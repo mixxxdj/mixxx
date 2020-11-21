@@ -11,14 +11,24 @@ jobs:
         include:
           - name: Ubuntu 18.04 (gcc)
             os: ubuntu-18.04
-            # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
-            cmake_args: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=O
+            cmake_args: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
             ctest_args:
             ccache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_script: tools/ubuntu_buildenv.sh
             artifacts_name: Ubuntu DEB
             artifacts_path: cmake_build/*.deb
+            apt_packages: libfaad-dev libmp4v2-dev
+          - name: Ubuntu 20.04 (gcc)
+            os: ubuntu-20.04
+            cmake_args: -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+            ctest_args:
+            ccache_path: ~/.ccache
+            cpack_generator: DEB
+            buildenv_script: tools/ubuntu_buildenv.sh
+            artifacts_name: Ubuntu DEB
+            artifacts_path: cmake_build/*.deb
+            apt_packages: libavcodec-dev libavutil-dev
           - name: macOS 10.15
             os: macos-10.15
             cmake_args: -DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON
@@ -57,7 +67,6 @@ jobs:
           libavformat-dev \
           libchromaprint-dev \
           libebur128-dev \
-          libfaad-dev \
           libfftw3-dev \
           libflac-dev \
           libid3tag0-dev \
@@ -65,7 +74,6 @@ jobs:
           libmad0-dev \
           libmodplug-dev \
           libmp3lame-dev \
-          libmp4v2-dev \
           libopus-dev \
           libopusfile-dev \
           libportmidi-dev \

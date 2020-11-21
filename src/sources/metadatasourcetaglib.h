@@ -10,12 +10,12 @@ namespace mixxx {
 class MetadataSourceTagLib : public MetadataSource {
   public:
     explicit MetadataSourceTagLib(
-            QString fileName)
+            const QString& fileName)
             : m_fileName(fileName),
               m_fileType(taglib::getFileTypeFromFileName(fileName)) {
     }
     MetadataSourceTagLib(
-            QString fileName,
+            const QString& fileName,
             taglib::FileType fileType)
             : m_fileName(fileName),
               m_fileType(fileType) {

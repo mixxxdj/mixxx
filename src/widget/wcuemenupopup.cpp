@@ -67,7 +67,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     layout()->activate();
 }
 
-void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
+void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue) {
     if (pTrack && pCue) {
         m_pTrack = pTrack;
         m_pCue = pCue;

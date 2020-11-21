@@ -147,8 +147,7 @@ void CrateSummaryQueryFields::populateFromQuery(
     pCrateSummary->setTrackDuration(getTrackDuration(query));
 }
 
-
-void CrateStorage::repairDatabase(QSqlDatabase database) {
+void CrateStorage::repairDatabase(const QSqlDatabase& database) {
     // NOTE(uklotzde): No transactions
     // All queries are independent so there is no need to enclose some
     // or all of them in a transaction. Grouping into transactions would
@@ -233,12 +232,10 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
     }
 }
 
-
-void CrateStorage::connectDatabase(QSqlDatabase database) {
+void CrateStorage::connectDatabase(const QSqlDatabase& database) {
     m_database = database;
     createViews();
 }
-
 
 void CrateStorage::disconnectDatabase() {
     // Ensure that we don't use the current database connection

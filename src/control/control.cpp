@@ -18,7 +18,7 @@ QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
 MMutex ControlDoublePrivate::s_qCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate(
-        ConfigKey key,
+        const ConfigKey& key,
         ControlObject* pCreatorCO,
         bool bIgnoreNops,
         bool bTrack,

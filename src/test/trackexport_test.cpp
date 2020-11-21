@@ -10,15 +10,15 @@
 
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 
-void FakeOverwriteAnswerer::slotProgress(QString filename, int progress, int count) {
+void FakeOverwriteAnswerer::slotProgress(const QString& filename, int progress, int count) {
     m_progress_filename = filename;
     m_progress = progress;
     m_progress_count = count;
 }
 
 void FakeOverwriteAnswerer::slotAskOverwriteMode(
-            QString filename,
-            std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
+        const QString& filename,
+        std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     auto it = m_answers.find(filename);
     // Make sure this filename is in the map, and then remove it.
     // The ASSERT_EQ macro has trouble with this comparison.

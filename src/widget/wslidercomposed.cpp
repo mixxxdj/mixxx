@@ -167,9 +167,9 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
-void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
-                                      Paintable::DrawMode drawMode,
-                                      double scaleFactor) {
+void WSliderComposed::setSliderPixmap(const PixmapSource& sourceSlider,
+        Paintable::DrawMode drawMode,
+        double scaleFactor) {
     m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode, scaleFactor);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
@@ -180,9 +180,9 @@ void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
 }
 
 void WSliderComposed::setHandlePixmap(bool bHorizontal,
-                                      PixmapSource sourceHandle,
-                                      Paintable::DrawMode mode,
-                                      double scaleFactor) {
+        const PixmapSource& sourceHandle,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_bHorizontal = bHorizontal;
     m_handler.setHorizontal(m_bHorizontal);
     m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode, scaleFactor);

@@ -357,7 +357,7 @@ void DlgPrefInterface::slotSetScheme(int) {
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
-void DlgPrefInterface::slotSetSkinDescription(QString skin) {
+void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
     SkinManifest manifest = LegacySkinParser::getSkinManifest(
             LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
     QString description = QString::fromStdString(manifest.description());
