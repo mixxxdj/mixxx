@@ -16,7 +16,7 @@ jobs:
             ccache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_script: tools/ubuntu_buildenv.sh
-            artifacts_name: Ubuntu DEB
+            artifacts_name: Ubuntu 18.04 DEB
             artifacts_path: cmake_build/*.deb
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
@@ -25,7 +25,7 @@ jobs:
             ccache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_script: tools/ubuntu_buildenv.sh
-            artifacts_name: Ubuntu DEB
+            artifacts_name: Ubuntu 20.04 DEB
             artifacts_path: cmake_build/*.deb
           - name: macOS 10.15
             os: macos-10.15
@@ -35,7 +35,7 @@ jobs:
             cpack_generator: DragNDrop
             ccache_path: /Users/runner/Library/Caches/ccache
             buildenv_script: tools/macos_buildenv.sh
-            artifacts_name: macOS-DMG
+            artifacts_name: macOS DMG
             artifacts_path: cmake_build/*.dmg
 
     env:
