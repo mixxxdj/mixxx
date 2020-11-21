@@ -18,7 +18,6 @@ jobs:
             buildenv_script: tools/ubuntu_buildenv.sh
             artifacts_name: Ubuntu DEB
             artifacts_path: cmake_build/*.deb
-            apt_packages: libfaad-dev libmp4v2-dev
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
@@ -28,7 +27,6 @@ jobs:
             buildenv_script: tools/ubuntu_buildenv.sh
             artifacts_name: Ubuntu DEB
             artifacts_path: cmake_build/*.deb
-            apt_packages: libavcodec-dev libavutil-dev
           - name: macOS 10.15
             os: macos-10.15
             cmake_args: -DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON
@@ -58,44 +56,6 @@ jobs:
         # This should always match the mininum required version in
         # our CMakeLists.txt
         cmake-version: '3.13.x'
-
-    - name: "[Ubuntu] Install apt dependencies"
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update && sudo apt-get install -y --no-install-recommends \
-          ccache \
-          libavformat-dev \
-          libchromaprint-dev \
-          libebur128-dev \
-          libfftw3-dev \
-          libflac-dev \
-          libid3tag0-dev \
-          liblilv-dev \
-          libmad0-dev \
-          libmodplug-dev \
-          libmp3lame-dev \
-          libopus-dev \
-          libopusfile-dev \
-          libportmidi-dev \
-          libprotobuf-dev \
-          libqt5opengl5-dev \
-          libqt5sql5-sqlite \
-          libqt5svg5-dev \
-          libqt5x11extras5-dev \
-          librubberband-dev \
-          libshout3-dev \
-          libsndfile1-dev \
-          libsoundtouch-dev \
-          libsqlite3-dev \
-          libtag1-dev \
-          libupower-glib-dev \
-          libusb-1.0-0-dev \
-          libwavpack-dev \
-          portaudio19-dev \
-          protobuf-compiler \
-          qt5-default \
-          qt5keychain-dev \
-          qtscript5-dev \
 
     - name: "[macOS] Get build environment name"
       if: runner.os == 'macOS'
