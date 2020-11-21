@@ -7,6 +7,7 @@
 #include <QScopedPointer>
 #include <QWidget>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
@@ -18,7 +19,10 @@ typedef std::function<void(QMenu*, QAction*, bool)> FnAddMenu;
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
   public:
-    VisibilityControlConnection(QObject* pParent, QAction* pAction, const ConfigKey& key);
+    VisibilityControlConnection(QObject* pParent,
+            QAction* pAction,
+            const ConfigKey& key,
+            ControlObject* COFeature);
     double value();
     bool valid();
 
@@ -33,6 +37,7 @@ class VisibilityControlConnection : public QObject {
 
   private:
     ConfigKey m_key;
+    ControlObject* m_pCOFeature;
     QScopedPointer<ControlProxy> m_pControl;
     QAction* m_pAction;
 };
@@ -96,8 +101,11 @@ class WMainMenu : public QWidget {
     void slotVisitUrl(const QString& url);
 
   private:
+    void resetFeatureFlags();
     void initialize();
-    VisibilityControlConnection* createVisibilityControl(QAction* pAction, const ConfigKey& key);
+    VisibilityControlConnection* createVisibilityControl(QAction* pAction,
+            const ConfigKey& key,
+            ControlObject* m_feature = nullptr);
 
     UserSettingsPointer m_pConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
@@ -131,6 +139,9 @@ class WMainMenu : public QWidget {
     QAction* m_pHelpFeedback;
     QAction* m_pHelpTranslation;
     QAction* m_pHelpAboutApp;
+
+    ControlObject* m_pFeatureCOHideMenubar;
+    ControlObject* m_pFeatureCOSkinSettings;
 
     unsigned int m_lastNumPlayers;
     VisibilityControlConnection* m_pMenubarConnection;

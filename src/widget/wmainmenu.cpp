@@ -5,6 +5,7 @@
 #include <QPalette>
 #include <QUrl>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
@@ -15,6 +16,8 @@
 namespace {
 
 const int kMaxLoadToDeckActions = 4;
+const auto kFeatureHideMenubar = ConfigKey("[skin]", QLatin1String("feature_hide_menubar"));
+const auto kFeatureSkinSettings = ConfigKey("[skin]", QLatin1String("feature_skin_settings"));
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -68,6 +71,10 @@ WMainMenu::WMainMenu(QWidget* pParent,
           m_pKbdConfig(pKbdConfig),
           m_lastNumPlayers(0),
           m_pMenubarConnection(nullptr) {
+    // feature COs
+    m_pFeatureCOHideMenubar = new ControlObject(kFeatureHideMenubar);
+    m_pFeatureCOSkinSettings = new ControlObject(kFeatureSkinSettings);
+
     // FILE MENU
     QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
@@ -162,7 +169,9 @@ WMainMenu::WMainMenu(QWidget* pParent,
     m_pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
     m_pViewShowSkinSettings->setWhatsThis(
             buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));
-    createVisibilityControl(m_pViewShowSkinSettings, ConfigKey("[Master]", "skin_settings"));
+    createVisibilityControl(m_pViewShowSkinSettings,
+            ConfigKey("[Master]", "skin_settings"),
+            m_pFeatureCOSkinSettings);
 
     // Microphone Section
     QString showMicrophoneTitle = tr("Show Microphone Section");
@@ -230,7 +239,7 @@ WMainMenu::WMainMenu(QWidget* pParent,
     m_pViewShowMenuBar->setStatusTip(showMenubarText);
     m_pViewShowMenuBar->setWhatsThis(buildWhatsThis(showMenubarTitle, showMenubarText));
     m_pMenubarConnection = createVisibilityControl(
-            m_pViewShowMenuBar, ConfigKey("[Skin]", "show_menubar"));
+            m_pViewShowMenuBar, ConfigKey("[Skin]", "show_menubar"), m_pFeatureCOHideMenubar);
     connect(m_pViewShowMenuBar,
             &QAction::triggered,
             this,
@@ -693,6 +702,11 @@ void WMainMenu::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
     }
 }
 
+void WMainMenu::resetFeatureFlags() {
+    m_pFeatureCOHideMenubar->set(0.0);
+    m_pFeatureCOSkinSettings->set(0.0);
+}
+
 bool WMainMenu::shouldBeVisible() {
     if (CmdlineArgs::Instance().getSafeMode()) {
         return true;
@@ -700,7 +714,7 @@ bool WMainMenu::shouldBeVisible() {
     VERIFY_OR_DEBUG_ASSERT(m_pMenubarConnection) {
         return true;
     }
-    if (!m_pMenubarConnection->valid()) {
+    if (!m_pFeatureCOHideMenubar->toBool()) {
         return true;
     }
     return m_pMenubarConnection->value() > 0.0;
@@ -721,6 +735,7 @@ void WMainMenu::onNewSkinLoaded() {
 }
 
 void WMainMenu::onNewSkinAboutToLoad() {
+    resetFeatureFlags();
     emit internalOnNewSkinAboutToLoad();
 }
 
@@ -778,7 +793,7 @@ void WMainMenu::slotVisitUrl(const QString& url) {
 }
 
 void WMainMenu::finalize() {
-    for (VisibilityControlConnection* connection : m_visibilityConnections) {
+    for (VisibilityControlConnection* connection : qAsConst(m_visibilityConnections)) {
         disconnect(connection, nullptr, nullptr, nullptr);
         disconnect(this, nullptr, connection, nullptr);
         connection->slotClearControl();
@@ -786,10 +801,17 @@ void WMainMenu::finalize() {
 }
 
 VisibilityControlConnection* WMainMenu::createVisibilityControl(QAction* pAction,
-        const ConfigKey& key) {
-    auto pConnection = new VisibilityControlConnection(this, pAction, key);
-    connect(this, SIGNAL(internalOnNewSkinLoaded()), pConnection, SLOT(slotReconnectControl()));
-    connect(this, SIGNAL(internalOnNewSkinAboutToLoad()), pConnection, SLOT(slotClearControl()));
+        const ConfigKey& key,
+        ControlObject* feature) {
+    auto pConnection = new VisibilityControlConnection(this, pAction, key, feature);
+    connect(this,
+            &WMainMenu::internalOnNewSkinLoaded,
+            pConnection,
+            &VisibilityControlConnection::slotReconnectControl);
+    connect(this,
+            &WMainMenu::internalOnNewSkinAboutToLoad,
+            pConnection,
+            &VisibilityControlConnection::slotClearControl);
     m_visibilityConnections.push_back(pConnection);
     return pConnection;
 }
@@ -805,9 +827,10 @@ void WMainMenu::onNumberOfDecksChanged(int decks) {
 }
 
 VisibilityControlConnection::VisibilityControlConnection(
-        QObject* pParent, QAction* pAction, const ConfigKey& key)
+        QObject* pParent, QAction* pAction, const ConfigKey& key, ControlObject* feature)
         : QObject(pParent),
           m_key(key),
+          m_pCOFeature(feature),
           m_pAction(pAction) {
     connect(m_pAction, SIGNAL(triggered(bool)), this, SLOT(slotActionToggled(bool)));
 }
@@ -828,7 +851,12 @@ void VisibilityControlConnection::slotClearControl() {
 void VisibilityControlConnection::slotReconnectControl() {
     m_pControl.reset(new ControlProxy(m_key, this, ControlFlag::NoAssertIfMissing));
     m_pControl->connectValueChanged(this, &VisibilityControlConnection::slotControlChanged);
-    m_pAction->setEnabled(m_pControl->valid());
+    if (!m_pControl->valid()) {
+        m_pAction->setEnabled(false);
+    } else if (m_pCOFeature) {
+        qDebug() << "check Skin Feature" << m_pCOFeature->toBool();
+        m_pAction->setEnabled(m_pCOFeature->toBool());
+    }
     slotControlChanged();
 }
 
