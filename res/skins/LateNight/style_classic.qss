@@ -1299,17 +1299,23 @@ QPushButton#pushButtonRecording:checked {
     border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
 
-#BeatgridControls WPushButton, #BeatgridControlsToggle,
+#BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
-#PlayDeck, #PlayIndicator, #PlayBg,
-#CueDeck, #PlayCueMini WPushButton,
-#LoopActivate,
-#RateControls WPushButton, #SyncDeck,
+WPushButton#PlayDeck,
+WPushButton#PreviewIndicator,
+WPushButton#PlayIndicator,
+WPushButton#CueDeck,
+#PlayCueMini WPushButton,
+WPushButton#LoopActivate,
+#RateControls WPushButton,
+WPushButton#SyncDeck,
+WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
 #Sampler WPushButton,
+#SamplerMini WPushButton,
 #MicAuxRack WPushButton,
-#PlayPreview {
+WPushButton#PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
   margin: 1px;
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
@@ -1325,7 +1331,7 @@ WPushButton#SamplerExpand,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
 WPushButton#FxExpandOverlay,
-#LibExpand,
+WPushButton#LibExpand,
 #ToolBar WPushButton {
   margin: 0px;
   border-radius: 0px;
@@ -1334,17 +1340,22 @@ WPushButton#FxExpandOverlay,
 
 
 /************** button background colors **************************************/
+
+/* top-level buttons in transport, fx, micaux and others */
 #BeatgridControls WPushButton[displayValue="0"],
 #DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
-#PlayBg, #PlayCueMini WPushButton[displayValue="0"],
-#CueDeck[displayValue="0"], #LoopActivate[displayValue="0"],
+#PlayCueMini WPushButton[displayValue="0"],
+WPushButton#CueDeck[displayValue="0"],
+WPushButton#PlayIndicator[value="0"],
+WPushButton#LoopActivate[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #VinylControls WPushButton[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
-  WPushButton#VinylModeButton[displayValue="1"],
-  WPushButton#VinylModeButton[displayValue="2"],
+WPushButton#VinylModeButton[displayValue="1"],
+WPushButton#VinylModeButton[displayValue="2"],
 WPushButton#MixModeButton[displayValue="1"],
-#RateControls WPushButton[displayValue="0"], #SyncDeck[value="0"],
+#RateControls WPushButton[displayValue="0"],
+WPushButton#SyncDeck[value="0"],
 #MixerContainer WPushButton[displayValue="0"],
 #FxUnitContainer WPushButton[displayValue="0"],
 #Sampler WPushButton[displayValue="0"],
@@ -1356,23 +1367,27 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 #DlgAutoDJ > QPushButton:enabled,
 #DlgRecording > QPushButton:enabled,
 #DlgAnalysis > QPushButton:enabled,
-#GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
-#BroadcastButton[displayValue="0"], #SkinSettingsToggle[displayValue="0"] {
+WPushButton#GuiToggleButton[displayValue="0"],
+#RecFeedback[displayValue="0"],
+WPushButton#BroadcastButton[displayValue="0"],
+WPushButton#SkinSettingsToggle[displayValue="0"] {
   background-color: #262626;
 }
 
-/* Red */
+/* Red for 'active' status */
 #BeatgridControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
 #SyncDeck[value="1"], #SyncSampler[displayValue="1"],
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
-#PlaySampler[displayValue="1"], #PlayPreview[displayValue="1"],
+WPushButton#PlaySampler[displayValue="1"],
+WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
-#LoopControls WPushButton[value="1"], #LoopActivate[displayValue="1"],
+#LoopControls WPushButton[value="1"],
+#LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
 #EQKillButtonBox WPushButton[displayValue="1"],
 #PflButton[value="1"],
@@ -1381,7 +1396,14 @@ WPushButton#Reverse[pressed="true"],
 #RecFeedback[displayValue="2"],
 QPushButton#pushButtonRecording:checked {
   background-color: #db0000;
-}
+  }
+  /* Red border for Play buttons when previewing from
+    Cue or Hotcue */
+  WPushButton#PreviewIndicator[value="1"] {
+    border: 3px solid #db0000;
+    /* work around round borders being painted outside the actual border area */
+    border-radius: 0px;
+  }
 
 /* Green for Fx buttons: QuickEffect + Fx 1/2 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
@@ -1514,7 +1536,7 @@ QPushButton#pushButtonAutoDJ:checked,
 /* Special flat buttons */
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
-WPushButton#PlayIndicator[value="0"],
+WPushButton#PlaySampler[displayValue="0"],
 WPushButton#BpmTap[displayValue="0"],
 WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
