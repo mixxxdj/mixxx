@@ -14,7 +14,7 @@ class ColorMapperJSProxy final : public QObject {
     // the ColorMapper constructor segfaults. QJSEngine converts a JS object to
     // a QVariantMap, so this constructor converts the QVariantMap to a
     // QMap<QRgb, QVariant>.
-    Q_INVOKABLE ColorMapperJSProxy(QVariantMap availableColors);
+    Q_INVOKABLE ColorMapperJSProxy(const QVariantMap& availableColors);
 
     // Mixxx would segfault without this if a script calls "new ColorMapper()"
     // This should not actually be used.

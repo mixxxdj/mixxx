@@ -83,7 +83,7 @@ class WTrackMenu : public QMenu {
     void slotOpenInFileBrowser();
 
     // Row color
-    void slotColorPicked(mixxx::RgbColor::optional_t color);
+    void slotColorPicked(const mixxx::RgbColor::optional_t& color);
 
     // Reset
     void slotClearBeats();

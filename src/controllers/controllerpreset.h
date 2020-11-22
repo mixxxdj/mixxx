@@ -60,7 +60,7 @@ class ControllerPreset {
     }
 
     void setModuleFileInfo(QFileInfo fileInfo) {
-        m_moduleFileInfo = fileInfo;
+        m_moduleFileInfo = std::move(fileInfo);
     }
 
     QFileInfo moduleFileInfo() const {

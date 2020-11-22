@@ -606,7 +606,7 @@ bool insertTrackLibrary(
         const mixxx::BeatsPointer& pBeats,
         DbId trackLocationId,
         const TrackFile& trackFile,
-        QDateTime trackDateAdded) {
+        const QDateTime& trackDateAdded) {
     bindTrackLibraryValues(pTrackLibraryInsert, trackRecord, pBeats);
 
     if (!trackRecord.getDateAdded().isNull()) {
@@ -2169,7 +2169,7 @@ TrackFile TrackDAO::relocateCachedTrack(
 }
 
 bool TrackDAO::updatePlayCounterFromPlayedHistory(
-        const QSet<TrackId> trackIds) const {
+        const QSet<TrackId>& trackIds) const {
     // Update both timesplay and last_played_at according to the
     // corresponding aggregated properties from the played history,
     // i.e. COUNT for the number of times a track has been played

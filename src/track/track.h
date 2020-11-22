@@ -177,7 +177,7 @@ class Track : public QObject {
     // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
     // Sets the track color
-    void setColor(mixxx::RgbColor::optional_t);
+    void setColor(const mixxx::RgbColor::optional_t&);
     // Returns the user comment
     QString getComment() const;
     // Sets the user commnet
@@ -352,7 +352,7 @@ class Track : public QObject {
     void keyUpdated(double key);
     void keysUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
-    void colorUpdated(mixxx::RgbColor::optional_t color);
+    void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
     void analyzed();
 

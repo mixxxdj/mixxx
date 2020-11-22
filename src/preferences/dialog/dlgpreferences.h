@@ -118,7 +118,7 @@ DlgPreferences(MixxxMainWindow* mixxx,
   private:
     DlgPreferencePage* currentPage();
     QList<PreferencesPage> m_allPages;
-    QTreeWidgetItem* createTreeItem(QString text, QIcon icon);
+    QTreeWidgetItem* createTreeItem(const QString& text, const QIcon& icon);
     void onShow();
     void onHide();
     QRect getDefaultGeometry();
