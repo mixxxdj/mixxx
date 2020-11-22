@@ -56,7 +56,7 @@ GenericMidiController.userConfig = function() {
             components: [
                 {
                     type: e.ShiftButton, midi: [status, p.buttonRow1[3]],
-                    options: {key: "touch_shift", group: "[Controls]", target: GenericMidiController}
+                    options: {target: GenericMidiController}
                 },
                 {
                     type: e.RangeAwareEncoder, midi: [status, p.pushEncoderGroup1[0].encoder],
@@ -117,7 +117,7 @@ GenericMidiController.userConfig = function() {
             components: [
                 {
                     type: e.ShiftButton, midi: [status, p.buttonRow1[7]],
-                    options: {key: "touch_shift", group: "[Controls]", target: GenericMidiController}
+                    options: {target: GenericMidiController}
                 },
                 {
                     type: e.RangeAwareEncoder, midi: [status, p.pushEncoderGroup1[4].encoder],
