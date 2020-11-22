@@ -32,13 +32,8 @@ class PlayerManagerInterface {
   public:
     virtual ~PlayerManagerInterface() = default;
 
-<<<<<<< HEAD
     virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
     virtual BaseTrackPlayer* getPlayer(const ChannelHandle& channelHandle) const = 0;
-=======
-    // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
->>>>>>> upstream/2.3
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
@@ -122,18 +117,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return numPreviewDecks();
     }
 
-<<<<<<< HEAD
-=======
-    // Get a BaseTrackPlayer (i.e. a Deck, Sampler or PreviewDeck) by its
-    // group. Auxiliaries and microphones are not players.
-    BaseTrackPlayer* getPlayer(const QString& group) const override;
-
-    // Get the deck by its deck number. Decks are numbered starting with 1.
-    Deck* getDeck(unsigned int player) const override;
-
-    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const override;
-
->>>>>>> upstream/2.3
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const override;
     // Return the number of samplers. Thread-safe.

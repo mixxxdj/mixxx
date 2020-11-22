@@ -433,12 +433,8 @@ void Library::slotLoadLocationToPlayer(const QString& location, const QString& g
     }
 }
 
-<<<<<<< HEAD
 void Library::slotLoadTrackToPlayer(
-        TrackPointer pTrack, QString group, bool play) {
-=======
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
->>>>>>> upstream/2.3
+        TrackPointer pTrack, const QString& group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
 }
 

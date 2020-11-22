@@ -31,17 +31,8 @@ FakeController::FakeController()
     getEngine()->setTesting(true);
 }
 
-<<<<<<< HEAD
 FakeController::~FakeController() {
 }
-=======
-  protected:
-    Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
-        Q_UNUSED(data);
-        Q_UNUSED(length);
-        Q_UNUSED(reportID);
-    }
->>>>>>> upstream/2.3
 
 ControllerPresetPointer FakeController::getPreset() const {
     if (m_bHidPreset) {
@@ -55,21 +46,11 @@ ControllerPresetPointer FakeController::getPreset() const {
     }
 }
 
-<<<<<<< HEAD
 bool FakeController::isMappable() const {
     if (m_bMidiPreset) {
         return m_midiPreset.isMappable();
     } else if (m_bHidPreset) {
         return m_hidPreset.isMappable();
-=======
-  private:
-    void send(const QByteArray& data) override {
-        Q_UNUSED(data);
-    }
-    virtual void send(const QByteArray& data, unsigned int reportID) {
-        Q_UNUSED(data);
-        Q_UNUSED(reportID);
->>>>>>> upstream/2.3
     }
     return false;
 }

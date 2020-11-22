@@ -600,7 +600,6 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":key", keyText);
 }
 
-<<<<<<< HEAD
 bool insertTrackLibrary(
         QSqlQuery* pTrackLibraryInsert,
         const mixxx::TrackRecord& trackRecord,
@@ -609,13 +608,6 @@ bool insertTrackLibrary(
         const TrackFile& trackFile,
         QDateTime trackDateAdded) {
     bindTrackLibraryValues(pTrackLibraryInsert, trackRecord, pBeats);
-=======
-    bool insertTrackLibrary(QSqlQuery* pTrackLibraryInsert,
-            const Track& track,
-            DbId trackLocationId,
-            const QDateTime& trackDateAdded) {
-        bindTrackLibraryValues(pTrackLibraryInsert, track);
->>>>>>> upstream/2.3
 
     if (!trackRecord.getDateAdded().isNull()) {
         qDebug() << "insertTrackLibrary: Track"

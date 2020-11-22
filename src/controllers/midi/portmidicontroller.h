@@ -78,11 +78,7 @@ class PortMidiController : public MidiController {
   private:
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-<<<<<<< HEAD
     void sendBytes(const QByteArray& data) override;
-=======
-    void send(const QByteArray& data) override;
->>>>>>> upstream/2.3
 
     bool isPolling() const override {
         return true;

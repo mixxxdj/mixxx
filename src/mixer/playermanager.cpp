@@ -541,13 +541,10 @@ void PlayerManager::addAuxiliaryInner() {
 }
 
 BaseTrackPlayer* PlayerManager::getPlayer(const QString& group) const {
-<<<<<<< HEAD
     return getPlayer(m_pEngine->registerChannelGroup(group).handle());
 }
 
 BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
-=======
->>>>>>> upstream/2.3
     QMutexLocker locker(&m_mutex);
 
     if (m_players.contains(handle)) {

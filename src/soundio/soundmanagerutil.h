@@ -186,81 +186,49 @@ class AudioInputBuffer : public AudioInput {
 
 class AudioSource {
 public:
-<<<<<<< HEAD
     virtual ~AudioSource() = default;
 
-    virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
+    virtual const CSAMPLE* buffer(const AudioOutput& output) const = 0;
 
     /// This is called by SoundManager whenever an output is connected for this
     /// source. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onOutputConnected(AudioOutput output) { Q_UNUSED(output); };
+    virtual void onOutputConnected(const AudioOutput& output) {
+        Q_UNUSED(output);
+    };
 
     /// This is called by SoundManager whenever an output is disconnected for
     /// this source. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onOutputDisconnected(AudioOutput output) { Q_UNUSED(output); };
-=======
-  virtual const CSAMPLE* buffer(const AudioOutput& output) const = 0;
-
-  // This is called by SoundManager whenever an output is connected for this
-  // source. When this is called it is guaranteed that no callback is
-  // active.
-  virtual void onOutputConnected(const AudioOutput& output) {
-      Q_UNUSED(output);
-  };
-
-    // This is called by SoundManager whenever an output is disconnected for
-    // this source. When this is called it is guaranteed that no callback is
-    // active.
-  virtual void onOutputDisconnected(const AudioOutput& output) {
-      Q_UNUSED(output);
-  };
->>>>>>> upstream/2.3
+    virtual void onOutputDisconnected(const AudioOutput& output) {
+        Q_UNUSED(output);
+    };
 };
 
 class AudioDestination {
 public:
-<<<<<<< HEAD
     virtual ~AudioDestination() = default;
 
     /// This is called by SoundManager whenever there are new samples from the
     /// configured input to be processed. This is run in the clock reference
     /// callback thread
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                               unsigned int iNumFrames) = 0;
+    virtual void receiveBuffer(const AudioInput& input,
+            const CSAMPLE* pBuffer,
+            unsigned int iNumFrames) = 0;
 
     /// This is called by SoundManager whenever an input is configured for this
     /// destination. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onInputConfigured(AudioInput input) { Q_UNUSED(input); };
+    virtual void onInputConfigured(const AudioInput& input) {
+        Q_UNUSED(input);
+    };
 
     /// This is called by SoundManager whenever an input is unconfigured for this
     /// destination. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onInputUnconfigured(AudioInput input) { Q_UNUSED(input); };
-=======
-    // This is called by SoundManager whenever there are new samples from the
-    // configured input to be processed. This is run in the clock reference
-    // callback thread
-  virtual void receiveBuffer(const AudioInput& input,
-          const CSAMPLE* pBuffer,
-          unsigned int iNumFrames) = 0;
-
-  // This is called by SoundManager whenever an input is configured for this
-  // destination. When this is called it is guaranteed that no callback is
-  // active.
-  virtual void onInputConfigured(const AudioInput& input) {
-      Q_UNUSED(input);
-  };
-
-    // This is called by SoundManager whenever an input is unconfigured for this
-    // destination. When this is called it is guaranteed that no callback is
-    // active.
-  virtual void onInputUnconfigured(const AudioInput& input) {
-      Q_UNUSED(input);
-  };
->>>>>>> upstream/2.3
+    virtual void onInputUnconfigured(const AudioInput& input) {
+        Q_UNUSED(input);
+    };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;

@@ -65,7 +65,7 @@ class FakeController : public Controller {
     }
 
   protected:
-    void send(QList<int> data, unsigned int length) override {
+    void send(const QList<int>& data, unsigned int length) override {
         Q_UNUSED(data);
         Q_UNUSED(length);
     }

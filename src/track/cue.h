@@ -58,12 +58,7 @@ class Cue : public QObject {
             int hotCue = kNoHotCue);
 
     QString getLabel() const;
-<<<<<<< HEAD
-    void setLabel(QString label);
-=======
-    void setLabel(
-            const QString& label = QString());
->>>>>>> upstream/2.3
+    void setLabel(const QString& label);
 
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);

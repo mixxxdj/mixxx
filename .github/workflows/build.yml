@@ -49,51 +49,8 @@ jobs:
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
-<<<<<<< HEAD
-    - name: Install build dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y --no-install-recommends \
-          ccache \
-          libavformat-dev \
-          libchromaprint-dev \
-          libebur128-dev \
-          libfaad-dev \
-          libfftw3-dev \
-          libflac-dev \
-          libid3tag0-dev \
-          liblilv-dev \
-          libmad0-dev \
-          libmodplug-dev \
-          libmp3lame-dev \
-          libmp4v2-dev \
-          libopus-dev \
-          libopusfile-dev \
-          libportmidi-dev \
-          libprotobuf-dev \
-          libqt5opengl5-dev \
-          libqt5sql5-sqlite \
-          libqt5svg5-dev \
-          libqt5x11extras5-dev \
-          librubberband-dev \
-          libshout3-dev \
-          libsndfile1-dev \
-          libsoundtouch-dev \
-          libsqlite3-dev \
-          libtag1-dev \
-          libupower-glib-dev \
-          libusb-1.0-0-dev \
-          libwavpack-dev \
-          portaudio19-dev \
-          protobuf-compiler \
-          qt5-default \
-          qt5keychain-dev \
-          qtdeclarative5-dev \
-          qtscript5-dev \
-    - name: Set up cmake
-=======
 
     - name: "Set up cmake"
->>>>>>> upstream/2.3
       uses: jwlawson/actions-setup-cmake@v1.4
       with:
         # This should always match the mininum required version in

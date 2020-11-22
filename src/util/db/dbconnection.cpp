@@ -233,11 +233,7 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
-<<<<<<< HEAD
-bool initDatabase(QSqlDatabase database, mixxx::StringCollator* pCollator) {
-=======
-bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
->>>>>>> upstream/2.3
+bool initDatabase(const QSqlDatabase& database, mixxx::StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();

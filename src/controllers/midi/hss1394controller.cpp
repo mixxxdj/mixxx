@@ -207,11 +207,7 @@ void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
     //}
 }
 
-<<<<<<< HEAD
 void Hss1394Controller::sendBytes(const QByteArray& data) {
-=======
-void Hss1394Controller::send(const QByteArray& data) {
->>>>>>> upstream/2.3
     int bytesSent = m_pChannel->SendChannelBytes(
         (unsigned char*)data.constData(), data.size());
 

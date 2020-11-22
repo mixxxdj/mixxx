@@ -63,11 +63,7 @@ class MidiController : public Controller {
     /// Alias for send()
     /// The length parameter is here for backwards compatibility for when scripts
     /// were required to specify it.
-<<<<<<< HEAD
-    inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
-=======
-    Q_INVOKABLE inline void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
->>>>>>> upstream/2.3
+    inline void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
         Q_UNUSED(length);
         send(data);
     }

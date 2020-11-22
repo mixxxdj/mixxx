@@ -2436,15 +2436,11 @@ double HotcueControl::getPosition() const {
     return m_hotcuePosition->get();
 }
 
-<<<<<<< HEAD
 double HotcueControl::getEndPosition() const {
     return m_hotcueEndPosition->get();
 }
 
-void HotcueControl::setCue(CuePointer pCue) {
-=======
 void HotcueControl::setCue(const CuePointer& pCue) {
->>>>>>> upstream/2.3
     setPosition(pCue->getPosition());
     setEndPosition(pCue->getEndPosition());
     setColor(pCue->getColor());

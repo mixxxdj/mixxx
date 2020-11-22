@@ -57,7 +57,6 @@ inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
-<<<<<<< HEAD
     /// Describes the current status of the hotcue
     enum class Status {
         /// Hotuce not set
@@ -72,7 +71,7 @@ class HotcueControl : public QObject {
         Active = 2,
     };
 
-    HotcueControl(QString group, int hotcueNumber);
+    HotcueControl(const QString& group, int hotcueNumber);
     ~HotcueControl() override;
 
     int getHotcueNumber() const {
@@ -82,16 +81,7 @@ class HotcueControl : public QObject {
     CuePointer getCue() const {
         return m_pCue;
     }
-    void setCue(CuePointer pCue);
-=======
-    HotcueControl(const QString& group, int hotcueNumber);
-    ~HotcueControl() override;
-
-    inline int getHotcueNumber() { return m_iHotcueNumber; }
-    inline CuePointer getCue() { return m_pCue; }
-    double getPosition() const;
     void setCue(const CuePointer& pCue);
->>>>>>> upstream/2.3
     void resetCue();
 
     double getPosition() const;

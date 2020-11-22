@@ -380,13 +380,7 @@ void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     }
 }
 
-<<<<<<< HEAD:src/library/trackset/setlogfeature.cpp
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId, QString newName) {
-=======
-void SetlogFeature::slotPlaylistTableRenamed(
-        int playlistId,
-        const QString& newName) {
->>>>>>> upstream/2.3:src/library/setlogfeature.cpp
+void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
