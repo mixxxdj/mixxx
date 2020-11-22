@@ -1148,6 +1148,18 @@ install(
   FILES_MATCHING REGEX
     "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
 )
+
+# The version of ANGLE included in Qt since Qt 5.12 (ANGLE version chromium/3280) causes
+# several major bugs with Mixxx with some old GPUs that have unmaintained buggy drivers.
+# These DLLs are from Qt 5.11 which had ANGLE version chromium/2651.
+# https://bugs.launchpad.net/mixxx/+bug/1895427
+install(
+  FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libEGL.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libGLESv2.dll"
+  DESTINATION
+    "${MIXXX_INSTALL_DATADIR}"
+)
 endif()
 
 # Font files
