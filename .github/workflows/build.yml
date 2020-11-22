@@ -14,7 +14,8 @@ jobs:
             cmake_args: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
             cmake_generator: Unix Makefiles
             ctest_args:
-            ccache_path: ~/.ccache
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/ubuntu_buildenv.sh
@@ -26,7 +27,8 @@ jobs:
             cmake_args: -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
             cmake_generator: Unix Makefiles
             ctest_args:
-            ccache_path: ~/.ccache
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/ubuntu_buildenv.sh
@@ -40,7 +42,8 @@ jobs:
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
-            ccache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache: ccache
+            compiler_cache_path: /Users/runner/Library/Caches/ccache
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_buildenv.sh
             artifacts_name: macOS DMG
@@ -55,6 +58,8 @@ jobs:
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.(FullIntroOutro_LongerOutro|EnabledSuccess_DecksStopped|FadeToDeck1_LoadOnDeck2_TrackLoadFailed|FadeToDeck2_LoadOnDeck1_TrackLoadSuccess)$'
             cpack_generator: WIX
+            compiler_cache: clcache
+            compiler_cache_path: ${{ github.workspace }}\clcache
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
@@ -125,19 +130,18 @@ jobs:
       env:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-    - name: "Set ccache size limit"
-      if: runner.os != 'Windows'
-      run: ccache -M 5G
+    - name: "Set compiler cache size limit"
+      # Set size to 2 GiB
+      run: ${{ matrix.compiler_cache }}  -M 2097152
 
-    - name: "Set up ccache cache"
-      if: runner.os != 'Windows'
+    - name: "Set up compiler cache"
       uses: actions/cache@v2
       with:
-        path: ${{ matrix.ccache_path }}
-        key: ${{ matrix.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        path: ${{ matrix.compiler_cache_path }}
+        key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ matrix.os }}-ccache-${{ github.head_ref }}
-          ${{ matrix.os }}-ccache
+          ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
+          ${{ matrix.os }}-${{ matrix.compiler_cache }}
 
     - name: "Create build directory"
       run: mkdir cmake_build
@@ -187,10 +191,11 @@ jobs:
         CMAKE_BUILD_PARALLEL_LEVEL: 2
         # GitHub Actions automatically zstd compresses caches
         CCACHE_NOCOMPRESS: true
+        CLCACHE_COMPRESS: false
+        CLCACHE_HARDLINK: true
 
-    - name: "Print ccache stats"
-      if: runner.os != 'Windows'
-      run: ccache -s
+    - name: "Print compiler cache stats"
+      run: ${{ matrix.compiler_cache }} -s
 
     - name: "Test"
       run: ctest --timeout 45 ${{ matrix.ctest_args }}
