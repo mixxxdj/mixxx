@@ -60,7 +60,7 @@ jobs:
     - name: "[macOS] Get build environment name"
       if: runner.os == 'macOS'
       id: buildenv_name
-      run: ${{ matrix.buildenv_script }} name --ghactions
+      run: ${{ matrix.buildenv_script }} name
 
     - name: "[macOS] Set up build environment cache"
       if: runner.os == 'macOS'
@@ -93,14 +93,10 @@ jobs:
 
     - name: "Set up build environment"
       id: buildenv
-      run: ${{ matrix.buildenv_script }} setup --ghactions
-      env:
-        BUILDENV_BASEPATH: ${{ github.workspace }}/buildenv
+      run: ${{ matrix.buildenv_script }} setup
 
     - name: "Set ccache size limit"
       run: ccache -M 5G
-      env:
-        PATH: ${{ steps.buildenv.outputs.path }}
 
     - name: "Set up ccache cache"
       uses: actions/cache@v2
@@ -131,9 +127,7 @@ jobs:
           ..
       working-directory: cmake_build
       env:
-         PATH: ${{ steps.buildenv.outputs.path }}
-         CMAKE_FLAGS_EXTRA: ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }} -DCMAKE_PREFIX_PATH=${{ steps.buildenv.outputs.cmake_prefix_path }} -DQt5_DIR=${{ steps.buildenv.outputs.qt_path }}
-         MACOSX_DEPLOYMENT_TARGET: ${{ steps.buildenv.outputs.macosx_deployment_target }}
+         CMAKE_FLAGS_EXTRA: ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }} "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}" "-DQt5_DIR=${{ env.QT_PATH }}"
 
     - name: "Set up problem matcher"
       uses: ammaraskar/gcc-problem-matcher@master
@@ -145,18 +139,14 @@ jobs:
         CMAKE_BUILD_PARALLEL_LEVEL: 2
         # GitHub Actions automatically zstd compresses caches
         CCACHE_NOCOMPRESS: true
-        PATH: ${{ steps.buildenv.outputs.path }}
 
     - name: "Print ccache stats"
       run: ccache -s
-      env:
-        PATH: ${{ steps.buildenv.outputs.path }}
 
     - name: "Test"
       run: ctest --timeout 45 ${{ matrix.ctest_args }}
       working-directory: cmake_build
       env:
-        QT_QPA_PLATFORM_PLUGIN_PATH: ${{ steps.buildenv.outputs.qt_qpa_platform_plugin_path }}
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: offscreen
         GTEST_COLOR: 1
@@ -167,15 +157,12 @@ jobs:
       run: cmake --build . --target mixxx-benchmark
       working-directory: cmake_build
       env:
-        QT_QPA_PLATFORM_PLUGIN_PATH: ${{ steps.buildenv.outputs.qt_qpa_platform_plugin_path }}
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: offscreen
 
     - name: "Package"
       run: cpack -G ${{ matrix.cpack_generator }}
       working-directory: cmake_build
-      env:
-        PATH: ${{ steps.buildenv.outputs.path }}
 
     - name: "[macOS] Sign Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
