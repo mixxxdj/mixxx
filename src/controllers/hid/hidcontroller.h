@@ -82,11 +82,11 @@ class HidControllerJSProxy : public ControllerJSProxy {
               m_pHidController(m_pController) {
     }
 
-    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0) override {
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override {
         m_pHidController->send(data, length);
     }
 
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID) {
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
         m_pHidController->sendReport(data, length, reportID);
     }
 
