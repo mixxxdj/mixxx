@@ -689,6 +689,223 @@
         },
     });
 
+    /**
+     * A generic, configurable MIDI controller.
+     *
+     * The mapping is configured by the function `configurationProvider` which returns an object
+     * that is structured as follows:
+     *
+     * configuration
+     * |
+     * +- init: (optional) function that is called when Mixxx is started
+     * +- shutdown: (optional) function that is called when Mixxx is shutting down
+     * |
+     * +- decks: an array of deck definitions (may be empty or omitted)
+     * |  +- deck:
+     * |     +- deckNumbers: as defined by `components.Deck`
+     * |     +- components: an array of component definitions for the deck
+     * |        +- component:
+     * |           +- type:    Component type (constructor function, required)
+     * |           |           Example: components.Button
+     * |           +- midi:    MIDI address of the component (number array, required)
+     * |           |           Example: [0xB0, 0x43]
+     * |           +- shift:   Active only when a Shift button is pressed? (boolean, optional)
+     * |           |           Example: true
+     * |           +- options: Additional options for the component (object, required)
+     * |                       Example: {key: "reverse"}
+     * |
+     * +-effectUnits: an array of effect unit definitions (may be empty or omitted)
+     *   +- effectUnit
+     *      +- unitNumbers: as defined by `components.EffectUnit`
+     *      +- components: an object of component definitions for the effect unit. Each definition
+     *                     is a key-value pair for a component of `components.EffectUnit` where key
+     *                     is the name of the component and value is the MIDI address. Example:
+     *                     `effectFocusButton: [0xB0, 0x15]`
+     *
+     * @constructor
+     * @extends {components.ComponentContainer}
+     * @param {object} options Options object
+     * @param {function} components.configurationProvider Mapping configuration provider
+     * @public
+     */
+    var GenericMidiController = function(options) {
+        if (!options || typeof options.configurationProvider !== "function") {
+            log.error("The required function 'configurationProvider' is missing.");
+            return;
+        }
+        this.config = options.configurationProvider();
+        components.ComponentContainer.call(this, options);
+    };
+    GenericMidiController.prototype = new components.ComponentContainer({
+
+        /**
+         * Contains all decks and effect units so that a (un)shift operation
+         * is delegated to the decks, effect units and their children.
+         *
+         * @private
+         */
+        componentContainers: [],
+
+        /**
+         * Initialize the controller mapping.
+         * This function is called by Mixxx on startup.
+         *
+         * @param {string} controllerId Controller-ID
+         * @param {boolean} debug Is the application in debug mode?
+         * @public
+         */
+        init: function(controllerId, debug) {
+            this.controllerId = controllerId;
+            this.debug = debug;
+
+            if (typeof this.config.init === "function") {
+                this.config.init(controllerId, debug);
+            }
+            this.layerManager = this.createLayerManager(
+                this.config.decks || [], this.config.effectUnits || [], this.componentContainers);
+
+            log.debug(this.controllerId + ".init() completed.");
+        },
+
+        /**
+         * Shutdown the controller mapping.
+         * This function is called by Mixxx on shutdown.
+         *
+         * @public
+         */
+        shutdown: function() {
+            this.layerManager.destroy();
+            if (typeof this.config.shutdown === "function") {
+                this.config.shutdown();
+            }
+            log.debug(this.controllerId + ".shutdown() completed.");
+        },
+
+        /**
+         * Delegate a MIDI message to a component within this controller mapping.
+         *
+         * This function may be used in the XML mapping file for all components of this mapping.
+         *
+         * @param {number} channel Channel of the MIDI message
+         * @param {number} control Control byte of the MIDI message
+         * @param {number} value Value of the MIDI message
+         * @param {number} status Status byte of the MIDI message
+         * @param {string} group Group of the component (ignored, taken from the component instead)
+         * @public
+         */
+        input: function(channel, control, value, status, group) {
+            return this.layerManager.input(channel, control, value, status, group);
+        },
+
+        /**
+         * Create a layer manager containing the components of all decks and effect units.
+         *
+         * @param {object} deckDefinitions Definition of decks
+         * @param {object} effectUnitDefinitions Definition of effect units
+         * @param {Array} componentContainers Target for decks and effect units
+         * @return {object} Layer manager
+         * @see `components.extension.LayerManager`
+         * @private
+         */
+        createLayerManager: function(deckDefinitions, effectUnitDefinitions, componentContainers) {
+            var layerManager = new components.extension.LayerManager({debug: this.debug});
+            [
+                {definitions: deckDefinitions, factory: this.createDeck},
+                {definitions: effectUnitDefinitions, factory: this.createEffectUnit}
+            ].forEach(function(context) {
+                if (Array.isArray(context.definitions)) {
+                    context.definitions.forEach(function(definition) {
+                        var implementation = context.factory(definition);
+                        componentContainers.push(implementation);
+                        this.registerComponents(layerManager, definition.components, implementation);
+                    }, this);
+                } else {
+                    log.error(this.controllerId + ": Skipping a part of the configuration because "
+                            + "the following definition is not an array: "
+                            + stringifyObject(context.definitions));
+                }
+            }, this);
+            layerManager.init();
+            return layerManager;
+        },
+
+        /**
+         * Create a deck.
+         *
+         * @param {object} deckDefinition Definition of the deck
+         * @return {object} The new deck
+         * @private
+         */
+        createDeck: function(deckDefinition) {
+            var deck = new components.Deck(deckDefinition.deckNumbers);
+            deckDefinition.components.forEach(function(componentDefinition, index) {
+                var options = _.merge({
+                    group: deck.currentDeck,
+                    midi: componentDefinition.midi
+                }, componentDefinition.options);
+                deck[index] = new componentDefinition.type(options);
+            }, this);
+            return deck;
+        },
+
+        /**
+         * Create an effect unit.
+         *
+         * In addition to the implementation of `components.EffectUnit`, output values of effect unit
+         * components are sent to the controller.
+         *
+         * @param {object} effectUnitDefinition Definition of the effect unit
+         * @return {object} The new effect unit
+         * @private
+         */
+        createEffectUnit: function(effectUnitDefinition) {
+            var unit = new components.EffectUnit(effectUnitDefinition.unitNumbers, true);
+
+            /* Convert MIDI addresses (number array) to objects containing a 'midi' property */
+            var midify = function(object) {
+                return Array.isArray(object) ? {midi: object} : Object.keys(object).reduce(
+                    function(result, name) { result[name] = midify(object[name]); return result; }, {});
+            };
+            _.merge(unit, midify(effectUnitDefinition.components));
+
+            /* Add support for sending output values to the controller */
+            unit.forEachComponent(function(effectComponent) {
+                var prototype = Object.getPrototypeOf(effectComponent);
+                var publisher = new components.extension.Publisher({source: effectComponent});
+                ["onFocusChange", "shift", "unshift"].forEach(function(functionName) {
+                    var delegate = prototype[functionName];
+                    if (typeof delegate === "function") {
+                        prototype[functionName] = function() {
+                            delegate.apply(this, arguments);
+                            publisher.bind();
+                        };
+                    }
+                });
+            });
+
+            unit.init();
+            return unit;
+        },
+
+        /**
+         * Register a component with all its child components in the layer manager.
+         *
+         * @param {components.extension.LayerManager} layerManager Layer manager
+         * @param {object} definition Definition of a component
+         * @param {components.Component|components.ComponentContainer} Implementation of a component
+         * @private
+         */
+        registerComponents: function(layerManager, definition, implementation) {
+            if (implementation instanceof components.Component) {
+                layerManager.register(implementation, definition.shift === true);
+            } else if (implementation instanceof components.ComponentContainer) {
+                Object.keys(definition).forEach(function(name) {
+                    this.registerComponents(layerManager, definition[name], implementation[name]);
+                }, this);
+            }
+        },
+    });
+
     var exports = {};
     exports.LayerManager = LayerManager;
     exports.ShiftButton = ShiftButton;
@@ -700,5 +917,6 @@
     exports.LoopMoveEncoder = LoopMoveEncoder;
     exports.BackLoopButton = BackLoopButton;
     exports.Publisher = Publisher;
+    exports.GenericMidiController = GenericMidiController;
     global.components.extension = exports;
 })(this);
