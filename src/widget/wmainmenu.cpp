@@ -2,6 +2,7 @@
 
 #include <QColor>
 #include <QDesktopServices>
+#include <QMainWindow>
 #include <QPalette>
 #include <QUrl>
 
@@ -16,8 +17,8 @@
 namespace {
 
 const int kMaxLoadToDeckActions = 4;
-const auto kFeatureHideMenubar = ConfigKey("[skin]", QLatin1String("feature_hide_menubar"));
-const auto kFeatureSkinSettings = ConfigKey("[skin]", QLatin1String("feature_skin_settings"));
+const auto kFeatureHideMenubar = ConfigKey("[Skin]", QLatin1String("feature_hide_menubar"));
+const auto kFeatureSkinSettings = ConfigKey("[Skin]", QLatin1String("feature_skin_settings"));
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -567,9 +568,10 @@ WMainMenu::WMainMenu(QWidget* pParent,
     connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SIGNAL(showAbout()));
 }
 
-QMenuBar* WMainMenu::createMainMenuBar(QWidget* parent, bool native) {
+QMenuBar* WMainMenu::createMainMenuBar(QMainWindow* parent, bool native) {
     qDebug() << "createMainMenuBar: native" << native;
     auto pMainMenuBar = new QMenuBar(parent);
+    parent->setMenuBar(pMainMenuBar);
     pMainMenuBar->setObjectName(QStringLiteral("MainMenuBar"));
 
     // why ?
@@ -583,34 +585,53 @@ QMenuBar* WMainMenu::createMainMenuBar(QWidget* parent, bool native) {
     Pal.setColor(QPalette::Window, MenuBarBackground);
     pMainMenuBar->setPalette(Pal);
 
-    createMenu([pMainMenuBar](QMenu* menu, QAction* action, bool separator) {
+    createMenuInternal([pMainMenuBar](QMenu* menu, QAction* action, bool separator) {
         if (menu) {
-            pMainMenuBar->addMenu(menu);
+            //    menu->setParent(pMainMenuBar);
+            //   pMainMenuBar->addMenu(menu);
         }
+
+        Q_UNUSED(menu);
         Q_UNUSED(action);
         Q_UNUSED(separator);
     },
-            true);
+            pMainMenuBar,
+            this);
     pMainMenuBar->setNativeMenuBar(native);
     return pMainMenuBar;
 }
 
-void WMainMenu::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
+void WMainMenu::createMenu(FnAddMenu fnAddMenu, QWidget* parent) {
+    createMenuInternal(fnAddMenu, nullptr, parent);
+}
+
+void WMainMenu::createMenuInternal(FnAddMenu fnAddMenu, QMenuBar* pMenuBar, QWidget* parent) {
     // FILE MENU
-    QMenu* pFileMenu = new QMenu(tr("&File"));
+    QMenu* pFileMenu;
+    if (pMenuBar) {
+        pFileMenu = pMenuBar->addMenu(tr("&File"));
+    } else {
+        pFileMenu = new QMenu(tr("&File"), parent);
+    }
 
     for (unsigned int deck = 0; deck < kMaxLoadToDeckActions; ++deck) {
         pFileMenu->addAction(m_loadToDeckActions.at(deck));
     }
     pFileMenu->addSeparator();
     // exit button is at the end of main menu in WMainMenuButton
-    if (isMainMenu) {
+    if (pMenuBar) {
         pFileMenu->addAction(m_pFileQuit);
     }
 
     fnAddMenu(pFileMenu, nullptr, false);
     // LIBRARY MENU
-    QMenu* pLibraryMenu = new QMenu(tr("&Library"));
+    QMenu* pLibraryMenu;
+    if (pMenuBar) {
+        pLibraryMenu = pMenuBar->addMenu(tr("&Library"));
+    } else {
+        pLibraryMenu = new QMenu(tr("&Library"), parent);
+    }
+
     pLibraryMenu->addAction(m_pLibraryRescan);
     pLibraryMenu->addSeparator();
     pLibraryMenu->addAction(m_pLibraryCreatePlaylist);
@@ -624,10 +645,17 @@ void WMainMenu::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
     // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
     // and the magic menu items won't get injected.
     // https://bugs.launchpad.net/mixxx/+bug/1534292
-    QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"));
+    QString viewTitle = tr("&View") + QStringLiteral("\u200C");
 #else
-    QMenu* pViewMenu = new QMenu(tr("&View"));
+    QString viewTitle = tr("&View") + QStringLiteral("\u200C");
 #endif
+
+    QMenu* pViewMenu;
+    if (pMenuBar) {
+        pViewMenu = pMenuBar->addMenu(viewTitle);
+    } else {
+        pViewMenu = new QMenu(viewTitle, parent);
+    }
 
     pViewMenu->addAction(m_pViewShowSkinSettings);
     pViewMenu->addAction(m_pViewShowMicrophone);
@@ -644,7 +672,12 @@ void WMainMenu::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
     fnAddMenu(pViewMenu, nullptr, false);
 
     // OPTIONS MENU
-    QMenu* pOptionsMenu = new QMenu(tr("&Options"));
+    QMenu* pOptionsMenu;
+    if (pMenuBar) {
+        pOptionsMenu = pMenuBar->addMenu(tr("&Options"));
+    } else {
+        pOptionsMenu = new QMenu(tr("&Options"), parent);
+    }
 #ifdef __VINYLCONTROL__
     QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"));
     for (unsigned int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -678,7 +711,12 @@ void WMainMenu::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
     }
 
     // HELP MENU
-    QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
+    QMenu* pHelpMenu;
+    if (pMenuBar) {
+        pHelpMenu = pMenuBar->addMenu(tr("&Help"));
+    } else {
+        pHelpMenu = new QMenu(tr("&Help"), parent);
+    }
 
     pHelpMenu->addAction(m_pHelpSupport);
 
@@ -691,7 +729,7 @@ void WMainMenu::createMenu(FnAddMenu fnAddMenu, bool isMainMenu) {
 
     fnAddMenu(pHelpMenu, nullptr, false);
 
-    if (!isMainMenu) {
+    if (!pMenuBar) {
         fnAddMenu(nullptr, nullptr, true);
         fnAddMenu(nullptr, m_pFileQuit, false);
     }
@@ -856,6 +894,8 @@ void VisibilityControlConnection::slotReconnectControl() {
     } else if (m_pCOFeature) {
         qDebug() << "check Skin Feature" << m_pCOFeature->toBool();
         m_pAction->setEnabled(m_pCOFeature->toBool());
+    } else {
+        m_pAction->setEnabled(true);
     }
     slotControlChanged();
 }

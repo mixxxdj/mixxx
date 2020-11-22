@@ -90,6 +90,11 @@
       <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+
+    <!-- Enable skin features -->
+      <attribute persist="false" config_key="[Skin],feature_hide_menubar">1</attribute>
+      <attribute persist="false" config_key="[Skin],feature_skin_settings">1</attribute>
+
     <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>

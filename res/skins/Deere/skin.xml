@@ -49,8 +49,9 @@
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
 
-      <attribute config_key="[Skin],feature_hide_menubar">1</attribute>
-      <attribute config_key="[Skin],feature_skin_settings">1</attribute>
+      <!-- Enable skin features -->
+      <attribute persist="false" config_key="[Skin],feature_hide_menubar">1</attribute>
+      <attribute persist="false" config_key="[Skin],feature_skin_settings">1</attribute>
 
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>

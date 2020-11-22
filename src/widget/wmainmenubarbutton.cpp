@@ -30,5 +30,6 @@ void WMainMenuBarButton::initialize(WMainMenu* pMainMenu) {
         } else if (separator) {
             m_pMenu->addSeparator();
         }
-    });
+    },
+            this);
 }

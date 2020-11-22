@@ -28,7 +28,6 @@ class VisibilityControlConnection : public QObject {
 
   public slots:
     void slotClearControl();
-  private slots:
     void slotReconnectControl();
 
   private slots:
@@ -42,14 +41,16 @@ class VisibilityControlConnection : public QObject {
     QAction* m_pAction;
 };
 
+class QMainWindow;
+
 class WMainMenu : public QWidget {
     Q_OBJECT
   public:
     WMainMenu(QWidget* pParent,
             UserSettingsPointer pConfig,
             ConfigObject<ConfigValueKbd>* pKbdConfig);
-    void createMenu(FnAddMenu fnAddMenu, bool isMainMenu = false);
-    QMenuBar* createMainMenuBar(QWidget* parent, bool native = true);
+    void createMenu(FnAddMenu fnAddMenu, QWidget* parent);
+    QMenuBar* createMainMenuBar(QMainWindow* parent, bool native = true);
     /// Should the mainMenuBar be visible
     bool shouldBeVisible();
     /// Cleanup connections and remove controlproxies
@@ -103,6 +104,7 @@ class WMainMenu : public QWidget {
   private:
     void resetFeatureFlags();
     void initialize();
+    void createMenuInternal(FnAddMenu fnAddMenu, QMenuBar* pMenuBar, QWidget* parent);
     VisibilityControlConnection* createVisibilityControl(QAction* pAction,
             const ConfigKey& key,
             ControlObject* m_feature = nullptr);
