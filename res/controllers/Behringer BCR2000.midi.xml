@@ -17,7 +17,7 @@
 
       <!-- Deck 1 -->
       <control>
-        <description>Pushbutton G1.1 Button</description>
+        <description>Pushencoder G1.1 Button</description>
         <status>0xB0</status>
         <midino>0x21</midino>
         <options>
@@ -26,7 +26,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.1 Encoder</description>
+        <description>Pushencoder G1.1 Encoder</description>
         <status>0xB0</status>
         <midino>0x01</midino>
         <options>
@@ -35,7 +35,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.2 Encoder</description>
+        <description>Pushencoder G1.2 Encoder</description>
         <status>0xB0</status>
         <midino>0x02</midino>
         <options>
@@ -44,7 +44,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.3 Encoder</description>
+        <description>Pushencoder G1.3 Encoder</description>
         <status>0xB0</status>
         <midino>0x03</midino>
         <options>
@@ -53,7 +53,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.4 Encoder</description>
+        <description>Pushencoder G1.4 Encoder</description>
         <status>0xB0</status>
         <midino>0x04</midino>
         <options>
@@ -100,7 +100,7 @@
 
       <!-- Deck 2 -->
       <control>
-        <description>Pushbutton G1.5 Button</description>
+        <description>Pushencoder G1.5 Button</description>
         <status>0xB0</status>
         <midino>0x25</midino>
         <options>
@@ -109,7 +109,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.5 Encoder</description>
+        <description>Pushencoder G1.5 Encoder</description>
         <status>0xB0</status>
         <midino>0x05</midino>
         <options>
@@ -118,7 +118,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.6 Encoder</description>
+        <description>Pushencoder G1.6 Encoder</description>
         <status>0xB0</status>
         <midino>0x06</midino>
         <options>
@@ -127,7 +127,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.7 Encoder</description>
+        <description>Pushencoder G1.7 Encoder</description>
         <status>0xB0</status>
         <midino>0x07</midino>
         <options>
@@ -136,7 +136,7 @@
         <key>BCR2000.input</key>
       </control>
       <control>
-        <description>Pushbutton G1.8 Encoder</description>
+        <description>Pushencoder G1.8 Encoder</description>
         <status>0xB0</status>
         <midino>0x08</midino>
         <options>
@@ -367,6 +367,500 @@
         <key>BCR2000.input</key>
       </control>
 
+      <!-- Pushencoder Group 1 -->
+      <control>
+        <description>Pushencoder G1.2 Button</description>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G1.3 Button</description>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G1.4 Button</description>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G1.6 Button</description>
+        <status>0xB0</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G1.7 Button</description>
+        <status>0xB0</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G1.8 Button</description>
+        <status>0xB0</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+
+      <!-- Pushencoder Group 2 -->
+      <control>
+        <description>Pushencoder G2.1 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.2 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.3 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.4 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.5 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.6 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.7 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.8 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.1 Button</description>
+        <status>0xB0</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.2 Button</description>
+        <status>0xB0</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.3 Button</description>
+        <status>0xB0</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.4 Button</description>
+        <status>0xB0</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.5 Button</description>
+        <status>0xB0</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.6 Button</description>
+        <status>0xB0</status>
+        <midino>0x2E</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.7 Button</description>
+        <status>0xB0</status>
+        <midino>0x2F</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G2.8 Button</description>
+        <status>0xB0</status>
+        <midino>0x30</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+
+      <!-- Pushencoder Group 3 -->
+      <control>
+        <description>Pushencoder G3.1 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.2 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.3 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.4 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.5 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.6 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.7 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.8 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.1 Button</description>
+        <status>0xB0</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.2 Button</description>
+        <status>0xB0</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.3 Button</description>
+        <status>0xB0</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.4 Button</description>
+        <status>0xB0</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.5 Button</description>
+        <status>0xB0</status>
+        <midino>0x35</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.6 Button</description>
+        <status>0xB0</status>
+        <midino>0x36</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.7 Button</description>
+        <status>0xB0</status>
+        <midino>0x37</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G3.8 Button</description>
+        <status>0xB0</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+    </controls>
+
+      <!-- Pushencoder Group 4 -->
+      <control>
+        <description>Pushencoder G4.1 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.2 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.3 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.4 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.5 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.6 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.7 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.8 Encoder</description>
+        <status>0xB0</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.1 Button</description>
+        <status>0xB0</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.2 Button</description>
+        <status>0xB0</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.3 Button</description>
+        <status>0xB0</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.4 Button</description>
+        <status>0xB0</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.5 Button</description>
+        <status>0xB0</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.6 Button</description>
+        <status>0xB0</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushencoder G4.7 Button</description>
+        <status>0xB0</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
+      <control>
+        <description>Pushbutton G4.8 Button</description>
+        <status>0xB0</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding />
+        </options>
+        <key>BCR2000.input</key>
+      </control>
     </controls>
   </controller>
 </MixxxControllerPreset>
