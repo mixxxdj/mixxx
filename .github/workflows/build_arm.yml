@@ -1,0 +1,103 @@
+on: [push, pull_request]
+
+jobs:
+  build_job:
+    # The host should always be linux
+    runs-on: ubuntu-18.04
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+
+    # Run steps on a matrix of 3 arch/distro combinations
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: buster
+          - arch: armv7
+            distro: buster
+          # - arch: armv7
+          #   distro: ubuntu20.04
+          - arch: aarch64
+            distro: ubuntu20.04
+
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - name: "Create build directory"
+        run: mkdir cmake_build
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: Build Arm
+        id: build_arm
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+
+          # Create an artifacts directory
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+
+          # Mount the artifacts directory as /artifacts in the container
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+
+          # Pass some environment variables to the container
+          env: | # YAML, but pipe character is necessary
+            artifact_name: mixxx-${{ matrix.distro }}_${{ matrix.arch }}
+
+          # The shell to run commands with in the container
+          shell: /bin/sh
+
+          # Install some dependencies in the container. This speeds up builds if
+          # you are also using githubToken. Any dependencies installed here will
+          # be part of the container image that gets cached, so subsequent
+          # builds don't have to re-install them. The image layer is cached
+          # publicly in your project's package repository, so it is vital that
+          # no secrets are present in the container state or logs.
+          install: |
+            apt-get update -q -y
+            apt-get install -q -y g++ git scons libportmidi-dev libopusfile-dev \
+              libshout-dev libtag1-dev libprotobuf-dev protobuf-compiler \
+              libusb-1.0-0-dev libfftw3-dev libmad0-dev libsoundtouch-dev portaudio19-dev \
+              libchromaprint-dev librubberband-dev libsqlite3-dev \
+              libid3tag0-dev libflac-dev libsndfile-dev libupower-glib-dev \
+              libavcodec-dev libavformat-dev \
+              libgl-dev liblilv-dev \
+              libjack-dev libjack0 \
+              libfaad-dev \
+              libmp3lame-dev libebur128-dev libwavpack-dev \
+              qt5-default qt5keychain-dev qtdeclarative5-dev libqt5opengl5-dev qtscript5-dev \
+              libqt5svg5-dev libqt5x11extras5-dev libvamp-sdk2v5 libhidapi-libusb0 libqt5sql5-sqlite libmodplug-dev \
+              libglu1-mesa-dev \
+              cmake
+            case "${{ matrix.distro }}" in
+              ubuntu*)
+                apt-get install -q -y libavutil-dev
+                ;;
+            esac
+          # Produce a binary artifact and place it in the mounted volume
+          run: |
+            export CTEST_PARALLEL_LEVEL="$(nproc)"
+            export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+            export PATH="$HOME/.local/bin:$PATH"
+            export CMAKEFLAGS="-DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON -DENGINEPRIME=ON"
+            export CMAKEFLAGS_EXTRA="-DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
+            export GTEST_COLOR="1"
+            export CTEST_OUTPUT_ON_FAILURE="1"
+            export QT_QPA_PLATFORM="offscreen"
+            cd cmake_build
+            cmake -DCMAKE_INSTALL_PREFIX=/usr .. 
+            cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
+            cmake --build .
+            cpack -G DEB
+            cp *.deb "/artifacts/"
+            echo "Produced artifact ${artifact_name} at /artifacts/"
+
+      - name: Show the artifact
+        # Items placed in /artifacts in the container will be in
+        # ${PWD}/artifacts on the host.
+        run: |
+          ls -al "${PWD}/artifacts"
+
+      - name: "Deploy artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: mixxx-${{ matrix.distro }}_${{ matrix.arch }}
+          path: /artifacts/*.deb
