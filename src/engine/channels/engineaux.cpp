@@ -46,7 +46,7 @@ bool EngineAux::isActive() {
     return m_wasActive;
 }
 
-void EngineAux::onInputConfigured(AudioInput input) {
+void EngineAux::onInputConfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
@@ -56,7 +56,7 @@ void EngineAux::onInputConfigured(AudioInput input) {
     m_pInputConfigured->forceSet(1.0);
 }
 
-void EngineAux::onInputUnconfigured(AudioInput input) {
+void EngineAux::onInputUnconfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
@@ -66,8 +66,8 @@ void EngineAux::onInputUnconfigured(AudioInput input) {
     m_pInputConfigured->forceSet(0.0);
 }
 
-void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                              unsigned int nFrames) {
+void EngineAux::receiveBuffer(
+        const AudioInput& input, const CSAMPLE* pBuffer, unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     m_sampleBuffer = pBuffer;

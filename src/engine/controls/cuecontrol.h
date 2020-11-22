@@ -57,6 +57,7 @@ inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
+<<<<<<< HEAD
     /// Describes the current status of the hotcue
     enum class Status {
         /// Hotuce not set
@@ -82,6 +83,15 @@ class HotcueControl : public QObject {
         return m_pCue;
     }
     void setCue(CuePointer pCue);
+=======
+    HotcueControl(const QString& group, int hotcueNumber);
+    ~HotcueControl() override;
+
+    inline int getHotcueNumber() { return m_iHotcueNumber; }
+    inline CuePointer getCue() { return m_pCue; }
+    double getPosition() const;
+    void setCue(const CuePointer& pCue);
+>>>>>>> upstream/2.3
     void resetCue();
 
     double getPosition() const;
@@ -181,8 +191,8 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(QString group,
-               UserSettingsPointer pConfig);
+    CueControl(const QString& group,
+            UserSettingsPointer pConfig);
     ~CueControl() override;
 
     void hintReader(HintVector* pHintList) override;
@@ -257,7 +267,7 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
-    void attachCue(CuePointer pCue, HotcueControl* pControl);
+    void attachCue(const CuePointer& pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();

@@ -108,7 +108,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     // its data, not the title string itself.
     void setHeaderProperties(
             ColumnCache::Column column,
-            QString title,
+            const QString& title,
             int defaultWidth = 0);
 
     ColumnCache::Column mapColumn(int column) const {
@@ -173,11 +173,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
   private slots:
     void slotTrackLoaded(
-            QString group,
+            const QString& group,
             TrackPointer pTrack);
 
     void slotRefreshCoverRows(
-            QList<int> rows);
+            const QList<int>& rows);
 
     void slotRefreshAllRows();
 

@@ -16,7 +16,7 @@ class LegacyAudioSourceAdapter : public virtual /*implements*/ IAudioSourceReade
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     AudioSource* m_pOwner;

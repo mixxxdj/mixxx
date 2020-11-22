@@ -7,7 +7,7 @@
 
 #include "track/track.h"
 
-WStarRating::WStarRating(QString group, QWidget* pParent)
+WStarRating::WStarRating(const QString& group, QWidget* pParent)
         : WWidget(pParent),
           m_starRating(0, 5),
           m_group(group),

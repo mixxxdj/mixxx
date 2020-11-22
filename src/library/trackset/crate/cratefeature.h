@@ -32,8 +32,15 @@ class CrateFeature : public BaseTrackSetFeature {
     QVariant title() override;
     QIcon getIcon() override;
 
+<<<<<<< HEAD:src/library/trackset/crate/cratefeature.h
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) override;
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
+=======
+    bool dropAcceptChild(const QModelIndex& index,
+            const QList<QUrl>& urls,
+            QObject* pSource) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
+>>>>>>> upstream/2.3:src/library/crate/cratefeature.h
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -44,7 +51,7 @@ class CrateFeature : public BaseTrackSetFeature {
   public slots:
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
 
   private slots:

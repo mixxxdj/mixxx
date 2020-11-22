@@ -478,14 +478,15 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     emit tracksChanged(QSet<int>{playlistId});
 }
 
-void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions) {
+void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& positions) {
     // get positions in reversed order
-    std::sort(positions.begin(), positions.end(), std::greater<int>());
+    QList sortedPositons = positions;
+    std::sort(sortedPositons.begin(), sortedPositons.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(positions)) {
+    for (const auto position : qAsConst(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();

@@ -49,19 +49,19 @@ class BrowseFeature : public LibraryFeature {
     void slotAddToLibrary();
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
     void onLazyChildExpandation(const QModelIndex& index);
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
   signals:
     void setRootIndex(const QModelIndex&);
-    void requestAddDir(QString);
+    void requestAddDir(const QString&);
     void scanLibrary();
 
   private:
     QString getRootViewHtml() const;
-    QString extractNameFromPath(QString spath);
+    QString extractNameFromPath(const QString& spath);
     QStringList getDefaultQuickLinks() const;
     void saveQuickLinks();
     void loadQuickLinks();

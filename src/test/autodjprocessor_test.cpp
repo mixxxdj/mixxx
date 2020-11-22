@@ -122,7 +122,10 @@ class MockPlayerManager : public PlayerManagerInterface {
     }
 
     MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const QString&));
+<<<<<<< HEAD
     MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const ChannelHandle&));
+=======
+>>>>>>> upstream/2.3
     MOCK_CONST_METHOD1(getDeck, Deck*(unsigned int));
     MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(unsigned int));
     MOCK_CONST_METHOD1(getSampler, Sampler*(unsigned int));
@@ -158,7 +161,7 @@ class MockAutoDJProcessor : public AutoDJProcessor {
     virtual ~MockAutoDJProcessor() {
     }
 
-    MOCK_METHOD3(emitLoadTrackToPlayer, void(TrackPointer, QString, bool));
+    MOCK_METHOD3(emitLoadTrackToPlayer, void(TrackPointer, const QString&, bool));
     MOCK_METHOD1(emitAutoDJStateChanged, void(AutoDJProcessor::AutoDJState));
 };
 

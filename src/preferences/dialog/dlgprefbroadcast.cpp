@@ -359,7 +359,7 @@ void DlgPrefBroadcast::selectConnectionRow(int row) {
     connectionListItemSelected(newSelection);
 }
 
-void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
+void DlgPrefBroadcast::selectConnectionRowByName(const QString& rowName) {
     int row = -1;
     for (int i = 0; i < m_pSettingsModel->rowCount(); i++) {
         QModelIndex index = m_pSettingsModel->index(i, kColumnName);

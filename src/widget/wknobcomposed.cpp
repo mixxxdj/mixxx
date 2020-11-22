@@ -88,9 +88,9 @@ void WKnobComposed::clear() {
     m_pKnob.clear();
 }
 
-void WKnobComposed::setPixmapBackground(PixmapSource source,
-                                        Paintable::DrawMode mode,
-                                        double scaleFactor) {
+void WKnobComposed::setPixmapBackground(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
@@ -98,9 +98,9 @@ void WKnobComposed::setPixmapBackground(PixmapSource source,
     }
 }
 
-void WKnobComposed::setPixmapKnob(PixmapSource source,
-                                  Paintable::DrawMode mode,
-                                  double scaleFactor) {
+void WKnobComposed::setPixmapKnob(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_pKnob = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()

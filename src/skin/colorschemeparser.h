@@ -10,12 +10,13 @@ class ImgSource;
 class ColorSchemeParser {
   public:
     static void setupLegacyColorSchemes(
-            QDomElement docElem,
+            const QDomElement& docElem,
             UserSettingsPointer pConfig,
             QString* pStyle,
             SkinContext* pContext);
+
   private:
-    static ImgSource* parseFilters(QDomNode filter);
+    static ImgSource* parseFilters(const QDomNode& filter);
     ColorSchemeParser() { }
     ~ColorSchemeParser() { }
 };

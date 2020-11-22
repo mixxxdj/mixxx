@@ -166,7 +166,7 @@ void AutoDJFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
-bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
+bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
     // Auto DJ playlist.
@@ -182,7 +182,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
-bool AutoDJFeature::dragMoveAccept(QUrl url) {
+bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
@@ -289,7 +289,7 @@ void AutoDJFeature::constructCrateChildModel() {
 }
 
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
-                                      QModelIndex index) {
+        const QModelIndex& index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
     QMenu menu(m_pSidebarWidget);
     if (m_pCratesTreeItem == pClickedItem) {

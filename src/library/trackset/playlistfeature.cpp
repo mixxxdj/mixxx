@@ -23,7 +23,7 @@
 namespace {
 
 QString createPlaylistLabel(
-        QString name,
+        const QString& name,
         int count,
         int duration) {
     return QStringLiteral("%1 (%2) %3")
@@ -71,8 +71,12 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     menu.exec(globalPos);
 }
 
+<<<<<<< HEAD:src/library/trackset/playlistfeature.cpp
 void PlaylistFeature::onRightClickChild(
         const QPoint& globalPos, QModelIndex index) {
+=======
+void PlaylistFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
+>>>>>>> upstream/2.3:src/library/playlistfeature.cpp
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
@@ -104,7 +108,11 @@ void PlaylistFeature::onRightClickChild(
 }
 
 bool PlaylistFeature::dropAcceptChild(
+<<<<<<< HEAD:src/library/trackset/playlistfeature.cpp
         const QModelIndex& index, QList<QUrl> urls, QObject* pSource) {
+=======
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+>>>>>>> upstream/2.3:src/library/playlistfeature.cpp
     int playlistId = playlistIdFromIndex(index);
     VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return false;
@@ -125,7 +133,7 @@ bool PlaylistFeature::dropAcceptChild(
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
@@ -267,7 +275,12 @@ void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
 }
 
 void PlaylistFeature::slotPlaylistTableRenamed(
+<<<<<<< HEAD:src/library/trackset/playlistfeature.cpp
         int playlistId, QString newName) {
+=======
+        int playlistId,
+        const QString& newName) {
+>>>>>>> upstream/2.3:src/library/playlistfeature.cpp
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);

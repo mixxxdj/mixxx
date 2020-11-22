@@ -163,7 +163,7 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
 }
 
 bool ControllerPresetFileHandler::writeDocument(
-        QDomDocument root, const QString fileName) const {
+        const QDomDocument& root, const QString& fileName) const {
     // Need to do this on Windows
     QDir directory;
     if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
@@ -189,8 +189,8 @@ bool ControllerPresetFileHandler::writeDocument(
 
 void addTextTag(QDomDocument& doc,
         QDomElement& holder,
-        QString tagName,
-        QString tagText) {
+        const QString& tagName,
+        const QString& tagText) {
     QDomElement tag = doc.createElement(tagName);
     QDomText textNode = doc.createTextNode(tagText);
     tag.appendChild(textNode);

@@ -973,17 +973,18 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame() {
 }
 
 ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& originalWritableSampleFrames) {
     DEBUG_ASSERT(m_frameBuffer.signalInfo() == getSignalInfo());
     const SINT readableStartIndex =
-            writableSampleFrames.frameIndexRange().start();
-    const CSAMPLE* readableData = writableSampleFrames.writableData();
+            originalWritableSampleFrames.frameIndexRange().start();
+    const CSAMPLE* readableData = originalWritableSampleFrames.writableData();
 
 #if VERBOSE_DEBUG_LOG
-    kLogger.debug()
-            << "readSampleFramesClamped:"
-            << "writableSampleFrames.frameIndexRange()" << writableSampleFrames.frameIndexRange();
+    kLogger.debug() << "readSampleFramesClamped:"
+                    << "originalWritableSampleFrames.frameIndexRange()"
+                    << originalWritableSampleFrames.frameIndexRange();
 #endif
+    WritableSampleFrames writableSampleFrames = originalWritableSampleFrames;
 
     // Consume all buffered sample data before decoding any new data
     if (m_frameBuffer.isReady()) {

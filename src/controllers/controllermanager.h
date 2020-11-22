@@ -41,7 +41,7 @@ class ControllerManager : public QObject {
     QSharedPointer<PresetInfoEnumerator> getMainThreadSystemPresetEnumerator() {
         return m_pMainThreadSystemPresetEnumerator;
     }
-    QString getConfiguredPresetFileForDevice(QString name);
+    QString getConfiguredPresetFileForDevice(const QString& name);
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit requestSetUpDevices(); };

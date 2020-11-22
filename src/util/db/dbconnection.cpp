@@ -24,7 +24,7 @@ const mixxx::Logger kLogger("DbConnection");
 
 QSqlDatabase createDatabase(
         const DbConnection::Params& params,
-        const QString connectionName) {
+        const QString& connectionName) {
     kLogger.info()
         << "Available drivers for database connections:"
         << QSqlDatabase::drivers();
@@ -41,7 +41,7 @@ QSqlDatabase createDatabase(
 
 QSqlDatabase cloneDatabase(
         const QSqlDatabase& database,
-        const QString connectionName) {
+        const QString& connectionName) {
     DEBUG_ASSERT(!database.isOpen());
     return QSqlDatabase::cloneDatabase(database, connectionName);
 }
@@ -233,7 +233,11 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
+<<<<<<< HEAD
 bool initDatabase(QSqlDatabase database, mixxx::StringCollator* pCollator) {
+=======
+bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
+>>>>>>> upstream/2.3
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();

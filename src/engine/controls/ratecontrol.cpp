@@ -33,13 +33,13 @@ RateControl::RampMode RateControl::m_eRateRampMode;
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 
-RateControl::RateControl(QString group,
-                         UserSettingsPointer pConfig)
-    : EngineControl(group, pConfig),
-      m_pBpmControl(NULL),
-      m_bTempStarted(false),
-      m_tempRateRatio(0.0),
-      m_dRateTempRampChange(0.0) {
+RateControl::RateControl(const QString& group,
+        UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_pBpmControl(NULL),
+          m_bTempStarted(false),
+          m_tempRateRatio(0.0),
+          m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
     // This is the resulting rate ratio that can be used for display or calculations.

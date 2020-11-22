@@ -30,13 +30,13 @@ class TagFetcher : public QObject {
   signals:
     void resultAvailable(
             TrackPointer pTrack,
-            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void fetchProgress(
-            QString message);
+            const QString& message);
     void networkError(
             int httpStatus,
-            QString app,
-            QString message,
+            const QString& app,
+            const QString& message,
             int code);
 
   private slots:
@@ -45,26 +45,26 @@ class TagFetcher : public QObject {
     void slotAcoustIdTaskSucceeded(
             QList<QUuid> recordingIds);
     void slotAcoustIdTaskFailed(
-            mixxx::network::JsonWebResponse response);
+            const mixxx::network::JsonWebResponse& response);
     void slotAcoustIdTaskAborted();
     void slotAcoustIdTaskNetworkError(
-            QUrl requestUrl,
+            const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString errorString,
-            QByteArray errorContent);
+            const QString& errorString,
+            const QByteArray& errorContent);
 
     void slotMusicBrainzTaskSucceeded(
-            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void slotMusicBrainzTaskFailed(
-            mixxx::network::WebResponse response,
+            const mixxx::network::WebResponse& response,
             int errorCode,
-            QString errorMessage);
+            const QString& errorMessage);
     void slotMusicBrainzTaskAborted();
     void slotMusicBrainzTaskNetworkError(
-            QUrl requestUrl,
+            const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString errorString,
-            QByteArray errorContent);
+            const QString& errorString,
+            const QByteArray& errorContent);
 
   private:
     QNetworkAccessManager m_network;

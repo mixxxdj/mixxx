@@ -191,8 +191,13 @@ void HidController::sendReport(QList<int> data, unsigned int length, unsigned in
     sendBytesReport(temp, reportID);
 }
 
+<<<<<<< HEAD
 void HidController::sendBytes(const QByteArray& data) {
     sendBytesReport(data, 0);
+=======
+void HidController::send(const QByteArray& data) {
+    send(data, 0);
+>>>>>>> upstream/2.3
 }
 
 void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
