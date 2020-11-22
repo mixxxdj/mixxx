@@ -1,15 +1,15 @@
 /**
  * Mixxx controller mapping for a generic MIDI controller.
  *
- * The mapping may be configured in the object  `GenericMidiController.userConfig` which is
+ * The mapping may be configured in the object `GenericMidiController.userConfig` which is
  * structured as follows:
  *
  * userConfig
  * |
- * +- init: function that is called when Mixxx is started
- * +- shutdown: function that is called when Mixxx is shutting down
+ * +- init: (optional) function that is called when Mixxx is started
+ * +- shutdown: (optional) function that is called when Mixxx is shutting down
  * |
- * +- decks: an array of deck definitions
+ * +- decks: an array of deck definitions (may be empty or omitted)
  * |  +- deck:
  * |     +- deckNumbers: as defined by `components.Deck`
  * |     +- components: an array of component definitions for the deck
@@ -23,7 +23,7 @@
  * |           +- options: Additional options for the component (object, required)
  * |                       Example: {key: "reverse"}
  * |
- * +-effectUnits: an array of effect unit definitions
+ * +-effectUnits: an array of effect unit definitions (may be empty or omitted)
  *   +- effectUnit
  *      +- unitNumbers: as defined by `components.EffectUnit`
  *      +- components: an object of component definitions for the effect unit. Each definition is
