@@ -46,7 +46,7 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
 
 } // namespace
 
-CueControl::CueControl(QString group,
+CueControl::CueControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pConfig(pConfig),
@@ -351,7 +351,7 @@ void CueControl::createControls() {
     }
 }
 
-void CueControl::attachCue(CuePointer pCue, HotcueControl* pControl) {
+void CueControl::attachCue(const CuePointer& pCue, HotcueControl* pControl) {
     VERIFY_OR_DEBUG_ASSERT(pControl) {
         return;
     }
@@ -2205,7 +2205,7 @@ ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
     return key;
 }
 
-HotcueControl::HotcueControl(QString group, int i)
+HotcueControl::HotcueControl(const QString& group, int i)
         : m_group(group),
           m_iHotcueNumber(i),
           m_pCue(NULL),
@@ -2440,7 +2440,7 @@ double HotcueControl::getEndPosition() const {
     return m_hotcueEndPosition->get();
 }
 
-void HotcueControl::setCue(CuePointer pCue) {
+void HotcueControl::setCue(const CuePointer& pCue) {
     setPosition(pCue->getPosition());
     setEndPosition(pCue->getEndPosition());
     setColor(pCue->getColor());

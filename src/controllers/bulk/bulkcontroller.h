@@ -28,7 +28,7 @@ class BulkReader : public QThread {
     void stop();
 
   signals:
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
+    void incomingData(const QByteArray& data, mixxx::Duration timestamp);
 
   protected:
     void run();
@@ -72,7 +72,7 @@ class BulkController : public Controller {
     bool matchPreset(const PresetInfo& preset) override;
 
   protected:
-    void send(QList<int> data, unsigned int length) override;
+    void send(const QList<int>& data, unsigned int length) override;
 
   private slots:
     int open() override;

@@ -847,7 +847,7 @@ const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
     return NULL;
 }
 
-const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
+const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
     for (int i = 0; i < m_channels.size(); ++i) {
         const ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
@@ -857,7 +857,7 @@ const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
     return NULL;
 }
 
-const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
+const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
     switch (output.getType()) {
     case AudioOutput::MASTER:
         return getMasterBuffer();
@@ -882,7 +882,7 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
     }
 }
 
-void EngineMaster::onOutputConnected(AudioOutput output) {
+void EngineMaster::onOutputConnected(const AudioOutput& output) {
     switch (output.getType()) {
         case AudioOutput::MASTER:
             // overwrite config option if a master output is configured
@@ -910,7 +910,7 @@ void EngineMaster::onOutputConnected(AudioOutput output) {
     }
 }
 
-void EngineMaster::onOutputDisconnected(AudioOutput output) {
+void EngineMaster::onOutputDisconnected(const AudioOutput& output) {
     switch (output.getType()) {
         case AudioOutput::MASTER:
             // not used, because we need the master buffer for headphone mix
@@ -936,7 +936,7 @@ void EngineMaster::onOutputDisconnected(AudioOutput output) {
     }
 }
 
-void EngineMaster::onInputConnected(AudioInput input) {
+void EngineMaster::onInputConnected(const AudioInput& input) {
     switch (input.getType()) {
       case AudioInput::MICROPHONE:
           m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() + 1);
@@ -955,7 +955,7 @@ void EngineMaster::onInputConnected(AudioInput input) {
     }
 }
 
-void EngineMaster::onInputDisconnected(AudioInput input) {
+void EngineMaster::onInputDisconnected(const AudioInput& input) {
     switch (input.getType()) {
       case AudioInput::MICROPHONE:
           m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() - 1);

@@ -40,7 +40,7 @@ const SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
 
-CachingReader::CachingReader(QString group,
+CachingReader::CachingReader(const QString& group,
         UserSettingsPointer config)
         : m_pConfig(config),
           // Limit the number of in-flight requests to the worker. This should

@@ -121,9 +121,9 @@ int Hss1394Controller::open() {
                     unsigned char,
                     mixxx::Duration>::of(&Hss1394Controller::receive));
     connect(m_pChannelListener,
-            QOverload<QByteArray, mixxx::Duration>::of(&DeviceChannelListener::incomingData),
+            QOverload<const QByteArray&, mixxx::Duration>::of(&DeviceChannelListener::incomingData),
             this,
-            QOverload<QByteArray, mixxx::Duration>::of(&Hss1394Controller::receive));
+            QOverload<const QByteArray&, mixxx::Duration>::of(&Hss1394Controller::receive));
 
     if (!m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << getName();
@@ -169,9 +169,9 @@ int Hss1394Controller::close() {
                     unsigned char,
                     mixxx::Duration>::of(&Hss1394Controller::receive));
     disconnect(m_pChannelListener,
-            QOverload<QByteArray, mixxx::Duration>::of(&DeviceChannelListener::incomingData),
+            QOverload<const QByteArray&, mixxx::Duration>::of(&DeviceChannelListener::incomingData),
             this,
-            QOverload<QByteArray, mixxx::Duration>::of(&Hss1394Controller::receive));
+            QOverload<const QByteArray&, mixxx::Duration>::of(&Hss1394Controller::receive));
 
     stopEngine();
     MidiController::close();

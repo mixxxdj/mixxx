@@ -139,7 +139,7 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
-    void setMarkPositions(QMap<WaveformMarkPointer, int> markPositions) {
+    void setMarkPositions(const QMap<WaveformMarkPointer, int>& markPositions) {
         m_markPositions = markPositions;
     }
 
@@ -206,7 +206,7 @@ private:
     // draw play position indicator triangles
     void drawPlayPosmarker(QPainter* painter);
     void drawTriangle(QPainter* painter,
-            QBrush fillColor,
+            const QBrush& fillColor,
             QPointF p1,
             QPointF p2,
             QPointF p3);

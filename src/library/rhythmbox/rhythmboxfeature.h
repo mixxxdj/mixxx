@@ -40,9 +40,9 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist);
     // Removes all rows from a given table
-    void clearTable(QString table_name);
+    void clearTable(const QString& table_name);
     // reads the properties of a track and executes a SQL statement
     void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
     // reads all playlist entries and executes a SQL statement

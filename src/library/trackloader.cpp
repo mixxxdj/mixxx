@@ -37,7 +37,7 @@ TrackLoader::TrackLoader(
 }
 
 void TrackLoader::invokeSlotLoadTrack(
-        TrackRef trackRef,
+        const TrackRef& trackRef,
         Qt::ConnectionType connectionType) {
     DEBUG_ASSERT(connectionType == (connectionType & ~Qt::UniqueConnection));
     DEBUG_ASSERT((thread() == QThread::currentThread()) ||
@@ -59,7 +59,7 @@ void TrackLoader::invokeSlotLoadTrack(
 }
 
 void TrackLoader::slotLoadTrack(
-        TrackRef trackRef) {
+        const TrackRef& trackRef) {
     VERIFY_OR_DEBUG_ASSERT(m_trackCollectionManager) {
         kLogger.warning()
                 << "Track collection manager not accessible";

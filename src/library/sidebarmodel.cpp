@@ -253,7 +253,7 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     return QVariant();
 }
 
-void SidebarModel::startPressedUntilClickedTimer(QModelIndex pressedIndex) {
+void SidebarModel::startPressedUntilClickedTimer(const QModelIndex& pressedIndex) {
     m_pressedIndex = pressedIndex;
     m_pressedUntilClickedTimer->start(kPressedUntilClickedTimeoutMillis);
 }
@@ -330,8 +330,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     }
 }
 
-bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
-                              QObject* pSource) {
+bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     bool result = false;
     if (index.isValid()) {
@@ -355,8 +354,7 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     return false;
 }
 
-
-bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) {
     //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     bool result = false;
 

@@ -13,7 +13,7 @@ class ControlObject;
 // adjustments in volume relative to playback speed.
 class EnginePregain : public EngineObject {
   public:
-    EnginePregain(QString group);
+    EnginePregain(const QString& group);
     ~EnginePregain() override;
 
     // If the user is scratching and the record reverses direction, the volume

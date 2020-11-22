@@ -322,4 +322,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
              << sectionTemplate.arg(s_specialThanks,
                                     specialThanks.join("<br>"));
     textBrowser->setHtml(sections.join(""));
+
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &DlgAbout::reject);
 }

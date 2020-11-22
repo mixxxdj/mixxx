@@ -17,8 +17,8 @@ class TrackModel {
     static const int kHeaderWidthRole = Qt::UserRole + 0;
     static const int kHeaderNameRole = Qt::UserRole + 1;
 
-    TrackModel(QSqlDatabase db,
-               const char* settingsNamespace)
+    TrackModel(const QSqlDatabase& db,
+            const char* settingsNamespace)
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
@@ -158,13 +158,13 @@ class TrackModel {
     /*non-virtual*/ bool hasCapabilities(Capabilities caps) const {
         return (getCapabilities() & caps) == caps;
     }
-    virtual QString getModelSetting(QString name) {
+    virtual QString getModelSetting(const QString& name) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.getValue(key);
     }
 
-    virtual bool setModelSetting(QString name, QVariant value) {
+    virtual bool setModelSetting(const QString& name, const QVariant& value) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.setValue(key, value);

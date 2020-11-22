@@ -832,7 +832,7 @@ bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName)
     return true;
 }
 
-bool dropTable(QSqlDatabase& database, QString tableName) {
+bool dropTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Dropping Serato table: " << tableName;
 
     QSqlQuery query(database);
@@ -952,7 +952,7 @@ void SeratoFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     SeratoPlaylistModel* model = new SeratoPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     model->setPlaylist(playlist);
     return model;

@@ -42,18 +42,18 @@ class PlayerInfo : public QObject {
   signals:
     void currentPlayingDeckChanged(int deck);
     void currentPlayingTrackChanged(TrackPointer pTrack);
-    void trackLoaded(QString group, TrackPointer pTrack);
-    void trackUnloaded(QString group, TrackPointer pTrack);
+    void trackLoaded(const QString& group, TrackPointer pTrack);
+    void trackUnloaded(const QString& group, TrackPointer pTrack);
 
   private:
     class DeckControls {
         public:
-            DeckControls(QString& group)
-                    : m_play(group, "play"),
-                      m_pregain(group, "pregain"),
-                      m_volume(group, "volume"),
-                      m_orientation(group, "orientation") {
-            }
+          DeckControls(const QString& group)
+                  : m_play(group, "play"),
+                    m_pregain(group, "pregain"),
+                    m_volume(group, "volume"),
+                    m_orientation(group, "orientation") {
+          }
 
             ControlProxy m_play;
             ControlProxy m_pregain;

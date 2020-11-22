@@ -528,7 +528,7 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 }
 
 ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     bool retryAfterReopeningDecoder = false;

@@ -71,7 +71,7 @@ class HotcueControl : public QObject {
         Active = 2,
     };
 
-    HotcueControl(QString group, int hotcueNumber);
+    HotcueControl(const QString& group, int hotcueNumber);
     ~HotcueControl() override;
 
     int getHotcueNumber() const {
@@ -81,7 +81,7 @@ class HotcueControl : public QObject {
     CuePointer getCue() const {
         return m_pCue;
     }
-    void setCue(CuePointer pCue);
+    void setCue(const CuePointer& pCue);
     void resetCue();
 
     double getPosition() const;
@@ -181,8 +181,8 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(QString group,
-               UserSettingsPointer pConfig);
+    CueControl(const QString& group,
+            UserSettingsPointer pConfig);
     ~CueControl() override;
 
     void hintReader(HintVector* pHintList) override;
@@ -257,7 +257,7 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
-    void attachCue(CuePointer pCue, HotcueControl* pControl);
+    void attachCue(const CuePointer& pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();

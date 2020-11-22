@@ -63,7 +63,7 @@ Cue::Cue(
         double position,
         double length,
         int hotCue,
-        QString label,
+        const QString& label,
         mixxx::RgbColor color)
         : m_bDirty(false), // clear flag after loading from database
           m_dbId(id),
@@ -221,7 +221,7 @@ QString Cue::getLabel() const {
     return m_label;
 }
 
-void Cue::setLabel(const QString label) {
+void Cue::setLabel(const QString& label) {
     QMutexLocker lock(&m_mutex);
     if (m_label == label) {
         return;

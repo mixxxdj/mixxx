@@ -76,7 +76,7 @@ class WTrackMenu : public QMenu {
     void slotShowDlgTrackInfo();
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
 
   private slots:
     // File
@@ -170,7 +170,7 @@ class WTrackMenu : public QMenu {
 
     void lockBpm(bool lock);
 
-    void loadSelectionToGroup(QString group, bool play = false);
+    void loadSelectionToGroup(const QString& group, bool play = false);
     void clearTrackSelection();
 
     bool isAnyTrackBpmLocked() const;

@@ -360,7 +360,7 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
 }
 
 PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
-        QSharedPointer<PresetInfoEnumerator> pPresetEnumerator, QIcon icon) {
+        QSharedPointer<PresetInfoEnumerator> pPresetEnumerator, const QIcon& icon) {
     PresetInfo match;
 
     // Check if enumerator is ready. Should be rare that it isn't. We will
