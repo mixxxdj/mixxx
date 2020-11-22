@@ -23,7 +23,7 @@ GenericMidiController.init = function(controllerId, debug) {
     this.controllerId = controllerId;
     this.debug = debug;
     if (typeof this.userConfig !== "function") {
-        print(this.controllerId + ": ERROR: Missing configuration. "
+        this.log.error("Missing configuration. "
         + "Please check if the configuration file "
         + "'generic-midi-controller-configuration.js' "
         + "exists and contains the function 'GenericMidiController.userConfig'.");
@@ -34,9 +34,9 @@ GenericMidiController.init = function(controllerId, debug) {
         this.config.init(controllerId, debug);
     }
     this.layerManager = this.createLayerManager(
-        this.config.decks, this.config.effectUnits, this.componentContainers);
+        this.config.decks || [], this.config.effectUnits || [], this.componentContainers);
 
-    this.log("init() completed.");
+    this.log.debug("init() completed.");
 };
 
 
@@ -51,7 +51,7 @@ GenericMidiController.shutdown = function() {
     if (typeof this.config.shutdown === "function") {
         this.config.shutdown();
     }
-    this.log("shutdown() completed.");
+    this.log.debug("shutdown() completed.");
 };
 
 /**
@@ -86,11 +86,16 @@ GenericMidiController.createLayerManager = function(deckDefinitions, effectUnitD
         {definitions: deckDefinitions, factory: this.createDeck},
         {definitions: effectUnitDefinitions, factory: this.createEffectUnit}
     ].forEach(function(context) {
-        context.definitions.forEach(function(definition) {
-            var implementation = context.factory.call(this, definition);
-            componentContainers.push(implementation);
-            this.registerComponents(layerManager, definition.components, implementation);
-        }, this);
+        if (Array.isArray(context.definitions)) {
+            context.definitions.forEach(function(definition) {
+                var implementation = context.factory(definition);
+                componentContainers.push(implementation);
+                this.registerComponents(layerManager, definition.components, implementation);
+            }, this);
+        } else {
+            this.log.error("Skipping a part of the configuration because the following definition "
+                         + "is not an array: " + stringifyObject(context.definitions));
+        }
     }, this);
     layerManager.init();
     return layerManager;
@@ -179,8 +184,13 @@ GenericMidiController.registerComponents = function(layerManager, definition, im
  * @param {string} message Message
  * @private
  */
-GenericMidiController.log = function(message) {
-    if (this.debug) {
-        print(this.controllerId + ": " + message);
-    }
+GenericMidiController.log = {
+    debug: function(message) {
+        if (GenericMidiController.debug) {
+            print("[DEBUG] " + GenericMidiController.controllerId + ": " + message);
+        }
+    },
+    error: function(message) {
+        print("[ERROR] " + GenericMidiController.controllerId + ": " + message);
+    },
 };
