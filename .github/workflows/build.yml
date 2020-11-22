@@ -70,7 +70,7 @@ jobs:
         key: macOS-build-environment-${{ steps.buildenv_name.outputs.buildenv_name }}
 
     - name: "[macOS] Import Apple code signing identity"
-      id: codesign
+      id: apple_codesign
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
       run: |
         # Decrypt the certificate
@@ -83,7 +83,7 @@ jobs:
         security create-keychain -p mixxx Mixxx.keychain
         security unlock-keychain -p mixxx Mixxx.keychain
         security import ~/certificate.p12 -k Mixxx.keychain \
-          -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -T /usr/bin/codesign
+          -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
         security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
         # Add keychain to search list
         security list-keychains -s Mixxx.keychain
@@ -179,8 +179,7 @@ jobs:
 
     - name: "[macOS] Sign Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: codesign --verbose=4 --deep --force --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
-        fi
+      run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
       working-directory: cmake_build
 
     - name: "Deploy artifacts"
