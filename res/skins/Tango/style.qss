@@ -2968,6 +2968,26 @@ WLibrary QRadioButton::indicator:checked {
 WLibrary QRadioButton::indicator:unchecked {
   image: url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
 }
+
+WMainMenuBarButton {
+  margin: 4px 2px 0px 2px;
+  font-weight: normal;
+  border-radius: 3px;
+  border: 1px solid #444;
+  color: rgba(151,151,151,0);;
+  background-color: #333;
+  image: url(skin:/graphics/mainmenu.svg);
+}
+
+WMainMenuBarButton:hover {
+  border: 1px solid #ff8800;
+}
+
+WMainMenuBarButton::menu-indicator, WMainMenuBarButton::menu-indicator:pressed, WMainMenuBarButton::menu-indicator:open {
+  width: 0;
+  height: 0;
+}
+
 /* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
 WOverview {
   font-size: 16px/16px;
