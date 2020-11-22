@@ -69,12 +69,12 @@ void makeLatinLow(QChar* c, int count) {
     for (int i = 0; i < count; ++i) {
         if (c[i].decompositionTag() != QChar::NoDecomposition) {
             QString decomposition = c[i].decomposition();
-            if (!decomposition[0].isSpace())  {
-                // here we remove the decoration brom all characters.
+            if (!decomposition.isEmpty() && !decomposition[0].isSpace()) {
+                // here we remove the decoration from all characters.
                 // We want "o" matching "ó" and all other variants but we
                 // do not decompose decoration only characters like "˚" where
                 // the base character is a space
-                c[i] = c[i].decomposition()[0];
+                c[i] = decomposition.at(0);
             }
         }
         if (c[i].isUpper()) {
@@ -180,7 +180,7 @@ const QChar kSqlLikeEscapeDefault = '\0';
 int sqliteStringCompareUTF16(void* pArg,
                              int len1, const void* data1,
                              int len2, const void* data2) {
-    StringCollator* pCollator = static_cast<StringCollator*>(pArg);
+    const auto* pCollator = static_cast<mixxx::StringCollator*>(pArg);
     // Construct a QString without copy
     QString string1 = QString::fromRawData(static_cast<const QChar*>(data1),
                                            len1 / sizeof(QChar));
@@ -233,7 +233,7 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
-bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
+bool initDatabase(QSqlDatabase database, mixxx::StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();

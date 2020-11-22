@@ -28,7 +28,7 @@ const double kShiftCuesOffsetSmallMillis = 1;
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
 }
-}
+} // namespace
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
         : BasePlayer(pParent, group) {
@@ -75,10 +75,11 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     // Connect our signals and slots with the EngineBuffer's signals and
     // slots. This will let us know when the reader is done loading a track, and
     // let us request that the reader load a track.
-    connect(pEngineBuffer, SIGNAL(trackLoaded(TrackPointer, TrackPointer)),
-            this, SLOT(slotTrackLoaded(TrackPointer, TrackPointer)));
-    connect(pEngineBuffer, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotLoadFailed(TrackPointer, QString)));
+    connect(pEngineBuffer, &EngineBuffer::trackLoaded, this, &BaseTrackPlayerImpl::slotTrackLoaded);
+    connect(pEngineBuffer,
+            &EngineBuffer::trackLoadFailed,
+            this,
+            &BaseTrackPlayerImpl::slotLoadFailed);
 
     // Get loop point control objects
     m_pLoopInPoint = make_parented<ControlProxy>(
@@ -128,21 +129,21 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pWaveformZoomUp = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "waveform_zoom_up"));
     connect(m_pWaveformZoomUp.get(),
-            SIGNAL(valueChanged(double)),
+            &ControlPushButton::valueChanged,
             this,
-            SLOT(slotWaveformZoomUp(double)));
+            &BaseTrackPlayerImpl::slotWaveformZoomUp);
     m_pWaveformZoomDown = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "waveform_zoom_down"));
     connect(m_pWaveformZoomDown.get(),
-            SIGNAL(valueChanged(double)),
+            &ControlPushButton::valueChanged,
             this,
-            SLOT(slotWaveformZoomDown(double)));
+            &BaseTrackPlayerImpl::slotWaveformZoomDown);
     m_pWaveformZoomSetDefault = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "waveform_zoom_set_default"));
     connect(m_pWaveformZoomSetDefault.get(),
-            SIGNAL(valueChanged(double)),
+            &ControlPushButton::valueChanged,
             this,
-            SLOT(slotWaveformZoomSetDefault(double)));
+            &BaseTrackPlayerImpl::slotWaveformZoomSetDefault);
 
     m_pPreGain = make_parented<ControlProxy>(getGroup(), "pregain", this);
 

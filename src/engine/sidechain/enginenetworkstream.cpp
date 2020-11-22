@@ -78,7 +78,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
     m_inputStreamStartTimeUs = getNetworkTimeUs();
     m_inputStreamFramesWritten = 0;
 
-    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }
@@ -90,7 +90,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
 void EngineNetworkStream::stopStream() {
     m_inputStreamStartTimeUs = -1;
 
-    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }

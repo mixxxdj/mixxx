@@ -5,8 +5,6 @@
   Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   background-color: #1e1e1e;
-  font-family: Ubuntu;
-  font-weight: normal;
   font-size: 12px/12px;
 }
 
@@ -17,24 +15,39 @@
   background-color: #1e1e1e;
 }
 
-WWidget,
-WLabel,
-WNumber,
-WBeatSpinBox,
-WEffectSelector, WEffectSelector QAbstractScrollArea,
+#Mixxx, WWidget,
+QToolTip,
+WLabel, QLabel,
+WNumber, WNumberPos,
 WPushButton,
-#LibraryContainer QPushButton,
-#LibraryContainer QLabel,
-#LibraryContainer QRadioButton,
-#LibraryContainer QMenu,
+WKey,
+WTime,
+WTrackText,
+WTrackProperty,
+WRecordingDuration,
+QSpinBox,
+WBeatSpinBox,
+WOverview #PassthroughLabel,
 WBeatSpinBox QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
 WCoverArtMenu,
-#LibraryContainer QMenu QCheckBox,
-QToolTip,
-#LibraryContainer QHeaderView {
+WTrackMenu,
+WTrackMenu QMenu,
+WOverview /* Hotcue labels in the overview */,
+QComboBox,
+WEffect,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea
+#LibraryContainer QPushButton,
+#LibraryContainer QLabel,
+#LibraryContainer QRadioButton,
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::item,
+#LibraryContainer QMenu {
   font-family: Ubuntu;
   font-weight: normal;
 }
@@ -2545,7 +2558,6 @@ WTrackMenu QMenu::right-arrow {
   }
 
 #LibraryContainer QHeaderView {
-  font-family: Ubuntu;
   font-weight: bold;
   /* Note(ronso0)
   Interferes with skin scaling
@@ -2688,7 +2700,7 @@ Library features and their buttons:
     QPushButton#
   DlgAutoDJ
     QPushButton#pushButtonShuffle
-    QPushButton#pushButtonAddRandom
+    QPushButton#pushButtonAddRandomTrack
     QPushButton#pushButtonSkipNext
     QPushButton#pushButtonFadeNow
     QSpinBox#spinBoxTransition
@@ -2708,7 +2720,6 @@ Library features and their buttons:
   	*/
 WLibrary QPushButton {
   text-align: center;
-  font-family: Ubuntu;
   font-weight: normal;
   /* Note(ronso0)
   Interferes with skin scaling, system font size respectively
@@ -2825,7 +2836,7 @@ QPushButton#pushButtonSkipNext:!enabled {
 QPushButton#pushButtonShuffle {
   image: url(skin:/buttons/btn_autodj_shuffle.svg) no-repeat center center;
 }
-QPushButton#pushButtonAddRandom {
+QPushButton#pushButtonAddRandomTrack {
   image: url(skin:/buttons/btn_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist:!checked {

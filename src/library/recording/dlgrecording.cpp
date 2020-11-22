@@ -69,7 +69,7 @@ DlgRecording::DlgRecording(
             this,
             &DlgRecording::slotDurationRecorded);
 
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -186,9 +186,9 @@ void DlgRecording::slotDurationRecorded(QString durationRecorded) {
 // update label besides start/stop button
 void DlgRecording::refreshLabels() {
     QString recFile = m_pRecordingManager->getRecordingFile();
-    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") + QStringLiteral(")"))
-            .arg(m_bytesRecordedStr)
-            .arg(m_durationRecordedStr);
+    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") +
+            QStringLiteral(")"))
+                              .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);
     labelRecStatistics->setText(recData);
 }

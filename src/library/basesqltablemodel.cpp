@@ -35,8 +35,6 @@ const int kMaxSortColumns = 3;
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
-const QString kEmptyString = QStringLiteral("");
-
 } // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(
@@ -46,8 +44,7 @@ BaseSqlTableModel::BaseSqlTableModel(
         : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
-          m_bInitialized(false),
-          m_currentSearch(kEmptyString) {
+          m_bInitialized(false) {
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -522,7 +519,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
         bool first = true;
-        for (const SortColumn& sc : m_sortColumns) {
+        for (const SortColumn& sc : qAsConst(m_sortColumns)) {
             QString sort_field;
             if (sc.m_column < m_tableColumns.size()) {
                 if (sc.m_column == kIdColumn) {

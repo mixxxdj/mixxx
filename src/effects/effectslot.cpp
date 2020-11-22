@@ -37,25 +37,29 @@ EffectSlot::EffectSlot(const QString& group,
     // at the beginning of a set.
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
-    connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEnabled(double)));
+    connect(m_pControlEnabled, &ControlPushButton::valueChanged, this, &EffectSlot::slotEnabled);
 
     m_pControlNextEffect = new ControlPushButton(ConfigKey(m_group, "next_effect"));
-    connect(m_pControlNextEffect, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNextEffect(double)));
+    connect(m_pControlNextEffect,
+            &ControlPushButton::valueChanged,
+            this,
+            &EffectSlot::slotNextEffect);
 
     m_pControlPrevEffect = new ControlPushButton(ConfigKey(m_group, "prev_effect"));
-    connect(m_pControlPrevEffect, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPrevEffect(double)));
+    connect(m_pControlPrevEffect,
+            &ControlPushButton::valueChanged,
+            this,
+            &EffectSlot::slotPrevEffect);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlEffectSelector = new ControlEncoder(ConfigKey(m_group, "effect_selector"), false);
-    connect(m_pControlEffectSelector, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEffectSelector(double)));
+    connect(m_pControlEffectSelector,
+            &ControlEncoder::valueChanged,
+            this,
+            &EffectSlot::slotEffectSelector);
 
     m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
-    connect(m_pControlClear, SIGNAL(valueChanged(double)),
-            this, SLOT(slotClear(double)));
+    connect(m_pControlClear, &ControlPushButton::valueChanged, this, &EffectSlot::slotClear);
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
         addEffectParameterSlot();
@@ -63,8 +67,9 @@ EffectSlot::EffectSlot(const QString& group,
     }
 
     m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
-    connect(m_pControlMetaParameter, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEffectMetaParameter(double)));
+    connect(m_pControlMetaParameter, &ControlPotmeter::valueChanged, this, [this](double value) {
+        slotEffectMetaParameter(value, false);
+    });
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 
@@ -164,8 +169,10 @@ void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
         // disabled, so if this EffectSlot was enabled, enable the Effect and EngineEffect.
         pEffect->setEnabled(m_pControlEnabled->toBool());
 
-        connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
-                this, SLOT(slotEffectEnabledChanged(bool)));
+        connect(pEffect.data(),
+                &Effect::enabledChanged,
+                this,
+                &EffectSlot::slotEffectEnabledChanged);
 
         while (static_cast<unsigned int>(m_parameters.size())
                 < pEffect->numKnobParameters()) {
@@ -177,13 +184,12 @@ void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
             addEffectButtonParameterSlot();
         }
 
-        for (const auto& pParameter : m_parameters) {
+        for (const auto& pParameter : qAsConst(m_parameters)) {
             pParameter->loadEffect(pEffect);
         }
-        for (const auto& pParameter : m_buttonParameters) {
+        for (const auto& pParameter : qAsConst(m_buttonParameters)) {
             pParameter->loadEffect(pEffect);
         }
-
 
         if (adoptMetaknobPosition) {
             slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
@@ -208,10 +214,10 @@ void EffectSlot::clear() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
-    for (const auto& pParameter : m_parameters) {
+    for (const auto& pParameter : qAsConst(m_parameters)) {
         pParameter->clear();
     }
-    for (const auto& pParameter : m_buttonParameters) {
+    for (const auto& pParameter : qAsConst(m_buttonParameters)) {
         pParameter->clear();
     }
     m_pEffect.clear();
@@ -245,7 +251,7 @@ void EffectSlot::slotClear(double v) {
 }
 
 void EffectSlot::syncSofttakeover() {
-    for (const auto& pParameterSlot : m_parameters) {
+    for (const auto& pParameterSlot : qAsConst(m_parameters)) {
         pParameterSlot->syncSofttakeover();
     }
 }
@@ -275,7 +281,7 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     if (!m_pControlEnabled->toBool()) {
         force = true;
     }
-    for (const auto& pParameterSlot : m_parameters) {
+    for (const auto& pParameterSlot : qAsConst(m_parameters)) {
         pParameterSlot->onEffectMetaParameterChanged(v, force);
     }
 }
@@ -358,13 +364,13 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
     }
 
     QMap<QString, EffectParameterSlotBasePointer> parametersById;
-    for (const auto& pParameter : m_parameters) {
+    for (const auto& pParameter : qAsConst(m_parameters)) {
         EffectManifestParameterPointer manifest = pParameter->getManifest();
         if (manifest) {
             parametersById.insert(manifest->id(), pParameter);
         }
     }
-    for (const auto& pParameter : m_buttonParameters) {
+    for (const auto& pParameter : qAsConst(m_buttonParameters)) {
         EffectManifestParameterPointer manifest = pParameter->getManifest();
         if (manifest) {
             parametersById.insert(manifest->id(), pParameter);

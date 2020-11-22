@@ -58,8 +58,10 @@ DlgPrefLibrary::DlgPrefLibrary(
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(rowHeight);
-    connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
-            this, SLOT(slotRowHeightValueChanged(int)));
+    connect(spinBoxRowHeight,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefLibrary::slotRowHeightValueChanged);
 
     searchDebouncingTimeoutSpinBox->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
@@ -68,11 +70,12 @@ DlgPrefLibrary::DlgPrefLibrary(
                     ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
-    connect(searchDebouncingTimeoutSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSearchDebouncingTimeoutMillisChanged(int)));
+    connect(searchDebouncingTimeoutSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
-    connect(libraryFontButton, SIGNAL(clicked()),
-            this, SLOT(slotSelectFont()));
+    connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVE, AIFF";
@@ -93,8 +96,10 @@ DlgPrefLibrary::DlgPrefLibrary(
 #endif
     builtInFormats->setText(builtInFormatsStr);
 
-    connect(checkBox_SyncTrackMetadataExport, SIGNAL(toggled(bool)),
-            this, SLOT(slotSyncTrackMetadataExportToggled()));
+    connect(checkBox_SyncTrackMetadataExport,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefLibrary::slotSyncTrackMetadataExportToggled);
 
     // Initialize the controls after all slots have been connected
     slotUpdate();

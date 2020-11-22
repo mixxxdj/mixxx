@@ -13,6 +13,7 @@
 
 // TODO(rryan): Move to a utility file.
 namespace {
+const QString kTempFilenameExtension = QStringLiteral(".tmp");
 
 QString computeResourcePath() {
     // Try to read in the resource directory from the command line
@@ -186,34 +187,68 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(const QString& f
     }
 }
 
-template <class ValueType> void ConfigObject<ValueType>::save() {
+/// Save the ConfigObject to disk.
+/// Returns true on success
+template<class ValueType>
+bool ConfigObject<ValueType>::save() {
     QReadLocker lock(&m_valuesLock); // we only read the m_values here.
-    QFile file(m_filename);
-    if (!QDir(QFileInfo(file).absolutePath()).exists()) {
-        QDir().mkpath(QFileInfo(file).absolutePath());
+    QFile tmpFile(m_filename + kTempFilenameExtension);
+    if (!QDir(QFileInfo(tmpFile).absolutePath()).exists()) {
+        QDir().mkpath(QFileInfo(tmpFile).absolutePath());
     }
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Could not write file" << m_filename << ", don't worry.";
-        return;
-    } else {
-        QTextStream stream(&file);
-        stream.setCodec("UTF-8");
-
-        QString grp = "";
-
-        for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
-            //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
-            if (i.key().group != grp) {
-                grp = i.key().group;
-                stream << "\n" << grp << "\n";
-            }
-            stream << i.key().item << " " << i.value().value << "\n";
-        }
-        file.close();
-        if (file.error()!=QFile::NoError) { //could be better... should actually say what the error was..
-            qDebug() << "Error while writing configuration file:" << file.errorString();
-        }
+    if (!tmpFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Could not write config file: " << tmpFile.fileName();
+        return false;
     }
+    QTextStream stream(&tmpFile);
+    stream.setCodec("UTF-8");
+
+    QString group = "";
+
+    // Since it is legit to have a ConfigObject with 0 values, checking
+    // the stream.pos alone will yield wrong warnings. We therefore estimate
+    // a minimum length as an additional safety check.
+    qint64 minLength = 0;
+    for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
+        //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
+        if (i.key().group != group) {
+            group = i.key().group;
+            stream << "\n"
+                   << group << "\n";
+            minLength += i.key().group.length() + 2;
+        }
+        stream << i.key().item << " " << i.value().value << "\n";
+        minLength += i.key().item.length() + i.value().value.length() + 1;
+    }
+
+    stream.flush();
+    // the stream is usually longer, depending on the amount of encoded data.
+    if (stream.pos() < minLength || QFileInfo(tmpFile).size() != stream.pos()) {
+        qWarning().nospace() << "Error while writing configuration file: " << tmpFile.fileName();
+        return false;
+    }
+
+    tmpFile.close();
+    if (tmpFile.error() !=
+            QFile::NoError) { //could be better... should actually say what the error was..
+        qWarning().nospace() << "Error while writing configuration file: "
+                             << tmpFile.fileName() << ": " << tmpFile.errorString();
+        return false;
+    }
+
+    QFile oldConfig(m_filename);
+    if (!oldConfig.remove()) {
+        qWarning().nospace() << "Could not remove old config file: "
+                             << oldConfig.fileName() << ": " << oldConfig.errorString();
+        return false;
+    }
+    if (!tmpFile.rename(m_filename)) {
+        qWarning().nospace() << "Could not rename tmp file to config file: "
+                             << tmpFile.fileName() << ": " << tmpFile.errorString();
+        return false;
+    }
+
+    return true;
 }
 
 template<class ValueType>

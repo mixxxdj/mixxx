@@ -32,6 +32,6 @@ void Auxiliary::slotAuxMasterEnabled(double v) {
     // configured input.
     if (!configured && auxMasterEnable) {
         m_pAuxMasterEnabled->set(0.0);
-        emit(noAuxiliaryInputConfigured());
+        emit noAuxiliaryInputConfigured();
     }
 }

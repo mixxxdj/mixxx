@@ -61,6 +61,9 @@ class EngineControl : public QObject {
             const double dTotalSamples, const double dTrackSampleRate);
     QString getGroup() const;
 
+    void setBeatLoop(double startPosition, bool enabled);
+    void setLoop(double startPosition, double endPosition, bool enabled);
+
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
         Q_UNUSED(pGroupFeatures);

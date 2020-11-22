@@ -1,0 +1,203 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+env:
+  CMAKEFLAGS_COMMON: -DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON
+  GTEST_COLOR: 1
+  CTEST_OUTPUT_ON_FAILURE: 1
+  # Render analyzer waveform tests to an offscreen buffer
+  QT_QPA_PLATFORM: offscreen
+  # GitHub Actions automatically zstd compresses caches
+  CCACHE_NOCOMPRESS: true
+
+jobs:
+  build-ubuntu-gcc:
+    name: Ubuntu 18.04 (gcc)
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+          ccache \
+          libavformat-dev \
+          libchromaprint-dev \
+          libebur128-dev \
+          libfaad-dev \
+          libfftw3-dev \
+          libflac-dev \
+          libid3tag0-dev \
+          liblilv-dev \
+          libmad0-dev \
+          libmodplug-dev \
+          libmp3lame-dev \
+          libmp4v2-dev \
+          libopus-dev \
+          libopusfile-dev \
+          libportmidi-dev \
+          libprotobuf-dev \
+          libqt5opengl5-dev \
+          libqt5sql5-sqlite \
+          libqt5svg5-dev \
+          libqt5x11extras5-dev \
+          librubberband-dev \
+          libshout3-dev \
+          libsndfile1-dev \
+          libsoundtouch-dev \
+          libsqlite3-dev \
+          libtag1-dev \
+          libupower-glib-dev \
+          libusb-1.0-0-dev \
+          libwavpack-dev \
+          portaudio19-dev \
+          protobuf-compiler \
+          qt5-default \
+          qt5keychain-dev \
+          qtdeclarative5-dev \
+          qtscript5-dev \
+    - name: Set up cmake
+      uses: jwlawson/actions-setup-cmake@v1.4
+      with:
+        # This should always match the mininum required version in
+        # our CMakeLists.txt
+        cmake-version: '3.13.x'
+    - name: Create build directory
+      run: mkdir cmake_build
+    - name: Set up ccache cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.ccache
+        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-${{ github.head_ref }}
+          ${{ runner.os }}-ccache
+    - name: Configure
+      run: cmake $CMAKE_FLAGS_COMMON $CMAKE_FLAGS_UBUNTU -S . -B cmake_build
+      env:
+         # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
+         CMAKE_FLAGS_UBUNTU: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+    - name: Set up problem matcher
+      uses: ammaraskar/gcc-problem-matcher@master
+    - name: Build
+      run: cmake --build . -j $(nproc)
+      working-directory: cmake_build
+    - name: Test
+      run: ctest --timeout 45
+      working-directory: cmake_build
+    - name: Package
+      run: cpack -G DEB
+      working-directory: cmake_build
+    - name: Deploy artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Ubuntu DEB
+        path: cmake_build/*.deb
+
+  build-mac:
+    name: macOS 10.15
+    runs-on: macos-10.15
+    env:
+      APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
+    steps:
+    - name: clone Git repository
+      uses: actions/checkout@v2
+    - name: ccache
+      uses: actions/cache@v2
+      env:
+        cache-name: ccache
+      with:
+        path: /Users/runner/Library/Caches/ccache
+        key: ${{ runner.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-${{ github.head_ref }}
+          ${{ runner.os }}-ccache
+    - name: read build environment file
+      id: read_build_environment_file
+      run: |
+        read -r MIXXX_ENVNAME < cmake/macos_build_environment_name
+        echo "::set-output name=buildenv_name::$MIXXX_ENVNAME"
+    - name: macOS build environment cache
+      uses: actions/cache@v2
+      env:
+        cache-name: macOS build environment
+      with:
+        path: /Users/runner/buildenv
+        key: macOS-build-environment-${{ steps.read_build_environment_file.outputs.buildenv_name }}
+    - name: import code signing identity
+      env:
+        MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
+        MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+      run: |
+        if [ -n "$MACOS_CODESIGN_OPENSSL_PASSWORD" ] && [ -n "$MACOS_CODESIGN_CERTIFICATE_PASSWORD" ]; then
+          # Decrypt the certificate
+          openssl enc -aes-256-cbc -d -md sha512 \
+            -k ${MACOS_CODESIGN_OPENSSL_PASSWORD} \
+            -in /Users/runner/work/mixxx/mixxx/cmake/macos_developer_id_codesign_certificate.p12.enc \
+            -out ~/certificate.p12
+
+          # Create a temporary keychain for the certificate and import it.
+          security create-keychain -p mixxx Mixxx.keychain
+          security unlock-keychain -p mixxx Mixxx.keychain
+          security import ~/certificate.p12 -k Mixxx.keychain \
+            -P ${MACOS_CODESIGN_CERTIFICATE_PASSWORD} -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -k mixxx Mixxx.keychain
+          # Add keychain to search list
+          security list-keychains -s Mixxx.keychain
+        fi
+    - name: build
+      run: |
+        if [[ $MIXXX_ENVNAME =~ .*macosminimum([0-9]*\.[0-9]*).* ]]; then
+          export MACOSX_DEPLOYMENT_TARGET=${BASH_REMATCH[1]}
+        else
+          echo "Build environment did not match expected pattern. Check cmake/macos_build_environment_name file."
+          exit
+        fi
+
+        mkdir -p /Users/runner/buildenv
+        export MIXXX_ENVPATH="/Users/runner/buildenv/$MIXXX_ENVNAME"
+        if [ ! -d "$MIXXX_ENVPATH" ]; then
+          # TODO: download from downloads.mixxx.org
+          curl "http://beasintheverb.me/${MIXXX_ENVNAME}.tar.gz" -o /Users/runner/buildenv/${MIXXX_ENVNAME}.tar.gz
+          tar xf /Users/runner/buildenv/${MIXXX_ENVNAME}.tar.gz -C /Users/runner/buildenv
+          rm /Users/runner/buildenv/${MIXXX_ENVNAME}.tar.gz
+        fi
+        export QT_DIR="$(find "${MIXXX_ENVPATH}" -type d -path "*/cmake/Qt5")"
+        export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${MIXXX_ENVPATH}" -type d -path "*/plugins")"
+
+        export PATH="${MIXXX_ENVPATH}/bin:$PATH"
+        ccache -M 5G
+
+        if [ -n "$MACOS_CODESIGN_OPENSSL_PASSWORD" ] && [ -n "$MACOS_CODESIGN_CERTIFICATE_PASSWORD" ]; then
+          export CMAKE_FLAGS_MAC="$CMAKE_FLAGS_MAC -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}"
+        fi
+
+        cd /Users/runner/work/mixxx/mixxx
+        mkdir cmake_build
+        cd cmake_build
+        cmake -L $CMAKEFLAGS $CMAKEFLAGS_MACOS -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} ..
+        cmake --build . --parallel $(sysctl -n hw.physicalcpu)
+        cmake --build . --target benchmark
+        #TODO: fix disabled test
+        ctest --timeout 45 --exclude-regex DirectoryDAOTest.relocateDirectory
+        ccache -s
+      env:
+        CMAKEFLAGS_MACOS: -DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON
+        MIXXX_ENVNAME: ${{ steps.read_build_environment_file.outputs.buildenv_name }}
+    - name: package app bundle
+      working-directory: cmake_build
+      run: |
+        cpack -G DragNDrop
+        if [ -n "$MACOS_CODESIGN_OPENSSL_PASSWORD" ] && [ -n "$MACOS_CODESIGN_CERTIFICATE_PASSWORD" ]; then
+          codesign --verbose=4 --deep --force --options runtime \
+            --sign $APPLE_CODESIGN_IDENTITY \
+            --entitlements ../build/osx/entitlements.plist *.dmg
+        fi
+    - name: upload macOS DMG artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: macOS-DMG
+        path: cmake_build/*.dmg

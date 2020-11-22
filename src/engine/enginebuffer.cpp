@@ -232,6 +232,22 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
+    connect(m_pLoopingControl,
+            &LoopingControl::loopReset,
+            m_pCueControl,
+            &CueControl::slotLoopReset,
+            Qt::DirectConnection);
+    connect(m_pLoopingControl,
+            &LoopingControl::loopUpdated,
+            m_pCueControl,
+            &CueControl::slotLoopUpdated,
+            Qt::DirectConnection);
+    connect(m_pLoopingControl,
+            &LoopingControl::loopEnabledChanged,
+            m_pCueControl,
+            &CueControl::slotLoopEnabledChanged,
+            Qt::DirectConnection);
+
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
@@ -349,6 +365,14 @@ double EngineBuffer::getBpm() const {
 
 double EngineBuffer::getLocalBpm() const {
     return m_pBpmControl->getLocalBpm();
+}
+
+void EngineBuffer::setBeatLoop(double startPosition, bool enabled) {
+    return m_pLoopingControl->setBeatLoop(startPosition, enabled);
+}
+
+void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled) {
+    return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
@@ -654,25 +678,26 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     queueNewPlaypos(new_playpos, seekType);
 }
 
-bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
+bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
     if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
-             m_filepos_play >= m_pTrackSamples->get() &&
-             !atomicLoadRelaxed(m_iSeekQueued)) || m_pPassthroughEnabled->toBool()) {
+                    m_filepos_play >= m_pTrackSamples->get() &&
+                    !atomicLoadRelaxed(m_iSeekQueued)) ||
+            m_pPassthroughEnabled->toBool()) {
         // play not possible
         playPossible = false;
     }
 
-    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, oldPlay, playPossible);
 }
 
 void EngineBuffer::verifyPlay() {
     bool play = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(play, play);
     if (play != verifiedPlay) {
         m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
@@ -680,7 +705,7 @@ void EngineBuffer::verifyPlay() {
 
 void EngineBuffer::slotControlPlayRequest(double v) {
     bool oldPlay = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
         if (m_pQuantize->toBool()

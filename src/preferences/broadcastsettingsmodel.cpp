@@ -25,13 +25,18 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
         m_profiles.clear();
     }
 
-    for(BroadcastProfilePtr profile : pSettings->profiles()) {
+    const QList<BroadcastProfilePtr> profiles = pSettings->profiles();
+    for (BroadcastProfilePtr profile : profiles) {
         BroadcastProfilePtr copy = profile->valuesCopy();
         copy->setConnectionStatus(profile->connectionStatus());
-        connect(profile.data(), SIGNAL(statusChanged(bool)),
-                copy.data(), SLOT(relayStatus(bool)));
-        connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-                copy.data(), SLOT(relayConnectionStatus(int)));
+        connect(profile.data(),
+                &BroadcastProfile::statusChanged,
+                copy.data(),
+                &BroadcastProfile::relayStatus);
+        connect(profile.data(),
+                &BroadcastProfile::connectionStatusChanged,
+                copy.data(),
+                &BroadcastProfile::relayConnectionStatus);
         addProfileToModel(copy);
     }
 }
@@ -48,10 +53,14 @@ bool BroadcastSettingsModel::addProfileToModel(BroadcastProfilePtr profile) {
     // at risk of being manually deleted.
     // However it's fine with Qt's connect because it can be trusted that
     // it won't delete the pointer.
-    connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
-            this, SLOT(onProfileNameChanged(QString,QString)));
-    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-            this, SLOT(onConnectionStatusChanged(int)));
+    connect(profile.data(),
+            &BroadcastProfile::profileNameChanged,
+            this,
+            &BroadcastSettingsModel::onProfileNameChanged);
+    connect(profile.data(),
+            &BroadcastProfile::connectionStatusChanged,
+            this,
+            &BroadcastSettingsModel::onConnectionStatusChanged);
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
     endInsertRows();
@@ -100,8 +109,7 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
         if (column == kColumnEnabled) {
             if (role == Qt::CheckStateRole) {
                 return (profile->getEnabled() == true ? Qt::Checked : Qt::Unchecked);
-            }
-            else if (role == Qt::TextAlignmentRole) {
+            } else if (role == Qt::TextAlignmentRole) {
                 return Qt::AlignCenter;
             }
         }
@@ -111,11 +119,12 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
         else if (column == kColumnStatus) {
             if (role == Qt::DisplayRole) {
                 return connectionStatusString(profile);
-            }
-            else if (role == Qt::BackgroundRole) {
-                return QBrush(connectionStatusColor(profile));
-            }
-            else if (role == Qt::TextAlignmentRole) {
+            } else if (role == Qt::BackgroundRole) {
+                return QBrush(connectionStatusBgColor(profile));
+            } else if (role == Qt::ForegroundRole &&
+                    profile->connectionStatus() != BroadcastProfile::STATUS_UNCONNECTED) {
+                return QBrush(Qt::black);
+            } else if (role == Qt::TextAlignmentRole) {
                 return Qt::AlignCenter;
             }
         }
@@ -193,13 +202,10 @@ QString BroadcastSettingsModel::connectionStatusString(BroadcastProfilePtr profi
     }
 }
 
-QColor BroadcastSettingsModel::connectionStatusColor(BroadcastProfilePtr profile) {
+QColor BroadcastSettingsModel::connectionStatusBgColor(BroadcastProfilePtr profile) {
     // Manual colors below were picked using Google's color picker (query: colorpicker)
-    //
     int status = profile->connectionStatus();
         switch(status) {
-            case BroadcastProfile::STATUS_UNCONNECTED:
-                return Qt::white;
             case BroadcastProfile::STATUS_CONNECTING:
                 return QColor(25, 224, 255); // turquoise blue
             case BroadcastProfile::STATUS_CONNECTED:
@@ -208,7 +214,7 @@ QColor BroadcastSettingsModel::connectionStatusColor(BroadcastProfilePtr profile
                 return QColor(255, 228, 56); // toned-down yellow
 
             default:
-                return Qt::white;
+                return Qt::transparent;
         }
 }
 

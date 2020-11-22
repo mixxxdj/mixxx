@@ -73,7 +73,7 @@ bool LibraryFeature::exportPlaylistItemsIntoFile(
                     << "No valid file extension for playlist export specified."
                     << "Appending .m3u and exporting to M3U.";
             playlistFilePath.append(QStringLiteral(".m3u"));
-            if (QFileInfo(playlistFilePath).exists()) {
+            if (QFileInfo::exists(playlistFilePath)) {
                 auto overwrite = QMessageBox::question(
                         NULL,
                         tr("Overwrite File?"),

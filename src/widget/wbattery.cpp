@@ -10,8 +10,10 @@ WBattery::WBattery(QWidget* parent)
           m_pBattery(Battery::getBattery(this)) {
     setVisible(false);
     if (m_pBattery) {
-        connect(m_pBattery.data(), SIGNAL(stateChanged()),
-                this, SLOT(update()));
+        connect(m_pBattery.data(),
+                &Battery::stateChanged,
+                this,
+                &WBattery::slotStateChanged);
     }
 }
 
@@ -88,7 +90,7 @@ QString WBattery::formatTooltip(double dPercentage) {
     return QString::number(dPercentage, 'f', 0) + QStringLiteral("%");
 }
 
-void WBattery::update() {
+void WBattery::slotStateChanged() {
     int minutesLeft = m_pBattery ? m_pBattery->getMinutesLeft() : 0;
     Battery::ChargingState chargingState = m_pBattery ?
             m_pBattery->getChargingState() : Battery::UNKNOWN;

@@ -266,7 +266,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                                     m_pPlaylistTableModel->getTrack(index);
                             // Do not update the play count, just set played status.
                             PlayCounter playCounter(track->getPlayCounter());
-                            playCounter.setPlayed();
+                            playCounter.triggerLastPlayedNow();
                             track->setPlayCounter(playCounter);
                         }
                     }

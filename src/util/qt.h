@@ -7,6 +7,20 @@
 
 namespace mixxx {
 
+/// Allow to emit non-const signals from a const member function.
+///
+/// https://github.com/KDE/clazy/blob/master/docs/checks/README-const-signal-or-slot.md
+///
+/// This is needed as a workaround for many DAO classes. Most member
+/// functions should be const and those classes should not emit any
+/// signals.
+///
+/// Usage: emit thisAsNonConst(this)->signalName(<signal args>);
+template<typename T>
+inline T* thisAsNonConst(const T* constThisPointer) {
+    return const_cast<T*>(constThisPointer);
+}
+
 /// Escape special characters in text properties to prevent
 /// the implicit creation of shortcuts for widgets.
 ///

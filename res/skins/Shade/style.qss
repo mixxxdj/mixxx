@@ -13,9 +13,36 @@
 #DeckSmall {
   padding: 5px 0px;
 }
-
-WOverview {
-  font-family: "Ubuntu";
+#Mixxx, WWidget,
+WEffect,
+WEffectSelector,
+WKey,
+WLabel, WLibrary QLabel,
+WNumber, WNumberPos,
+WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
+WRecordingDuration,
+WTime,
+WTrackText,
+WTrackProperty,
+QSpinBox,
+WBeatSpinBox,
+WLibrary QHeaderView,
+WLibrary QHeaderView::item,
+QToolTip,
+WOverview #PassthroughLabel,
+#LibraryContainer QMenu,
+WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCoverArtMenu,
+WTrackMenu,
+WTrackMenu QMenu,
+WOverview /* Hotcue labels in the overview */,
+QComboBox,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea {
+  font-family: "Open Sans";
 }
 
 /* Passthrough label on overview waveform */
@@ -30,7 +57,7 @@ WBeatSpinBox,
 wouldn't style the respective spinbox in Shade (anymore),
 that's why we do it in another way here */
 #spinBoxTransition {
-  font: 13px;
+  font-size: 13px;
   padding: 0px;
   selection-color: #eee;
   selection-background-color: #060613;
@@ -120,7 +147,7 @@ WEffectSelector::indicator:!checked,
 WLibrary QPushButton:enabled,
 WBeatSpinBox,
 #spinBoxTransition {
-  font: 13px;
+  font-size: 13px;
   }
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
@@ -620,7 +647,8 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
   font-size: 13px/13px;
   This doesn't scale when using QT_SCALE_FACTOR manually:
   font-size: 10pt;	*/
-  font-size: 13px/13px;
+  font-size: 13px;
+  line-height: 13px;
   font-weight: bold;
   color: #000;
   border-radius: 0px;
@@ -875,7 +903,7 @@ QPushButton#pushButtonSkipNext:!enabled {
 QPushButton#pushButtonShuffle {
   image: url(skin:/btn/btn_autodj_shuffle.svg) no-repeat center center;
 }
-QPushButton#pushButtonAddRandom {
+QPushButton#pushButtonAddRandomTrack {
   image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {

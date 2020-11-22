@@ -13,6 +13,7 @@
 #include "preferences/usersettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/parented_ptr.h"
 
 #define NUM_HOT_CUES 37
 
@@ -36,60 +37,112 @@ enum class SeekOnLoadMode {
     IntroStart = 3, // Use intro start cue point
 };
 
+/// Used for requesting a specific hotcue type when activating/setting a
+/// hotcue. Auto will make CueControl determine the type automatically (i.e.
+/// create a loop cue if a loop is set, and a regular cue in all other cases).
+enum class HotcueSetMode {
+    Auto = 0,
+    Cue = 1,
+    Loop = 2,
+};
+
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
     return static_cast<SeekOnLoadMode>(int(value));
 }
 
+/// A `HotcueControl` represents a hotcue slot. It can either be empty or have
+/// a (hot-)cue attached to it.
+///
+/// TODO(XXX): This class should be moved into a separate file.
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
+    /// Describes the current status of the hotcue
+    enum class Status {
+        /// Hotuce not set
+        Empty = 0,
+        /// Hotcue is set and can be used
+        Set = 1,
+        /// Hotcue is currently active (this only applies to Saved Loop cues
+        /// while their loop is enabled). This status can be used by skins or
+        /// controller mappings to highlight a the cue control that has saved the current loop,
+        /// because resizing or moving the loop will make persistent changes to
+        /// the cue.
+        Active = 2,
+    };
+
     HotcueControl(QString group, int hotcueNumber);
     ~HotcueControl() override;
 
-    inline int getHotcueNumber() { return m_iHotcueNumber; }
-    inline CuePointer getCue() { return m_pCue; }
-    double getPosition() const;
+    int getHotcueNumber() const {
+        return m_iHotcueNumber;
+    }
+
+    CuePointer getCue() const {
+        return m_pCue;
+    }
     void setCue(CuePointer pCue);
     void resetCue();
+
+    double getPosition() const;
     void setPosition(double position);
+
+    double getEndPosition() const;
+    void setEndPosition(double endPosition);
+
+    void setType(mixxx::CueType type);
+
+    void setStatus(HotcueControl::Status status);
+    HotcueControl::Status getStatus() const;
+
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
     // Used for caching the preview state of this hotcue control.
-    inline bool isPreviewing() {
-        return m_bPreviewing;
+    mixxx::CueType getPreviewingType() const {
+        return m_previewingType;
     }
-    inline void setPreviewing(bool bPreviewing) {
-        m_bPreviewing = bPreviewing;
+    void setPreviewingType(mixxx::CueType type) {
+        m_previewingType = type;
     }
-    inline double getPreviewingPosition() {
+    double getPreviewingPosition() const {
         return m_previewingPosition;
     }
-    inline void setPreviewingPosition(double position) {
+    void setPreviewingPosition(double position) {
         m_previewingPosition = position;
     }
 
   private slots:
     void slotHotcueSet(double v);
+    void slotHotcueSetCue(double v);
+    void slotHotcueSetLoop(double v);
     void slotHotcueGoto(double v);
     void slotHotcueGotoAndPlay(double v);
     void slotHotcueGotoAndStop(double v);
+    void slotHotcueGotoAndLoop(double v);
+    void slotHotcueCueLoop(double v);
     void slotHotcueActivate(double v);
+    void slotHotcueActivateCue(double v);
+    void slotHotcueActivateLoop(double v);
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
+    void slotHotcueEndPositionChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
     void slotHotcueColorChangeRequest(double newColor);
     void slotHotcueColorChanged(double newColor);
 
   signals:
-    void hotcueSet(HotcueControl* pHotcue, double v);
+    void hotcueSet(HotcueControl* pHotcue, double v, HotcueSetMode mode);
     void hotcueGoto(HotcueControl* pHotcue, double v);
     void hotcueGotoAndPlay(HotcueControl* pHotcue, double v);
     void hotcueGotoAndStop(HotcueControl* pHotcue, double v);
-    void hotcueActivate(HotcueControl* pHotcue, double v);
+    void hotcueGotoAndLoop(HotcueControl* pHotcue, double v);
+    void hotcueCueLoop(HotcueControl* pHotcue, double v);
+    void hotcueActivate(HotcueControl* pHotcue, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
+    void hotcueEndPositionChanged(HotcueControl* pHotcue, double newEndPosition);
     void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
 
@@ -102,18 +155,26 @@ class HotcueControl : public QObject {
 
     // Hotcue state controls
     ControlObject* m_hotcuePosition;
-    ControlObject* m_hotcueEnabled;
+    ControlObject* m_hotcueEndPosition;
+    ControlObject* m_pHotcueStatus;
+    ControlObject* m_hotcueType;
     ControlObject* m_hotcueColor;
     // Hotcue button controls
     ControlObject* m_hotcueSet;
+    ControlObject* m_hotcueSetCue;
+    ControlObject* m_hotcueSetLoop;
     ControlObject* m_hotcueGoto;
     ControlObject* m_hotcueGotoAndPlay;
     ControlObject* m_hotcueGotoAndStop;
+    ControlObject* m_hotcueGotoAndLoop;
+    ControlObject* m_hotcueCueLoop;
     ControlObject* m_hotcueActivate;
+    ControlObject* m_hotcueActivateCue;
+    ControlObject* m_hotcueActivateLoop;
     ControlObject* m_hotcueActivatePreview;
     ControlObject* m_hotcueClear;
 
-    bool m_bPreviewing;
+    mixxx::CueType m_previewingType;
     double m_previewingPosition;
 };
 
@@ -125,7 +186,7 @@ class CueControl : public EngineControl {
     ~CueControl() override;
 
     void hintReader(HintVector* pHintList) override;
-    bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
+    bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtIntroCue();
     void resetIndicators();
@@ -135,20 +196,28 @@ class CueControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
+  public slots:
+    void slotLoopReset();
+    void slotLoopEnabledChanged(bool enabled);
+    void slotLoopUpdated(double startPosition, double endPosition);
+
   private slots:
     void quantizeChanged(double v);
 
     void cueUpdated();
     void trackAnalyzed();
     void trackCuesUpdated();
-    void hotcueSet(HotcueControl* pControl, double v);
+    void hotcueSet(HotcueControl* pControl, double v, HotcueSetMode mode);
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);
     void hotcueGotoAndStop(HotcueControl* pControl, double v);
-    void hotcueActivate(HotcueControl* pControl, double v);
+    void hotcueGotoAndLoop(HotcueControl* pControl, double v);
+    void hotcueCueLoop(HotcueControl* pControl, double v);
+    void hotcueActivate(HotcueControl* pControl, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
+    void hotcueEndPositionChanged(HotcueControl* pControl, double newEndPosition);
 
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
@@ -190,6 +259,7 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
+    void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
     double quantizeCuePoint(double position);
     double getQuantizedCurrentPosition();
@@ -204,6 +274,11 @@ class CueControl : public EngineControl {
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pClosestBeat;
+    parented_ptr<ControlProxy> m_pLoopStartPosition;
+    parented_ptr<ControlProxy> m_pLoopEndPosition;
+    parented_ptr<ControlProxy> m_pLoopEnabled;
+    parented_ptr<ControlProxy> m_pBeatLoopActivate;
+    parented_ptr<ControlProxy> m_pBeatLoopSize;
     bool m_bypassCueSetByPlay;
     ControlValueAtomic<double> m_usedSeekOnLoadPosition;
 
@@ -258,11 +333,25 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
+    HotcueControl* m_pCurrentSavedLoopControl;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
 
+    // TODO(daschuer): It looks like the whole m_mutex is broken. Originally it
+    // ensured that the main cue really belongs to the loaded track. Now that
+    // we have hot cues that are altered outsite this guard this guarantee has
+    // become void.
+    //
+    // We have multiple cases where it locks m_pLoadedTrack and
+    // pControl->getCue(). This guards the hotcueClear() that could detach the
+    // cue call, but doesn't protect from cue changes via loadCuesFromTrack()
+    // which is called outside the mutex lock.
+    //
+    // We need to repair this.
     QMutex m_mutex;
+
+    friend class HotcueControlTest;
 };
 
 

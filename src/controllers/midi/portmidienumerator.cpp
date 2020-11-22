@@ -13,16 +13,25 @@
 #include "controllers/midi/portmidicontroller.h"
 #include "util/cmdlineargs.h"
 
-bool shouldBlacklistDevice(const PmDeviceInfo* device) {
-    QString deviceName = device->name;
-    // In developer mode we show the MIDI Through Port, otherwise blacklist it
+namespace {
+
+const auto kMidiThroughPortPrefix = QLatin1String("MIDI Through Port");
+
+bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
+    // In developer mode we show the MIDI Through Port, otherwise ignore it
     // since it routinely causes trouble.
-    return !CmdlineArgs::Instance().getDeveloper() &&
-            deviceName.startsWith("Midi Through Port", Qt::CaseInsensitive);
+    return CmdlineArgs::Instance().getDeveloper() ||
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+            !QLatin1String(deviceInfo.name)
+#else
+            !QString::fromLatin1(deviceInfo.name)
+#endif
+                     .startsWith(kMidiThroughPortPrefix, Qt::CaseInsensitive);
 }
 
-PortMidiEnumerator::PortMidiEnumerator()
-        : MidiEnumerator() {
+} // namespace
+
+PortMidiEnumerator::PortMidiEnumerator() {
     PmError err = Pm_Initialize();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
@@ -206,73 +215,71 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
     // Build a complete list of output devices for later pairing
     for (int i = 0; i < iNumDevices; i++) {
-        const PmDeviceInfo* deviceInfo = Pm_GetDeviceInfo(i);
-        if (shouldBlacklistDevice(deviceInfo)) {
+        const PmDeviceInfo* pDeviceInfo = Pm_GetDeviceInfo(i);
+        VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
             continue;
         }
-        if (deviceInfo->output) {
-            qDebug() << " Found output device" << "#" << i << deviceInfo->name;
-            QString deviceName = deviceInfo->name;
-            unassignedOutputDevices[i] = deviceName;
+        if (!recognizeDevice(*pDeviceInfo) || !pDeviceInfo->output) {
+            continue;
         }
+        qDebug() << " Found output device"
+                 << "#" << i << pDeviceInfo->name;
+        QString deviceName = pDeviceInfo->name;
+        unassignedOutputDevices[i] = deviceName;
     }
 
     // Search for input devices and pair them with output devices if applicable
     for (int i = 0; i < iNumDevices; i++) {
-        const PmDeviceInfo* deviceInfo = Pm_GetDeviceInfo(i);
-        if (shouldBlacklistDevice(deviceInfo)) {
+        const PmDeviceInfo* pDeviceInfo = Pm_GetDeviceInfo(i);
+        VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
+            continue;
+        }
+        if (!recognizeDevice(*pDeviceInfo) || !pDeviceInfo->input) {
+            // Is there a use case for output-only devices such as message
+            // displays? Then this condition has to be split and
+            // deviceInfo->output also needs to be checked and handled.
             continue;
         }
 
-        //If we found an input device
-        if (deviceInfo->input) {
-            qDebug() << " Found input device" << "#" << i << deviceInfo->name;
-            inputDeviceInfo = deviceInfo;
-            inputDevIndex = i;
+        qDebug() << " Found input device"
+                 << "#" << i << pDeviceInfo->name;
+        inputDeviceInfo = pDeviceInfo;
+        inputDevIndex = i;
 
-            //Reset our output device variables before we look for one in case we find none.
-            outputDeviceInfo = NULL;
-            outputDevIndex = -1;
+        //Reset our output device variables before we look for one in case we find none.
+        outputDeviceInfo = nullptr;
+        outputDevIndex = -1;
 
-            //Search for a corresponding output device
-            QMapIterator<int, QString> j(unassignedOutputDevices);
-            while (j.hasNext()) {
-                j.next();
+        //Search for a corresponding output device
+        QMapIterator<int, QString> j(unassignedOutputDevices);
+        while (j.hasNext()) {
+            j.next();
 
-                QString deviceName = inputDeviceInfo->name;
-                QString outputName = QString(j.value());
+            QString deviceName = inputDeviceInfo->name;
+            QString outputName = QString(j.value());
 
-                if (shouldLinkInputToOutput(deviceName, outputName)) {
-                    outputDevIndex = j.key();
-                    outputDeviceInfo = Pm_GetDeviceInfo(outputDevIndex);
+            if (shouldLinkInputToOutput(deviceName, outputName)) {
+                outputDevIndex = j.key();
+                outputDeviceInfo = Pm_GetDeviceInfo(outputDevIndex);
 
-                    unassignedOutputDevices.remove(outputDevIndex);
+                unassignedOutputDevices.remove(outputDevIndex);
 
-                    qDebug() << "    Linking to output device #" << outputDevIndex << outputName;
-                    break;
-                }
+                qDebug() << "    Linking to output device #" << outputDevIndex << outputName;
+                break;
             }
-
-            // So at this point, we either have an input-only MIDI device
-            // (outputDeviceInfo == NULL) or we've found a matching output MIDI
-            // device (outputDeviceInfo != NULL).
-
-            //.... so create our (aggregate) MIDI device!
-            PortMidiController* currentDevice =
-                    new PortMidiController(inputDeviceInfo,
-                            outputDeviceInfo,
-                            inputDevIndex,
-                            outputDevIndex);
-            m_devices.push_back(currentDevice);
         }
 
-        // Is there a use-case for output-only devices (such as message
-        // displays?) If so, handle them here.
+        // So at this point, we either have an input-only MIDI device
+        // (outputDeviceInfo == NULL) or we've found a matching output MIDI
+        // device (outputDeviceInfo != NULL).
 
-        //else if (deviceInfo->output) {
-        //    PortMidiController *currentDevice = new PortMidiController(deviceInfo, i);
-        //    m_devices.push_back((MidiController*)currentDevice);
-        //}
+        //.... so create our (aggregate) MIDI device!
+        PortMidiController* currentDevice =
+                new PortMidiController(inputDeviceInfo,
+                        outputDeviceInfo,
+                        inputDevIndex,
+                        outputDevIndex);
+        m_devices.push_back(currentDevice);
     }
     return m_devices;
 }

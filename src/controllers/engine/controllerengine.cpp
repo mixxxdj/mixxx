@@ -309,7 +309,10 @@ bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileI
 
     m_lastScriptFiles = scripts;
 
-    connect(&m_scriptWatcher, &QFileSystemWatcher::fileChanged, this, &ControllerEngine::scriptHasChanged);
+    connect(&m_scriptWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerEngine::scriptHasChanged);
 
     if (!scriptsEvaluatedCorrectly) {
         gracefulShutdown();
@@ -521,7 +524,10 @@ void ControllerEngine::scriptErrorDialog(
     if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
         m_bDisplayingExceptionDialog = true;
         // Enable custom handling of the dialog buttons
-        connect(ErrorDialogHandler::instance(), &ErrorDialogHandler::stdButtonClicked, this, &ControllerEngine::errorDialogButton);
+        connect(ErrorDialogHandler::instance(),
+                &ErrorDialogHandler::stdButtonClicked,
+                this,
+                &ControllerEngine::errorDialogButton);
     }
 }
 
@@ -531,8 +537,7 @@ void ControllerEngine::errorDialogButton(
 
     m_bDisplayingExceptionDialog = false;
     // Something was clicked, so disable this signal now
-    disconnect(
-            ErrorDialogHandler::instance(),
+    disconnect(ErrorDialogHandler::instance(),
             &ErrorDialogHandler::stdButtonClicked,
             this,
             &ControllerEngine::errorDialogButton);

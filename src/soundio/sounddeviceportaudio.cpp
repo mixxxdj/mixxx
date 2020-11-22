@@ -73,16 +73,15 @@ const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))
 
 } // anonymous namespace
 
-
-
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
-                                           SoundManager* sm,
-                                           const PaDeviceInfo* deviceInfo,
-                                           unsigned int devIndex,
-                                           QHash<PaHostApiIndex, PaHostApiTypeId> apiIndexToTypeId)
+        SoundManager* sm,
+        const PaDeviceInfo* deviceInfo,
+        PaHostApiTypeId deviceTypeId,
+        unsigned int devIndex)
         : SoundDevice(config, sm),
           m_pStream(NULL),
           m_deviceInfo(deviceInfo),
+          m_deviceTypeId(deviceTypeId),
           m_outputFifo(NULL),
           m_inputFifo(NULL),
           m_outputDrift(false),
@@ -95,7 +94,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
-    if (apiIndexToTypeId.value(deviceInfo->hostApi) == paALSA) {
+    if (m_deviceTypeId == paALSA) {
         // PortAudio gives the device name including the ALSA hw device. The
         // ALSA hw device is an only somewhat reliable identifier; it may change
         // when an audio interface is unplugged or Linux is restarted. Separating
@@ -194,7 +193,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // in stereo and only take the first channel.
     // TODO(rryan): Remove once PortAudio has a solution built in (and
     // released).
-    if (m_deviceInfo->hostApi == paALSA) {
+    if (m_deviceTypeId == paALSA) {
         // Only engage workaround if the device has enough input and output
         // channels.
         if (m_deviceInfo->maxInputChannels >= 2 &&
@@ -206,7 +205,6 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             m_outputParams.channelCount = 2;
         }
     }
-
 
     // Sample rate
     if (m_dSampleRate <= 0) {
@@ -337,7 +335,8 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
 
 
 #ifdef __LINUX__
-    if (m_deviceInfo->hostApi == paALSA) {
+    if (m_deviceTypeId == paALSA) {
+        qInfo() << "Enabling ALSA real-time scheduling";
         PaAlsa_EnableRealtimeScheduling(pStream, 1);
     }
 #endif

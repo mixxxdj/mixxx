@@ -74,7 +74,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
 
 WTrackTableView::~WTrackTableView() {
     WTrackTableViewHeader* pHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
         pHeader->saveHeaderState();
     }
@@ -171,7 +171,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
 
     // Save the previous track model's header state
     WTrackTableViewHeader* oldHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (oldHeader) {
         oldHeader->saveHeaderState();
     }

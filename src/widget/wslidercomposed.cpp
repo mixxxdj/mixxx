@@ -49,8 +49,10 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_pHandle(nullptr),
       m_renderTimer(mixxx::Duration::fromMillis(20),
                     mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer, SIGNAL(update()),
-            this, SLOT(update()));
+    connect(&m_renderTimer,
+            &WidgetRenderTimer::update,
+            this,
+            QOverload<>::of(&QWidget::update));
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -97,8 +99,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             int comma = margins.indexOf(",");
             bool m1ok;
             bool m2ok;
-            double m1 = (margins.left(comma)).toDouble(&m1ok);
-            double m2 = (margins.mid(comma + 1)).toDouble(&m2ok);
+            double m1 = (margins.leftRef(comma)).toDouble(&m1ok);
+            double m2 = (margins.midRef(comma + 1)).toDouble(&m2ok);
             if (m1ok && m2ok) {
                 m_dBarStart = m1 * scaleFactor;
                 m_dBarEnd = m2 * scaleFactor;
@@ -122,8 +124,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
                 int comma = bgMargins.indexOf(",");
                 bool m1ok;
                 bool m2ok;
-                double m1 = (bgMargins.left(comma)).toDouble(&m1ok);
-                double m2 = (bgMargins.mid(comma + 1)).toDouble(&m2ok);
+                double m1 = (bgMargins.leftRef(comma)).toDouble(&m1ok);
+                double m2 = (bgMargins.midRef(comma + 1)).toDouble(&m2ok);
                 if (m1ok && m2ok) {
                     m_dBarBgStart = m1 * scaleFactor;
                     m_dBarBgEnd = m2 * scaleFactor;

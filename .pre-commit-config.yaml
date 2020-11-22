@@ -45,7 +45,7 @@ default_language_version:
   python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.2.0
+  rev: v3.3.0
   hooks:
   - id: check-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
@@ -66,14 +66,14 @@ repos:
     - manual
   - id: no-commit-to-branch
 - repo: https://github.com/codespell-project/codespell
-  rev: f7f304cb40596e4706be27ca44d1401396a97420
+  rev: v1.17.1
   hooks:
   - id: codespell
     # ignore-regex is substituted by ' '
     entry: tools/codespell.py --ignore-file .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
     exclude: ^(\.codespellignore|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v7.11.0
+  rev: v7.12.1
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
@@ -93,7 +93,7 @@ repos:
     language: python
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
 - repo: https://github.com/psf/black
-  rev: stable
+  rev: 20.8b1
   hooks:
   - id: black
     files: ^tools/.*$

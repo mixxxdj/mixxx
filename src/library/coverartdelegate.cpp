@@ -118,7 +118,7 @@ void CoverArtDelegate::paintItem(
             return;
         }
         const double scaleFactor =
-                getDevicePixelRatioF(static_cast<QWidget*>(parent()));
+                getDevicePixelRatioF(qobject_cast<QWidget*>(parent()));
         QPixmap pixmap = m_pCache->tryLoadCover(this,
                 coverInfo,
                 static_cast<int>(option.rect.width() * scaleFactor),

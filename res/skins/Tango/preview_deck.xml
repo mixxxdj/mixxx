@@ -10,7 +10,7 @@ Description:
 Variables:
   PlayedOverlayColor  : defined in skin.xml
 -->
-<Template>	
+<Template>
   <SetVariable name="group">[PreviewDeck1]</SetVariable>
   <WidgetGroup>
     <Layout>stacked</Layout>
@@ -141,6 +141,7 @@ Variables:
 
               <Template src="skin:vumeter_mini.xml">
                 <SetVariable name="Size">5f,1me</SetVariable>
+                <SetVariable name="sourceType">preview</SetVariable>
               </Template>
 
               <WidgetGroup>

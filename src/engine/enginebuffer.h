@@ -126,6 +126,10 @@ class EngineBuffer : public EngineObject {
     double getBpm() const;
     // Returns the BPM of the loaded track around the current position (not thread-safe)
     double getLocalBpm() const;
+    /// Sets a beatloop for the loaded track (not thread safe)
+    void setBeatLoop(double startPosition, bool enabled);
+    /// Sets a loop for the loaded track (not thread safe)
+    void setLoop(double startPosition, double endPositon, bool enabled);
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -241,7 +245,7 @@ class EngineBuffer : public EngineObject {
     void processSyncRequests();
     void processSeek(bool paused);
 
-    bool updateIndicatorsAndModifyPlay(bool newPlay);
+    bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
@@ -251,6 +255,7 @@ class EngineBuffer : public EngineObject {
     UserSettingsPointer m_pConfig;
 
     friend class CueControlTest;
+    friend class HotcueControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
