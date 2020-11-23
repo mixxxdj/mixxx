@@ -8,7 +8,7 @@ if [ "$2" != "--ghactions" ] && ! $(return 0 2>/dev/null); then
 fi
 
 COMMAND=$1
-shift
+shift 1
 
 realpath() {
     OLDPWD="${PWD}"
@@ -17,11 +17,13 @@ realpath() {
     cd "${OLDPWD}" || exit 1
 }
 
-MIXXX_ROOT="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
+# some hackery is required to be compatible with both bash and zsh
+THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
+[ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
-IFS=$'\n' read -d '' -r -a lines < "${MIXXX_ROOT}/cmake/macos_build_environment"
-BUILDENV_NAME=${lines[0]}
-BUILDENV_SHA256=${lines[1]}
+MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
+
+read -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/cmake/macos_build_environment"
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
@@ -61,7 +63,7 @@ case "$COMMAND" in
                 tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}"
             else
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, run the command below to download it."
-                echo "source ${BASH_SOURCE[0]} setup"
+                echo "source ${THIS_SCRIPT_NAME} setup"
                 return # exit would quit the shell being started
             fi
         elif [ "$1" != "--profile" ]; then
