@@ -27,7 +27,7 @@ shopt -s extglob
 rsync -e "${SSH}" --rsync-path="mkdir -p ${TMP_PATH} && rsync" -r --delete-after ${FILE_TO_DEPLOY} ${USER}@${HOSTNAME}:${TMP_PATH}
 
 FILE_NAME=$(basename $FILE_TO_DEPLOY)
-FILE_EXTENSION="${FILE_NAME#*.}"
+FILE_EXTENSION="${FILE_NAME##*.}"
 SYMLINK_NAME="Mixxx-${GIT_BRANCH}-latest.${FILE_EXTENSION}"
 
 # Move from the temporary path to the final destination.
