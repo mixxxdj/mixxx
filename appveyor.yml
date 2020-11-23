@@ -222,11 +222,6 @@ for:
     # Improve clcache performance
     - set CLCACHE_SERVER=1
     - set CLCACHE_HARDLINK=1
-    - IF [%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%] == [] (
-        set "MIXXX_PACKAGE_NAME=mixxx-%APPVEYOR_REPO_BRANCH:/=-%-%APPVEYOR_REPO_COMMIT%"
-      ) else (
-        set "MIXXX_PACKAGE_NAME=mixxx-pr-%APPVEYOR_PULL_REQUEST_NUMBER%-%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH:/=-%-%APPVEYOR_REPO_COMMIT%"
-      )
     - ps: Start-Process clcache-server
 
   build_script:
@@ -235,7 +230,6 @@ for:
     # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
     - cmake
       -L
-      -DCPACK_PACKAGE_FILE_NAME=%MIXXX_PACKAGE_NAME%
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=C:\mixxx
       -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
@@ -269,8 +263,8 @@ for:
     # and one with a name we can link to from the website
     - If [%APPVEYOR_PULL_REQUEST_NUMBER%] == []
       If "%APPVEYOR_ACCOUNT_NAME%" == "mixxxdj" (
-        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% %MIXXX_PACKAGE_NAME%.msi
-        && copy %MIXXX_PACKAGE_NAME%.msi mixxx-%APPVEYOR_REPO_BRANCH%-latest.msi
+        signtool sign /f ..\%CODESIGN_CERTIFICATE_PATH% /p %CODESIGN_CERTIFICATE_PASSWORD% *.msi
+        && copy *.msi Mixxx-%APPVEYOR_REPO_BRANCH%-latest.msi
       ) else (
         echo "Skipping certificate decryption because we are in a pull request or not on the mixxxdj account."
       )
