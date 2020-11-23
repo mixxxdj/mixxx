@@ -25,60 +25,74 @@ var BCR2000 = new components.extension.GenericMidiController({
                 deckNumbers: [1],
                 components: [
                     {
-                        type: e.ShiftButton, midi: [status, p.buttonRow1[3]],
-                        options: {target: BCR2000}
+                        type: e.ShiftButton, options: {
+                            midi: [status, p.buttonRow1[3]], target: BCR2000
+                        }
                     },
                     {
-                        type: e.RangeAwareEncoder, midi: [status, p.pushEncoderGroup1[0].encoder],
-                        options: {key: "pitch", bound: 6}
+                        type: e.RangeAwareEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[0].encoder], key: "pitch", bound: 6
+                        }
                     },
                     {
-                        type: e.Trigger, midi: [status, p.pushEncoderGroup1[0].button],
-                        options: {inKey: "pitch_set_zero"}
+                        type: e.Trigger, options: {
+                            midi: [status, p.pushEncoderGroup1[0].button], inKey: "pitch_set_zero"
+                        }
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[0]],
-                        options: {key: "keylock"}
+                        type: c.Button, options: {midi: [status, p.buttonRow1[0]], key: "keylock"}
                     },
                     {
-                        type: e.EnumToggleButton, midi: [status, p.buttonRow1[0]], shift: true,
-                        options: {inKey: "vinylcontrol_mode", maxValue: 3}
+                        type: e.EnumToggleButton, shift: true, options: {
+                            midi: [status, p.buttonRow1[0]], inKey: "vinylcontrol_mode", maxValue: 3
+                        }
                     },
                     {
-                        type: e.BackLoopButton, midi: [status, p.buttonRow1[1]],
-                        options: {outKey: "loop_enabled"}
+                        type: e.BackLoopButton,
+                        options: {midi: [status, p.buttonRow1[1]], outKey: "loop_enabled"}
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[1]], shift: true,
-                        options: {key: "beatlooproll_activate"}
+                        type: c.Button, shift: true,
+                        options: {midi: [status, p.buttonRow1[1]], key: "beatlooproll_activate"}
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[2]],
-                        options: {key: "reverse"}
+                        type: c.Button,
+                        options: {midi: [status, p.buttonRow1[2]], key: "reverse"}
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[2]], shift: true,
-                        options: {key: "reverseroll"}
+                        type: c.Button, shift: true,
+                        options: {midi: [status, p.buttonRow1[2]], key: "reverseroll"}
                     },
                     {
-                        type: e.LoopEncoder, midi: [status, p.pushEncoderGroup1[1].encoder],
-                        options: {key: "beatloop_size"}
+                        type: e.LoopEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[1].encoder], key: "beatloop_size"
+                        }
                     },
                     {
-                        type: e.LoopMoveEncoder, midi: [status, p.pushEncoderGroup1[2].encoder],
-                        options: {inKey: "loop_move", sizeControl: "beatjump_size"}
+                        type: e.LoopMoveEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[2].encoder],
+                            inKey: "loop_move",
+                            sizeControl: "beatjump_size"
+                        }
                     },
                     {
-                        type: e.LoopEncoder, midi: [status, p.pushEncoderGroup1[3].encoder],
-                        options: {key: "beatjump_size"}
+                        type: e.LoopEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[3].encoder], key: "beatjump_size"
+                        }
                     },
                     {
-                        type: c.EffectAssignmentButton, midi: [status, p.buttonBox[0]],
-                        options: {effectUnit: 1, type: c.Button.prototype.types.push}
+                        type: c.EffectAssignmentButton, options: {
+                            midi: [status, p.buttonBox[0]],
+                            effectUnit: 1,
+                            type: c.Button.prototype.types.push
+                        }
                     },
                     {
-                        type: c.EffectAssignmentButton, midi: [status, p.buttonBox[1]],
-                        options: {effectUnit: 2, type: c.Button.prototype.types.push}
+                        type: c.EffectAssignmentButton, options: {
+                            midi: [status, p.buttonBox[1]],
+                            effectUnit: 2,
+                            type: c.Button.prototype.types.push
+                        }
                     },
                 ],
             },
@@ -86,60 +100,72 @@ var BCR2000 = new components.extension.GenericMidiController({
                 deckNumbers: [2],
                 components: [
                     {
-                        type: e.ShiftButton, midi: [status, p.buttonRow1[7]],
-                        options: {target: BCR2000}
+                        type: e.ShiftButton,
+                        options: {midi: [status, p.buttonRow1[7]], target: BCR2000}
                     },
                     {
-                        type: e.RangeAwareEncoder, midi: [status, p.pushEncoderGroup1[4].encoder],
-                        options: {key: "pitch", bound: 6}
+                        type: e.RangeAwareEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[4].encoder], key: "pitch", bound: 6
+                        }
                     },
                     {
-                        type: e.Trigger, midi: [status, p.pushEncoderGroup1[4].button],
-                        options: {inKey: "pitch_set_zero"}
+                        type: e.Trigger, options: {
+                            midi: [status, p.pushEncoderGroup1[4].button], inKey: "pitch_set_zero"
+                        }
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[4]],
-                        options: {key: "keylock"}
+                        type: c.Button, options: {midi: [status, p.buttonRow1[4]], key: "keylock"}
                     },
                     {
-                        type: e.EnumToggleButton, midi: [status, p.buttonRow1[4]], shift: true,
-                        options: {inKey: "vinylcontrol_mode", maxValue: 3}
+                        type: e.EnumToggleButton, shift: true, options: {
+                            midi: [status, p.buttonRow1[4]], inKey: "vinylcontrol_mode", maxValue: 3
+                        }
                     },
                     {
-                        type: e.BackLoopButton, midi: [status, p.buttonRow1[5]],
-                        options: {outKey: "loop_enabled"}
+                        type: e.BackLoopButton,
+                        options: {midi: [status, p.buttonRow1[5]], outKey: "loop_enabled"}
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[5]], shift: true,
-                        options: {key: "beatlooproll_activate"}
+                        type: c.Button, shift: true,
+                        options: {midi: [status, p.buttonRow1[5]], key: "beatlooproll_activate"}
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[6]],
-                        options: {key: "reverse"}
+                        type: c.Button, options: {midi: [status, p.buttonRow1[6]], key: "reverse"}
                     },
                     {
-                        type: c.Button, midi: [status, p.buttonRow1[6]], shift: true,
-                        options: {key: "reverseroll"}
+                        type: c.Button, shift: true,
+                        options: {midi: [status, p.buttonRow1[6]], key: "reverseroll"}
                     },
                     {
-                        type: e.LoopEncoder, midi: [status, p.pushEncoderGroup1[5].encoder],
-                        options: {key: "beatloop_size"}
+                        type: e.LoopEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[5].encoder], key: "beatloop_size"
+                        }
                     },
                     {
-                        type: e.LoopMoveEncoder, midi: [status, p.pushEncoderGroup1[6].encoder],
-                        options: {inKey: "loop_move", sizeControl: "beatjump_size"}
+                        type: e.LoopMoveEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[6].encoder],
+                            inKey: "loop_move",
+                            sizeControl: "beatjump_size"
+                        }
                     },
                     {
-                        type: e.LoopEncoder, midi: [status, p.pushEncoderGroup1[7].encoder],
-                        options: {key: "beatjump_size"}
+                        type: e.LoopEncoder, options: {
+                            midi: [status, p.pushEncoderGroup1[7].encoder], key: "beatjump_size"
+                        }
                     },
                     {
-                        type: c.EffectAssignmentButton, midi: [status, p.buttonBox[2]],
-                        options: {effectUnit: 1, type: c.Button.prototype.types.push}
+                        type: c.EffectAssignmentButton, options: {
+                            midi: [status, p.buttonBox[2]],
+                            effectUnit: 1,
+                            type: c.Button.prototype.types.push
+                        }
                     },
                     {
-                        type: c.EffectAssignmentButton, midi: [status, p.buttonBox[3]],
-                        options: {effectUnit: 2, type: c.Button.prototype.types.push}
+                        type: c.EffectAssignmentButton, options: {
+                            midi: [status, p.buttonBox[3]],
+                            effectUnit: 2,
+                            type: c.Button.prototype.types.push
+                        }
                     },
                 ]
             }],

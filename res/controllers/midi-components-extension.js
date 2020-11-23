@@ -707,12 +707,10 @@
      * |        +- component:
      * |           +- type:    Component type (constructor function, required)
      * |           |           Example: components.Button
-     * |           +- midi:    MIDI address of the component (number array, required)
-     * |           |           Example: [0xB0, 0x43]
      * |           +- shift:   Active only when a Shift button is pressed? (boolean, optional)
      * |           |           Example: true
      * |           +- options: Additional options for the component (object, required)
-     * |                       Example: {key: "reverse"}
+     * |                       Example: {midi: [0xB0, 0x43], key: "reverse"}
      * |
      * +- effectUnits: an array of effect unit definitions (may be empty or omitted)
      * |  +- effectUnit
@@ -809,7 +807,7 @@
          * Create a layer manager containing the components of all decks, effect units and
          * additional component containers.
          *
-         * @param {Array} target Target for decks, effect units and component containers
+         * @param {Array} target Target for decks, effect units and additional component containers
          * @param {object} deckDefinitions Definition of decks
          * @param {object} effectUnitDefinitions Definition of effect units
          * @param {object} containerDefinitions Definition of additional component containers
@@ -852,10 +850,7 @@
         createDeck: function(deckDefinition) {
             var deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
-                var options = _.merge({
-                    group: deck.currentDeck,
-                    midi: componentDefinition.midi
-                }, componentDefinition.options);
+                var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
                 deck[index] = new componentDefinition.type(options);
             }, this);
             return deck;
@@ -910,9 +905,7 @@
         createComponentContainer: function(containerDefinition) {
             var container = new components.ComponentContainer();
             containerDefinition.components.forEach(function(componentDefinition, index) {
-                var options
-                    = _.merge({midi: componentDefinition.midi}, componentDefinition.options);
-                container[index] = new componentDefinition.type(options);
+                container[index] = new componentDefinition.type(componentDefinition.options);
             }, this);
             return container;
         },
