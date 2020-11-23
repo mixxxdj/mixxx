@@ -480,7 +480,7 @@ bool WTrackMenu::isAnyTrackBpmLocked() const {
     if (m_pTrackModel) {
         const int column =
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
-        for (const auto trackIndex : m_trackIndexList) {
+        for (const auto& trackIndex : m_trackIndexList) {
             QModelIndex bpmLockedIndex =
                     trackIndex.sibling(trackIndex.row(), column);
             if (bpmLockedIndex.data().toBool()) {
@@ -507,7 +507,7 @@ std::optional<std::optional<mixxx::RgbColor>> WTrackMenu::getCommonTrackColor() 
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
         commonColor = mixxx::RgbColor::fromQVariant(
                 m_trackIndexList.first().sibling(m_trackIndexList.first().row(), column).data());
-        for (const auto trackIndex : m_trackIndexList) {
+        for (const auto& trackIndex : m_trackIndexList) {
             const auto otherColor = mixxx::RgbColor::fromQVariant(
                     trackIndex.sibling(trackIndex.row(), column).data());
             if (commonColor != otherColor) {
