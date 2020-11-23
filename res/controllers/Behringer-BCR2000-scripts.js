@@ -206,3 +206,6 @@ var BCR2000 = new components.extension.GenericMidiController({
         };
     }
 });
+
+/* this statement exists to avoid linter errors */
+BCR2000;

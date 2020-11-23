@@ -472,7 +472,7 @@
     });
 
     /**
-     * An encoder for a direction.
+     * An encoder for directions.
      *
      * Turning the encoder to the right means "forwards" and returns 1;
      * turning it to the left means "backwards" and returns -1.
