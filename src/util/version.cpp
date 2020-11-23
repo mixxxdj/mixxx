@@ -83,9 +83,9 @@ QString Version::developmentCommitHash() {
 }
 
 // static
-QString Version::developmentRevision() {
-#ifdef BUILD_REV
-    return BUILD_REV;
+QString Version::gitCommitDateTime() {
+#ifdef BUILD_COMMIT_DATE_TIME
+    return BUILD_COMMIT_DATE_TIME;
 #else
     return QString();
 #endif
@@ -143,15 +143,17 @@ void Version::logBuildDetails() {
     QString version = Version::version();
     QString buildBranch = developmentBranch();
     QString buildCommitHash = developmentCommitHash();
+    QString buildCommitDateTime = gitCommitDateTime();
     QString buildFlags = Version::buildFlags();
 
     QStringList buildInfo;
-    if (!buildBranch.isEmpty() && !buildCommitHash.isEmpty()) {
-        buildInfo.append(
-                QString("git branch %1 commit %2").arg(buildBranch, buildCommitHash));
-    } else if (!buildCommitHash.isEmpty()) {
-        buildInfo.append(
-                QString("git commit %2").arg(buildCommitHash));
+    if (!buildBranch.isEmpty() && !buildCommitHash.isEmpty() && !buildCommitDateTime.isEmpty()) {
+        buildInfo.append(QString("git branch %1 commit %2 committed at %3")
+                                 .arg(buildBranch,
+                                         buildCommitHash,
+                                         buildCommitDateTime));
+    } else {
+        buildInfo.append(QStringLiteral("built outside of Git repository"));
     }
 #ifndef DISABLE_BUILDTIME // buildtime=1, on by default
     buildInfo.append("built on: " __DATE__ " @ " __TIME__);

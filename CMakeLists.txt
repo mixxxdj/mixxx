@@ -268,18 +268,18 @@ if(GIT_WORKTREE_DIRTY EQUAL "1")
   set(GIT_COMMIT_HASH "${GIT_COMMIT_HASH} (modified)")
 endif()
 
-# Get the number of commits on the working branch
+set(ENV{TZ} UTC)
 execute_process(
-  COMMAND git rev-list --count --first-parent HEAD
+  COMMAND git show --quiet --date=format-local:%Y-%m-%d_%H-%M-%S --format=%cd
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_COUNT
+  OUTPUT_VARIABLE GIT_COMMIT_DATE_TIME
   OUTPUT_STRIP_TRAILING_WHITESPACE
   ERROR_QUIET
 )
-if(NOT GIT_COMMIT_COUNT)
-    set(GIT_COMMIT_COUNT "unknown")
+if(NOT GIT_COMMIT_DATE_TIME)
+    set(GIT_COMMIT_DATE_TIME "unknown")
 endif()
-message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
+message(STATUS "Git commit date_time: ${GIT_COMMIT_DATE_TIME}")
 
 if(MSVC)
   # clcache support
@@ -2499,7 +2499,7 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_BRANCH}-r${GIT_COMMIT_COUNT}-${GIT_COMMIT_HASH}")
+set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_BRANCH}-${GIT_COMMIT_DATE_TIME}-${GIT_COMMIT_HASH}")
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")

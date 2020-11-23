@@ -8,6 +8,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     QString mixxxVersion = Version::version();
     QString buildBranch = Version::developmentBranch();
     QString buildCommitHash = Version::developmentCommitHash();
+    QString buildCommitDateTime = Version::gitCommitDateTime();
 
     QString version(QStringLiteral("Mixxx version: ") + mixxxVersion);
     if (!buildBranch.isEmpty()) {
@@ -15,6 +16,9 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     }
     if (!buildCommitHash.isEmpty()) {
         version.append(QStringLiteral("\nGit hash: ") + buildCommitHash);
+    }
+    if (!buildCommitDateTime.isEmpty()) {
+        version.append(QStringLiteral("\nGit commit date and time: ") + buildCommitDateTime);
     }
     version_label->setText(version);
 

@@ -19,9 +19,7 @@ class Version {
 
     static QString developmentCommitHash();
 
-    // Returns the development revision (e.g. git3096) or the null string if the
-    // revision is unknown.
-    static QString developmentRevision();
+    static QString gitCommitDateTime();
 
     // Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
     // the null string if the flags are unknown.
