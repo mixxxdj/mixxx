@@ -63,6 +63,24 @@
     };
 
     /**
+     * Convert a parameter value (0..1) to a MIDI value (0..this.max).
+     *
+     * @param {number} value A number between 0 and 1.
+     * @private
+     */
+    var convertToMidiValue = function(value) {
+        /*
+         * Math.round() is important to keep input and output in sync.
+         * Example:
+         * - Mixxx receives input value 35 and calculates input parameter (35 / 127) == 0.27559
+         * - Mixxx sends output value of 0.27559
+         * - Component.outScaleValue(0.27559) = 0.27559 * 127 = 34.99
+         * - Without round, 34 is sent to the controller.
+         */
+        return Math.round(value * this.max);
+    };
+
+    /**
      * Manage Components in named ComponentContainers.
      *
      * @constructor
@@ -454,22 +472,34 @@
     });
 
     /**
-     * Convert a parameter value (0..1) to a MIDI value (0..this.max).
+     * An encoder for a direction.
      *
-     * @param {number} value A number between 0 and 1.
-     * @private
+     * Turning the encoder to the right means "forwards" and returns 1;
+     * turning it to the left means "backwards" and returns -1.
+     *
+     * @constructor
+     * @extends {components.Encoder}
+     * @param {object} options Options object
+     * @public
      */
-    var convertToMidiValue = function(value) {
-        /*
-         * Math.round() is important to keep input and output in sync.
-         * Example:
-         * - Mixxx receives input value 35 and calculates input parameter (35 / 127) == 0.27559
-         * - Mixxx sends output value of 0.27559
-         * - Component.outScaleValue(0.27559) = 0.27559 * 127 = 34.99
-         * - Without round, 34 is sent to the controller.
-         */
-        return Math.round(value * this.max);
+    var DirectionEncoder = function(options) {
+        components.Encoder.call(this, options);
+        this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
     };
+    DirectionEncoder.prototype = new components.Encoder({
+        min: 0,
+        inValueScale: function(value) {
+            var direction = 0;
+            if (value > this.previousValue || value === this.max) {
+                direction = 1;
+            } else if (value < this.previousValue || value === this.min) {
+                direction = -1;
+            }
+            this.previousValue = value;
+
+            return direction;
+        },
+    });
 
     /**
      * An encoder for a value range of [-bound..0..+bound].
@@ -587,21 +617,13 @@
         options = options || {};
         options.inKey = options.inKey || "loop_move";
         options.size = options.size || 0.5;
-        components.Encoder.call(this, options);
-        this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
+        DirectionEncoder.call(this, options);
     };
-    LoopMoveEncoder.prototype = new components.Encoder({
-        min: 0,
+    LoopMoveEncoder.prototype = new DirectionEncoder({
         inValueScale: function(value) {
-            var direction = 0;
-            if (value > this.previousValue || value === this.max) {
-                direction = 1;
-            } else if (value < this.previousValue || value === this.min) {
-                direction = -1;
-            }
-            this.previousValue = value;
-
-            var beats = this.sizeControl ? global.engine.getValue(this.group, this.sizeControl)
+            var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
+            var beats = this.sizeControl
+                ? global.engine.getValue(this.group, this.sizeControl)
                 : this.size;
             return direction * beats;
         },
@@ -933,6 +955,7 @@
     exports.LayerManager = LayerManager;
     exports.ShiftButton = ShiftButton;
     exports.Trigger = Trigger;
+    exports.DirectionEncoder = DirectionEncoder;
     exports.RangeAwareEncoder = RangeAwareEncoder;
     exports.EnumToggleButton = EnumToggleButton;
     exports.EnumEncoder = EnumEncoder;
