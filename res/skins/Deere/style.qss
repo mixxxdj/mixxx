@@ -96,13 +96,6 @@
   padding: 3px;
   qproperty-layoutAlignment: 'AlignBottom';
 }
-#PlayGutterSmall {
-  padding: 3px;
-  background-color: none;
-  qproperty-layoutAlignment: 'AlignBottom'; /*
-  border-left: 1px solid #222;
-  background-color: #664988;  */
-}
 
 #MixerBorder {
   background-color: #222;
@@ -1630,12 +1623,24 @@ WPushButton[value="2"]:hover,
   border: 1px solid transparent;
 }
 
-#PlayToggle[value="0"] {
+WPushButton#PlayToggle[value="0"] {
   image: url(skin:/icon/ic_play_48px.svg) no-repeat center center;
+  background-color: transparent;
 }
 
-#PlayToggle[value="1"] {
+WPushButton#PlayToggle[value="1"] {
   image: url(skin:/icon/ic_pause_48px.svg) no-repeat center center;
+}
+WPushButton#PreviewIndicator {
+  background-color: transparent;
+}
+/* Blue border for Play buttons when previewing from
+  Cue or Hotcue */
+WPushButton#PreviewIndicator[value="1"] {
+  border: 2px solid #0080BE;
+}
+WPushButton#PreviewIndicator[value="0"] {
+  border: none;
 }
 
 #ToolbarButton[value="1"] {
