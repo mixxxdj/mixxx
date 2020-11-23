@@ -2676,7 +2676,6 @@ void print_version(char verbose)
 #endif
 
         printf("\nLarge file support: %s\n",(sizeof(off_t)==SIZEOF_OFF64_T)?"yes":"no");
-        printf("Executable built on %s.", __DATE__);
     }
     printf("\n");
 }

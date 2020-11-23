@@ -155,9 +155,6 @@ void Version::logBuildDetails() {
     } else {
         buildInfo.append(QStringLiteral("built outside of Git repository"));
     }
-#ifndef DISABLE_BUILDTIME // buildtime=1, on by default
-    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
-#endif
     if (!buildFlags.isEmpty()) {
         buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
     }
