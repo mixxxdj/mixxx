@@ -45,8 +45,7 @@ case "$COMMAND" in
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]
         then
-            # TODO: download from downloads.mixxx.org
-            curl "http://beasintheverb.me/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
+            curl "https://downloads.mixxx.org/builds/buildserver/2.3.x-unix/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
             # TODO: verify download using sha256sum?
             tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}"
             rm "${BUILDENV_PATH}.tar.gz"
