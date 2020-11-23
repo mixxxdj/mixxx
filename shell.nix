@@ -116,6 +116,7 @@ let
         else
           pre-commit install
         fi
+        create-includes
       '');
 
   wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
@@ -185,6 +186,30 @@ let
       export QT_PLUGIN_PATH=${pkgs.qt5.qtbase}/${pkgs.qt5.qtbase.qtPluginPrefix}
     fi
     ./mixxx-test "$@"
+  '';
+
+  # this creates a folder with links to the include folders of the configured
+  # nix pkgs. This allows to IDE to look up the correct headers
+  shell-create-includes = nixroot.writeShellScriptBin "create-includes" ''
+    echo "Creating include cache"
+    create_includes() {
+      local IFS=:
+      local includes
+      set -f # Disable glob expansion
+      includes=( $@ ) # Deliberately unquoted
+      set +f
+      mkdir -p cbuild/includes
+      rm -f cbuild/includes/* >/dev/null
+      cd cbuild/includes
+      for i in "''${includes[@]}"
+        do
+            t=$(basename $(dirname $i))
+            if [ ! -e $t ]; then
+                ln -s -T $i ./$t
+            fi
+      done
+    }
+    create_includes $CMAKE_INCLUDE_PATH
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then
@@ -272,6 +297,7 @@ in stdenv.mkDerivation rec {
         shell-debug
         shell-run
         shell-run-tests
+        shell-create-includes
         nix
       ] ++ (if useClang then [ clazy ] else [ ]))
   else
