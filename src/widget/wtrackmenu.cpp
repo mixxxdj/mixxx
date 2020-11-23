@@ -1235,7 +1235,7 @@ namespace {
 
 class SetColorTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
-    explicit SetColorTrackPointerOperation(mixxx::RgbColor::optional_t color)
+    explicit SetColorTrackPointerOperation(const mixxx::RgbColor::optional_t& color)
             : m_color(color) {
     }
 
@@ -1250,7 +1250,7 @@ class SetColorTrackPointerOperation : public mixxx::TrackPointerOperation {
 
 } // anonymous namespace
 
-void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
+void WTrackMenu::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     const auto progressLabelText =
             tr("Setting color of %n track(s)", "", getTrackCount());
     const auto trackOperator =

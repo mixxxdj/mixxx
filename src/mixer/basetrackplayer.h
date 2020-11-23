@@ -84,7 +84,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, const QString& reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
-    void slotSetTrackColor(mixxx::RgbColor::optional_t color);
+    void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotPlayToggled(double);
 
   private slots:

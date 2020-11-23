@@ -26,7 +26,7 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
-    void handleInput(QByteArray data, mixxx::Duration timestamp);
+    void handleInput(const QByteArray& data, mixxx::Duration timestamp);
 
     bool executeFunction(QJSValue functionObject, const QJSValueList& arguments);
     bool executeFunction(const QJSValue& functionObject, const QByteArray& data);
@@ -43,11 +43,11 @@ class ControllerEngine : public QObject {
 
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
-    void showScriptExceptionDialog(QJSValue evaluationResult, bool bFatal = false);
+    void showScriptExceptionDialog(const QJSValue& evaluationResult, bool bFatal = false);
 
-    bool removeScriptConnection(const ScriptConnection conn);
+    bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback
-    void triggerScriptConnection(const ScriptConnection conn);
+    void triggerScriptConnection(const ScriptConnection& conn);
 
     inline void setTesting(bool testing) {
         m_bTesting = testing;
@@ -64,7 +64,7 @@ class ControllerEngine : public QObject {
     double getDefaultParameter(const QString& group, const QString& name);
     /// Connect a ControlObject's valueChanged() signal to a script callback function
     /// Returns to the script a ScriptConnectionJSProxy
-    QJSValue makeConnection(const QString& group, const QString& name, const QJSValue callback);
+    QJSValue makeConnection(const QString& group, const QString& name, const QJSValue& callback);
     /// DEPRECATED: Use makeConnection instead.
     QJSValue connectControl(const QString& group,
             const QString& name,
@@ -105,7 +105,7 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent* event);
 
   public slots:
-    void loadModule(QFileInfo moduleFileInfo);
+    void loadModule(const QFileInfo& moduleFileInfo);
     bool loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();

@@ -138,7 +138,7 @@ class MidiControllerJSProxy : public ControllerJSProxy {
         m_pMidiController->sendShortMsg(status, byte1, byte2);
     }
 
-    Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+    Q_INVOKABLE void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
         m_pMidiController->sendSysexMsg(data, length);
     }
 

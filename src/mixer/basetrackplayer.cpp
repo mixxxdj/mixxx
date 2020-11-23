@@ -595,7 +595,7 @@ void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     }
 }
 
-void BaseTrackPlayerImpl::slotSetTrackColor(mixxx::RgbColor::optional_t color) {
+void BaseTrackPlayerImpl::slotSetTrackColor(const mixxx::RgbColor::optional_t& color) {
     m_pTrackColor->forceSet(trackColorToDouble(color));
 }
 

@@ -238,7 +238,7 @@ DlgPreferences::~DlgPreferences() {
     delete m_pControllersDlg;
 }
 
-QTreeWidgetItem* DlgPreferences::createTreeItem(QString text, QIcon icon) {
+QTreeWidgetItem* DlgPreferences::createTreeItem(const QString& text, const QIcon& icon) {
     QTreeWidgetItem* pTreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     pTreeItem->setIcon(0, icon);
     pTreeItem->setText(0, text);

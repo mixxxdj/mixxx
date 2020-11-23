@@ -14,8 +14,8 @@
 #include "util/assert.h"
 
 namespace {
-const QString kEffectGroupSeparator = "_";
-const QString kGroupClose = "]";
+constexpr QChar kEffectGroupSeparator = '_';
+constexpr QChar kGroupClose = ']';
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 

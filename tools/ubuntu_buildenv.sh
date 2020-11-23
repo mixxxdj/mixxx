@@ -64,6 +64,7 @@ case "$COMMAND" in
                 protobuf-compiler \
                 qt5-default \
                 qt5keychain-dev \
+                qtdeclarative5-dev \
                 qtscript5-dev \
                 ${PACKAGES_EXTRA}
         fi
