@@ -714,13 +714,18 @@
      * |           +- options: Additional options for the component (object, required)
      * |                       Example: {key: "reverse"}
      * |
-     * +-effectUnits: an array of effect unit definitions (may be empty or omitted)
-     *   +- effectUnit
-     *      +- unitNumbers: as defined by `components.EffectUnit`
-     *      +- components: an object of component definitions for the effect unit. Each definition
-     *                     is a key-value pair for a component of `components.EffectUnit` where key
-     *                     is the name of the component and value is the MIDI address. Example:
-     *                     `effectFocusButton: [0xB0, 0x15]`
+     * +- effectUnits: an array of effect unit definitions (may be empty or omitted)
+     * |  +- effectUnit
+     * |     +- unitNumbers: as defined by `components.EffectUnit`
+     * |     +- components: an object of component definitions for the effect unit. Each definition
+     * |                    is a key-value pair for a component of `components.EffectUnit` where key
+     * |                    is the name of the component and value is the MIDI address. Example:
+     * |                    `effectFocusButton: [0xB0, 0x15]`
+     * |
+     * +- containers: an array of component container definitions (may be empty or omitted)
+     *    +- componentContainer
+     *       +- components: an object of component definitions for the component container.
+     *          +- component: a component definition in the same format as described for decks
      *
      * @constructor
      * @extends {components.ComponentContainer}
@@ -762,7 +767,10 @@
                 this.config.init(controllerId, debug);
             }
             this.layerManager = this.createLayerManager(
-                this.config.decks || [], this.config.effectUnits || [], this.componentContainers);
+                this.componentContainers,
+                this.config.decks || [],
+                this.config.effectUnits || [],
+                this.config.containers || []);
 
             log.debug(this.controllerId + ".init() completed.");
         },
@@ -798,25 +806,30 @@
         },
 
         /**
-         * Create a layer manager containing the components of all decks and effect units.
+         * Create a layer manager containing the components of all decks, effect units and
+         * additional component containers.
          *
+         * @param {Array} target Target for decks, effect units and component containers
          * @param {object} deckDefinitions Definition of decks
          * @param {object} effectUnitDefinitions Definition of effect units
-         * @param {Array} componentContainers Target for decks and effect units
+         * @param {object} containerDefinitions Definition of additional component containers
          * @return {object} Layer manager
          * @see `components.extension.LayerManager`
          * @private
          */
-        createLayerManager: function(deckDefinitions, effectUnitDefinitions, componentContainers) {
+        createLayerManager: function(target, deckDefinitions, effectUnitDefinitions,
+            containerDefinitions) {
+
             var layerManager = new components.extension.LayerManager({debug: this.debug});
             [
                 {definitions: deckDefinitions, factory: this.createDeck},
-                {definitions: effectUnitDefinitions, factory: this.createEffectUnit}
+                {definitions: effectUnitDefinitions, factory: this.createEffectUnit},
+                {definitions: containerDefinitions, factory: this.createComponentContainer},
             ].forEach(function(context) {
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
                         var implementation = context.factory(definition);
-                        componentContainers.push(implementation);
+                        target.push(implementation);
                         this.registerComponents(layerManager, definition.components, implementation);
                     }, this);
                 } else {
@@ -851,8 +864,8 @@
         /**
          * Create an effect unit.
          *
-         * In addition to the implementation of `components.EffectUnit`, output values of effect unit
-         * components are sent to the controller.
+         * In addition to the implementation of `components.EffectUnit`, output values of effect
+         * unit components are sent to the controller.
          *
          * @param {object} effectUnitDefinition Definition of the effect unit
          * @return {object} The new effect unit
@@ -885,6 +898,23 @@
 
             unit.init();
             return unit;
+        },
+
+        /**
+         * Create a component container.
+         *
+         * @param {object} containerDefinition Definition of the component container
+         * @return {object} The new component container
+         * @private
+         */
+        createComponentContainer: function(containerDefinition) {
+            var container = new components.ComponentContainer();
+            containerDefinition.components.forEach(function(componentDefinition, index) {
+                var options
+                    = _.merge({midi: componentDefinition.midi}, componentDefinition.options);
+                container[index] = new componentDefinition.type(options);
+            }, this);
+            return container;
         },
 
         /**
