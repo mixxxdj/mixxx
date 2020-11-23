@@ -50,11 +50,9 @@ jobs:
     - name: Create build directory
       run: mkdir cmake_build
     - name: Configure
-      # -DOPTIMIZE=off: Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
-      # -ferror-limit=0: Disable aborting on errors
+      # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
       run: |
         cmake \
-          -DCMAKE_CXX_FLAGS="-ferror-limit=0" \
           -DCMAKE_BUILD_TYPE=Debug \
           -DWARNINGS_FATAL=ON \
           -DOPTIMIZE=off \
