@@ -26,7 +26,7 @@ var BCR2000 = new components.extension.GenericMidiController({
                 components: [
                     {
                         type: e.ShiftButton, options: {
-                            midi: [status, p.buttonRow1[3]], target: BCR2000
+                            midi: [status, p.buttonRow1[3]], target: this
                         }
                     },
                     {
@@ -101,7 +101,7 @@ var BCR2000 = new components.extension.GenericMidiController({
                 components: [
                     {
                         type: e.ShiftButton,
-                        options: {midi: [status, p.buttonRow1[7]], target: BCR2000}
+                        options: {midi: [status, p.buttonRow1[7]], target: this}
                     },
                     {
                         type: e.RangeAwareEncoder, options: {

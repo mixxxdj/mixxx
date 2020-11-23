@@ -736,7 +736,7 @@
             log.error("The required function 'configurationProvider' is missing.");
             return;
         }
-        this.config = options.configurationProvider();
+        this.config = options.configurationProvider.call(this);
         components.ComponentContainer.call(this, options);
     };
     GenericMidiController.prototype = new components.ComponentContainer({
