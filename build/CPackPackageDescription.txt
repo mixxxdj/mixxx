@@ -1,4 +1,3 @@
-Digital Disc Jockey Application
 Mixxx is a digital DJ system, where Wave, Ogg, FLAC and MP3 files can be
 mixed on a computer for use in live performances. Filters, crossfader, and
 speed control are provided. Mixxx can sync the 4 decks automatically, using
