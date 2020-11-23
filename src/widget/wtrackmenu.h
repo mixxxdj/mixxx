@@ -16,6 +16,7 @@
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
+//class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
 class Library;
 class TrackModel;

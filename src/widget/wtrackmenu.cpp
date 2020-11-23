@@ -1,8 +1,12 @@
 #include "widget/wtrackmenu.h"
 
 #include <QCheckBox>
+#include <QDialogButtonBox>
 #include <QInputDialog>
+#include <QListView>
+#include <QListWidget>
 #include <QModelIndex>
+#include <QVBoxLayout>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -1587,47 +1591,53 @@ class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointer
 } // anonymous namespace
 
 void WTrackMenu::slotRemoveFromDisk() {
-    // Collect & de-duplicate file locations for the Delete warning.
-    QList<QString> trackLocations;
-    trackLocations.reserve(getTrackCount());
-    for (const auto& trackRef : getTrackRefs()) {
-        DEBUG_ASSERT(trackRef.hasLocation());
+    const auto trackRefs = getTrackRefs();
+    QStringList locations;
+    locations.reserve(trackRefs.size());
+    for (const auto& trackRef : trackRefs) {
         QString location = trackRef.getLocation();
-        if (!trackLocations.contains(location)) {
-            trackLocations.append(location);
-        }
+        // TODO de-duplicate when extending this feature to Playlists
+        locations.append(location);
     }
 
-    // TODO Use a dialog with a QListView that can be scrolled horizontally?
-    // Or improve linebreaks and formatting in the current plain textview.
+    // TODO Resize the dialog appropriately.
     // TODO Should each item may have a checkbox to allow removing it from the delete list
     // or is it okay for the user to Cancel and adjust the selection in the tracks table?
-    // TODO Allow to keep all selected tracks' references
+    {
+        QDialog* delConfirmDlg = new QDialog(nullptr);
+        delConfirmDlg->setModal(true); // just to be sure
+        delConfirmDlg->setWindowTitle(tr("Delete Track Files"));
 
-    // Show Delete warning.
-    QMessageBox msgBoxDelete(QMessageBox::Critical,
-            QObject::tr("Delete Files"),
-            nullptr);
-    msgBoxDelete.setInformativeText(
-            QObject::tr("<b>Permanently delete these %1 files from disk?</b>"
-                        "                                                      "
-                        "      <br>"
-                        "%2<br>"
-                        "<br>"
-                        "<b>This can not be undone!</b><br>")
-                    .arg(QString::number(trackLocations.length()),
-                            // Primitive hack to create a pseudo list.
-                            QString(QStringLiteral("&#8226; ")) +
-                                    trackLocations.join(
-                                            QStringLiteral("<br>&#8226; "))));
-    msgBoxDelete.setTextFormat(Qt::RichText);
-    QAbstractButton* deleteBtn = msgBoxDelete.addButton(
-            tr("Delete Files!"), QMessageBox::AcceptRole);
-    msgBoxDelete.addButton(QMessageBox::Cancel);
-    msgBoxDelete.setDefaultButton(QMessageBox::Cancel);
-    msgBoxDelete.exec();
-    if (msgBoxDelete.clickedButton() != deleteBtn) {
-        return;
+        QVBoxLayout* delConfirmDlgLayout = new QVBoxLayout;
+        QLabel* delWarning = new QLabel;
+        delWarning->setText(tr("Permanently delete these files from disk?") + QString("<br>") +
+                QString("<b>") + tr("This can not be undone!") + QString("</b>"));
+        delWarning->setTextFormat(Qt::RichText);
+
+        QListWidget* fileListWidget = new QListWidget;
+        fileListWidget->addItems(locations);
+
+        QDialogButtonBox* delConfirmDlgButtons = new QDialogButtonBox();
+        QPushButton* cancelBtn = delConfirmDlgButtons->addButton(
+                tr("Cancel"),
+                QDialogButtonBox::RejectRole);
+        QPushButton* deleteBtn = delConfirmDlgButtons->addButton(
+                tr("Delete Files"),
+                QDialogButtonBox::AcceptRole);
+        cancelBtn->setDefault(true);
+        // This is required after customizing the buttons, otherwise neither button
+        // would close the dialog.
+        connect(cancelBtn, &QPushButton::clicked, delConfirmDlg, &QDialog::reject);
+        connect(deleteBtn, &QPushButton::clicked, delConfirmDlg, &QDialog::accept);
+
+        delConfirmDlgLayout->addWidget(fileListWidget);
+        delConfirmDlgLayout->addWidget(delWarning);
+        delConfirmDlgLayout->addWidget(delConfirmDlgButtons);
+        delConfirmDlg->setLayout(delConfirmDlgLayout);
+
+        if (delConfirmDlg->exec() == QDialog::Rejected) {
+            return;
+        }
     }
 
     // Set up and initiate the track batch operation
@@ -1647,42 +1657,44 @@ void WTrackMenu::slotRemoveFromDisk() {
         m_pLibrary->trackCollections()->purgeTracks(trackOperator.tr_tracksToPurge);
         // Optional message box:
         QMessageBox msgBoxPurgeTracks(QMessageBox::Information,
-                QObject::tr("Yeaiij!"),
+                QObject::tr("Track files deleted"),
                 nullptr);
-        msgBoxPurgeTracks.setInformativeText(
-                QObject::tr(
-                        "<br><b>"
-                        "%1 annoying tracks were deleted from disk and "
-                        "purged from the Mixxx database."
-                        "<br><br>")
-                        .arg(QString::number(trackOperator.tr_tracksToPurge.length())));
+        msgBoxPurgeTracks.setText(
+                QObject::tr("%1 track files were deleted from disk and purged "
+                            "from the Mixxx database.")
+                        .arg(QString::number(
+                                trackOperator.tr_tracksToPurge.length())));
         msgBoxPurgeTracks.setTextFormat(Qt::RichText);
         msgBoxPurgeTracks.exec();
     }
 
-    // Show list of tracks that could not be deleted and are thus not going to be purged.
     if (trackOperator.tr_tracksToKeep.length() >= 0) {
         return;
     }
-    QMessageBox msgBoxKeepTracks(QMessageBox::Warning,
-            QObject::tr("Some Files Were Not Deleted"),
-            nullptr);
-    msgBoxKeepTracks.setInformativeText(
-            QObject::tr("<br><br><b>"
-                        "The following %1 files could not be deleted from disk."
-                        "Make sure you have write access to those files and "
-                        "try again later.</b>"
-                        "<br>"
-                        "%2"
-                        "<br>")
-                    .arg(QString::number(
-                                 trackOperator.tr_tracksToKeep.length()),
-                            // Primitive hack to create a pseudo list.
-                            QString(QStringLiteral("&#8226; ")) +
-                                    trackOperator.tr_tracksToKeep.join(
-                                            QStringLiteral("<br>&#8226; "))));
-    msgBoxKeepTracks.setTextFormat(Qt::RichText);
-    msgBoxKeepTracks.exec();
+
+    {
+        // If there are tracks that could not be deleted show a message with those listed.
+        QDialog* notDeletedDlg = new QDialog(nullptr);
+        notDeletedDlg->setWindowTitle(tr("Delete Track Files"));
+        QVBoxLayout* notDeletedLayout = new QVBoxLayout;
+        QLabel* notDeletedLabel = new QLabel;
+        notDeletedLabel->setText(
+                tr("The following %1 files could not be deleted from disk")
+                        .arg(QString::number(
+                                trackOperator.tr_tracksToKeep.length())));
+        notDeletedLabel->setTextFormat(Qt::RichText);
+
+        QListWidget* notDeletedList = new QListWidget;
+        notDeletedList->addItems(trackOperator.tr_tracksToKeep);
+
+        QDialogButtonBox* deletedDlgButtons = new QDialogButtonBox(QDialogButtonBox::Ok);
+
+        notDeletedLayout->addWidget(notDeletedLabel);
+        notDeletedLayout->addWidget(notDeletedList);
+        notDeletedLayout->addWidget(deletedDlgButtons);
+        notDeletedDlg->setLayout(notDeletedLayout);
+        notDeletedDlg->exec();
+    }
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {
