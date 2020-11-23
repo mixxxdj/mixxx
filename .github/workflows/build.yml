@@ -182,7 +182,17 @@ jobs:
       run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
       working-directory: cmake_build
 
-    - name: "Deploy artifacts"
+    - name: "[macOS] Upload build to downloads.mixxx.org"
+      # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
+      if: runner.os == 'macOS' && env.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD != null
+      run: tools/deploy.sh
+      env:
+        FILE_TO_DEPLOY: ${{ matrix.artifacts_path }}
+        OS: ${{ runner.os }}
+        DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        SSH_KEY: build/certificates/downloads-hostgator.mixxx.org.key
+
+    - name: "Upload GitHub Actions artifacts"
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifacts_name }}
