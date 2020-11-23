@@ -11,7 +11,13 @@ jobs:
         include:
           - name: Ubuntu 18.04 (gcc)
             os: ubuntu-18.04
-            cmake_args: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+            cmake_args: >-
+              -DFAAD=ON
+              -DKEYFINDER=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
             cmake_generator: Unix Makefiles
             ctest_args:
             compiler_cache: ccache
@@ -24,7 +30,13 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
-            cmake_args: -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+            cmake_args: >-
+              -DFFMPEG=ON
+              -DKEYFINDER=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
             cmake_generator: Unix Makefiles
             ctest_args:
             compiler_cache: ccache
@@ -37,7 +49,10 @@ jobs:
             qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
-            cmake_args: -DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON
+            cmake_args: >-
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
             cmake_generator: Unix Makefiles
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
@@ -51,7 +66,13 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Windows 2016 (MSVC)
             os: windows-2016
-            cmake_args: -DHSS1394=ON -DKEYFINDER=OFF -DLOCALECOMPARE=ON -DMAD=ON -DMEDIAFOUNDATION=ON -DSTATIC_DEPS=ON
+            cmake_args: >-
+              -DHSS1394=ON
+              -DKEYFINDER=OFF
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMEDIAFOUNDATION=ON
+              -DSTATIC_DEPS=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
@@ -153,26 +174,25 @@ jobs:
         toolset: 14.16
 
     - name: "Configure"
-      run: >
+      run: >-
         cmake
         -G "${{ matrix.cmake_generator }}"
-        -DCMAKE_BUILD_TYPE=Release
         -DBATTERY=ON -DBROADCAST=ON
         -DBULK=ON
+        -DCMAKE_BUILD_TYPE=Release
+        "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=ON
         -DHID=ON
         -DLILV=ON
         -DOPUS=ON
         -DQTKEYCHAIN=ON
         -DVINYLCONTROL=ON
-        ${{ env.CMAKE_FLAGS_EXTRA }}
+        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }}
         ..
-
       working-directory: cmake_build
       env:
         CC: ${{ matrix.cc }}
         CXX: ${{ matrix.cxx }}
-        CMAKE_FLAGS_EXTRA: ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }} "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}" "-DQt5_DIR=${{ env.QT_PATH }}"
 
     - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
       if: runner.os != 'Windows'
