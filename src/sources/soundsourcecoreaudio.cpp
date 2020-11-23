@@ -185,7 +185,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     }
 
     initChannelCountOnce(m_outputFormat.NumberChannels());
-    initSampleRateOnce(m_inputFormat.mSampleRate);
+    DEBUG_ASSERT(std::round(m_inputFormat.mSampleRate) == m_inputFormat.mSampleRate);
+    initSampleRateOnce(static_cast<SINT>(m_inputFormat.mSampleRate));
     // TODO(XXX): Reduce totalFrameCount by m_leadingFrames???
     initFrameIndexRangeOnce(IndexRange::forward(m_leadingFrames, totalFrameCount));
 
