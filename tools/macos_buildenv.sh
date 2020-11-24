@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o pipefail
 
-if [ "$2" != "--ghactions" ] && ! $(return 0 2>/dev/null); then
+if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
   echo "This script must be run by sourcing it:"
   echo "source $0 $@"
   exit 1
