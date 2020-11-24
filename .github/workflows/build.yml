@@ -176,17 +176,18 @@ jobs:
       run: >-
         cmake
         -G "${{ matrix.cmake_generator }}"
-        -DBATTERY=ON -DBROADCAST=ON
-        -DBULK=ON
         -DCMAKE_BUILD_TYPE=Release
         "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=ON
+        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }}
+        -DBATTERY=ON
+        -DBROADCAST=ON
+        -DBULK=ON
         -DHID=ON
         -DLILV=ON
         -DOPUS=ON
         -DQTKEYCHAIN=ON
         -DVINYLCONTROL=ON
-        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }}
         ..
       working-directory: cmake_build
       env:
