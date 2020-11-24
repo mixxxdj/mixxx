@@ -1148,6 +1148,15 @@ install(
   FILES_MATCHING REGEX
     "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
 )
+
+# Qt loads the ANGLE libraries dynamical, also when Qt itself is linked static 
+install(
+  FILES
+    "${Qt5_DIR}/bin/libEGL.dll"
+    "${Qt5_DIR}/bin/libGLESv2.dll"
+  DESTINATION
+    "${MIXXX_INSTALL_DATADIR}"
+)
 endif()
 
 # Font files
