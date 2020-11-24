@@ -6,7 +6,11 @@ let
     pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
     nix-gitignore python3 python37Packages;
 
-  llvm_packages = pkgs.llvmPackages_10;
+  llvm_packages = if builtins.hasAttr "llvmPackages_10" pkgs then
+    pkgs.llvmPackages_10
+  else
+    pkgs.llvmPackages;
+
   clangVersion = builtins.map builtins.fromJSON
     (lib.versions.splitVersion llvm_packages.clang.version);
   glibcVersion = builtins.map builtins.fromJSON
@@ -105,7 +109,9 @@ let
       "") + ''
         mkdir -p cbuild
         cd cbuild
-        cmake .. ${lib.escapeShellArgs allCFlags} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "$@"
+        cmake .. ${
+          lib.escapeShellArgs allCFlags
+        } -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "$@"
         cd ..
         V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
         # install pre-commit from python for older systems
@@ -288,13 +294,11 @@ in stdenv.mkDerivation rec {
         git-clang-format
         glibcLocales
         # for pre-commit installation since nixpkg.pre-commit may be to old
-        pre-commit
         python3
         python37Packages.pip
         python37Packages.setuptools
         python37Packages.virtualenv
         nodejs
-        nixfmt
         shell-build
         shell-configure
         shell-debug
@@ -302,7 +306,9 @@ in stdenv.mkDerivation rec {
         shell-run-tests
         shell-create-includes
         nix
-      ] ++ (if useClang then [ clazy ] else [ ]))
+      ] ++ lib.optional useClang [ clazy ]
+      ++ lib.optional (builtins.hasAttr "pre-commit" pkgs) [ pkgs.pre-commit ]
+      ++ lib.optional (builtins.hasAttr "nixfmt" pkgs) [ pkgs.nixfmt ])
   else
     [ ]);
 
