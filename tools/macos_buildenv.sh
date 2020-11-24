@@ -29,8 +29,8 @@ read -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/cmake/macos_build_env
 
 case "$COMMAND" in
     name)
-        if [ "$1" = "--ghactions" ]; then
-            echo "::set-output name=buildenv_name::$envname"
+        if [ -n "${GITHUB_ENV}" ]; then
+            echo "BUILDENV_NAME=$envname" >> "${GITHUB_ENV}"
         else
             echo "$BUILDENV_NAME"
         fi
@@ -38,7 +38,7 @@ case "$COMMAND" in
 
     setup)
         if [[ "$BUILDENV_NAME" =~ .*macosminimum([0-9]*\.[0-9]*).* ]]; then
-            MACOSX_DEPLOYMENT_TARGET="${BASH_REMATCH[1]}"
+            export MACOSX_DEPLOYMENT_TARGET="${BASH_REMATCH[1]}"
         else
             echo "Build environment did not match expected pattern. Check ${MIXXX_ROOT}/cmake/macos_build_environment file." >&2
             return
@@ -75,12 +75,14 @@ case "$COMMAND" in
         export Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
         export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
 
-        if [ "$1" = "--ghactions" ]; then
-            echo "::set-output name=macosx_deployment_target::${MACOSX_DEPLOYMENT_TARGET}"
-            echo "::set-output name=cmake_prefix_path::${CMAKE_PREFIX_PATH}"
-            echo "::set-output name=path::${PATH}"
-            echo "::set-output name=qt_path::${Qt5_DIR}"
-            echo "::set-output name=qt_qpa_platform_plugin_path::${QT_QPA_PLATFORM_PLUGIN_PATH}"
+        if [ -n "${GITHUB_ENV}" ]; then
+            {
+                echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
+                echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
+                echo "PATH=${PATH}"
+                echo "QT_PATH=${QT_PATH}"
+                echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
+            } >> "${GITHUB_ENV}"
         fi
         ;;
 esac

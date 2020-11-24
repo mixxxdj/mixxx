@@ -179,7 +179,7 @@ for:
       secure: EiAsLAgrsS+N3rr71AAkXPCrxIe2vLvlOvCipnTw6pg=
 
   install:
-    - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
+    - set /P ENVIRONMENT_NAME=<cmake\windows_build_environment_name
     - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
     - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
     - set WINLIB_PATH=%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
