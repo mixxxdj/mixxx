@@ -1149,7 +1149,7 @@ install(
     "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
 )
 
-# Qt loads the ANGLE libraries dynamical, also when Qt itself is linked static 
+# Qt loads the ANGLE libraries dynamically, even when Qt itself is linked statically
 install(
   FILES
     "${Qt5_DIR}/bin/libEGL.dll"
