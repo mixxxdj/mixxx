@@ -59,8 +59,10 @@ case "$COMMAND" in
                     echo "Got $OBSERVED_SHA256"
                     exit 1
                 fi
+                echo ""
                 echo "Extracting ${BUILDENV_NAME}.tar.gz..."
-                tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}"
+                tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}" && \
+                echo "Successfully extracted ${BUILDENV_NAME}.tar.gz"
             else
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, run the command below to download it."
                 echo "source ${THIS_SCRIPT_NAME} setup"
@@ -83,6 +85,14 @@ case "$COMMAND" in
                 echo "Qt5_DIR=${Qt5_DIR}"
                 echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
             } >> "${GITHUB_ENV}"
+        elif [ "$1" != "--profile" ]; then
+            echo ""
+            echo "Exported environment variables:"
+            echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
+            echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
+            echo "PATH=${PATH}"
+            echo "Qt5_DIR=${Qt5_DIR}"
+            echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
         fi
         ;;
 esac
