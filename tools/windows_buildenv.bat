@@ -59,8 +59,8 @@ EXIT /B 0
     # - https://github.com/actions/virtual-environments/issues/480
     SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
-    FOR /D %%G IN (%BUILDENV_PATH%\Qt-*) DO (SET QT_PATH=%%G)
-    SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!;!QT_PATH!
+    FOR /D %%G IN (%BUILDENV_PATH%\Qt-*) DO (SET Qt5_DIR=%%G)
+    SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!;!Qt5_DIR!
 
     ECHO ^Environent Variables:
     ECHO ^- PATH=!PATH!
