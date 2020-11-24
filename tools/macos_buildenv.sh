@@ -79,26 +79,26 @@ case "$COMMAND" in
         fi
 
         export CMAKE_PREFIX_PATH="${BUILDENV_PATH}"
-        export PATH="${BUILDENV_PATH}/bin:${PATH}"
         export Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
         export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
+        export PATH="${BUILDENV_PATH}/bin:${PATH}"
 
         if [ -n "${GITHUB_ENV}" ]; then
             {
                 echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
                 echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
-                echo "PATH=${PATH}"
                 echo "Qt5_DIR=${Qt5_DIR}"
                 echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
+                echo "PATH=${PATH}"
             } >> "${GITHUB_ENV}"
         elif [ "$1" != "--profile" ]; then
             echo ""
             echo "Exported environment variables:"
             echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
-            echo "PATH=${PATH}"
             echo "Qt5_DIR=${Qt5_DIR}"
             echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
+            echo "PATH=${PATH}"
         fi
         ;;
 esac
