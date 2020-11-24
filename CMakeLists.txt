@@ -1152,8 +1152,8 @@ if(WIN32)
   # Qt loads the ANGLE libraries dynamically, even when Qt itself is linked statically
   install(
     FILES
-      "${Qt5_DIR}/bin/libEGL.dll"
-      "${Qt5_DIR}/bin/libGLESv2.dll"
+      "${Qt5_DIR}/../../../bin/libEGL.dll"
+      "${Qt5_DIR}/../../../bin/libGLESv2.dll"
     DESTINATION
       "${MIXXX_INSTALL_DATADIR}"
   )
