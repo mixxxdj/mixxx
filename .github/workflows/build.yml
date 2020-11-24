@@ -108,8 +108,7 @@ jobs:
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
-      run: |
-        python -m pip install ninja git+https://github.com/frerich/clcache.git
+      run: python -m pip install ninja git+https://github.com/frerich/clcache.git
 
     - name: "[macOS/Windows] Get build environment name"
       if: runner.os != 'Linux'
