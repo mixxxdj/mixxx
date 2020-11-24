@@ -38,7 +38,13 @@ case "$COMMAND" in
 
     setup)
         if [[ "$BUILDENV_NAME" =~ .*macosminimum([0-9]*\.[0-9]*).* ]]; then
-            export MACOSX_DEPLOYMENT_TARGET="${BASH_REMATCH[1]}"
+            # bash and zsh have different ways of getting the matched string
+            # zsh's BASH_REMATCH option is not actually compatible with bash
+            if [ -n "${BASH_REMATCH}" ]; then
+                export MACOSX_DEPLOYMENT_TARGET="${BASH_REMATCH[1]}"
+            elif [ -n "$match" ]; then
+                export MACOSX_DEPLOYMENT_TARGET="${match[1]}"
+            fi
         else
             echo "Build environment did not match expected pattern. Check ${MIXXX_ROOT}/cmake/macos_build_environment file." >&2
             return
@@ -51,7 +57,7 @@ case "$COMMAND" in
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
                 curl "https://downloads.mixxx.org/builds/buildserver/2.3.x-unix/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.tar.gz"|cut -f 1 -d' ')
-                if [ $OBSERVED_SHA256 == $BUILDENV_SHA256 ]; then
+                if [[ $OBSERVED_SHA256 == $BUILDENV_SHA256 ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"
                 else
                     echo "ERROR: Download did not match expected SHA256 checksum!"
