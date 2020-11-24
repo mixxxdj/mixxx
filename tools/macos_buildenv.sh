@@ -80,7 +80,7 @@ case "$COMMAND" in
                 echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
                 echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
                 echo "PATH=${PATH}"
-                echo "QT_PATH=${QT_PATH}"
+                echo "Qt5_DIR=${Qt5_DIR}"
                 echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
             } >> "${GITHUB_ENV}"
         fi
