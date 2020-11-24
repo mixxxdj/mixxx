@@ -1135,28 +1135,28 @@ install(
     "*.qm"
 )
 if(WIN32)
-install(
-  # I haven't seen a way to determine where the translations dir is, so I am making
-  # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
-  # which is what my configuration tells me.
-  DIRECTORY
-    "${Qt5_DIR}/../../../translations"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-  # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-  # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-  FILES_MATCHING REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-)
+    install(
+        # I haven't seen a way to determine where the translations dir is, so I am making
+        # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+        # which is what my configuration tells me.
+        DIRECTORY
+            "${Qt5_DIR}/../../../translations"
+        DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+        # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+        # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+        FILES_MATCHING REGEX
+            "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+    )
 
-# Qt loads the ANGLE libraries dynamically, even when Qt itself is linked statically
-install(
-  FILES
-    "${Qt5_DIR}/bin/libEGL.dll"
-    "${Qt5_DIR}/bin/libGLESv2.dll"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-)
+    # Qt loads the ANGLE libraries dynamically, even when Qt itself is linked statically
+    install(
+        FILES
+            "${Qt5_DIR}/bin/libEGL.dll"
+            "${Qt5_DIR}/bin/libGLESv2.dll"
+        DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+    )
 endif()
 
 # Font files
