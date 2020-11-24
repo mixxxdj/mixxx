@@ -64,8 +64,8 @@ jobs:
             artifacts_name: macOS DMG
             artifacts_path: cmake_build/*.dmg
             qt_qpa_platform: offscreen
-          - name: Windows 2016 (MSVC)
-            os: windows-2016
+          - name: Windows 2019 (MSVC)
+            os: windows-2019
             cmake_args: >-
               -DHSS1394=ON
               -DKEYFINDER=OFF
