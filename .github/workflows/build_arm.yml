@@ -1,12 +1,11 @@
+name: Build ARM packages
+
 on: [push, pull_request]
 
 jobs:
   build_job:
-    # The host should always be linux
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
-
-    # Run steps on a matrix of 3 arch/distro combinations
     strategy:
       matrix:
         include:
@@ -14,8 +13,6 @@ jobs:
             distro: buster
           - arch: armv7
             distro: buster
-          # - arch: armv7
-          #   distro: ubuntu20.04
           - arch: aarch64
             distro: ubuntu20.04
 
@@ -40,11 +37,12 @@ jobs:
           arch: ${{ matrix.arch }}
           distro: ${{ matrix.distro }}
 
-          # Create an artifacts directory
+          # Create an artifacts and cache directory
           setup: |
             mkdir -p "${PWD}/artifacts"
             mkdir -p "${PWD}/.ccache"
-          # Mount the artifacts directory as /artifacts in the container
+
+          # Mount the artifacts directory and ccache
           dockerRunArgs: |
             --volume "${PWD}/artifacts:/artifacts"
             --volume "${PWD}/.ccache:/ccache"
@@ -53,32 +51,14 @@ jobs:
           env: | # YAML, but pipe character is necessary
             artifact_name: mixxx-${{ matrix.distro }}_${{ matrix.arch }}
 
-          # The shell to run commands with in the container
           shell: /bin/sh
 
           install: |
             apt-get update -q -y
-            apt-get install -q -y g++ git scons libportmidi-dev libopusfile-dev \
-              libshout-dev libtag1-dev libprotobuf-dev protobuf-compiler \
-              libusb-1.0-0-dev libfftw3-dev libmad0-dev libsoundtouch-dev portaudio19-dev \
-              libchromaprint-dev librubberband-dev libsqlite3-dev \
-              libid3tag0-dev libflac-dev libsndfile-dev libupower-glib-dev \
-              libavcodec-dev libavformat-dev \
-              libgl-dev liblilv-dev \
-              libjack-dev libjack0 \
-              libfaad-dev \
-              libmp3lame-dev libebur128-dev libwavpack-dev \
-              qt5-default qt5keychain-dev qtdeclarative5-dev libqt5opengl5-dev qtscript5-dev \
-              libqt5svg5-dev libqt5x11extras5-dev libvamp-sdk2v5 libhidapi-libusb0 libqt5sql5-sqlite libmodplug-dev \
-              libglu1-mesa-dev \
-              cmake ccache
-            case "${{ matrix.distro }}" in
-              ubuntu*)
-                apt-get install -q -y libavutil-dev
-                ;;
-            esac
-          # Produce a binary artifact and place it in the mounted volume
+            apt-get install -q -y g++ git scons cmake ccache
+          # Configure and run build
           run: |
+            tools/arm_buildenv.sh ${{ matrix.distro }}
             export CCACHE_DIR=/ccache
             ccache -M 5G
             export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -91,19 +71,13 @@ jobs:
             export QT_QPA_PLATFORM="offscreen"
             export CCACHE_NOCOMPRESS="true"
             cd cmake_build
-            cmake -DCMAKE_INSTALL_PREFIX=/usr .. 
+            cmake -DCMAKE_INSTALL_PREFIX=/usr ..
             cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
             cmake --build .
             cpack -G DEB
             cp *.deb "/artifacts/"
             echo "Produced artifact ${artifact_name} at /artifacts/"
             ccache -s
-
-      - name: Show the artifact
-        # Items placed in /artifacts in the container will be in
-        # ${PWD}/artifacts on the host.
-        run: |
-          ls -al "${PWD}/artifacts"
 
       - name: "Deploy artifacts"
         uses: actions/upload-artifact@v2
