@@ -1,11 +1,12 @@
-#include <QtDebug>
-#include <QTime>
-#include <QLocale>
-
 #include "widget/wairtime.h"
+
+#include <QLocale>
+#include <QTime>
+#include <QtDebug>
+
 #include "util/cmdlineargs.h"
 
-WAirTime::WAirTime(QWidget *parent)
+WAirTime::WAirTime(QWidget* parent)
         : WLabel(parent),
           m_sTimeFormat("h:mm:ss AP"),
           m_iInterval(s_iMinuteInterval) {
@@ -35,7 +36,7 @@ void WAirTime::setTimeFormat(const QDomNode& node, const SkinContext& context) {
         QString secondsFormat = context.selectString(node, "ShowSeconds");
         // long format is equivalent to showing seconds
         QLocale::FormatType format;
-        if(secondsFormat == "true" || secondsFormat == "yes") {
+        if (secondsFormat == "true" || secondsFormat == "yes") {
             format = QLocale::LongFormat;
             m_iInterval = s_iSecondInterval;
         } else {

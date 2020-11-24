@@ -7,14 +7,14 @@
 
 #include <QTimer>
 
-#include "widget/wlabel.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
 
-class WAirTime: public WLabel {
+class WAirTime : public WLabel {
     Q_OBJECT
   public:
-    explicit WTime(QWidget *parent=nullptr);
-    ~WTime() override;
+    explicit WAirTime(QWidget* parent = nullptr);
+    ~WAirTime() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -34,4 +34,4 @@ class WAirTime: public WLabel {
     static const short s_iMinuteInterval = 1000;
 };
 
-#endif /* WTIME_H */
+#endif /* WAIRTIME_H */
