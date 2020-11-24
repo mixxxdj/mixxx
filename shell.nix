@@ -185,6 +185,9 @@ let
     if [ -z "$QT_PLUGIN_PATH" ]; then
       export QT_PLUGIN_PATH=${pkgs.qt5.qtbase}/${pkgs.qt5.qtbase.qtPluginPrefix}
     fi
+    if [ -z "$QT_QPA_PLATFORM" ]; then
+      export QT_QPA_PLATFORM=offscreen
+    fi
     ./mixxx-test "$@"
   '';
 
