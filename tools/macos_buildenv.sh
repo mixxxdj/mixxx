@@ -82,7 +82,7 @@ case "$COMMAND" in
         export Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
         export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
         export PATH="${BUILDENV_PATH}/bin:${PATH}"
-        
+
         echo_exported_variables() {
             echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
