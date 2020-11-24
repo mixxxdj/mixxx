@@ -49,12 +49,12 @@ bool Parser::isBinary(const QString& filename) {
             return false;
         }
         // Check for UTF-8 BOM
-        if (firstByte == static_cast<char>(0xEF)) {
+        if (firstByte == '\xEF') {
             char nextChar;
             if (file.getChar(&nextChar) &&
-                    nextChar == static_cast<char>(0xBB) &&
+                    nextChar == '\xBB' &&
                     file.getChar(&nextChar) &&
-                    nextChar == static_cast<char>(0xBF)) {
+                    nextChar == '\xBF') {
                 // UTF-8 text file
                 return false;
             }

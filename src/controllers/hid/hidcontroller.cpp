@@ -6,15 +6,22 @@
   *
   */
 
-#include <wchar.h>
-#include <string.h>
-
-#include "util/path.h" // for PATH_MAX on Windows
 #include "controllers/hid/hidcontroller.h"
-#include "controllers/defs_controllers.h"
-#include "util/trace.h"
+
+#include <cstring>
+#include <cwchar>
+
 #include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
+#include "util/path.h" // for PATH_MAX on Windows
 #include "util/time.h"
+#include "util/trace.h"
+
+namespace {
+constexpr size_t kHidPathBufferSize = PATH_MAX + 1;
+constexpr size_t kHidSerialMaxLength = 512;
+constexpr size_t kHidSerialBufferSize = kHidSerialMaxLength + 1;
+} // namespace
 
 HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
         : Controller(pConfig),
@@ -37,16 +44,15 @@ HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPoin
     }
 
     // Don't trust path to be null terminated.
-    hid_path = new char[PATH_MAX + 1];
-    strncpy(hid_path, deviceInfo.path, PATH_MAX);
-    hid_path[PATH_MAX] = 0;
+    hid_path = new char[kHidPathBufferSize];
+    std::strncpy(hid_path, deviceInfo.path, PATH_MAX);
+    hid_path[PATH_MAX] = '\0';
 
-    hid_serial_raw = NULL;
-    if (deviceInfo.serial_number != NULL) {
-        size_t serial_max_length = 512;
-        hid_serial_raw = new wchar_t[serial_max_length+1];
-        wcsncpy(hid_serial_raw, deviceInfo.serial_number, serial_max_length);
-        hid_serial_raw[serial_max_length] = 0;
+    hid_serial_raw = nullptr;
+    if (deviceInfo.serial_number != nullptr) {
+        hid_serial_raw = new wchar_t[kHidSerialBufferSize];
+        std::wcsncpy(hid_serial_raw, deviceInfo.serial_number, kHidSerialMaxLength);
+        hid_serial_raw[kHidSerialMaxLength] = '\0';
     }
 
     hid_serial = safeDecodeWideString(deviceInfo.serial_number, 512);
