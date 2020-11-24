@@ -105,7 +105,7 @@ let
       "") + ''
         mkdir -p cbuild
         cd cbuild
-        cmake .. ${lib.escapeShellArgs allCFlags} "$@"
+        cmake .. ${lib.escapeShellArgs allCFlags} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "$@"
         cd ..
         V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
         # install pre-commit from python for older systems
