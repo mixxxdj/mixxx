@@ -403,6 +403,7 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
+    makeCurrent();
     swapBuffers();
 }
 
