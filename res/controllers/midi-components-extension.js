@@ -745,7 +745,11 @@
      * +- containers: an array of component container definitions (may be empty or omitted)
      *    +- componentContainer
      *       +- components: an object of component definitions for the component container.
-     *          +- component: a component definition in the same format as described for decks
+     *       |  +- component: a component definition in the same format as described for decks
+     *       +- type: (function, optional) constructor (default : `components.ComponentContainer`)
+     *       +- options: (object, optional) constructor argument
+     *       +- init: (function, optional) a function that is called after component creation and
+     *                                     before first use
      *
      * @constructor
      * @extends {components.ComponentContainer}
@@ -925,10 +929,14 @@
          * @private
          */
         createComponentContainer: function(containerDefinition) {
-            var container = new components.ComponentContainer();
+            var containerType = containerDefinition.type || components.ComponentContainer;
+            var container = new containerType(containerDefinition.options);
             containerDefinition.components.forEach(function(componentDefinition, index) {
                 container[index] = new componentDefinition.type(componentDefinition.options);
             }, this);
+            if (typeof containerDefinition.init === "function") {
+                containerDefinition.init.call(container);
+            }
             return container;
         },
 
