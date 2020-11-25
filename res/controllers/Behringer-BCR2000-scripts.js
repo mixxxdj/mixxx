@@ -211,6 +211,40 @@ var BCR2000 = new components.extension.GenericMidiController({
                     },
                 }
             }],
+            equalizerUnits: [{
+                channel: 1,
+                components: {
+                    enabled: [cc, p.pushEncoderGroup2[0].button],
+                    super1: [cc, p.pushEncoderGroup2[0].encoder],
+                    parameterKnobs: {
+                        1: [cc, p.pushEncoderGroup2[1].encoder],
+                        2: [cc, p.pushEncoderGroup2[2].encoder],
+                        3: [cc, p.pushEncoderGroup2[3].encoder],
+                    },
+                    parameterButtons: {
+                        1: [cc, p.pushEncoderGroup2[1].button],
+                        2: [cc, p.pushEncoderGroup2[2].button],
+                        3: [cc, p.pushEncoderGroup2[3].button],
+                    },
+                }
+            },
+            {
+                channel: 2,
+                components: {
+                    enabled: [cc, p.pushEncoderGroup2[4].button],
+                    super1: [cc, p.pushEncoderGroup2[4].encoder],
+                    parameterKnobs: {
+                        1: [cc, p.pushEncoderGroup2[5].encoder],
+                        2: [cc, p.pushEncoderGroup2[6].encoder],
+                        3: [cc, p.pushEncoderGroup2[7].encoder],
+                    },
+                    parameterButtons: {
+                        1: [cc, p.pushEncoderGroup2[5].button],
+                        2: [cc, p.pushEncoderGroup2[6].button],
+                        3: [cc, p.pushEncoderGroup2[7].button],
+                    },
+                }
+            }],
         };
     }
 });

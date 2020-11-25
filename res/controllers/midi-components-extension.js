@@ -712,6 +712,57 @@
     });
 
     /**
+     * @typedef {components.ComponentContainer} EqualizerUnit
+     *
+     * @property {components.Button} enabled En-/disable equalizer unit
+     * @property {components.Pot} super1 QuickEffect super knob
+     * @property {components.Pot} parameterKnobs.1 Low knob
+     * @property {components.Pot} parameterKnobs.2 Mid knob
+     * @property {components.Pot} parameterKnobs.3 High knob
+     * @property {components.Button} parameterButtons.1 Mute low
+     * @property {components.Button} parameterButtons.2 Mute mid
+     * @property {components.Button} parameterButtons.3 Mute high
+     */
+
+    /**
+     * A component container for equalizer controls.
+     *
+     * @constructor
+     * @extends {components.ComponentContainer}
+     * @param {number} channelNumber channel number
+     * @yields {EqualizerUnit}
+     * @public
+     */
+    var EqualizerUnit = function(channelNumber) {
+        components.ComponentContainer.call(this);
+        var channelId = "[Channel" + channelNumber + "]";
+        var effectGroup = "[EqualizerRack1_" + channelId + "_Effect1]";
+
+        var ParameterKnob = function(parameterNumber) {
+            components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
+        };
+        ParameterKnob.prototype = new components.Pot({});
+        var ParameterButton = function(parameterNumber) {
+            components.Button.call(this, {
+                group: effectGroup, key: "button_parameter" + parameterNumber
+            });
+        };
+        ParameterButton.prototype = new components.Button({});
+
+        this.enabled = new components.Button(
+            {group: "[QuickEffectRack1_" + channelId + "_Effect1]", key: "enabled"});
+        this.super1 = new components.Pot(
+            {group: "[QuickEffectRack1_" + channelId + "]", key: "super1"});
+        this.parameterKnobs = new components.ComponentContainer();
+        this.parameterButtons = new components.ComponentContainer();
+        for (var i = 1; i <= 3; i++) {
+            this.parameterKnobs[i] = new ParameterKnob(i);
+            this.parameterButtons[i] = new ParameterButton(i);
+        }
+    };
+    EqualizerUnit.prototype = new components.ComponentContainer();
+
+    /**
      * A generic, configurable MIDI controller.
      *
      * The mapping is configured by the function `configurationProvider` which returns an object
@@ -794,6 +845,7 @@
                 this.componentContainers,
                 this.config.decks || [],
                 this.config.effectUnits || [],
+                this.config.equalizerUnits || [],
                 this.config.containers || []);
 
             log.debug(this.controllerId + ".init() completed.");
@@ -836,23 +888,25 @@
          * @param {Array} target Target for decks, effect units and additional component containers
          * @param {object} deckDefinitions Definition of decks
          * @param {object} effectUnitDefinitions Definition of effect units
+         * @param {object} equalizerUnitDefinitions Definition of equalizer units
          * @param {object} containerDefinitions Definition of additional component containers
          * @return {object} Layer manager
          * @see `components.extension.LayerManager`
          * @private
          */
         createLayerManager: function(target, deckDefinitions, effectUnitDefinitions,
-            containerDefinitions) {
+            equalizerUnitDefinitions, containerDefinitions) {
 
             var layerManager = new components.extension.LayerManager({debug: this.debug});
             [
                 {definitions: deckDefinitions, factory: this.createDeck},
                 {definitions: effectUnitDefinitions, factory: this.createEffectUnit},
+                {definitions: equalizerUnitDefinitions, factory: this.createEqualizerUnit},
                 {definitions: containerDefinitions, factory: this.createComponentContainer},
             ].forEach(function(context) {
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
-                        var implementation = context.factory.call(this, definition);
+                        var implementation = context.factory.call(this, definition, target);
                         target.push(implementation);
                         this.registerComponents(layerManager, definition.components, implementation);
                     }, this);
@@ -883,30 +937,42 @@
         },
 
         /**
-         * Create an effect unit.
+         * Convert MIDI addresses (number array) to objects containing a 'midi' property.
          *
-         * In addition to the implementation of `components.EffectUnit`, output values of effect
-         * unit components are sent to the controller.
-         *
-         * @param {object} effectUnitDefinition Definition of the effect unit
-         * @return {object} The new effect unit
+         * @param {object} definition Definition of a component container with MIDI addresses
+         * @param {object} implementation A component container object
+         * @return {object} The component container with MIDI addresses
          * @private
          */
-        createEffectUnit: function(effectUnitDefinition) {
-            var unit = new components.EffectUnit(effectUnitDefinition.unitNumbers, true);
-
-            /* Convert MIDI addresses (number array) to objects containing a 'midi' property */
+        setMidiAddresses: function(definition, implementation) {
             var midify = function(object) {
                 return Array.isArray(object) ? {midi: object} : Object.keys(object).reduce(
-                    function(result, name) { result[name] = midify(object[name]); return result; }, {});
+                    function(result, name) { result[name] = midify(object[name]); return result; },
+                    {});
             };
-            _.merge(unit, midify(effectUnitDefinition.components));
+            return _.merge(implementation, midify(definition.components));
+        },
 
-            /* Add support for sending output values to the controller */
-            unit.forEachComponent(function(effectComponent) {
+        /**
+         * Enhance components for sending output values to the controller.
+         *
+         * The enhancement is implemented by adding a `Publisher` for each source component.
+         * The optional array of function names may be used to rebind the publisher
+         * every time a function is called on the source component.
+         *
+         * @param {Array} target Target for publisher components
+         * @param {object} componentContainer Container with components to be enhanced
+         * @param {Array<string>} rebindTriggers Names of functions that trigger a rebind of the
+         *                                       publisher to the source component
+         * @private
+         */
+        addPublishers: function(target, componentContainer, rebindTriggers) {
+            var triggers = rebindTriggers || [];
+            componentContainer.forEachComponent(function(effectComponent) {
                 var prototype = Object.getPrototypeOf(effectComponent);
                 var publisher = new components.extension.Publisher({source: effectComponent});
-                ["onFocusChange", "shift", "unshift"].forEach(function(functionName) {
+                target.push(publisher);
+                triggers.forEach(function(functionName) {
                     var delegate = prototype[functionName];
                     if (typeof delegate === "function") {
                         prototype[functionName] = function() {
@@ -916,8 +982,42 @@
                     }
                 });
             });
+        },
 
+        /**
+         * Create an effect unit.
+         *
+         * In addition to the implementation of `components.EffectUnit`, output values of effect
+         * unit components are sent to the controller.
+         *
+         * @param {object} effectUnitDefinition Definition of the effect unit
+         * @param {Array} target Target for additionally created components
+         * @yields {components.EffectUnit}
+         * @private
+         */
+        createEffectUnit: function(effectUnitDefinition, target) {
+            var unit = new components.EffectUnit(effectUnitDefinition.unitNumbers, true);
+            this.setMidiAddresses(effectUnitDefinition, unit);
+            this.addPublishers(target, unit, ["onFocusChange", "shift", "unshift"]);
             unit.init();
+            return unit;
+        },
+
+        /**
+         * Create an equalizer unit.
+         *
+         * In addition to the implementation of `components.extension.EqualizerUnit`,
+         * output values of equalizer unit components are sent to the controller.
+         *
+         * @param {object} equalizerUnitDefinition Definition of the equalizer unit
+         * @param {Array} target Target for additionally created components
+         * @yields {components.extension.EqualizerUnit}
+         * @private
+         */
+        createEqualizerUnit: function(equalizerUnitDefinition, target) {
+            var unit = new components.extension.EqualizerUnit(equalizerUnitDefinition.channel);
+            this.setMidiAddresses(equalizerUnitDefinition, unit);
+            this.addPublishers(target, unit);
             return unit;
         },
 
@@ -925,7 +1025,7 @@
          * Create a component container.
          *
          * @param {object} containerDefinition Definition of the component container
-         * @return {object} The new component container
+         * @yields {object} The new component container
          * @private
          */
         createComponentContainer: function(containerDefinition) {
@@ -971,6 +1071,7 @@
     exports.LoopMoveEncoder = LoopMoveEncoder;
     exports.BackLoopButton = BackLoopButton;
     exports.Publisher = Publisher;
+    exports.EqualizerUnit = EqualizerUnit;
     exports.GenericMidiController = GenericMidiController;
     global.components.extension = exports;
 })(this);
