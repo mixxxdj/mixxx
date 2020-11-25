@@ -178,6 +178,7 @@ var BCR2000 = new components.extension.GenericMidiController({
                 ]
             }],
             effectUnits: [{
+                feedback: true,
                 unitNumbers: [1, 3],
                 components: {
                     effectFocusButton: [cc, p.buttonRow2[0]],
@@ -195,6 +196,7 @@ var BCR2000 = new components.extension.GenericMidiController({
                 },
             },
             {
+                feedback: true,
                 unitNumbers: [2, 4],
                 components: {
                     effectFocusButton: [cc, p.buttonRow2[4]],
@@ -213,6 +215,7 @@ var BCR2000 = new components.extension.GenericMidiController({
             }],
             equalizerUnits: [{
                 channel: 1,
+                feedback: true,
                 components: {
                     enabled: [cc, p.pushEncoderGroup2[0].button],
                     super1: [cc, p.pushEncoderGroup2[0].encoder],
@@ -230,6 +233,7 @@ var BCR2000 = new components.extension.GenericMidiController({
             },
             {
                 channel: 2,
+                feedback: true,
                 components: {
                     enabled: [cc, p.pushEncoderGroup2[4].button],
                     super1: [cc, p.pushEncoderGroup2[4].encoder],

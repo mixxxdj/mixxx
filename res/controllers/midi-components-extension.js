@@ -729,14 +729,14 @@
      *
      * @constructor
      * @extends {components.ComponentContainer}
-     * @param {number} channelNumber channel number
+     * @param {number} channel Channel number
      * @yields {EqualizerUnit}
      * @public
      */
-    var EqualizerUnit = function(channelNumber) {
+    var EqualizerUnit = function(channel) {
         components.ComponentContainer.call(this);
-        var channelId = "[Channel" + channelNumber + "]";
-        var effectGroup = "[EqualizerRack1_" + channelId + "_Effect1]";
+        var channelGroup = "[Channel" + channel + "]";
+        var effectGroup = "[EqualizerRack1_" + channelGroup + "_Effect1]";
 
         var ParameterKnob = function(parameterNumber) {
             components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
@@ -750,9 +750,9 @@
         ParameterButton.prototype = new components.Button({});
 
         this.enabled = new components.Button(
-            {group: "[QuickEffectRack1_" + channelId + "_Effect1]", key: "enabled"});
+            {group: "[QuickEffectRack1_" + channelGroup + "_Effect1]", key: "enabled"});
         this.super1 = new components.Pot(
-            {group: "[QuickEffectRack1_" + channelId + "]", key: "super1"});
+            {group: "[QuickEffectRack1_" + channelGroup + "]", key: "super1"});
         this.parameterKnobs = new components.ComponentContainer();
         this.parameterButtons = new components.ComponentContainer();
         for (var i = 1; i <= 3; i++) {
@@ -787,11 +787,24 @@
      * |
      * +- effectUnits: an array of effect unit definitions (may be empty or omitted)
      * |  +- effectUnit
+     * |     +- feedback: iff truthy, values are sent to the hardware controller on changes
+     * |                  (boolean, optional)
      * |     +- unitNumbers: as defined by `components.EffectUnit`
      * |     +- components: an object of component definitions for the effect unit. Each definition
      * |                    is a key-value pair for a component of `components.EffectUnit` where key
      * |                    is the name of the component and value is the MIDI address. Example:
      * |                    `effectFocusButton: [0xB0, 0x15]`
+     * |
+     * +- equalizerUnits: an array of equalizer unit definitions (may be empty or omitted)
+     * |  +- equalizerUnit
+     * |     +- feedback: iff truthy, values are sent to the hardware controller on changes
+     * |                  (boolean, optional)
+     * |     +- channel: channel of the equalizer unit (number, required)
+     * |     +- components: an object of component definitions for the equalizer unit. Each
+     * |                    definition is a key-value pair for a component of
+     * |                    `components.extension.EqualizerUnit` where key
+     * |                    is the name of the component and value is the MIDI address. Example:
+     * |                    `enabled: [0xB0, 0x29]`
      * |
      * +- containers: an array of component container definitions (may be empty or omitted)
      *    +- componentContainer
@@ -998,7 +1011,9 @@
         createEffectUnit: function(effectUnitDefinition, target) {
             var unit = new components.EffectUnit(effectUnitDefinition.unitNumbers, true);
             this.setMidiAddresses(effectUnitDefinition, unit);
-            this.addPublishers(target, unit, ["onFocusChange", "shift", "unshift"]);
+            if (effectUnitDefinition.feedback) {
+                this.addPublishers(target, unit, ["onFocusChange", "shift", "unshift"]);
+            }
             unit.init();
             return unit;
         },
@@ -1017,7 +1032,9 @@
         createEqualizerUnit: function(equalizerUnitDefinition, target) {
             var unit = new components.extension.EqualizerUnit(equalizerUnitDefinition.channel);
             this.setMidiAddresses(equalizerUnitDefinition, unit);
-            this.addPublishers(target, unit);
+            if (equalizerUnitDefinition.feedback) {
+                this.addPublishers(target, unit);
+            }
             return unit;
         },
 
