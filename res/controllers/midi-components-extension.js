@@ -967,33 +967,35 @@
         },
 
         /**
-         * Enhance components for sending output values to the controller.
+         * Enhance pots so that they send output values to the controller.
          *
-         * The enhancement is implemented by adding a `Publisher` for each source component.
+         * The enhancement is implemented by creating a `Publisher` for each pot.
          * The optional array of function names may be used to rebind the publisher
-         * every time a function is called on the source component.
+         * every time a function is called on the pot.
          *
-         * @param {Array} target Target for publisher components
-         * @param {object} componentContainer Container with components to be enhanced
+         * @param {Array} target Storage for publisher components
+         * @param {object} potContainer Component container with pots to be enhanced
          * @param {Array<string>} rebindTriggers Names of functions that trigger a rebind of the
-         *                                       publisher to the source component
+         *                                       publisher to the pot
          * @private
          */
-        addPublishers: function(target, componentContainer, rebindTriggers) {
+        createPublishersForPots: function(target, potContainer, rebindTriggers) {
             var triggers = rebindTriggers || [];
-            componentContainer.forEachComponent(function(effectComponent) {
-                var prototype = Object.getPrototypeOf(effectComponent);
-                var publisher = new components.extension.Publisher({source: effectComponent});
-                target.push(publisher);
-                triggers.forEach(function(functionName) {
-                    var delegate = prototype[functionName];
-                    if (typeof delegate === "function") {
-                        prototype[functionName] = function() {
-                            delegate.apply(this, arguments);
-                            publisher.bind();
-                        };
-                    }
-                });
+            potContainer.forEachComponent(function(effectComponent) {
+                if (effectComponent instanceof components.Pot) {
+                    var prototype = Object.getPrototypeOf(effectComponent);
+                    var publisher = new components.extension.Publisher({source: effectComponent});
+                    target.push(publisher);
+                    triggers.forEach(function(functionName) {
+                        var delegate = prototype[functionName];
+                        if (typeof delegate === "function") {
+                            prototype[functionName] = function() {
+                                delegate.apply(this, arguments);
+                                publisher.bind();
+                            };
+                        }
+                    });
+                }
             });
         },
 
@@ -1012,7 +1014,7 @@
             var unit = new components.EffectUnit(effectUnitDefinition.unitNumbers, true);
             this.setMidiAddresses(effectUnitDefinition, unit);
             if (effectUnitDefinition.feedback) {
-                this.addPublishers(target, unit, ["onFocusChange", "shift", "unshift"]);
+                this.createPublishersForPots(target, unit, ["onFocusChange", "shift", "unshift"]);
             }
             unit.init();
             return unit;
@@ -1033,7 +1035,7 @@
             var unit = new components.extension.EqualizerUnit(equalizerUnitDefinition.channel);
             this.setMidiAddresses(equalizerUnitDefinition, unit);
             if (equalizerUnitDefinition.feedback) {
-                this.addPublishers(target, unit);
+                this.createPublishersForPots(target, unit);
             }
             return unit;
         },
