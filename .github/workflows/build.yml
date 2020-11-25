@@ -140,6 +140,8 @@ jobs:
         security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
         # Add keychain to search list
         security list-keychains -s Mixxx.keychain
+        # Prevent keychain access from timing out
+        security set-keychain-settings Mixxx.keychain
 
         CMAKE_ARGS="-DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}"
         echo "::set-output name=cmake_args::${CMAKE_ARGS}"
@@ -235,7 +237,7 @@ jobs:
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
-      run: cpack -G ${{ matrix.cpack_generator }}
+      run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: cmake_build
 
     - name: "[macOS] Sign Package"
