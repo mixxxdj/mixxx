@@ -58,25 +58,25 @@ class TrackMetadata final {
             Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
 
     // Parse an format date/time values according to ISO 8601
-    static QDate parseDate(QString str) {
+    static QDate parseDate(const QString& str) {
         return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
-    static QDateTime parseDateTime(QString str) {
+    static QDateTime parseDateTime(const QString& str) {
         return QDateTime::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
     static QString formatDate(QDate date) {
         return date.toString(Qt::ISODate);
     }
-    static QString formatDateTime(QDateTime dateTime) {
+    static QString formatDateTime(const QDateTime& dateTime) {
         return dateTime.toString(Qt::ISODate);
     }
 
     // Parse and format the calendar year (for simplified display)
     static constexpr int kCalendarYearInvalid = 0;
-    static int parseCalendarYear(QString year, bool* pValid = nullptr);
-    static QString formatCalendarYear(QString year, bool* pValid = nullptr);
+    static int parseCalendarYear(const QString& year, bool* pValid = nullptr);
+    static QString formatCalendarYear(const QString& year, bool* pValid = nullptr);
 
-    static QString reformatYear(QString year);
+    static QString reformatYear(const QString& year);
 };
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);

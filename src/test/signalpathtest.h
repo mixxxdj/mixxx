@@ -144,8 +144,10 @@ class BaseSignalPathTest : public MixxxTest {
     // Use tools/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesReference(const CSAMPLE* pBuffer, const int iBufferSize,
-                                   QString reference_title, const double delta=.0001) {
+    void assertBufferMatchesReference(const CSAMPLE* pBuffer,
+            const int iBufferSize,
+            const QString& reference_title,
+            const double delta = .0001) {
         QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
         bool pass = true;
         int i = 0;

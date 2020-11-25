@@ -34,7 +34,7 @@ class Cue : public QObject {
             double position,
             double length,
             int hotCue,
-            QString label,
+            const QString& label,
             mixxx::RgbColor color);
     ~Cue() override = default;
 
@@ -60,7 +60,7 @@ class Cue : public QObject {
 
     QString getLabel() const;
     void setLabel(
-            QString label = QString());
+            const QString& label = QString());
 
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);

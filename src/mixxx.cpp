@@ -211,7 +211,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #if defined(Q_OS_LINUX)
     // XESetWireToError will segfault if running as a Wayland client
-    if (pApp->platformName() == QStringLiteral("xcb")) {
+    if (pApp->platformName() == QLatin1String("xcb")) {
         for (auto i = 0; i < NUM_HANDLERS; ++i) {
             XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
         }

@@ -10,7 +10,7 @@ class BaseTrackSetFeature : public LibraryFeature {
             const QString& rootViewName);
 
   signals:
-    void analyzeTracks(QList<TrackId>);
+    void analyzeTracks(const QList<TrackId>&);
 
   public slots:
     void activate() override;

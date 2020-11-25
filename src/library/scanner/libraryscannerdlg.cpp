@@ -54,7 +54,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
 LibraryScannerDlg::~LibraryScannerDlg() {
 }
 
-void LibraryScannerDlg::slotUpdate(QString path) {
+void LibraryScannerDlg::slotUpdate(const QString& path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed().formatMillisWithUnit() << path;
     if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
        setVisible(true);
@@ -66,7 +66,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
     }
 }
 
-void LibraryScannerDlg::slotUpdateCover(QString path) {
+void LibraryScannerDlg::slotUpdateCover(const QString& path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
     if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
        setVisible(true);

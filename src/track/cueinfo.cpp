@@ -17,7 +17,7 @@ CueInfo::CueInfo(
         std::optional<double> startPositionMillis,
         std::optional<double> endPositionMillis,
         std::optional<int> hotCueNumber,
-        QString label,
+        const QString& label,
         mixxx::RgbColor::optional_t color)
         : m_type(type),
           m_startPositionMillis(startPositionMillis),
@@ -63,7 +63,7 @@ QString CueInfo::getLabel() const {
     return m_label;
 }
 
-void CueInfo::setLabel(QString label) {
+void CueInfo::setLabel(const QString& label) {
     m_label = label;
 }
 

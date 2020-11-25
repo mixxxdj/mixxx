@@ -128,12 +128,12 @@ class WebTask : public QObject {
     // is finally deleted. If no receiver is connected the task
     // will be deleted implicitly.
     void aborted(
-            QUrl requestUrl);
+            const QUrl& requestUrl);
     void networkError(
-            QUrl requestUrl,
+            const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString errorString,
-            QByteArray errorContent);
+            const QString& errorString,
+            const QByteArray& errorContent);
 
   protected:
     template<typename S>

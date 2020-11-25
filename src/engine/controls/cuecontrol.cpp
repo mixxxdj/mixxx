@@ -59,7 +59,7 @@ inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
 
 } // namespace
 
-CueControl::CueControl(QString group,
+CueControl::CueControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pConfig(pConfig),
@@ -329,7 +329,7 @@ void CueControl::createControls() {
     }
 }
 
-void CueControl::attachCue(CuePointer pCue, HotcueControl* pControl) {
+void CueControl::attachCue(const CuePointer& pCue, HotcueControl* pControl) {
     VERIFY_OR_DEBUG_ASSERT(pControl) {
         return;
     }
@@ -1991,7 +1991,7 @@ double HotcueControl::getPosition() const {
     return m_hotcuePosition->get();
 }
 
-void HotcueControl::setCue(CuePointer pCue) {
+void HotcueControl::setCue(const CuePointer& pCue) {
     setPosition(pCue->getPosition());
     setColor(pCue->getColor());
     // set pCue only if all other data is in place

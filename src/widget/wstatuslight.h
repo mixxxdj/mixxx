@@ -45,8 +45,10 @@ class WStatusLight : public WWidget  {
     void paintEvent(QPaintEvent * /*unused*/) override;
 
   private:
-    void setPixmap(int iState, PixmapSource source,
-                   Paintable::DrawMode mode, double scaleFactor);
+    void setPixmap(int iState,
+            const PixmapSource& source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
     void setNoPos(int iNoPos);
 
     // Current position

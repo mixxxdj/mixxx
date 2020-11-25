@@ -27,8 +27,7 @@ class CoverArtDelegate : public TableItemDelegate {
 
   signals:
     // Sent when rows need to be refreshed
-    void rowsChanged(
-            QList<int> rows);
+    void rowsChanged(const QList<int>& rows);
 
   public slots:
     // Advise the delegate to temporarily inhibit lazy loading

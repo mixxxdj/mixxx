@@ -45,6 +45,10 @@ else()
   set(LLVM_CLANG false)
 endif()
 
+if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.14)
+  add_compile_options(-fno-aligned-allocation)
+endif()
+
 # CMake implicitly sets the variable MSVC to true for Microsoft
 # Visual C++ or another compiler simulating Visual C++.
 # https://cmake.org/cmake/help/latest/variable/MSVC.html
@@ -1074,16 +1078,11 @@ if (APPLE)
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
-    set(MACOS_BUNDLE_MINOSVERSION "10.12.0")
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
     )
-  else()
-    get_filename_component(QT_PLUGIN_DIR "${Qt5_DIR}/../../../plugins/" ABSOLUTE)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/run-mixxx.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh" @ONLY)
-    execute_process(COMMAND chmod +x "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh")
   endif()
 else()
     include(InstallRequiredSystemLibraries)

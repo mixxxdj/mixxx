@@ -18,7 +18,7 @@ mixxx::Logger kLogger("CachingReaderWorker");
 } // anonymous namespace
 
 CachingReaderWorker::CachingReaderWorker(
-        QString group,
+        const QString& group,
         FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
         : m_group(group),

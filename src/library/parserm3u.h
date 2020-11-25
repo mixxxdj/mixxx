@@ -27,7 +27,7 @@ public:
     ParserM3u();
     ~ParserM3u();
     /**Overwriting function parse in class Parser**/
-    QList<QString> parse(QString);
+    QList<QString> parse(const QString&);
     //Playlist Export
     static bool writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath, bool useUtf8);
     static bool writeM3UFile(const QString &file, const QList<QString> &items, bool useRelativePath);

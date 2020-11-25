@@ -107,7 +107,7 @@ QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
 
 inline QScreen* getPrimaryScreen() {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
+    QGuiApplication* app = qobject_cast<QGuiApplication*>(QCoreApplication::instance());
     VERIFY_OR_DEBUG_ASSERT(app) {
         qWarning() << "Unable to get applications QCoreApplication instance, "
                       "cannot determine primary screen!";

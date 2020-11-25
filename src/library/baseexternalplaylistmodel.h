@@ -22,7 +22,7 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
 
     ~BaseExternalPlaylistModel() override;
 
-    void setPlaylist(QString path_name);
+    void setPlaylist(const QString& path_name);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
