@@ -25,7 +25,13 @@ var BCR2000 = new components.extension.GenericMidiController({
                 deckNumbers: [1],
                 components: [
                     {
-                        type: e.ShiftButton, options: {midi: [cc, p.buttonRow1[3]], target: this}
+                        type: e.ShiftButton, options:
+                        {
+                            midi: [cc, p.buttonRow1[3]],
+                            group: "[Controls]",
+                            key: "touch_shift",
+                            target: this
+                        }
                     },
                     {
                         type: e.RangeAwareEncoder, options: {
@@ -97,7 +103,13 @@ var BCR2000 = new components.extension.GenericMidiController({
                 deckNumbers: [2],
                 components: [
                     {
-                        type: e.ShiftButton, options: {midi: [cc, p.buttonRow1[7]], target: this}
+                        type: e.ShiftButton, options:
+                        {
+                            midi: [cc, p.buttonRow1[7]],
+                            group: "[Controls]",
+                            key: "touch_shift",
+                            target: this
+                        }
                     },
                     {
                         type: e.RangeAwareEncoder, options: {
