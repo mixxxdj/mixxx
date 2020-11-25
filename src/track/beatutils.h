@@ -37,6 +37,9 @@ class BeatUtils {
         return bpm;
     }
 
+    static double isNearInteger(double bpm, const double epsilon, const double minBPM, const double maxBPM) {
+        return bpm >= minBPM && bpm <= maxBPM && fabs(bpm - round(bpm)) <= epsilon;
+    };
 
     /*
      * This method detects the BPM given a set of beat positions.

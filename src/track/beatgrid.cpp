@@ -355,7 +355,12 @@ void BeatGrid::scale(enum BPMScale scale) {
         DEBUG_ASSERT(!"scale value invalid");
         return;
     }
-    setBpm(bpm);
+    double rounded = round(bpm * 100) / 100;
+    if (fabs(rounded - bpm) < 0.001) {
+        setBpm(rounded);
+    } else {
+        setBpm(bpm);
+    }
 }
 
 void BeatGrid::setBpm(double dBpm) {

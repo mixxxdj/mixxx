@@ -28,6 +28,8 @@ const double kCorrectBeatLocalBpmEpsilon = 0.05; //0.2;
 const int kHistogramDecimalPlaces = 2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
+const double k23Epsilon = 0.1;
+const double kRoundFactor = 0.05;
 
 void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
     if (!sDebug) {
@@ -240,79 +242,122 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
      * for BPM error correction.
      */
 
-     double perfect_bpm = 0;
-     double firstCorrectBeatSample = beats.first();
-     bool foundFirstCorrectBeat = false;
+    double perfect_bpm = 0;
+    double firstCorrectBeatSample = beats.first();
+    bool foundFirstCorrectBeat = false;
 
-     int counter = 0;
-     int perfectBeats = 0;
-     for (int i = N; i < beats.size(); i += 1) {
-         // get start and end sample of the beats
-         double beat_start = beats.at(i-N);
-         double beat_end = beats.at(i);
+    int counter = 0;
+    int perfectBeats = 0;
+    for (int i = N; i < beats.size(); i += 1) {
+        // get start and end sample of the beats
+        double beat_start = beats.at(i-N);
+        double beat_end = beats.at(i);
 
-         // Time needed to count a bar (N beats)
-         double time = (beat_end - beat_start) / SampleRate;
-         if (time == 0) continue;
-         double local_bpm = 60.0 * N / time;
-         // round BPM to have two decimal places
-         local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
+        // Time needed to count a bar (N beats)
+        double time = (beat_end - beat_start) / SampleRate;
+        if (time == 0) continue;
+        double local_bpm = 60.0 * N / time;
+        // round BPM to have two decimal places
+        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
 
-         //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
-         if (!foundFirstCorrectBeat &&
-             filtered_bpm_frequency_table.contains(local_bpm) &&
-             fabs(local_bpm - filterWeightedAverageBpm) < BPM_ERROR) {
-             firstCorrectBeatSample = beat_start;
-             foundFirstCorrectBeat = true;
-             if (sDebug) {
-                 qDebug() << "Beat #" << (i - N)
-                          << "is considered as reference beat with BPM:"
-                          << local_bpm;
-             }
-         }
-         if (foundFirstCorrectBeat) {
-             if (counter == 0) {
-                 counter = N;
-             } else {
-                 counter += 1;
-             }
-             double time2 = (beat_end - firstCorrectBeatSample) / SampleRate;
-             double correctedBpm = 60 * counter / time2;
+        //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
+        if (!foundFirstCorrectBeat &&
+            filtered_bpm_frequency_table.contains(local_bpm) &&
+            fabs(local_bpm - filterWeightedAverageBpm) < BPM_ERROR) {
+            firstCorrectBeatSample = beat_start;
+            foundFirstCorrectBeat = true;
+            if (sDebug) {
+                qDebug() << "Beat #" << (i - N)
+                        << "is considered as reference beat with BPM:"
+                        << local_bpm;
+            }
+        }
+        if (foundFirstCorrectBeat) {
+            if (counter == 0) {
+                counter = N;
+            } else {
+                counter += 1;
+            }
+            double time2 = (beat_end - firstCorrectBeatSample) / SampleRate;
+            double correctedBpm = 60 * counter / time2;
 
-             if (fabs(correctedBpm - filterWeightedAverageBpm) <= BPM_ERROR) {
-                 perfect_bpm += correctedBpm;
-                 ++perfectBeats;
-                 if (sDebug) {
-                     qDebug() << "Beat #" << (i-N)
-                              << "is considered as correct -->BPM improved to:"
-                              << correctedBpm;
-                 }
-             }
-         }
-     }
+            if (fabs(correctedBpm - filterWeightedAverageBpm) <= BPM_ERROR) {
+                perfect_bpm += correctedBpm;
+                ++perfectBeats;
+                if (sDebug) {
+                    qDebug() << "Beat #" << (i-N)
+                            << "is considered as correct -->BPM improved to:"
+                            << correctedBpm;
+                }
+            }
+        }
+    }
 
-     const double perfectAverageBpm = perfectBeats > 0 ?
-             perfect_bpm / perfectBeats : filterWeightedAverageBpm;
+    double perfectAverageBpm = perfectBeats > 0 ?
+            perfect_bpm / perfectBeats : filterWeightedAverageBpm;
 
-     // Round values that are within BPM_ERROR of a whole number.
-     const double rounded_bpm = floor(perfectAverageBpm + 0.5);
-     const double bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
-     bool perform_rounding = (bpm_diff <= BPM_ERROR);
+    bool perform_rounding;
+    double bpm_diff;
+    double rounded_bpm;
+    // test if 2/3 or 3/2 creates a bpm which is a whole number in reason
+    const bool near_integer = fabs(round(perfectAverageBpm) - perfectAverageBpm) <= kRoundFactor;
+
+    if (!near_integer) {
+        const double bpm_32 = perfectAverageBpm * 3.0/2.0;
+        const double bpm_23 = perfectAverageBpm * 2.0/3.0;
+        const double bpm_21 = perfectAverageBpm * 2.0;
+
+        if(isNearInteger(bpm_32, k23Epsilon, min_bpm, max_bpm)) {
+            // test 3/2 bpm e.g 96.666 -> 145
+            rounded_bpm = round(bpm_32);
+            bpm_diff = fabs(bpm_32 - rounded_bpm);
+            perform_rounding = true;
+            qDebug() << "Adjusting BPM: " << (perfectAverageBpm)
+                                << " looks like:"
+                                << rounded_bpm;
+        } else if (isNearInteger(bpm_23, k23Epsilon, min_bpm, max_bpm)) {
+            // test 2/3 bpm e.g 184.5 -> 123
+            rounded_bpm = round(bpm_23);
+            bpm_diff = fabs(bpm_23 - rounded_bpm);
+            perform_rounding = true;
+            qDebug() << "Adjusting BPM: " << (perfectAverageBpm)
+                                << " looks like:"
+                                << rounded_bpm;
+        } else if (isNearInteger(bpm_21, k23Epsilon, min_bpm, max_bpm)) {
+            // double if that's round 50.5 -> 101 bpm
+            rounded_bpm = round(bpm_23);
+            bpm_diff = fabs(bpm_23 - rounded_bpm);
+            perform_rounding = true;
+            qDebug() << "Adjusting BPM: " << (perfectAverageBpm)
+                                << " looks like:"
+                                << rounded_bpm;
+        } else {
+            rounded_bpm = floor(perfectAverageBpm + 0.5);
+            bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
+            perform_rounding = (bpm_diff <= BPM_ERROR);
+        }
+    } else {
+        // Round values that are within BPM_ERROR of a whole number.
+        rounded_bpm = floor(perfectAverageBpm + 0.5);
+        bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
+        perform_rounding = (bpm_diff <= BPM_ERROR);
+    }
 
      // Finally, restrict the BPM to be within min_bpm and max_bpm.
-     const double maybeRoundedBpm = perform_rounding ? rounded_bpm : perfectAverageBpm;
-     const double constrainedBpm = constrainBpm(maybeRoundedBpm, min_bpm, max_bpm, false);
+    const double maybeRoundedBpm = perform_rounding ? rounded_bpm : perfectAverageBpm;
 
-     if (sDebug) {
-         qDebug() << "SampleMedianBpm=" << median;
-         qDebug() << "FilterWeightedAverageBpm=" << filterWeightedAverageBpm;
-         qDebug() << "Perfect BPM=" << perfectAverageBpm;
-         qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
-         qDebug() << "Rounded difference=" << bpm_diff;
-         qDebug() << "Perform rounding=" << perform_rounding;
-         qDebug() << "Constrained to Range [" << min_bpm << "," << max_bpm << "]=" << constrainedBpm;
-     }
-     return constrainedBpm;
+    const double constrainedBpm = constrainBpm(maybeRoundedBpm, min_bpm, max_bpm, false);
+
+    if (sDebug) {
+        qDebug() << "SampleMedianBpm=" << median;
+        qDebug() << "FilterWeightedAverageBpm=" << filterWeightedAverageBpm;
+        qDebug() << "Perfect BPM=" << perfectAverageBpm;
+        qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
+        qDebug() << "Rounded difference=" << bpm_diff;
+        qDebug() << "Perform rounding=" << perform_rounding;
+        qDebug() << "Constrained to Range [" << min_bpm << "," << max_bpm << "]=" << constrainedBpm;
+    }
+    return constrainedBpm;
 }
 
 double BeatUtils::calculateOffset(const QVector<double>& beats1,
