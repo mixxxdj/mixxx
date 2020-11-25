@@ -235,7 +235,7 @@ jobs:
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
-      run: cpack -G ${{ matrix.cpack_generator }}
+      run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: cmake_build
 
     - name: "[macOS] Sign Package"
