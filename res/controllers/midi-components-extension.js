@@ -848,7 +848,7 @@
             ].forEach(function(context) {
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
-                        var implementation = context.factory(definition);
+                        var implementation = context.factory.call(this, definition);
                         target.push(implementation);
                         this.registerComponents(layerManager, definition.components, implementation);
                     }, this);
