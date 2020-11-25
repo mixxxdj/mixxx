@@ -42,6 +42,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "notificationmanager.h"
 #include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/launchimage.h"
@@ -324,6 +325,8 @@ MixxxMainWindow::MixxxMainWindow(
             &PlayerInfo::currentPlayingDeckChanged,
             this,
             &MixxxMainWindow::slotChangedPlayingDeck);
+
+    m_pCoreServices->getNotificationManager()->notify(new mixxx::Notification("Mixxx started!"));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -1023,6 +1026,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
             &m_skinCreatedControls,
             m_pCoreServices->getKeyboardEventFilter().get(),
             m_pCoreServices->getPlayerManager().get(),
+            m_pCoreServices->getNotificationManager().get(),
             m_pCoreServices->getControllerManager().get(),
             m_pCoreServices->getLibrary().get(),
             m_pCoreServices->getVinylControlManager().get(),

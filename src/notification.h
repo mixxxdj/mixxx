@@ -33,19 +33,6 @@ class Notification : public QObject {
     QString m_text;
 };
 
-class NotificationPointer : public std::shared_ptr<Notification> {
-  public:
-    NotificationPointer() = default;
-    explicit NotificationPointer(Notification* pNotification)
-            : std::shared_ptr<Notification>(pNotification, deleteLater) {
-    }
-
-  private:
-    static void deleteLater(Notification* pNotification) {
-        if (pNotification) {
-            pNotification->deleteLater();
-        }
-    }
-};
+typedef Notification* NotificationPointer;
 
 } // namespace mixxx

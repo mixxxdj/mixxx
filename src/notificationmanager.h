@@ -20,15 +20,14 @@ class NotificationManager : public QObject {
     ~NotificationManager() = default;
 
     void notify(NotificationPointer pNotification);
-    NotificationPointer notify(const QString& text,
-            NotificationFlags flags = NotificationFlag::Default);
 
   private slots:
     void slotUpdateNotifications();
 
   private:
     QTimer m_timer;
-    QMultiMap<QDateTime, NotificationPointer> m_activeNotifications;
+    QMultiMap<QDateTime, NotificationPointer> m_timedNotifications;
+    QList<NotificationPointer> m_stickyNotifications;
     QList<NotificationPointer> m_inactiveNotifications;
     QMutex m_mutex;
 };

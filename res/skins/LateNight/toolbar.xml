@@ -153,6 +153,23 @@
 
       <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
+      <NotificationButton>
+        <TooltipId>notifications</TooltipId>
+        <ObjectName>NotificationButton</ObjectName>
+        <MinimumSize>26,26</MinimumSize>
+        <MaximumSize>26,26</MaximumSize>
+        <Text>N</Text>
+        <SizePolicy>me,f</SizePolicy>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_embedded_square.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_embedded_square_active.svg</Pressed>
+        </State>
+      </NotificationButton>
+
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+
       <Label>
         <ObjectName>ToolbarLogo</ObjectName>
         <Size>74f,24f</Size>

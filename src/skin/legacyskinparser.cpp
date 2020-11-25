@@ -20,6 +20,7 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
+#include "notificationmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/colorschemeparser.h"
 #include "skin/launchimage.h"
@@ -53,6 +54,7 @@
 #include "widget/wlabel.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wnotificationbutton.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
@@ -156,6 +158,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pSkinCreatedControls(nullptr),
           m_pKeyboard(nullptr),
           m_pPlayerManager(nullptr),
+          m_pNotificationManager(nullptr),
           m_pControllerManager(nullptr),
           m_pLibrary(nullptr),
           m_pVCManager(nullptr),
@@ -168,6 +171,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         QSet<ControlObject*>* pSkinCreatedControls,
         KeyboardEventFilter* pKeyboard,
         PlayerManager* pPlayerManager,
+        mixxx::NotificationManager* pNotificationManager,
         ControllerManager* pControllerManager,
         Library* pLibrary,
         VinylControlManager* pVCMan,
@@ -177,6 +181,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
+          m_pNotificationManager(pNotificationManager),
           m_pControllerManager(pControllerManager),
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
@@ -510,6 +515,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
         result = wrapWidget(parseHotcueButton(node));
+    } else if (nodeName == "NotificationButton") {
+        result = wrapWidget(parseNotificationButton(node));
     } else if (nodeName == "ComboBox") {
         result = wrapWidget(parseStandardWidget<WComboBox>(node));
     } else if (nodeName == "Overview") {
@@ -1603,6 +1610,15 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     pWidget->installEventFilter(m_pKeyboard);
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parseNotificationButton(const QDomElement& element) {
+    WNotificationButton* pWidget = new WNotificationButton(m_pNotificationManager, m_pParent);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
     pWidget->Init();
     return pWidget;
 }
