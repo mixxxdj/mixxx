@@ -359,7 +359,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
             if (m_pSidebarWidget) {
                 // FIXME: this does not scroll to the correct position for some reason
                 nextIndex = indexFromPlaylistId(nextId);
-                m_pSidebarWidget->selectIndex(nextIndex);
+                m_pSidebarWidget->selectChildIndex(nextIndex);
             }
         }
     }

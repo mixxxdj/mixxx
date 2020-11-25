@@ -215,17 +215,27 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     pModel->select(index, QItemSelectionModel::Select);
     setSelectionModel(pModel);
 
-//FIXME(XXX): use expandRecursively when
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    QModelIndex parentIndex = index.parent();
+    scrollTo(index);
+}
+
+/// Selects a child index from a feature and ensures visibility
+void WLibrarySidebar::selectChildIndex(const QModelIndex& index) {
+    auto pModel = new QItemSelectionModel(model());
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        qDebug() << "model() is not SidebarModel";
+        return;
+    }
+    QModelIndex translated = sidebarModel->translateChildIndex(index);
+    pModel->select(index, QItemSelectionModel::Select);
+    setSelectionModel(pModel);
+
+    QModelIndex parentIndex = translated.parent();
     if (parentIndex.isValid()) {
         expand(parentIndex);
         parentIndex = parentIndex.parent();
     }
-#else
-    expandRecursively(index);
-#endif
-    scrollTo(index);
+    scrollTo(translated, PositionAtCenter);
 }
 
 bool WLibrarySidebar::event(QEvent* pEvent) {

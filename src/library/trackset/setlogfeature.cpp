@@ -341,7 +341,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
                     reloadChildModel(previousPlaylistId); // For moving selection
                     emit showTrackModel(m_pPlaylistTableModel);
-                    emit activatePlaylist(previousPlaylistId);
+                    activatePlaylist(previousPlaylistId);
                 }
             }
         }
