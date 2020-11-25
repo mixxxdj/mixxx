@@ -78,6 +78,7 @@ jobs:
             cp *.deb "/artifacts/"
             echo "Produced artifact ${artifact_name} at /artifacts/"
             ccache -s
+            ctest --timeout 45
 
       - name: "Deploy artifacts"
         uses: actions/upload-artifact@v2
