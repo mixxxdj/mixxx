@@ -9,6 +9,9 @@
 #include "control/controlproxy.h"
 #include "util/sandbox.h"
 
+namespace {
+const bool kDefaultCueEnabled = true;
+} // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -69,8 +72,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     loadMetaData();
 
     // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -173,8 +176,8 @@ void DlgPrefRecord::slotUpdate()
     loadMetaData();
 
      // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -199,8 +202,7 @@ void DlgPrefRecord::slotResetToDefaults()
 
     // 4GB splitting is the default
     comboBoxSplitting->setCurrentIndex(4);
-    CheckBoxRecordCueFile->setChecked(false);
-
+    CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 }
 
 
