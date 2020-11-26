@@ -484,7 +484,9 @@
      */
     var DirectionEncoder = function(options) {
         components.Encoder.call(this, options);
-        this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
+        if (this.group && this.inKey) { // undefined when called for prototype creation
+            this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
+        }
     };
     DirectionEncoder.prototype = new components.Encoder({
         min: 0,
