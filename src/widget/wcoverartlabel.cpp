@@ -50,7 +50,7 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
 WCoverArtLabel::~WCoverArtLabel() = default;
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
-                                 QPixmap px) {
+        const QPixmap& px) {
     m_pCoverMenu->setCoverArt(coverInfo);
     if (px.isNull()) {
         m_loadedCover = px;

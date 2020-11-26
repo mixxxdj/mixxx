@@ -47,7 +47,7 @@
         </Children>
       </WidgetGroup><!-- 1 / Master / 2 -->
 
-      <WidgetGroup><!-- 3 / (Master) / 4 -->
+      <WidgetGroup><!-- 3 / (Main) / 4 -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
@@ -69,9 +69,10 @@
             <Children>
               <WidgetGroup>
                 <Layout>stacked</Layout>
-                <Size>15f,96f</Size>
+                <Size>14f,96f</Size>
                 <Children>
                   <WidgetGroup>
+                    <!-- <TooltipId>master_VuMeter</TooltipId> -->
                     <ObjectName>VuMasterCover</ObjectName>
                   </WidgetGroup>
                   <!-- Unfortnately we can load a Singleton only once,
@@ -97,7 +98,7 @@
           <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- 3 / dimmed Master / 4 -->
+      </WidgetGroup><!-- 3 / (Main) / 4 -->
 
     </Children>
     <Connection>

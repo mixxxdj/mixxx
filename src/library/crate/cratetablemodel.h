@@ -19,7 +19,7 @@ class CrateTableModel final : public BaseSqlTableModel {
         return m_selectedCrate;
     }
 
-    bool addTrack(const QModelIndex &index, QString location);
+    bool addTrack(const QModelIndex& index, const QString& location);
 
     // From TrackModel
     bool isColumnInternal(int column) final;

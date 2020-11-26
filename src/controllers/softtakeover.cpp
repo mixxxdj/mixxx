@@ -32,7 +32,7 @@ SoftTakeoverCtrl::~SoftTakeoverCtrl() {
 }
 
 void SoftTakeoverCtrl::enable(ControlObject* control) {
-    ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(control);
+    ControlPotmeter* cpo = qobject_cast<ControlPotmeter*>(control);
     if (cpo == NULL) {
         // softtakecover works only for continuous ControlPotmeter based COs
         return;

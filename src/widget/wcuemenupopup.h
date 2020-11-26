@@ -23,7 +23,7 @@ class WCueMenuPopup : public QWidget {
         delete m_pDeleteCue;
     }
 
-    void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
+    void setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue);
 
     void setColorPalette(const ColorPalette& palette) {
         if (m_pColorPicker != nullptr) {
@@ -32,7 +32,7 @@ class WCueMenuPopup : public QWidget {
     }
 
     void popup(const QPoint& p) {
-        auto parentWidget = static_cast<QWidget*>(parent());
+        auto parentWidget = qobject_cast<QWidget*>(parent());
         QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
         move(topLeft);
         show();

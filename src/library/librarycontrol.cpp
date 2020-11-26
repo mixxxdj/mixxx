@@ -363,7 +363,7 @@ void LibraryControl::searchboxWidgetDeleted() {
     m_pSearchbox = nullptr;
 }
 
-void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
+void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
     if (!m_pLibraryWidget) {
         return;
     }
@@ -643,7 +643,8 @@ void LibraryControl::slotGoToItem(double v) {
         // expanding those root items via controllers is considered dispensable
         // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
-            return setLibraryFocus();
+            setLibraryFocus();
+            return;
         } else {
             // Otherwise toggle the sidebar item expanded state
             slotToggleSelectedSidebarItem(v);
@@ -653,7 +654,8 @@ void LibraryControl::slotGoToItem(double v) {
     // Load current track if a LibraryView object has focus
     LibraryView* activeView = m_pLibraryWidget->getActiveView();
     if (activeView && activeView->hasFocus()) {
-        return activeView->loadSelectedTrack();
+        activeView->loadSelectedTrack();
+        return;
     }
 
     // Clear the search if the searchbox has focus

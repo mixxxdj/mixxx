@@ -6,7 +6,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
-ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)
+ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
     m_pCOBeatActive->set(0.0);

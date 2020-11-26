@@ -31,9 +31,8 @@ TaskMonitor::~TaskMonitor() {
 
 Task* TaskMonitor::senderTask() const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    auto* pTask = static_cast<Task*>(sender());
+    auto* pTask = qobject_cast<Task*>(sender());
     DEBUG_ASSERT(pTask);
-    DEBUG_ASSERT(dynamic_cast<Task*>(sender()));
     return pTask;
 }
 

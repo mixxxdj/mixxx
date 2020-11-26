@@ -19,7 +19,7 @@ class WCoverArtLabel : public QLabel {
     explicit WCoverArtLabel(QWidget* parent = nullptr);
     ~WCoverArtLabel() override; // Verifies that the base destructor is virtual
 
-    void setCoverArt(const CoverInfo& coverInfo, QPixmap px);
+    void setCoverArt(const CoverInfo& coverInfo, const QPixmap& px);
     void loadTrack(TrackPointer pTrack);
 
   signals:

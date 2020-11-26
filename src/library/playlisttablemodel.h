@@ -32,7 +32,7 @@ class PlaylistTableModel final : public BaseSqlTableModel {
     CapabilitiesFlags getCapabilities() const final;
 
   private slots:
-    void playlistsChanged(QSet<int> playlistIds);
+    void playlistsChanged(const QSet<int>& playlistIds);
 
   private:
     void initSortColumnMapping() override;

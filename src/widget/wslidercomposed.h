@@ -46,12 +46,12 @@ class WSliderComposed : public WWidget  {
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setSliderPixmap(
-            PixmapSource sourceSlider,
+            const PixmapSource& sourceSlider,
             Paintable::DrawMode drawMode,
             double scaleFactor);
     void setHandlePixmap(
             bool bHorizontal,
-            PixmapSource sourceHandle,
+            const PixmapSource& sourceHandle,
             Paintable::DrawMode mode,
             double scaleFactor);
     inline bool isHorizontal() const { return m_bHorizontal; };

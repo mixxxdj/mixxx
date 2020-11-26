@@ -46,10 +46,10 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
         return false;
     }
 
-    auto glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+    auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
         // Not a QGLWidget. We can simply use QWidget::isVisible.
-        auto qwidget = dynamic_cast<QWidget*>(pWaveformWidget->getWidget());
+        auto qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
 
@@ -711,8 +711,11 @@ void WaveformWidgetFactory::swap() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                QGLWidget* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
                 if (glw != nullptr) {
+                    if (glw->context() != QGLContext::currentContext()) {
+                        glw->makeCurrent();
+                    }
                     glw->swapBuffers();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();

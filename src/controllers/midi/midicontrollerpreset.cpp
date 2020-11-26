@@ -32,7 +32,7 @@ bool MidiControllerPreset::isMappable() const {
     return true;
 }
 
-void MidiControllerPreset::addInputMapping(uint16_t key, MidiInputMapping mapping) {
+void MidiControllerPreset::addInputMapping(uint16_t key, const MidiInputMapping& mapping) {
     m_inputMappings.insert(key, mapping);
     setDirty(true);
 }
@@ -56,12 +56,12 @@ void MidiControllerPreset::setInputMappings(
 }
 
 void MidiControllerPreset::addOutputMapping(
-        ConfigKey key, MidiOutputMapping mapping) {
+        const ConfigKey& key, const MidiOutputMapping& mapping) {
     m_outputMappings.insert(key, mapping);
     setDirty(true);
 }
 
-void MidiControllerPreset::removeOutputMapping(ConfigKey key) {
+void MidiControllerPreset::removeOutputMapping(const ConfigKey& key) {
     m_outputMappings.remove(key);
     setDirty(true);
 }

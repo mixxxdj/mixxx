@@ -23,8 +23,8 @@ class TrackDropTarget {
     }
 
   signals:
-    virtual void trackDropped(QString filename, QString group) = 0;
-    virtual void cloneDeck(QString sourceGroup, QString targetGroup) = 0;
+    virtual void trackDropped(const QString& filename, const QString& group) = 0;
+    virtual void cloneDeck(const QString& sourceGroup, const QString& targetGroup) = 0;
 };
 
 #endif // TRACKDROPTARGET

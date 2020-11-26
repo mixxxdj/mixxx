@@ -239,11 +239,11 @@ class SkinContext {
 
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
-    void defineSingleton(QString objectName, QWidget* widget) {
-        return m_pSharedState->singletons.insertSingleton(objectName, widget);
+    void defineSingleton(const QString& objectName, QWidget* widget) {
+        m_pSharedState->singletons.insertSingleton(objectName, widget);
     }
 
-    QWidget* getSingletonWidget(QString objectName) const {
+    QWidget* getSingletonWidget(const QString& objectName) const {
         return m_pSharedState->singletons.getSingletonWidget(objectName);
     }
 

@@ -24,14 +24,14 @@ class MidiControllerPreset : public ControllerPreset {
     virtual bool isMappable() const override;
 
     // Input mappings
-    void addInputMapping(uint16_t key, MidiInputMapping mapping);
+    void addInputMapping(uint16_t key, const MidiInputMapping& mapping);
     void removeInputMapping(uint16_t key);
     const QMultiHash<uint16_t, MidiInputMapping>& getInputMappings() const;
     void setInputMappings(const QMultiHash<uint16_t, MidiInputMapping>& mappings);
 
     // Output mappings
-    void addOutputMapping(ConfigKey key, MidiOutputMapping mapping);
-    void removeOutputMapping(ConfigKey key);
+    void addOutputMapping(const ConfigKey& key, const MidiOutputMapping& mapping);
+    void removeOutputMapping(const ConfigKey& key);
     const QMultiHash<ConfigKey, MidiOutputMapping>& getOutputMappings() const;
     void setOutputMappings(const QMultiHash<ConfigKey, MidiOutputMapping>& mappings);
 

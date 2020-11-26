@@ -116,14 +116,14 @@ class IAudioSourceReader {
     // empty the internal memory pointer of the returned buffer might
     // be null.
     virtual ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) = 0;
+            const WritableSampleFrames& sampleFrames) = 0;
 
     // The following function is required for accessing the protected
     // read function from siblings implementing this interface, e.g.
     // for proxies and adapters.
     static ReadableSampleFrames readSampleFramesClampedOn(
             IAudioSourceReader& that,
-            WritableSampleFrames sampleFrames) {
+            const WritableSampleFrames& sampleFrames) {
         return that.readSampleFramesClamped(sampleFrames);
     }
 };
@@ -311,10 +311,10 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     bool verifyReadable();
 
     ReadableSampleFrames readSampleFrames(
-            WritableSampleFrames sampleFrames);
+            const WritableSampleFrames& sampleFrames);
 
   protected:
-    explicit AudioSource(QUrl url);
+    explicit AudioSource(const QUrl& url);
 
     bool initChannelCountOnce(audio::ChannelCount channelCount);
     bool initChannelCountOnce(SINT channelCount) {
@@ -385,7 +385,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
             const audio::SignalInfo& signalInfo);
 
     std::optional<WritableSampleFrames> clampWritableSampleFrames(
-            WritableSampleFrames sampleFrames) const;
+            const WritableSampleFrames& sampleFrames) const;
 
     audio::SignalInfo m_signalInfo;
 

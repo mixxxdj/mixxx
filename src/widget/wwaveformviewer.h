@@ -43,8 +43,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void leaveEvent(QEvent* /*unused*/) override;
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

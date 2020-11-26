@@ -403,6 +403,9 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
+    if (context() != QGLContext::currentContext()) {
+        makeCurrent();
+    }
     swapBuffers();
 }
 
