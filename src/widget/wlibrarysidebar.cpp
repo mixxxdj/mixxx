@@ -213,6 +213,9 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     auto pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
+    if (selectionModel()) {
+        selectionModel()->deleteLater();
+    }
     setSelectionModel(pModel);
     if (index.parent().isValid()) {
         expand(index.parent());
@@ -222,14 +225,17 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
 
 /// Selects a child index from a feature and ensures visibility
 void WLibrarySidebar::selectChildIndex(const QModelIndex& index) {
-    auto pModel = new QItemSelectionModel(model());
     SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
     VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
         qDebug() << "model() is not SidebarModel";
         return;
     }
     QModelIndex translated = sidebarModel->translateChildIndex(index);
-    pModel->select(index, QItemSelectionModel::Select);
+    auto pModel = new QItemSelectionModel(sidebarModel);
+    pModel->select(translated, QItemSelectionModel::Select);
+    if (selectionModel()) {
+        selectionModel()->deleteLater();
+    }
     setSelectionModel(pModel);
 
     QModelIndex parentIndex = translated.parent();
