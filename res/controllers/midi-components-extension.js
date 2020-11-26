@@ -81,6 +81,18 @@
     };
 
     /**
+     * Derive a prototype from a parent.
+     *
+     * @param {object} parent Constructor of parent whose prototype is used as base
+     * @param {object} members Own members that are not inherited
+     * @return {object} A new prototype based on parent with the given members
+     * @private
+     */
+    var deriveFrom = function(parent, members) {
+        return _.merge(Object.create(parent.prototype), members || {});
+    };
+
+    /**
      * Manage Components in named ComponentContainers.
      *
      * @constructor
@@ -252,7 +264,7 @@
         this.activeLayer = new components.ComponentContainer();
         components.Component.call(this, options);
     };
-    LayerManager.prototype = new components.Component({
+    LayerManager.prototype = deriveFrom(components.Component, {
         /** @private */
         defaultContainerName: "Default",
         /** @private */
@@ -446,7 +458,7 @@
     var ShiftButton = function(options) {
         components.Button.call(this, options);
     };
-    ShiftButton.prototype = new components.Button({
+    ShiftButton.prototype = deriveFrom(components.Button, {
         input: function(_channel, _control, value, _status, _group) {
             if (value) {
                 this.target.shift();
@@ -467,7 +479,7 @@
     var Trigger = function(options) {
         components.Component.call(this, options);
     };
-    Trigger.prototype = new components.Component({
+    Trigger.prototype = deriveFrom(components.Component, {
         inValueScale: function() { return true; },
     });
 
@@ -484,11 +496,9 @@
      */
     var DirectionEncoder = function(options) {
         components.Encoder.call(this, options);
-        if (this.group && this.inKey) { // undefined when called for prototype creation
-            this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
-        }
+        this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
     };
-    DirectionEncoder.prototype = new components.Encoder({
+    DirectionEncoder.prototype = deriveFrom(components.Encoder, {
         min: 0,
         inValueScale: function(value) {
             var direction = 0;
@@ -515,7 +525,7 @@
     var RangeAwareEncoder = function(options) {
         components.Encoder.call(this, options);
     };
-    RangeAwareEncoder.prototype = new components.Encoder({
+    RangeAwareEncoder.prototype = deriveFrom(components.Encoder, {
         outValueScale: function(value) {
             /* -bound..+bound => 0..1 */
             var normalizedValue = (value + this.bound) / (2 * this.bound);
@@ -541,7 +551,7 @@
         }
         components.Button.call(this, options);
     };
-    EnumToggleButton.prototype = new components.Button({
+    EnumToggleButton.prototype = deriveFrom(components.Button, {
         input: function(_channel, _control, _value, _status, _group) {
             this.inSetValue((this.inGetValue() + 1) % this.maxValue);
         }
@@ -565,7 +575,7 @@
         options.maxIndex = options.values.length - 1;
         components.Encoder.call(this, options);
     };
-    EnumEncoder.prototype = new components.Encoder({
+    EnumEncoder.prototype = deriveFrom(components.Encoder, {
         inValueScale: function(value) {
             var normalizedValue = value / this.max;
             var index = Math.round(normalizedValue * this.maxIndex);
@@ -599,7 +609,7 @@
         }
         EnumEncoder.call(this, options);
     };
-    LoopEncoder.prototype = new EnumEncoder({values: []});
+    LoopEncoder.prototype = deriveFrom(EnumEncoder);
 
     /**
      * An encoder that moves a loop.
@@ -621,7 +631,7 @@
         options.size = options.size || 0.5;
         DirectionEncoder.call(this, options);
     };
-    LoopMoveEncoder.prototype = new DirectionEncoder({
+    LoopMoveEncoder.prototype = deriveFrom(DirectionEncoder, {
         inValueScale: function(value) {
             var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
             var beats = this.sizeControl
@@ -644,7 +654,7 @@
         options.outKey = options.outKey || "loop_enabled";
         components.Button.call(this, options);
     };
-    BackLoopButton.prototype = new components.Button({
+    BackLoopButton.prototype = deriveFrom(components.Button, {
         input: function(_channel, _control, value, _status, group) {
             var engine = global.engine;
             var script = global.script;
@@ -688,7 +698,7 @@
         this.sync();
         components.Component.call(this, options);
     };
-    Publisher.prototype = new components.Component({
+    Publisher.prototype = deriveFrom(components.Component, {
         outValueScale: function(_value) {
             /*
              * We ignore the argument and use the parameter (0..1) instead because value scale is
@@ -743,13 +753,13 @@
         var ParameterKnob = function(parameterNumber) {
             components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
         };
-        ParameterKnob.prototype = new components.Pot({});
+        ParameterKnob.prototype = deriveFrom(components.Pot);
         var ParameterButton = function(parameterNumber) {
             components.Button.call(this, {
                 group: effectGroup, key: "button_parameter" + parameterNumber
             });
         };
-        ParameterButton.prototype = new components.Button({});
+        ParameterButton.prototype = deriveFrom(components.Button);
 
         this.enabled = new components.Button(
             {group: "[QuickEffectRack1_" + channelGroup + "_Effect1]", key: "enabled"});
@@ -762,7 +772,7 @@
             this.parameterButtons[i] = new ParameterButton(i);
         }
     };
-    EqualizerUnit.prototype = new components.ComponentContainer();
+    EqualizerUnit.prototype = deriveFrom(components.ComponentContainer);
 
     /**
      * A generic, configurable MIDI controller.
@@ -831,7 +841,7 @@
         this.config = options.configurationProvider.call(this);
         components.ComponentContainer.call(this, options);
     };
-    GenericMidiController.prototype = new components.ComponentContainer({
+    GenericMidiController.prototype = deriveFrom(components.ComponentContainer, {
 
         /**
          * Contains all decks and effect units so that a (un)shift operation
