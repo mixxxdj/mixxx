@@ -10,7 +10,7 @@
 #include "util/sandbox.h"
 
 namespace {
-const bool kDefaultCueEnabled = true;
+constexpr bool kDefaultCueEnabled = true;
 } // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
