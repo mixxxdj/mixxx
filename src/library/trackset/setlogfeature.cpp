@@ -342,6 +342,8 @@ void SetlogFeature::slotJoinWithPrevious() {
                     reloadChildModel(previousPlaylistId); // For moving selection
                     emit showTrackModel(m_pPlaylistTableModel);
                     activatePlaylist(previousPlaylistId);
+                    QModelIndex previousIndex = indexFromPlaylistId(previousPlaylistId);
+                    m_pSidebarWidget->selectChildIndex(previousIndex);
                 }
             }
         }
