@@ -1141,21 +1141,6 @@ install(
   FILES_MATCHING PATTERN
     "*.qm"
 )
-if(WIN32)
-install(
-  # I haven't seen a way to determine where the translations dir is, so I am making
-  # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
-  # which is what my configuration tells me.
-  DIRECTORY
-    "${Qt5_DIR}/../../../translations"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-  # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-  # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-  FILES_MATCHING REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-)
-endif()
 
 # Font files
 install(
@@ -1813,8 +1798,6 @@ elseif(WIN32)
       # New libraries required by Qt5.
       dwmapi      # qtwindows
       iphlpapi    # qt5network
-      #libEGL      # qt5opengl
-      #libGLESv2   # qt5opengl
       mpr         # qt5core
       netapi32    # qt5core
       userenv     # qt5core
@@ -1875,6 +1858,32 @@ elseif(WIN32)
   endif()
 endif()
 
+# Qt5_DIR is not set until now, so this cannot be moved above with the rest of the install commands
+if(WIN32)
+  install(
+    # I haven't seen a way to determine where the translations dir is, so I am making
+    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+    # which is what my configuration tells me.
+    DIRECTORY
+      "${Qt5_DIR}/../../../translations"
+    DESTINATION
+      "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
+
+  # ANGLE DLLs are dynamically linked even when the rest of Qt is built statically
+  install(
+    FILES
+        "${Qt5_DIR}/../../../bin/libEGL.dll"
+        "${Qt5_DIR}/../../../bin/libGLESv2.dll"
+    DESTINATION
+        "${MIXXX_INSTALL_DATADIR}"
+  )
+endif()
+
 # Queen Mary DSP
 add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/base/KaiserWindow.cpp
@@ -1916,6 +1925,7 @@ add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/maths/pca/pca.c
   # lib/qm-dsp/thread/Thread.cpp
 )
+
 target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
 if(UNIX)
   target_compile_definitions(QueenMaryDsp PRIVATE USE_PTHREADS)
