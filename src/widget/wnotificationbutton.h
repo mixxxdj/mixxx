@@ -18,10 +18,10 @@ class WNotificationButton : public WPushButton {
     Q_OBJECT
   public:
     WNotificationButton(mixxx::NotificationManager* pNotificationManager, QWidget* pParent);
-    void setup(const QDomNode& node, const SkinContext& context) override;
 
   protected:
-    void mousePressEvent(QMouseEvent* e) override;
+    void moveEvent(QMoveEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
   private slots:
     void slotShow();

@@ -965,6 +965,9 @@ void MixxxMainWindow::rebootMixxxView() {
     // safe geometry for later restoration
     const QRect initGeometry = geometry();
 
+    // Delay notification popups until skin if fully loaded
+    m_pCoreServices->getNotificationManager()->setInhibitNotifications(true);
+
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
     // that need to be deleted -- otherwise we can't tell what features the skin
@@ -1017,6 +1020,8 @@ void MixxxMainWindow::rebootMixxxView() {
         setGeometry(initGeometry);
     }
 
+    m_pCoreServices->getNotificationManager()->setInhibitNotifications(false);
+
     qDebug() << "rebootMixxxView DONE";
 }
 
@@ -1035,7 +1040,9 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     if (centralWidget() == m_pLaunchImage) {
         initializationProgressUpdate(100, "");
     }
+    m_pCoreServices->getNotificationManager()->setInhibitNotifications(false);
     emit skinLoaded();
+
     return m_pCentralWidget != nullptr;
 }
 

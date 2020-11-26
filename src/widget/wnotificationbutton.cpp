@@ -4,25 +4,33 @@
 #include <QStylePainter>
 #include <QtDebug>
 
+#include "notificationmanager.h"
+
 WNotificationButton::WNotificationButton(
         mixxx::NotificationManager* pNotificationManager, QWidget* pParent)
-        : WPushButton(pParent), m_pNotificationManager(pNotificationManager) {
-}
-
-void WNotificationButton::setup(const QDomNode& node, const SkinContext& context) {
-    // Setup parent class.
-    WPushButton::setup(node, context);
-
-    m_pNotificationMenuPopup = make_parented<WNotificationMenuPopup>(this);
+        : WPushButton(pParent),
+          m_pNotificationManager(pNotificationManager),
+          m_pNotificationMenuPopup(make_parented<WNotificationMenuPopup>(
+                  m_pNotificationManager, this)) {
+    connect(m_pNotificationManager,
+            &mixxx::NotificationManager::notificationAdded,
+            this,
+            &WNotificationButton::slotShow);
 }
 
 void WNotificationButton::slotShow() {
     m_pNotificationMenuPopup->popup(mapToGlobal(QPoint(0, height())));
 }
 
-void WNotificationButton::mousePressEvent(QMouseEvent* e) {
+void WNotificationButton::moveEvent(QMoveEvent* event) {
+    if (m_pNotificationMenuPopup->isVisible()) {
+        slotShow();
+    }
+
+    WPushButton::moveEvent(event);
+}
+void WNotificationButton::mousePressEvent(QMouseEvent* event) {
     slotShow();
 
-    // Pass all other press events to the base class.
-    WPushButton::mousePressEvent(e);
+    WPushButton::mousePressEvent(event);
 }

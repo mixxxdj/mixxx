@@ -13,7 +13,10 @@ constexpr int kAutoTimeoutMillis = 5000;
 
 namespace mixxx {
 
-NotificationManager::NotificationManager() {
+NotificationManager::NotificationManager()
+        : m_inhibitNotifications(false),
+          m_notificationsAddedWhileInhibited(false),
+          m_notificationsClosedWhileInhibited(false) {
     m_timer.setInterval(1000);
     connect(&m_timer, &QTimer::timeout, this, &NotificationManager::slotUpdateNotifications);
 };
@@ -27,7 +30,7 @@ void NotificationManager::notify(NotificationPointer pNotification) {
         m_timer.start();
     }
 
-    qWarning() << "New notification:" << pNotification->text();
+    qDebug() << "New notification:" << pNotification->text();
 
     QMutexLocker lock(&m_mutex);
     if (pNotification->flags().testFlag(NotificationFlag::AutoTimeout)) {
@@ -36,22 +39,36 @@ void NotificationManager::notify(NotificationPointer pNotification) {
     } else {
         m_stickyNotifications.prepend(pNotification);
     }
+
+    if (m_inhibitNotifications) {
+        m_notificationsAddedWhileInhibited = true;
+    } else {
+        emit notificationAdded();
+    }
 }
 
 void NotificationManager::slotUpdateNotifications() {
-    QDateTime currentDateTime = QDateTime::currentDateTime();
-
+    bool changed = false;
     auto it = m_timedNotifications.begin();
     while (it != m_timedNotifications.upperBound(QDateTime::currentDateTime())) {
         DEBUG_ASSERT(it.key().isValid());
 
-        qWarning() << "Notification timed out:" << it.value()->text();
+        qDebug() << "Notification timed out:" << it.value()->text();
         m_inactiveNotifications.prepend(it.value());
         it = m_timedNotifications.erase(it);
+        changed = true;
     }
 
     if (m_timedNotifications.isEmpty()) {
         m_timer.stop();
+    }
+
+    if (changed) {
+        if (m_inhibitNotifications) {
+            m_notificationsClosedWhileInhibited = true;
+        } else {
+            emit notificationClosed();
+        }
     }
 }
 

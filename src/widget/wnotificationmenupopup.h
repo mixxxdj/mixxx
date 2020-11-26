@@ -4,10 +4,15 @@
 
 #include "util/widgethelper.h"
 
+namespace mixxx {
+class NotificationManager;
+}
+
 class WNotificationMenuPopup : public QWidget {
     Q_OBJECT
   public:
-    WNotificationMenuPopup(QWidget* parent = nullptr);
+    WNotificationMenuPopup(mixxx::NotificationManager* pNotificationManager,
+            QWidget* parent = nullptr);
 
     ~WNotificationMenuPopup() {
     }
@@ -23,6 +28,12 @@ class WNotificationMenuPopup : public QWidget {
     void aboutToHide();
     void aboutToShow();
 
+  public slots:
+    void slotUpdateNotifications();
+
   protected:
     void closeEvent(QCloseEvent* event) override;
+
+  private:
+    mixxx::NotificationManager* m_pNotificationManager;
 };
