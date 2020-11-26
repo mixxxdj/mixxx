@@ -128,7 +128,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         menu.addAction(m_pDeletePlaylistAction);
         menu.addAction(m_pLockPlaylistAction);
     }
-    if (index.row() > 0) {
+    if (index.sibling(index.row() + 1, index.column()).isValid()) {
         // The very first setlog cannot be joint
         menu.addAction(m_pJoinWithPreviousAction);
     }
