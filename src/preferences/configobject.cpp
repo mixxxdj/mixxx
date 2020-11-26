@@ -237,10 +237,13 @@ bool ConfigObject<ValueType>::save() {
     }
 
     QFile oldConfig(m_filename);
-    if (!oldConfig.remove()) {
-        qWarning().nospace() << "Could not remove old config file: "
-                             << oldConfig.fileName() << ": " << oldConfig.errorString();
-        return false;
+    // Trying to remove a file that does not exist would fail
+    if (oldConfig.exists()) {
+        if (!oldConfig.remove()) {
+            qWarning().nospace() << "Could not remove old config file: "
+                                 << oldConfig.fileName() << ": " << oldConfig.errorString();
+            return false;
+        }
     }
     if (!tmpFile.rename(m_filename)) {
         qWarning().nospace() << "Could not rename tmp file to config file: "
