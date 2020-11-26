@@ -43,13 +43,13 @@ inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
-    HotcueControl(QString group, int hotcueNumber);
+    HotcueControl(const QString& group, int hotcueNumber);
     ~HotcueControl() override;
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
     double getPosition() const;
-    void setCue(CuePointer pCue);
+    void setCue(const CuePointer& pCue);
     void resetCue();
     void setPosition(double position);
     void setColor(mixxx::RgbColor::optional_t newColor);
@@ -120,8 +120,8 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(QString group,
-               UserSettingsPointer pConfig);
+    CueControl(const QString& group,
+            UserSettingsPointer pConfig);
     ~CueControl() override;
 
     void hintReader(HintVector* pHintList) override;
@@ -188,7 +188,7 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
-    void attachCue(CuePointer pCue, HotcueControl* pControl);
+    void attachCue(const CuePointer& pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void loadCuesFromTrack();
     double quantizeCuePoint(double position);

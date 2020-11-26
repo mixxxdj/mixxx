@@ -44,7 +44,7 @@ QtRGBWaveformWidget::~QtRGBWaveformWidget() {
 }
 
 void QtRGBWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void QtRGBWaveformWidget::paintEvent(QPaintEvent* event) {

@@ -39,6 +39,6 @@ void WRecordingDuration::slotRecordingInactive(bool isRecording) {
     }
 }
 
-void WRecordingDuration::refreshLabel(QString durationRecorded) {
+void WRecordingDuration::refreshLabel(const QString& durationRecorded) {
     setText(durationRecorded);
 }

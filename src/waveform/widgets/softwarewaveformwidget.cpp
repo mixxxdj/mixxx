@@ -32,7 +32,7 @@ SoftwareWaveformWidget::~SoftwareWaveformWidget() {
 }
 
 void SoftwareWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(this);
+    m_widget = this;
 }
 
 void SoftwareWaveformWidget::paintEvent(QPaintEvent* event) {

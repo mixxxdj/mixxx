@@ -1,0 +1,59 @@
+<Template>
+  <WidgetGroup>
+    <SizePolicy>me,i</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>LibraryContainer</ObjectName>
+        <SizePolicy>me,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Splitter>
+            <Size>me,me</Size>
+            <SplitSizes>1,6</SplitSizes>
+            <Collapsible>1,0</Collapsible>
+            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+            <Children>
+              <!-- Sidebar etc. -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:preview_deck.xml"/>
+
+                  <SearchBox></SearchBox>
+
+                  <WidgetGroup><Size>,5f</Size></WidgetGroup>
+
+                  <!-- Tree View | Cover Art -->
+                  <Splitter>
+                    <Size>e,me</Size>
+                    <SplitSizes>1,e</SplitSizes>
+                    <Collapsible>0,0</Collapsible>
+                    <Children>
+                      <LibrarySidebar></LibrarySidebar>
+                      <CoverArt>
+                        <MinimumSize>16,16</MinimumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Connection>
+                          <ConfigKey>[Library],show_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </CoverArt>
+                    </Children>
+                  </Splitter>
+
+                </Children>
+              </WidgetGroup><!-- Sidebar etc. -->
+
+              <Library>
+                <ShowButtonText>false</ShowButtonText>
+                <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+              </Library>
+
+            </Children>
+          </Splitter>
+        </Children>
+      </WidgetGroup><!-- LibraryContainer -->
+    </Children>
+  </WidgetGroup>
+</Template>

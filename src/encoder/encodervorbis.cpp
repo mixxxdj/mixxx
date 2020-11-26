@@ -217,7 +217,7 @@ void EncoderVorbis::initStream() {
     m_bStreamInitialized = true;
 }
 
-int EncoderVorbis::initEncoder(int samplerate, QString errorMessage) {
+int EncoderVorbis::initEncoder(int samplerate, QString& errorMessage) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode

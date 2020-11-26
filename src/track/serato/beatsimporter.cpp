@@ -10,7 +10,7 @@ SeratoBeatsImporter::SeratoBeatsImporter()
 }
 
 SeratoBeatsImporter::SeratoBeatsImporter(
-        QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers,
+        const QList<SeratoBeatGridNonTerminalMarkerPointer>& nonTerminalMarkers,
         SeratoBeatGridTerminalMarkerPointer pTerminalMarker)
         : BeatsImporter(),
           m_nonTerminalMarkers(nonTerminalMarkers),

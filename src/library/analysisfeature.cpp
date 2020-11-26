@@ -85,7 +85,7 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView,
             &DlgAnalysis::loadTrackToPlayer,
             this,
-            [=](TrackPointer track, QString group) {
+            [=](TrackPointer track, const QString& group) {
                 emit loadTrackToPlayer(track, group, false);
             });
     connect(m_pAnalysisView,
@@ -134,7 +134,7 @@ void AnalysisFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
-void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
+void AnalysisFeature::analyzeTracks(const QList<TrackId>& trackIds) {
     if (!m_pTrackAnalysisScheduler) {
         const int numAnalyzerThreads = numberOfAnalyzerThreads();
         kLogger.info()
@@ -229,13 +229,13 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
     emit analysisActive(false);
 }
 
-bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
+bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     QList<TrackId> trackIds = m_pLibrary->trackCollection().resolveTrackIdsFromUrls(urls,
             !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }
 
-bool AnalysisFeature::dragMoveAccept(QUrl url) {
+bool AnalysisFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url);
 }

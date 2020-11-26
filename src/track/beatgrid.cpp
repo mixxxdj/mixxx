@@ -129,7 +129,7 @@ QString BeatGrid::getSubVersion() const {
     return m_subVersion;
 }
 
-void BeatGrid::setSubVersion(QString subVersion) {
+void BeatGrid::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
 }
 

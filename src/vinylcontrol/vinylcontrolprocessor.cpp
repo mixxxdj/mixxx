@@ -153,7 +153,7 @@ void VinylControlProcessor::reloadConfig() {
     }
 }
 
-void VinylControlProcessor::onInputConfigured(AudioInput input) {
+void VinylControlProcessor::onInputConfigured(const AudioInput& input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -177,7 +177,7 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
     delete pCurrent;
 }
 
-void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
+void VinylControlProcessor::onInputUnconfigured(const AudioInput& input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -203,9 +203,9 @@ bool VinylControlProcessor::deckConfigured(int index) const {
     return m_processors[index] != NULL;
 }
 
-void VinylControlProcessor::receiveBuffer(AudioInput input,
-                                          const CSAMPLE* pBuffer,
-                                          unsigned int nFrames) {
+void VinylControlProcessor::receiveBuffer(const AudioInput& input,
+        const CSAMPLE* pBuffer,
+        unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";

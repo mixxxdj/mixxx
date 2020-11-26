@@ -40,7 +40,7 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
 void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     m_scaleFactor = context.getScaleFactor();
-    static_cast<WBeatLineEdit*>(lineEdit())->setScaleFactor(m_scaleFactor);
+    qobject_cast<WBeatLineEdit*>(lineEdit())->setScaleFactor(m_scaleFactor);
 }
 
 void WBeatSpinBox::stepBy(int steps) {

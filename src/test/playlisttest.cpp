@@ -9,7 +9,7 @@
 
 class DummyParser : public Parser {
   public:
-    QList<QString> parse(QString) override {
+    QList<QString> parse(const QString&) override {
         return QList<QString>();
     }
 

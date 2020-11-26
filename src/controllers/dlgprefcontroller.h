@@ -103,7 +103,7 @@ class DlgPrefController : public DlgPreferencePage {
     void enumeratePresets(const QString& selectedPresetPath);
     PresetInfo enumeratePresetsFromEnumerator(
             QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,
-            QIcon icon = QIcon());
+            const QIcon& icon = QIcon());
 
     void enableDevice();
     void disableDevice();

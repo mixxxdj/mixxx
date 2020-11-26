@@ -45,6 +45,10 @@ else()
   set(LLVM_CLANG false)
 endif()
 
+if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.14)
+  add_compile_options(-fno-aligned-allocation)
+endif()
+
 # CMake implicitly sets the variable MSVC to true for Microsoft
 # Visual C++ or another compiler simulating Visual C++.
 # https://cmake.org/cmake/help/latest/variable/MSVC.html
@@ -1074,16 +1078,11 @@ if (APPLE)
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
-    set(MACOS_BUNDLE_MINOSVERSION "10.12.0")
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
     )
-  else()
-    get_filename_component(QT_PLUGIN_DIR "${Qt5_DIR}/../../../plugins/" ABSOLUTE)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/run-mixxx.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh" @ONLY)
-    execute_process(COMMAND chmod +x "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh")
   endif()
 else()
     include(InstallRequiredSystemLibraries)
@@ -1131,21 +1130,6 @@ install(
   FILES_MATCHING PATTERN
     "*.qm"
 )
-if(WIN32)
-install(
-  # I haven't seen a way to determine where the translations dir is, so I am making
-  # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
-  # which is what my configuration tells me.
-  DIRECTORY
-    "${Qt5_DIR}/../../../translations"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-  # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-  # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-  FILES_MATCHING REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-)
-endif()
 
 # Font files
 install(
@@ -1545,8 +1529,8 @@ if(KEYFINDER)
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
     ExternalProject_Add(libKeyFinder
-      URL "https://github.com/ibsh/libKeyFinder/archive/v2.2.2.zip"
-      URL_HASH SHA256=f04ff63c9710d969e79b71bde18abd720e886f537951a1045cc50cb497a72492
+      URL "https://github.com/mixxxdj/libKeyFinder/archive/v2.2.3.zip"
+      URL_HASH SHA256=56887e7b51834223d4264f4ea9acf16f0b6a0c706c218478afbaf89ad1f9c6ea
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
@@ -1737,8 +1721,6 @@ elseif(WIN32)
       # New libraries required by Qt5.
       dwmapi      # qtwindows
       iphlpapi    # qt5network
-      #libEGL      # qt5opengl
-      #libGLESv2   # qt5opengl
       mpr         # qt5core
       netapi32    # qt5core
       userenv     # qt5core
@@ -1799,6 +1781,32 @@ elseif(WIN32)
   endif()
 endif()
 
+# Qt5_DIR is not set until now, so this cannot be moved above with the rest of the install commands
+if(WIN32)
+  install(
+    # I haven't seen a way to determine where the translations dir is, so I am making
+    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+    # which is what my configuration tells me.
+    DIRECTORY
+      "${Qt5_DIR}/../../../translations"
+    DESTINATION
+      "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
+
+  # ANGLE DLLs are dynamically linked even when the rest of Qt is built statically
+  install(
+    FILES
+        "${Qt5_DIR}/../../../bin/libEGL.dll"
+        "${Qt5_DIR}/../../../bin/libGLESv2.dll"
+    DESTINATION
+        "${MIXXX_INSTALL_DATADIR}"
+  )
+endif()
+
 # QtScriptByteArray
 add_library(QtScriptByteArray STATIC EXCLUDE_FROM_ALL
   lib/qtscript-bytearray/bytearrayclass.cpp
@@ -1850,6 +1858,7 @@ add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/maths/pca/pca.c
   # lib/qm-dsp/thread/Thread.cpp
 )
+
 target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
 if(UNIX)
   target_compile_definitions(QueenMaryDsp PRIVATE USE_PTHREADS)
@@ -1924,9 +1933,8 @@ else()
 endif()
 
 # TagLib
-find_package(Taglib REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${TAGLIB_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
+find_package(TagLib REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
 endif()

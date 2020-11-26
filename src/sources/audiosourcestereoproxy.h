@@ -27,7 +27,7 @@ class AudioSourceStereoProxy : public AudioSourceProxy {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames writableSampleFrames) override;
+            const WritableSampleFrames& writableSampleFrames) override;
 
   private:
     SampleBuffer m_tempSampleBuffer;

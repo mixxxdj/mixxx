@@ -1213,14 +1213,6 @@ WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox {
   color: #c2b3a5;
   }
-  WSearchLineEdit,
-  #LibraryBPMSpinBox,
-  #LibraryBPMButton::item,
-  #LibraryContainer QTableView,
-  #LibraryContainer QTextBrowser,
-  #LibraryContainer QTreeView {
-    selection-color: #c2b3a5;
-  }
   /* dim ivory / light brown */
   #Deck1 WStarRating, #DeckCompact1 WStarRating,
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
@@ -1464,8 +1456,8 @@ WEffectSelector,
   }
 
   #LibraryContainer QHeaderView {
-    border-bottom-right-radius: 1px solid #000; /*
-    outline: none;
+    border-bottom-right-radius: 1px solid #000;
+    outline: none; /*
     border-width: 1px 0px 1px 0px;
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 1 1 1;  */
   }
@@ -1476,8 +1468,8 @@ WEffectSelector,
   }
   #LibraryContainer QHeaderView::up-arrow,
   #LibraryContainer QHeaderView::down-arrow {
-    /* ToDo: restore image
     outline: none;
+    /* ToDo: restore image
     border-width: 1px 2px 1px 0px;
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
   }
@@ -2438,15 +2430,27 @@ WColorPicker QPushButton[checked="true"] {
 
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView { /*
-  border-top: 1px solid #0a0a0a;
-  border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #333,
-    stop:1 #444);
-  border-bottom: 1px solid #444;
-  border-left: 1px solid #0a0a0a; */
+#LibraryContainer QTreeView {
+  background-color: #0f0f0f;
   alternate-background-color: #0a0a0a;
+/* In selected library rows this sets the color of
+  * shapes in star rating delegate
+  * focus border of Cover Art and Color delegates
+   > See src/library/coverartdelegate.cpp: "option.palette.highlightedText().color();" */
+  selection-color: #fff;
+  /* background of Color delegate in selected row */
   selection-background-color: #2c454f;
+}
+/* Selected rows in Tree and Tracks table */
+#LibraryContainer QTreeView::item:selected,
+#LibraryContainer QTableView::item:selected,
+#LibraryBPMButton::item:selected {
+  color: #fff;
+  background-color: #2c454f;
+}
+#LibraryContainer QTreeView,
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
 }
 
 #LibraryContainer QTableView:focus,
@@ -2459,21 +2463,26 @@ WColorPicker QPushButton[checked="true"] {
   show-decoration-selected: 0;
 }
 
-/* selected items in Tree and Tracks table */
-#LibraryContainer QTreeView::item:selected,
-#LibraryContainer QTableView::item:selected,
-#LibraryBPMButton::item:selected {
-  color: #fff;
-  background-color: #2c454f;
+/* Use the native focus decoration */
+/* This is for all cells including Played and Location */
+#LibraryContainer QTableView,
+/* This is for the BPM cell */
+#LibraryContainer QTableView QCheckBox:focus {
+  outline: 1px solid #fff;
+}
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  qproperty-focusBorderColor: #fff;
 }
 
-/* checkbox in library "Played" column */
-#LibraryContainer QTableView::indicator {/*
-  This results in 10x10px + 1px border = 12x12px
+/* This is the only way to select the 'Played' checkbox.
+  Note that this also selects the BPM lock. */
+#LibraryContainer QTableView::indicator {
+/* This results in 10x10px + 1px border = 12x12px
   Omitting this definitions makes the checkbox grow to
-  12x12px + 1px border = 14x14px
-  which also miraculously makes the BPM icon grow to 14x14px
-  Neither checkbox nor BPM icon size have an effect on the size... */
+  12x12px + 1px border = 14x14px */
   width: 10px;
   height: 10px;
   /* border is added to size defined above */
@@ -2483,11 +2492,11 @@ WColorPicker QPushButton[checked="true"] {
   }
   #LibraryContainer QTableView::indicator:checked {
     image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
-    }
+  }
   #LibraryContainer QTableView::indicator:unchecked {
     image: none;
     border: 1px solid rgba(151,151,151,128);
-    }
+  }
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
@@ -2502,30 +2511,29 @@ WLibrary QLineEdit,
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/palemoon/buttons/btn__lib_bpm_locked_orange.svg);
+  image: url(skin:/palemoon/buttons/btn__lib_bpm_locked_blue.svg);
   }
 #LibraryBPMButton::indicator:unchecked {
   image: url(skin:/palemoon/buttons/btn__lib_bpm_unlocked_grey.svg);
   }
 /* BPM value */
-#LibraryBPMButton::item {
-  }
+#LibraryBPMButton::item {}
+/* BPM spinbox in edit mode */
 #LibraryBPMSpinBox {
   border-width: 1px 2px 1px 0px;
-}
-/* When activated, the left border of the spinbox shows an
-  artefact of the inactive BPM value. */
-#LibraryBPMSpinBox::up-button,
-#LibraryBPMSpinBox::down-button {
-  margin-right: 2px;  /*
-  background-color: #19272d;  */
   }
-  #LibraryBPMSpinBox::up-button {
-    image: url(skin:/palemoon/buttons/btn__lib_spinbox_up.svg) no-repeat center center;
-    }
+  /* When activated, the left border of the spinbox shows an
+    artefact of the inactive BPM value. A small margin eliminates that.*/
+  #LibraryBPMSpinBox::up-button,
   #LibraryBPMSpinBox::down-button {
-    image: url(skin:/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
+    margin-right: 2px;
     }
+    #LibraryBPMSpinBox::up-button {
+      image: url(skin:/palemoon/buttons/btn__lib_spinbox_up.svg) no-repeat center center;
+      }
+    #LibraryBPMSpinBox::down-button {
+      image: url(skin:/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
+      }
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
@@ -2886,8 +2894,8 @@ WEffectSelector::item,
     outline: none;
   }
   /* remove OS focus indicator from some buttons */
-  #LibraryBPMButton::item:selected,
   WLibrary QCheckBox,
+  #LibraryBPMButton::item:selected,
   WCueMenuPopup QPushButton:focus {
     outline: none;
   }

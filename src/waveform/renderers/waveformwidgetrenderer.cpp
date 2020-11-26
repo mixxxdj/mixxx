@@ -290,7 +290,7 @@ void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
 }
 
 void WaveformWidgetRenderer::drawTriangle(QPainter* painter,
-        QBrush fillColor,
+        const QBrush& fillColor,
         QPointF p0,
         QPointF p1,
         QPointF p2) {

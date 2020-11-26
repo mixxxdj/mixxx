@@ -42,9 +42,9 @@ class EngineSideChain : public QThread, public AudioDestination {
 
     // Thin wrapper around writeSamples that is used by SoundManager when receiving
     // from a sound card input instead of the engine
-    void receiveBuffer(AudioInput input,
-                       const CSAMPLE* pBuffer,
-                       unsigned int iFrames) override;
+    void receiveBuffer(const AudioInput& input,
+            const CSAMPLE* pBuffer,
+            unsigned int iFrames) override;
 
     // Thread-safe, blocking.
     void addSideChainWorker(SideChainWorker* pWorker);

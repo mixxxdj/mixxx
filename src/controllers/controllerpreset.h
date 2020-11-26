@@ -67,7 +67,7 @@ class ControllerPreset {
         return m_bDirty;
     }
 
-    inline void setDeviceId(const QString id) {
+    inline void setDeviceId(const QString& id) {
         m_deviceId = id;
         setDirty(true);
     }
@@ -76,7 +76,7 @@ class ControllerPreset {
         return m_deviceId;
     }
 
-    inline void setFilePath(const QString filePath) {
+    inline void setFilePath(const QString& filePath) {
         m_filePath = filePath;
         setDirty(true);
     }
@@ -89,7 +89,7 @@ class ControllerPreset {
         return QFileInfo(filePath()).absoluteDir();
     }
 
-    inline void setName(const QString name) {
+    inline void setName(const QString& name) {
         m_name = name;
         setDirty(true);
     }
@@ -98,7 +98,7 @@ class ControllerPreset {
         return m_name;
     }
 
-    inline void setAuthor(const QString author) {
+    inline void setAuthor(const QString& author) {
         m_author = author;
         setDirty(true);
     }
@@ -107,7 +107,7 @@ class ControllerPreset {
         return m_author;
     }
 
-    inline void setDescription(const QString description) {
+    inline void setDescription(const QString& description) {
         m_description = description;
         setDirty(true);
     }
@@ -116,7 +116,7 @@ class ControllerPreset {
         return m_description;
     }
 
-    inline void setForumLink(const QString forumlink) {
+    inline void setForumLink(const QString& forumlink) {
         m_forumlink = forumlink;
         setDirty(true);
     }
@@ -143,7 +143,7 @@ class ControllerPreset {
         return MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX + page + MIXXX_MANUAL_CONTROLLERMANUAL_SUFFIX;
     }
 
-    inline void setWikiLink(const QString wikilink) {
+    inline void setWikiLink(const QString& wikilink) {
         m_wikilink = wikilink;
         setDirty(true);
     }
@@ -152,7 +152,7 @@ class ControllerPreset {
         return m_wikilink;
     }
 
-    inline void setSchemaVersion(const QString schemaVersion) {
+    inline void setSchemaVersion(const QString& schemaVersion) {
         m_schemaVersion = schemaVersion;
         setDirty(true);
     }
@@ -161,7 +161,7 @@ class ControllerPreset {
         return m_schemaVersion;
     }
 
-    inline void setMixxxVersion(const QString mixxxVersion) {
+    inline void setMixxxVersion(const QString& mixxxVersion) {
         m_mixxxVersion = mixxxVersion;
         setDirty(true);
     }
@@ -170,7 +170,7 @@ class ControllerPreset {
         return m_mixxxVersion;
     }
 
-    inline void addProductMatch(QHash<QString,QString> match) {
+    inline void addProductMatch(const QHash<QString, QString>& match) {
         m_productMatches.append(match);
         setDirty(true);
     }
