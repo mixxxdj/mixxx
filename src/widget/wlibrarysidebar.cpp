@@ -214,7 +214,9 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     auto pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
     setSelectionModel(pModel);
-
+    if (index.parent().isValid()) {
+        expand(index.parent());
+    }
     scrollTo(index);
 }
 
@@ -231,7 +233,7 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index) {
     setSelectionModel(pModel);
 
     QModelIndex parentIndex = translated.parent();
-    if (parentIndex.isValid()) {
+    while (parentIndex.isValid()) {
         expand(parentIndex);
         parentIndex = parentIndex.parent();
     }
