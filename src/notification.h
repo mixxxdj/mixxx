@@ -1,4 +1,5 @@
 #pragma once
+#include <QDateTime>
 #include <QObject>
 #include <QString>
 #include <memory>
@@ -7,8 +8,8 @@ namespace mixxx {
 
 enum class NotificationFlag {
     None = 0,
-    AutoTimeout = 1,
-    Default = AutoTimeout,
+    Sticky = 1,
+    Default = None,
 };
 Q_DECLARE_FLAGS(NotificationFlags, NotificationFlag);
 Q_DECLARE_OPERATORS_FOR_FLAGS(NotificationFlags);
@@ -28,9 +29,27 @@ class Notification : public QObject {
         return m_text;
     }
 
+    void setTimeoutSecs(int timeout) {
+        m_timeoutSecs = timeout;
+    }
+
+    int timeoutSecs() const {
+        return m_timeoutSecs;
+    }
+
+    void setLastUpdated(const QDateTime& lastUpdated) {
+        m_lastUpdated = lastUpdated;
+    }
+
+    QDateTime lastUpdated() const {
+        return m_lastUpdated;
+    }
+
   private:
     const NotificationFlags m_flags;
-    QString m_text;
+    const QString m_text;
+    int m_timeoutSecs;
+    QDateTime m_lastUpdated;
 };
 
 typedef Notification* NotificationPointer;

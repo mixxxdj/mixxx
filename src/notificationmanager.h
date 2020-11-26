@@ -22,10 +22,7 @@ class NotificationManager : public QObject {
     void notify(NotificationPointer pNotification);
 
     QList<NotificationPointer> activeNotifications() {
-        QList<NotificationPointer> notifications;
-        notifications.append(m_stickyNotifications);
-        notifications.append(m_timedNotifications.values());
-        return notifications;
+        return m_notifications;
     }
 
     void setInhibitNotifications(bool value) {
@@ -55,9 +52,7 @@ class NotificationManager : public QObject {
 
   private:
     QTimer m_timer;
-    QMultiMap<QDateTime, NotificationPointer> m_timedNotifications;
-    QList<NotificationPointer> m_stickyNotifications;
-    QList<NotificationPointer> m_inactiveNotifications;
+    QList<NotificationPointer> m_notifications;
     QMutex m_mutex;
 
     bool m_inhibitNotifications;

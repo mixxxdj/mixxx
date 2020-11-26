@@ -7,8 +7,7 @@
 
 namespace {
 
-constexpr int kAutoTimeoutMillis = 5000;
-
+constexpr int kAutoTimeoutSecs = 10;
 }
 
 namespace mixxx {
@@ -25,20 +24,25 @@ void NotificationManager::notify(NotificationPointer pNotification) {
     VERIFY_OR_DEBUG_ASSERT(pNotification) {
         return;
     }
-
-    if (!m_timer.isActive() && pNotification->flags().testFlag(NotificationFlag::AutoTimeout)) {
-        m_timer.start();
-    }
-
     qDebug() << "New notification:" << pNotification->text();
 
-    QMutexLocker lock(&m_mutex);
-    if (pNotification->flags().testFlag(NotificationFlag::AutoTimeout)) {
-        QDateTime timeoutDateTime = QDateTime::currentDateTime().addMSecs(kAutoTimeoutMillis);
-        m_timedNotifications.insert(timeoutDateTime, pNotification);
-    } else {
-        m_stickyNotifications.prepend(pNotification);
+    if (!pNotification->lastUpdated().isValid()) {
+        pNotification->setLastUpdated(QDateTime::currentDateTimeUtc());
     }
+
+    if (!pNotification->flags().testFlag(NotificationFlag::Sticky)) {
+        if (pNotification->timeoutSecs() == 0) {
+            pNotification->setTimeoutSecs(kAutoTimeoutSecs);
+        }
+
+        if (!m_timer.isActive()) {
+            m_timer.start();
+        }
+    }
+
+    QMutexLocker lock(&m_mutex);
+    m_notifications.prepend(pNotification);
+    lock.unlock();
 
     if (m_inhibitNotifications) {
         m_notificationsAddedWhileInhibited = true;
@@ -49,17 +53,32 @@ void NotificationManager::notify(NotificationPointer pNotification) {
 
 void NotificationManager::slotUpdateNotifications() {
     bool changed = false;
-    auto it = m_timedNotifications.begin();
-    while (it != m_timedNotifications.upperBound(QDateTime::currentDateTime())) {
-        DEBUG_ASSERT(it.key().isValid());
+    bool timedNotificationLeft = false;
 
-        qDebug() << "Notification timed out:" << it.value()->text();
-        m_inactiveNotifications.prepend(it.value());
-        it = m_timedNotifications.erase(it);
-        changed = true;
+    QMutexLocker lock(&m_mutex);
+    auto it = m_notifications.begin();
+    while (it != m_notifications.end()) {
+        const NotificationPointer pNotification = *it;
+        if (pNotification->flags().testFlag(NotificationFlag::Sticky)) {
+            it++;
+            continue;
+        }
+
+        DEBUG_ASSERT(pNotification->lastUpdated().isValid());
+        if (pNotification->lastUpdated().addSecs(
+                    pNotification->timeoutSecs()) <=
+                QDateTime::currentDateTimeUtc()) {
+            qDebug() << "Notification timed out:" << pNotification->text();
+            changed = true;
+            it = m_notifications.erase(it);
+        } else {
+            timedNotificationLeft = true;
+            it++;
+        }
     }
+    lock.unlock();
 
-    if (m_timedNotifications.isEmpty()) {
+    if (!timedNotificationLeft) {
         m_timer.stop();
     }
 
