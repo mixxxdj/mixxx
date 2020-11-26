@@ -114,11 +114,17 @@ void BasePlaylistFeature::initActions() {
     connect(&m_playlistDao,
             &PlaylistDAO::added,
             this,
-            &BasePlaylistFeature::slotPlaylistTableChanged);
+            [this](int playlistId) {
+                slotPlaylistTableChanged(playlistId);
+                selectPlaylistInSidebar(playlistId);
+            });
     connect(&m_playlistDao,
             &PlaylistDAO::lockChanged,
             this,
-            &BasePlaylistFeature::slotPlaylistTableChanged);
+            [this](int playlistId) {
+                slotPlaylistTableChanged(playlistId);
+                selectPlaylistInSidebar(playlistId);
+            });
     connect(&m_playlistDao,
             &PlaylistDAO::deleted,
             this,
@@ -157,6 +163,16 @@ int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
     }
 }
 
+void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId) {
+    if (playlistId == -1) {
+        return;
+    }
+    QModelIndex index = indexFromPlaylistId(playlistId);
+    if (index.isValid() && m_pSidebarWidget) {
+        m_pSidebarWidget->selectChildIndex(index);
+    }
+}
+
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
@@ -164,6 +180,9 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);
+        if (m_pSidebarWidget) {
+            m_pSidebarWidget->selectChildIndex(index);
+        }
     }
 }
 
@@ -356,11 +375,6 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         activate();
         if (nextId != -1) {
             activatePlaylist(nextId);
-            if (m_pSidebarWidget) {
-                // FIXME: this does not scroll to the correct position for some reason
-                nextIndex = indexFromPlaylistId(nextId);
-                m_pSidebarWidget->selectChildIndex(nextIndex);
-            }
         }
     }
 }

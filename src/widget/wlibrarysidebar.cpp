@@ -237,7 +237,7 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index) {
         expand(parentIndex);
         parentIndex = parentIndex.parent();
     }
-    scrollTo(translated, PositionAtCenter);
+    scrollTo(translated, EnsureVisible);
 }
 
 bool WLibrarySidebar::event(QEvent* pEvent) {

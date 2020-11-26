@@ -147,8 +147,6 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 /// Use a custom model in the history for grouping by year
 /// @param selectedId row which should be selected
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
-    int selectedRow = -1;
-
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
             m_pLibrary->trackCollections()->internalCollection()->database());
@@ -185,11 +183,6 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                         .data(playlistTableModel.index(row, createdColumn))
                         .toDateTime();
 
-        if (selectedId == id) {
-            // save index for selection
-            selectedRow = row;
-        }
-
         // Create the TreeItem whose parent is the invisible root item
         if (row >= kNumDirectHistoryEntries) {
             int yearCreated = dateCreated.date().year();
@@ -222,10 +215,11 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel.insertTreeItemRows(itemList, 0);
-    if (selectedRow == -1) {
-        return QModelIndex();
+
+    if (selectedId) {
+        return indexFromPlaylistId(selectedId);
     }
-    return m_childModel.index(selectedRow, 0);
+    return QModelIndex();
 }
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
@@ -342,8 +336,6 @@ void SetlogFeature::slotJoinWithPrevious() {
                     reloadChildModel(previousPlaylistId); // For moving selection
                     emit showTrackModel(m_pPlaylistTableModel);
                     activatePlaylist(previousPlaylistId);
-                    QModelIndex previousIndex = indexFromPlaylistId(previousPlaylistId);
-                    m_pSidebarWidget->selectChildIndex(previousIndex);
                 }
             }
         }
@@ -428,6 +420,9 @@ void SetlogFeature::reloadChildModel(int playlistId) {
             type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
+        if (m_pSidebarWidget) {
+            m_pSidebarWidget->selectChildIndex(m_lastRightClickedIndex);
+        }
     }
 }
 
@@ -469,8 +464,10 @@ void SetlogFeature::activatePlaylist(int playlistId) {
         emit enableCoverArtDisplay(true);
         // Update selection only, if it is not the current playlist
         if (playlistId != m_playlistId) {
-            emit featureSelect(this, m_lastRightClickedIndex);
-            activateChild(m_lastRightClickedIndex);
+            emit featureSelect(this, index);
+            activateChild(index);
+        } else if (m_pSidebarWidget) {
+            m_pSidebarWidget->selectChildIndex(index);
         }
     }
 }
