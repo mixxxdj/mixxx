@@ -45,6 +45,9 @@ class Notification : public QObject {
         return m_lastUpdated;
     }
 
+  signals:
+    void closed();
+
   private:
     const NotificationFlags m_flags;
     const QString m_text;

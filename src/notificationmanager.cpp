@@ -51,6 +51,15 @@ void NotificationManager::notify(NotificationPointer pNotification) {
     }
 }
 
+void NotificationManager::closeNotification(NotificationPointer pNotification) {
+    m_notifications.removeAll(pNotification);
+    if (m_inhibitNotifications) {
+        m_notificationsClosedWhileInhibited = true;
+    } else {
+        emit notificationClosed();
+    }
+}
+
 void NotificationManager::slotUpdateNotifications() {
     bool changed = false;
     bool timedNotificationLeft = false;

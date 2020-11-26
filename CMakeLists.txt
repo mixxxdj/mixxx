@@ -942,7 +942,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wcoverartlabel.cpp
   src/widget/wcoverartmenu.cpp
   src/widget/wcuemenupopup.cpp
-  src/widget/wnotificationmenupopup.cpp
   src/widget/wdisplay.cpp
   src/widget/weffect.cpp
   src/widget/weffectbuttonparameter.cpp
@@ -954,7 +953,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectpushbutton.cpp
   src/widget/weffectselector.cpp
   src/widget/whotcuebutton.cpp
-  src/widget/wnotificationbutton.cpp
   src/widget/wimagestore.cpp
   src/widget/wkey.cpp
   src/widget/wknob.cpp
@@ -965,6 +963,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
+  src/widget/wnotification.cpp
+  src/widget/wnotificationmenupopup.cpp
+  src/widget/wnotificationbutton.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp

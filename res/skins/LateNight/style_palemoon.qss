@@ -1441,7 +1441,8 @@ WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector,
 #LibraryFeatureControls QPushButton:enabled,
 #fadeModeCombobox,
-#CueDeleteButton {
+#CueDeleteButton,
+WNotification #CloseButton {
   outline: none;
   border-width: 2px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
@@ -2872,13 +2873,19 @@ WBeatSpinBox QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
 WNotificationMenuPopup,
-WNotificationMenuPopup #Notification,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu {
   padding: 3px;
   border: 1px solid #333;
   border-radius: 1px;
+}
+WNotificationMenuPopup WNotification {
+  border-color: #333;
+  border-bottom: 1px;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
 }
 
 #SkinContainer {
@@ -3171,3 +3178,12 @@ WEffectSelector,
     }
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
+
+WNotification #CloseButton {
+  height: 10px;
+}
+
+WNotification #TimeLabel {
+  font-size: 10px;
+  color: #eee;
+}

@@ -43,6 +43,8 @@ class NotificationManager : public QObject {
         }
     }
 
+    void closeNotification(NotificationPointer pNotification);
+
   signals:
     void notificationAdded();
     void notificationClosed();

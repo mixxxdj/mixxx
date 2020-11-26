@@ -163,8 +163,8 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_embedded_square.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_embedded_square_active.svg</Pressed>
+          <Unpressed scalemode="FIXED">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications.svg</Unpressed>
+          <Pressed scalemode="FIXED">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_active.svg</Pressed>
         </State>
       </NotificationButton>
 

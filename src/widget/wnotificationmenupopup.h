@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QScrollArea>
+#include <QVBoxLayout>
 #include <QWidget>
 
 #include "util/widgethelper.h"
@@ -34,6 +36,11 @@ class WNotificationMenuPopup : public QWidget {
   protected:
     void closeEvent(QCloseEvent* event) override;
 
+  private slots:
+    void slotNotificationWidgetClosed();
+
   private:
     mixxx::NotificationManager* m_pNotificationManager;
+    QScrollArea* m_pScrollArea;
+    QVBoxLayout* m_pNotificationLayout;
 };

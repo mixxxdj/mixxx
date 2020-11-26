@@ -1,13 +1,13 @@
 #include "widget/wnotificationmenupopup.h"
 
 #include <QLabel>
-#include <QScrollArea>
 #include <QStackedLayout>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include "notification.h"
 #include "notificationmanager.h"
+#include "widget/wnotification.h"
 
 namespace {
 constexpr int kLayoutPageEmpty = 0;
@@ -32,8 +32,6 @@ WNotificationMenuPopup::WNotificationMenuPopup(
     setWindowFlags(Qt::Popup);
     setAttribute(Qt::WA_StyledBackground);
     setContentsMargins(0, 0, 0, 0);
-    setFixedWidth(400);
-    setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum));
 
     QStackedLayout* pMainLayout = new QStackedLayout();
     pMainLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -54,15 +52,9 @@ WNotificationMenuPopup::WNotificationMenuPopup(
     QWidget* pWidget = new QWidget(this);
     pWidget->setObjectName("NotificationContainer");
     pWidget->setContentsMargins(0, 0, 0, 0);
-    auto* pLayout = new QVBoxLayout();
-    pLayout->setSizeConstraint(QLayout::SetMinimumSize);
-    pLayout->setContentsMargins(0, 0, 0, 0);
-    pWidget->setLayout(pLayout);
-    QScrollArea* pScrollArea = new QScrollArea(this);
-    pScrollArea->setWidgetResizable(true);
-    pScrollArea->setMaximumHeight(600);
-    pScrollArea->setWidget(pWidget);
-    pMainLayout->addWidget(pScrollArea);
+    m_pNotificationLayout = new QVBoxLayout();
+    pWidget->setLayout(m_pNotificationLayout);
+    pMainLayout->addWidget(pWidget);
 
     DEBUG_ASSERT(pMainLayout->count() == kLayoutNumPages);
     setLayout(pMainLayout);
@@ -95,37 +87,23 @@ void WNotificationMenuPopup::slotUpdateNotifications() {
 
     pMainLayout->setCurrentIndex(kLayoutPageLoading);
 
-    QLayoutItem* pItem = pMainLayout->itemAt(kLayoutPageNotifications);
-    VERIFY_OR_DEBUG_ASSERT(pItem) {
-        return;
-    }
-
-    QScrollArea* pScrollArea = static_cast<QScrollArea*>(pItem->widget());
-    VERIFY_OR_DEBUG_ASSERT(pScrollArea) {
-        return;
-    }
-
-    QWidget* pWidget = pScrollArea->widget();
-    VERIFY_OR_DEBUG_ASSERT(pWidget) {
-        return;
-    }
-
-    QLayout* pLayout = pWidget->layout();
-    VERIFY_OR_DEBUG_ASSERT(pLayout) {
+    VERIFY_OR_DEBUG_ASSERT(m_pNotificationLayout) {
         return;
     }
 
     // Clear items from layout
-    for (int i = 0; i < pLayout->count(); i++) {
-        pLayout->removeItem(pLayout->itemAt(i));
+    for (int i = 0; i < m_pNotificationLayout->count(); i++) {
+        m_pNotificationLayout->removeItem(m_pNotificationLayout->itemAt(i));
     }
 
     // Add items from layout
     for (const auto& pNotification : notifications) {
-        QLabel* pLabel = new QLabel(pNotification->text(), this);
-        pLabel->setObjectName("Notification");
-        pLabel->setWordWrap(true);
-        pLayout->addWidget(pLabel);
+        WNotification* pNotificationWidget = new WNotification(pNotification);
+        m_pNotificationLayout->addWidget(pNotificationWidget);
+        connect(pNotificationWidget,
+                &WNotification::closed,
+                this,
+                &WNotificationMenuPopup::slotNotificationWidgetClosed);
     }
 
     pMainLayout->setCurrentIndex(kLayoutPageNotifications);
@@ -136,4 +114,12 @@ void WNotificationMenuPopup::slotUpdateNotifications() {
 void WNotificationMenuPopup::closeEvent(QCloseEvent* event) {
     emit aboutToHide();
     QWidget::closeEvent(event);
+}
+
+void WNotificationMenuPopup::slotNotificationWidgetClosed() {
+    WNotification* pNotificationWidget = qobject_cast<WNotification*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pNotificationWidget) {
+        return;
+    }
+    m_pNotificationManager->closeNotification(pNotificationWidget->notification());
 }
