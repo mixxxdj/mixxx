@@ -416,11 +416,8 @@
          * @public
          */
         unshift: function() {
-            /* undefined when called from Component constructor on prototype creation */
-            if (this.activeLayer !== undefined) {
-                log.debug("LayerManager.unshift()");
-                this.activeLayer.applyLayer(this.defaultLayer());
-            }
+            log.debug("LayerManager.unshift()");
+            this.activeLayer.applyLayer(this.defaultLayer());
         },
 
         /**
