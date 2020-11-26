@@ -29,6 +29,7 @@ constexpr double CUE_MODE_CUP = 5.0;
 
 /// This is the position of a fresh loaded tack without any seek
 constexpr double kDefaultLoadPosition = 0.0;
+constexpr int kNoHotCueNumber = 0;
 
 // Helper function to convert control values (i.e. doubles) into RgbColor
 // instances (or nullopt if value < 0). This happens by using the integer
@@ -46,15 +47,18 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
 
 /// Convert 0-based hot cue index to 1-based number
 inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
-    DEBUG_ASSERT(hotcueIndex == Cue::kNoHotCue || hotcueIndex >= 0);
+    if (hotcueIndex < 0 || hotcueIndex == Cue::kNoHotCue) {
+        return kNoHotCueNumber;
+    }
     return hotcueIndex + 1;
 }
 
 /// Convert 1-based hot cue number to 0-based index
 inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
-    int hotcueIndex = hotcueNumber - 1;
-    DEBUG_ASSERT(hotcueIndex == Cue::kNoHotCue || hotcueIndex >= 0);
-    return hotcueIndex;
+    if (hotcueNumber < 1 || hotcueNumber == kNoHotCueNumber) {
+        return Cue::kNoHotCue;
+    }
+    return hotcueNumber - 1;
 }
 
 } // namespace
