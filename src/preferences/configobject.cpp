@@ -237,6 +237,7 @@ bool ConfigObject<ValueType>::save() {
     }
 
     QFile oldConfig(m_filename);
+    // Trying to remove a file that does not exist would fail
     if (oldConfig.exists()) {
         if (!oldConfig.remove()) {
             qWarning().nospace() << "Could not remove old config file: "
