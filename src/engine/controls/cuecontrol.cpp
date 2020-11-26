@@ -45,20 +45,32 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
     return mixxx::RgbColor::optional(colorCode);
 }
 
-/// Convert 0-based hot cue index to 1-based number
+/// Convert hot cue index to 1-based number
+///
+/// Works independent of if the hot cue index is either 0-based
+/// or 1..n-based.
 inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
-    if (hotcueIndex < 0 || hotcueIndex == Cue::kNoHotCue) {
+    if (hotcueIndex >= Cue::kFirstHotCue) {
+        DEBUG_ASSERT(hotcueIndex != Cue::kNoHotCue);
+        return (hotcueIndex - Cue::kFirstHotCue) + 1; // to 1-based numbering
+    } else {
+        DEBUG_ASSERT(hotcueIndex == Cue::kNoHotCue);
         return kNoHotCueNumber;
     }
-    return hotcueIndex + 1;
 }
 
-/// Convert 1-based hot cue number to 0-based index
+/// Convert 1-based hot cue number to hot cue index.
+///
+/// Works independent of if the hot cue index is either 0-based
+/// or 1..n-based.
 inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
-    if (hotcueNumber < 1 || hotcueNumber == kNoHotCueNumber) {
+    if (hotcueNumber >= 1) {
+        DEBUG_ASSERT(hotcueNumber != kNoHotCueNumber);
+        return Cue::kFirstHotCue + (hotcueNumber - 1); // from 1-based numbering
+    } else {
+        DEBUG_ASSERT(hotcueNumber == kNoHotCueNumber);
         return Cue::kNoHotCue;
     }
-    return hotcueNumber - 1;
 }
 
 } // namespace
