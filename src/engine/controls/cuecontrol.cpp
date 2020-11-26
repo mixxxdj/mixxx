@@ -735,8 +735,13 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double value) {
     if (pCue) {
         double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
-            m_pPlay->set(0.0);
-            seekExact(position);
+            if (!m_iCurrentlyPreviewingHotcues && !m_bPreviewing) {
+                m_pPlay->set(0.0);
+                seekExact(position);
+            } else {
+                // this becomes a play latch command if we are previewing
+                m_pPlay->set(0.0);
+            }
         }
     }
 }
@@ -992,14 +997,14 @@ void CueControl::cueGotoAndStop(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_mutex);
-    m_pPlay->set(0.0);
-    double cuePoint = m_pCuePoint->get();
-
-    // Need to unlock before emitting any signals to prevent deadlock.
-    lock.unlock();
-
-    seekExact(cuePoint);
+    if (!m_iCurrentlyPreviewingHotcues && !m_bPreviewing) {
+        m_pPlay->set(0.0);
+        double position = m_pCuePoint->get();
+        seekExact(position);
+    } else {
+        // this becomes a play latch command if we are previewing
+        m_pPlay->set(0.0);
+    }
 }
 
 void CueControl::cuePreview(double value) {
