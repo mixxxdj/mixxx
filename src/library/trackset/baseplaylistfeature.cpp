@@ -185,8 +185,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != kInvalidPlaylistId && index.isValid()) {
+    if (index.isValid()) {
         m_lastRightClickedIndex = index;
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
