@@ -1508,9 +1508,12 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         // return true for no tool tips
         switch (m_toolTipsCfg) {
             case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-                return dynamic_cast<WBaseWidget*>(obj) != nullptr;
+                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
+                    return true;
+                }
+                break;
             case mixxx::TooltipsPreference::TOOLTIPS_ON:
-                return false;
+                break;
             case mixxx::TooltipsPreference::TOOLTIPS_OFF:
                 return true;
             default:
@@ -1519,7 +1522,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         }
     }
     // standard event processing
-    return QObject::eventFilter(obj, event);
+    return QMainWindow::eventFilter(obj, event);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
