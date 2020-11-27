@@ -258,7 +258,9 @@ inline bool instanceof (const T* ptr) {
 }
 
 QString toUnicode(const std::string& toConvert) {
-    return QTextCodec::codecForName("UTF-16BE")->toUnicode(QByteArray(toConvert.c_str(), toConvert.length()));
+    const int strLength = static_cast<int>(toConvert.length());
+    return QTextCodec::codecForName("UTF-16BE")
+            ->toUnicode(QByteArray(toConvert.c_str(), strLength));
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:

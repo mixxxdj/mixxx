@@ -10,7 +10,8 @@ class ControllerDebug {
   public:
     // Any debug statement starting with this prefix bypasses the --logLevel
     // command line flags.
-    static constexpr const char* kLogMessagePrefix = "CDBG";
+    static constexpr const char kLogMessagePrefix[] = "CDBG";
+    static constexpr int kLogMessagePrefixLength = sizeof(kLogMessagePrefix);
 
     static bool enabled();
 
