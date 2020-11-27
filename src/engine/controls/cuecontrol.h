@@ -44,7 +44,7 @@ class HotcueControl : public QObject {
     Q_OBJECT
   public:
     HotcueControl(const QString& group, int hotcueIndex);
-    ~HotcueControl() override = default;
+    ~HotcueControl() override;
 
     int getHotcueIndex() const {
         return m_hotcueIndex;

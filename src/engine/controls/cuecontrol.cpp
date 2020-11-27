@@ -1957,6 +1957,8 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             Qt::DirectConnection);
 }
 
+HotcueControl::~HotcueControl() = default;
+
 void HotcueControl::slotHotcueSet(double v) {
     emit hotcueSet(this, v);
 }
