@@ -145,7 +145,7 @@ void BasePlaylistFeature::initActions() {
 int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
-        return -1;
+        return kInvalidPlaylistId;
     }
 
     bool ok = false;
@@ -153,12 +153,15 @@ int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
     if (ok) {
         return playlistId;
     } else {
-        return -1;
+        return kInvalidPlaylistId;
     }
 }
 
 void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId) {
-    if (playlistId == -1) {
+    if (!m_pSidebarWidget) {
+        return;
+    }
+    if (playlistId == kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
@@ -170,7 +173,7 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId) {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId != -1) {
+    if (playlistId != kInvalidPlaylistId) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);
@@ -183,7 +186,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid()) {
+    if (playlistId != kInvalidPlaylistId && index.isValid()) {
         m_lastRightClickedIndex = index;
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
@@ -196,7 +199,7 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
 
 void BasePlaylistFeature::slotRenamePlaylist() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (playlistId == -1) {
+    if (playlistId == kInvalidPlaylistId) {
         return;
     }
     QString oldName = m_playlistDao.getPlaylistName(playlistId);
@@ -225,7 +228,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
         int existingId = m_playlistDao.getPlaylistIdFromName(newName);
 
-        if (existingId != -1) {
+        if (existingId != kInvalidPlaylistId) {
             QMessageBox::warning(NULL,
                     tr("Renaming Playlist Failed"),
                     tr("A playlist by that name already exists."));
@@ -243,7 +246,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {
     int oldPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (oldPlaylistId == -1) {
+    if (oldPlaylistId == kInvalidPlaylistId) {
         return;
     }
 
@@ -268,7 +271,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
 
-        if (existingId != -1) {
+        if (existingId != kInvalidPlaylistId) {
             QMessageBox::warning(NULL,
                     tr("Playlist Creation Failed"),
                     tr("A playlist by that name already exists."));
@@ -283,7 +286,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
     int newPlaylistId = m_playlistDao.createPlaylist(name);
 
-    if (newPlaylistId != -1 &&
+    if (newPlaylistId != kInvalidPlaylistId &&
             m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
         activatePlaylist(newPlaylistId);
     }
@@ -291,7 +294,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (playlistId == -1) {
+    if (playlistId == kInvalidPlaylistId) {
         return;
     }
     bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
@@ -319,7 +322,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
 
-        if (existingId != -1) {
+        if (existingId != kInvalidPlaylistId) {
             QMessageBox::warning(NULL,
                     tr("Playlist Creation Failed"),
                     tr("A playlist by that name already exists."));
@@ -334,7 +337,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
     int playlistId = m_playlistDao.createPlaylist(name);
 
-    if (playlistId != -1) {
+    if (playlistId != kInvalidPlaylistId) {
         activatePlaylist(playlistId);
     } else {
         QMessageBox::warning(NULL,
@@ -346,11 +349,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    QModelIndex nextIndex =
-            m_lastRightClickedIndex.sibling(m_lastRightClickedIndex.row() + 1,
-                    m_lastRightClickedIndex.column());
-    int nextId = playlistIdFromIndex(nextIndex);
-    if (playlistId == -1) {
+    if (playlistId == kInvalidPlaylistId) {
         return;
     }
 
@@ -367,7 +366,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
         m_playlistDao.deletePlaylist(playlistId);
         activate();
-        if (nextId != -1) {
+        if (nextId != kInvalidPlaylistId) {
             activatePlaylist(nextId);
         }
     }
@@ -430,7 +429,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     m_pConfig->set(ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             ConfigValue(fileName.dir().absolutePath()));
 
-    int lastPlaylistId = -1;
+    int lastPlaylistId = kInvalidPlaylistId;
 
     // For each selected element create a different playlist.
     for (const QString& playlistFile : playlist_files) {
@@ -451,12 +450,12 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
             // Check name
             int existingId = m_playlistDao.getPlaylistIdFromName(name);
 
-            validNameGiven = (existingId == -1);
+            validNameGiven = (existingId == kInvalidPlaylistId);
             ++i;
         }
 
         lastPlaylistId = m_playlistDao.createPlaylist(name);
-        if (lastPlaylistId != -1) {
+        if (lastPlaylistId != kInvalidPlaylistId) {
             m_pPlaylistTableModel->setTableModel(lastPlaylistId);
         } else {
             QMessageBox::warning(NULL,
@@ -472,7 +471,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 
 void BasePlaylistFeature::slotExportPlaylist() {
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (playlistId == -1) {
+    if (playlistId == kInvalidPlaylistId) {
         return;
     }
     QString playlistName = m_playlistDao.getPlaylistName(playlistId);

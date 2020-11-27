@@ -34,7 +34,7 @@ SetlogFeature::SetlogFeature(
                           "mixxx.db.model.setlog",
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME")),
-          m_playlistId(-1),
+          m_playlistId(kInvalidPlaylistId),
           m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     // clear old empty entries
@@ -42,7 +42,7 @@ SetlogFeature::SetlogFeature(
 
     //construct child model
     m_childModel.setRootItem(TreeItem::newRoot(this));
-    constructChildModel(-1);
+    constructChildModel(kInvalidPlaylistId);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction,
@@ -64,7 +64,7 @@ SetlogFeature::~SetlogFeature() {
     // If the history playlist we created doesn't have any tracks in it then
     // delete it so we don't end up with tons of empty playlists. This is mostly
     // for developers since they regularly open Mixxx without loading a track.
-    if (m_playlistId != -1 &&
+    if (m_playlistId != kInvalidPlaylistId &&
             m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
         m_playlistDao.deletePlaylist(m_playlistId);
     }
@@ -105,7 +105,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     int playlistId = index.data(TreeItemModel::kDataRole).toInt();
     // not a real entry
-    if (playlistId == -1) {
+    if (playlistId == kInvalidPlaylistId) {
         return;
     }
 
@@ -192,7 +192,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             if (i != groups.end() && i.key() == yearCreated) {
                 groupItem = i.value();
             } else {
-                groupItem = new TreeItem(QString::number(yearCreated), -1);
+                groupItem = new TreeItem(QString::number(yearCreated), kInvalidPlaylistId);
                 groups.insert(yearCreated, groupItem);
                 itemList.append(groupItem);
             }
@@ -266,7 +266,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     int i = 1;
 
     // calculate name of the todays setlog
-    while (m_playlistDao.getPlaylistIdFromName(set_log_name) != -1) {
+    while (m_playlistDao.getPlaylistIdFromName(set_log_name) != kInvalidPlaylistId) {
         set_log_name = set_log_name_format.arg(++i);
     }
 
@@ -274,7 +274,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     m_playlistId = m_playlistDao.createPlaylist(
             set_log_name, PlaylistDAO::PLHT_SET_LOG);
 
-    if (m_playlistId == -1) {
+    if (m_playlistId == kInvalidPlaylistId) {
         qDebug() << "Setlog playlist Creation Failed";
         qDebug() << "An unknown error occurred while creating playlist: "
                  << set_log_name;
@@ -458,7 +458,7 @@ void SetlogFeature::activate() {
 void SetlogFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid()) {
+    if (playlistId != kInvalidPlaylistId && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);

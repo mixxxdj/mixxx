@@ -46,7 +46,7 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_childModel.setRootItem(std::move(pRootItem));
-    constructChildModel(-1);
+    constructChildModel(kInvalidPlaylistId);
 }
 
 QVariant PlaylistFeature::title() {
