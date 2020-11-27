@@ -57,12 +57,12 @@ let
 
   clazy = stdenv.mkDerivation rec {
     shortname = "clazy";
-    version = "1.7";
+    version = "1.8";
     name = "${shortname}-${version}";
     src = fetchurl {
       url = "https://github.com/KDE/clazy/archive/v${version}.tar.gz";
       sha256 =
-        "01d595bc584e6b37be0a9b3db22a67aae6249dc5a05df10f50cb12ccbc3fc9a3";
+        "0k4qpk5w8gk9y44jb4m9fcl7xga29wmcv34d43mmz0fx6nff92v9";
     };
     cmakeFlags = [ "-DCMAKE_MODULE_PATH=${llvm_packages.clang}" ];
     nativeBuildInputs = [
@@ -145,6 +145,7 @@ let
     fi
     if [ -z "$CLAZY_CHECKS" -a -e .github/workflows/clazy.yml ]; then
       export CLAZY_CHECKS=$(grep CLAZY_CHECKS ./.github/workflows/clazy.yml | sed "s/\s*CLAZY_CHECKS:\s*//")
+      echo "Using clazy checks: $CLAZY_CHECKS"
     fi
     cd cbuild
     rm -f .mixxx-wrapped mixxx mixxx-test .mixxx-test-wrapped
