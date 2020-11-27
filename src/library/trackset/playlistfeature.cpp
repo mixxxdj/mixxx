@@ -240,7 +240,8 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     int selectedRow = -1;
 
     int row = 0;
-    for (const IdAndLabel& idAndLabel : createPlaylistLabels()) {
+    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
+    for (const auto& idAndLabel : playlistLabels) {
         int playlistId = idAndLabel.id;
         QString playlistLabel = idAndLabel.label;
 
