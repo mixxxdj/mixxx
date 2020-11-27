@@ -702,7 +702,7 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     if (pTrack) {
         trackId = pTrack->getId();
     }
-    m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
+    m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistIdsOfSelectedTrack);
 
     for (int row = 0; row < m_childModel.rowCount(); ++row) {
         QModelIndex index = m_childModel.index(row, 0);
@@ -718,7 +718,7 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
     bool ok;
     int playlistId = pTreeItem->getData().toInt(&ok);
     if (ok) {
-        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
+        bool shouldBold = m_playlistIdsOfSelectedTrack.contains(playlistId);
         pTreeItem->setBold(shouldBold);
         if (shouldBold && pTreeItem->hasParent()) {
             TreeItem* item = pTreeItem;

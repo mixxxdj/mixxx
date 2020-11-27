@@ -19,7 +19,7 @@
 #include "widget/wtracktableview.h"
 
 namespace {
-constexpr int kNumDirectHistoryEntries = 5;
+constexpr int kNumToplevelHistoryEntries = 5;
 }
 
 SetlogFeature::SetlogFeature(
@@ -167,7 +167,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
 
     QList<TreeItem*> itemList;
     // Generous estimate (number of years the db is used ;))
-    itemList.reserve(kNumDirectHistoryEntries + 15);
+    itemList.reserve(kNumToplevelHistoryEntries + 15);
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
@@ -184,7 +184,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                         .toDateTime();
 
         // Create the TreeItem whose parent is the invisible root item
-        if (row >= kNumDirectHistoryEntries) {
+        if (row >= kNumToplevelHistoryEntries) {
             int yearCreated = dateCreated.date().year();
 
             auto i = groups.find(yearCreated);
@@ -198,14 +198,14 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             }
 
             auto item = std::make_unique<TreeItem>(name, id);
-            item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
+            item->setBold(m_playlistIdsOfSelectedTrack.contains(id));
 
             decorateChild(item.get(), id);
 
             groupItem->appendChild(std::move(item));
         } else {
             TreeItem* item = new TreeItem(name, id);
-            item->setBold(m_playlistsSelectedTrackIsIn.contains(id));
+            item->setBold(m_playlistIdsOfSelectedTrack.contains(id));
 
             decorateChild(item, id);
 
@@ -463,11 +463,10 @@ void SetlogFeature::activatePlaylist(int playlistId) {
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);
         // Update selection only, if it is not the current playlist
+        // since we want the root item to be the current playlist as well
         if (playlistId != m_playlistId) {
             emit featureSelect(this, index);
             activateChild(index);
-        } else if (m_pSidebarWidget) {
-            m_pSidebarWidget->selectChildIndex(index);
         }
     }
 }

@@ -107,7 +107,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QAction* m_pAnalyzePlaylistAction;
 
     PlaylistTableModel* m_pPlaylistTableModel;
-    QSet<int> m_playlistsSelectedTrackIsIn;
+    QSet<int> m_playlistIdsOfSelectedTrack;
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
