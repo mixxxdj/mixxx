@@ -367,8 +367,15 @@ int BasePlaylistFeature::selectSiblingPlaylistId(QModelIndex& start) {
 
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
     if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return;
     }
 
@@ -378,17 +385,12 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         return;
     }
 
-    if (m_lastRightClickedIndex.isValid()) {
-        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
-            return;
-        }
-        int nextId = selectSiblingPlaylistId(m_lastRightClickedIndex);
+    int nextId = selectSiblingPlaylistId(m_lastRightClickedIndex);
 
-        m_playlistDao.deletePlaylist(playlistId);
-        activate();
-        if (nextId != kInvalidPlaylistId) {
-            activatePlaylist(nextId);
-        }
+    m_playlistDao.deletePlaylist(playlistId);
+    activate();
+    if (nextId != kInvalidPlaylistId) {
+        activatePlaylist(nextId);
     }
 }
 
