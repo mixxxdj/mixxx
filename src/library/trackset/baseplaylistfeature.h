@@ -39,6 +39,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void selectPlaylistInSidebar(int playlistId);
+    int selectSiblingPlaylistId(QModelIndex& start);
 
   public slots:
     void activateChild(const QModelIndex& index) override;

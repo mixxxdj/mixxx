@@ -346,6 +346,22 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     }
 }
 
+/// Returns a playlist that is a sibling inside the same parent
+/// as the start index
+int BasePlaylistFeature::selectSiblingPlaylistId(QModelIndex& start) {
+    for (int i = start.row() + 1; i >= (start.row() - 1); i -= 2) {
+        QModelIndex nextIndex = start.sibling(i, start.column());
+        if (nextIndex.isValid()) {
+            TreeItem* pTreeItem = m_childModel.getItem(nextIndex);
+            DEBUG_ASSERT(pTreeItem != nullptr);
+            if (!pTreeItem->hasChildren()) {
+                return playlistIdFromIndex(nextIndex);
+            }
+        }
+    }
+    return kInvalidPlaylistId;
+}
+
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
@@ -363,6 +379,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
             return;
         }
+        int nextId = selectSiblingPlaylistId(m_lastRightClickedIndex);
 
         m_playlistDao.deletePlaylist(playlistId);
         activate();
@@ -629,6 +646,7 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // store the sidebar widget pointer for later use in onRightClickChild
+    DEBUG_ASSERT(!m_pSidebarWidget);
     m_pSidebarWidget = pSidebarWidget;
 }
 
