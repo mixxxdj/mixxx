@@ -60,7 +60,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Delete a playlist
     void deletePlaylist(const int playlistId);
     /// Deletes all empty Playlist
-    void deleteAllEmptyPlaylists(PlaylistDAO::HiddenType type);
+    void deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, int length);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist

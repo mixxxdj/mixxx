@@ -38,7 +38,7 @@ SetlogFeature::SetlogFeature(
           m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     // clear old empty entries
-    m_playlistDao.deleteAllEmptyPlaylists(PlaylistDAO::HiddenType::PLHT_SET_LOG);
+    m_playlistDao.deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType::PLHT_SET_LOG, 1);
 
     //construct child model
     m_childModel.setRootItem(TreeItem::newRoot(this));
