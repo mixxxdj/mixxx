@@ -114,17 +114,11 @@ void BasePlaylistFeature::initActions() {
     connect(&m_playlistDao,
             &PlaylistDAO::added,
             this,
-            [this](int playlistId) {
-                slotPlaylistTableChanged(playlistId);
-                selectPlaylistInSidebar(playlistId);
-            });
+            &BasePlaylistFeature::slotPlaylistTableChangedAndSelect);
     connect(&m_playlistDao,
             &PlaylistDAO::lockChanged,
             this,
-            [this](int playlistId) {
-                slotPlaylistTableChanged(playlistId);
-                selectPlaylistInSidebar(playlistId);
-            });
+            &BasePlaylistFeature::slotPlaylistTableChangedAndSelect);
     connect(&m_playlistDao,
             &PlaylistDAO::deleted,
             this,

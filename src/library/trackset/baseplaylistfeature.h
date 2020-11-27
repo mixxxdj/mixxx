@@ -44,6 +44,10 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
+    void slotPlaylistTableChangedAndSelect(int playlistId) {
+        slotPlaylistTableChanged(playlistId);
+        selectPlaylistInSidebar(playlistId);
+    };
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
     void slotCreatePlaylist();
