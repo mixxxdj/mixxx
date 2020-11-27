@@ -493,6 +493,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                 "default skin cannot be loaded - see <b>mixxx</b> trace for more information");
         m_pCentralWidget = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
+    } else {
+        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
 
     // Fake a 100 % progress here.
@@ -1082,6 +1084,9 @@ void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
     m_pMenuBar = make_parented<WMainMenuBar>(this, m_pSettingsManager->settings(), m_pKbdConfig);
+    if (m_pCentralWidget) {
+        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+    }
     setMenuBar(m_pMenuBar);
 }
 
@@ -1435,6 +1440,7 @@ void MixxxMainWindow::rebootMixxxView() {
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
+    m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
 
     setCentralWidget(m_pCentralWidget);
 #ifdef __LINUX__
