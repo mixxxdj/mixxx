@@ -220,6 +220,7 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pPlayStutter;
     ControlIndicator* m_pCueIndicator;
     ControlIndicator* m_pPlayIndicator;
+    ControlObject* m_pPlayLatched;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCuePlay;

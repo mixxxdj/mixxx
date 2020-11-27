@@ -135,6 +135,9 @@ CueControl::CueControl(const QString& group,
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
+    m_pPlayLatched = new ControlObject(ConfigKey(group, "play_latched"));
+    m_pPlayLatched->setReadOnly();
+
     m_pIntroStartPosition = new ControlObject(ConfigKey(group, "intro_start_position"));
     m_pIntroStartPosition->set(Cue::kNoPosition);
 
@@ -255,6 +258,7 @@ CueControl::~CueControl() {
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
+    delete m_pPlayLatched;
     delete m_pIntroStartPosition;
     delete m_pIntroStartEnabled;
     delete m_pIntroStartSet;
@@ -1549,8 +1553,10 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool 
             m_bPreviewing = false;
             m_iCurrentlyPreviewingHotcues = 0;
             newPlay = true;
+            m_pPlayLatched->forceSet(1.0);
         } else {
             previewing = true;
+            m_pPlayLatched->forceSet(0.0);
         }
     }
 
@@ -1561,13 +1567,16 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool 
         newPlay = false;
         m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         m_pStopButton->set(0.0);
+        m_pPlayLatched->forceSet(0.0);
     } else if (newPlay && !previewing) {
         // Play: Indicates a latched Play
         m_pPlayIndicator->setBlinkValue(ControlIndicator::ON);
         m_pStopButton->set(0.0);
+        m_pPlayLatched->forceSet(1.0);
     } else {
         // Pause:
         m_pStopButton->set(1.0);
+        m_pPlayLatched->forceSet(0.0);
         if (cueMode == CueMode::Denon) {
             if (trackAt == TrackAt::Cue || previewing) {
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);

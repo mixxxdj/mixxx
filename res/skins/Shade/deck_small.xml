@@ -179,6 +179,7 @@
                 <Size>41f,38f</Size>
                 <BackPath>style/style_bg_deck_blank.png</BackPath>
                 <Children>
+                  <!-- Play indicator, blinks depending on Cue mode -->
                   <PushButton>
                     <Pos>5,8</Pos>
                     <NumberStates>2</NumberStates>
@@ -196,6 +197,23 @@
                       <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
                     </Connection>
                   </PushButton>
+                  <!-- Preview indicator -->
+                  <PushButton>
+                    <Pos>5,8</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small_preview.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small_preview.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <!-- Play -->
                   <PushButton>
                     <TooltipId>play_cue_default</TooltipId>
                     <Pos>5,8</Pos>
@@ -217,6 +235,10 @@
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_latched</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
                   </PushButton>
                 </Children>
