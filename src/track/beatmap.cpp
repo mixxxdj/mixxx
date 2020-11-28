@@ -109,7 +109,7 @@ QByteArray BeatMap::toByteArray() const {
 
     std::string output;
     map.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 BeatsPointer BeatMap::clone() const {

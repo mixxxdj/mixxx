@@ -121,14 +121,16 @@ void EncoderMp3::flush() {
     // `lame_get_lametag_frame` returns the number of bytes copied into buffer,
     // or the required buffer size, if the provided buffer is too small.
     // Function failed, if the return value is larger than `m_bufferOutSize`!
-    size_t numBytes = lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize);
-    if (numBytes > static_cast<size_t>(m_bufferOutSize)) {
+    int numBytes = static_cast<int>(
+            lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize));
+    if (numBytes > m_bufferOutSize) {
         bufferOutGrow(numBytes);
-        numBytes = lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize);
+        numBytes = static_cast<int>(lame_get_lametag_frame(
+                m_lameFlags, m_bufferOut, m_bufferOutSize));
     }
     // Write the lame/xing header.
     m_pCallback->seek(0);
-    m_pCallback->write(nullptr, m_bufferOut, 0, static_cast<int>(numBytes));
+    m_pCallback->write(nullptr, m_bufferOut, 0, numBytes);
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {

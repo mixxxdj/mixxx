@@ -78,7 +78,7 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) 
 bool AnalyzerQueenMaryBeats::finalize() {
     m_helper.finalize();
 
-    int nonZeroCount = m_detectionResults.size();
+    int nonZeroCount = static_cast<int>(m_detectionResults.size());
     while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {
         --nonZeroCount;
     }
@@ -103,7 +103,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
     std::vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);
 
-    m_resultBeats.reserve(beats.size());
+    m_resultBeats.reserve(static_cast<int>(beats.size()));
     for (size_t i = 0; i < beats.size(); ++i) {
         double result = (beats.at(i) * m_stepSize) - m_stepSize / 2;
         m_resultBeats.push_back(result);
