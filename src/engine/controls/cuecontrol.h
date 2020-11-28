@@ -99,17 +99,31 @@ class HotcueControl : public QObject {
     mixxx::RgbColor::optional_t getColor() const;
 
     // Used for caching the preview state of this hotcue control.
+    static bool canPreview(const Cue& cue) {
+        return cue.getType() != mixxx::CueType::Invalid &&
+                cue.getPosition() != Cue::kNoPosition;
+    }
+    bool isPreviewing() const {
+        return m_previewingType != mixxx::CueType::Invalid &&
+                m_previewingPosition != Cue::kNoPosition;
+    }
+    void startPreviewing(mixxx::CueType type, double position) {
+        m_previewingType = type;
+        m_previewingPosition = position;
+        DEBUG_ASSERT(isPreviewing());
+    }
+    void stopPreviewing() {
+        m_previewingType = mixxx::CueType::Invalid;
+        m_previewingPosition = Cue::kNoPosition;
+        DEBUG_ASSERT(!isPreviewing());
+    }
     mixxx::CueType getPreviewingType() const {
+        DEBUG_ASSERT(isPreviewing());
         return m_previewingType;
     }
-    void setPreviewingType(mixxx::CueType type) {
-        m_previewingType = type;
-    }
     double getPreviewingPosition() const {
+        DEBUG_ASSERT(isPreviewing());
         return m_previewingPosition;
-    }
-    void setPreviewingPosition(double position) {
-        m_previewingPosition = position;
     }
 
   private slots:
