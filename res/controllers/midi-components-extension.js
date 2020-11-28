@@ -93,6 +93,334 @@
     };
 
     /**
+     * A button to toggle un-/shift on a target component.
+     *
+     * @constructor
+     * @extends {components.Button}
+     * @param {object} options Options object
+     * @param {components.Component|components.ComponentContainer} options.target Target component
+     * @public
+     */
+    var ShiftButton = function(options) {
+        components.Button.call(this, options);
+    };
+    ShiftButton.prototype = deriveFrom(components.Button, {
+        input: function(_channel, _control, value, _status, _group) {
+            if (value) {
+                this.target.shift();
+            } else {
+                this.target.unshift();
+            }
+        },
+    });
+
+    /**
+     * A component that handles every incoming value.
+     *
+     * @constructor
+     * @extends {components.Component}
+     * @param {object} options Options object
+     * @public
+     */
+    var Trigger = function(options) {
+        components.Component.call(this, options);
+    };
+    Trigger.prototype = deriveFrom(components.Component, {
+        inValueScale: function() { return true; },
+    });
+
+    /**
+     * An encoder for directions.
+     *
+     * Turning the encoder to the right means "forwards" and returns 1;
+     * turning it to the left means "backwards" and returns -1.
+     *
+     * @constructor
+     * @extends {components.Encoder}
+     * @param {object} options Options object
+     * @public
+     */
+    var DirectionEncoder = function(options) {
+        components.Encoder.call(this, options);
+        this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
+    };
+    DirectionEncoder.prototype = deriveFrom(components.Encoder, {
+        min: 0,
+        inValueScale: function(value) {
+            var direction = 0;
+            if (value > this.previousValue || value === this.max) {
+                direction = 1;
+            } else if (value < this.previousValue || value === this.min) {
+                direction = -1;
+            }
+            this.previousValue = value;
+
+            return direction;
+        },
+    });
+
+    /**
+     * An encoder for a value range of [-bound..0..+bound].
+     *
+     * @constructor
+     * @extends {components.Encoder}
+     * @param {object} options Options object
+     * @param {number} options.bound A positive integer defining the range bounds
+     * @public
+     */
+    var RangeAwareEncoder = function(options) {
+        components.Encoder.call(this, options);
+    };
+    RangeAwareEncoder.prototype = deriveFrom(components.Encoder, {
+        outValueScale: function(value) {
+            /* -bound..+bound => 0..1 */
+            var normalizedValue = (value + this.bound) / (2 * this.bound);
+            /* 0..1 => 0..127 */
+            return convertToMidiValue.call(this, normalizedValue);
+        },
+    });
+
+    /**
+     * A button to cycle through the values of an enumeration [0..maxValue]
+     *
+     * @constructor
+     * @extends {components.Button}
+     * @param {object} options Options object
+     * @param {number} options.maxValue A positive integer defining the maximum enumeration value
+     * @public
+     */
+    var EnumToggleButton = function(options) {
+        options = options || {};
+        if (options.maxValue === undefined) {
+            log.error("EnumToggleButton constructor was called without specifying max value.");
+            this.maxValue = 0;
+        }
+        components.Button.call(this, options);
+    };
+    EnumToggleButton.prototype = deriveFrom(components.Button, {
+        input: function(_channel, _control, _value, _status, _group) {
+            this.inSetValue((this.inGetValue() + 1) % this.maxValue);
+        }
+    });
+
+    /**
+     * An encoder for enumeration values.
+     *
+     * @constructor
+     * @extends {components.Encoder}
+     * @param {object} options Options object
+     * @param {Array} options.values An array containing the enumeration values
+     * @public
+     */
+    var EnumEncoder = function(options) {
+        options = options || {};
+        if (options.values === undefined) {
+            log.error("EnumEncoder constructor was called without specifying enum values.");
+            options.values = [];
+        }
+        options.maxIndex = options.values.length - 1;
+        components.Encoder.call(this, options);
+    };
+    EnumEncoder.prototype = deriveFrom(components.Encoder, {
+        inValueScale: function(value) {
+            var normalizedValue = value / this.max;
+            var index = Math.round(normalizedValue * this.maxIndex);
+            return this.values[index];
+        },
+        outValueScale: function(value) {
+            var index = this.values.indexOf(value);
+            if (index !== -1) {
+                var normalizedValue = index / this.maxIndex;
+                return convertToMidiValue.call(this, normalizedValue);
+            } else {
+                log.warn("'" + value + "' is not in supported values " + "[" + this.values + "]");
+            }
+        },
+    });
+
+    /**
+     * An EnumEncoder for a loop control that uses beat sizes as enumeration.
+     *
+     * @constructor
+     * @extends {EnumEncoder}
+     * @param {object} options Options object
+     * @public
+     */
+    var LoopEncoder = function(options) {
+        options = options || {};
+        if (options.values === undefined) {
+            /* taken from src/engine/controls/loopingcontrol.cpp */
+            options.values
+                = [0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512];
+        }
+        EnumEncoder.call(this, options);
+    };
+    LoopEncoder.prototype = deriveFrom(EnumEncoder);
+
+    /**
+     * An encoder that moves a loop.
+     *
+     * Turning the encoder to the right will move the loop forwards; turning it to the left will
+     * move it backwards. The amount of movement may be given by either `size` or `sizeControl`,
+     * `sizeControl` being preferred.
+     *
+     * @constructor
+     * @extends {components.Encoder}
+     * @param {object} options Options object
+     * @param {number} options.size (optional) Size given in number of beats; default: 0.5
+     * @param {string} options.sizeControl (optional) Name of a control that contains `size`
+     * @public
+     */
+    var LoopMoveEncoder = function(options) {
+        options = options || {};
+        options.inKey = options.inKey || "loop_move";
+        options.size = options.size || 0.5;
+        DirectionEncoder.call(this, options);
+    };
+    LoopMoveEncoder.prototype = deriveFrom(DirectionEncoder, {
+        inValueScale: function(value) {
+            var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
+            var beats = this.sizeControl
+                ? global.engine.getValue(this.group, this.sizeControl)
+                : this.size;
+            return direction * beats;
+        },
+    });
+
+    /**
+     * A button that toggles a beatloop that ends at the current play position.
+     *
+     * @constructor
+     * @extends {components.Button}
+     * @param {object} options Options object
+     * @public
+     */
+    var BackLoopButton = function(options) {
+        options = options || {};
+        options.outKey = options.outKey || "loop_enabled";
+        components.Button.call(this, options);
+    };
+    BackLoopButton.prototype = deriveFrom(components.Button, {
+        input: function(_channel, _control, value, _status, group) {
+            var engine = global.engine;
+            var script = global.script;
+            if (value) {
+                var loopSize = engine.getValue(group, "beatloop_size");
+                var beatjumpSize = engine.getValue(group, "beatjump_size");
+                engine.setValue(group, "beatjump_size", loopSize);
+                script.triggerControl(group, "beatloop_activate");
+                script.triggerControl(group, "beatjump_backward");
+                engine.setValue(group, "beatjump_size", beatjumpSize);
+            } else {
+                script.triggerControl(group, "reloop_toggle");
+            }
+        }
+    });
+
+    /**
+     * A component that sends the values of a source component to a MIDI controller even if the
+     * source component uses its `outKey` property for other purposes.
+     *
+     * Note: most components send output properly out of the box so that no Publisher is required.
+     * This component allows to add functionality to some special components, e.g. effect unit
+     * controls.
+     *
+     * This component offers a `bind()` function that allows for re-binding to the source component
+     * when its internal state changes.
+     *
+     * @constructor
+     * @extends {components.Component}
+     * @param {object} options Options object
+     * @param {components.Component} options.source Source component whose values are sent to the
+     *                                              controller
+     * @public
+     */
+    var Publisher = function(options) {
+        if (options.source === undefined) {
+            log.error("Missing source component");
+            return;
+        }
+        this.source = options.source;
+        this.sync();
+        components.Component.call(this, options);
+    };
+    Publisher.prototype = deriveFrom(components.Component, {
+        outValueScale: function(_value) {
+            /*
+             * We ignore the argument and use the parameter (0..1) instead because value scale is
+             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
+             */
+            return convertToMidiValue.call(this, this.outGetParameter());
+        },
+        sync: function() {
+            this.midi = this.source.midi;
+            this.group = this.source.group;
+            this.outKey = this.source.inKey;
+        },
+        bind: function() {
+            if (this.group !== this.source.group || this.outKey !== this.source.inKey) {
+                log.debug("Binding publisher " + stringifyComponent(this)
+                    + " to " + stringifyComponent(this.source));
+                this.disconnect();
+                this.sync();
+                this.connect();
+                this.trigger();
+            }
+        },
+    });
+
+    /**
+     * @typedef {components.ComponentContainer} EqualizerUnit
+     *
+     * @property {components.Button} enabled En-/disable equalizer unit
+     * @property {components.Pot} super1 QuickEffect super knob
+     * @property {components.Pot} parameterKnobs.1 Low knob
+     * @property {components.Pot} parameterKnobs.2 Mid knob
+     * @property {components.Pot} parameterKnobs.3 High knob
+     * @property {components.Button} parameterButtons.1 Mute low
+     * @property {components.Button} parameterButtons.2 Mute mid
+     * @property {components.Button} parameterButtons.3 Mute high
+     */
+
+    /**
+     * A component container for equalizer controls.
+     *
+     * @constructor
+     * @extends {components.ComponentContainer}
+     * @param {number} channel Channel number
+     * @yields {EqualizerUnit}
+     * @public
+     */
+    var EqualizerUnit = function(channel) {
+        components.ComponentContainer.call(this);
+        var channelGroup = "[Channel" + channel + "]";
+        var effectGroup = "[EqualizerRack1_" + channelGroup + "_Effect1]";
+
+        var ParameterKnob = function(parameterNumber) {
+            components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
+        };
+        ParameterKnob.prototype = deriveFrom(components.Pot);
+        var ParameterButton = function(parameterNumber) {
+            components.Button.call(this, {
+                group: effectGroup, key: "button_parameter" + parameterNumber
+            });
+        };
+        ParameterButton.prototype = deriveFrom(components.Button);
+
+        this.enabled = new components.Button(
+            {group: "[QuickEffectRack1_" + channelGroup + "_Effect1]", key: "enabled"});
+        this.super1 = new components.Pot(
+            {group: "[QuickEffectRack1_" + channelGroup + "]", key: "super1"});
+        this.parameterKnobs = new components.ComponentContainer();
+        this.parameterButtons = new components.ComponentContainer();
+        for (var i = 1; i <= 3; i++) {
+            this.parameterKnobs[i] = new ParameterKnob(i);
+            this.parameterButtons[i] = new ParameterButton(i);
+        }
+    };
+    EqualizerUnit.prototype = deriveFrom(components.ComponentContainer);
+
+    /**
      * Manage Components in named ComponentContainers.
      *
      * @constructor
@@ -444,385 +772,63 @@
     });
 
     /**
-     * A button to toggle un-/shift on a target component.
-     *
-     * @constructor
-     * @extends {components.Button}
-     * @param {object} options Options object
-     * @param {components.Component|components.ComponentContainer} options.target Target component
-     * @public
-     */
-    var ShiftButton = function(options) {
-        components.Button.call(this, options);
-    };
-    ShiftButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, _group) {
-            if (value) {
-                this.target.shift();
-            } else {
-                this.target.unshift();
-            }
-        },
-    });
-
-    /**
-     * A component that handles every incoming value.
-     *
-     * @constructor
-     * @extends {components.Component}
-     * @param {object} options Options object
-     * @public
-     */
-    var Trigger = function(options) {
-        components.Component.call(this, options);
-    };
-    Trigger.prototype = deriveFrom(components.Component, {
-        inValueScale: function() { return true; },
-    });
-
-    /**
-     * An encoder for directions.
-     *
-     * Turning the encoder to the right means "forwards" and returns 1;
-     * turning it to the left means "backwards" and returns -1.
-     *
-     * @constructor
-     * @extends {components.Encoder}
-     * @param {object} options Options object
-     * @public
-     */
-    var DirectionEncoder = function(options) {
-        components.Encoder.call(this, options);
-        this.previousValue = this.inGetValue(); // available only after call of Encoder constructor
-    };
-    DirectionEncoder.prototype = deriveFrom(components.Encoder, {
-        min: 0,
-        inValueScale: function(value) {
-            var direction = 0;
-            if (value > this.previousValue || value === this.max) {
-                direction = 1;
-            } else if (value < this.previousValue || value === this.min) {
-                direction = -1;
-            }
-            this.previousValue = value;
-
-            return direction;
-        },
-    });
-
-    /**
-     * An encoder for a value range of [-bound..0..+bound].
-     *
-     * @constructor
-     * @extends {components.Encoder}
-     * @param {object} options Options object
-     * @param {number} options.bound A positive integer defining the range bounds
-     * @public
-     */
-    var RangeAwareEncoder = function(options) {
-        components.Encoder.call(this, options);
-    };
-    RangeAwareEncoder.prototype = deriveFrom(components.Encoder, {
-        outValueScale: function(value) {
-            /* -bound..+bound => 0..1 */
-            var normalizedValue = (value + this.bound) / (2 * this.bound);
-            /* 0..1 => 0..127 */
-            return convertToMidiValue.call(this, normalizedValue);
-        },
-    });
-
-    /**
-     * A button to cycle through the values of an enumeration [0..maxValue]
-     *
-     * @constructor
-     * @extends {components.Button}
-     * @param {object} options Options object
-     * @param {number} options.maxValue A positive integer defining the maximum enumeration value
-     * @public
-     */
-    var EnumToggleButton = function(options) {
-        options = options || {};
-        if (options.maxValue === undefined) {
-            log.error("EnumToggleButton constructor was called without specifying max value.");
-            this.maxValue = 0;
-        }
-        components.Button.call(this, options);
-    };
-    EnumToggleButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, _value, _status, _group) {
-            this.inSetValue((this.inGetValue() + 1) % this.maxValue);
-        }
-    });
-
-    /**
-     * An encoder for enumeration values.
-     *
-     * @constructor
-     * @extends {components.Encoder}
-     * @param {object} options Options object
-     * @param {Array} options.values An array containing the enumeration values
-     * @public
-     */
-    var EnumEncoder = function(options) {
-        options = options || {};
-        if (options.values === undefined) {
-            log.error("EnumEncoder constructor was called without specifying enum values.");
-            options.values = [];
-        }
-        options.maxIndex = options.values.length - 1;
-        components.Encoder.call(this, options);
-    };
-    EnumEncoder.prototype = deriveFrom(components.Encoder, {
-        inValueScale: function(value) {
-            var normalizedValue = value / this.max;
-            var index = Math.round(normalizedValue * this.maxIndex);
-            return this.values[index];
-        },
-        outValueScale: function(value) {
-            var index = this.values.indexOf(value);
-            if (index !== -1) {
-                var normalizedValue = index / this.maxIndex;
-                return convertToMidiValue.call(this, normalizedValue);
-            } else {
-                log.warn("'" + value + "' is not in supported values " + "[" + this.values + "]");
-            }
-        },
-    });
-
-    /**
-     * An EnumEncoder for a loop control that uses beat sizes as enumeration.
-     *
-     * @constructor
-     * @extends {EnumEncoder}
-     * @param {object} options Options object
-     * @public
-     */
-    var LoopEncoder = function(options) {
-        options = options || {};
-        if (options.values === undefined) {
-            /* taken from src/engine/controls/loopingcontrol.cpp */
-            options.values
-                = [0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512];
-        }
-        EnumEncoder.call(this, options);
-    };
-    LoopEncoder.prototype = deriveFrom(EnumEncoder);
-
-    /**
-     * An encoder that moves a loop.
-     *
-     * Turning the encoder to the right will move the loop forwards; turning it to the left will
-     * move it backwards. The amount of movement may be given by either 'size' or 'sizeControl',
-     * 'sizeControl' being preferred.
-     *
-     * @constructor
-     * @extends {components.Encoder}
-     * @param {object} options Options object
-     * @param {number} options.size (optional) Size given in number of beats; default: 0.5
-     * @param {string} options.sizeControl (optional) Name of a control that contains 'size'
-     * @public
-     */
-    var LoopMoveEncoder = function(options) {
-        options = options || {};
-        options.inKey = options.inKey || "loop_move";
-        options.size = options.size || 0.5;
-        DirectionEncoder.call(this, options);
-    };
-    LoopMoveEncoder.prototype = deriveFrom(DirectionEncoder, {
-        inValueScale: function(value) {
-            var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
-            var beats = this.sizeControl
-                ? global.engine.getValue(this.group, this.sizeControl)
-                : this.size;
-            return direction * beats;
-        },
-    });
-
-    /**
-     * A button that toggles a beatloop that ends at the current play position.
-     *
-     * @constructor
-     * @extends {components.Button}
-     * @param {object} options Options object
-     * @public
-     */
-    var BackLoopButton = function(options) {
-        options = options || {};
-        options.outKey = options.outKey || "loop_enabled";
-        components.Button.call(this, options);
-    };
-    BackLoopButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, group) {
-            var engine = global.engine;
-            var script = global.script;
-            if (value) {
-                var loopSize = engine.getValue(group, "beatloop_size");
-                var beatjumpSize = engine.getValue(group, "beatjump_size");
-                engine.setValue(group, "beatjump_size", loopSize);
-                script.triggerControl(group, "beatloop_activate");
-                script.triggerControl(group, "beatjump_backward");
-                engine.setValue(group, "beatjump_size", beatjumpSize);
-            } else {
-                script.triggerControl(group, "reloop_toggle");
-            }
-        }
-    });
-
-    /**
-     * A component that sends the values of a source component to a MIDI controller even if the
-     * source component uses its 'outKey' property for other purposes.
-     *
-     * Note: most components send output properly out of the box so that no Publisher is required.
-     * This component allows to add functionality to some special components, e.g. effect unit
-     * controls.
-     *
-     * This component offers a `bind()` function that allows for re-binding to the source component
-     * when its internal state changes.
-     *
-     * @constructor
-     * @extends {components.Component}
-     * @param {object} options Options object
-     * @param {components.Component} options.source Source component whose values are sent to the
-     *                                              controller
-     * @public
-     */
-    var Publisher = function(options) {
-        if (options.source === undefined) {
-            log.error("Missing source component");
-            return;
-        }
-        this.source = options.source;
-        this.sync();
-        components.Component.call(this, options);
-    };
-    Publisher.prototype = deriveFrom(components.Component, {
-        outValueScale: function(_value) {
-            /*
-             * We ignore the argument and use the parameter (0..1) instead because value scale is
-             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
-             */
-            return convertToMidiValue.call(this, this.outGetParameter());
-        },
-        sync: function() {
-            this.midi = this.source.midi;
-            this.group = this.source.group;
-            this.outKey = this.source.inKey;
-        },
-        bind: function() {
-            if (this.group !== this.source.group || this.outKey !== this.source.inKey) {
-                log.debug("Binding publisher " + stringifyComponent(this)
-                    + " to " + stringifyComponent(this.source));
-                this.disconnect();
-                this.sync();
-                this.connect();
-                this.trigger();
-            }
-        },
-    });
-
-    /**
-     * @typedef {components.ComponentContainer} EqualizerUnit
-     *
-     * @property {components.Button} enabled En-/disable equalizer unit
-     * @property {components.Pot} super1 QuickEffect super knob
-     * @property {components.Pot} parameterKnobs.1 Low knob
-     * @property {components.Pot} parameterKnobs.2 Mid knob
-     * @property {components.Pot} parameterKnobs.3 High knob
-     * @property {components.Button} parameterButtons.1 Mute low
-     * @property {components.Button} parameterButtons.2 Mute mid
-     * @property {components.Button} parameterButtons.3 Mute high
-     */
-
-    /**
-     * A component container for equalizer controls.
-     *
-     * @constructor
-     * @extends {components.ComponentContainer}
-     * @param {number} channel Channel number
-     * @yields {EqualizerUnit}
-     * @public
-     */
-    var EqualizerUnit = function(channel) {
-        components.ComponentContainer.call(this);
-        var channelGroup = "[Channel" + channel + "]";
-        var effectGroup = "[EqualizerRack1_" + channelGroup + "_Effect1]";
-
-        var ParameterKnob = function(parameterNumber) {
-            components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
-        };
-        ParameterKnob.prototype = deriveFrom(components.Pot);
-        var ParameterButton = function(parameterNumber) {
-            components.Button.call(this, {
-                group: effectGroup, key: "button_parameter" + parameterNumber
-            });
-        };
-        ParameterButton.prototype = deriveFrom(components.Button);
-
-        this.enabled = new components.Button(
-            {group: "[QuickEffectRack1_" + channelGroup + "_Effect1]", key: "enabled"});
-        this.super1 = new components.Pot(
-            {group: "[QuickEffectRack1_" + channelGroup + "]", key: "super1"});
-        this.parameterKnobs = new components.ComponentContainer();
-        this.parameterButtons = new components.ComponentContainer();
-        for (var i = 1; i <= 3; i++) {
-            this.parameterKnobs[i] = new ParameterKnob(i);
-            this.parameterButtons[i] = new ParameterButton(i);
-        }
-    };
-    EqualizerUnit.prototype = deriveFrom(components.ComponentContainer);
-
-    /**
      * A generic, configurable MIDI controller.
      *
      * The mapping is configured by the function `configurationProvider` which returns an object
      * that is structured as follows:
      *
-     * configuration
-     * |
-     * +- init: (optional) function that is called when Mixxx is started
-     * +- shutdown: (optional) function that is called when Mixxx is shutting down
-     * |
-     * +- decks: an array of deck definitions (may be empty or omitted)
-     * |  +- deck:
-     * |     +- deckNumbers: as defined by `components.Deck`
-     * |     +- components: an array of component definitions for the deck
-     * |        +- component:
-     * |           +- type:    Component type (constructor function, required)
-     * |           |           Example: components.Button
-     * |           +- shift:   Active only when a Shift button is pressed? (boolean, optional)
-     * |           |           Example: true
-     * |           +- options: Additional options for the component (object, required)
-     * |                       Example: {midi: [0xB0, 0x43], key: "reverse"}
-     * |
-     * +- effectUnits: an array of effect unit definitions (may be empty or omitted)
-     * |  +- effectUnit
-     * |     +- feedback: iff truthy, values are sent to the hardware controller on changes
-     * |                  (boolean, optional)
-     * |     +- unitNumbers: as defined by `components.EffectUnit`
-     * |     +- components: an object of component definitions for the effect unit. Each definition
-     * |                    is a key-value pair for a component of `components.EffectUnit` where key
-     * |                    is the name of the component and value is the MIDI address. Example:
-     * |                    `effectFocusButton: [0xB0, 0x15]`
-     * |
-     * +- equalizerUnits: an array of equalizer unit definitions (may be empty or omitted)
-     * |  +- equalizerUnit
-     * |     +- feedback: iff truthy, values are sent to the hardware controller on changes
-     * |                  (boolean, optional)
-     * |     +- channel: channel of the equalizer unit (number, required)
-     * |     +- components: an object of component definitions for the equalizer unit. Each
-     * |                    definition is a key-value pair for a component of
-     * |                    `components.extension.EqualizerUnit` where key
-     * |                    is the name of the component and value is the MIDI address. Example:
-     * |                    `enabled: [0xB0, 0x29]`
-     * |
-     * +- containers: an array of component container definitions (may be empty or omitted)
-     *    +- componentContainer
-     *       +- components: an object of component definitions for the component container.
-     *       |  +- component: a component definition in the same format as described for decks
-     *       +- type: (function, optional) constructor (default : `components.ComponentContainer`)
-     *       +- options: (object, optional) constructor argument
-     *       +- init: (function, optional) a function that is called after component creation and
-     *                                     before first use
+     *     configuration
+     *     |
+     *     +- init: (optional) A function that is called when Mixxx is started
+     *     +- shutdown: (optional) A function that is called when Mixxx is shutting down
+     *     |
+     *     +- decks: An array of deck definitions (may be empty or omitted)
+     *     |  +- deck:
+     *     |     +- deckNumbers: As defined by {components.Deck}
+     *     |     +- components: An array of component definitions for the deck
+     *     |        +- component:
+     *     |           +- type:    Component type (constructor function, required)
+     *     |           |           Example: `components.Button`
+     *     |           +- shift:   Active only when a Shift button is pressed? (boolean, optional)
+     *     |           |           Example: `true`
+     *     |           +- options: Additional options for the component (object, required)
+     *     |                       Example: {midi: [0xB0, 0x43], key: "reverse"}
+     *     |
+     *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
+     *     |  +- effectUnit
+     *     |     +- unitNumbers: As defined by {components.EffectUnit}.
+     *     |     +- components: An object of component definitions for the unit. Each definition
+     *     |     |              is a key-value pair for a component of {components.EffectUnit} where
+     *     |     |              ikey s the name of the component and value is the MIDI address.
+     *     |     |              Example: `effectFocusButton: [0xB0, 0x15]`
+     *     |     +- feedback: When set to `true`, values are sent to the hardware controller on
+     *     |     |            changes. The address of the MIDI message is taken from the `midi`
+     *     |     |            property of the affected component. (boolean, optional)
+     *     |     +- output: Contains additional output definitions (optional). The structure of this
+     *     |                object is the same as the structure of `components`. Every value change
+     *     |                of a component contained in `output` causes a MIDI message to be sent to
+     *     |                the hardware controller, using the configured address instead of the
+     *     |                component's `midi` property.
+     *     |                This option is independent of the `feedback` option.
+     *     |
+     *     +- equalizerUnits: An array of equalizer unit definitions (may be empty or omitted)
+     *     |  +- equalizerUnit
+     *     |     +- channel: As defined by {components.extension.EqualizerUnit}.
+     *     |     +- components: As described for effect unit using
+     *     |     |              {components.extension.EqualizerUnit} instead of
+     *     |     |              {components.EffectUnit}.
+     *     |     |              Example: `enabled: [0xB0, 0x29]`
+     *     |     +- feedback: As described for effect unit
+     *     |     +- output: As described for effect unit
+     *     |
+     *     +- containers: An array of component container definitions (may be empty or omitted)
+     *        +- componentContainer
+     *           +- components: An object of component definitions for the component container.
+     *           |  +- component: A component definition in the same format as described for decks
+     *           +- type: (function, optional) Constructor; default: `components.ComponentContainer`
+     *           +- options: (object, optional) Constructor argument
+     *           +- init: (function, optional) A function that is called after component creation
+     *                                         and before first use
      *
      * @constructor
      * @extends {components.ComponentContainer}
@@ -959,94 +965,129 @@
         },
 
         /**
-         * Convert MIDI addresses (number array) to objects containing a 'midi' property.
+         * Process all MIDI addresses (number arrays) of a component container definition.
          *
          * @param {object} definition Definition of a component container with MIDI addresses
-         * @param {object} implementation A component container object
-         * @return {object} The component container with MIDI addresses
+         * @param {components.ComponentContainer} implementation Corresponding component container
+         *                                        object
+         * @param {function} action Function that performs the processing of a single MIDI address
          * @private
          */
-        setMidiAddresses: function(definition, implementation) {
-            var midify = function(object) {
-                return Array.isArray(object) ? {midi: object} : Object.keys(object).reduce(
-                    function(result, name) { result[name] = midify(object[name]); return result; },
-                    {});
-            };
-            return _.merge(implementation, midify(definition.components));
+        processMidiAddresses: function(definition, implementation, action) {
+            if (Array.isArray(definition)) {
+                action.call(this, definition, implementation);
+            } else if (typeof definition === "object") {
+                Object.keys(definition).forEach(function(name) {
+                    this.processMidiAddresses(definition[name], implementation[name], action);
+                }, this);
+            }
         },
 
         /**
-         * Enhance pots so that they send output values to the controller.
+         * Create and store a publisher for a source component.
          *
-         * The enhancement is implemented by creating a `Publisher` for each pot.
-         * The optional array of function names may be used to rebind the publisher
-         * every time a function is called on the pot.
-         *
-         * @param {Array} target Storage for publisher components
-         * @param {object} potContainer Component container with pots to be enhanced
-         * @param {Array<string>} rebindTriggers Names of functions that trigger a rebind of the
-         *                                       publisher to the pot
+         * @param {components.Component} source Source component of the publisher
+         * @param {Array} publisherStorage Storage for the publisher component
+         * @yields {components.extension.Publisher} Publisher
          * @private
          */
-        createPublishersForPots: function(target, potContainer, rebindTriggers) {
-            var triggers = rebindTriggers || [];
-            potContainer.forEachComponent(function(effectComponent) {
-                if (effectComponent instanceof components.Pot) {
-                    var prototype = Object.getPrototypeOf(effectComponent);
-                    var publisher = new components.extension.Publisher({source: effectComponent});
-                    target.push(publisher);
-                    triggers.forEach(function(functionName) {
-                        var delegate = prototype[functionName];
-                        if (typeof delegate === "function") {
-                            prototype[functionName] = function() {
-                                delegate.apply(this, arguments);
-                                publisher.bind();
-                            };
-                        }
+        createPublisher: function(source, publisherStorage) {
+            var publisher = new components.extension.Publisher({source: source});
+            publisherStorage.push(publisher);
+            return publisher;
+        },
+
+        /**
+         * Setup MIDI input and output for a component container.
+         *
+         * Publisher components will be created when the definition is configured respectively.
+         *
+         * @param {object} definition Definition of a component container
+         * @param {object} implementation Corresponding component container object
+         * @param {Array} publisherStorage Storage for publisher components
+         * @param {Array<string>} rebindTriggers Names of functions that trigger rebinding a
+         *                                       publisher to its source component
+         * @return {components.ComponentContainer} The given component container argument
+         * @private
+         */
+        setupMidi: function(definition, implementation, publisherStorage, rebindTriggers) {
+
+            /* Set MIDI address in implementation components */
+            this.processMidiAddresses(definition.components, implementation,
+                function(componentDefinition, componentImplementation) {
+                    componentImplementation.midi = componentDefinition;
+                });
+
+            /* Add publishers for pots */
+            if (definition.feedback) {
+                var triggers = rebindTriggers || [];
+                var createPublisher = this.createPublisher; // `this` is bound to implementation
+                implementation.forEachComponent(function(effectComponent) {
+                    if (effectComponent instanceof components.Pot) {
+                        var publisher = createPublisher(effectComponent, publisherStorage);
+                        var prototype = Object.getPrototypeOf(effectComponent);
+                        triggers.forEach(function(functionName) {
+                            var delegate = prototype[functionName];
+                            if (typeof delegate === "function") {
+                                prototype[functionName] = function() {
+                                    delegate.apply(this, arguments);
+                                    publisher.bind();
+                                };
+                            }
+                        });
+                    }
+                });
+            }
+
+            /* Add publishers for output definitions */
+            if (definition.output) {
+                this.processMidiAddresses(definition.output, implementation,
+                    function(midi, component) {
+                        this.createPublisher(
+                            {midi: midi, group: component.group, inKey: component.inKey},
+                            publisherStorage);
                     });
-                }
-            });
+            }
+            return implementation;
         },
 
         /**
          * Create an effect unit.
          *
-         * In addition to the implementation of `components.EffectUnit`, output values of effect
-         * unit components are sent to the controller.
+         * The values of the unit's components are sent to the controller
+         * when the definition is configured respectively.
          *
          * @param {object} effectUnitDefinition Definition of the effect unit
-         * @param {Array} target Target for additionally created components
+         * @param {Array} componentStorage Storage for additionally created components
          * @yields {components.EffectUnit}
          * @private
          */
-        createEffectUnit: function(effectUnitDefinition, target) {
-            var unit = new components.EffectUnit(effectUnitDefinition.unitNumbers, true);
-            this.setMidiAddresses(effectUnitDefinition, unit);
-            if (effectUnitDefinition.feedback) {
-                this.createPublishersForPots(target, unit, ["onFocusChange", "shift", "unshift"]);
-            }
-            unit.init();
-            return unit;
+        createEffectUnit: function(effectUnitDefinition, componentStorage) {
+            var effectUnit = this.setupMidi(
+                effectUnitDefinition,
+                new components.EffectUnit(effectUnitDefinition.unitNumbers, true),
+                componentStorage,
+                ["onFocusChange", "shift", "unshift"]);
+            effectUnit.init();
+            return effectUnit;
         },
 
         /**
          * Create an equalizer unit.
          *
-         * In addition to the implementation of `components.extension.EqualizerUnit`,
-         * output values of equalizer unit components are sent to the controller.
+         * The values of the unit's components are sent to the controller
+         * when the definition is configured respectively.
          *
          * @param {object} equalizerUnitDefinition Definition of the equalizer unit
-         * @param {Array} target Target for additionally created components
+         * @param {Array} componentStorage Storage for additionally created components
          * @yields {components.extension.EqualizerUnit}
          * @private
          */
-        createEqualizerUnit: function(equalizerUnitDefinition, target) {
-            var unit = new components.extension.EqualizerUnit(equalizerUnitDefinition.channel);
-            this.setMidiAddresses(equalizerUnitDefinition, unit);
-            if (equalizerUnitDefinition.feedback) {
-                this.createPublishersForPots(target, unit);
-            }
-            return unit;
+        createEqualizerUnit: function(equalizerUnitDefinition, componentStorage) {
+            return this.setupMidi(
+                equalizerUnitDefinition,
+                new components.extension.EqualizerUnit(equalizerUnitDefinition.channel),
+                componentStorage);
         },
 
         /**
@@ -1088,7 +1129,6 @@
     });
 
     var exports = {};
-    exports.LayerManager = LayerManager;
     exports.ShiftButton = ShiftButton;
     exports.Trigger = Trigger;
     exports.DirectionEncoder = DirectionEncoder;
@@ -1100,6 +1140,7 @@
     exports.BackLoopButton = BackLoopButton;
     exports.Publisher = Publisher;
     exports.EqualizerUnit = EqualizerUnit;
+    exports.LayerManager = LayerManager;
     exports.GenericMidiController = GenericMidiController;
     global.components.extension = exports;
 })(this);
