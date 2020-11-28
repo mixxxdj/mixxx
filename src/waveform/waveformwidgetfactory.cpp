@@ -641,7 +641,9 @@ void WaveformWidgetFactory::render() {
             // next rendered frame is displayed after next buffer swap and than after VSync
             QVarLengthArray<bool, 10> shouldRenderWaveforms(
                     static_cast<int>(m_waveformWidgetHolders.size()));
-            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            for (decltype(m_waveformWidgetHolders)::size_type i = 0;
+                    i < m_waveformWidgetHolders.size();
+                    i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 // Don't bother doing the pre-render work if we aren't going to
                 // render this widget.
@@ -658,7 +660,9 @@ void WaveformWidgetFactory::render() {
             // It may happen that there is an artificially delayed due to
             // anti tearing driver settings
             // all render commands are delayed until the swap from the previous run is executed
-            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            for (decltype(m_waveformWidgetHolders)::size_type i = 0;
+                    i < m_waveformWidgetHolders.size();
+                    i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (!shouldRenderWaveforms[i]) {
                     continue;
