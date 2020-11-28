@@ -181,6 +181,49 @@ jobs:
           ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
           ${{ matrix.os }}-${{ matrix.compiler_cache }}
 
+    - name: "Generate package filename"
+      shell: python
+      run: |
+        import os
+        import re
+
+        def get_refname(varname):
+            matchobj = re.match(r"^refs/([^/]+)/(.*)$", os.getenv(varname))
+            assert matchobj is not None
+            reftype = matchobj.group(1)
+            refname = re.sub(r"\W+", "-", matchobj.group(2))
+            assert reftype in ("tags", "heads")
+            return ("release-%s" % refname) if reftype == "tags" else refname
+
+        def get_pr_id(varname):
+            matchobj = re.match(r"^refs/pull/(\d+)/merge$", os.getenv(varname))
+            assert matchobj is not None
+            return int(matchobj.group(1))
+
+        commit = os.getenv("GITHUB_SHA")
+        event_name = os.getenv("GITHUB_EVENT_NAME")
+        assert event_name in ("push", "pull_request")
+
+        if event_name == "push":
+            refname = get_refname("GITHUB_REF")
+            package_name = "mixxx-%s-%s" % (refname, commit)
+        else:
+            refname = os.getenv("GITHUB_HEAD_REF")
+            pr_id = get_pr_id("GITHUB_REF")
+            package_name = "mixxx-pr-%d-%s-%s" % (pr_id, refname, commit)
+
+        with open(os.getenv("GITHUB_ENV"), mode="a") as f:
+            f.write("MIXXX_PACKAGE_NAME=%s\n" % package_name)
+
+            cmake_args_extra = os.getenv("CMAKE_ARGS_EXTRA", "")
+            if cmake_args_extra:
+                cmake_args_extra += " "
+            cmake_args_extra += "-DCPACK_PACKAGE_FILE_NAME=%s" % package_name
+            f.write("CMAKE_ARGS_EXTRA=%s\n" % cmake_args_extra)
+
+        print("Event Type: %s" % event_name)
+        print("Package name: %s" % package_name)
+
     - name: "Create build directory"
       run: mkdir cmake_build
 
