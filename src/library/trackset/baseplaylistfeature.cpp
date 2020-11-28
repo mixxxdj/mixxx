@@ -173,14 +173,18 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId) {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId != kInvalidPlaylistId) {
-        m_pPlaylistTableModel->setTableModel(playlistId);
-        emit showTrackModel(m_pPlaylistTableModel);
-        emit enableCoverArtDisplay(true);
-        if (m_pSidebarWidget) {
-            m_pSidebarWidget->selectChildIndex(index);
-        }
+    if (playlistId == kInvalidPlaylistId) {
+        return;
     }
+
+    m_pPlaylistTableModel->setTableModel(playlistId);
+    emit showTrackModel(m_pPlaylistTableModel);
+    emit enableCoverArtDisplay(true);
+
+    if (!m_pSidebarWidget) {
+        return;
+    }
+    m_pSidebarWidget->selectChildIndex(index);
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
@@ -189,15 +193,17 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (index.isValid()) {
-        m_lastRightClickedIndex = index;
-        m_pPlaylistTableModel->setTableModel(playlistId);
-        emit showTrackModel(m_pPlaylistTableModel);
-        emit enableCoverArtDisplay(true);
-        // Update selection
-        emit featureSelect(this, m_lastRightClickedIndex);
-        activateChild(m_lastRightClickedIndex);
+    if (!index.isValid()) {
+        return;
     }
+
+    m_lastRightClickedIndex = index;
+    m_pPlaylistTableModel->setTableModel(playlistId);
+    emit showTrackModel(m_pPlaylistTableModel);
+    emit enableCoverArtDisplay(true);
+    // Update selection
+    emit featureSelect(this, m_lastRightClickedIndex);
+    activateChild(m_lastRightClickedIndex);
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
@@ -389,6 +395,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
     m_playlistDao.deletePlaylist(playlistId);
     activate();
+
     if (nextId != kInvalidPlaylistId) {
         activatePlaylist(nextId);
     }
