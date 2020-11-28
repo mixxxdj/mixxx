@@ -61,8 +61,7 @@ let
     name = "${shortname}-${version}";
     src = fetchurl {
       url = "https://github.com/KDE/clazy/archive/v${version}.tar.gz";
-      sha256 =
-        "0k4qpk5w8gk9y44jb4m9fcl7xga29wmcv34d43mmz0fx6nff92v9";
+      sha256 = "0k4qpk5w8gk9y44jb4m9fcl7xga29wmcv34d43mmz0fx6nff92v9";
     };
     cmakeFlags = [ "-DCMAKE_MODULE_PATH=${llvm_packages.clang}" ];
     nativeBuildInputs = [
@@ -122,7 +121,7 @@ let
         else
           pre-commit install
         fi
-        create-includes
+        link-environment
       '');
 
   wrapper = (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
@@ -200,8 +199,8 @@ let
 
   # this creates a folder with links to the include folders of the configured
   # nix pkgs. This allows to IDE to look up the correct headers
-  shell-create-includes = nixroot.writeShellScriptBin "create-includes" ''
-    echo "Creating include cache"
+  shell-link-environment = nixroot.writeShellScriptBin "link-environment" ''
+    echo "Link environment"
     create_includes() {
       local IFS=:
       local includes
@@ -218,8 +217,11 @@ let
                 ln -s -T $i ./$t
             fi
       done
+      cd ../..
     }
     create_includes $CMAKE_INCLUDE_PATH
+    rm -f cbuild/compiler 2>/dev/null
+    ln -s ${stdenv.cc} cbuild/compiler
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then
@@ -305,7 +307,7 @@ in stdenv.mkDerivation rec {
         shell-debug
         shell-run
         shell-run-tests
-        shell-create-includes
+        shell-link-environment
         nix
       ] ++ lib.optional useClang [ clazy ]
       ++ lib.optional (builtins.hasAttr "pre-commit" pkgs) [ pkgs.pre-commit ]
