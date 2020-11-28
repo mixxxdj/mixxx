@@ -100,9 +100,8 @@ QNetworkRequest newRequest(
         const QUrl& url) {
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, JSON_CONTENT_TYPE);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+            QNetworkRequest::NoLessSafeRedirectPolicy);
     return request;
 }
 
