@@ -769,8 +769,13 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double value) {
     if (pCue) {
         double position = pCue->getPosition();
         if (position != Cue::kNoPosition) {
-            m_pPlay->set(0.0);
-            seekExact(position);
+            if (!m_iCurrentlyPreviewingHotcues && !m_bPreviewing) {
+                m_pPlay->set(0.0);
+                seekExact(position);
+            } else {
+                // this becomes a play latch command if we are previewing
+                m_pPlay->set(0.0);
+            }
         }
     }
 }
@@ -861,7 +866,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
     CuePointer pCue(pControl->getCue());
 
     if (value > 0) {
-        if (pCue && pCue->getPosition() != Cue::kNoPosition) {
+        if (pCue && pCue->getPosition() != Cue::kNoPosition && !pControl->isPreviewing()) {
             m_iCurrentlyPreviewingHotcues++;
             double position = pCue->getPosition();
             m_bypassCueSetByPlay = true;
@@ -1026,23 +1031,26 @@ void CueControl::cueGotoAndStop(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_mutex);
-    m_pPlay->set(0.0);
-    double cuePoint = m_pCuePoint->get();
-
-    // Need to unlock before emitting any signals to prevent deadlock.
-    lock.unlock();
-
-    seekExact(cuePoint);
+    if (!m_iCurrentlyPreviewingHotcues && !m_bPreviewing) {
+        m_pPlay->set(0.0);
+        double position = m_pCuePoint->get();
+        seekExact(position);
+    } else {
+        // this becomes a play latch command if we are previewing
+        m_pPlay->set(0.0);
+    }
 }
 
 void CueControl::cuePreview(double value) {
+    //qDebug() << "CueControl::cuePreview" << value;
     QMutexLocker lock(&m_mutex);
 
     if (value > 0) {
-        m_bPreviewing = true;
-        m_bypassCueSetByPlay = true;
-        m_pPlay->set(1.0);
+        if (!m_bPreviewing) {
+            m_bPreviewing = true;
+            m_bypassCueSetByPlay = true;
+            m_pPlay->set(1.0);
+        }
     } else if (m_bPreviewing) {
         m_bPreviewing = false;
         if (m_iCurrentlyPreviewingHotcues) {
@@ -1071,7 +1079,10 @@ void CueControl::cueCDJ(double value) {
     TrackAt trackAt = getTrackAt();
 
     if (value > 0) {
-        if (m_iCurrentlyPreviewingHotcues) {
+        if (m_bPreviewing) {
+            // already previewing, do nothing
+            return;
+        } else if (m_iCurrentlyPreviewingHotcues) {
             // we are already previewing by hotcues
             // just jump to cue point and continue previewing
             m_bPreviewing = true;
@@ -1095,9 +1106,6 @@ void CueControl::cueCDJ(double value) {
         } else {
             // Pause not at cue point and not at end position
             cueSet(value);
-            // Just in case.
-            m_bPreviewing = false;
-            m_pPlay->set(0.0);
 
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
@@ -1138,7 +1146,10 @@ void CueControl::cueDenon(double value) {
     TrackAt trackAt = getTrackAt();
 
     if (value > 0) {
-        if (m_iCurrentlyPreviewingHotcues) {
+        if (m_bPreviewing) {
+            // already previewing, do nothing
+            return;
+        } else if (m_iCurrentlyPreviewingHotcues) {
             // we are already previewing by hotcues
             // just jump to cue point and continue previewing
             m_bPreviewing = true;
@@ -1149,13 +1160,8 @@ void CueControl::cueDenon(double value) {
             m_bPreviewing = true;
             m_pPlay->set(1.0);
         } else {
-            // Just in case.
-            m_bPreviewing = false;
-            m_pPlay->set(0.0);
-
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
-
             seekAbs(m_pCuePoint->get());
         }
     } else if (m_bPreviewing) {
