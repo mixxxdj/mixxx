@@ -19,7 +19,12 @@ class Cue : public QObject {
 
   public:
     static constexpr double kNoPosition = -1.0;
+
+    /// Invalid hot cue index
     static constexpr int kNoHotCue = -1;
+
+    /// Hot cues are sequentially indexed starting with kFirstHotCue (inclusive)
+    static constexpr int kFirstHotCue = 0;
 
     Cue();
     Cue(
@@ -34,7 +39,7 @@ class Cue : public QObject {
             double position,
             double length,
             int hotCue,
-            QString label,
+            const QString& label,
             mixxx::RgbColor color);
     ~Cue() override = default;
 
@@ -60,7 +65,7 @@ class Cue : public QObject {
 
     QString getLabel() const;
     void setLabel(
-            QString label = QString());
+            const QString& label = QString());
 
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);

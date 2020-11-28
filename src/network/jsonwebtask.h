@@ -61,7 +61,7 @@ class JsonWebTask : public WebTask {
 
   signals:
     void failed(
-            network::JsonWebResponse response);
+            const network::JsonWebResponse& response);
 
   private slots:
     void slotNetworkReplyFinished();

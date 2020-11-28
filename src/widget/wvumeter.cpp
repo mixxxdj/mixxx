@@ -95,7 +95,7 @@ void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WVuMeter::setPixmapBackground(
-        PixmapSource source,
+        const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
@@ -107,8 +107,10 @@ void WVuMeter::setPixmapBackground(
     }
 }
 
-void WVuMeter::setPixmaps(PixmapSource source, bool bHorizontal,
-                          Paintable::DrawMode mode, double scaleFactor ) {
+void WVuMeter::setPixmaps(const PixmapSource& source,
+        bool bHorizontal,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << source.getPath();

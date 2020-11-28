@@ -60,7 +60,7 @@ class ScriptConnectionInvokableWrapper : public QObject {
     //Q_PROPERTY(QScriptValue function READ function)
     Q_PROPERTY(bool isConnected READ readIsConnected)
   public:
-    ScriptConnectionInvokableWrapper(ScriptConnection conn) {
+    ScriptConnectionInvokableWrapper(const ScriptConnection& conn) {
         m_scriptConnection = conn;
         m_idString = conn.id.toString();
         m_isConnected = true;
@@ -99,36 +99,39 @@ class ControllerEngine : public QObject {
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
     // Disconnect a ScriptConnection
-    bool removeScriptConnection(const ScriptConnection conn);
-    void triggerScriptConnection(const ScriptConnection conn);
+    bool removeScriptConnection(const ScriptConnection& conn);
+    void triggerScriptConnection(const ScriptConnection& conn);
 
   protected:
-    Q_INVOKABLE double getValue(QString group, QString name);
-    Q_INVOKABLE void setValue(QString group, QString name, double newValue);
-    Q_INVOKABLE double getParameter(QString group, QString name);
-    Q_INVOKABLE void setParameter(QString group, QString name, double newValue);
-    Q_INVOKABLE double getParameterForValue(QString group, QString name, double value);
-    Q_INVOKABLE void reset(QString group, QString name);
-    Q_INVOKABLE double getDefaultValue(QString group, QString name);
-    Q_INVOKABLE double getDefaultParameter(QString group, QString name);
-    Q_INVOKABLE QScriptValue makeConnection(QString group, QString name,
-                                            const QScriptValue callback);
+    Q_INVOKABLE double getValue(const QString& group, const QString& name);
+    Q_INVOKABLE void setValue(const QString& group, const QString& name, double newValue);
+    Q_INVOKABLE double getParameter(const QString& group, const QString& name);
+    Q_INVOKABLE void setParameter(const QString& group, const QString& name, double newValue);
+    Q_INVOKABLE double getParameterForValue(
+            const QString& group, const QString& name, double value);
+    Q_INVOKABLE void reset(const QString& group, const QString& name);
+    Q_INVOKABLE double getDefaultValue(const QString& group, const QString& name);
+    Q_INVOKABLE double getDefaultParameter(const QString& group, const QString& name);
+    Q_INVOKABLE QScriptValue makeConnection(const QString& group,
+            const QString& name,
+            const QScriptValue& callback);
     // DEPRECATED: Use makeConnection instead.
-    Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                            const QScriptValue passedCallback,
-                                            bool disconnect = false);
+    Q_INVOKABLE QScriptValue connectControl(const QString& group,
+            const QString& name,
+            const QScriptValue& passedCallback,
+            bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
-    Q_INVOKABLE void trigger(QString group, QString name);
-    Q_INVOKABLE void log(QString message);
-    Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
+    Q_INVOKABLE void trigger(const QString& group, const QString& name);
+    Q_INVOKABLE void log(const QString& message);
+    Q_INVOKABLE int beginTimer(int interval, const QScriptValue& scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm,
                                    double alpha, double beta, bool ramp = true);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
-    Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-    Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
+    Q_INVOKABLE void softTakeover(const QString& group, const QString& name, bool set);
+    Q_INVOKABLE void softTakeoverIgnoreNextValue(const QString& group, const QString& name);
     Q_INVOKABLE void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
     Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0);
@@ -141,17 +144,16 @@ class ControllerEngine : public QObject {
     bool evaluate(const QString& filepath);
 
     // Execute a basic MIDI message callback.
-    bool execute(QScriptValue function,
-                 unsigned char channel,
-                 unsigned char control,
-                 unsigned char value,
-                 unsigned char status,
-                 const QString& group,
-                 mixxx::Duration timestamp);
+    bool execute(const QScriptValue& function,
+            unsigned char channel,
+            unsigned char control,
+            unsigned char value,
+            unsigned char status,
+            const QString& group,
+            mixxx::Duration timestamp);
 
     // Execute a byte array callback.
-    bool execute(QScriptValue function, const QByteArray data,
-                 mixxx::Duration timestamp);
+    bool execute(const QScriptValue& function, const QByteArray& data, mixxx::Duration timestamp);
 
     // Evaluates all provided script files and returns true if no script errors
     // occurred while evaluating them.
@@ -169,9 +171,10 @@ class ControllerEngine : public QObject {
   private:
     bool syntaxIsValid(const QString& scriptCode, const QString& filename = QString());
     bool evaluate(const QFileInfo& scriptFile);
-    bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
-    bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
-                         QScriptValueList arguments);
+    bool internalExecute(const QScriptValue& thisObject, const QString& scriptCode);
+    bool internalExecute(const QScriptValue& thisObject,
+            QScriptValue functionObject,
+            const QScriptValueList& arguments);
     void initializeScriptEngine();
     void uninitializeScriptEngine();
 
@@ -180,7 +183,9 @@ class ControllerEngine : public QObject {
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
-    void callFunctionOnObjects(QList<QString>, const QString&, QScriptValueList args = QScriptValueList());
+    void callFunctionOnObjects(const QList<QString>&,
+            const QString&,
+            const QScriptValueList& args = QScriptValueList());
     bool checkException(bool bFatal = false);
     QScriptEngine *m_pEngine;
 

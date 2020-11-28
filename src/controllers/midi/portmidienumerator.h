@@ -24,7 +24,7 @@ class PortMidiEnumerator : public MidiEnumerator {
 };
 
 // For testing.
-bool shouldLinkInputToOutput(const QString input_name,
-                             const QString output_name);
+bool shouldLinkInputToOutput(const QString& input_name,
+        const QString& output_name);
 
 #endif

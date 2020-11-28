@@ -16,6 +16,19 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
           m_pConfig(_config) {
     m_pUi->setupUi(this);
     m_pUi->advancedSettings->setVisible(m_pUi->showAdvanced->isChecked());
+
+    connect(m_pUi->memoryLimit,
+            &QAbstractSlider::valueChanged,
+            m_pUi->memoryLimitSpin,
+            &QSpinBox::setValue);
+    connect(m_pUi->memoryLimitSpin,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            m_pUi->memoryLimit,
+            &QAbstractSlider::setValue);
+    connect(m_pUi->showAdvanced,
+            &QAbstractButton::toggled,
+            m_pUi->advancedSettings,
+            &QWidget::setVisible);
 }
 
 DlgPrefModplug::~DlgPrefModplug() {

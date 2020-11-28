@@ -29,7 +29,7 @@ class CueInfo {
             std::optional<double> startPositionMillis,
             std::optional<double> endPositionMillis,
             std::optional<int> hotCueNumber,
-            QString label,
+            const QString& label,
             RgbColor::optional_t color);
 
     CueType getType() const;
@@ -49,7 +49,7 @@ class CueInfo {
 
     QString getLabel() const;
     void setLabel(
-            QString label = QString());
+            const QString& label = QString());
 
     mixxx::RgbColor::optional_t getColor() const;
     void setColor(

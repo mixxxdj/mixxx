@@ -272,7 +272,7 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
 }
 
 ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
     if (m_currentFrameIndex != kUnknownFrameIndex) {
         seekSampleFrame(firstFrameIndex);

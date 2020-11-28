@@ -109,7 +109,9 @@ class SeratoBeatGrid final {
     const QList<SeratoBeatGridNonTerminalMarkerPointer>& nonTerminalMarkers() const {
         return m_nonTerminalMarkers;
     }
-    void setNonTerminalMarkers(QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers) {
+    void setNonTerminalMarkers(
+            const QList<SeratoBeatGridNonTerminalMarkerPointer>&
+                    nonTerminalMarkers) {
         m_nonTerminalMarkers = nonTerminalMarkers;
     }
 

@@ -34,8 +34,8 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     QVariant title() override;
     QIcon getIcon() override;
-    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAccept(QUrl url) override;
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dragMoveAccept(const QUrl& url) override;
     TreeItemModel* getChildModel() override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;

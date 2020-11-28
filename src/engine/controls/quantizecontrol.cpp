@@ -13,8 +13,8 @@
 #include "track/track.h"
 #include "util/assert.h"
 
-QuantizeControl::QuantizeControl(QString group,
-                                 UserSettingsPointer pConfig)
+QuantizeControl::QuantizeControl(const QString& group,
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);

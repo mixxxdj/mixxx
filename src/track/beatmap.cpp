@@ -36,7 +36,7 @@ namespace mixxx {
 
 class BeatMapIterator : public BeatIterator {
   public:
-    BeatMapIterator(BeatList::const_iterator start, BeatList::const_iterator end)
+    BeatMapIterator(const BeatList::const_iterator& start, const BeatList::const_iterator& end)
             : m_currentBeat(start),
               m_endBeat(end) {
         // Advance to the first enabled beat.
@@ -165,7 +165,7 @@ QString BeatMap::getSubVersion() const {
     return m_subVersion;
 }
 
-void BeatMap::setSubVersion(QString subVersion) {
+void BeatMap::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
 }
 

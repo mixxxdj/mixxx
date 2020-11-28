@@ -147,7 +147,7 @@ void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
 }
 
 TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
-        QString filename) {
+        const QString& filename) {
     // QT's QFuture is not quite right for this type of threaded question-and-answer.
     // std::future works fine, even with signals and slots.
     QScopedPointer<std::promise<OverwriteAnswer>> mode_promise(

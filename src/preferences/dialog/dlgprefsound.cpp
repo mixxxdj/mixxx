@@ -176,7 +176,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(m_pSoundManager,
             &SoundManager::outputRegistered,
             this,
-            [this](AudioOutput output, AudioSource* source) {
+            [this](const AudioOutput& output, AudioSource* source) {
                 Q_UNUSED(source);
                 addPath(output);
                 loadSettings();
@@ -185,7 +185,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
-            [this](AudioInput input, AudioDestination* dest) {
+            [this](const AudioInput& input, AudioDestination* dest) {
                 Q_UNUSED(dest);
                 addPath(input);
                 loadSettings();
@@ -343,7 +343,7 @@ void DlgPrefSound::initializePaths() {
     }
 }
 
-void DlgPrefSound::addPath(AudioOutput output) {
+void DlgPrefSound::addPath(const AudioOutput& output) {
     // if we already know about this output, don't make a new entry
     foreach (QObject *obj, outputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
@@ -374,7 +374,7 @@ void DlgPrefSound::addPath(AudioOutput output) {
     connectSoundItem(toInsert);
 }
 
-void DlgPrefSound::addPath(AudioInput input) {
+void DlgPrefSound::addPath(const AudioInput& input) {
     DlgPrefSoundItem *toInsert;
     // if we already know about this input, don't make a new entry
     foreach (QObject *obj, inputTab->children()) {

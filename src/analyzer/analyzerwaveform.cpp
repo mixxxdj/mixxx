@@ -16,7 +16,7 @@ mixxx::Logger kLogger("AnalyzerWaveform");
 
 AnalyzerWaveform::AnalyzerWaveform(
         UserSettingsPointer pConfig,
-        QSqlDatabase dbConnection)
+        const QSqlDatabase& dbConnection)
         : m_analysisDao(pConfig),
           m_waveformData(nullptr),
           m_waveformSummaryData(nullptr),
