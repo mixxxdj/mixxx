@@ -950,6 +950,17 @@ if(GNU_GCC OR LLVM_CLANG)
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
   )
+elseif(MSVC)
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS /w
+  )
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS /w
+  )
 endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
@@ -958,6 +969,7 @@ if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
     target_compile_options(mixxx-lib PUBLIC /W3)
+    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
   target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion)
@@ -1096,16 +1108,71 @@ if (APPLE)
     )
   endif()
 else()
-    include(InstallRequiredSystemLibraries)
-    install(
-        FILES
-            ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-        DESTINATION
-            "${MIXXX_INSTALL_BINDIR}"
-        COMPONENT
-            Libraries
-    )
+  include(InstallRequiredSystemLibraries)
+  install(
+    FILES
+        ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+    DESTINATION
+        "${MIXXX_INSTALL_BINDIR}"
+    COMPONENT
+        Libraries
+  )
 endif()
+
+if(WIN32)
+  option(WINDOWS_CODESIGN "Sign Windows executables and libraries with digital certificate" OFF)
+  mark_as_advanced(WINDOWS_CODESIGN)
+  if(WINDOWS_CODESIGN)
+    set(WINDOWS_CODESIGN_CERTIFICATE_PATH "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PATH}" CACHE STRING "Path to signtool certificate")
+    set(WINDOWS_CODESIGN_CERTIFICATE_PASSWORD "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" CACHE STRING "Password of signtool certificate")
+    if("${WINDOWS_CODESIGN_CERTIFICATE_PATH}" STREQUAL "" AND "${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" STREQUAL "")
+        set(WINDOWS_CODESIGN_ARGS /a /t http://timestamp.verisign.com/scripts/timstamp.dll CACHE STRING "parameters for signtool (list)")
+    else()
+        set(WINDOWS_CODESIGN_ARGS /f ${WINDOWS_CODESIGN_CERTIFICATE_PATH} /p ${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD} CACHE STRING "parameters for signtool (list)")
+    endif()
+    find_program(SIGNTOOL_EXECUTABLE signtool)
+    if(NOT SIGNTOOL_EXECUTABLE)
+      message(FATAL_ERROR "signtool is not found. Signing executables not possible")
+    endif()
+    message(STATUS "Found signtool: ${SIGNTOOL_EXECUTABLE}")
+
+    # Check if we're able to sign an executable
+    if(NOT DEFINED WINDOWS_CODESIGN_OK)
+      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/testsign.c "int main(){return 0;}")
+      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testsign)
+      try_compile(
+        RESULT ${CMAKE_CURRENT_BINARY_DIR}/testsign ${CMAKE_CURRENT_BINARY_DIR}/testsign.c
+        COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
+      )
+      execute_process(
+        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
+        RESULT_VARIABLE ERR OUTPUT_QUIET
+      )
+      if(ERR EQUAL 0)
+        message(STATUS "Windows codesigning via signtool is working")
+        set(WINDOWS_CODESIGN_OK 1 CACHE INTERNAL "Can sign executables")
+      else()
+        message(FATAL_ERROR "Could NOT codesign test sample (signtool failed)")
+        set(WINDOWS_CODESIGN_OK 0 CACHE INTERNAL "Invalid or missing certificate")
+      endif()
+    endif()
+    mark_as_advanced(SIGNTOOL_EXECUTABLE SIGNTOOL_ARGS)
+  endif()
+
+  macro(windows_codesign_target CODESIGN_TARGET)
+    add_custom_command(
+        TARGET "${CODESIGN_TARGET}" POST_BUILD
+        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} $<TARGET_FILE:${CODESIGN_TARGET}>
+        COMMENT "Signining target ${CODESIGN_TARGET}"
+        VERBATIM
+    )
+  endmacro()
+
+  if(WINDOWS_CODESIGN)
+    windows_codesign_target(mixxx)
+  endif()
+endif()
+
 
 install(
   TARGETS
@@ -1724,7 +1791,7 @@ target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 
 # Rigtorp SPSC Queue
 # https://github.com/rigtorp/SPSCQueue
-target_include_directories(mixxx-lib PUBLIC lib/rigtorp/SPSCQueue/include)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
 find_package(Qt5
@@ -2250,7 +2317,7 @@ if(BROADCAST)
       # Fall back to internal libraray in the lib tree
       message(STATUS "Using internal libshout")
       add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")
-      target_include_directories(mixxx-lib PUBLIC lib/libshout/include)
+      target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout/include)
       target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
     else()
       target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
@@ -2379,7 +2446,7 @@ if(QTKEYCHAIN)
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
   target_link_libraries(mixxx-lib PUBLIC ${QTKEYCHAIN_LIBRARIES})
-  target_include_directories(mixxx-lib PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
+  target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
 endif()
 
 # USB HID or/and Bulk controller support
@@ -2475,7 +2542,7 @@ if(VINYLCONTROL)
   else()
     target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
   endif()
-  target_include_directories(mixxx-xwax PUBLIC lib/xwax)
+  target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PUBLIC mixxx-xwax)
 endif()
 

@@ -590,7 +590,7 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
         double absPos = calculatePositionFromAngle(theta);
         double absPosInSamples = absPos * m_pTrackSamples->get();
         m_pScratchPos->set(absPosInSamples - m_dInitialPos);
-    } else if (e->buttons() & Qt::MidButton) {
+    } else if (e->buttons() & Qt::MiddleButton) {
     } else if (e->buttons() & Qt::NoButton) {
         setCursor(QCursor(Qt::OpenHandCursor));
     }

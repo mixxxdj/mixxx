@@ -126,7 +126,7 @@ inline void writeToStdErr(
                     .toLocal8Bit();
 
     QMutexLocker locked(&s_mutexStdErr);
-    const size_t written = fwrite(
+    const std::size_t written = fwrite(
             formattedMessage.constData(), sizeof(char), formattedMessage.size(), stderr);
     Q_UNUSED(written);
     DEBUG_ASSERT(written == static_cast<size_t>(formattedMessage.size()));
