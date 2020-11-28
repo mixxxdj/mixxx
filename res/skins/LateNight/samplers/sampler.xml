@@ -82,8 +82,8 @@
 
                       <WidgetGroup>
                         <ObjectName>SamplerPlayBox</ObjectName>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>min,min</SizePolicy>
+                        <Layout>stacked</Layout>
+                        <SizePolicy>max,max</SizePolicy>
                         <Children>
                           <Template src="skin:/controls/button_2state_right_display.xml">
                             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
@@ -93,10 +93,18 @@
                             <SetVariable name="BtnSize">square_big</SetVariable>
                             <SetVariable name="ConfigKey"><Variable name="Group"/>,cue_gotoandplay</SetVariable>
                             <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_default</SetVariable>
-                            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play</SetVariable>
+                            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_latched</SetVariable>
                           </Template>
+                          <PushButton>
+                            <ObjectName>PreviewIndicator</ObjectName>
+                            <Size>34f,34f</Size>
+                            <NumberStates>2</NumberStates>
+                            <Connection>
+                              <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+                            </Connection>
+                          </PushButton>
                         </Children>
-                      </WidgetGroup><!-- SamplerPlayBox -->
+                      </WidgetGroup>
 
                       <WidgetGroup>
                         <ObjectName>OverviewBox</ObjectName>

@@ -1640,11 +1640,12 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${PortMidi_LIBRARIES})
 
 # Protobuf
+if(STATIC_DEPS)
+  set(Protobuf_USE_STATIC_LIBS ON)
+  mark_as_advanced(Protobuf_USE_STATIC_LIBS)
+endif()
 add_subdirectory(src/proto)
 target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
-if(WIN32 AND NOT STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC PROTOBUF_USE_DLLS)
-endif()
 
 # Rigtorp SPSC Queue
 # https://github.com/rigtorp/SPSCQueue

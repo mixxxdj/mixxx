@@ -19,7 +19,12 @@ class Cue : public QObject {
 
   public:
     static constexpr double kNoPosition = -1.0;
+
+    /// Invalid hot cue index
     static constexpr int kNoHotCue = -1;
+
+    /// Hot cues are sequentially indexed starting with kFirstHotCue (inclusive)
+    static constexpr int kFirstHotCue = 0;
 
     Cue();
     Cue(

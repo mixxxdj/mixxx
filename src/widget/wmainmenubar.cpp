@@ -56,12 +56,13 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
         : QMenuBar(pParent),
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {
+    setObjectName(QStringLiteral("MainMenu"));
     initialize();
 }
 
 void WMainMenuBar::initialize() {
     // FILE MENU
-    QMenu* pFileMenu = new QMenu(tr("&File"));
+    QMenu* pFileMenu = new QMenu(tr("&File"), this);
 
     QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
@@ -109,7 +110,7 @@ void WMainMenuBar::initialize() {
     addMenu(pFileMenu);
 
     // LIBRARY MENU
-    QMenu* pLibraryMenu = new QMenu(tr("&Library"));
+    QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
 
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
@@ -158,9 +159,9 @@ void WMainMenuBar::initialize() {
     // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
     // and the magic menu items won't get injected.
     // https://bugs.launchpad.net/mixxx/+bug/1534292
-    QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"));
+    QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"), this);
 #else
-    QMenu* pViewMenu = new QMenu(tr("&View"));
+    QMenu* pViewMenu = new QMenu(tr("&View"), this);
 #endif
 
     // Skin Settings Menu
@@ -295,10 +296,10 @@ void WMainMenuBar::initialize() {
     addMenu(pViewMenu);
 
     // OPTIONS MENU
-    QMenu* pOptionsMenu = new QMenu(tr("&Options"));
+    QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
 
 #ifdef __VINYLCONTROL__
-    QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"));
+    QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"), this);
     QString vinylControlText = tr(
             "Use timecoded vinyls on external turntables to control Mixxx");
 
@@ -414,7 +415,7 @@ void WMainMenuBar::initialize() {
 
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
-        QMenu* pDeveloperMenu = new QMenu(tr("&Developer"));
+        QMenu* pDeveloperMenu = new QMenu(tr("&Developer"), this);
 
         QString reloadSkinTitle = tr("&Reload Skin");
         QString reloadSkinText = tr("Reload the skin");

@@ -468,16 +468,19 @@ void Tooltips::addStandardTooltips() {
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
+    QString whilePreviewing = tr("(while previewing)");
     QString cueSet = tr("Places a cue point at the current position on the waveform.");
     QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
     QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
             "OR preview from it (Denon mode).");
     QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+    QString latchingPlay = tr("Is latching the playing state.");
 
     // Currently used for decks
     add("play_cue_set")
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
+            << QString("%1 %2: %3").arg(leftClick, whilePreviewing, latchingPlay)
             << QString("%1: %2").arg(rightClick, cueSet);
 
     // Currently used for minimal decks
@@ -494,7 +497,8 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
             << cueHint
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
+            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."))
+            << QString("%1 %2: %3").arg(rightClick, whilePreviewing, latchingPlay);
     add("cue_gotoandplay_cue_default")
             << tr("Play")
             << QString("%1: %2").arg(leftClick, tr("Plays track from the cue point."))

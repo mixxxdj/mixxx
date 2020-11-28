@@ -1509,19 +1509,22 @@ WEffectSelector,
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_active.svg) 12 2 1 2;
   }
 
-#BeatgridControls WPushButton, #BeatgridControlsToggle,
+#BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
-#PlayDeck, #PlayIndicator, #PlayBg,
-#CueDeck, #PlayCueMini WPushButton,
-#LoopActivate,
-#RateControls WPushButton,
-#SyncDeck, #SyncSampler,
+WPushButton#PlayDeck,
+WPushButton#PreviewIndicator,
+WPushButton#PlayIndicator,
+WPushButton#CueDeck,
+#PlayCueMini WPushButton,
+WPushButton#LoopActivate,
+WPushButton#RateControls WPushButton,
+WPushButton#SyncDeck, WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
 #Sampler WPushButton,
 #SamplerMini WPushButton,
 #MicAuxRack WPushButton,
-#PlayPreview {
+WPushButton#PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
   margin: 1px;
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
@@ -1548,13 +1551,15 @@ WPushButton#CrossfaderButton,
 
 /* top-level buttons in transport, fx, micaux and others */
 #DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
-#PlayBg, #PlayCueMini WPushButton[displayValue="0"],
-#CueDeck[displayValue="0"], #LoopActivate[displayValue="0"],
+#PlayCueMini WPushButton[displayValue="0"],
+WPushButton#PlayIndicator[displayValue="0"],
+WPushButton#CueDeck[displayValue="0"],
+#SamplerPlayBox WPushButton#PreviewIndicator,
+WPushButton#LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
-#FxToggleButton[displayValue="0"],
-WPushButton#PlaySampler[displayValue="0"],
+WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
 WBeatSpinBox,
@@ -1565,16 +1570,16 @@ WBeatSpinBox::down-button {
   /* dim buttons in top-level containers */
   #LoopControls WPushButton[displayValue="0"],
   #BeatjumpControls WPushButton[displayValue="0"],
-  #SyncDeck[value="0"],
+  WPushButton#SyncDeck[value="0"],
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
-  #FxParameterButton[displayValue="0"],
+  WPushButton#FxParameterButton[displayValue="0"],
   #LibraryContainer QHeaderView,
   #LibraryContainer QHeaderView::section {
     background-color: #171719;
   }
-  /*  even buttons in 2nd level containers */
+  /* even buttons in 2nd level containers */
   #FxAssignButtons WPushButton[displayValue="0"],
   #VinylControls WPushButton[displayValue="0"],
   #KeyControls WPushButton[displayValue="0"],
@@ -1583,14 +1588,14 @@ WBeatSpinBox::down-button {
   WPushButton#HotcueButton[displayValue="0"],
   WPushButton#SpecialCueButton[displayValue="0"],
   #RateControls WPushButton[displayValue="0"],
-  #PflButton[displayValue="0"],
-  #MixModeButton[displayValue="0"],
-  #MixModeButton[displayValue="1"],
+  WPushButton#PflButton[displayValue="0"],
+  WPushButton#MixModeButton[displayValue="0"],
+  WPushButton#MixModeButton[displayValue="1"],
   WEffectSelector,
   #fadeModeCombobox,
-  #SamplerContainer #SyncSampler[displayValue="0"],
-  #SamplerContainer #PflButton[displayValue="0"],
-  #MicAuxUnit #PflButton[displayValue="0"],
+  #SamplerContainer WPushButton#SyncSampler[displayValue="0"],
+  #SamplerContainer WPushButton#PflButton[displayValue="0"],
+  #MicAuxUnit WPushButton#PflButton[displayValue="0"],
   WPushButton#MicAuxAdd {
     background-color: #1e1e20;
   }
@@ -1625,7 +1630,8 @@ WPushButton#PlayIndicator[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
-#LoopActivate[value="1"], #Reloop[value="1"],
+#LoopActivate[value="1"],
+#Reloop[value="1"],
 #SyncSampler[displayValue="1"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
@@ -1635,7 +1641,14 @@ WPushButton#Reverse[pressed="true"],
 QPushButton#pushButtonAutoDJ:checked,
 #DlgAnalysis > QPushButton:checked {
   background-color: #b24c12;
-}
+  }
+  /* Orange border for Play buttons when previewing from
+    Cue or Hotcue */
+  WPushButton#PreviewIndicator[value="1"] {
+    border: 3px solid #b24c12;
+    /* work around round borders being painted outside the actual border area */
+    border-radius: 0px;
+  }
 /* dim orange for momentary controls */
 #SyncDeck[value="1"],
 WPushButton#LoopIn[pressed="true"],
@@ -1694,8 +1707,8 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #236b00;
   }
 #FxUnit1 #FxSuperLinkButton[value="2"],
-#FxUnit2 #FxSuperLinkButton[value="2"] {  /*
-  a simple way to achieve a partitioning in thirds  */
+#FxUnit2 #FxSuperLinkButton[value="2"] {
+/* a simple way to achieve a partitioning in thirds  */
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #236b00,
     stop: 0.33 #236b00,
@@ -1760,9 +1773,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #d09300;
 }
 
-#SpecialCueButton[value="1"] {  /*
-  background-color: #3166ab;
-  background-color: #2b5a97;  */
+#SpecialCueButton[value="1"] {
   background-color: #395579;
 }
 
@@ -1797,7 +1808,9 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 #BeatgridControlsToggle,
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
-WPushButton#PlayIndicator[value="0"],
+WPushButton#PlaySampler[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton#PreviewIndicator,
+#PlayCueMini WPushButton#PreviewIndicator,
 WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
@@ -1814,10 +1827,10 @@ WPushButton#RecButton[displayValue="1"],
 
 
 /************** Button icons **************************************************/
-#PlayDeck[displayValue="0"] {
+WPushButton#PlayDeck[value="0"] {
   image: url(skin:/palemoon/buttons/btn__play_deck.svg) no-repeat center center;
   }
-  #PlayDeck[displayValue="1"] {
+  WPushButton#PlayDeck[value="1"] {
     image: url(skin:/palemoon/buttons/btn__play_deck_active.svg) no-repeat center center;
   }
 
@@ -2775,7 +2788,7 @@ WLibrary QRadioButton::indicator:unchecked {
 /* closed */
 #LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:!selected,
 #LibraryContainer QTreeView::branch:closed:has-children:has-siblings:!selected {
-/*  Suppresses that selected sidebar items branch indicator shows wrong color when
+/* Suppresses that selected sidebar items branch indicator shows wrong color when
     out of focus ; lp:880588 */
   border-image: none;
     image: url(skin:/palemoon/style/library_branch_closed_grey.png);

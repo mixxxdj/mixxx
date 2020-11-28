@@ -43,11 +43,16 @@ inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
-    HotcueControl(const QString& group, int hotcueNumber);
+    HotcueControl(const QString& group, int hotcueIndex);
     ~HotcueControl() override;
 
-    inline int getHotcueNumber() { return m_iHotcueNumber; }
-    inline CuePointer getCue() { return m_pCue; }
+    int getHotcueIndex() const {
+        return m_hotcueIndex;
+    }
+
+    CuePointer getCue() const {
+        return m_pCue;
+    }
     double getPosition() const;
     void setCue(const CuePointer& pCue);
     void resetCue();
@@ -56,16 +61,16 @@ class HotcueControl : public QObject {
     mixxx::RgbColor::optional_t getColor() const;
 
     // Used for caching the preview state of this hotcue control.
-    inline bool isPreviewing() {
+    bool isPreviewing() const {
         return m_bPreviewing;
     }
-    inline void setPreviewing(bool bPreviewing) {
+    void setPreviewing(bool bPreviewing) {
         m_bPreviewing = bPreviewing;
     }
-    inline double getPreviewingPosition() {
+    double getPreviewingPosition() const {
         return m_previewingPosition;
     }
-    inline void setPreviewingPosition(double position) {
+    void setPreviewingPosition(double position) {
         m_previewingPosition = position;
     }
 
@@ -94,24 +99,24 @@ class HotcueControl : public QObject {
     void hotcuePlay(double v);
 
   private:
-    ConfigKey keyForControl(int hotcue, const char* name);
+    ConfigKey keyForControl(const QString& name);
 
     const QString m_group;
-    int m_iHotcueNumber;
+    const int m_hotcueIndex;
     CuePointer m_pCue;
 
     // Hotcue state controls
-    ControlObject* m_hotcuePosition;
-    ControlObject* m_hotcueEnabled;
-    ControlObject* m_hotcueColor;
+    std::unique_ptr<ControlObject> m_hotcuePosition;
+    std::unique_ptr<ControlObject> m_hotcueEnabled;
+    std::unique_ptr<ControlObject> m_hotcueColor;
     // Hotcue button controls
-    ControlObject* m_hotcueSet;
-    ControlObject* m_hotcueGoto;
-    ControlObject* m_hotcueGotoAndPlay;
-    ControlObject* m_hotcueGotoAndStop;
-    ControlObject* m_hotcueActivate;
-    ControlObject* m_hotcueActivatePreview;
-    ControlObject* m_hotcueClear;
+    std::unique_ptr<ControlPushButton> m_hotcueSet;
+    std::unique_ptr<ControlPushButton> m_hotcueGoto;
+    std::unique_ptr<ControlPushButton> m_hotcueGotoAndPlay;
+    std::unique_ptr<ControlPushButton> m_hotcueGotoAndStop;
+    std::unique_ptr<ControlPushButton> m_hotcueActivate;
+    std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
+    std::unique_ptr<ControlPushButton> m_hotcueClear;
 
     bool m_bPreviewing;
     double m_previewingPosition;
@@ -195,6 +200,8 @@ class CueControl : public EngineControl {
     double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
     void seekOnLoad(double seekOnLoadPosition);
+    void setHotcueFocusIndex(int hotcueIndex);
+    int getHotcueFocusIndex() const;
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
@@ -220,6 +227,7 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pPlayStutter;
     ControlIndicator* m_pCueIndicator;
     ControlIndicator* m_pPlayIndicator;
+    ControlObject* m_pPlayLatched;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCuePlay;

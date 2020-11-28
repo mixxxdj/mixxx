@@ -110,6 +110,10 @@ jobs:
       if: runner.os == 'Windows'
       run: python -m pip install ninja git+https://github.com/frerich/clcache.git
 
+    - name: "[Windows] Set up MSVC Developer Command Prompt"
+      if: runner.os == 'Windows'
+      uses: seanmiddleditch/gha-setup-vsdevenv@v3
+
     - name: "[macOS/Windows] Get build environment name"
       if: runner.os != 'Linux'
       id: buildenv_name
@@ -167,12 +171,6 @@ jobs:
 
     - name: "Create build directory"
       run: mkdir cmake_build
-
-    - name: "[Windows] Set up MSVC Developer Command Prompt"
-      if: runner.os == 'Windows'
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        toolset: 14.16
 
     - name: "Configure"
       run: >-
