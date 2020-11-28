@@ -111,7 +111,7 @@ void MessageHandler(QtMsgType type,
 
     QByteArray input8Bit;
     if (isControllerDebug) {
-        input8Bit = input.mid(ControllerDebug::kLogMessagePrefixLength).toLocal8Bit();
+        input8Bit = input.mid(ControllerDebug::kLogMessagePrefixLength + 1).toLocal8Bit();
     } else {
         input8Bit = input.toLocal8Bit();
     }
