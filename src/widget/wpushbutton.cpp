@@ -449,7 +449,7 @@ bool WPushButton::event(QEvent* e) {
                     QPointF(),
                     Qt::LeftButton,
                     Qt::NoButton,
-                    0,
+                    Qt::NoModifier,
                     Qt::MouseEventSynthesizedByApplication);
             mouseReleaseEvent(&mouseEvent);
         }
