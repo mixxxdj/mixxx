@@ -24,7 +24,7 @@ void NotificationManager::notify(NotificationPointer pNotification) {
     VERIFY_OR_DEBUG_ASSERT(pNotification) {
         return;
     }
-    qDebug() << "New notification:" << pNotification->text();
+    qWarning() << "New notification:" << pNotification->text();
 
     if (!pNotification->lastUpdated().isValid()) {
         pNotification->setLastUpdated(QDateTime::currentDateTimeUtc());

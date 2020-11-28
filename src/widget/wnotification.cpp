@@ -41,5 +41,16 @@ WNotification::WNotification(mixxx::Notification* pNotification, QWidget* parent
     pTextLabel->setWordWrap(true);
     pMainLayout->addWidget(pTextLabel);
 
+    const auto& buttons = pNotification->buttons();
+    if (!buttons.isEmpty()) {
+        QDialogButtonBox* pButtonBox = new QDialogButtonBox();
+        for (const auto& button : buttons) {
+            QPushButton* pButton = pButtonBox->addButton(
+                    button.label, QDialogButtonBox::AcceptRole);
+            connect(pButton, &QAbstractButton::clicked, button.receiver, button.func);
+        }
+        pMainLayout->addWidget(pButtonBox);
+    }
+
     setLayout(pMainLayout);
 }

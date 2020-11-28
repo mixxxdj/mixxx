@@ -1,7 +1,9 @@
 #pragma once
 #include <QDateTime>
+#include <QDialogButtonBox>
 #include <QObject>
 #include <QString>
+#include <functional>
 #include <memory>
 
 namespace mixxx {
@@ -18,6 +20,12 @@ class Notification : public QObject {
     Q_OBJECT
 
   public:
+    struct NotificationButton {
+        QString label;
+        QObject* receiver;
+        std::function<void()> func;
+    };
+
     explicit Notification(const QString& text, NotificationFlags flags = NotificationFlag::Default);
     ~Notification(){};
 
@@ -45,6 +53,18 @@ class Notification : public QObject {
         return m_lastUpdated;
     }
 
+    QVector<NotificationButton> buttons() {
+        return m_buttons;
+    }
+
+    void addButton(const QString& buttonLabel, QObject* receiver, std::function<void()> func) {
+        NotificationButton button;
+        button.label = buttonLabel;
+        button.receiver = receiver;
+        button.func = func;
+        m_buttons.append(button);
+    }
+
   signals:
     void closed();
 
@@ -53,6 +73,7 @@ class Notification : public QObject {
     const QString m_text;
     int m_timeoutSecs;
     QDateTime m_lastUpdated;
+    QVector<NotificationButton> m_buttons;
 };
 
 typedef Notification* NotificationPointer;

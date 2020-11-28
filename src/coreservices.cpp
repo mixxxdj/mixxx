@@ -296,15 +296,21 @@ void CoreServices::initialize(QApplication* pApp) {
         // resolves to) and a user hitting 'cancel'. If we get a blank return
         // but the user didn't hit cancel, we need to know this and let the
         // user take some course of action -- bkgood
-        QString fd = QFileDialog::getExistingDirectory(nullptr,
-                tr("Choose music library directory"),
-                QStandardPaths::writableLocation(
-                        QStandardPaths::MusicLocation));
-        if (!fd.isEmpty()) {
-            // adds Folder to database.
-            m_pLibrary->slotRequestAddDir(fd);
-            hasChanged_MusicDir = true;
-        }
+        mixxx::Notification* pNotification =
+                new mixxx::Notification("No music directory configured!",
+                        mixxx::NotificationFlag::Sticky);
+        pNotification->addButton(tr("Choose Directory"), this, [this]() {
+            QString fd = QFileDialog::getExistingDirectory(nullptr,
+                    tr("Choose music library directory"),
+                    QStandardPaths::writableLocation(
+                            QStandardPaths::MusicLocation));
+            if (!fd.isEmpty()) {
+                // adds Folder to database.
+                m_pLibrary->slotRequestAddDir(fd);
+                m_pTrackCollectionManager->startLibraryScan();
+            }
+        });
+        m_pNotificationManager->notify(pNotification);
     }
 
     emit initializationProgressUpdate(60, tr("controllers"));
