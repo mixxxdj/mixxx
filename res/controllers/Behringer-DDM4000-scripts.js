@@ -30,6 +30,19 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x38], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x37], outKey: ""}}, // Mode: Single
                     ],
+                    equalizerUnit: {
+                        midi: {
+                            //               Low,           Mid,           High
+                            parameterKnobs: {1: [cc, 0x06], 2: [cc, 0x05], 3: [cc, 0x04]},
+                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                            parameterButtons: {1: [note, 0x02], 2: [note, 0x01], 3: [note, 0x00]},
+                        },
+                        output: {
+                            //                 P3 (Low),      P2 (Mid),      P1 (High)
+                            parameterButtons: {1: [cc, 0x3D], 2: [cc, 0x3B], 3: [cc, 0x39]} // Amber
+                            // parameterButtons: {1: [cc, 0x3E], 2: [cc, 0x3C], 3: [cc, 0x3A]} // Green
+                        },
+                    },
                 },
 
                 /* Channel 2 */
@@ -45,6 +58,19 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x42], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x41], outKey: ""}}, // Mode: Single
                     ],
+                    equalizerUnit: {
+                        midi: {
+                            //               Low,           Mid,           High
+                            parameterKnobs: {1: [cc, 0x0A], 2: [cc, 0x09], 3: [cc, 0x08]},
+                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                            parameterButtons: {1: [note, 0x06], 2: [note, 0x05], 3: [note, 0x04]},
+                        },
+                        output: {
+                            //                 P3 (Low),      P2 (Mid),      P1 (High)
+                            parameterButtons: {1: [cc, 0x47], 2: [cc, 0x45], 3: [cc, 0x43]} // Amber
+                            // parameterButtons: {1: [cc, 0x48], 2: [cc, 0x46], 3: [cc, 0x44]} // Green
+                        },
+                    },
                 },
 
                 /* Channel 3 */
@@ -60,6 +86,19 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x4C], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x4B], outKey: ""}}, // Mode: Single
                     ],
+                    equalizerUnit: {
+                        midi: {
+                            //               Low,           Mid,           High
+                            parameterKnobs: {1: [cc, 0x0E], 2: [cc, 0x0D], 3: [cc, 0x0C]},
+                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                            parameterButtons: {1: [note, 0x0A], 2: [note, 0x09], 3: [note, 0x08]},
+                        },
+                        output: {
+                            //                 P3 (Low),      P2 (Mid),      P1 (High)
+                            parameterButtons: {1: [cc, 0x51], 2: [cc, 0x4F], 3: [cc, 0x4D]} // Amber
+                            // parameterButtons: {1: [cc, 0x52], 2: [cc, 0x50], 3: [cc, 0x4E]} // Green
+                        },
+                    },
                 },
 
                 /* Channel 4 */
@@ -75,86 +114,19 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x56], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x55], outKey: ""}}, // Mode: Single
                     ],
-                },
-            ],
-
-            equalizerUnits: [
-
-                /* Channel 1: Equalizer */
-                {
-                    channel: 1,
-                    components: {
-                        //               Low,           Mid,           High
-                        parameterKnobs: {1: [cc, 0x06], 2: [cc, 0x05], 3: [cc, 0x04]},
-                        //                 P3 (Low),        P2 (Mid),        P1 (High)
-                        parameterButtons: {1: [note, 0x02], 2: [note, 0x01], 3: [note, 0x00]},
+                    equalizerUnit: {
+                        midi: {
+                            //               Low,           Mid,           High
+                            parameterKnobs: {1: [cc, 0x12], 2: [cc, 0x11], 3: [cc, 0x10]},
+                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                            parameterButtons: {1: [note, 0x0E], 2: [note, 0x0D], 3: [note, 0x0C]},
+                        },
+                        output: {
+                            //                 P3 (Low),      P2 (Mid),      P1 (High)
+                            parameterButtons: {1: [cc, 0x5B], 2: [cc, 0x59], 3: [cc, 0x57]} // Amber
+                            // parameterButtons: {1: [cc, 0x5C], 2: [cc, 0x5A], 3: [cc, 0x58]} // Green
+                        },
                     },
-                    output: {
-                        //                 P3 (Low),      P2 (Mid),      P1 (High)
-                        parameterButtons: {1: [cc, 0x3D], 2: [cc, 0x3B], 3: [cc, 0x39]} // Amber
-                        // parameterButtons: {1: [cc, 0x3E], 2: [cc, 0x3C], 3: [cc, 0x3A]} // Green
-                    },
-                },
-
-                /* Channel 2: Equalizer */
-                {
-                    channel: 2,
-                    components: {
-                        //               Low,           Mid,           High
-                        parameterKnobs: {1: [cc, 0x0A], 2: [cc, 0x09], 3: [cc, 0x08]},
-                        //                 P3 (Low),        P2 (Mid),        P1 (High)
-                        parameterButtons: {1: [note, 0x06], 2: [note, 0x05], 3: [note, 0x04]},
-                    },
-                    output: {
-                        //                 P3 (Low),      P2 (Mid),      P1 (High)
-                        parameterButtons: {1: [cc, 0x47], 2: [cc, 0x45], 3: [cc, 0x43]} // Amber
-                        // parameterButtons: {1: [cc, 0x48], 2: [cc, 0x46], 3: [cc, 0x44]} // Green
-                    },
-                },
-
-                /* Channel 3: Equalizer */
-                {
-                    channel: 3,
-                    components: {
-                        //               Low,           Mid,           High
-                        parameterKnobs: {1: [cc, 0x0E], 2: [cc, 0x0D], 3: [cc, 0x0C]},
-                        //                 P3 (Low),        P2 (Mid),        P1 (High)
-                        parameterButtons: {1: [note, 0x0A], 2: [note, 0x09], 3: [note, 0x08]},
-                    },
-                    output: {
-                        //                 P3 (Low),      P2 (Mid),      P1 (High)
-                        parameterButtons: {1: [cc, 0x51], 2: [cc, 0x4F], 3: [cc, 0x4D]} // Amber
-                        // parameterButtons: {1: [cc, 0x52], 2: [cc, 0x50], 3: [cc, 0x4E]} // Green
-                    },
-                },
-
-                /* Channel 4: Equalizer */
-                {
-                    channel: 4,
-                    components: {
-                        //               Low,           Mid,           High
-                        parameterKnobs: {1: [cc, 0x12], 2: [cc, 0x11], 3: [cc, 0x10]},
-                        //                 P3 (Low),        P2 (Mid),        P1 (High)
-                        parameterButtons: {1: [note, 0x0E], 2: [note, 0x0D], 3: [note, 0x0C]},
-                    },
-                    output: {
-                        //                 P3 (Low),      P2 (Mid),      P1 (High)
-                        parameterButtons: {1: [cc, 0x5B], 2: [cc, 0x59], 3: [cc, 0x57]} // Amber
-                        // parameterButtons: {1: [cc, 0x5C], 2: [cc, 0x5A], 3: [cc, 0x58]} // Green
-                    },
-                },
-
-                /* Microphone: Equalizer */
-                {
-                    channel: 5,
-                    components: {
-                        //               Low,           Mid,           High
-                        parameterKnobs: {1: [cc, 0x02], 2: [cc, 0x01], 3: [cc, 0x00]},
-                        //                 Talk On,         Mic FX On,       XMC On
-                        parameterButtons: {1: [note, 0x34], 2: [note, 0x33], 3: [note, 0x32]},
-                    },
-                    //                          Talk On,       Mic FX On,     XMC On
-                    output: {parameterButtons: {1: [cc, 0x34], 2: [cc, 0x33], 3: [cc, 0x32]}},
                 },
             ],
 
@@ -164,7 +136,13 @@ var DDM4000 = new components.extension.GenericMidiController({
                 {
                     defaultDefinition: {type: c.Button, options: {group: "[Microphone]"}},
                     components: [
+                        {options: {midi: [cc,   0x02], inKey: ""}, type: c.Pot}, // Mic: EQ Low
+                        {options: {midi: [cc,   0x01], inKey: ""}, type: c.Pot}, // Mic: EQ Mid
+                        {options: {midi: [cc,   0x00], inKey: ""}, type: c.Pot}, // Mic: EQ High
                         {options: {midi: [note, 0x31], key: "", sendShifted: true}}, // Mic: Setup
+                        {options: {midi: [note, 0x32], key: "", sendShifted: true}}, // Mic: XMC On
+                        {options: {midi: [note, 0x33], key: "", sendShifted: true}}, // Mic: FX On
+                        {options: {midi: [note, 0x34], key: "talkover", sendShifted: true}}, // Mic: Talk On
                         {options: {midi: [note, 0x35], key: "", sendShifted: true}}, // Mic: On/Off
                     ]
                 },
