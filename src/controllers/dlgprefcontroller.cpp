@@ -10,6 +10,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QInputDialog>
 #include <QStandardPaths>
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -23,6 +24,8 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
+const QString kPresetExt(".midi.xml");
+
 DlgPrefController::DlgPrefController(
         QWidget* parent,
         Controller* controller,
@@ -30,6 +33,7 @@ DlgPrefController::DlgPrefController(
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
+          m_pUserDir(userPresetsPath(pConfig)),
           m_pControllerManager(controllerManager),
           m_pController(controller),
           m_pDlgControllerLearning(NULL),
@@ -507,33 +511,118 @@ void DlgPrefController::savePreset() {
     }
 
     if (!m_pPreset->isDirty()) {
-        qDebug() << "Preset is not dirty, no need to save it.";
+        qDebug() << "Preset has not been edited, no need to save it.";
         return;
     }
 
-    QFileInfo fileInfo(m_pPreset->filePath());
-    QString fileName = fileInfo.fileName();
+    QString oldFilePath = m_pPreset->filePath();
+    QString newFilePath;
+    QFileInfo fileInfo(oldFilePath);
+    QString presetName = m_pPreset->name();
 
-    // Add " (edited)" to preset name (if it's not already present)
-    QString editedSuffix = QStringLiteral(" (") + tr("edited") + QStringLiteral(")");
-    if (!m_pPreset->name().endsWith(editedSuffix)) {
-        m_pPreset->setName(m_pPreset->name() + editedSuffix);
-        qDebug() << "Renamed preset to " << m_pPreset->name();
+    bool isUserPreset = fileInfo.absoluteDir().absolutePath().append("/") == m_pUserDir;
+    bool saveAsNew = true;
+    if (m_pOverwritePresets.contains(oldFilePath) &&
+            m_pOverwritePresets.value(oldFilePath) == true) {
+        saveAsNew = false;
+    }
 
-        // Add " (edited)" to file name (if it's not already present)
-        QString baseName = fileInfo.baseName();
-        if (baseName.endsWith(editedSuffix)) {
-            baseName.chop(editedSuffix.size());
+    // If this is a user preset, ask whether to overwrite or save with new name.
+    // Optionally, tick checkbox to always overwrite this preset in the current session.
+    if (isUserPreset && saveAsNew) {
+        QString overwriteTitle = tr("Preset already exists.");
+        QString overwriteLabel = tr(
+                "<b>%1</b> already exists in user preset folder.<br>"
+                "Overwrite or save with a new name?");
+        QString overwriteCheckLabel = tr("Always overwrite during this session");
+
+        QMessageBox overwriteMsgBox;
+        overwriteMsgBox.setIcon(QMessageBox::Question);
+        overwriteMsgBox.setWindowTitle(overwriteTitle);
+        overwriteMsgBox.setText(overwriteLabel.arg(presetName));
+        QCheckBox overwriteCheckBox;
+        overwriteCheckBox.setText(overwriteCheckLabel);
+        overwriteCheckBox.blockSignals(true);
+        overwriteCheckBox.setCheckState(Qt::Unchecked);
+        overwriteMsgBox.addButton(&overwriteCheckBox, QMessageBox::ActionRole);
+        QPushButton* pSaveAsNew = overwriteMsgBox.addButton(
+                tr("Save As"), QMessageBox::AcceptRole);
+        QPushButton* pOverwrite = overwriteMsgBox.addButton(
+                tr("Overwrite"), QMessageBox::AcceptRole);
+        overwriteMsgBox.setDefaultButton(pSaveAsNew);
+        overwriteMsgBox.exec();
+
+        if (overwriteMsgBox.clickedButton() == pOverwrite) {
+            saveAsNew = false;
+            if (overwriteCheckBox.checkState() == Qt::Checked) {
+                m_pOverwritePresets.insert(m_pPreset->filePath(), true);
+            }
+        } else if (overwriteMsgBox.close()) {
+            return;
         }
-        fileName = baseName + editedSuffix + QStringLiteral(".") + fileInfo.completeSuffix();
-    }
-    QString filePath = QDir(userPresetsPath(m_pConfig)).absoluteFilePath(fileName);
-
-    if (!m_pPreset->savePreset(filePath)) {
-        qDebug() << "Failed to save preset!";
     }
 
-    m_pPreset->setFilePath(filePath);
+    // Ask for a preset name when
+    // * initially saving a modified Mixxx preset to the user folder
+    // * saving a user preset with a new name.
+    // The name will be used as display name and file name.
+    if (!saveAsNew) {
+        newFilePath = oldFilePath;
+    } else {
+        QString savePresetTitle = tr("Save user preset");
+        QString savePresetLabel = tr("Enter the name for saving the preset to the user folder.");
+        QString savingFailedTitle = tr("Saving preset failed");
+        QString invalidNameLabel =
+                tr("A preset cannot have a blank name and may not contain "
+                   "special characters.");
+        QString fileExistsLabel = tr("A preset file with that name already exists.");
+        // Only allow the name to contain letters, numbers, whitespaces and _-+()/
+        const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
+
+        // Choose a new file (base) name
+        bool validPresetName = false;
+        while (!validPresetName) {
+            QString userDir = m_pUserDir;
+            bool ok = false;
+            presetName = QInputDialog::getText(nullptr,
+                    savePresetTitle,
+                    savePresetLabel,
+                    QLineEdit::Normal,
+                    presetName,
+                    &ok)
+                                 .remove(rxRemove)
+                                 .trimmed();
+            if (!ok) {
+                return;
+            }
+            if (presetName.isEmpty()) {
+                QMessageBox::warning(nullptr,
+                        savingFailedTitle,
+                        invalidNameLabel);
+                continue;
+            }
+            // While / is allowed for the display name we can't use it for the file name.
+            QString fileName = presetName.replace(QString("/"), QString("-"));
+            newFilePath = userDir + fileName + kPresetExt;
+            if (QFile::exists(newFilePath)) {
+                QMessageBox::warning(nullptr,
+                        savingFailedTitle,
+                        fileExistsLabel);
+                continue;
+            }
+            validPresetName = true;
+        }
+        m_pPreset->setName(presetName);
+        qDebug() << "Preset renamed to" << m_pPreset->name();
+    }
+
+    if (!m_pPreset->savePreset(newFilePath)) {
+        qDebug() << "Failed to save preset as" << newFilePath;
+        return;
+    }
+    qDebug() << "Preset saved as" << newFilePath;
+
+    m_pPreset->setFilePath(newFilePath);
     m_pPreset->setDirty(false);
 
     enumeratePresets(m_pPreset->filePath());
