@@ -116,7 +116,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Load Preset:</string>
+          <string>Load Mapping:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -145,11 +145,11 @@
        <item row="10" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Preset Info</string>
+          <string>Mapping Info</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
-           <widget class="QLabel" name="label_presetName">
+           <widget class="QLabel" name="labelPresetName">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -182,7 +182,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string notr="true">(preset name goes here)</string>
+             <string notr="true">(mapping name goes here)</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -214,7 +214,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string notr="true">(preset author goes here)</string>
+             <string notr="true">(mapping author goes here)</string>
             </property>
            </widget>
           </item>
@@ -255,7 +255,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string notr="true">(preset description goes here) even when it is a damn long text which should wrap but does not</string>
+             <string notr="true">(mapping description goes here) even when it is a damn long text which should wrap but does not</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -299,7 +299,7 @@
              <set>Qt::ImhUrlCharactersOnly</set>
             </property>
             <property name="text">
-             <string notr="true">(forum link for preset goes here)</string>
+             <string notr="true">(forum link for mapping goes here)</string>
             </property>
             <property name="openExternalLinks">
              <bool>true</bool>
@@ -318,7 +318,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Script Files:</string>
+             <string>Mapping Files:</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
@@ -343,7 +343,7 @@
              <set>Qt::ImhUrlCharactersOnly</set>
             </property>
             <property name="text">
-             <string notr="true">(links to loaded preset script files go here)</string>
+             <string notr="true">(links to loaded mapping script files go here)</string>
             </property>
             <property name="openExternalLinks">
              <bool>false</bool>
