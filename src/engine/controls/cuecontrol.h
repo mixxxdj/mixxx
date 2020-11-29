@@ -102,16 +102,18 @@ class HotcueControl : public QObject {
     // Used for caching the preview state of this hotcue control
     // for the case the cue is deleted during preview.
     mixxx::CueType getPreviewingType() const {
-        return m_previewingType;
-    }
-    void setPreviewingType(mixxx::CueType type) {
-        m_previewingType = type;
+        return m_previewingType.getValue();
     }
     double getPreviewingPosition() const {
-        return m_previewingPosition;
+        return m_previewingPosition.getValue();
     }
-    void setPreviewingPosition(double position) {
-        m_previewingPosition = position;
+    void storePreviewingActivateData() {
+        if (m_pCue) {
+            m_previewingPosition.setValue(m_pCue->getPosition());
+            m_previewingType.setValue(m_pCue->getType());
+        } else {
+            m_previewingType.setValue(mixxx::CueType::Invalid);
+        }
     }
 
   private slots:
@@ -176,8 +178,8 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
     std::unique_ptr<ControlPushButton> m_hotcueClear;
 
-    mixxx::CueType m_previewingType;
-    double m_previewingPosition;
+    ControlValueAtomic<mixxx::CueType> m_previewingType;
+    ControlValueAtomic<double> m_previewingPosition;
 };
 
 class CueControl : public EngineControl {

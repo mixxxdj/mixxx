@@ -1008,18 +1008,17 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
     CuePointer pCue = pControl->getCue();
+    int index = pControl->getHotcueIndex();
     if (value > 0) {
-        if (pCue) {
-            double position = pCue->getPosition();
-            mixxx::CueType type = pCue->getType();
-            int index = pControl->getHotcueIndex();
+        if (m_currentlyPreviewingIndex != index) {
+            pControl->storePreviewingActivateData();
+            double position = pControl->getPreviewingPosition();
+            mixxx::CueType type = pControl->getPreviewingType();
+            ;
             if (type != mixxx::CueType::Invalid &&
-                    position != Cue::kNoPosition &&
-                    m_currentlyPreviewingIndex != index) {
+                    position != Cue::kNoPosition) {
                 updateCurrentlyPreviewingIndex(index);
                 m_bypassCueSetByPlay = true;
-                pControl->setPreviewingType(type);
-                pControl->setPreviewingPosition(position);
                 if (type == mixxx::CueType::Loop) {
                     setCurrentSavedLoopControlAndActivate(pControl);
                 } else if (pControl->getStatus() == HotcueControl::Status::Set) {
@@ -1029,7 +1028,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
                 m_pPlay->set(1.0);
             }
         }
-    } else if (m_currentlyPreviewingIndex == pControl->getHotcueIndex()) {
+    } else if (m_currentlyPreviewingIndex == index) {
         // This is a release of a previewing hotcue
         double position = pControl->getPreviewingPosition();
         updateCurrentlyPreviewingIndex(Cue::kNoHotCue);
@@ -2169,9 +2168,7 @@ ConfigKey HotcueControl::keyForControl(const QString& name) {
 HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
         : m_group(group),
           m_hotcueIndex(hotcueIndex),
-          m_pCue(nullptr),
-          m_previewingType(mixxx::CueType::Invalid),
-          m_previewingPosition(-1) {
+          m_pCue(nullptr) {
     m_hotcuePosition = std::make_unique<ControlObject>(keyForControl(QStringLiteral("position")));
     connect(m_hotcuePosition.get(),
             &ControlObject::valueChanged,
@@ -2310,6 +2307,9 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             this,
             &HotcueControl::slotHotcueClear,
             Qt::DirectConnection);
+
+    m_previewingType.setValue(mixxx::CueType::Invalid);
+    m_previewingPosition.setValue(Cue::kNoPosition);
 }
 
 HotcueControl::~HotcueControl() = default;
