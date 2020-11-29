@@ -813,22 +813,6 @@ void Track::slotCueUpdated() {
     emit cuesUpdated();
 }
 
-CuePointer Track::createAndAddCue() {
-    QMutexLocker lock(&m_qMutex);
-    CuePointer pCue(new Cue());
-    // While this method could be called from any thread,
-    // associated Cue objects should always live on the
-    // same thread as their host, namely this->thread().
-    pCue->moveToThread(thread());
-    connect(pCue.get(),
-            &Cue::updated,
-            this,
-            &Track::slotCueUpdated);
-    m_cuePoints.push_back(pCue);
-    // don't emit cuesUpdated() here, because the cue is still invalid.
-    return pCue;
-}
-
 CuePointer Track::createAndAddCue(
         mixxx::CueType type,
         int hotCueIndex,

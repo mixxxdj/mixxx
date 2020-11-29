@@ -248,7 +248,6 @@ class Track : public QObject {
     void analysisFinished();
 
     // Calls for managing the track's cue points
-    CuePointer createAndAddCue();
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
