@@ -1118,10 +1118,10 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
     }
 
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
-        double lastSound = pFromTrackAudibleSound->getEndPosition();
-        if (lastSound > 0) {
-            return samplePositionToSeconds(lastSound, pDeck);
+    if (pFromTrackAudibleSound) {
+        Cue::StartAndEndPositions pos = pFromTrackAudibleSound->getStartAndEndPosition();
+        if (pos.endPosition > 0 && (pos.endPosition - pos.startPosition) > 0) {
+            return samplePositionToSeconds(pos.endPosition, pDeck);
         }
     }
     return getEndSecond(pDeck);

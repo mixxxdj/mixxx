@@ -581,8 +581,9 @@ void CueControl::loadCuesFromTrack() {
                 attachCue(pCue, pControl);
             } else {
                 // If the old hotcue is the same, then we only need to update
-                pControl->setPosition(pCue->getPosition());
-                pControl->setEndPosition(pCue->getEndPosition());
+                Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
+                pControl->setPosition(pos.startPosition);
+                pControl->setEndPosition(pos.endPosition);
                 pControl->setColor(pCue->getColor());
                 pControl->setType(pCue->getType());
             }
@@ -940,7 +941,8 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
             setCurrentSavedLoopControlAndActivate(pControl);
         } else {
             bool loopActive = pControl->getStatus() == HotcueControl::Status::Active;
-            setLoop(pCue->getPosition(), pCue->getEndPosition(), !loopActive);
+            Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
+            setLoop(pos.startPosition, pos.endPosition, !loopActive);
         }
     } break;
     case mixxx::CueType::HotCue: {
@@ -981,7 +983,8 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                     } else {
                         bool loopActive = pControl->getStatus() ==
                                 HotcueControl::Status::Active;
-                        setLoop(pCue->getPosition(), pCue->getEndPosition(), !loopActive);
+                        Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
+                        setLoop(pos.startPosition, pos.endPosition, !loopActive);
                     }
                     break;
                 default:
@@ -2075,18 +2078,17 @@ void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) 
     }
 
     mixxx::CueType type = pCue->getType();
-    double startPos = pCue->getPosition();
-    double endPos = pCue->getEndPosition();
+    Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
 
     VERIFY_OR_DEBUG_ASSERT(
             type == mixxx::CueType::Loop &&
-            endPos != Cue::kNoPosition) {
+            pos.endPosition != Cue::kNoPosition) {
         return;
     }
 
     // Set new control as active
     m_pCurrentSavedLoopControl = pControl;
-    setLoop(startPos, endPos, true);
+    setLoop(pos.startPosition, pos.endPosition, true);
     pControl->setStatus(HotcueControl::Status::Active);
 }
 
@@ -2404,8 +2406,9 @@ double HotcueControl::getEndPosition() const {
 
 void HotcueControl::setCue(const CuePointer& pCue) {
     DEBUG_ASSERT(!m_pCue);
-    setPosition(pCue->getPosition());
-    setEndPosition(pCue->getEndPosition());
+    Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
+    setPosition(pos.startPosition);
+    setEndPosition(pos.endPosition);
     setColor(pCue->getColor());
     setStatus((pCue->getType() == mixxx::CueType::Invalid)
                     ? HotcueControl::Status::Empty
