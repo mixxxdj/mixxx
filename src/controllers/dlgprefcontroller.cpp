@@ -271,14 +271,24 @@ QString DlgPrefController::presetManualLink(
     return url;
 }
 
-QString DlgPrefController::presetScriptFileLinks(
+QString DlgPrefController::presetFileLinks(
         const ControllerPresetPointer pPreset) const {
-    if (!pPreset || pPreset->getScriptFiles().empty()) {
-        return tr("No Scripts");
+    if (!pPreset) {
+        return QString();
     }
 
+    const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
     QStringList linkList;
+    QString xmlFileName = QFileInfo(pPreset->filePath()).fileName();
+    QString xmlFileLink = QStringLiteral("<a href=\"") +
+            pPreset->filePath() + QStringLiteral("\">") +
+            xmlFileName + QStringLiteral("</a>");
+    if (pPreset->filePath().startsWith(systemPresetPath)) {
+        xmlFileLink += builtinFileSuffix;
+    }
+    linkList << xmlFileLink;
+
     for (const auto& script : pPreset->getScriptFiles()) {
         QString scriptFileLink = QStringLiteral("<a href=\"") +
                 script.file.absoluteFilePath() + QStringLiteral("\">") +
@@ -289,8 +299,7 @@ QString DlgPrefController::presetScriptFileLinks(
                     QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
         } else if (script.file.absoluteFilePath().startsWith(
                            systemPresetPath)) {
-            scriptFileLink +=
-                    QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
+            scriptFileLink += builtinFileSuffix;
         }
 
         linkList << scriptFileLink;
@@ -666,8 +675,8 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     QString support = supportLinks.join("&nbsp;&nbsp;");
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 
-    QString scriptFiles = presetScriptFileLinks(preset);
-    m_ui.labelLoadedPresetScriptFileLinks->setText(scriptFiles);
+    QString mappingFileLinks = presetFileLinks(preset);
+    m_ui.labelLoadedPresetScriptFileLinks->setText(mappingFileLinks);
 
     // We mutate this preset so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this

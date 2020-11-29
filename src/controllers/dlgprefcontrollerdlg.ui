@@ -318,7 +318,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Script Files:</string>
+             <string>Preset Files:</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
