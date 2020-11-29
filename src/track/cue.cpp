@@ -104,6 +104,21 @@ Cue::Cue(
     DEBUG_ASSERT(!m_dbId.isValid());
 }
 
+/// Initialize new cue points
+Cue::Cue(
+        mixxx::CueType type,
+        int hotCueIndex,
+        double sampleStartPosition,
+        double sampleEndPosition)
+        : m_bDirty(false), // not yet in database
+          m_type(type),
+          m_sampleStartPosition(sampleStartPosition),
+          m_sampleEndPosition(sampleEndPosition),
+          m_iHotCue(hotCueIndex),
+          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+    DEBUG_ASSERT(!m_dbId.isValid());
+}
+
 mixxx::CueInfo Cue::getCueInfo(
         mixxx::audio::SampleRate sampleRate) const {
     QMutexLocker lock(&m_mutex);

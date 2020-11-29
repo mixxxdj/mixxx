@@ -26,11 +26,14 @@ class Cue : public QObject {
     /// Hot cues are sequentially indexed starting with kFirstHotCue (inclusive)
     static constexpr int kFirstHotCue = 0;
 
+    /// Creates an invalid Cue point
     Cue();
+    /// For roundtrips during tests
     Cue(
             const mixxx::CueInfo& cueInfo,
             mixxx::audio::SampleRate sampleRate,
             bool setDirty);
+
     /// Load entity from database.
     Cue(
             DbId id,
@@ -40,6 +43,14 @@ class Cue : public QObject {
             int hotCue,
             const QString& label,
             mixxx::RgbColor color);
+
+    /// Initialize new cue points
+    Cue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double sampleStartPosition,
+            double sampleEndPosition);
+
     ~Cue() override = default;
 
     bool isDirty() const;

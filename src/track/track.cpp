@@ -829,6 +829,31 @@ CuePointer Track::createAndAddCue() {
     return pCue;
 }
 
+CuePointer Track::createAndAddCue(
+        mixxx::CueType type,
+        int hotCueIndex,
+        double sampleStartPosition,
+        double sampleEndPosition) {
+    QMutexLocker lock(&m_qMutex);
+    CuePointer pCue(new Cue(
+            type,
+            hotCueIndex,
+            sampleStartPosition,
+            sampleEndPosition));
+    // While this method could be called from any thread,
+    // associated Cue objects should always live on the
+    // same thread as their host, namely this->thread().
+    pCue->moveToThread(thread());
+    connect(pCue.get(),
+            &Cue::updated,
+            this,
+            &Track::slotCueUpdated);
+    m_cuePoints.push_back(pCue);
+    markDirtyAndUnlock(&lock);
+    emit cuesUpdated();
+    return pCue;
+}
+
 CuePointer Track::findCueByType(mixxx::CueType type) const {
     // This method cannot be used for hotcues because there can be
     // multiple hotcues and this function returns only a single CuePointer.
