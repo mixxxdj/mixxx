@@ -11,6 +11,7 @@
 #include "library/trackcollection.h"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -227,12 +228,10 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
-void PlaylistDAO::deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, int length) {
-    //qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
-    // Get the playlist id for this
+int PlaylistDAO::deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, int length) {
     QSqlQuery query(m_database);
 
-    // Delete the row in the Playlists table.
+    ScopedTransaction transaction(m_database);
     query.prepare(QStringLiteral(
             "SELECT id FROM Playlists  "
             "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
@@ -242,14 +241,36 @@ void PlaylistDAO::deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type,
     query.bindValue(":length", length);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return;
+        return -1;
     }
 
+    QStringList idStringList;
     while (query.next()) {
-        int id = query.value(0).toInt();
-        qDebug() << "Delete playlist" << id;
-        deletePlaylist(id);
+        idStringList.append(query.value(0).toString());
     }
+    QString idString = idStringList.join(",");
+
+    qDebug() << "Delete Playlists: " << idString;
+
+    auto deletePlaylists = FwdSqlQuery(m_database,
+            QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
+    if (deletePlaylists.hasError()) {
+        LOG_FAILED_QUERY(deletePlaylists);
+        return -1;
+    }
+    deletePlaylists.execPrepared();
+
+    auto deleteTracks = FwdSqlQuery(m_database,
+            QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
+                    .arg(idString));
+    if (deleteTracks.hasError()) {
+        LOG_FAILED_QUERY(deleteTracks);
+        return -1;
+    }
+    deleteTracks.execPrepared();
+
+    transaction.commit();
+    return idStringList.length();
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {

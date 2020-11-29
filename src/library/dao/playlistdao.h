@@ -59,8 +59,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
-    /// Deletes all empty Playlist
-    void deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, int length);
+    /// Delete Playlists with fewer entries then "length"
+    /// @return number of deleted playlists, -1 on error
+    int deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, int length);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
