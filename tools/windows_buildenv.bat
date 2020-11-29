@@ -22,7 +22,7 @@ EXIT /B 0
 :COMMAND_name
     CALL :READ_ENVNAME
     ECHO "%RETVAL%"
-    IF "%CI%" == "true" (
+    IF DEFINED GITHUB_ENV (
         ECHO BUILDENV_NAME=!RETVAL! >> !GITHUB_ENV!
     )
     GOTO :EOF
@@ -53,12 +53,6 @@ EXIT /B 0
     ENDLOCAL
 
     SET PATH=!BUILDENV_PATH!\bin;!PATH!
-    REM Remove C:\Program Files\Git\usr\bin from the PATH
-    REM This works around an issue on the windows-2016 builder provided by GitHub
-    REM Actions, see this for details:
-    REM - https://github.com/actions/cache/issues/333
-    REM - https://github.com/actions/virtual-environments/issues/480
-    SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
     FOR /D %%G IN (%BUILDENV_PATH%\Qt-*) DO (SET Qt5_DIR=%%G)
     SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!;!Qt5_DIR!
