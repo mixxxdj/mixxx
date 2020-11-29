@@ -61,9 +61,12 @@ class Cue : public QObject {
 
     double getPosition() const;
     void setStartPosition(
-            double samplePosition = kNoPosition);
+            double samplePosition);
     void setEndPosition(
-            double samplePosition = kNoPosition);
+            double samplePosition);
+    void setStartAndEndPosition(
+            double sampleStartPosition,
+            double sampleEndPosition);
     void shiftPositionFrames(double frameOffset);
 
     double getLength() const;
