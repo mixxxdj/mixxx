@@ -110,10 +110,12 @@ class DlgPrefController : public DlgPreferencePage {
 
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
+    const QString m_pUserDir;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
+    QMap<QString, bool> m_pOverwritePresets;
     ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
