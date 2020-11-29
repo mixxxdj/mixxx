@@ -484,7 +484,7 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
     applyPresetChanges();
     if (m_pPreset && m_pPreset->isDirty()) {
         if (QMessageBox::question(this,
-                    tr("Preset has been edited"),
+                    tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
                 QMessageBox::Yes) {
             savePreset();
@@ -507,7 +507,7 @@ void DlgPrefController::savePreset() {
     }
 
     if (!m_pPreset->isDirty()) {
-        qDebug() << "Preset has not been edited, no need to save it.";
+        qDebug() << "Mapping is not dirty, no need to save it.";
         return;
     }
 
@@ -565,13 +565,13 @@ void DlgPrefController::savePreset() {
     if (!saveAsNew) {
         newFilePath = oldFilePath;
     } else {
-        QString savePresetTitle = tr("Save user preset");
-        QString savePresetLabel = tr("Enter the name for saving the preset to the user folder.");
-        QString savingFailedTitle = tr("Saving preset failed");
+        QString savePresetTitle = tr("Save user mapping");
+        QString savePresetLabel = tr("Enter the name for saving the mapping to the user folder.");
+        QString savingFailedTitle = tr("Saving mapping failed");
         QString invalidNameLabel =
-                tr("A preset cannot have a blank name and may not contain "
+                tr("A mapping cannot have a blank name and may not contain "
                    "special characters.");
-        QString fileExistsLabel = tr("A preset file with that name already exists.");
+        QString fileExistsLabel = tr("A mapping file with that name already exists.");
         // Only allow the name to contain letters, numbers, whitespaces and _-+()/
         const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
 
@@ -609,14 +609,14 @@ void DlgPrefController::savePreset() {
             validPresetName = true;
         }
         m_pPreset->setName(presetName);
-        qDebug() << "Preset renamed to" << m_pPreset->name();
+        qDebug() << "Mapping renamed to" << m_pPreset->name();
     }
 
     if (!m_pPreset->savePreset(newFilePath)) {
-        qDebug() << "Failed to save preset as" << newFilePath;
+        qDebug() << "Failed to save mapping as" << newFilePath;
         return;
     }
-    qDebug() << "Preset saved as" << newFilePath;
+    qDebug() << "Mapping saved as" << newFilePath;
 
     m_pPreset->setFilePath(newFilePath);
     m_pPreset->setDirty(false);
