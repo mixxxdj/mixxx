@@ -1004,6 +1004,11 @@ if(APPLE)
   endif()
 endif()
 
+# Windows-specific options
+if(MSVC)
+  target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
+endif()
+
 #
 # Installation directories
 #
@@ -1949,6 +1954,9 @@ target_link_libraries(mixxx-lib PRIVATE ReplayGain)
 
 # Reverb
 add_library(Reverb STATIC EXCLUDE_FROM_ALL lib/reverb/Reverb.cc)
+if(MSVC)
+  target_compile_definitions(Reverb PUBLIC _USE_MATH_DEFINES)
+endif()
 target_include_directories(Reverb PRIVATE src)
 target_link_libraries(Reverb PUBLIC Qt5::Core)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
@@ -1994,6 +2002,9 @@ if(SoundTouch_STATIC)
     lib/soundtouch/sse_optimized.cpp
   )
   target_include_directories(SoundTouch SYSTEM PUBLIC lib)
+  if(MSVC)
+    target_compile_definitions(SoundTouch PUBLIC _USE_MATH_DEFINES)
+  endif()
   target_link_libraries(mixxx-lib PUBLIC SoundTouch)
 else()
   message(STATUS "Linking libSoundTouch dynamically")
