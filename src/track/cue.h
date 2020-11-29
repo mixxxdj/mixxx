@@ -26,6 +26,11 @@ class Cue : public QObject {
     /// Hot cues are sequentially indexed starting with kFirstHotCue (inclusive)
     static constexpr int kFirstHotCue = 0;
 
+    struct StartAndEndPositions {
+        double startPosition;
+        double endPosition;
+    };
+
     /// For roundtrips during tests
     Cue(
             const mixxx::CueInfo& cueInfo,
@@ -78,6 +83,8 @@ class Cue : public QObject {
     void setColor(mixxx::RgbColor color);
 
     double getEndPosition() const;
+
+    StartAndEndPositions getStartAndEndPosition() const;
 
     mixxx::CueInfo getCueInfo(
             mixxx::audio::SampleRate sampleRate) const;
