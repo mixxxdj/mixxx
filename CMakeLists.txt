@@ -1034,10 +1034,6 @@ endif()
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
 
-  # Restrict ATL to XP-compatible SDK functions.
-  # TODO(rryan): Remove once we ditch XP support.
-  target_compile_definitions(mixxx-lib PUBLIC _ATL_XP_TARGETING)
-
   # Helps prevent duplicate symbols
   target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
 
