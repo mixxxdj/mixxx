@@ -267,7 +267,7 @@ jobs:
 
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-      if: runner.os != 'Linux' && env.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD != null
+      if: runner.os != 'Linux' && github.event_name == 'push' && env.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD != null
       run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
       env:
         OS: ${{ runner.os }}
