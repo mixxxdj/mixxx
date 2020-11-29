@@ -98,6 +98,23 @@ var BCR2000 = new components.extension.GenericMidiController({
                         }
                     },
                 ],
+                equalizerUnit: {
+                    feedback: true,
+                    midi: {
+                        enabled: [cc, p.pushEncoderGroup2[0].button],
+                        super1: [cc, p.pushEncoderGroup2[0].encoder],
+                        parameterKnobs: {
+                            1: [cc, p.pushEncoderGroup2[1].encoder],
+                            2: [cc, p.pushEncoderGroup2[2].encoder],
+                            3: [cc, p.pushEncoderGroup2[3].encoder],
+                        },
+                        parameterButtons: {
+                            1: [cc, p.pushEncoderGroup2[1].button],
+                            2: [cc, p.pushEncoderGroup2[2].button],
+                            3: [cc, p.pushEncoderGroup2[3].button],
+                        },
+                    }
+                },
             },
             {
                 deckNumbers: [2],
@@ -175,12 +192,29 @@ var BCR2000 = new components.extension.GenericMidiController({
                             type: c.Button.prototype.types.push
                         }
                     },
-                ]
+                ],
+                equalizerUnit: {
+                    feedback: true,
+                    midi: {
+                        enabled: [cc, p.pushEncoderGroup2[4].button],
+                        super1: [cc, p.pushEncoderGroup2[4].encoder],
+                        parameterKnobs: {
+                            1: [cc, p.pushEncoderGroup2[5].encoder],
+                            2: [cc, p.pushEncoderGroup2[6].encoder],
+                            3: [cc, p.pushEncoderGroup2[7].encoder],
+                        },
+                        parameterButtons: {
+                            1: [cc, p.pushEncoderGroup2[5].button],
+                            2: [cc, p.pushEncoderGroup2[6].button],
+                            3: [cc, p.pushEncoderGroup2[7].button],
+                        },
+                    }
+                }
             }],
             effectUnits: [{
                 feedback: true,
                 unitNumbers: [1, 3],
-                components: {
+                midi: {
                     effectFocusButton: [cc, p.buttonRow2[0]],
                     enableButtons: {
                         1: [cc, p.buttonRow2[1]],
@@ -198,7 +232,7 @@ var BCR2000 = new components.extension.GenericMidiController({
             {
                 feedback: true,
                 unitNumbers: [2, 4],
-                components: {
+                midi: {
                     effectFocusButton: [cc, p.buttonRow2[4]],
                     enableButtons: {
                         1: [cc, p.buttonRow2[5]],
@@ -210,42 +244,6 @@ var BCR2000 = new components.extension.GenericMidiController({
                         1: [cc, p.encoderRow1[5]],
                         2: [cc, p.encoderRow1[6]],
                         3: [cc, p.encoderRow1[7]],
-                    },
-                }
-            }],
-            equalizerUnits: [{
-                channel: 1,
-                feedback: true,
-                components: {
-                    enabled: [cc, p.pushEncoderGroup2[0].button],
-                    super1: [cc, p.pushEncoderGroup2[0].encoder],
-                    parameterKnobs: {
-                        1: [cc, p.pushEncoderGroup2[1].encoder],
-                        2: [cc, p.pushEncoderGroup2[2].encoder],
-                        3: [cc, p.pushEncoderGroup2[3].encoder],
-                    },
-                    parameterButtons: {
-                        1: [cc, p.pushEncoderGroup2[1].button],
-                        2: [cc, p.pushEncoderGroup2[2].button],
-                        3: [cc, p.pushEncoderGroup2[3].button],
-                    },
-                }
-            },
-            {
-                channel: 2,
-                feedback: true,
-                components: {
-                    enabled: [cc, p.pushEncoderGroup2[4].button],
-                    super1: [cc, p.pushEncoderGroup2[4].encoder],
-                    parameterKnobs: {
-                        1: [cc, p.pushEncoderGroup2[5].encoder],
-                        2: [cc, p.pushEncoderGroup2[6].encoder],
-                        3: [cc, p.pushEncoderGroup2[7].encoder],
-                    },
-                    parameterButtons: {
-                        1: [cc, p.pushEncoderGroup2[5].button],
-                        2: [cc, p.pushEncoderGroup2[6].button],
-                        3: [cc, p.pushEncoderGroup2[7].button],
                     },
                 }
             }],

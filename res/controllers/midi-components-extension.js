@@ -387,14 +387,13 @@
      *
      * @constructor
      * @extends {components.ComponentContainer}
-     * @param {number} channel Channel number
+     * @param {string} deckGroup Group of the deck this unit belongs to (e.g. `[Channel1]`)
      * @yields {EqualizerUnit}
      * @public
      */
-    var EqualizerUnit = function(channel) {
+    var EqualizerUnit = function(deckGroup) {
         components.ComponentContainer.call(this);
-        var channelGroup = "[Channel" + channel + "]";
-        var effectGroup = "[EqualizerRack1_" + channelGroup + "_Effect1]";
+        var effectGroup = "[EqualizerRack1_" + deckGroup + "_Effect1]";
 
         var ParameterKnob = function(parameterNumber) {
             components.Pot.call(this, {group: effectGroup, key: "parameter" + parameterNumber});
@@ -405,12 +404,13 @@
                 group: effectGroup, key: "button_parameter" + parameterNumber
             });
         };
-        ParameterButton.prototype = deriveFrom(components.Button);
+        ParameterButton.prototype = deriveFrom(
+            components.Button, {type: components.Button.prototype.types.toggle});
 
         this.enabled = new components.Button(
-            {group: "[QuickEffectRack1_" + channelGroup + "_Effect1]", key: "enabled"});
+            {group: "[QuickEffectRack1_" + deckGroup + "_Effect1]", key: "enabled"});
         this.super1 = new components.Pot(
-            {group: "[QuickEffectRack1_" + channelGroup + "]", key: "super1"});
+            {group: "[QuickEffectRack1_" + deckGroup + "]", key: "super1"});
         this.parameterKnobs = new components.ComponentContainer();
         this.parameterButtons = new components.ComponentContainer();
         for (var i = 1; i <= 3; i++) {
@@ -786,40 +786,40 @@
      *     |  +- deck:
      *     |     +- deckNumbers: As defined by {components.Deck}
      *     |     +- components: An array of component definitions for the deck
-     *     |        +- component:
-     *     |           +- type:    Component type (constructor function, required)
-     *     |           |           Example: `components.Button`
-     *     |           +- shift:   Active only when a Shift button is pressed? (boolean, optional)
-     *     |           |           Example: `true`
-     *     |           +- options: Additional options for the component (object, required)
-     *     |                       Example: {midi: [0xB0, 0x43], key: "reverse"}
+     *     |     |  +- component:
+     *     |     |     +- type:    Component type (constructor function, required)
+     *     |     |     |           Example: `components.Button`
+     *     |     |     +- shift:   Active only when a Shift button is pressed? (boolean, optional)
+     *     |     |     |           Example: `true`
+     *     |     |     +- options: Additional options for the component (object, required)
+     *     |     |                 Example: {midi: [0xB0, 0x43], key: "reverse"}
+     *     |     +- equalizerUnit: Equalizer unit definition (optional)
+     *     |        +- components: An object of component definitions for the unit.
+     *     |        |              Each definition is a key-value pair for a component of
+     *     |        |              {components.extension.EqualizerUnit} where `key` is the name of
+     *     |        |              the component and `value` is the MIDI address.
+     *     |        |              Example: `super1: [0xB0, 0x29]`
+     *     |        +- feedback: Enable controller feedback (boolean, optional)
+     *     |        |            When set to `true`, values of the components in this unit are sent
+     *     |        |            to the hardware controller on changes. The address of the MIDI
+     *     |        |            message is taken from the `midi` property of the affected
+     *     |        |            component.
+     *     |        +- output: Additional output definitions (optional).
+     *     |                   The structure of this object is the same as the structure of
+     *     |                   `components`. Every value change of a component contained in `output`
+     *     |                   causes a MIDI message to be sent to the hardware controller, using
+     *     |                   the configured address instead of the component's `midi` property.
+     *     |                   This option is independent of the `feedback` option.
      *     |
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
      *     |  +- effectUnit
      *     |     +- unitNumbers: As defined by {components.EffectUnit}.
-     *     |     +- components: An object of component definitions for the unit. Each definition
-     *     |     |              is a key-value pair for a component of {components.EffectUnit} where
-     *     |     |              ikey s the name of the component and value is the MIDI address.
+     *     |     +- components: As described for equalizer unit using
+     *     |     |              {components.EffectUnit} instead of
+     *     |     |              {components.extension.EqualizerUnit}.
      *     |     |              Example: `effectFocusButton: [0xB0, 0x15]`
-     *     |     +- feedback: When set to `true`, values are sent to the hardware controller on
-     *     |     |            changes. The address of the MIDI message is taken from the `midi`
-     *     |     |            property of the affected component. (boolean, optional)
-     *     |     +- output: Contains additional output definitions (optional). The structure of this
-     *     |                object is the same as the structure of `components`. Every value change
-     *     |                of a component contained in `output` causes a MIDI message to be sent to
-     *     |                the hardware controller, using the configured address instead of the
-     *     |                component's `midi` property.
-     *     |                This option is independent of the `feedback` option.
-     *     |
-     *     +- equalizerUnits: An array of equalizer unit definitions (may be empty or omitted)
-     *     |  +- equalizerUnit
-     *     |     +- channel: As defined by {components.extension.EqualizerUnit}.
-     *     |     +- components: As described for effect unit using
-     *     |     |              {components.extension.EqualizerUnit} instead of
-     *     |     |              {components.EffectUnit}.
-     *     |     |              Example: `enabled: [0xB0, 0x29]`
-     *     |     +- feedback: As described for effect unit
-     *     |     +- output: As described for effect unit
+     *     |     +- feedback: As described for equalizer unit
+     *     |     +- output: As described for equalizer unit
      *     |
      *     +- containers: An array of component container definitions (may be empty or omitted)
      *        +- componentContainer
@@ -875,7 +875,6 @@
                 this.componentContainers,
                 this.config.decks || [],
                 this.config.effectUnits || [],
-                this.config.equalizerUnits || [],
                 this.config.containers || []);
 
             log.debug(this.controllerId + ".init() completed.");
@@ -918,27 +917,50 @@
          * @param {Array} target Target for decks, effect units and additional component containers
          * @param {object} deckDefinitions Definition of decks
          * @param {object} effectUnitDefinitions Definition of effect units
-         * @param {object} equalizerUnitDefinitions Definition of equalizer units
          * @param {object} containerDefinitions Definition of additional component containers
          * @return {object} Layer manager
          * @see `components.extension.LayerManager`
          * @private
          */
-        createLayerManager: function(target, deckDefinitions, effectUnitDefinitions,
-            equalizerUnitDefinitions, containerDefinitions) {
+        createLayerManager: function(target,
+            deckDefinitions, effectUnitDefinitions, containerDefinitions) {
 
             var layerManager = new components.extension.LayerManager({debug: this.debug});
-            [
-                {definitions: deckDefinitions, factory: this.createDeck},
-                {definitions: effectUnitDefinitions, factory: this.createEffectUnit},
-                {definitions: equalizerUnitDefinitions, factory: this.createEqualizerUnit},
-                {definitions: containerDefinitions, factory: this.createComponentContainer},
-            ].forEach(function(context) {
+            var controller = this;
+            var registerComponents = function(definition, implementation) {
+                controller.registerComponents(layerManager, definition, implementation);
+            };
+
+            [{
+                definitions: deckDefinitions,
+                factory: this.createDeck,
+                register: function(deckDefinition, deckImplementation) {
+                    registerComponents(deckDefinition.components, deckImplementation);
+                    if (deckDefinition.equalizerUnit) {
+                        registerComponents(
+                            deckDefinition.equalizerUnit.midi, deckImplementation.equalizerUnit);
+                    }
+                }
+            },
+            {
+                definitions: effectUnitDefinitions,
+                factory: this.createEffectUnit,
+                register: function(effectUnitDefinition, effectUnitImplementation) {
+                    registerComponents(effectUnitDefinition.midi, effectUnitImplementation);
+                }
+            },
+            {
+                definitions: containerDefinitions,
+                factory: this.createComponentContainer,
+                register: function(containerDefinition, containerImplementation) {
+                    registerComponents(containerDefinition.components, containerImplementation);
+                }
+            }].forEach(function(context) {
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
                         var implementation = context.factory.call(this, definition, target);
                         target.push(implementation);
-                        this.registerComponents(layerManager, definition.components, implementation);
+                        context.register(definition, implementation);
                     }, this);
                 } else {
                     log.error(this.controllerId + ": Skipping a part of the configuration because "
@@ -954,15 +976,22 @@
          * Create a deck.
          *
          * @param {object} deckDefinition Definition of the deck
-         * @return {object} The new deck
+         * @param {Array} componentStorage Storage for additionally created components
+         * @yields {components.Deck} The new deck
          * @private
          */
-        createDeck: function(deckDefinition) {
+        createDeck: function(deckDefinition, componentStorage) {
             var deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
                 var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
                 deck[index] = new componentDefinition.type(options);
             }, this);
+            if (deckDefinition.equalizerUnit) {
+                deck.equalizerUnit = this.setupMidi(
+                    deckDefinition.equalizerUnit,
+                    new EqualizerUnit(deck.currentDeck),
+                    componentStorage);
+            }
             return deck;
         },
 
@@ -1004,7 +1033,7 @@
          *
          * Publisher components will be created when the definition is configured respectively.
          *
-         * @param {object} definition Definition of a component container
+         * @param {object} definition Definition of a component container with MIDI addresses
          * @param {object} implementation Corresponding component container object
          * @param {Array} publisherStorage Storage for publisher components
          * @param {Array<string>} rebindTriggers Names of functions that trigger rebinding a
@@ -1015,7 +1044,7 @@
         setupMidi: function(definition, implementation, publisherStorage, rebindTriggers) {
 
             /* Set MIDI address in implementation components */
-            this.processMidiAddresses(definition.components, implementation,
+            this.processMidiAddresses(definition.midi, implementation,
                 function(componentDefinition, componentImplementation) {
                     componentImplementation.midi = componentDefinition;
                 });
@@ -1075,24 +1104,6 @@
         },
 
         /**
-         * Create an equalizer unit.
-         *
-         * The values of the unit's components are sent to the controller
-         * when the definition is configured respectively.
-         *
-         * @param {object} equalizerUnitDefinition Definition of the equalizer unit
-         * @param {Array} componentStorage Storage for additionally created components
-         * @yields {components.extension.EqualizerUnit}
-         * @private
-         */
-        createEqualizerUnit: function(equalizerUnitDefinition, componentStorage) {
-            return this.setupMidi(
-                equalizerUnitDefinition,
-                new components.extension.EqualizerUnit(equalizerUnitDefinition.channel),
-                componentStorage);
-        },
-
-        /**
          * Create a component container.
          *
          * @param {object} containerDefinition Definition of the component container
@@ -1143,7 +1154,6 @@
     exports.LoopMoveEncoder = LoopMoveEncoder;
     exports.BackLoopButton = BackLoopButton;
     exports.Publisher = Publisher;
-    exports.EqualizerUnit = EqualizerUnit;
     exports.LayerManager = LayerManager;
     exports.GenericMidiController = GenericMidiController;
     global.components.extension = exports;
