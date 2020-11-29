@@ -11,6 +11,10 @@ var DDM4000 = new components.extension.GenericMidiController({
         var note = 0x90;
 
         return {
+            init: function() {
+                c.Button.prototype.shiftChannel = true;
+                c.Button.prototype.shiftOffset = cc - note;
+            },
             decks: [
 
                 /* Channel 1 */
@@ -21,7 +25,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [note, 0x20],  inKey: ""}}, // CF Assign
                         {type: c.Button, options: {midi: [cc,   0x20], outKey: ""}}, // CF Assign: A
                         {type: c.Button, options: {midi: [cc,   0x21], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x3F],    key: "pfl", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // PFL
+                        {type: c.Button, options: {midi: [note, 0x3F],    key: "pfl", sendShifted: true}}, // PFL
                         {type: c.Button, options: {midi: [note, 0x03],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x38], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x37], outKey: ""}}, // Mode: Single
@@ -36,7 +40,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [note, 0x22],  inKey: ""}}, // CF Assign
                         {type: c.Button, options: {midi: [cc,   0x22], outKey: ""}}, // CF Assign: A
                         {type: c.Button, options: {midi: [cc,   0x23], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x49],    key: "pfl", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // PFL
+                        {type: c.Button, options: {midi: [note, 0x49],    key: "pfl", sendShifted: true}}, // PFL
                         {type: c.Button, options: {midi: [note, 0x07],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x42], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x41], outKey: ""}}, // Mode: Single
@@ -51,7 +55,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [note, 0x24],  inKey: ""}}, // CF Assign
                         {type: c.Button, options: {midi: [cc,   0x24], outKey: ""}}, // CF Assign: A
                         {type: c.Button, options: {midi: [cc,   0x25], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x53],    key: "pfl", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // PFL
+                        {type: c.Button, options: {midi: [note, 0x53],    key: "pfl", sendShifted: true}}, // PFL
                         {type: c.Button, options: {midi: [note, 0x0B],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x4C], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x4B], outKey: ""}}, // Mode: Single
@@ -66,7 +70,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [note, 0x26],  inKey: ""}}, // CF Assign
                         {type: c.Button, options: {midi: [cc,   0x26], outKey: ""}}, // CF Assign: A
                         {type: c.Button, options: {midi: [cc,   0x27], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x5D],    key: "pfl", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // PFL
+                        {type: c.Button, options: {midi: [note, 0x5D],    key: "pfl", sendShifted: true}}, // PFL
                         {type: c.Button, options: {midi: [note, 0x0F],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x56], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x55], outKey: ""}}, // Mode: Single
@@ -154,79 +158,92 @@ var DDM4000 = new components.extension.GenericMidiController({
                 },
             ],
 
-            containers: [{
-                components: [
+            containers: [
 
-                    /* Microphone */
-                    {type: c.Button, options: {midi: [note, 0x31], group: "[Microphone]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Mic: Setup
-                    {type: c.Button, options: {midi: [note, 0x35], group: "[Microphone]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Mic: On/Off
+                /* Microphone */
+                {
+                    defaultDefinition: {type: c.Button, options: {group: "[Microphone]"}},
+                    components: [
+                        {options: {midi: [note, 0x31], key: "", sendShifted: true}}, // Mic: Setup
+                        {options: {midi: [note, 0x35], key: "", sendShifted: true}}, // Mic: On/Off
+                    ]
+                },
 
-                    /* Crossfader */
-                    {type: c.Pot,    options: {midi: [cc,   0x14], group: "[Master]",  inKey: ""}}, // Crossfader: Curve
-                    {type: c.Pot,    options: {midi: [cc,   0x15], group: "[Master]",  inKey: "crossfader"}}, // Crossfader
-                    {type: c.Button, options: {midi: [note, 0x17], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: A Full Freq
+                /* Crossfader */
+                {
+                    defaultDefinition: {type: c.Button, options: {group: "[Master]"}},
+                    components: [
 
-                    {type: c.Button, options: {midi: [note, 0x18], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: A High
-                    {type: c.Button, options: {midi: [note, 0x19], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: A Mid
-                    {type: c.Button, options: {midi: [note, 0x1A], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: A Low
-                    {type: c.Button, options: {midi: [note, 0x1B], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: B Full Freq
-                    {type: c.Button, options: {midi: [note, 0x1C], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: B High
-                    {type: c.Button, options: {midi: [note, 0x1D], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: B Mid
-                    {type: c.Button, options: {midi: [note, 0x1E], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: B Low
-                    {type: c.Button, options: {midi: [note, 0x1F], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: On
-                    {type: c.Button, options: {midi: [note, 0x28], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: Reverse Tap
-                    {type: c.Button, options: {midi: [note, 0x29], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: Reverse Hold
-                    {type: c.Button, options: {midi: [note, 0x2A], group: "[Master]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Crossfader: Bounce to MIDI Clock
-                    {type: c.Button, options: {midi: [note, 0x2B], group: "[Master]",  inKey: ""}}, // Crossfader: Beat (Left)
-                    {type: c.Button, options: {midi: [note, 0x2C], group: "[Master]",  inKey: ""}}, // Crossfader: Beat (Right)
-                    {type: c.Button, options: {midi: [cc,   0x2B], group: "[Master]", outKey: ""}}, // Crossfader: Beat 1
-                    {type: c.Button, options: {midi: [cc,   0x2C], group: "[Master]", outKey: ""}}, // Crossfader: Beat 2
-                    {type: c.Button, options: {midi: [cc,   0x2D], group: "[Master]", outKey: ""}}, // Crossfader: Beat 4
-                    {type: c.Button, options: {midi: [cc,   0x2E], group: "[Master]", outKey: ""}}, // Crossfader: Beat 8
-                    {type: c.Button, options: {midi: [cc,   0x2F], group: "[Master]", outKey: ""}}, // Crossfader: Beat 16
+                        {options: {midi: [cc,   0x14],  inKey: ""},           type: c.Pot}, // Crossfader: Curve
+                        {options: {midi: [cc,   0x15],  inKey: "crossfader"}, type: c.Pot}, // Crossfader
+                        {options: {midi: [note, 0x17],    key: "", sendShifted: true}}, // Crossfader: A Full Freq
+                        {options: {midi: [note, 0x18],    key: "", sendShifted: true}}, // Crossfader: A High
+                        {options: {midi: [note, 0x19],    key: "", sendShifted: true}}, // Crossfader: A Mid
+                        {options: {midi: [note, 0x1A],    key: "", sendShifted: true}}, // Crossfader: A Low
+                        {options: {midi: [note, 0x1B],    key: "", sendShifted: true}}, // Crossfader: B Full Freq
+                        {options: {midi: [note, 0x1C],    key: "", sendShifted: true}}, // Crossfader: B High
+                        {options: {midi: [note, 0x1D],    key: "", sendShifted: true}}, // Crossfader: B Mid
+                        {options: {midi: [note, 0x1E],    key: "", sendShifted: true}}, // Crossfader: B Low
+                        {options: {midi: [note, 0x1F],    key: "", sendShifted: true}}, // Crossfader: On
+                        {options: {midi: [note, 0x28],    key: "", sendShifted: true}}, // Crossfader: Reverse Tap
+                        {options: {midi: [note, 0x29],    key: "", sendShifted: true}}, // Crossfader: Reverse Hold
+                        {options: {midi: [note, 0x2A],    key: "", sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
+                        {options: {midi: [note, 0x2B],  inKey: ""}}, // Crossfader: Beat (Left)
+                        {options: {midi: [note, 0x2C],  inKey: ""}}, // Crossfader: Beat (Right)
+                        {options: {midi: [cc,   0x2B], outKey: ""}}, // Crossfader: Beat 1
+                        {options: {midi: [cc,   0x2C], outKey: ""}}, // Crossfader: Beat 2
+                        {options: {midi: [cc,   0x2D], outKey: ""}}, // Crossfader: Beat 4
+                        {options: {midi: [cc,   0x2E], outKey: ""}}, // Crossfader: Beat 8
+                        {options: {midi: [cc,   0x2F], outKey: ""}}, // Crossfader: Beat 16
+                    ]
+                },
 
-                    /* Sampler */
-                    {type: c.Pot,    options: {midi: [cc,   0x03], group: "[Sampler1]",  inKey: "volume"}}, // Sampler: Volume/Mix
-                    {type: c.Button, options: {midi: [note, 0x5F], group: "[Sampler1]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: Insert
-                    {type: c.Button, options: {midi: [note, 0x60], group: "[Sampler1]",  inKey: ""}}, // Sampler: REC Source (Right)
-                    {type: c.Button, options: {midi: [note, 0x61], group: "[Sampler1]",  inKey: ""}}, // Sampler: REC Source (Left)
-                    {type: c.Button, options: {midi: [cc,   0x60], group: "[Sampler1]", outKey: ""}}, // Sampler: REC Source 1
-                    {type: c.Button, options: {midi: [cc,   0x61], group: "[Sampler1]", outKey: ""}}, // Sampler: REC Source 2
-                    {type: c.Button, options: {midi: [cc,   0x62], group: "[Sampler1]", outKey: ""}}, // Sampler: REC Source 3
-                    {type: c.Button, options: {midi: [cc,   0x63], group: "[Sampler1]", outKey: ""}}, // Sampler: REC Source 4
-                    {type: c.Button, options: {midi: [cc,   0x64], group: "[Sampler1]", outKey: ""}}, // Sampler: REC Source Microphone
-                    {type: c.Button, options: {midi: [cc,   0x65], group: "[Sampler1]", outKey: ""}}, // Sampler: REC Source Master
-                    {type: c.Button, options: {midi: [note, 0x66], group: "[Sampler1]",  key: "pfl", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: PFL
-                    {type: c.Button, options: {midi: [note, 0x67], group: "[Sampler1]",  inKey: ""}}, // Sampler: Sample Length (Right)
-                    {type: c.Button, options: {midi: [note, 0x68], group: "[Sampler1]",  inKey: ""}}, // Sampler: Sample Length (Left)
-                    {type: c.Button, options: {midi: [cc,   0x67], group: "[Sampler1]", outKey: ""}}, // Sampler: Sample Length 1
-                    {type: c.Button, options: {midi: [cc,   0x68], group: "[Sampler1]", outKey: ""}}, // Sampler: Sample Length 2
-                    {type: c.Button, options: {midi: [cc,   0x69], group: "[Sampler1]", outKey: ""}}, // Sampler: Sample Length 4
-                    {type: c.Button, options: {midi: [cc,   0x6A], group: "[Sampler1]", outKey: ""}}, // Sampler: Sample Length 8
-                    {type: c.Button, options: {midi: [cc,   0x6B], group: "[Sampler1]", outKey: ""}}, // Sampler: Sample Length 16
-                    {type: c.Button, options: {midi: [cc,   0x6C], group: "[Sampler1]", outKey: ""}}, // Sampler: Sample Length ∞
-                    {type: c.Button, options: {midi: [note, 0x6D], group: "[Sampler1]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: Record / In
-                    {type: c.Button, options: {midi: [note, 0x6C], group: "[Sampler1]",  inKey: ""}}, // Sampler: Bank Assign
-                    {type: c.Button, options: {midi: [note, 0x6E], group: "[Sampler1]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: Bank 1 Play / Out
-                    {type: c.Button, options: {midi: [cc,   0x6F], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 1 Reverse
-                    {type: c.Button, options: {midi: [cc,   0x70], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 1 Loop
-                    {type: c.Button, options: {midi: [note, 0x71], group: "[Sampler1]",  inKey: ""}}, // Sampler: Bank 1 Mode
-                    {type: c.Button, options: {midi: [cc,   0x71], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 1 Mode Amber
-                    {type: c.Button, options: {midi: [cc,   0x72], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 1 Mode Blue
-                    {type: c.Button, options: {midi: [note, 0x73], group: "[Sampler1]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: Bank 2 Play / Out
-                    {type: c.Button, options: {midi: [cc,   0x74], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 2 Reverse
-                    {type: c.Button, options: {midi: [cc,   0x75], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 2 Loop
-                    {type: c.Button, options: {midi: [note, 0x76], group: "[Sampler1]",  inKey: ""}}, // Sampler: Bank 2 Mode
-                    {type: c.Button, options: {midi: [cc,   0x76], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 2 Mode Amber
-                    {type: c.Button, options: {midi: [cc,   0x77], group: "[Sampler1]", outKey: ""}}, // Sampler: Bank 2 Mode Blue
-                    {type: c.Button, options: {midi: [note, 0x78], group: "[Sampler1]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: FX On
-                    {type: c.Button, options: {midi: [note, 0x79], group: "[Sampler1]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: Select
-                    {type: c.Button, options: {midi: [note, 0x7A], group: "[Sampler1]",  inKey: ""}}, // Sampler: CF Assign
-                    {type: c.Button, options: {midi: [cc,   0x7A], group: "[Sampler1]", outKey: ""}}, // Sampler: CF Assign A
-                    {type: c.Button, options: {midi: [cc,   0x7B], group: "[Sampler1]", outKey: ""}}, // Sampler: CF Assign B
-                    {type: c.Button, options: {midi: [note, 0x7C], group: "[Sampler1]",  key: "", sendShifted: true, shiftChannel: true, shiftOffset: 0x20}}, // Sampler: CF Start
-                ]
-            }],
+                /* Sampler */
+                {
+                    defaultDefinition: {type: c.Button, options: {group: "[Sampler1]"}},
+                    components: [
+                        {options: {midi: [cc,   0x03],  inKey: "volume"}, type: c.Pot}, // Sampler: Volume/Mix
+                        {options: {midi: [note, 0x5F],    key: "", sendShifted: true}}, // Sampler: Insert
+                        {options: {midi: [note, 0x60],  inKey: ""}}, // Sampler: REC Source (Right)
+                        {options: {midi: [note, 0x61],  inKey: ""}}, // Sampler: REC Source (Left)
+                        {options: {midi: [cc,   0x60], outKey: ""}}, // Sampler: REC Source 1
+                        {options: {midi: [cc,   0x61], outKey: ""}}, // Sampler: REC Source 2
+                        {options: {midi: [cc,   0x62], outKey: ""}}, // Sampler: REC Source 3
+                        {options: {midi: [cc,   0x63], outKey: ""}}, // Sampler: REC Source 4
+                        {options: {midi: [cc,   0x64], outKey: ""}}, // Sampler: REC Source Microphone
+                        {options: {midi: [cc,   0x65], outKey: ""}}, // Sampler: REC Source Master
+                        {options: {midi: [note, 0x66],    key: "pfl", sendShifted: true}}, // Sampler: PFL
+                        {options: {midi: [note, 0x67],  inKey: ""}}, // Sampler: Sample Length (Right)
+                        {options: {midi: [note, 0x68],  inKey: ""}}, // Sampler: Sample Length (Left)
+                        {options: {midi: [cc,   0x67], outKey: ""}}, // Sampler: Sample Length 1
+                        {options: {midi: [cc,   0x68], outKey: ""}}, // Sampler: Sample Length 2
+                        {options: {midi: [cc,   0x69], outKey: ""}}, // Sampler: Sample Length 4
+                        {options: {midi: [cc,   0x6A], outKey: ""}}, // Sampler: Sample Length 8
+                        {options: {midi: [cc,   0x6B], outKey: ""}}, // Sampler: Sample Length 16
+                        {options: {midi: [cc,   0x6C], outKey: ""}}, // Sampler: Sample Length ∞
+                        {options: {midi: [note, 0x6D],    key: "", sendShifted: true}}, // Sampler: Record / In
+                        {options: {midi: [note, 0x6C],  inKey: ""}}, // Sampler: Bank Assign
+                        {options: {midi: [note, 0x6E],    key: "", sendShifted: true}}, // Sampler: Bank 1 Play / Out
+                        {options: {midi: [cc,   0x6F], outKey: ""}}, // Sampler: Bank 1 Reverse
+                        {options: {midi: [cc,   0x70], outKey: ""}}, // Sampler: Bank 1 Loop
+                        {options: {midi: [note, 0x71],  inKey: ""}}, // Sampler: Bank 1 Mode
+                        {options: {midi: [cc,   0x71], outKey: ""}}, // Sampler: Bank 1 Mode Amber
+                        {options: {midi: [cc,   0x72], outKey: ""}}, // Sampler: Bank 1 Mode Blue
+                        {options: {midi: [note, 0x73],    key: "", sendShifted: true}}, // Sampler: Bank 2 Play / Out
+                        {options: {midi: [cc,   0x74], outKey: ""}}, // Sampler: Bank 2 Reverse
+                        {options: {midi: [cc,   0x75], outKey: ""}}, // Sampler: Bank 2 Loop
+                        {options: {midi: [note, 0x76],  inKey: ""}}, // Sampler: Bank 2 Mode
+                        {options: {midi: [cc,   0x76], outKey: ""}}, // Sampler: Bank 2 Mode Amber
+                        {options: {midi: [cc,   0x77], outKey: ""}}, // Sampler: Bank 2 Mode Blue
+                        {options: {midi: [note, 0x78],    key: "", sendShifted: true}}, // Sampler: FX On
+                        {options: {midi: [note, 0x79],    key: "", sendShifted: true}}, // Sampler: Select
+                        {options: {midi: [note, 0x7A],  inKey: ""}}, // Sampler: CF Assign
+                        {options: {midi: [cc,   0x7A], outKey: ""}}, // Sampler: CF Assign A
+                        {options: {midi: [cc,   0x7B], outKey: ""}}, // Sampler: CF Assign B
+                        {options: {midi: [note, 0x7C],    key: "", sendShifted: true}}, // Sampler: CF Start
+                    ]
+                }
+            ],
         };
     }
 });
