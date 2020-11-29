@@ -327,11 +327,14 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
             }
         }
         if (!pLoopCue) {
-            pLoopCue = m_pLoadedTrack->createAndAddCue();
-            pLoopCue->setType(mixxx::CueType::Loop);
+            pLoopCue = m_pLoadedTrack->createAndAddCue(
+                    mixxx::CueType::Loop,
+                    Cue::kNoHotCue,
+                    loopStart,
+                    loopEnd);
+        } else {
+            pLoopCue->setStartAndEndPosition(loopStart, loopEnd);
         }
-        pLoopCue->setStartPosition(loopStart);
-        pLoopCue->setEndPosition(loopEnd);
     }
 
     disconnectLoadedTrack();

@@ -651,10 +651,11 @@ void CueControl::loadCuesFromTrack() {
         // Note: This is 0:00 for new tracks
         mainCuePoint = m_pLoadedTrack->getCuePoint();
         // Than add the load cue to the list of cue
-        CuePointer pCue = m_pLoadedTrack->createAndAddCue();
-        pCue->setType(mixxx::CueType::MainCue);
-        pCue->setStartPosition(mainCuePoint.getPosition());
-        pCue->setHotCue(Cue::kNoHotCue);
+        CuePointer pCue = m_pLoadedTrack->createAndAddCue(
+                mixxx::CueType::MainCue,
+                Cue::kNoHotCue,
+                mainCuePoint.getPosition(),
+                Cue::kNoPosition);
     }
     m_pCuePoint->set(quantizeCuePoint(mainCuePoint.getPosition()));
 }
@@ -735,8 +736,6 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     // https://bugs.launchpad.net/mixxx/+bug/1653276
     hotcueClear(pControl, value);
 
-    CuePointer pCue = m_pLoadedTrack->createAndAddCue();
-
     double cueStartPosition = Cue::kNoPosition;
     double cueEndPosition = Cue::kNoPosition;
     mixxx::CueType cueType = mixxx::CueType::Invalid;
@@ -790,11 +789,12 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     int hotcueIndex = pControl->getHotcueIndex();
 
-    pCue->setStartPosition(cueStartPosition);
-    pCue->setEndPosition(cueEndPosition);
-    pCue->setHotCue(hotcueIndex);
-    pCue->setLabel(QString());
-    pCue->setType(cueType);
+    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
+            cueType,
+            hotcueIndex,
+            cueStartPosition,
+            cueEndPosition);
+
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
 
@@ -1436,11 +1436,14 @@ void CueControl::introStartSet(double value) {
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (!pCue) {
-            pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(mixxx::CueType::Intro);
+            pCue = pLoadedTrack->createAndAddCue(
+                    mixxx::CueType::Intro,
+                    Cue::kNoHotCue,
+                    position,
+                    introEnd);
+        } else {
+            pCue->setStartAndEndPosition(position, introEnd);
         }
-        pCue->setStartPosition(position);
-        pCue->setEndPosition(introEnd);
     }
 }
 
@@ -1520,11 +1523,14 @@ void CueControl::introEndSet(double value) {
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (!pCue) {
-            pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(mixxx::CueType::Intro);
+            pCue = pLoadedTrack->createAndAddCue(
+                    mixxx::CueType::Intro,
+                    Cue::kNoHotCue,
+                    introStart,
+                    position);
+        } else {
+            pCue->setStartAndEndPosition(introStart, position);
         }
-        pCue->setStartPosition(introStart);
-        pCue->setEndPosition(position);
     }
 }
 
@@ -1607,11 +1613,14 @@ void CueControl::outroStartSet(double value) {
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (!pCue) {
-            pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(mixxx::CueType::Outro);
+            pCue = pLoadedTrack->createAndAddCue(
+                    mixxx::CueType::Outro,
+                    Cue::kNoHotCue,
+                    position,
+                    outroEnd);
+        } else {
+            pCue->setStartAndEndPosition(position, outroEnd);
         }
-        pCue->setStartPosition(position);
-        pCue->setEndPosition(outroEnd);
     }
 }
 
@@ -1694,11 +1703,14 @@ void CueControl::outroEndSet(double value) {
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (!pCue) {
-            pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(mixxx::CueType::Outro);
+            pCue = pLoadedTrack->createAndAddCue(
+                    mixxx::CueType::Outro,
+                    Cue::kNoHotCue,
+                    outroStart,
+                    position);
+        } else {
+            pCue->setStartAndEndPosition(outroStart, position);
         }
-        pCue->setStartPosition(outroStart);
-        pCue->setEndPosition(position);
     }
 }
 

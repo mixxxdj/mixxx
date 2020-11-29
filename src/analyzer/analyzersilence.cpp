@@ -107,8 +107,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         // positions. This could be helpful, for example, when the track length
         // is changed in a different program, or the silence detection threshold
         // is changed.
-        pAudibleSound->setStartPosition(firstSound);
-        pAudibleSound->setEndPosition(lastSound);
+        pAudibleSound->setStartAndEndPosition(firstSound, lastSound);
     }
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
@@ -130,17 +129,19 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     }
 
     if (pIntroCue == nullptr) {
-        pIntroCue = pTrack->createAndAddCue();
-        pIntroCue->setType(mixxx::CueType::Intro);
-        pIntroCue->setStartPosition(introStart);
-        pIntroCue->setEndPosition(Cue::kNoPosition);
+        pIntroCue = pTrack->createAndAddCue(
+                mixxx::CueType::Intro,
+                Cue::kNoHotCue,
+                introStart,
+                Cue::kNoPosition);
     }
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     if (pOutroCue == nullptr) {
-        pOutroCue = pTrack->createAndAddCue();
-        pOutroCue->setType(mixxx::CueType::Outro);
-        pOutroCue->setStartPosition(Cue::kNoPosition);
-        pOutroCue->setEndPosition(lastSound);
+        pOutroCue = pTrack->createAndAddCue(
+                mixxx::CueType::Outro,
+                Cue::kNoHotCue,
+                Cue::kNoPosition,
+                lastSound);
     }
 }
