@@ -794,18 +794,15 @@ void setHotCue(TrackPointer track,
         const QString& label,
         mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
-    bool hotCueFound = false;
-
     const QList<CuePointer> cuePoints = track->getCuePoints();
     for (const CuePointer& trackCue : cuePoints) {
         if (trackCue->getHotCue() == id) {
             pCue = trackCue;
-            hotCueFound = true;
             break;
         }
     }
 
-    if (!hotCueFound) {
+    if (!pCue) {
         pCue = CuePointer(track->createAndAddCue());
     }
 
