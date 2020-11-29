@@ -46,7 +46,7 @@ class SetlogFeature : public BasePlaylistFeature {
 
     std::list<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
-    QAction* m_pGetNewPlaylist;
+    QAction* m_pStartNewPlaylist;
     int m_playlistId;
     WLibrary* m_libraryWidget;
     const QIcon m_icon;

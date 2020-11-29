@@ -50,8 +50,8 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotJoinWithPrevious);
 
-    m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
-    connect(m_pGetNewPlaylist,
+    m_pStartNewPlaylist = new QAction(tr("Finish current and start new"), this);
+    connect(m_pStartNewPlaylist,
             &QAction::triggered,
             this,
             &SetlogFeature::slotGetNewPlaylist);
@@ -132,9 +132,10 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         // The very first setlog cannot be joint
         menu.addAction(m_pJoinWithPreviousAction);
     }
-    if (playlistId == m_playlistId && m_playlistDao.tracksInPlaylist(m_playlistId) != 0) {
+    if (playlistId == m_playlistId) {
         // Todays playlists can change !
-        menu.addAction(m_pGetNewPlaylist);
+        m_pStartNewPlaylist->setEnabled(m_playlistDao.tracksInPlaylist(m_playlistId) > 0);
+        menu.addAction(m_pStartNewPlaylist);
     }
     menu.addSeparator();
     menu.addAction(m_pExportPlaylistAction);
@@ -282,6 +283,7 @@ void SetlogFeature::slotGetNewPlaylist() {
 
     reloadChildModel(m_playlistId); // For moving selection
     emit showTrackModel(m_pPlaylistTableModel);
+    activatePlaylist(m_playlistId);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
