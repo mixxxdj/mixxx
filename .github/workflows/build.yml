@@ -267,12 +267,15 @@ jobs:
 
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-      if: runner.os != 'Linux' && github.event_name == 'push' && env.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD != null
+      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
       run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
       env:
-        OS: ${{ runner.os }}
-        DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        DESTDIR: public_html/downloads/builds
+        SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: build/certificates/downloads-hostgator.mixxx.org.key
+        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        SSH_USER: mixxx
+        UPLOAD_ID: ${{ github.run_id }}
 
     - name: "Upload GitHub Actions artifacts"
       uses: actions/upload-artifact@v2

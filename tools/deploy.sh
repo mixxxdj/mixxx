@@ -4,13 +4,17 @@
 
 set -eu -o pipefail
 
-USER=mixxx
-HOSTNAME=downloads-hostgator.mixxx.org
-DESTDIR=public_html/downloads/builds
+[ -z "${SSH_HOST}" ] && echo "Please set the SSH_HOST env var." >&2 && exit 1
+[ -z "${SSH_KEY}" ] && echo "Please set the SSH_KEY env var." >&2 && exit 1
+[ -z "${SSH_PASSWORD}" ] && echo "Please set the SSH_PASSWORD env var." >&2 && exit 1
+[ -z "${SSH_USER}" ] && echo "Please set the SSH_USER env var." >&2 && exit 1
+[ -z "${UPLOAD_ID}" ] && echo "Please set the UPLOAD_ID env var." >&2 && exit 1
+[ -z "${DESTDIR}" ] && echo "Please set the DESTDIR env var." >&2 && exit 1
+
 SSH="ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-DEST_PATH="${DESTDIR}/${GIT_BRANCH}/${OS}"
-TMP_PATH="${DESTDIR}/.tmp/${GIT_BRANCH}/${OS}"
+DEST_PATH="${DESTDIR}/${GIT_BRANCH}"
+TMP_PATH="${DESTDIR}/.tmp/${UPLOAD_ID}"
 
 echo "Deploying to $TMP_PATH, then to $DEST_PATH."
 
@@ -19,7 +23,7 @@ echo "Deploying to $TMP_PATH, then to $DEST_PATH."
 chmod go-rwx "${SSH_KEY}"
 
 # Unlock the key by removing its password. This is easier than messing with ssh-agent.
-ssh-keygen -p -P "${DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD}" -N "" -f "${SSH_KEY}"
+ssh-keygen -p -P "${SSH_PASSWORD}" -N "" -f "${SSH_KEY}"
 
 # realpath does not exist on macOS
 command -v realpath >/dev/null 2>&1 || realpath() {
@@ -48,13 +52,13 @@ do
     FILEEXT="${FILENAME##*.}"
     SYMLINK_NAME="Mixxx-${GIT_BRANCH}-latest.${FILEEXT}"
 
-    rsync -e "${SSH}" --rsync-path="mkdir -p ${TMP_PATH} && rsync" -r --delete-after "${FILEPATH}" "${FILEPATH_HASH}" "${USER}@${HOSTNAME}:${TMP_PATH}"
+    rsync -e "${SSH}" --rsync-path="mkdir -p ${TMP_PATH} && rsync" -r --delete-after "${FILEPATH}" "${FILEPATH_HASH}" "${SSH_USER}@${SSH_HOST}:${TMP_PATH}"
 
     # Move from the temporary path to the final destination.
-    ${SSH} "${USER}@${HOSTNAME}" << EOF
+    ${SSH} "${SSH_USER}@${SSH_HOST}" << EOF
+    trap 'rm -rf "${TMP_PATH}"' EXIT
     mkdir -p "${DEST_PATH}" &&
     mv "${TMP_PATH}/${FILENAME}" "${TMP_PATH}/${FILENAME_HASH}" "${DEST_PATH}" &&
-    rm -rf "${TMP_PATH}" &&
     cd "${DEST_PATH}" &&
     ln -sf "${FILENAME_HASH}" "${SYMLINK_NAME}.sha256sum" &&
     ln -sf "${FILENAME}" "${SYMLINK_NAME}"
