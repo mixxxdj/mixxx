@@ -262,19 +262,15 @@ int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
     auto deleteTracks = FwdSqlQuery(m_database,
             QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
                     .arg(idString));
-    if (deleteTracks.hasError()) {
-        LOG_FAILED_QUERY(deleteTracks);
+    if (!deleteTracks.execPrepared()) {
         return -1;
     }
-    deleteTracks.execPrepared();
 
     auto deletePlaylists = FwdSqlQuery(m_database,
             QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
-    if (deletePlaylists.hasError()) {
-        LOG_FAILED_QUERY(deletePlaylists);
+    if (!deletePlaylists.execPrepared()) {
         return -1;
     }
-    deletePlaylists.execPrepared();
 
     return idStringList.length();
 }
