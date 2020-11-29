@@ -47,16 +47,6 @@ void CuePointer::deleteLater(Cue* pCue) {
     }
 }
 
-Cue::Cue()
-        : m_bDirty(false),
-          m_type(mixxx::CueType::Invalid),
-          m_sampleStartPosition(Cue::kNoPosition),
-          m_sampleEndPosition(Cue::kNoPosition),
-          m_iHotCue(Cue::kNoHotCue),
-          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
-    DEBUG_ASSERT(!m_dbId.isValid());
-}
-
 Cue::Cue(
         DbId id,
         mixxx::CueType type,

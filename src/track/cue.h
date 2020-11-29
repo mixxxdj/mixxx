@@ -26,8 +26,6 @@ class Cue : public QObject {
     /// Hot cues are sequentially indexed starting with kFirstHotCue (inclusive)
     static constexpr int kFirstHotCue = 0;
 
-    /// Creates an invalid Cue point
-    Cue();
     /// For roundtrips during tests
     Cue(
             const mixxx::CueInfo& cueInfo,

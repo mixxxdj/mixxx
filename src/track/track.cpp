@@ -763,13 +763,15 @@ void Track::setCuePoint(CuePosition cue) {
         if (pLoadCue) {
             pLoadCue->setStartPosition(position);
         } else {
-            pLoadCue = CuePointer(new Cue());
+            pLoadCue = CuePointer(new Cue(
+                    mixxx::CueType::MainCue,
+                    Cue::kNoHotCue,
+                    position,
+                    Cue::kNoPosition));
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
             pLoadCue->moveToThread(thread());
-            pLoadCue->setType(mixxx::CueType::MainCue);
-            pLoadCue->setStartPosition(position);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
