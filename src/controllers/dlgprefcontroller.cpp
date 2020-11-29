@@ -24,7 +24,9 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
+namespace {
 const QString kPresetExt(".midi.xml");
+}
 
 DlgPrefController::DlgPrefController(QWidget* parent,
         Controller* controller,
