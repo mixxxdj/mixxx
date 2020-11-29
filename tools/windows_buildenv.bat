@@ -4,20 +4,16 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL :REALPATH %~dp0\..
 SET MIXXX_ROOT=%RETVAL%
 
-IF "%PLATFORM%"=="" (
+IF NOT DEFINED PLATFORM (
     SET PLATFORM=x64
 )
 
-IF "%CONFIGURATION%"=="" (
+IF NOT DEFINED CONFIGURATION (
     SET CONFIGURATION=release-fastbuild
 )
 
-IF "%BUILDENV_BASEPATH%"=="" (
-    SET BUILDENV_BASEPATH="%MIXXX_ROOT%\buildenv"
-)
-
-IF "%BUILDENV_BASEPATH%"=="" (
-    SET BUILDENV_BASEPATH="%MIXXX_ROOT%\buildenv"
+IF NOT DEFINED BUILDENV_BASEPATH (
+    SET BUILDENV_BASEPATH=%MIXXX_ROOT%\buildenv
 )
 
 CALL :COMMAND_%1
@@ -27,7 +23,7 @@ EXIT /B 0
     CALL :READ_ENVNAME
     ECHO "%RETVAL%"
     IF "%CI%" == "true" (
-        ECHO BUILDENV_NAME=!RETVAL! >> %GITHUB_ENV%
+        ECHO BUILDENV_NAME=!RETVAL! >> !GITHUB_ENV!
     )
     GOTO :EOF
 
@@ -35,28 +31,33 @@ EXIT /B 0
     CALL :READ_ENVNAME
     SET BUILDENV_NAME=%RETVAL%
     SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
-    MD %BUILDENV_BASEPATH%
+
+    IF NOT EXIST %BUILDENV_BASEPATH% (
+        MD %BUILDENV_BASEPATH%
+    )
 
     IF NOT EXIST %BUILDENV_PATH% (
         SET BUILDENV_URL=https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/%BUILDENV_NAME%.zip
-        ECHO Downloading !BUILDENV_URL!
-        BITSADMIN /transfer buildenvjob /download /priority normal !BUILDENV_URL! !BUILDENV_PATH!.zip
-        REM TODO: verify download using sha256sum?
-        ECHO Unpacking %BUILDENV_PATH%.zip
-        CALL :UNZIP "%BUILDENV_PATH%.zip" "%BUILDENV_BASEPATH%"
+        IF NOT EXIST !BUILDENV_PATH!.zip (
+            ECHO Downloading !BUILDENV_URL!
+            BITSADMIN /transfer buildenvjob /download /priority normal !BUILDENV_URL! !BUILDENV_PATH!.zip
+            REM TODO: verify download using sha256sum?
+        )
+        ECHO Unpacking !BUILDENV_PATH!.zip
+        CALL :UNZIP "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         ECHO Unpacking complete.
         DEL /f /q %BUILDENV_PATH%.zip
     )
 
-    ECHO Using build environment: %BUILDENV_PATH%
+    ECHO Using build environment: !BUILDENV_PATH!
     ENDLOCAL
 
     SET PATH=!BUILDENV_PATH!\bin;!PATH!
-    # Remove C:\Program Files\Git\usr\bin from the PATH
-    # This works around an issue on the windows-2016 builder provided by GitHub
-    # Actions, see this for details:
-    # - https://github.com/actions/cache/issues/333
-    # - https://github.com/actions/virtual-environments/issues/480
+    REM Remove C:\Program Files\Git\usr\bin from the PATH
+    REM This works around an issue on the windows-2016 builder provided by GitHub
+    REM Actions, see this for details:
+    REM - https://github.com/actions/cache/issues/333
+    REM - https://github.com/actions/virtual-environments/issues/480
     SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
     FOR /D %%G IN (%BUILDENV_PATH%\Qt-*) DO (SET Qt5_DIR=%%G)
@@ -67,9 +68,9 @@ EXIT /B 0
     ECHO ^CMake Configuration:
     ECHO ^- CMAKE_PREFIX_PATH=!CMAKE_PREFIX_PATH!
 
-    IF NOT "%GITHUB_ENV%" == "" (
-        ECHO CMAKE_PREFIX_PATH=!CMAKE_PREFIX_PATH!>>%GITHUB_ENV%
-        ECHO PATH=!PATH!>>%GITHUB_ENV%
+    IF DEFINED GITHUB_ENV (
+        ECHO CMAKE_PREFIX_PATH=!CMAKE_PREFIX_PATH!>>!GITHUB_ENV!
+        ECHO PATH=!PATH!>>!GITHUB_ENV!
     )
     GOTO :EOF
 
