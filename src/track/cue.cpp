@@ -224,18 +224,6 @@ int Cue::getHotCue() const {
     return m_iHotCue;
 }
 
-void Cue::setHotCue(int hotCue) {
-    QMutexLocker lock(&m_mutex);
-    // TODO(XXX) enforce uniqueness?
-    if (m_iHotCue == hotCue) {
-        return;
-    }
-    m_iHotCue = hotCue;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
-}
-
 QString Cue::getLabel() const {
     QMutexLocker lock(&m_mutex);
     return m_label;

@@ -70,8 +70,6 @@ class Cue : public QObject {
     double getLength() const;
 
     int getHotCue() const;
-    void setHotCue(
-            int hotCue = kNoHotCue);
 
     QString getLabel() const;
     void setLabel(const QString& label);
@@ -99,7 +97,7 @@ class Cue : public QObject {
     mixxx::CueType m_type;
     double m_sampleStartPosition;
     double m_sampleEndPosition;
-    int m_iHotCue;
+    const int m_iHotCue;
     QString m_label;
     mixxx::RgbColor m_color;
 
