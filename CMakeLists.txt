@@ -1005,8 +1005,14 @@ if(APPLE)
 endif()
 
 # Windows-specific options
-if(MSVC)
-  target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
+if(WIN32)
+  # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
+  # _WIN32_WINNT_WIN7 = 0x0601
+  target_compile_definitions(mixxx-lib PUBLIC WINVER=0x0601)
+  target_compile_definitions(mixxx-lib PUBLIC _WIN32_WINNT=0x0601)
+  if(MSVC)
+    target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
+  endif()
 endif()
 
 #
