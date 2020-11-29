@@ -7,6 +7,7 @@
 #include "control/controlobject.h"
 #include "library/library.h"
 #include "library/playlisttablemodel.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
@@ -38,7 +39,9 @@ SetlogFeature::SetlogFeature(
           m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     // clear old empty entries
-    m_playlistDao.deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType::PLHT_SET_LOG, 1);
+    ScopedTransaction transaction(pLibrary->trackCollections()->internalCollection()->database());
+    m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG, 1);
+    transaction.commit();
 
     //construct child model
     m_childModel.setRootItem(TreeItem::newRoot(this));

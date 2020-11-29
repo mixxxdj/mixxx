@@ -228,17 +228,20 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 }
 
-int PlaylistDAO::deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, int length) {
-    QSqlQuery query(m_database);
+int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
+        PlaylistDAO::HiddenType type, int minNumberOfTracks) {
+    VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
+        return 0; // nothing to do, probably unintended invocation
+    }
 
-    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "SELECT id FROM Playlists  "
             "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
             "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
             "Playlists.hidden = :hidden"));
     query.bindValue(":hidden", static_cast<int>(type));
-    query.bindValue(":length", length);
+    query.bindValue(":length", minNumberOfTracks);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return -1;
@@ -248,17 +251,13 @@ int PlaylistDAO::deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, 
     while (query.next()) {
         idStringList.append(query.value(0).toString());
     }
+    if (idStringList.isEmpty()) {
+        return 0;
+    }
     QString idString = idStringList.join(",");
 
-    qDebug() << "Delete Playlists: " << idString;
-
-    auto deletePlaylists = FwdSqlQuery(m_database,
-            QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
-    if (deletePlaylists.hasError()) {
-        LOG_FAILED_QUERY(deletePlaylists);
-        return -1;
-    }
-    deletePlaylists.execPrepared();
+    qInfo() << "Deleting" << idStringList.size() << "playlists of type" << type
+            << "that contain fewer than" << minNumberOfTracks << "tracks";
 
     auto deleteTracks = FwdSqlQuery(m_database,
             QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
@@ -269,7 +268,14 @@ int PlaylistDAO::deleteAllPlaylistsWithFewerItems(PlaylistDAO::HiddenType type, 
     }
     deleteTracks.execPrepared();
 
-    transaction.commit();
+    auto deletePlaylists = FwdSqlQuery(m_database,
+            QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
+    if (deletePlaylists.hasError()) {
+        LOG_FAILED_QUERY(deletePlaylists);
+        return -1;
+    }
+    deletePlaylists.execPrepared();
+
     return idStringList.length();
 }
 
