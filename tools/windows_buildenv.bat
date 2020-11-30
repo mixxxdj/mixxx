@@ -16,22 +16,27 @@ IF NOT DEFINED BUILDENV_BASEPATH (
     SET BUILDENV_BASEPATH=%MIXXX_ROOT%\buildenv
 )
 
+CALL :READ_ENVNAME
+SET BUILDENV_NAME=%RETVAL%
+SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
+
 CALL :COMMAND_%1
+
+
+IF NOT DEFINED GITHUB_ENV (
+    CALL :GENERATE_CMakeSettings_JSON
+)
+
 EXIT /B 0
 
 :COMMAND_name
-    CALL :READ_ENVNAME
-    ECHO "%RETVAL%"
+    ECHO "!BUILDENV_NAME!"
     IF DEFINED GITHUB_ENV (
-        ECHO BUILDENV_NAME=!RETVAL! >> !GITHUB_ENV!
+        ECHO BUILDENV_NAME=!BUILDENV_PATH! >> !GITHUB_ENV!
     )
     GOTO :EOF
 
 :COMMAND_setup
-    CALL :READ_ENVNAME
-    SET BUILDENV_NAME=%RETVAL%
-    SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
-
     IF NOT EXIST %BUILDENV_BASEPATH% (
         MD %BUILDENV_BASEPATH%
     )
@@ -96,4 +101,39 @@ EXIT /B 0
     SET BUILDENV_NAME=!BUILDENV_NAME:PLATFORM=%PLATFORM%!
     SET BUILDENV_NAME=!BUILDENV_NAME:CONFIGURATION=%CONFIGURATION%!
     SET RETVAL=%BUILDENV_NAME%
+    GOTO :EOF
+
+:GENERATE_CMakeSettings_JSON
+REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
+    SET CMakeSettings="%MIXXX_ROOT%\CMakeSettings.json"
+    IF EXIST %CMakeSettings% del /f /q %CMakeSettings%
+    >>%CMakeSettings% echo {
+    >>%CMakeSettings% echo   "configurations": [
+    >>%CMakeSettings% echo     {
+    >>%CMakeSettings% echo       "buildCommandArgs": "",
+    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\cmake_build",
+    >>%CMakeSettings% echo       "cmakeCommandArgs": "-DDEBUG_ASSERTIONS_FATAL=ON -DHSS1394=ON -DKEYFINDER=OFF -DLOCALECOMPARE=ON -DMAD=ON -DMEDIAFOUNDATION=ON -DSTATIC_DEPS=ON -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON",
+    >>%CMakeSettings% echo       "configurationType": "Release",
+    >>%CMakeSettings% echo       "ctestCommandArgs": "",
+    >>%CMakeSettings% echo       "generator": "Ninja",
+    >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
+    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\cmake_dist",
+    >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
+    >>%CMakeSettings% echo       "name": "!PLATFORM!-!CONFIGURATION!",
+    >>%CMakeSettings% echo       "variables": [
+    >>%CMakeSettings% echo         {
+    >>%CMakeSettings% echo           "name": "CMAKE_PREFIX_PATH",
+    >>%CMakeSettings% echo           "type": "STRING",
+    REM Replaces all \ by \\ in CMAKE_PREFIX_PATH
+    >>%CMakeSettings% echo           "value": "!CMAKE_PREFIX_PATH:\=\\!"
+    >>%CMakeSettings% echo         },
+    >>%CMakeSettings% echo         {
+    >>%CMakeSettings% echo           "name": "CMAKE_INTERPROCEDURAL_OPTIMIZATION",
+    >>%CMakeSettings% echo           "type": "BOOL",
+    >>%CMakeSettings% echo           "value": "FALSE"
+    >>%CMakeSettings% echo         }
+    >>%CMakeSettings% echo       ]
+    >>%CMakeSettings% echo     }
+    >>%CMakeSettings% echo   ]
+    >>%CMakeSettings% echo }
     GOTO :EOF
