@@ -24,7 +24,9 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
+namespace {
 const QString kPresetExt(".midi.xml");
+}
 
 DlgPrefController::DlgPrefController(
         QWidget* parent,
@@ -284,14 +286,24 @@ QString DlgPrefController::presetManualLink(
     return url;
 }
 
-QString DlgPrefController::presetScriptFileLinks(
+QString DlgPrefController::presetFileLinks(
         const ControllerPresetPointer pPreset) const {
-    if (!pPreset || pPreset->getScriptFiles().empty()) {
-        return tr("No Scripts");
+    if (!pPreset) {
+        return QString();
     }
 
+    const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
     QStringList linkList;
+    QString xmlFileName = QFileInfo(pPreset->filePath()).fileName();
+    QString xmlFileLink = QStringLiteral("<a href=\"") +
+            pPreset->filePath() + QStringLiteral("\">") +
+            xmlFileName + QStringLiteral("</a>");
+    if (pPreset->filePath().startsWith(systemPresetPath)) {
+        xmlFileLink += builtinFileSuffix;
+    }
+    linkList << xmlFileLink;
+
     for (const auto& script : pPreset->getScriptFiles()) {
         QString scriptFileLink = QStringLiteral("<a href=\"") +
                 script.file.absoluteFilePath() + QStringLiteral("\">") +
@@ -302,8 +314,7 @@ QString DlgPrefController::presetScriptFileLinks(
                     QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
         } else if (script.file.absoluteFilePath().startsWith(
                            systemPresetPath)) {
-            scriptFileLink +=
-                    QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
+            scriptFileLink += builtinFileSuffix;
         }
 
         linkList << scriptFileLink;
@@ -488,7 +499,7 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
     applyPresetChanges();
     if (m_pPreset && m_pPreset->isDirty()) {
         if (QMessageBox::question(this,
-                    tr("Preset has been edited"),
+                    tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
                 QMessageBox::Yes) {
             savePreset();
@@ -511,7 +522,7 @@ void DlgPrefController::savePreset() {
     }
 
     if (!m_pPreset->isDirty()) {
-        qDebug() << "Preset has not been edited, no need to save it.";
+        qDebug() << "Mapping is not dirty, no need to save it.";
         return;
     }
 
@@ -569,13 +580,13 @@ void DlgPrefController::savePreset() {
     if (!saveAsNew) {
         newFilePath = oldFilePath;
     } else {
-        QString savePresetTitle = tr("Save user preset");
-        QString savePresetLabel = tr("Enter the name for saving the preset to the user folder.");
-        QString savingFailedTitle = tr("Saving preset failed");
+        QString savePresetTitle = tr("Save user mapping");
+        QString savePresetLabel = tr("Enter the name for saving the mapping to the user folder.");
+        QString savingFailedTitle = tr("Saving mapping failed");
         QString invalidNameLabel =
-                tr("A preset cannot have a blank name and may not contain "
+                tr("A mapping cannot have a blank name and may not contain "
                    "special characters.");
-        QString fileExistsLabel = tr("A preset file with that name already exists.");
+        QString fileExistsLabel = tr("A mapping file with that name already exists.");
         // Only allow the name to contain letters, numbers, whitespaces and _-+()/
         const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
 
@@ -613,14 +624,14 @@ void DlgPrefController::savePreset() {
             validPresetName = true;
         }
         m_pPreset->setName(presetName);
-        qDebug() << "Preset renamed to" << m_pPreset->name();
+        qDebug() << "Mapping renamed to" << m_pPreset->name();
     }
 
     if (!m_pPreset->savePreset(newFilePath)) {
-        qDebug() << "Failed to save preset as" << newFilePath;
+        qDebug() << "Failed to save mapping as" << newFilePath;
         return;
     }
-    qDebug() << "Preset saved as" << newFilePath;
+    qDebug() << "Mapping saved as" << newFilePath;
 
     m_pPreset->setFilePath(newFilePath);
     m_pPreset->setDirty(false);
@@ -679,8 +690,8 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     QString support = supportLinks.join("&nbsp;&nbsp;");
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 
-    QString scriptFiles = presetScriptFileLinks(preset);
-    m_ui.labelLoadedPresetScriptFileLinks->setText(scriptFiles);
+    QString mappingFileLinks = presetFileLinks(preset);
+    m_ui.labelLoadedPresetScriptFileLinks->setText(mappingFileLinks);
 
     // We mutate this preset so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this
