@@ -55,9 +55,6 @@ QString HeaderViewState::saveState() const {
     int size = m_view_state.ByteSize();
 #endif
     QByteArray array(size, '\0');
-    for (const auto& header : m_view_state.header_state()) {
-        qDebug() << "Save: " << QString::fromStdString(header.column_name());
-    }
     m_view_state.SerializeToArray(array.data(), size);
     return QString(array.toBase64());
 }
@@ -76,7 +73,6 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     // First set all sections to be hidden and update logical indexes.
     for (int li = 0; li < headers->count(); ++li) {
         headers->setSectionHidden(li, true);
-        qDebug() << "HeaderViewState::restoreState looking for:" << headers->model()->headerData(li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
         auto it = map.find(headers->model()->headerData(
                                                    li, Qt::Horizontal, TrackModel::kHeaderNameRole)
                                    .toString());
@@ -220,7 +216,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     } else {
         // Load the previous header state (stored as serialized protobuf).
         // Decode it and restore it.
-        qDebug() << "Restoring header state from proto" << headerStateString;
+        //qDebug() << "Restoring header state from proto" << headerStateString;
         HeaderViewState view_state(headerStateString);
         if (!view_state.healthy()) {
             loadDefaultHeaderState();

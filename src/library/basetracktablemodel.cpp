@@ -241,7 +241,6 @@ void BaseTrackTableModel::setHeaderProperties(
         m_columnHeaders.resize(section + 1);
     }
     m_columnHeaders[section].column = column;
-    qDebug() << "col: " << m_columnCache.columnName(column);
     setHeaderData(
             section,
             Qt::Horizontal,

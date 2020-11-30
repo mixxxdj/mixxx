@@ -24,7 +24,7 @@
 
 namespace {
 
-const bool sDebug = true;
+const bool sDebug = false;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic

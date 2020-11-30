@@ -22,7 +22,6 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByName.clear();
     for (int i = 0; i < columns.size(); ++i) {
         QString column = columns[i];
-        qDebug() << "col: " << column;
         m_columnIndexByName[column] = i;
     }
 

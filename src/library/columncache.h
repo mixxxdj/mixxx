@@ -84,7 +84,6 @@ class ColumnCache : public QObject {
     }
 
     inline int fieldIndex(const QString& columnName) const {
-        qDebug() << "fieldIndex" << columnName << m_columnIndexByName.value(columnName, -1);
         return m_columnIndexByName.value(columnName, -1);
     }
 

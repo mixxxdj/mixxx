@@ -41,7 +41,6 @@ void LibraryTableModel::setTableModel(int id) {
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
             "WHERE (" + kDefaultLibraryFilter + ")";
-    qDebug() << "LibraryTableModel::setTableModel" << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
