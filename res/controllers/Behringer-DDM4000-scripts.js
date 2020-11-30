@@ -7,8 +7,10 @@ var DDM4000 = new components.extension.GenericMidiController({
 
         /* Shortcut variables */
         var c    = components;
+        var e    = components.extension;
         var cc   = 0xB0;
         var note = 0x90;
+        var toggle = c.Button.prototype.types.toggle;
 
         return {
             init: function() {
@@ -25,11 +27,24 @@ var DDM4000 = new components.extension.GenericMidiController({
                 { // Channel 1
                     deckNumbers: [1],
                     components: [
-                        {type: c.Pot,    options: {midi: [cc,   0x07],  inKey: "volume"}}, // Volume
-                        {type: c.Button, options: {midi: [note, 0x20],  inKey: ""}}, // CF Assign
-                        {type: c.Button, options: {midi: [cc,   0x20], outKey: ""}}, // CF Assign: A
-                        {type: c.Button, options: {midi: [cc,   0x21], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x3F],    key: "pfl", sendShifted: true}}, // PFL
+                        {type: c.Pot, options: {midi: [cc, 0x07], inKey: "volume"}}, // Volume
+                        { // CF Assign
+                            type: e.EnumToggleButton,
+                            options: {midi: [note, 0x20], inKey: "orientation", values: [0, 2, 1]},
+                        },
+                        { // CF Assign: A
+                            type: e.EnumEncoder,
+                            options: {midi: [cc, 0x20], outKey: "orientation", values: [1, 0]},
+                        },
+                        { // CF Assign: B
+                            type: e.EnumEncoder,
+                            options: {midi: [cc, 0x21], outKey: "orientation", values: [1, 2]},
+                        },
+                        { // PFL
+                            type: c.Button, options: {
+                                midi: [note, 0x3F], key: "pfl", type: toggle, sendShifted: true
+                            }
+                        },
                         {type: c.Button, options: {midi: [note, 0x03],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x38], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x37], outKey: ""}}, // Mode: Single
@@ -48,11 +63,25 @@ var DDM4000 = new components.extension.GenericMidiController({
                 { // Channel 2
                     deckNumbers: [2],
                     components: [
-                        {type: c.Pot,    options: {midi: [cc,   0x0B],  inKey: "volume"}}, // Volume
-                        {type: c.Button, options: {midi: [note, 0x22],  inKey: ""}}, // CF Assign
-                        {type: c.Button, options: {midi: [cc,   0x22], outKey: ""}}, // CF Assign: A
-                        {type: c.Button, options: {midi: [cc,   0x23], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x49],    key: "pfl", sendShifted: true}}, // PFL
+                        {type: c.Pot, options: {midi: [cc, 0x0B], inKey: "volume"}}, // Volume
+                        { // CF Assign
+                            type: e.EnumToggleButton,
+                            options: {midi: [note, 0x22],  inKey: "orientation", values: [0, 2, 1]},
+                        },
+                        { // CF Assign: A
+                            type: e.EnumEncoder,
+                            options: {midi: [cc, 0x22], outKey: "orientation", values: [1, 0]}
+                        },
+                        { // CF Assign: B
+                            type: e.EnumEncoder, options: {
+                                midi: [cc, 0x23], outKey: "orientation", values: [1, 2]
+                            }
+                        },
+                        { // PFL
+                            type: c.Button, options: {
+                                midi: [note, 0x49], key: "pfl", type: toggle, sendShifted: true
+                            }
+                        },
                         {type: c.Button, options: {midi: [note, 0x07],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x42], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x41], outKey: ""}}, // Mode: Single
@@ -71,11 +100,24 @@ var DDM4000 = new components.extension.GenericMidiController({
                 { // Channel 3
                     deckNumbers: [3],
                     components: [
-                        {type: c.Pot,    options: {midi: [cc,   0x0F],  inKey: "volume"}}, // Volume
-                        {type: c.Button, options: {midi: [note, 0x24],  inKey: ""}}, // CF Assign
-                        {type: c.Button, options: {midi: [cc,   0x24], outKey: ""}}, // CF Assign: A
-                        {type: c.Button, options: {midi: [cc,   0x25], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x53],    key: "pfl", sendShifted: true}}, // PFL
+                        {type: c.Pot, options: {midi: [cc, 0x0F],  inKey: "volume"}}, // Volume
+                        { // CF Assign
+                            type: e.EnumToggleButton,
+                            options: {midi: [note, 0x24],  inKey: "orientation", values: [0, 2, 1]}
+                        },
+                        { // CF Assign: A
+                            type: e.EnumEncoder,
+                            options: {midi: [cc,   0x24], outKey: "orientation", values: [1, 0]}
+                        },
+                        { // CF Assign: B
+                            type: e.EnumEncoder,
+                            options: {midi: [cc,   0x25], outKey: "orientation", values: [1, 2]}
+                        },
+                        { // PFL
+                            type: c.Button, options: {
+                                midi: [note, 0x53], key: "pfl", type: toggle, sendShifted: true
+                            }
+                        },
                         {type: c.Button, options: {midi: [note, 0x0B],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x4C], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x4B], outKey: ""}}, // Mode: Single
@@ -94,11 +136,24 @@ var DDM4000 = new components.extension.GenericMidiController({
                 { // Channel 4
                     deckNumbers: [4],
                     components: [
-                        {type: c.Pot,    options: {midi: [cc,   0x13],  inKey: "volume"}}, // Volume
-                        {type: c.Button, options: {midi: [note, 0x26],  inKey: ""}}, // CF Assign
-                        {type: c.Button, options: {midi: [cc,   0x26], outKey: ""}}, // CF Assign: A
-                        {type: c.Button, options: {midi: [cc,   0x27], outKey: ""}}, // CF Assign: B
-                        {type: c.Button, options: {midi: [note, 0x5D],    key: "pfl", sendShifted: true}}, // PFL
+                        {type: c.Pot, options: {midi: [cc, 0x13], inKey: "volume"}}, // Volume
+                        { // CF Assign
+                            type: e.EnumToggleButton,
+                            options: {midi: [note, 0x26],  inKey: "orientation", values: [0, 2, 1]}
+                        },
+                        { // CF Assign: A
+                            type: e.EnumEncoder,
+                            options: {midi: [cc,   0x26], outKey: "orientation", values: [1, 0]}
+                        },
+                        { // CF Assign: B
+                            type: e.EnumEncoder,
+                            options: {midi: [cc,   0x27], outKey: "orientation", values: [1, 2]}
+                        },
+                        { // PFL
+                            type: c.Button, options: {
+                                midi: [note, 0x5D], key: "pfl", type: toggle, sendShifted: true
+                            }
+                        },
                         {type: c.Button, options: {midi: [note, 0x0F],  inKey: ""}}, // Mode
                         {type: c.Button, options: {midi: [cc,   0x56], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x55], outKey: ""}}, // Mode: Single
@@ -142,7 +197,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [note, 0x1C],    key: "", sendShifted: true}}, // Crossfader: B High
                         {options: {midi: [note, 0x1D],    key: "", sendShifted: true}}, // Crossfader: B Mid
                         {options: {midi: [note, 0x1E],    key: "", sendShifted: true}}, // Crossfader: B Low
-                        {options: {midi: [note, 0x1F],    key: "", sendShifted: true}}, // Crossfader: On
+                        {options: {midi: [note, 0x1F],    key: "", sendShifted: true, type: toggle}}, // Crossfader: On
                         {options: {midi: [note, 0x28],    key: "", sendShifted: true}}, // Crossfader: Reverse Tap
                         {options: {midi: [note, 0x29],    key: "", sendShifted: true}}, // Crossfader: Reverse Hold
                         {options: {midi: [note, 0x2A],    key: "", sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
@@ -179,10 +234,10 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [cc,   0x6C], outKey: ""}}, // Sampler: Sample Length ∞
                         {options: {midi: [note, 0x6D],    key: "", sendShifted: true}}, // Sampler: Record / In
                         {options: {midi: [note, 0x6C],  inKey: ""}}, // Sampler: Bank Assign
-                        {options: {midi: [note, 0x6E],    key: "", sendShifted: true}}, // Sampler: Bank 1 Play / Out
+                        {options: {midi: [note, 0x6E],    key: "cue_gotoandplay", sendShifted: true}}, // Sampler: Bank 1 Play / Out
                         {options: {midi: [cc,   0x6F], outKey: ""}}, // Sampler: Bank 1 Reverse
-                        {options: {midi: [cc,   0x70], outKey: ""}}, // Sampler: Bank 1 Loop
-                        {options: {midi: [note, 0x71],  inKey: ""}}, // Sampler: Bank 1 Mode
+                        {options: {midi: [cc,   0x70], outKey: "repeat"}}, // Sampler: Bank 1 Loop
+                        {options: {midi: [note, 0x71],  inKey: "repeat", type: toggle}}, // Sampler: Bank 1 Mode
                         {options: {midi: [cc,   0x71], outKey: ""}}, // Sampler: Bank 1 Mode Amber
                         {options: {midi: [cc,   0x72], outKey: ""}}, // Sampler: Bank 1 Mode Blue
                         {options: {midi: [note, 0x73],    key: "", sendShifted: true}}, // Sampler: Bank 2 Play / Out
@@ -191,11 +246,25 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [note, 0x76],  inKey: ""}}, // Sampler: Bank 2 Mode
                         {options: {midi: [cc,   0x76], outKey: ""}}, // Sampler: Bank 2 Mode Amber
                         {options: {midi: [cc,   0x77], outKey: ""}}, // Sampler: Bank 2 Mode Blue
-                        {options: {midi: [note, 0x78],    key: "", sendShifted: true}}, // Sampler: FX On
+                        { // Sampler: FX On
+                            options: {
+                                midi: [note, 0x78], type: toggle, sendShifted: true,
+                                group: "[EffectRack1_EffectUnit1]", key: "group_[Sampler1]_enable",
+                            }
+                        },
                         {options: {midi: [note, 0x79],    key: "", sendShifted: true}}, // Sampler: Select
-                        {options: {midi: [note, 0x7A],  inKey: ""}}, // Sampler: CF Assign
-                        {options: {midi: [cc,   0x7A], outKey: ""}}, // Sampler: CF Assign A
-                        {options: {midi: [cc,   0x7B], outKey: ""}}, // Sampler: CF Assign B
+                        { // Sampler: CF Assign
+                            type: e.EnumToggleButton,
+                            options: {midi: [note, 0x7A],  inKey: "orientation", values: [0, 2, 1]},
+                        },
+                        { // Sampler: CF Assign A
+                            type: e.EnumEncoder,
+                            options: {midi: [cc, 0x7A], outKey: "orientation", values: [1, 0]},
+                        },
+                        { // Sampler: CF Assign B
+                            type: e.EnumEncoder,
+                            options: {midi: [cc, 0x7B], outKey: "orientation", values: [1, 2]},
+                        },
                         {options: {midi: [note, 0x7C],    key: "", sendShifted: true}}, // Sampler: CF Start
                     ]
                 }
