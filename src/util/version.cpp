@@ -65,27 +65,18 @@ QString Version::applicationTitle() {
 }
 
 // static
-QString Version::developmentBranch() {
-#ifdef BUILD_BRANCH
-    return BUILD_BRANCH;
+QString Version::gitCommitDescription() {
+#ifdef BUILD_COMMIT_DESCRIPTION
+    return BUILD_COMMIT_DESCRIPTION;
 #else
     return QString();
 #endif
 }
 
 // static
-QString Version::developmentCommitHash() {
-#ifdef BUILD_COMMIT_HASH
-    return BUILD_COMMIT_HASH;
-#else
-    return QString();
-#endif
-}
-
-// static
-QString Version::gitCommitDateTime() {
-#ifdef BUILD_COMMIT_DATE_TIME
-    return BUILD_COMMIT_DATE_TIME;
+QString Version::gitCommitDate() {
+#ifdef BUILD_COMMIT_DATE
+    return BUILD_COMMIT_DATE;
 #else
     return QString();
 #endif
@@ -141,17 +132,14 @@ QStringList Version::dependencyVersions() {
 
 void Version::logBuildDetails() {
     QString version = Version::version();
-    QString buildBranch = developmentBranch();
-    QString buildCommitHash = developmentCommitHash();
-    QString buildCommitDateTime = gitCommitDateTime();
+    QString buildCommitDescription = gitCommitDescription();
+    QString buildCommitDate = gitCommitDate();
     QString buildFlags = Version::buildFlags();
 
     QStringList buildInfo;
-    if (!buildBranch.isEmpty() && !buildCommitHash.isEmpty() && !buildCommitDateTime.isEmpty()) {
-        buildInfo.append(QString("git branch %1 commit %2 committed at %3")
-                                 .arg(buildBranch,
-                                         buildCommitHash,
-                                         buildCommitDateTime));
+    if (!buildCommitDescription.isEmpty() && !buildCommitDate.isEmpty()) {
+        buildInfo.append(QString("git commit %1, commited on %2")
+                                 .arg(buildCommitDescription, buildCommitDate));
     } else {
         buildInfo.append(QStringLiteral("built outside of Git repository"));
     }

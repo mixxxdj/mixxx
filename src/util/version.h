@@ -13,13 +13,11 @@ class Version {
     // Returns the application title (e.g. "Mixxx x64" on Windows)
     static QString applicationTitle();
 
-    // Returns the development branch (e.g. features_key) or the null
-    // string if the branch is unknown.
-    static QString developmentBranch();
+    /// unique identifier of Git commit including most recent tag name,
+    /// number of commits since the tag, and commit hash
+    static QString gitCommitDescription();
 
-    static QString developmentCommitHash();
-
-    static QString gitCommitDateTime();
+    static QString gitCommitDate();
 
     // Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
     // the null string if the flags are unknown.

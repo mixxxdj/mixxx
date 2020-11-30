@@ -231,55 +231,30 @@ if(WIN32)
 endif()
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
-# Get the current working branch
 execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
+  COMMAND git describe --tags --always --dirty=-modified
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_VARIABLE GIT_COMMIT_DESCRIPTION
   OUTPUT_STRIP_TRAILING_WHITESPACE
   ERROR_QUIET
 )
-if(NOT GIT_BRANCH)
-  set(GIT_BRANCH "unknown")
+if(NOT GIT_COMMIT_DESCRIPTION)
+    set(GIT_COMMIT_DESCRIPTION "unknown-version")
 endif()
-message(STATUS "Git branch: ${GIT_BRANCH}")
-
-# Get the latest abbreviated commit hash of the working branch
-execute_process(
-  COMMAND git log -1 --format=%h
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_HASH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_COMMIT_HASH)
-    set(GIT_COMMIT_HASH "unknown")
-endif()
-message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
-
-# Check if the worktree is dirty
-execute_process(
-  COMMAND git diff --quiet
-  RESULT_VARIABLE GIT_WORKTREE_DIRTY
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  ERROR_QUIET
-)
-if(GIT_WORKTREE_DIRTY EQUAL "1")
-  set(GIT_COMMIT_HASH "${GIT_COMMIT_HASH} (modified)")
-endif()
+message(STATUS "Git commit: ${GIT_COMMIT_DESCRIPTION}")
 
 set(ENV{TZ} UTC)
 execute_process(
-  COMMAND git show --quiet --date=format-local:%Y-%m-%d_%H-%M-%S --format=%cd
+  COMMAND git show --quiet --format=%cs
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_DATE_TIME
+  OUTPUT_VARIABLE GIT_COMMIT_DATE
   OUTPUT_STRIP_TRAILING_WHITESPACE
   ERROR_QUIET
 )
-if(NOT GIT_COMMIT_DATE_TIME)
-    set(GIT_COMMIT_DATE_TIME "unknown")
+if(NOT GIT_COMMIT_DATE)
+    set(GIT_COMMIT_DATE "unknown-date")
 endif()
-message(STATUS "Git commit date_time: ${GIT_COMMIT_DATE_TIME}")
+message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
 
 if(MSVC)
   # clcache support
@@ -2486,7 +2461,7 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-set(CPACK_PACKAGE_FILE_NAME "Mixxx_${GIT_BRANCH}_${GIT_COMMIT_DATE_TIME}_${GIT_COMMIT_HASH}")
+set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_COMMIT_DESCRIPTION}")
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
