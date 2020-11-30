@@ -6,19 +6,23 @@ var DDM4000 = new components.extension.GenericMidiController({
     configurationProvider: function() {
 
         /* Shortcut variables */
-        var c = components;
-        var cc = 0xB0;
+        var c    = components;
+        var cc   = 0xB0;
         var note = 0x90;
 
         return {
             init: function() {
+
+                /*
+                 * Prepare outgoing messages for the mixer's LED buttons.
+                 * The buttons send `[note, ?]` and the LEDs respond to `[cc, ?]`.
+                 * Enable LEDs by adding `sendShifted: true` to a button's `options` object.
+                 */
                 c.Button.prototype.shiftChannel = true;
                 c.Button.prototype.shiftOffset = cc - note;
             },
             decks: [
-
-                /* Channel 1 */
-                {
+                { // Channel 1
                     deckNumbers: [1],
                     components: [
                         {type: c.Pot,    options: {midi: [cc,   0x07],  inKey: "volume"}}, // Volume
@@ -30,23 +34,18 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x38], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x37], outKey: ""}}, // Mode: Single
                     ],
-                    equalizerUnit: {
-                        midi: {
-                            //               Low,           Mid,           High
-                            parameterKnobs: {1: [cc, 0x06], 2: [cc, 0x05], 3: [cc, 0x04]},
-                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                    equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
+                        midi: { // eslint-disable-next-line key-spacing
+                            parameterKnobs:   {1: [cc,   0x06], 2: [cc,   0x05], 3: [cc,   0x04]},
                             parameterButtons: {1: [note, 0x02], 2: [note, 0x01], 3: [note, 0x00]},
                         },
                         output: {
-                            //                 P3 (Low),      P2 (Mid),      P1 (High)
-                            parameterButtons: {1: [cc, 0x3D], 2: [cc, 0x3B], 3: [cc, 0x39]} // Amber
-                            // parameterButtons: {1: [cc, 0x3E], 2: [cc, 0x3C], 3: [cc, 0x3A]} // Green
+                            parameterButtons: {1: [cc,   0x3D], 2: [cc,   0x3B], 3: [cc,   0x39]}, // Amber
+                            // parameterButtons: {1: [cc,   0x3E], 2: [cc,   0x3C], 3: [cc,   0x3A]}, // Green
                         },
                     },
                 },
-
-                /* Channel 2 */
-                {
+                { // Channel 2
                     deckNumbers: [2],
                     components: [
                         {type: c.Pot,    options: {midi: [cc,   0x0B],  inKey: "volume"}}, // Volume
@@ -58,23 +57,18 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x42], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x41], outKey: ""}}, // Mode: Single
                     ],
-                    equalizerUnit: {
-                        midi: {
-                            //               Low,           Mid,           High
-                            parameterKnobs: {1: [cc, 0x0A], 2: [cc, 0x09], 3: [cc, 0x08]},
-                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                    equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
+                        midi: { // eslint-disable-next-line key-spacing
+                            parameterKnobs:   {1: [cc,   0x0A], 2: [cc,   0x09], 3: [cc,   0x08]},
                             parameterButtons: {1: [note, 0x06], 2: [note, 0x05], 3: [note, 0x04]},
                         },
                         output: {
-                            //                 P3 (Low),      P2 (Mid),      P1 (High)
-                            parameterButtons: {1: [cc, 0x47], 2: [cc, 0x45], 3: [cc, 0x43]} // Amber
-                            // parameterButtons: {1: [cc, 0x48], 2: [cc, 0x46], 3: [cc, 0x44]} // Green
+                            parameterButtons: {1: [cc,   0x47], 2: [cc,   0x45], 3: [cc,   0x43]}, // Amber
+                            // parameterButtons: {1: [cc,   0x48], 2: [cc,   0x46], 3: [cc,   0x44]}, // Green
                         },
                     },
                 },
-
-                /* Channel 3 */
-                {
+                { // Channel 3
                     deckNumbers: [3],
                     components: [
                         {type: c.Pot,    options: {midi: [cc,   0x0F],  inKey: "volume"}}, // Volume
@@ -86,23 +80,18 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x4C], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x4B], outKey: ""}}, // Mode: Single
                     ],
-                    equalizerUnit: {
-                        midi: {
-                            //               Low,           Mid,           High
-                            parameterKnobs: {1: [cc, 0x0E], 2: [cc, 0x0D], 3: [cc, 0x0C]},
-                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                    equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
+                        midi: { // eslint-disable-next-line key-spacing
+                            parameterKnobs:   {1: [cc,   0x0E], 2: [cc,   0x0D], 3: [cc,   0x0C]},
                             parameterButtons: {1: [note, 0x0A], 2: [note, 0x09], 3: [note, 0x08]},
                         },
                         output: {
-                            //                 P3 (Low),      P2 (Mid),      P1 (High)
-                            parameterButtons: {1: [cc, 0x51], 2: [cc, 0x4F], 3: [cc, 0x4D]} // Amber
-                            // parameterButtons: {1: [cc, 0x52], 2: [cc, 0x50], 3: [cc, 0x4E]} // Green
+                            parameterButtons: {1: [cc,   0x51], 2: [cc,   0x4F], 3: [cc,   0x4D]}, // Amber
+                            // parameterButtons: {1: [cc,   0x52], 2: [cc,   0x50], 3: [cc,   0x4E]}, // Green
                         },
                     },
                 },
-
-                /* Channel 4 */
-                {
+                { // Channel 4
                     deckNumbers: [4],
                     components: [
                         {type: c.Pot,    options: {midi: [cc,   0x13],  inKey: "volume"}}, // Volume
@@ -114,26 +103,20 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Button, options: {midi: [cc,   0x56], outKey: ""}}, // Mode: Multi
                         {type: c.Button, options: {midi: [cc,   0x55], outKey: ""}}, // Mode: Single
                     ],
-                    equalizerUnit: {
-                        midi: {
-                            //               Low,           Mid,           High
-                            parameterKnobs: {1: [cc, 0x12], 2: [cc, 0x11], 3: [cc, 0x10]},
-                            //                 P3 (Low),        P2 (Mid),        P1 (High)
+                    equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
+                        midi: { // eslint-disable-next-line key-spacing
+                            parameterKnobs:   {1: [cc,   0x12], 2: [cc,   0x11], 3: [cc,   0x10]},
                             parameterButtons: {1: [note, 0x0E], 2: [note, 0x0D], 3: [note, 0x0C]},
                         },
                         output: {
-                            //                 P3 (Low),      P2 (Mid),      P1 (High)
-                            parameterButtons: {1: [cc, 0x5B], 2: [cc, 0x59], 3: [cc, 0x57]} // Amber
-                            // parameterButtons: {1: [cc, 0x5C], 2: [cc, 0x5A], 3: [cc, 0x58]} // Green
+                            parameterButtons: {1: [cc,   0x5B], 2: [cc,   0x59], 3: [cc,   0x57]}, // Amber
+                            // parameterButtons: {1: [cc,   0x5C], 2: [cc,   0x5A], 3: [cc,   0x58]}, // Green
                         },
                     },
                 },
             ],
-
             containers: [
-
-                /* Microphone */
-                {
+                { // Microphone
                     defaultDefinition: {type: c.Button, options: {group: "[Microphone]"}},
                     components: [
                         {options: {midi: [cc,   0x02], inKey: ""}, type: c.Pot}, // Mic: EQ Low
@@ -146,12 +129,9 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [note, 0x35], key: "", sendShifted: true}}, // Mic: On/Off
                     ]
                 },
-
-                /* Crossfader */
-                {
+                { // Crossfader
                     defaultDefinition: {type: c.Button, options: {group: "[Master]"}},
                     components: [
-
                         {options: {midi: [cc,   0x14],  inKey: ""},           type: c.Pot}, // Crossfader: Curve
                         {options: {midi: [cc,   0x15],  inKey: "crossfader"}, type: c.Pot}, // Crossfader
                         {options: {midi: [note, 0x17],    key: "", sendShifted: true}}, // Crossfader: A Full Freq
@@ -175,9 +155,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [cc,   0x2F], outKey: ""}}, // Crossfader: Beat 16
                     ]
                 },
-
-                /* Sampler */
-                {
+                { // Sampler
                     defaultDefinition: {type: c.Button, options: {group: "[Sampler1]"}},
                     components: [
                         {options: {midi: [cc,   0x03],  inKey: "volume"}, type: c.Pot}, // Sampler: Volume/Mix
