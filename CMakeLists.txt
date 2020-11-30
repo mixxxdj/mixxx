@@ -239,7 +239,7 @@ execute_process(
   ERROR_QUIET
 )
 if(NOT GIT_COMMIT_DESCRIPTION)
-    set(GIT_COMMIT_DESCRIPTION "unknown-version")
+    set(GIT_COMMIT_DESCRIPTION "unknown-commit")
 endif()
 message(STATUS "Git commit: ${GIT_COMMIT_DESCRIPTION}")
 
@@ -1461,9 +1461,9 @@ if(WIN32)
   # Remove anything after ~ or - in the version number and replace the dots with commas
   string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
   string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
-  if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
-    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
-    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  if(NOT GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
+    string(REGEX MATCH "-([0-9]*)-" GIT_COMMITS_SINCE_LAST_TAG "${GIT_COMMIT_DESCRIPTION}")
+    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${CMAKE_MATCH_1}")
   endif()
   set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
 
