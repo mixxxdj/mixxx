@@ -405,7 +405,7 @@
             });
         };
         ParameterButton.prototype = deriveFrom(
-            components.Button, {type: components.Button.prototype.types.toggle});
+            components.Button, {type: components.Button.prototype.types.powerWindow});
 
         this.enabled = new components.Button(
             {group: "[QuickEffectRack1_" + deckGroup + "_Effect1]", key: "enabled"});
