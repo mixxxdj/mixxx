@@ -181,25 +181,38 @@
     });
 
     /**
-     * A button to cycle through the values of an enumeration [0..maxValue]
+     * A button to cycle through the values of an enumeration.
+     *
+     * The enumeration values may be defined either explicitly by an array
+     * or implicitly by a `maxValue` so that the values are `[0..maxValue]`.
      *
      * @constructor
      * @extends {components.Button}
      * @param {object} options Options object
+     * @param {Array<number>} options.values An array of enumeration values
      * @param {number} options.maxValue A positive integer defining the maximum enumeration value
      * @public
      */
     var EnumToggleButton = function(options) {
         options = options || {};
-        if (options.maxValue === undefined) {
-            log.error("EnumToggleButton constructor was called without specifying max value.");
+        if (options.maxValue === undefined && options.values === undefined) {
+            log.error("An EnumToggleButton requires either `values` or a `maxValue`.");
             this.maxValue = 0;
         }
         components.Button.call(this, options);
     };
     EnumToggleButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, _value, _status, _group) {
-            this.inSetValue((this.inGetValue() + 1) % this.maxValue);
+        input: function(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status)) {
+                var newValue;
+                if (this.values) {
+                    var index = this.values.indexOf(this.inGetValue());
+                    newValue = this.values[(index + 1) % this.values.length];
+                } else {
+                    newValue = (this.inGetValue() + 1) % (this.maxValue + 1);
+                }
+                this.inSetValue(newValue);
+            }
         }
     });
 
