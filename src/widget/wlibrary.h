@@ -25,7 +25,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     // the view and is in charge of deleting it. Returns whether or not the
     // registration was successful. Registered widget must implement the
     // LibraryView interface.
-    bool registerView(QString name, QWidget* view);
+    bool registerView(const QString& name, QWidget* view);
 
     LibraryView* getActiveView() const;
 

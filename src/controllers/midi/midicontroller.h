@@ -63,7 +63,7 @@ class MidiController : public Controller {
     /// Alias for send()
     /// The length parameter is here for backwards compatibility for when scripts
     /// were required to specify it.
-    inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+    inline void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
         Q_UNUSED(length);
         send(data);
     }
@@ -118,6 +118,9 @@ class MidiController : public Controller {
     friend class MidiOutputHandler;
     friend class MidiControllerTest;
     friend class MidiControllerJSProxy;
+
+    // MIDI learning assistant
+    friend class DlgControllerLearning;
 };
 
 class MidiControllerJSProxy : public ControllerJSProxy {
@@ -134,7 +137,7 @@ class MidiControllerJSProxy : public ControllerJSProxy {
         m_pMidiController->sendShortMsg(status, byte1, byte2);
     }
 
-    Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+    Q_INVOKABLE void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
         m_pMidiController->sendSysexMsg(data, length);
     }
 

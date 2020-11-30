@@ -263,7 +263,7 @@ class GlobalTrackCache : public QObject {
 
     TrackRef initTrackId(
             const TrackPointer& strongPtr,
-            TrackRef trackRef,
+            const TrackRef& trackRef,
             TrackId trackId);
 
     void purgeTrackId(TrackId trackId);

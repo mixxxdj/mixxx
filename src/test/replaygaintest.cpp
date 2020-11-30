@@ -8,7 +8,7 @@ namespace {
 
 class ReplayGainTest : public testing::Test {
   protected:
-    double ratioFromString(QString inputValue, bool expectedResult, double expectedValue) {
+    double ratioFromString(const QString& inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "ratioFromString" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
@@ -29,7 +29,7 @@ class ReplayGainTest : public testing::Test {
         }
     }
 
-    CSAMPLE peakFromString(QString inputValue, bool expectedResult, CSAMPLE expectedValue) {
+    CSAMPLE peakFromString(const QString& inputValue, bool expectedResult, CSAMPLE expectedValue) {
         //qDebug() << "peakFromString" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;

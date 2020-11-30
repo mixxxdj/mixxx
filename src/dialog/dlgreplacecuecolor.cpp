@@ -31,7 +31,7 @@ void setButtonColor(QPushButton* button, const QColor& color) {
 }
 
 typedef struct {
-    int id;
+    DbId id;
     TrackId trackId;
     mixxx::RgbColor color;
 } CueDatabaseRow;
@@ -339,7 +339,7 @@ void DlgReplaceCueColor::slotApply() {
         VERIFY_OR_DEBUG_ASSERT(color) {
             continue;
         }
-        CueDatabaseRow row = {selectQuery.value(idColumn).toInt(),
+        CueDatabaseRow row = {DbId(selectQuery.value(idColumn)),
                 TrackId(selectQuery.value(trackIdColumn).toInt()),
                 *color};
         rows << row;
@@ -383,14 +383,14 @@ void DlgReplaceCueColor::slotApply() {
 
     bool canceled = false;
 
-    QMultiMap<TrackPointer, int> cues;
-    for (const auto& row : rows) {
+    QMultiMap<TrackPointer, DbId> cues;
+    for (const auto& row : qAsConst(rows)) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
             canceled = true;
             break;
         }
-        query.bindValue(":id", row.id);
+        query.bindValue(":id", row.id.toVariant());
         query.bindValue(":track_id", row.trackId.value());
         query.bindValue(":current_color", mixxx::RgbColor::toQVariant(row.color));
         if (!query.exec()) {

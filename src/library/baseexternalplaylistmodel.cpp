@@ -80,7 +80,7 @@ Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
-void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
+void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
     QSqlQuery finder_query(m_database);
     finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
     finder_query.bindValue(":name", playlist_path);

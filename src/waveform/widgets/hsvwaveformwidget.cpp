@@ -32,7 +32,7 @@ HSVWaveformWidget::~HSVWaveformWidget() {
 }
 
 void HSVWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(this);
+    m_widget = this;
 }
 
 void HSVWaveformWidget::paintEvent(QPaintEvent* event) {

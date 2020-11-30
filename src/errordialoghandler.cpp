@@ -78,8 +78,7 @@ void ErrorDialogHandler::setEnabled(bool enabled) {
 
 ErrorDialogHandler::ErrorDialogHandler() {
     m_errorCondition = false;
-    connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)),
-            this, SLOT(errorDialog(ErrorDialogProperties*)));
+    connect(this, &ErrorDialogHandler::showErrorDialog, this, &ErrorDialogHandler::errorDialog);
 }
 
 ErrorDialogHandler::~ErrorDialogHandler() {
@@ -90,8 +89,8 @@ ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {
     return new ErrorDialogProperties();
 }
 
-bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
-                                            bool shouldQuit) {
+bool ErrorDialogHandler::requestErrorDialog(
+        DialogType type, const QString& message, bool shouldQuit) {
     if (!s_bEnabled) {
         return false;
     }
@@ -214,7 +213,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
 }
 
-void ErrorDialogHandler::boxClosed(QString key, QMessageBox* msgBox) {
+void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
     QMutexLocker locker(&m_mutex);
     locker.unlock();
 

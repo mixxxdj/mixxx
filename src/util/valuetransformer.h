@@ -84,8 +84,8 @@ class ValueTransformer {
     double transform(double argument) const;
     double transformInverse(double argument) const;
 
-    static ValueTransformer* parseFromXml(QDomElement transformElement,
-                                          const SkinContext& context);
+    static ValueTransformer* parseFromXml(const QDomElement& transformElement,
+            const SkinContext& context);
 
   private:
     ValueTransformer();

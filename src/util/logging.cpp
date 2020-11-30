@@ -126,7 +126,7 @@ inline void writeToStdErr(
                     .toLocal8Bit();
 
     QMutexLocker locked(&s_mutexStdErr);
-    const size_t written = fwrite(
+    const std::size_t written = fwrite(
             formattedMessage.constData(), sizeof(char), formattedMessage.size(), stderr);
     Q_UNUSED(written);
     DEBUG_ASSERT(written == static_cast<size_t>(formattedMessage.size()));
@@ -318,7 +318,7 @@ void Logging::initialize(
 
     s_debugAssertBreak = debugAssertBreak;
 
-    if (qgetenv("QT_MESSAGE_PATTERN").isEmpty()) {
+    if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
         qSetMessagePattern(kDefaultMessagePattern);
     }
 

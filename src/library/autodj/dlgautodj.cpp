@@ -66,7 +66,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             m_pTrackTableView,
             &WTrackTableView::setSelectedClick);
 
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -156,6 +156,12 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     labelTransitionAppendix->setToolTip(labelTransitionTooltip);
     fadeModeCombobox->setToolTip(fadeModeTooltip);
 
+    // Prevent the interactive widgets from being focused with Tab or Shift+Tab
+    fadeModeCombobox->setFocusPolicy(Qt::ClickFocus);
+    spinBoxTransition->setFocusPolicy(Qt::ClickFocus);
+    // work around QLineEdit being protected
+    spinBoxTransition->findChild<QLineEdit*>()->setFocusPolicy(Qt::ClickFocus);
+
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
@@ -216,7 +222,7 @@ DlgAutoDJ::~DlgAutoDJ() {
 
 void DlgAutoDJ::setupActionButton(QPushButton* pButton,
         void (DlgAutoDJ::*pSlot)(bool),
-        QString fallbackText) {
+        const QString& fallbackText) {
     connect(pButton, &QPushButton::clicked, this, pSlot);
     if (m_bShowButtonText) {
         pButton->setText(fallbackText);
@@ -237,7 +243,7 @@ void DlgAutoDJ::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 

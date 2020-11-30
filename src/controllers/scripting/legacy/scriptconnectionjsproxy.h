@@ -10,7 +10,7 @@ class ScriptConnectionJSProxy : public QObject {
     Q_PROPERTY(QString id READ readId)
     Q_PROPERTY(bool isConnected READ readIsConnected)
   public:
-    ScriptConnectionJSProxy(ScriptConnection conn) {
+    ScriptConnectionJSProxy(const ScriptConnection& conn) {
         m_scriptConnection = conn;
         m_idString = conn.id.toString();
         m_isConnected = true;

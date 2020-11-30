@@ -49,7 +49,8 @@ QList<QDir> SkinLoader::getSkinSearchPaths() const {
 }
 
 QString SkinLoader::getSkinPath(const QString& skinName) const {
-    for (QDir dir : getSkinSearchPaths()) {
+    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+    for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
             return dir.absolutePath();
         }
@@ -144,7 +145,7 @@ LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
     return pLaunchImage;
 }
 
-QString SkinLoader::pickResizableSkin(QString oldSkin) const {
+QString SkinLoader::pickResizableSkin(const QString& oldSkin) const {
     if (oldSkin.contains("latenight", Qt::CaseInsensitive)) {
         return "LateNight";
     }

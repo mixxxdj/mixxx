@@ -36,7 +36,7 @@ class FwdSqlQuery: protected QSqlQuery {
 
   public:
     FwdSqlQuery(
-            QSqlDatabase database,
+            const QSqlDatabase& database,
             const QString& statement);
 
     bool isPrepared() const {

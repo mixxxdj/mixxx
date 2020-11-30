@@ -63,14 +63,14 @@ TrackCollection::~TrackCollection() {
     DEBUG_ASSERT(!m_database.isOpen());
 }
 
-void TrackCollection::repairDatabase(QSqlDatabase database) {
+void TrackCollection::repairDatabase(const QSqlDatabase& database) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
 }
 
-void TrackCollection::connectDatabase(QSqlDatabase database) {
+void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Connecting database";
@@ -174,7 +174,7 @@ bool TrackCollection::removeDirectory(const QString& dir) {
     return false;
 }
 
-void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+void TrackCollection::relocateDirectory(const QString& oldDir, const QString& newDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // We only call this method if the user has picked a relocated directory via
@@ -246,7 +246,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     for (const auto& trackId: trackIds) {
         QSet<int> playlistIds;
         m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
-        for (const auto& playlistId: playlistIds) {
+        for (const auto& playlistId : qAsConst(playlistIds)) {
             if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
                 allPlaylistIds.insert(playlistId);
             }

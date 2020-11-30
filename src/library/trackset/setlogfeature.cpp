@@ -97,7 +97,7 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
     // menu.exec(globalPos);
 }
 
-void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
@@ -266,7 +266,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                                     m_pPlaylistTableModel->getTrack(index);
                             // Do not update the play count, just set played status.
                             PlayCounter playCounter(track->getPlayCounter());
-                            playCounter.setPlayed();
+                            playCounter.triggerLastPlayedNow();
                             track->setPlayCounter(playCounter);
                         }
                     }
@@ -380,7 +380,7 @@ void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     }
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId, QString newName) {
+void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);

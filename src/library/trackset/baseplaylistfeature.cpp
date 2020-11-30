@@ -136,7 +136,7 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
-int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
+int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
         return -1;
@@ -617,7 +617,8 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     int selected_row = -1;
 
     int row = 0;
-    for (const IdAndLabel& idAndLabel : createPlaylistLabels()) {
+    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
+    for (const auto& idAndLabel : playlistLabels) {
         int playlistId = idAndLabel.id;
         QString playlistLabel = idAndLabel.label;
 

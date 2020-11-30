@@ -107,10 +107,12 @@ void MidiController::createOutputHandlers() {
         MidiOutputHandler* moh = new MidiOutputHandler(this, mapping);
         if (!moh->validate()) {
             QString errorLog =
-                QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
-                        .arg(QString::number(status, 16).toUpper(),
-                             QString::number(control, 16).toUpper().rightJustified(2,'0'))
-                        .arg(group, key).toUtf8();
+                    QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
+                            .arg(QString::number(status, 16).toUpper(),
+                                    QString::number(control, 16).toUpper().rightJustified(2, '0'),
+                                    group,
+                                    key)
+                            .toUtf8();
             qWarning() << errorLog;
 
             int deckNum = 0;

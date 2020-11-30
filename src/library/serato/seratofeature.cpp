@@ -832,7 +832,7 @@ bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName)
     return true;
 }
 
-bool dropTable(QSqlDatabase& database, QString tableName) {
+bool dropTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Dropping Serato table: " << tableName;
 
     QSqlQuery query(database);
@@ -940,7 +940,7 @@ void SeratoFeature::bindLibraryWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)), this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &SeratoFeature::htmlLinkClicked);
     libraryWidget->registerView("SERATOHOME", edit);
 }
 
@@ -952,7 +952,7 @@ void SeratoFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     SeratoPlaylistModel* model = new SeratoPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
@@ -987,7 +987,7 @@ QString SeratoFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (const auto& item : items) {
+    for (const auto& item : qAsConst(items)) {
         html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));

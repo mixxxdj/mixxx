@@ -64,7 +64,7 @@ class DbConnection final {
     DbConnection(const DbConnection&&) = delete;
 
     QSqlDatabase m_sqlDatabase;
-    StringCollator m_collator;
+    mixxx::StringCollator m_collator;
 };
 
 } // namespace mixxx

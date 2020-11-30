@@ -30,7 +30,7 @@ class MidiControllerTest : public MixxxTest {
         m_pController.reset(new MockMidiController());
     }
 
-    void addMapping(MidiInputMapping mapping) {
+    void addMapping(const MidiInputMapping& mapping) {
         m_preset.addInputMapping(mapping.key.key, mapping);
     }
 

@@ -96,7 +96,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (lang == "C") { // Ugly hack to remove the non-resolving locales
             continue;
         }
-        lang = QString("%1 (%2)").arg(lang).arg(country);
+        lang = QString("%1 (%2)").arg(lang, country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
     }
     ComboBoxLocale->model()->sort(0); // Sort languages list
@@ -147,8 +147,14 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         index++;
     }
 
-    connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
-    connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
+    connect(ComboBoxSkinconf,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefInterface::slotSetSkin);
+    connect(ComboBoxSchemeconf,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefInterface::slotSetScheme);
 
     checkBoxScaleFactorAuto->hide();
     spinBoxScaleFactor->hide();
@@ -181,8 +187,13 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     // Initialize checkboxes to match config
     loadTooltipPreferenceFromConfig();
     slotSetTooltips();  // Update disabled status of "only library" checkbox
-    connect(buttonGroupTooltips, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotSetTooltips()));
+    connect(buttonGroupTooltips,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this,
+            [this](QAbstractButton* button) {
+                Q_UNUSED(button);
+                slotSetTooltips();
+            });
 
     slotUpdate();
 }
@@ -324,11 +335,17 @@ void DlgPrefInterface::slotSetTooltips() {
     }
 }
 
-void DlgPrefInterface::notifyRebootNecessary() {
+void DlgPrefInterface::notifyLocaleRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(
         this, tr("Information"),
         tr("Mixxx must be restarted before the new locale setting will take effect."));
+}
+
+void DlgPrefInterface::notifySkinRebootNecessary() {
+    // make the fact that you have to restart mixxx more obvious
+    QMessageBox::information(
+            this, tr("Information"), tr("Mixxx must be restarted to load the new skin."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -340,7 +357,7 @@ void DlgPrefInterface::slotSetScheme(int) {
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
-void DlgPrefInterface::slotSetSkinDescription(QString skin) {
+void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
     SkinManifest manifest = LegacySkinParser::getSkinManifest(
             LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
     QString description = QString::fromStdString(manifest.description());
@@ -403,15 +420,21 @@ void DlgPrefInterface::slotApply() {
     }
 
     if (locale != m_localeOnUpdate) {
-        notifyRebootNecessary();
+        notifyLocaleRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
     }
 
     if (m_bRebootMixxxView) {
+        // Require restarting Mixxx to apply the new skin in order to work around
+        // macOS skin change crash. https://bugs.launchpad.net/mixxx/+bug/1877487
+#ifdef __APPLE__
+        notifySkinRebootNecessary();
+#else
         m_mixxx->rebootMixxxView();
         // Allow switching skins multiple times without closing the dialog
         m_skinOnUpdate = m_skin;
+#endif
     }
     m_bRebootMixxxView = false;
 }

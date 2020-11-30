@@ -23,7 +23,7 @@
 namespace {
 
 QString createPlaylistLabel(
-        QString name,
+        const QString& name,
         int count,
         int duration) {
     return QStringLiteral("%1 (%2) %3")
@@ -72,7 +72,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void PlaylistFeature::onRightClickChild(
-        const QPoint& globalPos, QModelIndex index) {
+        const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
@@ -104,7 +104,7 @@ void PlaylistFeature::onRightClickChild(
 }
 
 bool PlaylistFeature::dropAcceptChild(
-        const QModelIndex& index, QList<QUrl> urls, QObject* pSource) {
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
     VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return false;
@@ -125,7 +125,7 @@ bool PlaylistFeature::dropAcceptChild(
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
@@ -267,7 +267,7 @@ void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
 }
 
 void PlaylistFeature::slotPlaylistTableRenamed(
-        int playlistId, QString newName) {
+        int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);

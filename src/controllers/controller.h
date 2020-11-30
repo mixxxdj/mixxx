@@ -93,7 +93,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   protected:
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    virtual void send(QList<int> data, unsigned int length = 0);
+    virtual void send(const QList<int>& data, unsigned int length = 0);
 
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
@@ -113,10 +113,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     inline ControllerScriptEngineLegacy* getScriptEngine() const {
         return m_pScriptEngineLegacy;
     }
-    inline void setDeviceName(QString deviceName) {
+    inline void setDeviceName(const QString& deviceName) {
         m_sDeviceName = deviceName;
     }
-    inline void setDeviceCategory(QString deviceCategory) {
+    inline void setDeviceCategory(const QString& deviceCategory) {
         m_sDeviceCategory = deviceCategory;
     }
     inline void setOutputDevice(bool outputDevice) {
@@ -183,7 +183,7 @@ class ControllerJSProxy : public QObject {
 
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    Q_INVOKABLE virtual void send(QList<int> data, unsigned int length = 0) {
+    Q_INVOKABLE virtual void send(const QList<int>& data, unsigned int length = 0) {
         Q_UNUSED(length);
         m_pController->send(data, data.length());
     }

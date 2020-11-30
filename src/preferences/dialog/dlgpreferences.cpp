@@ -78,8 +78,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
 
-    connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
-            this, SLOT(slotButtonPressed(QAbstractButton*)));
+    connect(buttonBox,
+            QOverload<QAbstractButton*>::of(&QDialogButtonBox::clicked),
+            this,
+            &DlgPreferences::slotButtonPressed);
 
     connect(contentsTreeWidget,
             &QTreeWidget::currentItemChanged,
@@ -190,7 +192,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
 #endif
 
     // Find accept and apply buttons
-    for (QAbstractButton* button : buttonBox->buttons()) {
+    const auto buttons = buttonBox->buttons();
+    for (QAbstractButton* button : buttons) {
         QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(button);
         if (role == QDialogButtonBox::ButtonRole::ApplyRole) {
             m_pApplyButton = button;
@@ -235,7 +238,7 @@ DlgPreferences::~DlgPreferences() {
     delete m_pControllersDlg;
 }
 
-QTreeWidgetItem* DlgPreferences::createTreeItem(QString text, QIcon icon) {
+QTreeWidgetItem* DlgPreferences::createTreeItem(const QString& text, const QIcon& icon) {
     QTreeWidgetItem* pTreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     pTreeItem->setIcon(0, icon);
     pTreeItem->setText(0, text);
@@ -254,7 +257,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         return;
     }
 
-    for (PreferencesPage page : m_allPages) {
+    for (PreferencesPage page : qAsConst(m_allPages)) {
         if (current == page.pTreeItem) {
             switchToPage(page.pDlg);
             break;
@@ -380,13 +383,16 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
 }
 
 void DlgPreferences::addPageWidget(PreferencesPage page) {
-    connect(this, SIGNAL(showDlg()), page.pDlg, SLOT(slotShow()));
-    connect(this, SIGNAL(closeDlg()), page.pDlg, SLOT(slotHide()));
-    connect(this, SIGNAL(showDlg()), page.pDlg, SLOT(slotUpdate()));
+    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotShow);
+    connect(this, &DlgPreferences::closeDlg, page.pDlg, &DlgPreferencePage::slotHide);
+    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotUpdate);
 
-    connect(this, SIGNAL(applyPreferences()), page.pDlg, SLOT(slotApply()));
-    connect(this, SIGNAL(cancelPreferences()), page.pDlg, SLOT(slotCancel()));
-    connect(this, SIGNAL(resetToDefaults()), page.pDlg, SLOT(slotResetToDefaults()));
+    connect(this, &DlgPreferences::applyPreferences, page.pDlg, &DlgPreferencePage::slotApply);
+    connect(this, &DlgPreferences::cancelPreferences, page.pDlg, &DlgPreferencePage::slotCancel);
+    connect(this,
+            &DlgPreferences::resetToDefaults,
+            page.pDlg,
+            &DlgPreferencePage::slotResetToDefaults);
 
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
@@ -412,7 +418,7 @@ DlgPreferencePage* DlgPreferences::currentPage() {
         }
         pObject = children[0];
     }
-    return dynamic_cast<DlgPreferencePage*>(pObject);
+    return qobject_cast<DlgPreferencePage*>(pObject);
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {

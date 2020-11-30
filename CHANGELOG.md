@@ -5,6 +5,7 @@
 * Cover art: Prevent wrong cover art display due to hash conflicts
 * Cover art: Add background color for quick cover art preview
 * Add Random Track Control to AutoDJ [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
+* Add support for saving loops as hotcues [#2194](https://github.com/mixxxdj/mixxx/pull/2194) [lp:1367159](https://bugs.launchpad.net/mixxx/+bug/1367159)
 
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (Unreleased)
 ### Hotcues ###

@@ -17,10 +17,22 @@ namespace {
 
 const Logger kLogger("SoundSourceModPlug");
 
-/* read files in 512k chunks */
-const SINT kChunkSizeInBytes = SINT(1) << 19;
+const QStringList kSupportedFileExtensions = {
+        // ModPlug supports more formats but file name
+        // extensions are not always present with modules.
+        QStringLiteral("mod"),
+        QStringLiteral("med"),
+        QStringLiteral("okt"),
+        QStringLiteral("s3m"),
+        QStringLiteral("stm"),
+        QStringLiteral("xm"),
+        QStringLiteral("it"),
+};
 
-QString getModPlugTypeFromUrl(QUrl url) {
+/* read files in 512k chunks */
+constexpr SINT kChunkSizeInBytes = SINT(1) << 19;
+
+QString getModPlugTypeFromUrl(const QUrl& url) {
     const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
     if (fileExtension == "mod") {
         return "Protracker";
@@ -43,17 +55,30 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 } // anonymous namespace
 
-/*static*/ constexpr SINT SoundSourceModPlug::kChannelCount;
-/*static*/ constexpr SINT SoundSourceModPlug::kBitsPerSample;
-/*static*/ constexpr SINT SoundSourceModPlug::kSampleRate;
+//static
+constexpr SINT SoundSourceModPlug::kChannelCount;
 
+//static
+constexpr SINT SoundSourceModPlug::kBitsPerSample;
+
+//static
+constexpr SINT SoundSourceModPlug::kSampleRate;
+
+//static
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
-// reserve some static space for settings...
+//static
 void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
         const ModPlug::ModPlug_Settings& settings) {
     s_bufferSizeLimit = bufferSizeLimit;
     ModPlug::ModPlug_SetSettings(&settings);
+}
+
+//static
+const QString SoundSourceProviderModPlug::kDisplayName = QStringLiteral("MODPlug");
+
+QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
+    return kSupportedFileExtensions;
 }
 
 SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
@@ -94,7 +119,7 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
-    return MetadataSource::importTrackMetadataAndCoverImage(nullptr, pCoverArt);
+    return MetadataSourceTagLib::importTrackMetadataAndCoverImage(nullptr, pCoverArt);
 }
 
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(
@@ -182,7 +207,7 @@ void SoundSourceModPlug::close() {
 }
 
 ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT readOffset = getSignalInfo().frames2samples(writableSampleFrames.frameIndexRange().start());
     const SINT readSamples = getSignalInfo().frames2samples(writableSampleFrames.frameLength());
     SampleUtil::convertS16ToFloat32(
@@ -195,24 +220,6 @@ ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     writableSampleFrames.writableLength()));
-}
-
-QString SoundSourceProviderModPlug::getName() const {
-    return "MODPlug";
-}
-
-QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    // ModPlug supports more formats but file name
-    // extensions are not always present with modules.
-    supportedFileExtensions.append("mod");
-    supportedFileExtensions.append("med");
-    supportedFileExtensions.append("okt");
-    supportedFileExtensions.append("s3m");
-    supportedFileExtensions.append("stm");
-    supportedFileExtensions.append("xm");
-    supportedFileExtensions.append("it");
-    return supportedFileExtensions;
 }
 
 } // namespace mixxx

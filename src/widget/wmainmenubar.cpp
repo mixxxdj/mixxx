@@ -56,12 +56,13 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
         : QMenuBar(pParent),
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {
+    setObjectName(QStringLiteral("MainMenu"));
     initialize();
 }
 
 void WMainMenuBar::initialize() {
     // FILE MENU
-    QMenu* pFileMenu = new QMenu(tr("&File"));
+    QMenu* pFileMenu = new QMenu(tr("&File"), this);
 
     QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
@@ -103,13 +104,13 @@ void WMainMenuBar::initialize() {
     pFileQuit->setStatusTip(quitText);
     pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
     pFileQuit->setMenuRole(QAction::QuitRole);
-    connect(pFileQuit, SIGNAL(triggered()), this, SIGNAL(quit()));
+    connect(pFileQuit, &QAction::triggered, this, &WMainMenuBar::quit);
     pFileMenu->addAction(pFileQuit);
 
     addMenu(pFileMenu);
 
     // LIBRARY MENU
-    QMenu* pLibraryMenu = new QMenu(tr("&Library"));
+    QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
 
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
@@ -117,11 +118,9 @@ void WMainMenuBar::initialize() {
     pLibraryRescan->setStatusTip(rescanText);
     pLibraryRescan->setWhatsThis(buildWhatsThis(rescanTitle, rescanText));
     pLibraryRescan->setCheckable(false);
-    connect(pLibraryRescan, SIGNAL(triggered()),
-            this, SIGNAL(rescanLibrary()));
+    connect(pLibraryRescan, &QAction::triggered, this, &WMainMenuBar::rescanLibrary);
     // Disable the action when a scan is active.
-    connect(this, SIGNAL(internalLibraryScanActive(bool)),
-            pLibraryRescan, SLOT(setDisabled(bool)));
+    connect(this, &WMainMenuBar::internalLibraryScanActive, pLibraryRescan, &QAction::setDisabled);
     pLibraryMenu->addAction(pLibraryRescan);
 
     pLibraryMenu->addSeparator();
@@ -136,8 +135,7 @@ void WMainMenuBar::initialize() {
     pLibraryCreatePlaylist->setShortcutContext(Qt::ApplicationShortcut);
     pLibraryCreatePlaylist->setStatusTip(createPlaylistText);
     pLibraryCreatePlaylist->setWhatsThis(buildWhatsThis(createPlaylistTitle, createPlaylistText));
-    connect(pLibraryCreatePlaylist, SIGNAL(triggered()),
-            this, SIGNAL(createPlaylist()));
+    connect(pLibraryCreatePlaylist, &QAction::triggered, this, &WMainMenuBar::createPlaylist);
     pLibraryMenu->addAction(pLibraryCreatePlaylist);
 
     QString createCrateTitle = tr("Create New &Crate");
@@ -150,8 +148,7 @@ void WMainMenuBar::initialize() {
     pLibraryCreateCrate->setShortcutContext(Qt::ApplicationShortcut);
     pLibraryCreateCrate->setStatusTip(createCrateText);
     pLibraryCreateCrate->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
-    connect(pLibraryCreateCrate, SIGNAL(triggered()),
-            this, SIGNAL(createCrate()));
+    connect(pLibraryCreateCrate, &QAction::triggered, this, &WMainMenuBar::createCrate);
     pLibraryMenu->addAction(pLibraryCreateCrate);
 
     addMenu(pLibraryMenu);
@@ -162,9 +159,9 @@ void WMainMenuBar::initialize() {
     // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
     // and the magic menu items won't get injected.
     // https://bugs.launchpad.net/mixxx/+bug/1534292
-    QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"));
+    QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"), this);
 #else
-    QMenu* pViewMenu = new QMenu(tr("&View"));
+    QMenu* pViewMenu = new QMenu(tr("&View"), this);
 #endif
 
     // Skin Settings Menu
@@ -289,19 +286,20 @@ void WMainMenuBar::initialize() {
     pViewFullScreen->setChecked(false);
     pViewFullScreen->setStatusTip(fullScreenText);
     pViewFullScreen->setWhatsThis(buildWhatsThis(fullScreenTitle, fullScreenText));
-    connect(pViewFullScreen, SIGNAL(triggered(bool)),
-            this, SIGNAL(toggleFullScreen(bool)));
-    connect(this, SIGNAL(internalFullScreenStateChange(bool)),
-            pViewFullScreen, SLOT(setChecked(bool)));
+    connect(pViewFullScreen, &QAction::triggered, this, &WMainMenuBar::toggleFullScreen);
+    connect(this,
+            &WMainMenuBar::internalFullScreenStateChange,
+            pViewFullScreen,
+            &QAction::setChecked);
     pViewMenu->addAction(pViewFullScreen);
 
     addMenu(pViewMenu);
 
     // OPTIONS MENU
-    QMenu* pOptionsMenu = new QMenu(tr("&Options"));
+    QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
 
 #ifdef __VINYLCONTROL__
-    QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"));
+    QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"), this);
     QString vinylControlText = tr(
             "Use timecoded vinyls on external turntables to control Mixxx");
 
@@ -348,10 +346,11 @@ void WMainMenuBar::initialize() {
     pOptionsRecord->setCheckable(true);
     pOptionsRecord->setStatusTip(recordText);
     pOptionsRecord->setWhatsThis(buildWhatsThis(recordTitle, recordText));
-    connect(pOptionsRecord, SIGNAL(triggered(bool)),
-            this, SIGNAL(toggleRecording(bool)));
-    connect(this, SIGNAL(internalRecordingStateChange(bool)),
-            pOptionsRecord, SLOT(setChecked(bool)));
+    connect(pOptionsRecord, &QAction::triggered, this, &WMainMenuBar::toggleRecording);
+    connect(this,
+            &WMainMenuBar::internalRecordingStateChange,
+            pOptionsRecord,
+            &QAction::setChecked);
     pOptionsMenu->addAction(pOptionsRecord);
 
 #ifdef __BROADCAST__
@@ -368,10 +367,11 @@ void WMainMenuBar::initialize() {
     pOptionsBroadcasting->setStatusTip(broadcastingText);
     pOptionsBroadcasting->setWhatsThis(buildWhatsThis(broadcastingTitle, broadcastingText));
 
-    connect(pOptionsBroadcasting, SIGNAL(triggered(bool)),
-            this, SIGNAL(toggleBroadcasting(bool)));
-    connect(this, SIGNAL(internalBroadcastingStateChange(bool)),
-            pOptionsBroadcasting, SLOT(setChecked(bool)));
+    connect(pOptionsBroadcasting, &QAction::triggered, this, &WMainMenuBar::toggleBroadcasting);
+    connect(this,
+            &WMainMenuBar::internalBroadcastingStateChange,
+            pOptionsBroadcasting,
+            &QAction::setChecked);
     pOptionsMenu->addAction(pOptionsBroadcasting);
 #endif
 
@@ -391,8 +391,7 @@ void WMainMenuBar::initialize() {
     pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
     pOptionsKeyboard->setStatusTip(keyboardShortcutText);
     pOptionsKeyboard->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
-    connect(pOptionsKeyboard, SIGNAL(triggered(bool)),
-            this, SIGNAL(toggleKeyboardShortcuts(bool)));
+    connect(pOptionsKeyboard, &QAction::triggered, this, &WMainMenuBar::toggleKeyboardShortcuts);
 
     pOptionsMenu->addAction(pOptionsKeyboard);
 
@@ -409,15 +408,14 @@ void WMainMenuBar::initialize() {
     pOptionsPreferences->setStatusTip(preferencesText);
     pOptionsPreferences->setWhatsThis(buildWhatsThis(preferencesTitle, preferencesText));
     pOptionsPreferences->setMenuRole(QAction::PreferencesRole);
-    connect(pOptionsPreferences, SIGNAL(triggered()),
-            this, SIGNAL(showPreferences()));
+    connect(pOptionsPreferences, &QAction::triggered, this, &WMainMenuBar::showPreferences);
     pOptionsMenu->addAction(pOptionsPreferences);
 
     addMenu(pOptionsMenu);
 
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
-        QMenu* pDeveloperMenu = new QMenu(tr("&Developer"));
+        QMenu* pDeveloperMenu = new QMenu(tr("&Developer"), this);
 
         QString reloadSkinTitle = tr("&Reload Skin");
         QString reloadSkinText = tr("Reload the skin");
@@ -429,8 +427,7 @@ void WMainMenuBar::initialize() {
         pDeveloperReloadSkin->setShortcutContext(Qt::ApplicationShortcut);
         pDeveloperReloadSkin->setStatusTip(reloadSkinText);
         pDeveloperReloadSkin->setWhatsThis(buildWhatsThis(reloadSkinTitle, reloadSkinText));
-        connect(pDeveloperReloadSkin, SIGNAL(triggered()),
-                this, SIGNAL(reloadSkin()));
+        connect(pDeveloperReloadSkin, &QAction::triggered, this, &WMainMenuBar::reloadSkin);
         pDeveloperMenu->addAction(pDeveloperReloadSkin);
 
         QString developerToolsTitle = tr("Developer &Tools");
@@ -445,10 +442,11 @@ void WMainMenuBar::initialize() {
         pDeveloperTools->setChecked(false);
         pDeveloperTools->setStatusTip(developerToolsText);
         pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
-        connect(pDeveloperTools, SIGNAL(triggered(bool)),
-                this, SIGNAL(toggleDeveloperTools(bool)));
-        connect(this, SIGNAL(internalDeveloperToolsStateChange(bool)),
-                pDeveloperTools, SLOT(setChecked(bool)));
+        connect(pDeveloperTools, &QAction::triggered, this, &WMainMenuBar::toggleDeveloperTools);
+        connect(this,
+                &WMainMenuBar::internalDeveloperToolsStateChange,
+                pDeveloperTools,
+                &QAction::setChecked);
         pDeveloperMenu->addAction(pDeveloperTools);
 
         QString enableExperimentTitle = tr("Stats: &Experiment Bucket");
@@ -465,8 +463,10 @@ void WMainMenuBar::initialize() {
             enableExperimentTitle, enableExperimentToolsText));
         pDeveloperStatsExperiment->setCheckable(true);
         pDeveloperStatsExperiment->setChecked(Experiment::isExperiment());
-        connect(pDeveloperStatsExperiment, SIGNAL(triggered(bool)),
-                this, SLOT(slotDeveloperStatsExperiment(bool)));
+        connect(pDeveloperStatsExperiment,
+                &QAction::triggered,
+                this,
+                &WMainMenuBar::slotDeveloperStatsExperiment);
         pDeveloperMenu->addAction(pDeveloperStatsExperiment);
 
         QString enableBaseTitle = tr("Stats: &Base Bucket");
@@ -483,8 +483,10 @@ void WMainMenuBar::initialize() {
             enableBaseTitle, enableBaseToolsText));
         pDeveloperStatsBase->setCheckable(true);
         pDeveloperStatsBase->setChecked(Experiment::isBase());
-        connect(pDeveloperStatsBase, SIGNAL(triggered(bool)),
-                this, SLOT(slotDeveloperStatsBase(bool)));
+        connect(pDeveloperStatsBase,
+                &QAction::triggered,
+                this,
+                &WMainMenuBar::slotDeveloperStatsBase);
         pDeveloperMenu->addAction(pDeveloperStatsBase);
 
         // "D" cannont be used with Alt here as it is already by the Developer menu
@@ -502,8 +504,10 @@ void WMainMenuBar::initialize() {
         pDeveloperDebugger->setCheckable(true);
         pDeveloperDebugger->setStatusTip(scriptDebuggerText);
         pDeveloperDebugger->setChecked(scriptDebuggerEnabled);
-        connect(pDeveloperDebugger, SIGNAL(triggered(bool)),
-                this, SLOT(slotDeveloperDebugger(bool)));
+        connect(pDeveloperDebugger,
+                &QAction::triggered,
+                this,
+                &WMainMenuBar::slotDeveloperDebugger);
         pDeveloperMenu->addAction(pDeveloperDebugger);
 
         addMenu(pDeveloperMenu);
@@ -592,8 +596,7 @@ void WMainMenuBar::initialize() {
     pHelpAboutApp->setStatusTip(aboutText);
     pHelpAboutApp->setWhatsThis(buildWhatsThis(aboutTitle, aboutText));
     pHelpAboutApp->setMenuRole(QAction::AboutRole);
-    connect(pHelpAboutApp, SIGNAL(triggered()),
-            this, SIGNAL(showAbout()));
+    connect(pHelpAboutApp, &QAction::triggered, this, &WMainMenuBar::showAbout);
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
@@ -671,19 +674,23 @@ void WMainMenuBar::slotVisitUrl(const QString& url) {
 void WMainMenuBar::createVisibilityControl(QAction* pAction,
                                            const ConfigKey& key) {
     auto pConnection = new VisibilityControlConnection(this, pAction, key);
-    connect(this, SIGNAL(internalOnNewSkinLoaded()),
-            pConnection, SLOT(slotReconnectControl()));
-    connect(this, SIGNAL(internalOnNewSkinAboutToLoad()),
-            pConnection, SLOT(slotClearControl()));
+    connect(this,
+            &WMainMenuBar::internalOnNewSkinLoaded,
+            pConnection,
+            &VisibilityControlConnection::slotReconnectControl);
+    connect(this,
+            &WMainMenuBar::internalOnNewSkinAboutToLoad,
+            pConnection,
+            &VisibilityControlConnection::slotClearControl);
 }
 
 void WMainMenuBar::onNumberOfDecksChanged(int decks) {
     int deck = 0;
-    for (QAction* pVinylControlEnabled : m_vinylControlEnabledActions) {
+    for (QAction* pVinylControlEnabled : qAsConst(m_vinylControlEnabledActions)) {
         pVinylControlEnabled->setVisible(deck++ < decks);
     }
     deck = 0;
-    for (QAction* pLoadToDeck : m_loadToDeckActions) {
+    for (QAction* pLoadToDeck : qAsConst(m_loadToDeckActions)) {
         pLoadToDeck->setVisible(deck++ < decks);
     }
 }
@@ -693,8 +700,7 @@ VisibilityControlConnection::VisibilityControlConnection(
         : QObject(pParent),
           m_key(key),
           m_pAction(pAction) {
-    connect(m_pAction, SIGNAL(triggered(bool)),
-            this, SLOT(slotActionToggled(bool)));
+    connect(m_pAction, &QAction::triggered, this, &VisibilityControlConnection::slotActionToggled);
 }
 
 void VisibilityControlConnection::slotClearControl() {

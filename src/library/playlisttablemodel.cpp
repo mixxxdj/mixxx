@@ -342,7 +342,7 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
-void PlaylistTableModel::playlistsChanged(QSet<int> playlistIds) {
+void PlaylistTableModel::playlistsChanged(const QSet<int>& playlistIds) {
     if (playlistIds.contains(m_iPlaylistId)) {
         select(); // Repopulate the data model.
     }

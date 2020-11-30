@@ -86,7 +86,7 @@ BulkController::BulkController(
 
     setDeviceCategory(tr("USB Controller"));
 
-    setDeviceName(QString("%1 %2").arg(product).arg(m_sUID));
+    setDeviceName(QString("%1 %2").arg(product, m_sUID));
 
     setInputDevice(true);
     setOutputDevice(true);
@@ -223,7 +223,7 @@ int BulkController::close() {
     return 0;
 }
 
-void BulkController::send(QList<int> data, unsigned int length) {
+void BulkController::send(const QList<int>& data, unsigned int length) {
     Q_UNUSED(length);
     QByteArray temp;
 

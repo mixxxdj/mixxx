@@ -58,7 +58,7 @@ QFileInfo findPresetFile(const QString& pathOrFilename, const QStringList& paths
 } // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
-                               const QString originalFilename) {
+        const QString& originalFilename) {
     QString filename = originalFilename;
     int i = 1;
     while (filenames.contains(filename)) {
@@ -92,8 +92,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     }
 
     m_pollTimer.setInterval(kPollInterval.toIntegerMillis());
-    connect(&m_pollTimer, SIGNAL(timeout()),
-            this, SLOT(pollDevices()));
+    connect(&m_pollTimer, &QTimer::timeout, this, &ControllerManager::pollDevices);
 
     m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
@@ -105,16 +104,16 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     // audio directly, like when scratching
     m_pThread->start(QThread::HighPriority);
 
-    connect(this, SIGNAL(requestInitialize()),
-            this, SLOT(slotInitialize()));
-    connect(this, SIGNAL(requestSetUpDevices()),
-            this, SLOT(slotSetUpDevices()));
-    connect(this, SIGNAL(requestShutdown()),
-            this, SLOT(slotShutdown()));
+    connect(this, &ControllerManager::requestInitialize, this, &ControllerManager::slotInitialize);
+    connect(this,
+            &ControllerManager::requestSetUpDevices,
+            this,
+            &ControllerManager::slotSetUpDevices);
+    connect(this, &ControllerManager::requestShutdown, this, &ControllerManager::slotShutdown);
 
     // Signal that we should run slotInitialize once our event loop has started
     // up.
-    emit requestInitialize();
+    emit requestInitialize(); // clazy:exclude=incorrect-emit
 }
 
 ControllerManager::~ControllerManager() {
@@ -218,7 +217,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-QString ControllerManager::getConfiguredPresetFileForDevice(QString name) {
+QString ControllerManager::getConfiguredPresetFileForDevice(const QString& name) {
     return m_pConfig->getValueString(ConfigKey("[ControllerPreset]", sanitizeDeviceName(name)));
 }
 
@@ -346,7 +345,7 @@ void ControllerManager::pollDevices() {
     }
 
     mixxx::Duration start = mixxx::Time::elapsed();
-    for (Controller* pDevice : m_controllers) {
+    for (Controller* pDevice : qAsConst(m_controllers)) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }

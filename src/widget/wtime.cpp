@@ -20,12 +20,11 @@ void WTime::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     setTimeFormat(node, context);
     m_pTimer->start(m_iInterval);
-    connect(m_pTimer, SIGNAL(timeout()),
-            this, SLOT(refreshTime()));
+    connect(m_pTimer, &QTimer::timeout, this, &WTime::refreshTime);
     refreshTime();
 }
 
-void WTime::setTimeFormat(QDomNode node, const SkinContext& context) {
+void WTime::setTimeFormat(const QDomNode& node, const SkinContext& context) {
     // if a custom format is defined, all other formatting flags are ignored
     QString customFormat;
     if (context.hasNodeSelectString(node, "CustomFormat", &customFormat)) {

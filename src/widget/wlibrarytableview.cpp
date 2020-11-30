@@ -12,12 +12,11 @@
 #include "widget/wwidget.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-                                     UserSettingsPointer pConfig,
-                                     ConfigKey vScrollBarPosKey)
+        UserSettingsPointer pConfig,
+        const ConfigKey& vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
-
     loadVScrollBarPosState();
 
     // Setup properties for table
@@ -44,8 +43,10 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SIGNAL(scrollValueChanged(int)));
+    connect(verticalScrollBar(),
+            &QScrollBar::valueChanged,
+            this,
+            &WLibraryTableView::scrollValueChanged);
 
     setTabKeyNavigation(false);
 }

@@ -12,10 +12,10 @@
 
 class HidEnumerator : public ControllerEnumerator {
   public:
-    explicit HidEnumerator();
-    virtual ~HidEnumerator();
+    HidEnumerator() = default;
+    ~HidEnumerator() override;
 
-    QList<Controller*> queryDevices();
+    QList<Controller*> queryDevices() override;
 
   private:
     QList<Controller*> m_devices;

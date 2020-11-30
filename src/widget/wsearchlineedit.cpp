@@ -21,8 +21,6 @@ const mixxx::Logger kLogger("WSearchLineEdit");
 
 const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
-const QString kEmptySearch = QStringLiteral("");
-
 const QString kDisabledText = QStringLiteral("- - -");
 
 constexpr int kClearButtonClearence = 1;
@@ -79,9 +77,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_clearButton(make_parented<QToolButton>(this)) {
-    DEBUG_ASSERT(kEmptySearch.isEmpty());
-    DEBUG_ASSERT(!kEmptySearch.isNull());
-
     setAcceptDrops(false);
     setEditable(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -464,7 +459,7 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
     DEBUG_ASSERT(isEnabled());
 
     if (text.isEmpty()) {
-        setTextBlockSignals(kEmptySearch);
+        setTextBlockSignals(QString());
     } else {
         setTextBlockSignals(text);
     }
@@ -519,7 +514,7 @@ void WSearchLineEdit::slotClearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
-    setCurrentText(kEmptySearch);
+    clear();
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }

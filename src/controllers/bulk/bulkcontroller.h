@@ -65,7 +65,7 @@ class BulkController : public Controller {
     bool matchPreset(const PresetInfo& preset) override;
 
   protected:
-    void send(QList<int> data, unsigned int length) override;
+    void send(const QList<int>& data, unsigned int length) override;
 
   private slots:
     int open() override;

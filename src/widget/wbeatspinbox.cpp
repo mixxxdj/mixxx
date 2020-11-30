@@ -30,15 +30,17 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
     lineEdit()->setFocusPolicy(Qt::ClickFocus);
 
     setValue(m_valueControl.get());
-    connect(this, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSpinboxValueChanged(double)));
+    connect(this,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &WBeatSpinBox::slotSpinboxValueChanged);
     m_valueControl.connectValueChanged(this, &WBeatSpinBox::slotControlValueChanged);
 }
 
 void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     m_scaleFactor = context.getScaleFactor();
-    static_cast<WBeatLineEdit*>(lineEdit())->setScaleFactor(m_scaleFactor);
+    qobject_cast<WBeatLineEdit*>(lineEdit())->setScaleFactor(m_scaleFactor);
 }
 
 void WBeatSpinBox::stepBy(int steps) {

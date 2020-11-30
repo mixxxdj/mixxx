@@ -44,12 +44,12 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     ~DlgPrefInterface() override = default;
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
     void slotSetTooltips();
-    void slotSetSkinDescription(QString skin);
+    void slotSetSkinDescription(const QString& skin);
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
@@ -57,7 +57,8 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetScaleFactorAuto(bool checked);
 
   private:
-    void notifyRebootNecessary();
+    void notifyLocaleRebootNecessary();
+    void notifySkinRebootNecessary();
     void loadTooltipPreferenceFromConfig();
 
     // Because the CueDefault list is out of order, we have to set the combo

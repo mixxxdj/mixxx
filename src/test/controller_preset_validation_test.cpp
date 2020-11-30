@@ -8,12 +8,12 @@ FakeControllerJSProxy::FakeControllerJSProxy()
         : ControllerJSProxy(nullptr) {
 }
 
-void FakeControllerJSProxy::send(QList<int> data, unsigned int length) {
+void FakeControllerJSProxy::send(const QList<int>& data, unsigned int length) {
     Q_UNUSED(data);
     Q_UNUSED(length);
 }
 
-void FakeControllerJSProxy::sendSysexMsg(QList<int> data, unsigned int length) {
+void FakeControllerJSProxy::sendSysexMsg(const QList<int>& data, unsigned int length) {
     Q_UNUSED(data);
     Q_UNUSED(length);
 }

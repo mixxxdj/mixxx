@@ -318,7 +318,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     }
 }
 
-void DlgTrackInfo::loadTrack(QModelIndex index) {
+void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }

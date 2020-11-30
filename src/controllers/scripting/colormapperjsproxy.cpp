@@ -1,6 +1,6 @@
 #include "controllers/scripting/colormapperjsproxy.h"
 
-ColorMapperJSProxy::ColorMapperJSProxy(QVariantMap availableColors)
+ColorMapperJSProxy::ColorMapperJSProxy(const QVariantMap& availableColors)
         : m_pColorMapper(nullptr) {
     QMap<QRgb, QVariant> qrgbMap;
     QVariantMap::const_iterator it;

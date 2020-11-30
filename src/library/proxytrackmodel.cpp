@@ -145,14 +145,14 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
     return rowMatches;
 }
 
-QString ProxyTrackModel::getModelSetting(QString name) {
+QString ProxyTrackModel::getModelSetting(const QString& name) {
     if (m_pTrackModel == NULL) {
         return QString();
     }
     return m_pTrackModel->getModelSetting(name);
 }
 
-bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
+bool ProxyTrackModel::setModelSetting(const QString& name, const QVariant& value) {
     if (m_pTrackModel == NULL) {
         return false;
     }
