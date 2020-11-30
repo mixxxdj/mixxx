@@ -398,7 +398,7 @@ TEST_F(SampleUtilTest, copyReverse) {
 }
 
 static void BM_MemCpy(benchmark::State& state) {
-    size_t size = state.range(0);
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -414,7 +414,7 @@ static void BM_MemCpy(benchmark::State& state) {
 BENCHMARK(BM_MemCpy)->Range(64, 4096);
 
 static void BM_StdCpy(benchmark::State& state) {
-    size_t size = state.range(0);
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -430,7 +430,7 @@ static void BM_StdCpy(benchmark::State& state) {
 BENCHMARK(BM_StdCpy)->Range(64, 4096);
 
 static void BM_SampleUtilCopy(benchmark::State& state) {
-    size_t size = state.range(0);
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -545,7 +545,7 @@ TEST_F(SampleUtilTest, copy3WithGainSpeed) {
 */
 
 static void BM_Copy2WithGain(benchmark::State& state) {
-    size_t size = state.range(0);
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -564,7 +564,7 @@ static void BM_Copy2WithGain(benchmark::State& state) {
 BENCHMARK(BM_Copy2WithGain)->Range(64, 4096);
 
 static void BM_Copy2WithRampingGain(benchmark::State& state) {
-    size_t size = state.range(0);
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);

@@ -19,29 +19,56 @@ Variables:
         <Size>i,40f</Size>
         <Children>
 
-          <WidgetGroup><!-- Play button incl. Cue & PlayIndicator -->
+          <WidgetGroup>
             <ObjectName>Spacer0f</ObjectName>
-            <Layout>stacked</Layout>
-            <Size>23f,40f</Size>
+            <Layout>vertical</Layout>
+            <Size>30f,40f</Size>
             <Children>
-              <!-- Play button -->
+
               <Template src="skin:button_2state_right_display.xml">
-                <SetVariable name="ObjectName">PlayCue</SetVariable>
-                <SetVariable name="TooltipId">play_cue_default</SetVariable>
-                <SetVariable name="Size">23f,40f</SetVariable>
-                <SetVariable name="state_0_icon">play_deck_mini.svg</SetVariable>
-                <SetVariable name="state_1_icon">pause_deck_mini.svg</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
+                <SetVariable name="ObjectName">CueButton</SetVariable>
+                <SetVariable name="Size">30f,19f</SetVariable>
+                <SetVariable name="state_0_text">Q</SetVariable>
+                <SetVariable name="state_1_text">Q</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_gotoandstop</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,cue_indicator</SetVariable>
               </Template>
-              <!--	Play indicator -->
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">PlayIndicator</SetVariable>
-                <SetVariable name="Size">23f,40f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
-              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>30f,40f</Size>
+                <Children>
+                  <!-- Play -->
+                  <Template src="skin:button_2state_right_display.xml">
+                    <SetVariable name="ObjectName">PlayCue</SetVariable>
+                    <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                    <SetVariable name="Size">30f,20f</SetVariable>
+                    <SetVariable name="state_0_icon">play_deck_mini.svg</SetVariable>
+                    <SetVariable name="state_1_icon">pause_deck_mini.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
+                  </Template>
+                  <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+                    <SetVariable name="Size">30f,20f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                  </Template>
+                  <!-- Play indicator, blinks depending on Cue mode -->
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">PlayIndicator</SetVariable>
+                    <SetVariable name="Size">30f,20f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- Play button incl. Cue & PlayIndicator -->
+          </WidgetGroup>
 
           <WidgetGroup>
             <Size>1f,1min</Size>

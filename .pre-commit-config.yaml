@@ -47,7 +47,7 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v3.3.0
   hooks:
-  - id: check-byte-order-marker
+  - id: fix-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
   - id: check-case-conflict
   - id: check-json

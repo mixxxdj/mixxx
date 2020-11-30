@@ -93,9 +93,9 @@ namespace {
 
 class YearItem: public QStandardItem {
 public:
-    explicit YearItem(QString year):
-        QStandardItem(year) {
-    }
+  explicit YearItem(const QString& year)
+          : QStandardItem(year) {
+  }
 
     QVariant data(int role) const {
         switch (role) {
@@ -142,7 +142,8 @@ void BrowseThread::populateModel() {
 
         if (thisPath.dir() != newPath.dir()) {
             qDebug() << "Abort populateModel()";
-            return populateModel();
+            populateModel();
+            return;
         }
 
         QList<QStandardItem*> row_data;

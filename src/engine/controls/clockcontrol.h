@@ -12,8 +12,8 @@ class ControlObject;
 class ClockControl: public EngineControl {
     Q_OBJECT
   public:
-    ClockControl(QString group,
-                 UserSettingsPointer pConfig);
+    ClockControl(const QString& group,
+            UserSettingsPointer pConfig);
 
     ~ClockControl() override;
 

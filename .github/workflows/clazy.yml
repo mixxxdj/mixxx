@@ -79,7 +79,8 @@ jobs:
     - name: Set up problem matcher
       uses: ammaraskar/gcc-problem-matcher@master
     - name: Build
-      run: cmake --build . -j $(nproc)
+      # Do not abort on errors and build/check the whole project
+      run: cmake --build . -j $(nproc) -- --keep-going
       working-directory: cmake_build
       env:
-        CLAZY_CHECKS: level1,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast
+        CLAZY_CHECKS: level2,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression,no-missing-typeinfo,no-base-class-event

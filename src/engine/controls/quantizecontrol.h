@@ -14,7 +14,7 @@ class ControlPushButton;
 class QuantizeControl : public EngineControl {
     Q_OBJECT
   public:
-    QuantizeControl(QString group, UserSettingsPointer pConfig);
+    QuantizeControl(const QString& group, UserSettingsPointer pConfig);
     ~QuantizeControl() override;
 
     void setCurrentSample(const double dCurrentSample,

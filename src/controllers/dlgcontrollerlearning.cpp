@@ -467,8 +467,8 @@ void DlgControllerLearning::showControlMenu() {
 }
 
 void DlgControllerLearning::loadControl(const ConfigKey& key,
-                                        QString title,
-                                        QString description) {
+        const QString& title,
+        QString description) {
     // If we have learned a mapping and the user picked a new control then we
     // should tell the controller to commit the existing ones.
     if (m_messagesLearned) {
@@ -493,7 +493,7 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
     pushButtonStartLearn->setFocus();
 }
 
-void DlgControllerLearning::controlPicked(ConfigKey control) {
+void DlgControllerLearning::controlPicked(const ConfigKey& control) {
     QString title = m_controlPickerMenu.controlTitleForConfigKey(control);
     QString description = m_controlPickerMenu.descriptionForConfigKey(control);
     loadControl(control, title, description);

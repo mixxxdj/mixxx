@@ -34,7 +34,7 @@ QString MidiChannelDelegate::displayText(const QVariant& value,
 void MidiChannelDelegate::setEditorData(QWidget* editor,
                                         const QModelIndex& index) const {
     int channel = index.data(Qt::EditRole).toInt();
-    QSpinBox* pSpinBox = dynamic_cast<QSpinBox*>(editor);
+    QSpinBox* pSpinBox = qobject_cast<QSpinBox*>(editor);
     if (pSpinBox == NULL) {
         return;
     }
@@ -45,7 +45,7 @@ void MidiChannelDelegate::setEditorData(QWidget* editor,
 void MidiChannelDelegate::setModelData(QWidget* editor,
                                       QAbstractItemModel* model,
                                       const QModelIndex& index) const {
-    QSpinBox* pSpinBox = dynamic_cast<QSpinBox*>(editor);
+    QSpinBox* pSpinBox = qobject_cast<QSpinBox*>(editor);
     if (pSpinBox == NULL) {
         return;
     }

@@ -270,7 +270,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(false);
 }
 
-void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;
 
@@ -457,7 +457,7 @@ void BrowseFeature::loadQuickLinks() {
     }
 }
 
-QString BrowseFeature::extractNameFromPath(QString spath) {
+QString BrowseFeature::extractNameFromPath(const QString& spath) {
     QString path = spath.left(spath.count()-1);
     int index = path.lastIndexOf("/");
     QString name = (spath.count() > 1) ? path.mid(index+1) : spath;

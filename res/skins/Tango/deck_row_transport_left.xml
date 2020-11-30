@@ -214,13 +214,13 @@ Variables:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><!-- Play button & PlayIndicator -->
+          <WidgetGroup>
             <ObjectName>Spacer0f</ObjectName>
             <Layout>stacked</Layout>
             <Size>50f,24f</Size>
             <Children>
               <!-- Play -->
-              <Template src="skin:button_2state_right.xml">
+              <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="Size">50f,24f</SetVariable>
@@ -228,6 +228,13 @@ Variables:
                 <SetVariable name="state_1_icon">pause_deck.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
+              </Template>
+              <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+                <SetVariable name="Size">50f,24f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
               </Template>
               <!-- Play indicator, blinks depending on Cue mode -->
               <Template src="skin:button_2state.xml">
@@ -236,7 +243,7 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
               </Template>
             </Children>
-          </WidgetGroup><!-- Play button & PlayIndicator -->
+          </WidgetGroup><!-- Play -->
 
         </Children>
       </WidgetGroup><!-- /Play + deck controls -->

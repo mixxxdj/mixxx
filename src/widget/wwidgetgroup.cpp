@@ -155,7 +155,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WWidgetGroup::setPixmapBackground(
-        PixmapSource source,
+        const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     // Load background pixmap
@@ -167,7 +167,7 @@ void WWidgetGroup::setPixmapBackground(
 }
 
 void WWidgetGroup::setPixmapBackgroundHighlighted(
-        PixmapSource source,
+        const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     // Load background pixmap for the highlighted state

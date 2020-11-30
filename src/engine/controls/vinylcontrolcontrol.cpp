@@ -4,7 +4,7 @@
 #include "util/math.h"
 #include "vinylcontrol/vinylcontrol.h"
 
-VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
+VinylControlControl::VinylControlControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));

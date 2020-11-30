@@ -13,9 +13,9 @@ QSharedPointer<ImgSource> WPixmapStore::m_loader
         = QSharedPointer<ImgSource>(new ImgLoader());
 
 // static
-PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode,
-                                            double scaleFactor) {
+PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     if (source.isEmpty()) {
         return PaintablePointer();
     }
