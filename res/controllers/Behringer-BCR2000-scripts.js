@@ -18,9 +18,6 @@ var BCR2000 = new components.extension.GenericMidiController({
             init: function() {
                 p.setPreset(1);
             },
-            shutdown: function() {
-                p.setPreset(31);
-            },
             decks: [{
                 deckNumbers: [1],
                 components: [
