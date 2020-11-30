@@ -45,7 +45,7 @@ var BCR2000 = new components.extension.GenericMidiController({
                     },
                     {
                         type: e.EnumToggleButton, shift: true, options: {
-                            midi: [cc, p.buttonRow1[0]], inKey: "vinylcontrol_mode", maxValue: 3
+                            midi: [cc, p.buttonRow1[0]], inKey: "vinylcontrol_mode", maxValue: 2
                         }
                     },
                     {
@@ -140,7 +140,7 @@ var BCR2000 = new components.extension.GenericMidiController({
                     },
                     {
                         type: e.EnumToggleButton, shift: true, options: {
-                            midi: [cc, p.buttonRow1[4]], inKey: "vinylcontrol_mode", maxValue: 3
+                            midi: [cc, p.buttonRow1[4]], inKey: "vinylcontrol_mode", maxValue: 2
                         }
                     },
                     {
