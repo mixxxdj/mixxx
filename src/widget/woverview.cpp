@@ -386,7 +386,7 @@ void WOverview::onPassthroughChange(double v) {
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     m_marksToRender.clear();
-    for (CuePointer currentCue: loadedCues) {
+    for (const CuePointer& currentCue : loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
         if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
@@ -1122,7 +1122,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     QFontMetricsF fontMetrics(markerFont);
 
     // Draw WaveformMark labels
-    for (const auto& pMark : m_marksToRender) {
+    for (const auto& pMark : qAsConst(m_marksToRender)) {
         if (m_pHoveredMark != nullptr && pMark != m_pHoveredMark) {
             if (pMark->m_label.intersects(m_pHoveredMark->m_label)) {
                 continue;
@@ -1205,13 +1205,13 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     QFont font = pPainter->font();
     QFontMetrics fm(font);
 
-    // TODO: The following use of QFontMetrics::width(const QString&, int) const
-    // is deprecated and should be replaced with
-    // QFontMetrics::horizontalAdvance(const QString&, int) const. However, the
-    // proposed alternative has just been introduced in Qt 5.11.
-    // Until the minimum required Qt version of Mixx is increased, we need a
-    // version check here.
-    #if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
+// TODO: The following use of QFontMetrics::width(const QString&, int) const
+// is deprecated and should be replaced with
+// QFontMetrics::horizontalAdvance(const QString&, int) const. However, the
+// proposed alternative has just been introduced in Qt 5.11.
+// Until the minimum required Qt version of Mixxx is increased, we need a
+// version check here.
+#if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
     int textWidth = fm.width(text);
     #else
     int textWidth = fm.horizontalAdvance(text);

@@ -21,7 +21,7 @@ double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
 
 // Used to generate the beatloop_%SIZE, beatjump_%SIZE, and loop_move_%SIZE CO
 // ConfigKeys.
-ConfigKey keyForControl(QString group, QString ctrlName, double num) {
+ConfigKey keyForControl(const QString& group, const QString& ctrlName, double num) {
     ConfigKey key;
     key.group = group;
     key.item = ctrlName.arg(num);
@@ -37,8 +37,8 @@ QList<double> LoopingControl::getBeatSizes() {
     return result;
 }
 
-LoopingControl::LoopingControl(QString group,
-                               UserSettingsPointer pConfig)
+LoopingControl::LoopingControl(const QString& group,
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_bLoopingEnabled(false),
           m_bLoopRollActive(false),
@@ -823,10 +823,10 @@ void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
         return;
     }
 
-    if (value) {
+    if (value > 0.0) {
         // Requested to set loop_enabled to 1
         if (m_bLoopingEnabled) {
-            VERIFY_OR_DEBUG_ASSERT(m_pCOLoopEnabled->get()) {
+            VERIFY_OR_DEBUG_ASSERT(m_pCOLoopEnabled->toBool()) {
                 m_pCOLoopEnabled->setAndConfirm(1.0);
             }
         } else {
@@ -852,7 +852,7 @@ void LoopingControl::slotLoopEnabledValueChangeRequest(double value) {
             // setAndConfirm is called by setLoopingEnabled
             setLoopingEnabled(false);
         } else {
-            VERIFY_OR_DEBUG_ASSERT(!m_pCOLoopEnabled->get()) {
+            VERIFY_OR_DEBUG_ASSERT(!m_pCOLoopEnabled->toBool()) {
                 m_pCOLoopEnabled->setAndConfirm(0.0);
             }
         }
@@ -1352,7 +1352,8 @@ void LoopingControl::slotBeatJump(double beats) {
         // If inside an active loop, move loop
         slotLoopMove(beats);
     } else {
-        seekAbs(pBeats->findNBeatsFromSample(currentSample, beats));
+        // seekExact bypasses Quantize, because a beat jump is implicit quantized
+        seekExact(pBeats->findNBeatsFromSample(currentSample, beats));
     }
 }
 
@@ -1448,7 +1449,7 @@ double LoopingControl::seekInsideAdjustedLoop(
     }
 }
 
-BeatJumpControl::BeatJumpControl(QString group, double size)
+BeatJumpControl::BeatJumpControl(const QString& group, double size)
         : m_dBeatJumpSize(size) {
     m_pJumpForward = new ControlPushButton(
             keyForControl(group, "beatjump_%1_forward", size));
@@ -1479,7 +1480,7 @@ void BeatJumpControl::slotJumpForward(double pressed) {
     }
 }
 
-LoopMoveControl::LoopMoveControl(QString group, double size)
+LoopMoveControl::LoopMoveControl(const QString& group, double size)
         : m_dLoopMoveSize(size) {
     m_pMoveForward = new ControlPushButton(
             keyForControl(group, "loop_move_%1_forward", size));
@@ -1510,7 +1511,7 @@ void LoopMoveControl::slotMoveForward(double v) {
     }
 }
 
-BeatLoopingControl::BeatLoopingControl(QString group, double size)
+BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
         : m_dBeatLoopSize(size),
           m_bActive(false) {
     // This is the original beatloop control which is now deprecated. Its value

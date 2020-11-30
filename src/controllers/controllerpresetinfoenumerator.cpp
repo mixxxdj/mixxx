@@ -56,7 +56,7 @@ void PresetInfoEnumerator::loadSupportedPresets() {
     m_hidPresets.clear();
     m_bulkPresets.clear();
 
-    for (const QString& dirPath : m_controllerDirPaths) {
+    for (const QString& dirPath : qAsConst(m_controllerDirPaths)) {
         QDirIterator it(dirPath);
         while (it.hasNext()) {
             it.next();

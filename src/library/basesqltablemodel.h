@@ -102,7 +102,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
   private slots:
-    void tracksChanged(QSet<TrackId> trackIds);
+    void tracksChanged(const QSet<TrackId>& trackIds);
 
   private:
     void setTrackValueForColumn(

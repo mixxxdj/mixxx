@@ -158,14 +158,14 @@ class SeratoMarkers final {
     const QList<SeratoMarkersEntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(QList<SeratoMarkersEntryPointer> entries) {
+    void setEntries(const QList<SeratoMarkersEntryPointer>& entries) {
         m_entries = entries;
     }
 
-    RgbColor::optional_t getTrackColor() const {
+    const RgbColor::optional_t& getTrackColor() const {
         return m_trackColor;
     }
-    void setTrackColor(RgbColor::optional_t color) {
+    void setTrackColor(const RgbColor::optional_t& color) {
         m_trackColor = color;
     }
 

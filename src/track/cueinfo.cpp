@@ -14,16 +14,16 @@ CueInfo::CueInfo()
 
 CueInfo::CueInfo(
         CueType type,
-        std::optional<double> startPositionMillis,
-        std::optional<double> endPositionMillis,
-        std::optional<int> hotCueNumber,
+        const std::optional<double>& startPositionMillis,
+        const std::optional<double>& endPositionMillis,
+        const std::optional<int>& hotCueNumber,
         QString label,
-        mixxx::RgbColor::optional_t color)
+        const mixxx::RgbColor::optional_t& color)
         : m_type(type),
           m_startPositionMillis(startPositionMillis),
           m_endPositionMillis(endPositionMillis),
           m_hotCueNumber(hotCueNumber),
-          m_label(label),
+          m_label(std::move(label)),
           m_color(color) {
 }
 
@@ -35,7 +35,7 @@ void CueInfo::setType(CueType type) {
     m_type = type;
 }
 
-void CueInfo::setStartPositionMillis(std::optional<double> positionMillis) {
+void CueInfo::setStartPositionMillis(const std::optional<double>& positionMillis) {
     m_startPositionMillis = positionMillis;
 }
 
@@ -43,7 +43,7 @@ std::optional<double> CueInfo::getStartPositionMillis() const {
     return m_startPositionMillis;
 }
 
-void CueInfo::setEndPositionMillis(std::optional<double> positionMillis) {
+void CueInfo::setEndPositionMillis(const std::optional<double>& positionMillis) {
     m_endPositionMillis = positionMillis;
 }
 
@@ -55,7 +55,7 @@ std::optional<int> CueInfo::getHotCueNumber() const {
     return m_hotCueNumber;
 }
 
-void CueInfo::setHotCueNumber(std::optional<int> hotCueNumber) {
+void CueInfo::setHotCueNumber(const std::optional<int>& hotCueNumber) {
     m_hotCueNumber = hotCueNumber;
 }
 
@@ -63,7 +63,7 @@ QString CueInfo::getLabel() const {
     return m_label;
 }
 
-void CueInfo::setLabel(QString label) {
+void CueInfo::setLabel(const QString& label) {
     m_label = label;
 }
 
@@ -71,7 +71,7 @@ RgbColor::optional_t CueInfo::getColor() const {
     return m_color;
 }
 
-void CueInfo::setColor(RgbColor::optional_t color) {
+void CueInfo::setColor(const RgbColor::optional_t& color) {
     m_color = color;
 }
 

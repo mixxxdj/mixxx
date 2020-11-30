@@ -90,9 +90,9 @@ QList<EncoderSettings::OptionsGroup> EncoderOpusSettings::getOptionGroups() cons
     return m_radioList;
 }
 
-void EncoderOpusSettings::setGroupOption(QString groupCode, int optionIndex) {
+void EncoderOpusSettings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found = false;
-    for (OptionsGroup group : qAsConst(m_radioList)) {
+    for (const OptionsGroup& group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
             found = true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
@@ -113,12 +113,12 @@ void EncoderOpusSettings::setGroupOption(QString groupCode, int optionIndex) {
     }
 }
 
-int EncoderOpusSettings::getSelectedOption(QString groupCode) const {
+int EncoderOpusSettings::getSelectedOption(const QString& groupCode) const {
     int value = m_pConfig->getValue(
             ConfigKey(RECORDING_PREF_KEY, BITRATE_MODE_GROUP), 0);
 
     bool found = false;
-    for (OptionsGroup group : qAsConst(m_radioList)) {
+    for (const OptionsGroup& group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
             found = true;
             if (value >= group.controlNames.size() && value > 1) {

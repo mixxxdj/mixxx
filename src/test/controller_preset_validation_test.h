@@ -11,9 +11,9 @@ class FakeControllerJSProxy : public ControllerJSProxy {
   public:
     FakeControllerJSProxy();
 
-    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0) override;
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override;
 
-    Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length = 0);
+    Q_INVOKABLE void sendSysexMsg(const QList<int>& data, unsigned int length = 0);
 
     Q_INVOKABLE void sendShortMsg(unsigned char status,
             unsigned char byte1,
@@ -65,7 +65,7 @@ class FakeController : public Controller {
     }
 
   protected:
-    void send(QList<int> data, unsigned int length) override {
+    void send(const QList<int>& data, unsigned int length) override {
         Q_UNUSED(data);
         Q_UNUSED(length);
     }

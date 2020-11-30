@@ -219,6 +219,8 @@ Description:
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+
                       <!-- Rate Controls -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
@@ -263,6 +265,8 @@ Description:
                         <SetVariable name="Text">Vinyl Control</SetVariable>
                         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
                       </Template>
+
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
 
                       <!-- Spinny -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -329,6 +333,8 @@ Description:
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+
                       <!-- Loop/Jump Controls in compact decks-->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId"></SetVariable>
@@ -381,11 +387,13 @@ Description:
                         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
                       </Template>
 
+                      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
+
                       <!-- Level meters -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                         <SetVariable name="Text">VU meters</SetVariable>
-                        <SetVariable name="Setting">[LateNight],show_vumeters_compact</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_vumeters_compact</SetVariable>
                       </Template>
 
                       <!-- Spinny -->
@@ -462,7 +470,7 @@ Description:
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
-                      <WidgetGroup><Size>0me,108f</Size></WidgetGroup>
+                      <WidgetGroup><Size>0me,120f</Size></WidgetGroup>
 
                       <!-- Spinny -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -497,7 +505,7 @@ Description:
 <!-- Other skin options -->
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <WidgetGroup><!--  Mixer -->
@@ -547,8 +555,8 @@ Description:
                         <Children>
 
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                            <SetVariable name="Text">Master / Headphone Mixer</SetVariable>
-                            <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
+                            <SetVariable name="Text">Main / Headphone Mixer</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_main_head_mixer</SetVariable>
                           </Template>
 
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -594,7 +602,7 @@ Description:
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <WidgetGroup><!-- Effects -->
@@ -694,7 +702,7 @@ Description:
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <WidgetGroup><!-- Samplers -->
@@ -859,7 +867,7 @@ Description:
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,6f</Size>
+            <Size>1min,12f</Size>
           </WidgetGroup>
 
           <Label>

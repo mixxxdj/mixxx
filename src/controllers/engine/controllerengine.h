@@ -26,10 +26,10 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
-    void handleInput(QByteArray data, mixxx::Duration timestamp);
+    void handleInput(const QByteArray& data, mixxx::Duration timestamp);
 
-    bool executeFunction(QJSValue functionObject, QJSValueList arguments);
-    bool executeFunction(QJSValue functionObject, const QByteArray& data);
+    bool executeFunction(QJSValue functionObject, const QJSValueList& arguments);
+    bool executeFunction(const QJSValue& functionObject, const QByteArray& data);
 
     /// Wrap a string of JS code in an anonymous function. This allows any JS
     /// string that evaluates to a function to be used in MIDI mapping XML files
@@ -43,48 +43,48 @@ class ControllerEngine : public QObject {
 
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
-    void showScriptExceptionDialog(QJSValue evaluationResult, bool bFatal = false);
+    void showScriptExceptionDialog(const QJSValue& evaluationResult, bool bFatal = false);
 
-    bool removeScriptConnection(const ScriptConnection conn);
+    bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback
-    void triggerScriptConnection(const ScriptConnection conn);
+    void triggerScriptConnection(const ScriptConnection& conn);
 
     inline void setTesting(bool testing) {
         m_bTesting = testing;
     };
 
   protected:
-    double getValue(QString group, QString name);
-    void setValue(QString group, QString name, double newValue);
-    double getParameter(QString group, QString name);
-    void setParameter(QString group, QString name, double newValue);
-    double getParameterForValue(QString group, QString name, double value);
-    void reset(QString group, QString name);
-    double getDefaultValue(QString group, QString name);
-    double getDefaultParameter(QString group, QString name);
+    double getValue(const QString& group, const QString& name);
+    void setValue(const QString& group, const QString& name, double newValue);
+    double getParameter(const QString& group, const QString& name);
+    void setParameter(const QString& group, const QString& name, double newValue);
+    double getParameterForValue(const QString& group, const QString& name, double value);
+    void reset(const QString& group, const QString& name);
+    double getDefaultValue(const QString& group, const QString& name);
+    double getDefaultParameter(const QString& group, const QString& name);
     /// Connect a ControlObject's valueChanged() signal to a script callback function
     /// Returns to the script a ScriptConnectionJSProxy
-    QJSValue makeConnection(QString group, QString name, const QJSValue callback);
+    QJSValue makeConnection(const QString& group, const QString& name, const QJSValue& callback);
     /// DEPRECATED: Use makeConnection instead.
-    QJSValue connectControl(QString group,
-            QString name,
-            QJSValue passedCallback,
+    QJSValue connectControl(const QString& group,
+            const QString& name,
+            const QJSValue& passedCallback,
             bool disconnect = false);
     /// Execute callbacks for all ScriptConnections connected to a ControlObject
     /// DEPRECATED: Use ScriptConnectionJSProxy::trigger instead.
-    void trigger(QString group, QString name);
-    void log(QString message);
+    void trigger(const QString& group, const QString& name);
+    void log(const QString& message);
     /// Returns a timer ID to the script
     int beginTimer(int intervalMillis, QJSValue scriptCode, bool oneShot = false);
     void stopTimer(int timerId);
 
     /// [En/dis]able soft-takeover status for a particular ControlObject
-    void softTakeover(QString group, QString name, bool set);
+    void softTakeover(const QString& group, const QString& name, bool set);
     /// Ignores the next value for the given ControlObject. This should be called
     /// before or after an absolute physical control (slider or knob with hard limits)
     /// is changed to operate on a different ControlObject, allowing it to sync up to the
     /// soft-takeover state without an abrupt jump.
-    void softTakeoverIgnoreNextValue(QString group, QString name);
+    void softTakeoverIgnoreNextValue(const QString& group, const QString& name);
 
     void scratchEnable(
             int deck,
@@ -105,7 +105,7 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent* event);
 
   public slots:
-    void loadModule(QFileInfo moduleFileInfo);
+    void loadModule(const QFileInfo& moduleFileInfo);
     bool loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
@@ -125,9 +125,10 @@ class ControllerEngine : public QObject {
     /// Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
-    bool callFunctionOnObjects(QList<QString>,
+    bool callFunctionOnObjects(
+            const QList<QString>&,
             const QString&,
-            QJSValueList args = QJSValueList(),
+            const QJSValueList& args = QJSValueList(),
             bool bFatalError = false);
     /// Convert a byteArray to a JS typed array over an ArrayBuffer
     QJSValue byteArrayToScriptValue(const QByteArray& byteArray);

@@ -50,10 +50,14 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget* parent, AudioPathType type,
     channelComboBox->setFocusPolicy(Qt::StrongFocus);
     channelComboBox->installEventFilter(this);
 
-    connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(deviceChanged(int)));
-    connect(channelComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(channelChanged()));
+    connect(deviceComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefSoundItem::deviceChanged);
+    connect(channelComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefSoundItem::channelChanged);
     refreshDevices(devices);
 }
 

@@ -84,7 +84,7 @@ QByteArray BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     std::string output;
     m_grid.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 BeatsPointer BeatGrid::clone() const {
@@ -129,7 +129,7 @@ QString BeatGrid::getSubVersion() const {
     return m_subVersion;
 }
 
-void BeatGrid::setSubVersion(QString subVersion) {
+void BeatGrid::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
 }
 

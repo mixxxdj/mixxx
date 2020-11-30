@@ -213,7 +213,7 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputCh
     for (auto&& outputChannelStatus : outputMap) {
         outputChannelStatus.enableState = EffectEnableState::Disabled;
     }
-    for (EngineEffect* pEffect : m_effects) {
+    for (EngineEffect* pEffect : qAsConst(m_effects)) {
         if (pEffect != nullptr) {
             pEffect->deleteStatesForInputChannel(inputChannel);
         }
@@ -266,7 +266,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         CSAMPLE* pIntermediateOutput;
         bool firstAddDryToWetEffectProcessed = false;
 
-        for (EngineEffect* pEffect: m_effects) {
+        for (EngineEffect* pEffect : qAsConst(m_effects)) {
             if (pEffect != nullptr) {
                 // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {

@@ -35,8 +35,8 @@ class AnalysisFeature : public LibraryFeature {
         return m_icon;
     }
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAccept(QUrl url) override;
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dragMoveAccept(const QUrl& url) override;
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
@@ -48,7 +48,7 @@ class AnalysisFeature : public LibraryFeature {
 
   public slots:
     void activate() override;
-    void analyzeTracks(QList<TrackId> trackIds);
+    void analyzeTracks(const QList<TrackId>& trackIds);
 
     void suspendAnalysis();
     void resumeAnalysis();

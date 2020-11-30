@@ -35,10 +35,10 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   private slots:
     void fetchTagFinished(
             TrackPointer pTrack,
-            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void resultSelected();
-    void fetchTagProgress(QString);
-    void slotNetworkResult(int httpStatus, QString app, QString message, int code);
+    void fetchTagProgress(const QString&);
+    void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
     void slotTrackChanged(TrackId trackId);
     void apply();
     void quit();

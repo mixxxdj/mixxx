@@ -32,7 +32,7 @@
       <Knob>
         <TooltipId></TooltipId>
         <NumberStates>64</NumberStates>
-        <Path>knobs/knob_rotary_s%1.png</Path>
+        <Path>knobs_no_center_inverted/knob_rotary_s%1.png</Path>
         <Pos>27,22</Pos>
         <Connection>
           <ConfigKey>[Master],duckStrength</ConfigKey>

@@ -254,7 +254,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                                 chunkFrameRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
         // The returned range fits into the requested range
-        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(chunkFrameRange));
 
         // Sometimes the duration of the audio source is inaccurate and adjusted
         // while reading. We need to adjust all frame ranges to reflect this new
@@ -265,7 +265,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         chunkFrameRange = intersect(chunkFrameRange, audioSourceProxy.frameIndexRange());
         // The audio data that has just been read should still fit into the adjusted
         // chunk range.
-        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(chunkFrameRange));
 
         // We also need to adjust the remaining frame range for the next requests.
         remainingFrameRange = intersect(remainingFrameRange, audioSourceProxy.frameIndexRange());
@@ -277,7 +277,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                 // If we have read an incomplete chunk while the range has grown
                 // we need to discard the read results and re-read the current
                 // chunk!
-                remainingFrameRange = span(remainingFrameRange, chunkFrameRange);
+
+                remainingFrameRange.growFront(chunkFrameRange.length());
                 continue;
             }
             DEBUG_ASSERT(remainingFrameRange.end() < audioSourceProxy.frameIndexRange().end());

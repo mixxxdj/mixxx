@@ -76,14 +76,14 @@ class WTrackMenu : public QMenu {
     void slotShowDlgTrackInfo();
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
 
   private slots:
     // File
     void slotOpenInFileBrowser();
 
     // Row color
-    void slotColorPicked(mixxx::RgbColor::optional_t color);
+    void slotColorPicked(const mixxx::RgbColor::optional_t& color);
 
     // Reset
     void slotClearBeats();
@@ -170,7 +170,7 @@ class WTrackMenu : public QMenu {
 
     void lockBpm(bool lock);
 
-    void loadSelectionToGroup(QString group, bool play = false);
+    void loadSelectionToGroup(const QString& group, bool play = false);
     void clearTrackSelection();
 
     bool isAnyTrackBpmLocked() const;

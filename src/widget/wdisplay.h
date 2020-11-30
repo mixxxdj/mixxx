@@ -53,7 +53,7 @@ class WDisplay : public WWidget {
             double scaleFactor);
 
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
 

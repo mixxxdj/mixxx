@@ -7,7 +7,7 @@
 #include "waveformmark.h"
 
 namespace {
-Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFlags) {
+Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
                                       .split('|',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -19,7 +19,7 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
     Qt::Alignment hflags;
     Qt::Alignment vflags;
 
-    for (auto stringFlag : stringFlags) {
+    for (const auto& stringFlag : stringFlags) {
         if (stringFlag == "center") {
             hflags |= Qt::AlignHCenter;
             vflags |= Qt::AlignVCenter;

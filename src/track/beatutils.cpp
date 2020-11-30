@@ -61,7 +61,7 @@ void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate
 
 // Given a sorted set of numbers, find the sample median.
 // http://en.wikipedia.org/wiki/Median#The_sample_median
-double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
+double BeatUtils::computeSampleMedian(const QList<double>& sortedItems) {
     if (sortedItems.empty()) {
         return 0.0;
     }
@@ -82,8 +82,11 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
 }
 
 QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
-        const QVector<double> beats, const int windowSize, const int windowStep,
-        const int sampleRate, QMap<double, int>* frequencyHistogram) {
+        const QVector<double>& beats,
+        const int windowSize,
+        const int windowStep,
+        const int sampleRate,
+        QMap<double, int>* frequencyHistogram) {
     QList<double> averageBpmList;
     for (int i = windowSize; i < beats.size(); i += windowStep) {
         //get start and end sample of the beats
@@ -107,10 +110,10 @@ QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
 }
 
 double BeatUtils::computeFilteredWeightedAverage(
-    const QMap<double, int> frequencyTable,
-    const double filterCenter,
-    const double filterTolerance,
-    QMap<double, int>* filteredFrequencyTable) {
+        const QMap<double, int>& frequencyTable,
+        const double filterCenter,
+        const double filterTolerance,
+        QMap<double, int>* filteredFrequencyTable) {
     double filterWeightedAverage = 0.0;
     int filterSum = 0;
     QMapIterator<double, int> i(frequencyTable);
@@ -312,9 +315,10 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
      return constrainedBpm;
 }
 
-double BeatUtils::calculateOffset(
-    const QVector<double> beats1, const double bpm1,
-    const QVector<double> beats2, const int SampleRate) {
+double BeatUtils::calculateOffset(const QVector<double>& beats1,
+        const double bpm1,
+        const QVector<double>& beats2,
+        const int SampleRate) {
     /*
      * Here we compare to beats vector and try to determine the best offset
      * based on the occurrences, i.e. by assuming that the almost correct beats
@@ -354,8 +358,9 @@ double BeatUtils::calculateOffset(
     return floor(bestOffset + beatLength1Epsilon);
 }
 
-double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
-                                       const int SampleRate, const double global_bpm) {
+double BeatUtils::findFirstCorrectBeat(const QVector<double>& rawbeats,
+        const int SampleRate,
+        const double global_bpm) {
     for (int i = N; i < rawbeats.size(); i++) {
         // get start and end sample of the beats
         double start_sample = rawbeats.at(i-N);
@@ -384,9 +389,11 @@ double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
 
 // static
 double BeatUtils::calculateFixedTempoFirstBeat(
-    bool enableOffsetCorrection,
-    const QVector<double> rawbeats, const int sampleRate,
-    const int totalSamples, const double globalBpm) {
+        bool enableOffsetCorrection,
+        const QVector<double>& rawbeats,
+        const int sampleRate,
+        const int totalSamples,
+        const double globalBpm) {
     if (rawbeats.size() == 0) {
         return 0;
     }

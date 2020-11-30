@@ -81,8 +81,6 @@ QSqlDatabase cloneDatabase(
             pTrackCollectionManager->internalCollection()) {
         return QSqlDatabase();
     }
-    const auto connectionName =
-            uuidToStringWithoutBraces(QUuid::createUuid());
     return cloneDatabase(
             pTrackCollectionManager->internalCollection()->database());
 }
@@ -227,7 +225,7 @@ void BaseTrackTableModel::initHeaderProperties() {
 
 void BaseTrackTableModel::setHeaderProperties(
         ColumnCache::Column column,
-        QString title,
+        const QString& title,
         int defaultWidth) {
     int section = fieldIndex(column);
     if (section < 0) {
@@ -466,17 +464,14 @@ bool BaseTrackTableModel::setData(
 QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         const QModelIndex& index) const {
     // Determine height of the cover art image depending on the screen size
-    unsigned int absoluteHeightOfCoverartToolTip;
     const QScreen* primaryScreen = getPrimaryScreen();
-    if (primaryScreen) {
-        absoluteHeightOfCoverartToolTip = static_cast<int>(
-                primaryScreen->availableGeometry().height() *
-                kRelativeHeightOfCoverartToolTip);
-    } else {
-        VERIFY_OR_DEBUG_ASSERT(primaryScreen) {
-            return QVariant();
-        }
+    if (!primaryScreen) {
+        DEBUG_ASSERT(!"Primary screen not found!");
+        return QVariant();
     }
+    unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
+            primaryScreen->availableGeometry().height() *
+            kRelativeHeightOfCoverartToolTip);
     // Get image from cover art cache
     CoverArtCache* pCache = CoverArtCache::instance();
     QPixmap pixmap = QPixmap(absoluteHeightOfCoverartToolTip,
@@ -741,7 +736,7 @@ QMimeData* BaseTrackTableModel::mimeData(
 }
 
 void BaseTrackTableModel::slotTrackLoaded(
-        QString group,
+        const QString& group,
         TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
@@ -761,7 +756,7 @@ void BaseTrackTableModel::slotTrackLoaded(
 }
 
 void BaseTrackTableModel::slotRefreshCoverRows(
-        QList<int> rows) {
+        const QList<int>& rows) {
     if (rows.isEmpty()) {
         return;
     }

@@ -182,7 +182,7 @@ bool SoundManagerConfig::readFromDisk() {
             AudioOutput out(AudioOutput::fromXML(outElement));
             if (out.getType() == AudioPath::INVALID) continue;
             bool dupe(false);
-            for (const AudioOutput& otherOut : m_outputs) {
+            for (const AudioOutput& otherOut : qAsConst(m_outputs)) {
                 if (out == otherOut
                         && out.getChannelGroup() == otherOut.getChannelGroup()) {
                     dupe = true;
@@ -199,7 +199,7 @@ bool SoundManagerConfig::readFromDisk() {
             AudioInput in(AudioInput::fromXML(inElement));
             if (in.getType() == AudioPath::INVALID) continue;
             bool dupe(false);
-            for (const AudioInput& otherIn : m_inputs) {
+            for (const AudioInput& otherIn : qAsConst(m_inputs)) {
                 if (in == otherIn
                         && in.getChannelGroup() == otherIn.getChannelGroup()) {
                     dupe = true;
@@ -224,21 +224,28 @@ bool SoundManagerConfig::writeToDisk() const {
     docElement.setAttribute(xmlAttributeDeckCount, m_deckCount);
     doc.appendChild(docElement);
 
-    for (const auto& deviceId: getDevices()) {
+    const QSet<SoundDeviceId> deviceIds = getDevices();
+    for (const auto& deviceId : deviceIds) {
         QDomElement devElement(doc.createElement(xmlElementSoundDevice));
         devElement.setAttribute(xmlAttributeDeviceName, deviceId.name);
         devElement.setAttribute(xmlAttributePortAudioIndex, deviceId.portAudioIndex);
         if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
             devElement.setAttribute(xmlAttributeAlsaHwDevice, deviceId.alsaHwDevice);
         }
-        for (const AudioInput& in : m_inputs.values(deviceId)) {
+
+        for (auto it = m_inputs.constFind(deviceId);
+                it != m_inputs.constEnd() && it.key() == deviceId;
+                ++it) {
             QDomElement inElement(doc.createElement(xmlElementInput));
-            in.toXML(&inElement);
+            it.value().toXML(&inElement);
             devElement.appendChild(inElement);
         }
-        for (const AudioOutput& out : m_outputs.values(deviceId)) {
+
+        for (auto it = m_outputs.constFind(deviceId);
+                it != m_outputs.constEnd() && it.key() == deviceId;
+                ++it) {
             QDomElement outElement(doc.createElement(xmlElementOutput));
-            out.toXML(&outElement);
+            it.value().toXML(&outElement);
             devElement.appendChild(outElement);
         }
         docElement.appendChild(devElement);
@@ -330,21 +337,29 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
 void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
-    for (const auto& device: getDevices()) {
-        foreach (AudioInput in, m_inputs.values(device)) {
-            if ((in.getType() == AudioInput::DECK ||
-                 in.getType() == AudioInput::VINYLCONTROL ||
-                 in.getType() == AudioInput::AUXILIARY) &&
-                in.getIndex() + 1 > minimum_deck_count) {
+    const QSet<SoundDeviceId> deviceIds = getDevices();
+    for (const auto& deviceId : deviceIds) {
+        for (auto it = m_inputs.constFind(deviceId);
+                it != m_inputs.constEnd() && it.key() == deviceId;
+                ++it) {
+            const int index = it.value().getIndex();
+            const AudioPathType type = it.value().getType();
+            if ((type == AudioInput::DECK ||
+                        type == AudioInput::VINYLCONTROL ||
+                        type == AudioInput::AUXILIARY) &&
+                    index + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
-                minimum_deck_count = in.getIndex() + 1;
+                minimum_deck_count = index + 1;
             }
         }
-        foreach (AudioOutput out, m_outputs.values(device)) {
-            if (out.getType() == AudioOutput::DECK &&
-                    out.getIndex() + 1 > minimum_deck_count) {
+        for (auto it = m_outputs.constFind(deviceId);
+                it != m_outputs.constEnd() && it.key() == deviceId;
+                ++it) {
+            const int index = it.value().getIndex();
+            const AudioPathType type = it.value().getType();
+            if (type == AudioOutput::DECK && index + 1 > minimum_deck_count) {
                 qDebug() << "Found an output connection above current deck count";
-                minimum_deck_count = out.getIndex() + 1;
+                minimum_deck_count = index + 1;
             }
         }
     }

@@ -11,7 +11,7 @@
 // construct the default QPixmap in CoverArtCache
 class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
-    void loadCoverFromMetadata(QString trackLocation) {
+    void loadCoverFromMetadata(const QString& trackLocation) {
         const QImage img = SoundSourceProxy::importTemporaryCoverImage(
                 trackLocation,
                 Sandbox::openSecurityToken(QDir(trackLocation), true));
@@ -31,7 +31,9 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         EXPECT_TRUE(res.coverArt.coverLocation.isNull());
     }
 
-    void loadCoverFromFile(QString trackLocation, QString coverLocation, QString absoluteCoverLocation) {
+    void loadCoverFromFile(const QString& trackLocation,
+            const QString& coverLocation,
+            const QString& absoluteCoverLocation) {
         const QImage img = QImage(absoluteCoverLocation);
         ASSERT_FALSE(img.isNull());
 

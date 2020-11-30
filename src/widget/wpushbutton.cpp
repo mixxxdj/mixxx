@@ -162,7 +162,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         m_leftButtonMode = ControlPushButton::PUSH;
         if (!leftClickForcePush) {
             const ConfigKey& configKey = leftConnection->getKey();
-            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+            ControlPushButton* p = qobject_cast<ControlPushButton*>(
                     ControlObject::getControl(configKey));
             if (p) {
                 m_leftButtonMode = p->getButtonMode();
@@ -205,7 +205,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         m_rightButtonMode = ControlPushButton::PUSH;
         if (!rightClickForcePush) {
             const ConfigKey configKey = rightConnection->getKey();
-            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+            ControlPushButton* p = qobject_cast<ControlPushButton*>(
                     ControlObject::getControl(configKey));
             if (p) {
                 m_rightButtonMode = p->getButtonMode();
@@ -257,8 +257,11 @@ void WPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
-                            Paintable::DrawMode mode, double scaleFactor) {
+void WPushButton::setPixmap(int iState,
+        bool bPressed,
+        const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -279,9 +282,9 @@ void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
     pixmaps.replace(iState, pPixmap);
 }
 
-void WPushButton::setPixmapBackground(PixmapSource source,
-                                      Paintable::DrawMode mode,
-                                      double scaleFactor) {
+void WPushButton::setPixmapBackground(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!source.isEmpty() &&
@@ -436,6 +439,20 @@ bool WPushButton::event(QEvent* e) {
         m_bHovered = true;
         restyleAndRepaint();
     } else if (e->type() == QEvent::Leave) {
+        if (m_bPressed) {
+            // A Leave event is send instead of a mouseReleaseEvent()
+            // fake it to get not stucked in pressed state
+            QMouseEvent mouseEvent = QMouseEvent(
+                    QEvent::MouseButtonRelease,
+                    QPointF(),
+                    QPointF(),
+                    QPointF(),
+                    Qt::LeftButton,
+                    Qt::NoButton,
+                    Qt::NoModifier,
+                    Qt::MouseEventSynthesizedByApplication);
+            mouseReleaseEvent(&mouseEvent);
+        }
         m_bHovered = false;
         restyleAndRepaint();
     }
