@@ -26,8 +26,7 @@ void EffectsBackendManager::addBackend(EffectsBackendPointer pBackend) {
 
     m_effectsBackends.insert(pBackend->getType(), pBackend);
 
-    QList<QString> backendEffects = pBackend->getEffectIds();
-    for (const QString& effectId : backendEffects) {
+    for (const QString& effectId : pBackend->getEffectIds()) {
         m_manifests.append(pBackend->getManifest(effectId));
     }
 
