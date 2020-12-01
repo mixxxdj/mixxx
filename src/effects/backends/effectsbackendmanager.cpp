@@ -84,7 +84,7 @@ EffectManifestPointer EffectsBackendManager::getManifest(
 const QString EffectsBackendManager::getDisplayNameForEffectPreset(
         EffectPresetPointer pPreset) const {
     QString displayName(QObject::tr("None"));
-    if (pPreset == nullptr || pPreset->isEmpty()) {
+    if (!pPreset || pPreset->isEmpty()) {
         return displayName;
     }
 
