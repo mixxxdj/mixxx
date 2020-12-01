@@ -10,7 +10,7 @@ LV2Backend::LV2Backend() {
 }
 
 LV2Backend::~LV2Backend() {
-    for (LilvNode* node : m_properties) {
+    for (LilvNode* node : std::as_const(m_properties)) {
         lilv_node_free(node);
     }
     lilv_world_free(m_pWorld);
