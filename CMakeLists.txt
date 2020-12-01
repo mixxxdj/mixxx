@@ -1209,7 +1209,7 @@ install(
 install(
   DIRECTORY
     "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
-  "DESTINATION"
+  DESTINATION
     "${MIXXX_INSTALL_DATADIR}"
 )
 
