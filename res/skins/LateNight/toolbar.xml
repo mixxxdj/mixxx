@@ -239,7 +239,7 @@
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- Rec dot + RecDuration -->
+          <WidgetGroup><!-- Rec dot -->
             <Layout>horizontal</Layout>
             <Size>68f,20f</Size>
             <Children>
@@ -251,19 +251,8 @@
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </Label>
-
-              <RecordingDuration>
-                <ObjectName>RecDuration</ObjectName>
-                <Size>53f,20f</Size>
-                <InactiveText>REC</InactiveText>
-                <Alignment>center</Alignment>
-                <Connection>
-                  <ConfigKey>[Recording],status</ConfigKey>
-                  <BindProperty>highlight</BindProperty>
-                </Connection>
-              </RecordingDuration>
             </Children>
-          </WidgetGroup><!-- /Rec dot + RecDuration -->
+          </WidgetGroup><!-- /Rec dot -->
 
           <!-- Rec feedback color -->
           <Template src="skin:/controls/button_3state_display.xml">
