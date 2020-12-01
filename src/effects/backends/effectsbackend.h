@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 #include <QSet>
 #include <QString>
 
@@ -21,7 +21,7 @@ class EffectProcessor;
 /// EffectManifest, EffectState, and EffectProcessorImpl.
 class EffectsBackend {
   public:
-    virtual ~EffectsBackend() {};
+    virtual ~EffectsBackend(){};
 
     virtual EffectBackendType getType() const = 0;
 
@@ -32,7 +32,7 @@ class EffectsBackend {
     virtual bool canInstantiateEffect(const QString& effectId) const = 0;
 
     virtual std::unique_ptr<EffectProcessor> createProcessor(
-        const EffectManifestPointer pManifest) const = 0;
+            const EffectManifestPointer pManifest) const = 0;
 
     static EffectBackendType backendTypeFromString(const QString& typeName);
     static QString backendTypeToString(EffectBackendType backendType);

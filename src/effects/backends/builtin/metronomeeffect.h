@@ -13,8 +13,8 @@
 class MetronomeGroupState final : public EffectState {
   public:
     MetronomeGroupState(const mixxx::EngineParameters& bufferParameters)
-      : EffectState(bufferParameters),
-        m_framesSinceClickStart(0) {
+            : EffectState(bufferParameters),
+              m_framesSinceClickStart(0) {
     }
     ~MetronomeGroupState() {
     }
@@ -35,7 +35,8 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
 
     void processChannel(
             MetronomeGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

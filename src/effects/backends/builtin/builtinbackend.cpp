@@ -1,19 +1,20 @@
 
+#include "effects/backends/builtin/builtinbackend.h"
+
 #include <QtDebug>
 
-#include "effects/backends/builtin/builtinbackend.h"
-#include "effects/backends/builtin/flangereffect.h"
-#include "effects/backends/builtin/bitcrushereffect.h"
 #include "effects/backends/builtin/balanceeffect.h"
-#include "effects/backends/builtin/linkwitzriley8eqeffect.h"
-#include "effects/backends/builtin/bessel8lvmixeqeffect.h"
 #include "effects/backends/builtin/bessel4lvmixeqeffect.h"
-#include "effects/backends/builtin/threebandbiquadeqeffect.h"
+#include "effects/backends/builtin/bessel8lvmixeqeffect.h"
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
-#include "effects/backends/builtin/graphiceqeffect.h"
-#include "effects/backends/builtin/parametriceqeffect.h"
+#include "effects/backends/builtin/bitcrushereffect.h"
 #include "effects/backends/builtin/filtereffect.h"
+#include "effects/backends/builtin/flangereffect.h"
+#include "effects/backends/builtin/graphiceqeffect.h"
+#include "effects/backends/builtin/linkwitzriley8eqeffect.h"
 #include "effects/backends/builtin/moogladder4filtereffect.h"
+#include "effects/backends/builtin/parametriceqeffect.h"
+#include "effects/backends/builtin/threebandbiquadeqeffect.h"
 #ifndef __MACAPPSTORE__
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
@@ -71,8 +72,8 @@ BuiltInBackend::~BuiltInBackend() {
 }
 
 void BuiltInBackend::registerEffect(const QString& id,
-                                    EffectManifestPointer pManifest,
-                                    EffectProcessorInstantiatorPointer pInstantiator) {
+        EffectManifestPointer pManifest,
+        EffectProcessorInstantiatorPointer pInstantiator) {
     VERIFY_OR_DEBUG_ASSERT(!m_registeredEffects.contains(id)) {
         return;
     }

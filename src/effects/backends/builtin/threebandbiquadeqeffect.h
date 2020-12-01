@@ -7,10 +7,10 @@
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
-#include "util/sample.h"
-#include "util/types.h"
 #include "util/memory.h"
+#include "util/sample.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
 
 class ThreeBandBiquadEQEffectGroupState final : public EffectState {
   public:
@@ -53,7 +53,8 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
 
     void processChannel(
             ThreeBandBiquadEQEffectGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;

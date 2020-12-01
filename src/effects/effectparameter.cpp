@@ -31,7 +31,8 @@ EffectManifestParameterPointer EffectParameter::manifest() const {
 
 // static
 bool EffectParameter::clampValue(double* pValue,
-                                 const double& minimum, const double& maximum) {
+        const double& minimum,
+        const double& maximum) {
     if (*pValue < minimum) {
         *pValue = minimum;
         return true;

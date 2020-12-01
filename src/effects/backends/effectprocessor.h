@@ -1,16 +1,16 @@
 #pragma once
 
-#include <QString>
-#include <QHash>
 #include <QDebug>
+#include <QHash>
 #include <QPair>
+#include <QString>
 
-#include "util/types.h"
-#include "engine/engine.h"
 #include "effects/defs.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
-#include "engine/channelhandle.h"
+#include "engine/engine.h"
+#include "util/types.h"
 
 /// Effects are implemented as two separate classes, an EffectState subclass and
 /// an EffectProcessorImpl subclass. Separating state from the DSP code allows
@@ -39,7 +39,7 @@ class EffectState {
         // Subclasses should call engineParametersChanged here.
         Q_UNUSED(bufferParameters);
     };
-    virtual ~EffectState() {};
+    virtual ~EffectState(){};
 };
 
 /// EffectProcessor is an abstract base class for interfacing with the main
@@ -47,7 +47,8 @@ class EffectState {
 /// template in EffectProcessorImpl.
 class EffectProcessor {
   public:
-    virtual ~EffectProcessor() { }
+    virtual ~EffectProcessor() {
+    }
 
     /// Called from main thread to avoid allocating memory in the audio callback thread
     virtual void initialize(
@@ -56,7 +57,7 @@ class EffectProcessor {
             const mixxx::EngineParameters& bufferParameters) = 0;
     virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
     virtual bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
-          const EffectStatesMap* pStatesMap) = 0;
+            const EffectStatesMap* pStatesMap) = 0;
     /// Called from main thread for garbage collection after the last audio thread
     /// callback executes process() with EffectEnableState::Disabling
     virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
@@ -75,18 +76,19 @@ class EffectProcessor {
     /// pass it on to EffectProcessorImpl::processChannel, allowing one
     /// EffectProcessor instance to process multiple signals simultaneously.
     virtual void process(const ChannelHandle& inputHandle,
-                         const ChannelHandle& outputHandle,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const mixxx::EngineParameters& bufferParameters,
-                         const EffectEnableState enableState,
-                         const GroupFeatureState& groupFeatures) = 0;
+            const ChannelHandle& outputHandle,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) = 0;
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every routing of
 /// input channel to output channel. This allows for processing effects in
 /// parallel for PFL and post-fader for the master output.
 /// EffectSpecificState must be a subclass of EffectState.
-template <typename EffectSpecificState>
+template<typename EffectSpecificState>
 class EffectProcessorImpl : public EffectProcessor {
   public:
     EffectProcessorImpl() {
@@ -125,21 +127,25 @@ class EffectProcessorImpl : public EffectProcessor {
 
     /// This is the only non-static method that subclasses need to implement.
     virtual void processChannel(EffectSpecificState* channelState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const mixxx::EngineParameters& bufferParameters,
-                                const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures) = 0;
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) = 0;
 
-    void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const mixxx::EngineParameters& bufferParameters,
-                         const EffectEnableState enableState,
-                         const GroupFeatureState& groupFeatures) final {
+    void process(const ChannelHandle& inputHandle,
+            const ChannelHandle& outputHandle,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
                 qWarning() << "EffectProcessorImpl::process could not retrieve"
-                              "EffectState for input" << inputHandle
+                              "EffectState for input"
+                           << inputHandle
                            << "and output" << outputHandle
                            << "EffectState should have been preallocated in the"
                               "main thread.";
@@ -147,8 +153,7 @@ class EffectProcessorImpl : public EffectProcessor {
             pState = createSpecificState(bufferParameters);
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
-        processChannel(pState, pInput, pOutput,
-                       bufferParameters, enableState, groupFeatures);
+        processChannel(pState, pInput, pOutput, bufferParameters, enableState, groupFeatures);
     }
 
     void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,
@@ -159,7 +164,8 @@ class EffectProcessorImpl : public EffectProcessor {
         for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
             if (kEffectDebugOutput) {
                 qDebug() << this << "EffectProcessorImpl::initialize allocating "
-                            "EffectStates for input" << inputChannel;
+                                    "EffectStates for input"
+                         << inputChannel;
             }
             ChannelHandleMap<EffectSpecificState*> outputChannelMap;
             for (const ChannelHandleAndGroup& outputChannel :
@@ -168,7 +174,8 @@ class EffectProcessorImpl : public EffectProcessor {
                         createSpecificState(bufferParameters));
                 if (kEffectDebugOutput) {
                     qDebug() << this << "EffectProcessorImpl::initialize "
-                                "registering output" << outputChannel << outputChannelMap[outputChannel.handle()];
+                                        "registering output"
+                             << outputChannel << outputChannelMap[outputChannel.handle()];
                 }
             }
             m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
@@ -180,84 +187,84 @@ class EffectProcessorImpl : public EffectProcessor {
     };
 
     bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
-              const EffectStatesMap* pStatesMap) final {
-          if (kEffectDebugOutput) {
-              qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this
-                       << "input" << *inputChannel;
-          }
+            const EffectStatesMap* pStatesMap) final {
+        if (kEffectDebugOutput) {
+            qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this
+                     << "input" << *inputChannel;
+        }
 
-          // NOTE: ChannelHandleMap is like a map in that it associates an
-          // object with a ChannelHandle key, but it actually backed by a
-          // QVarLengthArray, not a QMap. So it is okay that
-          // m_channelStateMatrix may be accessed concurrently in the main
-          // thread in deleteStatesForInputChannel.
+        // NOTE: ChannelHandleMap is like a map in that it associates an
+        // object with a ChannelHandle key, but it actually backed by a
+        // QVarLengthArray, not a QMap. So it is okay that
+        // m_channelStateMatrix may be accessed concurrently in the main
+        // thread in deleteStatesForInputChannel.
 
-          // Can't directly cast a ChannelHandleMap from containing the base
-          // EffectState* type to EffectSpecificState* type, so iterate through
-          // pStatesMap to build a new ChannelHandleMap with
-          // dynamic_cast'ed states.
-          ChannelHandleMap<EffectSpecificState*>& effectSpecificStatesMap =
-                  m_channelStateMatrix[*inputChannel];
+        // Can't directly cast a ChannelHandleMap from containing the base
+        // EffectState* type to EffectSpecificState* type, so iterate through
+        // pStatesMap to build a new ChannelHandleMap with
+        // dynamic_cast'ed states.
+        ChannelHandleMap<EffectSpecificState*>& effectSpecificStatesMap =
+                m_channelStateMatrix[*inputChannel];
 
-          // deleteStatesForInputChannel should have been called before a new
-          // map of EffectStates was sent to this function, or this is the first
-          // time states are being loaded for this input channel, so
-          // effectSpecificStatesMap should be empty and this loop should
-          // not go through any iterations.
-          for (EffectSpecificState* pState : effectSpecificStatesMap) {
-              VERIFY_OR_DEBUG_ASSERT(pState == nullptr) {
-                  delete pState;
-              }
-          }
+        // deleteStatesForInputChannel should have been called before a new
+        // map of EffectStates was sent to this function, or this is the first
+        // time states are being loaded for this input channel, so
+        // effectSpecificStatesMap should be empty and this loop should
+        // not go through any iterations.
+        for (EffectSpecificState* pState : effectSpecificStatesMap) {
+            VERIFY_OR_DEBUG_ASSERT(pState == nullptr) {
+                delete pState;
+            }
+        }
 
-          QSet<ChannelHandleAndGroup> receivedOutputChannels = m_registeredOutputChannels;
-          for (const ChannelHandleAndGroup& outputChannel :
-                  std::as_const(m_registeredOutputChannels)) {
-              if (kEffectDebugOutput) {
-                  qDebug() << "EffectProcessorImpl::loadStatesForInputChannel"
-                           << this << "output" << outputChannel;
-              }
+        QSet<ChannelHandleAndGroup> receivedOutputChannels = m_registeredOutputChannels;
+        for (const ChannelHandleAndGroup& outputChannel :
+                std::as_const(m_registeredOutputChannels)) {
+            if (kEffectDebugOutput) {
+                qDebug() << "EffectProcessorImpl::loadStatesForInputChannel"
+                         << this << "output" << outputChannel;
+            }
 
-              auto pState = dynamic_cast<EffectSpecificState*>(
-                        pStatesMap->at(outputChannel.handle()));
-              VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-                    return false;
-              }
-              effectSpecificStatesMap.insert(outputChannel.handle(), pState);
-              receivedOutputChannels.insert(outputChannel);
-          }
-          // Output channels are hardcoded in EngineMaster and should not
-          // be registered after Mixxx initializes.
-          DEBUG_ASSERT(receivedOutputChannels == m_registeredOutputChannels);
-          return true;
+            auto pState = dynamic_cast<EffectSpecificState*>(
+                    pStatesMap->at(outputChannel.handle()));
+            VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
+                return false;
+            }
+            effectSpecificStatesMap.insert(outputChannel.handle(), pState);
+            receivedOutputChannels.insert(outputChannel);
+        }
+        // Output channels are hardcoded in EngineMaster and should not
+        // be registered after Mixxx initializes.
+        DEBUG_ASSERT(receivedOutputChannels == m_registeredOutputChannels);
+        return true;
     };
 
     /// Called from main thread for garbage collection after an input channel is disabled
     void deleteStatesForInputChannel(const ChannelHandle* inputChannel) final {
-          if (kEffectDebugOutput) {
-              qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
-                       << this << *inputChannel;
-          }
+        if (kEffectDebugOutput) {
+            qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
+                     << this << *inputChannel;
+        }
 
-          // NOTE: ChannelHandleMap is like a map in that it associates an
-          // object with a ChannelHandle key, but it actually backed by a
-          // QVarLengthArray, not a QMap. So it is okay that
-          // m_channelStateMatrix may be accessed concurrently in the audio
-          // engine thread in loadStatesForInputChannel.
+        // NOTE: ChannelHandleMap is like a map in that it associates an
+        // object with a ChannelHandle key, but it actually backed by a
+        // QVarLengthArray, not a QMap. So it is okay that
+        // m_channelStateMatrix may be accessed concurrently in the audio
+        // engine thread in loadStatesForInputChannel.
 
-          ChannelHandleMap<EffectSpecificState*>& stateMap =
-                  m_channelStateMatrix[*inputChannel];
-          for (EffectSpecificState* pState : stateMap) {
-                VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-                      continue;
-                }
-                if (kEffectDebugOutput) {
-                      qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
-                               << this << "deleting state" << pState;
-                }
-                delete pState;
-          }
-          stateMap.clear();
+        ChannelHandleMap<EffectSpecificState*>& stateMap =
+                m_channelStateMatrix[*inputChannel];
+        for (EffectSpecificState* pState : stateMap) {
+            VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
+                continue;
+            }
+            if (kEffectDebugOutput) {
+                qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
+                         << this << "deleting state" << pState;
+            }
+            delete pState;
+        }
+        stateMap.clear();
     };
 
   protected:

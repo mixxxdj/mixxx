@@ -1,4 +1,5 @@
 #include "effects/backends/builtin/loudnesscontoureffect.h"
+
 #include "util/math.h"
 
 namespace {
@@ -12,7 +13,6 @@ static const double kLoPleakQ = 0.2;
 static const double kHiShelveQ = 0.7;
 
 } // anonymous namespace
-
 
 // static
 QString LoudnessContourEffect::getId() {
@@ -28,7 +28,8 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
+            "Amplifies low and high frequencies at low volumes to compensate "
+            "for reduced sensitivity of the human ear."));
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(1.0);
 
@@ -37,7 +38,7 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     loudness->setName(QObject::tr("Loudness"));
     loudness->setShortName(QObject::tr("Loudness"));
     loudness->setDescription(QObject::tr(
-        "Set the gain of the applied loudness contour"));
+            "Set the gain of the applied loudness contour"));
     loudness->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     loudness->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     loudness->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -50,7 +51,7 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     useGain->setName(QObject::tr("Use Gain"));
     useGain->setShortName(QObject::tr("Use Gain"));
     useGain->setDescription(QObject::tr(
-        "Follow Gain Knob"));
+            "Follow Gain Knob"));
     useGain->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
     useGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     useGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -72,9 +73,9 @@ LoudnessContourEffectGroupState::LoudnessContourEffectGroupState(
 
     // Initialize the filters with default parameters
     m_low = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate() , kLoPeakFreq , kHiShelveQ);
+            bufferParameters.sampleRate(), kLoPeakFreq, kHiShelveQ);
     m_high = std::make_unique<EngineFilterBiquad1HighShelving>(
-            bufferParameters.sampleRate() , kHiShelveFreq ,kHiShelveQ);
+            bufferParameters.sampleRate(), kHiShelveFreq, kHiShelveQ);
 }
 
 LoudnessContourEffectGroupState::~LoudnessContourEffectGroupState() {
@@ -86,7 +87,6 @@ void LoudnessContourEffectGroupState::setFilters(int sampleRate, double gain) {
             sampleRate, kLoPeakFreq, kLoPleakQ, gain);
     m_high->setFrequencyCorners(
             sampleRate, kHiShelveFreq, kHiShelveQ, gain / kHiShelveGainDiv);
-
 }
 
 void LoudnessContourEffect::loadEngineEffectParameters(
@@ -111,7 +111,6 @@ void LoudnessContourEffect::processChannel(
     auto gain = static_cast<CSAMPLE_GAIN>(pState->m_oldGain);
 
     if (enableState != EffectEnableState::Disabling) {
-
         bool useGain = m_pUseGain->toBool() && groupFeatures.has_gain;
         double loudness = m_pLoudness->value();
         double gainKnob = groupFeatures.gain;
@@ -122,9 +121,8 @@ void LoudnessContourEffect::processChannel(
                 gainKnob != pState->m_oldGainKnob ||
                 loudness != pState->m_oldLoudness ||
                 bufferParameters.sampleRate() != pState->m_oldSampleRate) {
-
             pState->m_oldUseGain = useGain;
-            pState->m_oldGainKnob =  gainKnob;
+            pState->m_oldGainKnob = gainKnob;
             pState->m_oldLoudness = loudness;
             pState->m_oldSampleRate = bufferParameters.sampleRate();
 
@@ -133,8 +131,7 @@ void LoudnessContourEffect::processChannel(
                 double gainKnobDb = ratio2db(gainKnob);
                 filterGainDb = loudness * gainKnobDb / kMaxLoGain;
                 gain = 1; // No need for adjust gain because master gain follows
-            }
-            else {
+            } else {
                 filterGainDb = -loudness;
                 // compensate filter boost to avoid clipping
                 gain = static_cast<CSAMPLE_GAIN>(db2ratio(-filterGainDb));
@@ -150,11 +147,13 @@ void LoudnessContourEffect::processChannel(
     } else {
         pState->m_low->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         pState->m_high->process(pOutput, pState->m_pBuf, bufferParameters.samplesPerBuffer());
-        SampleUtil::copyWithRampingGain(
-                pOutput, pState->m_pBuf, pState->m_oldGain, gain,
+        SampleUtil::copyWithRampingGain(pOutput,
+                pState->m_pBuf,
+                pState->m_oldGain,
+                gain,
                 bufferParameters.samplesPerBuffer());
     }
 
-    pState->m_oldFilterGainDb = filterGainDb ;
+    pState->m_oldFilterGainDb = filterGainDb;
     pState->m_oldGain = gain;
 }

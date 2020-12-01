@@ -20,14 +20,14 @@ EffectManifestPointer ReverbEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team, CAPS Plugins");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "Emulates the sound of the signal bouncing off the walls of a room"));
+            "Emulates the sound of the signal bouncing off the walls of a room"));
 
     EffectManifestParameterPointer decay = pManifest->addParameter();
     decay->setId("decay");
     decay->setName(QObject::tr("Decay"));
     decay->setShortName(QObject::tr("Decay"));
     decay->setDescription(QObject::tr(
-        "Lower decay values cause reverberations to fade out more quickly."));
+            "Lower decay values cause reverberations to fade out more quickly."));
     decay->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     decay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -38,8 +38,8 @@ EffectManifestPointer ReverbEffect::getManifest() {
     bandwidth->setName(QObject::tr("Bandwidth"));
     bandwidth->setShortName(QObject::tr("BW"));
     bandwidth->setDescription(QObject::tr(
-        "Bandwidth of the low pass filter at the input.\n"
-        "Higher values result in less attenuation of high frequencies."));
+            "Bandwidth of the low pass filter at the input.\n"
+            "Higher values result in less attenuation of high frequencies."));
     bandwidth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     bandwidth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -49,8 +49,9 @@ EffectManifestPointer ReverbEffect::getManifest() {
     damping->setId("damping");
     damping->setName(QObject::tr("Damping"));
     damping->setShortName(QObject::tr("Damping"));
-    damping->setDescription(QObject::tr(
-      "Higher damping values cause high frequencies to decay more quickly than low frequencies."));
+    damping->setDescription(
+            QObject::tr("Higher damping values cause high frequencies to decay "
+                        "more quickly than low frequencies."));
     damping->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     damping->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     damping->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -61,7 +62,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setName(QObject::tr("Send"));
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
-        "How much of the signal to send in to the effect"));
+            "How much of the signal to send in to the effect"));
     send->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -86,7 +87,8 @@ ReverbEffect::~ReverbEffect() {
 
 void ReverbEffect::processChannel(
         ReverbGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -100,15 +102,20 @@ void ReverbEffect::processChannel(
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.
     // Also, update the sample rate if it has changed.
-    if (enableState == EffectEnableState::Enabling
-        || pState->sampleRate != bufferParameters.sampleRate()) {
+    if (enableState == EffectEnableState::Enabling ||
+            pState->sampleRate != bufferParameters.sampleRate()) {
         pState->reverb.init(bufferParameters.sampleRate());
         pState->sampleRate = bufferParameters.sampleRate();
     }
 
-    pState->reverb.processBuffer(pInput, pOutput,
-                                 bufferParameters.samplesPerBuffer(),
-                                 bandwidth, decay, damping, sendCurrent, pState->sendPrevious);
+    pState->reverb.processBuffer(pInput,
+            pOutput,
+            bufferParameters.samplesPerBuffer(),
+            bandwidth,
+            decay,
+            damping,
+            sendCurrent,
+            pState->sendPrevious);
 
     // The ramping of the send parameter handles ramping when enabling, so
     // this effect must handle ramping to dry when disabling itself (instead

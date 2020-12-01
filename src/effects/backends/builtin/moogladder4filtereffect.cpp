@@ -1,9 +1,9 @@
 #include "effects/backends/builtin/moogladder4filtereffect.h"
+
 #include "util/math.h"
 
-
 static const double kMinCorner = 0.0003; // 13 Hz @ 44100
-static const double kMaxCorner = 0.5; // 22050 Hz @ 44100
+static const double kMaxCorner = 0.5;    // 22050 Hz @ 44100
 
 // static
 QString MoogLadder4FilterEffect::getId() {
@@ -68,10 +68,12 @@ MoogLadder4FilterGroupState::MoogLadder4FilterGroupState(
     m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
     m_pLowFilter = new EngineFilterMoogLadder4Low(
             bufferParameters.sampleRate(),
-            m_loFreq * bufferParameters.sampleRate(), m_resonance);
+            m_loFreq * bufferParameters.sampleRate(),
+            m_resonance);
     m_pHighFilter = new EngineFilterMoogLadder4High(
             bufferParameters.sampleRate(),
-            m_hiFreq * bufferParameters.sampleRate(), m_resonance);
+            m_hiFreq * bufferParameters.sampleRate(),
+            m_resonance);
 }
 
 MoogLadder4FilterGroupState::~MoogLadder4FilterGroupState() {
@@ -93,7 +95,8 @@ MoogLadder4FilterEffect::~MoogLadder4FilterEffect() {
 
 void MoogLadder4FilterEffect::processChannel(
         MoogLadder4FilterGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -141,7 +144,8 @@ void MoogLadder4FilterEffect::processChannel(
     } else if (pState->m_hiFreq > kMinCorner) {
         // hpf disabling
         pState->m_pHighFilter->processAndPauseFilter(pInput,
-                pHpfOutput, bufferParameters.samplesPerBuffer());
+                pHpfOutput,
+                bufferParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -153,7 +157,8 @@ void MoogLadder4FilterEffect::processChannel(
     } else if (pState->m_loFreq < kMaxCorner) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
-                pOutput, bufferParameters.samplesPerBuffer());
+                pOutput,
+                bufferParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {

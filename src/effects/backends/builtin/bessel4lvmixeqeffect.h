@@ -2,22 +2,21 @@
 #include <QMap>
 
 #include "control/controlproxy.h"
-#include "effects/backends/effectprocessor.h"
 #include "effects/backends/builtin/lvmixeqbase.h"
+#include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "engine/filters/enginefilterdelay.h"
 #include "util/class.h"
-#include "util/types.h"
 #include "util/defs.h"
+#include "util/types.h"
 
-class Bessel4LVMixEQEffectGroupState :
-        public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
+class Bessel4LVMixEQEffectGroupState : public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
   public:
-      Bessel4LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
-          : LVMixEQEffectGroupState<EngineFilterBessel4Low>(bufferParameters) {
-      }
+    Bessel4LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
+            : LVMixEQEffectGroupState<EngineFilterBessel4Low>(bufferParameters) {
+    }
 };
 
 class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGroupState> {
@@ -33,7 +32,8 @@ class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGrou
 
     void processChannel(
             Bessel4LVMixEQEffectGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;

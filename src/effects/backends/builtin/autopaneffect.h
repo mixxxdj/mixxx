@@ -17,11 +17,11 @@
 // somewhere else (I hear clicks when I change the period of flanger for example).
 class RampedSample {
   public:
-
     inline RampedSample()
-        : ramped(false),
-          maxDifference(1.0f),
-          initialized(false) {}
+            : ramped(false),
+              maxDifference(1.0f),
+              initialized(false) {
+    }
 
     virtual ~RampedSample(){};
 
@@ -89,7 +89,8 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
 
     void processChannel(
             AutoPanGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
@@ -97,7 +98,6 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
     double computeLawCoefficient(double position);
 
   private:
-
     QString debugString() const {
         return getId();
     }

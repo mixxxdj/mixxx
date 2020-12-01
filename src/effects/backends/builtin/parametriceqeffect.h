@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <QMap>
+#include <vector>
 
 #include "control/controlproxy.h"
 #include "effects/backends/effectprocessor.h"
@@ -10,9 +10,9 @@
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "util/memory.h"
 
 // The ParametricEQEffect models the mid bands from a SSL Black EQ (242)
 // with a gentle parameter range, as requested here:
@@ -49,7 +49,8 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
 
     void processChannel(
             ParametricEQEffectGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;

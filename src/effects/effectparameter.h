@@ -58,7 +58,8 @@ class EffectParameter {
     }
 
     static bool clampValue(double* pValue,
-                           const double& minimum, const double& maximum);
+            const double& minimum,
+            const double& maximum);
     bool clampValue();
 
     EngineEffect* m_pEngineEffect;

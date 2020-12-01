@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QVariant>
-#include <QString>
-#include <QtDebug>
 #include <QSharedPointer>
+#include <QString>
+#include <QVariant>
+#include <QtDebug>
 
-#include "util/assert.h"
 #include "effects/defs.h"
+#include "util/assert.h"
 
 class EffectManifestParameter;
 typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
@@ -55,7 +55,7 @@ class EffectManifestParameter {
         NUM_LINK_TYPES
     };
 
-    static QString LinkTypeToString (LinkType type) {
+    static QString LinkTypeToString(LinkType type) {
         if (type == LinkType::LINKED) {
             return QLatin1String("LINKED");
         } else if (type == LinkType::LINKED_LEFT) {
@@ -69,7 +69,7 @@ class EffectManifestParameter {
         }
     }
 
-    static LinkType LinkTypeFromString (const QString& string) {
+    static LinkType LinkTypeFromString(const QString& string) {
         if (string == QLatin1String("LINKED")) {
             return LinkType::LINKED;
         } else if (string == QLatin1String("LINKED_LEFT")) {

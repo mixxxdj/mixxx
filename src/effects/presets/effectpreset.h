@@ -1,8 +1,8 @@
 #pragma once
 #include <QDomElement>
 
-#include "effects/defs.h"
 #include "effects/backends/effectmanifest.h"
+#include "effects/defs.h"
 #include "effects/presets/effectparameterpreset.h"
 
 /// EffectPreset is a read-only snapshot of the state of an effect that can be

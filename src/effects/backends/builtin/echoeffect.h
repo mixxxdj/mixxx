@@ -3,9 +3,9 @@
 #include <QMap>
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/engine.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "engine/engine.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -20,18 +20,19 @@ class EchoGroupState : public EffectState {
     EchoGroupState(const mixxx::EngineParameters& bufferParameters)
             : EffectState(bufferParameters) {
         audioParametersChanged(bufferParameters);
-       clear();
+        clear();
     }
 
     void audioParametersChanged(const mixxx::EngineParameters& bufferParameters) {
-        delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds
-                * bufferParameters.sampleRate() * bufferParameters.channelCount());
+        delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds *
+                bufferParameters.sampleRate() *
+                bufferParameters.channelCount());
     };
 
     void clear() {
         delay_buf.clear();
         prev_send = 0.0f;
-        prev_feedback= 0.0f;
+        prev_feedback = 0.0f;
         prev_delay_samples = 0;
         write_position = 0;
         ping_pong = 0;
@@ -57,7 +58,8 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
 
     void processChannel(
             EchoGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

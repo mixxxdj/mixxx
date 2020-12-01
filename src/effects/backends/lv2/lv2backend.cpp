@@ -1,6 +1,7 @@
 #include "effects/backends/lv2/lv2backend.h"
-#include "effects/backends/lv2/lv2manifest.h"
+
 #include "effects/backends/lv2/lv2effectprocessor.h"
+#include "effects/backends/lv2/lv2manifest.h"
 
 LV2Backend::LV2Backend() {
     m_pWorld = lilv_world_new();
@@ -18,9 +19,9 @@ LV2Backend::~LV2Backend() {
 }
 
 void LV2Backend::enumeratePlugins() {
-    const LilvPlugins *plugs = lilv_world_get_all_plugins(m_pWorld);
+    const LilvPlugins* plugs = lilv_world_get_all_plugins(m_pWorld);
     LILV_FOREACH(plugins, i, plugs) {
-        const LilvPlugin *plug = lilv_plugins_get(plugs, i);
+        const LilvPlugin* plug = lilv_plugins_get(plugs, i);
         if (lilv_plugin_is_replaced(plug)) {
             continue;
         }
@@ -53,7 +54,8 @@ const QList<QString> LV2Backend::getEffectIds() const {
 const QSet<QString> LV2Backend::getDiscoveredPluginIds() const {
     QSet<QString> pluginIds;
     for (auto it = m_registeredEffects.constBegin();
-         it != m_registeredEffects.constEnd(); ++it) {
+            it != m_registeredEffects.constEnd();
+            ++it) {
         pluginIds.insert(it.key());
     }
     return pluginIds;
@@ -61,7 +63,7 @@ const QSet<QString> LV2Backend::getDiscoveredPluginIds() const {
 
 bool LV2Backend::canInstantiateEffect(const QString& effectId) const {
     if (m_registeredEffects.contains(effectId) &&
-        m_registeredEffects[effectId]->isValid()) {
+            m_registeredEffects[effectId]->isValid()) {
         return true;
     }
     return false;

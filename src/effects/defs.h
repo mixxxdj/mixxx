@@ -1,9 +1,10 @@
 #pragma once
-#include "util/memory.h"
-#include "engine/channelhandle.h"
-#include <array>
 #include <QSharedPointer>
+#include <array>
 #include <memory>
+
+#include "engine/channelhandle.h"
+#include "util/memory.h"
 
 enum class EffectEnableState {
     Disabled,
@@ -36,8 +37,8 @@ inline uint qHash(
 
 enum class EffectChainMixMode {
     DrySlashWet = 0, // Crossfade between dry and wet
-    DryPlusWet, // Add wet to dry
-    NumMixModes // The number of mix modes. Also used to represent "unknown".
+    DryPlusWet,      // Add wet to dry
+    NumMixModes      // The number of mix modes. Also used to represent "unknown".
 };
 
 constexpr int kNumStandardEffectUnits = 4;

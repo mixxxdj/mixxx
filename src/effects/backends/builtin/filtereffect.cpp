@@ -1,8 +1,9 @@
 #include "effects/backends/builtin/filtereffect.h"
+
 #include "util/math.h"
 
 namespace {
-const double kMinCorner = 13; // Hz
+const double kMinCorner = 13;    // Hz
 const double kMaxCorner = 22050; // Hz
 } // anonymous namespace
 
@@ -20,7 +21,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "Allows only high or low frequencies to play."));
+            "Allows only high or low frequencies to play."));
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.5);
 
@@ -29,7 +30,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     lpf->setName(QObject::tr("Low Pass Filter Cutoff"));
     lpf->setShortName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr(
-        "Corner frequency ratio of the low pass filter"));
+            "Corner frequency ratio of the low pass filter"));
     lpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     lpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -42,8 +43,8 @@ EffectManifestPointer FilterEffect::getManifest() {
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Q"));
     q->setDescription(QObject::tr(
-        "Resonance of the filters\n"
-        "Default: flat top")); // What does this mean?
+            "Resonance of the filters\n"
+            "Default: flat top")); // What does this mean?
     q->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
@@ -54,7 +55,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     hpf->setName(QObject::tr("High Pass Filter Cutoff"));
     hpf->setShortName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr(
-        "Corner frequency ratio of the high pass filter"));
+            "Corner frequency ratio of the high pass filter"));
     hpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     hpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -93,7 +94,8 @@ FilterEffect::~FilterEffect() {
 
 void FilterEffect::processChannel(
         FilterGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -149,9 +151,10 @@ void FilterEffect::processChannel(
         // hpf enabled, fade-in is handled in the filter when starting from pause
         pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_hiFreq > minCornerNormalized) {
-            // hpf disabling
-            pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, bufferParameters.samplesPerBuffer());
+        // hpf disabling
+        pState->m_pHighFilter->processAndPauseFilter(pInput,
+                pHpfOutput,
+                bufferParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -163,7 +166,8 @@ void FilterEffect::processChannel(
     } else if (pState->m_loFreq < maxCornerNormalized) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
-                pOutput, bufferParameters.samplesPerBuffer());
+                pOutput,
+                bufferParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {

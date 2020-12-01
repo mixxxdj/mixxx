@@ -2,9 +2,9 @@
 
 #include <QtDebug>
 
-#include "util/sample.h"
 #include "util/math.h"
 #include "util/rampingvalue.h"
+#include "util/sample.h"
 
 constexpr int EchoGroupState::kMaxDelaySeconds;
 
@@ -38,16 +38,16 @@ EffectManifestPointer EchoEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-      "Stores the input signal in a temporary buffer and outputs it after a short time"));
+            "Stores the input signal in a temporary buffer and outputs it after a short time"));
 
     EffectManifestParameterPointer delay = pManifest->addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
     delay->setShortName(QObject::tr("Time"));
     delay->setDescription(QObject::tr(
-        "Delay time\n"
-        "1/8 - 2 beats if tempo is detected\n"
-        "1/8 - 2 seconds if no tempo is detected"));
+            "Delay time\n"
+            "1/8 - 2 beats if tempo is detected\n"
+            "1/8 - 2 seconds if no tempo is detected"));
     delay->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -58,7 +58,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     feedback->setName(QObject::tr("Feedback"));
     feedback->setShortName(QObject::tr("Feedback"));
     feedback->setDescription(QObject::tr(
-        "Amount the echo fades each time it loops"));
+            "Amount the echo fades each time it loops"));
     feedback->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -68,8 +68,9 @@ EffectManifestPointer EchoEffect::getManifest() {
     pingpong->setId("pingpong_amount");
     pingpong->setName(QObject::tr("Ping Pong"));
     pingpong->setShortName(QObject::tr("Ping Pong"));
-    pingpong->setDescription(QObject::tr(
-        "How much the echoed sound bounces between the left and right sides of the stereo field"));
+    pingpong->setDescription(
+            QObject::tr("How much the echoed sound bounces between the left "
+                        "and right sides of the stereo field"));
     pingpong->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     pingpong->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -80,7 +81,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     send->setName(QObject::tr("Send"));
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
-        "How much of the signal to send into the delay buffer"));
+            "How much of the signal to send into the delay buffer"));
     send->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -92,7 +93,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     quantize->setName(QObject::tr("Quantize"));
     quantize->setShortName(QObject::tr("Quantize"));
     quantize->setDescription(QObject::tr(
-        "Round the Time parameter to the nearest 1/4 beat."));
+            "Round the Time parameter to the nearest 1/4 beat."));
     quantize->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -102,8 +103,9 @@ EffectManifestPointer EchoEffect::getManifest() {
     triplet->setId("triplet");
     triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplets"));
-    triplet->setDescription(QObject::tr(
-        "When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3."));
+    triplet->setDescription(
+            QObject::tr("When the Quantize parameter is enabled, divide "
+                        "rounded 1/4 beats of Time parameter by 3."));
     triplet->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -140,18 +142,18 @@ void EchoEffect::processChannel(
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         if (m_pQuantizeParameter->toBool()) {
-            period = std::max(roundToFraction(period, 4), 1/8.0);
+            period = std::max(roundToFraction(period, 4), 1 / 8.0);
             if (m_pTripletParameter->toBool()) {
                 period /= 3.0;
             }
-        } else if (period < 1/8.0) {
-            period = 1/8.0;
+        } else if (period < 1 / 8.0) {
+            period = 1 / 8.0;
         }
         delay_frames = static_cast<int>(period * groupFeatures.beat_length_sec *
                 bufferParameters.sampleRate());
     } else {
         // period is a number of seconds
-        period = std::max(period, 1/8.0);
+        period = std::max(period, 1 / 8.0);
         delay_frames = static_cast<int>(period * bufferParameters.sampleRate());
     }
     VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
@@ -168,12 +170,12 @@ void EchoEffect::processChannel(
     int read_position = gs.write_position;
     decrementRing(&read_position, delay_samples, gs.delay_buf.size());
 
-    RampingValue<CSAMPLE_GAIN> send(send_current, gs.prev_send,
-                                    bufferParameters.framesPerBuffer());
+    RampingValue<CSAMPLE_GAIN> send(send_current, gs.prev_send, bufferParameters.framesPerBuffer());
     // Feedback the delay buffer and then add the new input.
 
-    RampingValue<CSAMPLE_GAIN> feedback(feedback_current, gs.prev_feedback,
-                                        bufferParameters.framesPerBuffer());
+    RampingValue<CSAMPLE_GAIN> feedback(feedback_current,
+            gs.prev_feedback,
+            bufferParameters.framesPerBuffer());
 
     //TODO: rewrite to remove assumption of stereo buffer
     for (SINT i = 0;
@@ -191,11 +193,11 @@ void EchoEffect::processChannel(
             bufferedSampleRight *= frac;
             bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);
             bufferedSampleRight += gs.delay_buf[prev_read_position + 1] * (1 - frac);
-            incrementRing(&prev_read_position, bufferParameters.channelCount(),
+            incrementRing(&prev_read_position,
+                    bufferParameters.channelCount(),
                     gs.delay_buf.size());
         }
-        incrementRing(&read_position, bufferParameters.channelCount(),
-                gs.delay_buf.size());
+        incrementRing(&read_position, bufferParameters.channelCount(), gs.delay_buf.size());
 
         // Actual delays distort and saturate, so clamp the buffer here.
         gs.delay_buf[gs.write_position] = SampleUtil::clampSample(
@@ -225,8 +227,7 @@ void EchoEffect::processChannel(
                     (1 + pingpong_frac);
         }
 
-        incrementRing(&gs.write_position, bufferParameters.channelCount(),
-                gs.delay_buf.size());
+        incrementRing(&gs.write_position, bufferParameters.channelCount(), gs.delay_buf.size());
 
         ++gs.ping_pong;
         if (gs.ping_pong >= delay_samples) {

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QList>
+#include <QSharedPointer>
 #include <QString>
 #include <QtDebug>
-#include <QSharedPointer>
 
 #include "effects/backends/effectmanifestparameter.h"
 #include "effects/defs.h"
@@ -158,25 +158,25 @@ class EffectManifest {
     /// To display the backend name in the UI, use translatedBackendName()
     QString backendName() const {
         switch (m_backendType) {
-            case EffectBackendType::BuiltIn:
-                return QLatin1String("Built-in");
-            case EffectBackendType::LV2:
-                return QLatin1String("LV2");
-            default:
-                return QLatin1String("Unknown");
+        case EffectBackendType::BuiltIn:
+            return QLatin1String("Built-in");
+        case EffectBackendType::LV2:
+            return QLatin1String("LV2");
+        default:
+            return QLatin1String("Unknown");
         }
     }
 
     /// Use this when showing the string in the GUI
     QString translatedBackendName() const {
         switch (m_backendType) {
-            case EffectBackendType::BuiltIn:
-                //: Used for effects that are built into Mixxx
-                return QObject::tr("Built-in");
-            case EffectBackendType::LV2:
-                return QLatin1String("LV2");
-            default:
-                return QLatin1String("");
+        case EffectBackendType::BuiltIn:
+            //: Used for effects that are built into Mixxx
+            return QObject::tr("Built-in");
+        case EffectBackendType::LV2:
+            return QLatin1String("LV2");
+        default:
+            return QLatin1String("");
         }
     }
     static EffectBackendType backendTypeFromString(const QString& name) {

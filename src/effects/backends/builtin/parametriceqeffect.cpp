@@ -1,11 +1,12 @@
 #include "effects/backends/builtin/parametriceqeffect.h"
+
 #include "util/math.h"
 
 namespace {
-    constexpr int kBandCount = 2;
-    constexpr double kDefaultCenter1 = 1000; // 1 kHz
-    constexpr double kDefaultCenter2 = 3000; // 3 kHz
-}
+constexpr int kBandCount = 2;
+constexpr double kDefaultCenter1 = 1000; // 1 kHz
+constexpr double kDefaultCenter2 = 3000; // 3 kHz
+} // namespace
 
 // static
 QString ParametricEQEffect::getId() {
@@ -21,8 +22,8 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "An gentle 2-band parametric equalizer based on biquad filters.\n"
-        "It is designed as a complement to the steep mixing equalizers."));
+            "An gentle 2-band parametric equalizer based on biquad filters.\n"
+            "It is designed as a complement to the steep mixing equalizers."));
     pManifest->setEffectRampsFromDry(true);
     pManifest->setIsMasterEQ(true);
 
@@ -31,7 +32,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain1->setName(QObject::tr("Gain 1"));
     gain1->setShortName(QObject::tr("Gain 1"));
     gain1->setDescription(QObject::tr(
-        "Gain for Filter 1"));
+            "Gain for Filter 1"));
     gain1->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     gain1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -43,9 +44,9 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     q1->setName(QObject::tr("Q 1"));
     q1->setShortName(QObject::tr("Q 1"));
     q1->setDescription(QObject::tr(
-        "Controls the bandwidth of Filter 1.\n"
-        "A lower Q affects a wider band of frequencies,\n"
-        "a higher Q affects a narrower band of frequencies."));
+            "Controls the bandwidth of Filter 1.\n"
+            "A lower Q affects a wider band of frequencies,\n"
+            "a higher Q affects a narrower band of frequencies."));
     q1->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     q1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -57,7 +58,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     center1->setName(QObject::tr("Center 1"));
     center1->setShortName(QObject::tr("Center 1"));
     center1->setDescription(QObject::tr(
-        "Center frequency for Filter 1, from 100 Hz to 14 kHz"));
+            "Center frequency for Filter 1, from 100 Hz to 14 kHz"));
     center1->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     center1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center1->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -69,7 +70,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain2->setName(QObject::tr("Gain 2"));
     gain2->setShortName(QObject::tr("Gain 2"));
     gain2->setDescription(QObject::tr(
-        "Gain for Filter 2"));
+            "Gain for Filter 2"));
     gain2->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     gain2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -81,9 +82,9 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     q2->setName(QObject::tr("Q 2"));
     q2->setShortName(QObject::tr("Q 2"));
     q2->setDescription(QObject::tr(
-        "Controls the bandwidth of Filter 2.\n"
-        "A lower Q affects a wider band of frequencies,\n"
-        "a higher Q affects a narrower band of frequencies."));
+            "Controls the bandwidth of Filter 2.\n"
+            "A lower Q affects a wider band of frequencies,\n"
+            "a higher Q affects a narrower band of frequencies."));
     q2->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     q2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -95,7 +96,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     center2->setName(QObject::tr("Center 2"));
     center2->setShortName(QObject::tr("Center 2"));
     center2->setDescription(QObject::tr(
-        "Center frequency for Filter 2, from 100 Hz to 14 kHz"));
+            "Center frequency for Filter 2, from 100 Hz to 14 kHz"));
     center2->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     center2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center2->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -106,9 +107,9 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
 }
 
 ParametricEQEffectGroupState::ParametricEQEffectGroupState(
-      const mixxx::EngineParameters& bufferParameters)
-      : EffectState(bufferParameters),
-        m_oldSampleRate(44100) {
+        const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
+          m_oldSampleRate(44100) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
         m_oldQ.append(1.75);
@@ -146,7 +147,8 @@ ParametricEQEffect::~ParametricEQEffect() {
 
 void ParametricEQEffect::processChannel(
         ParametricEQEffectGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {

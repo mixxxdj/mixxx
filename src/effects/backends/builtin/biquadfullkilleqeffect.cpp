@@ -23,7 +23,7 @@ double getCenterFrequency(double low, double high) {
     return pow(10, scaleCenter);
 }
 
-double knobValueToBiquadGainDb (double value, bool kill) {
+double knobValueToBiquadGainDb(double value, bool kill) {
     if (kill) {
         return kKillGain;
     }
@@ -33,10 +33,9 @@ double knobValueToBiquadGainDb (double value, bool kill) {
     double startDB = ratio2db(kBesselStartRatio);
     value = 1 - (value / kBesselStartRatio);
     return (kKillGain - startDB) * value + startDB;
-
 }
 
-double knobValueToBesselRatio (double value, bool kill) {
+double knobValueToBesselRatio(double value, bool kill) {
     if (kill) {
         return 0.0;
     }
@@ -44,7 +43,6 @@ double knobValueToBesselRatio (double value, bool kill) {
 }
 
 } // anonymous namespace
-
 
 // static
 QString BiquadFullKillEQEffect::getId() {
@@ -59,8 +57,11 @@ EffectManifestPointer BiquadFullKillEQEffect::getManifest() {
     pManifest->setShortName(QObject::tr("BQ EQ/ISO"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-        "A 3-band Equalizer that combines an Equalizer and an Isolator circuit to offer gentle slopes and full kill.") + " " +  EqualizerUtil::adjustFrequencyShelvesTip());
+    pManifest->setDescription(
+            QObject::tr(
+                    "A 3-band Equalizer that combines an Equalizer and an "
+                    "Isolator circuit to offer gentle slopes and full kill.") +
+            " " + EqualizerUtil::adjustFrequencyShelvesTip());
     pManifest->setEffectRampsFromDry(true);
     pManifest->setIsMixingEQ(true);
 
@@ -125,7 +126,6 @@ void BiquadFullKillEQEffectGroupState::setFilters(
     double midCenter = getCenterFrequency(lowFreqCorner, highFreqCorner);
     double highCenter = getCenterFrequency(highFreqCorner, kMaximumFrequency);
 
-
     m_lowBoost->setFrequencyCorners(
             sampleRate, lowCenter, kQBoost, m_oldLowBoost);
     m_midBoost->setFrequencyCorners(
@@ -176,7 +176,8 @@ void BiquadFullKillEQEffect::processChannel(
         pState->m_highFreqCorner = m_pHiFreqCorner->get();
         pState->m_oldSampleRate = bufferParameters.sampleRate();
         pState->setFilters(bufferParameters.sampleRate(),
-                           pState->m_loFreqCorner, pState->m_highFreqCorner);
+                pState->m_loFreqCorner,
+                pState->m_highFreqCorner);
     }
 
     // Ramp to dry, when disabling, this will ramp from dry when enabling as well
@@ -234,9 +235,7 @@ void BiquadFullKillEQEffect::processChannel(
 
         inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
-    }
-    else
-    {
+    } else {
         inBuffer.append(pInput);
         outBuffer.append(pOutput);
 
@@ -278,7 +277,6 @@ void BiquadFullKillEQEffect::processChannel(
         pState->m_lowBoost->pauseFilter();
     }
 
-
     if (bqGainLow < 0.0 || pState->m_oldLowKill < 0.0) {
         if (bqGainLow != pState->m_oldLowKill) {
             double lowCenter = getCenterFrequency(
@@ -297,7 +295,6 @@ void BiquadFullKillEQEffect::processChannel(
         ++bufIndex;
     } else {
         pState->m_lowKill->pauseFilter();
-
     }
 
     if (bqGainMid > 0.0 || pState->m_oldMidBoost > 0.0) {
@@ -402,10 +399,14 @@ void BiquadFullKillEQEffect::processChannel(
                 m_pPotMid->value(), m_pKillMid->toBool());
         double fHigh = knobValueToBesselRatio(
                 m_pPotHigh->value(), m_pKillHigh->toBool());
-        pState->m_lvMixIso->processChannel(
-                pOutput, pOutput,
-                bufferParameters.samplesPerBuffer(), bufferParameters.sampleRate(),
-                fLow, fMid, fHigh,
-                m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
+        pState->m_lvMixIso->processChannel(pOutput,
+                pOutput,
+                bufferParameters.samplesPerBuffer(),
+                bufferParameters.sampleRate(),
+                fLow,
+                fMid,
+                fHigh,
+                m_pLoFreqCorner->get(),
+                m_pHiFreqCorner->get());
     }
 }

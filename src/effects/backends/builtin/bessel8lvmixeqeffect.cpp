@@ -16,8 +16,11 @@ EffectManifestPointer Bessel8LVMixEQEffect::getManifest() {
     pManifest->setShortName(QObject::tr("Bessel8 ISO"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-        "A Bessel 8th-order filter isolator with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -48 dB/octave).") + " " + EqualizerUtil::adjustFrequencyShelvesTip());
+    pManifest->setDescription(
+            QObject::tr("A Bessel 8th-order filter isolator with Lipshitz and "
+                        "Vanderkooy mix (bit perfect unity, roll-off -48 "
+                        "dB/octave).") +
+            " " + EqualizerUtil::adjustFrequencyShelvesTip());
     pManifest->setIsMixingEQ(true);
     pManifest->setEffectRampsFromDry(true);
 
@@ -40,7 +43,6 @@ void Bessel8LVMixEQEffect::loadEngineEffectParameters(
     m_pKillHigh = parameters.value("killHigh");
 }
 
-
 Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
     delete m_pLoFreqCorner;
     delete m_pHiFreqCorner;
@@ -48,7 +50,8 @@ Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
 
 void Bessel8LVMixEQEffect::processChannel(
         Bessel8LVMixEQEffectGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -76,10 +79,14 @@ void Bessel8LVMixEQEffect::processChannel(
         } else {
             fHigh = 0;
         }
-        pState->processChannel(
-                pInput, pOutput,
-                bufferParameters.samplesPerBuffer(), bufferParameters.sampleRate(),
-                fLow, fMid, fHigh,
-                m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
+        pState->processChannel(pInput,
+                pOutput,
+                bufferParameters.samplesPerBuffer(),
+                bufferParameters.sampleRate(),
+                fLow,
+                fMid,
+                fHigh,
+                m_pLoFreqCorner->get(),
+                m_pHiFreqCorner->get());
     }
 }

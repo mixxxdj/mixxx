@@ -16,8 +16,11 @@ EffectManifestPointer Bessel4LVMixEQEffect::getManifest() {
     pManifest->setShortName(QObject::tr("Bessel4 ISO"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-        "A Bessel 4th-order filter isolator with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 dB/octave).") + " " + EqualizerUtil::adjustFrequencyShelvesTip());
+    pManifest->setDescription(
+            QObject::tr("A Bessel 4th-order filter isolator with Lipshitz and "
+                        "Vanderkooy mix (bit perfect unity, roll-off -24 "
+                        "dB/octave).") +
+            " " + EqualizerUtil::adjustFrequencyShelvesTip());
     pManifest->setIsMixingEQ(true);
     pManifest->setEffectRampsFromDry(true);
 
@@ -47,7 +50,8 @@ Bessel4LVMixEQEffect::~Bessel4LVMixEQEffect() {
 
 void Bessel4LVMixEQEffect::processChannel(
         Bessel4LVMixEQEffectGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -75,10 +79,14 @@ void Bessel4LVMixEQEffect::processChannel(
         } else {
             fHigh = 0;
         }
-        pState->processChannel(pInput, pOutput,
-                               bufferParameters.samplesPerBuffer(),
-                               bufferParameters.sampleRate(),
-                               fLow, fMid, fHigh,
-                               m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
+        pState->processChannel(pInput,
+                pOutput,
+                bufferParameters.samplesPerBuffer(),
+                bufferParameters.sampleRate(),
+                fLow,
+                fMid,
+                fHigh,
+                m_pLoFreqCorner->get(),
+                m_pHiFreqCorner->get());
     }
 }

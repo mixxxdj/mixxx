@@ -1,7 +1,7 @@
 #pragma once
 
-#include "effects/defs.h"
 #include "effects/backends/effectsbackend.h"
+#include "effects/defs.h"
 
 /// Refer to EffectsBackend for documentation
 class BuiltInBackend : public EffectsBackend {
@@ -9,7 +9,9 @@ class BuiltInBackend : public EffectsBackend {
     BuiltInBackend();
     virtual ~BuiltInBackend();
 
-    EffectBackendType getType() const { return EffectBackendType::BuiltIn; };
+    EffectBackendType getType() const {
+        return EffectBackendType::BuiltIn;
+    };
 
     const QList<QString> getEffectIds() const;
     EffectManifestPointer getManifest(const QString& effectId) const;
@@ -27,12 +29,12 @@ class BuiltInBackend : public EffectsBackend {
     // IDs of effects with EffectProcessorImpl<EffectSpecificState> subclasses
     class EffectProcessorInstantiator {
       public:
-            virtual ~EffectProcessorInstantiator() {};
-            virtual EffectProcessor* instantiate() = 0;
+        virtual ~EffectProcessorInstantiator(){};
+        virtual EffectProcessor* instantiate() = 0;
     };
     typedef QSharedPointer<EffectProcessorInstantiator> EffectProcessorInstantiatorPointer;
 
-    template <typename T>
+    template<typename T>
     class EffectProcessorSpecificInstantiator : public EffectProcessorInstantiator {
       public:
         EffectProcessor* instantiate() {
@@ -43,16 +45,20 @@ class BuiltInBackend : public EffectsBackend {
     class RegisteredEffect {
       public:
         RegisteredEffect(EffectManifestPointer pManifest,
-                         EffectProcessorInstantiatorPointer pInitator)
-            : m_pManifest(pManifest),
-              m_pInitator(pInitator) {
+                EffectProcessorInstantiatorPointer pInitator)
+                : m_pManifest(pManifest),
+                  m_pInitator(pInitator) {
         }
 
         RegisteredEffect() {
         }
 
-        EffectManifestPointer manifest() const { return m_pManifest; };
-        EffectProcessorInstantiatorPointer initiator() const { return m_pInitator; };
+        EffectManifestPointer manifest() const {
+            return m_pManifest;
+        };
+        EffectProcessorInstantiatorPointer initiator() const {
+            return m_pInitator;
+        };
 
       private:
         EffectManifestPointer m_pManifest;
@@ -61,9 +67,9 @@ class BuiltInBackend : public EffectsBackend {
 
     void registerEffect(const QString& id,
             EffectManifestPointer pManifest,
-                        EffectProcessorInstantiatorPointer pInstantiator);
+            EffectProcessorInstantiatorPointer pInstantiator);
 
-    template <typename EffectProcessorImpl>
+    template<typename EffectProcessorImpl>
     void registerEffect() {
         registerEffect(
                 EffectProcessorImpl::getId(),

@@ -16,7 +16,7 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "Adds noise by the reducing the bit depth and sample rate"));
+            "Adds noise by the reducing the bit depth and sample rate"));
     pManifest->setEffectRampsFromDry(true);
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
@@ -24,7 +24,7 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     depth->setName(QObject::tr("Bit Depth"));
     depth->setShortName(QObject::tr("Bit Depth"));
     depth->setDescription(QObject::tr(
-        "The bit depth of the samples"));
+            "The bit depth of the samples"));
     depth->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -40,7 +40,7 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     frequency->setName(QObject::tr("Downsampling"));
     frequency->setShortName(QObject::tr("Down"));
     frequency->setDescription(QObject::tr(
-        "The sample rate to which the signal is downsampled"));
+            "The sample rate to which the signal is downsampled"));
     frequency->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     frequency->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
@@ -64,7 +64,8 @@ BitCrusherEffect::~BitCrusherEffect() {
 
 void BitCrusherEffect::processChannel(
         BitCrusherGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -91,18 +92,21 @@ void BitCrusherEffect::processChannel(
         if (pState->accumulator >= 1.0) {
             pState->accumulator -= 1.0f;
             if (bit_depth < 16) {
-
                 pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
-                pState->hold_r = floorf(SampleUtil::clampSample(pInput[i+1] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_r = floorf(SampleUtil::clampSample(pInput[i + 1] *
+                                                gainCorrection) *
+                                                 scale +
+                                         0.5f) /
+                        scale / gainCorrection;
             } else {
                 // Mixxx float has 24 bit depth, Audio CDs are 16 bit
                 // here we do not change the depth
                 pState->hold_l = pInput[i];
-                pState->hold_r = pInput[i+1];
+                pState->hold_r = pInput[i + 1];
             }
         }
 
         pOutput[i] = pState->hold_l;
-        pOutput[i+1] = pState->hold_r;
+        pOutput[i + 1] = pState->hold_r;
     }
 }

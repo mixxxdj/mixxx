@@ -7,11 +7,10 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-
 class TremoloState : public EffectState {
   public:
     TremoloState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters) {};
+            : EffectState(bufferParameters){};
     double gain;
     unsigned int currentFrame;
     bool quantizeEnabled = false;
@@ -30,7 +29,8 @@ class TremoloEffect : public EffectProcessorImpl<TremoloState> {
 
     void processChannel(
             TremoloState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

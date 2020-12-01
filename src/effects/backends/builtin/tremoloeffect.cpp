@@ -3,7 +3,7 @@
 namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast
 constexpr double kMaxGainIncrement = 0.001;
-}
+} // namespace
 
 // static
 QString TremoloEffect::getId() {
@@ -19,14 +19,14 @@ EffectManifestPointer TremoloEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "Cycles the volume up and down"));
+            "Cycles the volume up and down"));
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setShortName(QObject::tr("Depth"));
     depth->setDescription(QObject::tr(
-        "How much the effect changes the volume"));
+            "How much the effect changes the volume"));
     depth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -38,22 +38,22 @@ EffectManifestPointer TremoloEffect::getManifest() {
     rate->setName(QObject::tr("Rate"));
     rate->setShortName(QObject::tr("Rate"));
     rate->setDescription(QObject::tr(
-        "Rate of the volume changes\n"
-        "4 beats - 1/8 beat if tempo is detected\n"
-        "1/4 Hz - 8 Hz if no tempo is detected"));
+            "Rate of the volume changes\n"
+            "4 beats - 1/8 beat if tempo is detected\n"
+            "1/4 Hz - 8 Hz if no tempo is detected"));
     rate->setValueScaler(
-        EffectManifestParameter::ValueScaler::LOGARITHMIC);
+            EffectManifestParameter::ValueScaler::LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    rate->setRange(1.0/4, 1, 8);
+    rate->setRange(1.0 / 4, 1, 8);
 
     EffectManifestParameterPointer width = pManifest->addParameter();
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
     width->setDescription(QObject::tr(
-        "Width of the volume peak\n"
-        "10% - 90% of the effect period"));
+            "Width of the volume peak\n"
+            "10% - 90% of the effect period"));
     width->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -64,11 +64,11 @@ EffectManifestPointer TremoloEffect::getManifest() {
     waveform->setName(QObject::tr("Waveform"));
     waveform->setShortName(QObject::tr("Waveform"));
     waveform->setDescription(QObject::tr(
-        "Shape of the volume modulation wave\n"
-        "Fully left: Square wave\n"
-        "Fully right: Sine wave"));
+            "Shape of the volume modulation wave\n"
+            "Fully left: Square wave\n"
+            "Fully right: Sine wave"));
     waveform->setValueScaler(
-        EffectManifestParameter::ValueScaler::LOGARITHMIC);
+            EffectManifestParameter::ValueScaler::LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     waveform->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     waveform->setRange(0.005, 0.5, 1);
@@ -78,11 +78,11 @@ EffectManifestPointer TremoloEffect::getManifest() {
     phase->setName(QObject::tr("Phase"));
     phase->setShortName(QObject::tr("Phase"));
     phase->setDescription(QObject::tr(
-        "Shifts the position of the volume peak within the period\n"
-        "Fully left: beginning of the effect period\n"
-        "Fully right: end of the effect period"));
+            "Shifts the position of the volume peak within the period\n"
+            "Fully left: beginning of the effect period\n"
+            "Fully right: end of the effect period"));
     phase->setValueScaler(
-        EffectManifestParameter::ValueScaler::LINEAR);
+            EffectManifestParameter::ValueScaler::LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     phase->setRange(0, 0, 1);
@@ -92,9 +92,9 @@ EffectManifestPointer TremoloEffect::getManifest() {
     quantize->setName(QObject::tr("Quantize"));
     quantize->setShortName(QObject::tr("Quantize"));
     quantize->setDescription(QObject::tr(
-        "Round the Rate parameter to the nearest whole division of a beat."));
+            "Round the Rate parameter to the nearest whole division of a beat."));
     quantize->setValueScaler(
-        EffectManifestParameter::ValueScaler::TOGGLE);
+            EffectManifestParameter::ValueScaler::TOGGLE);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     quantize->setRange(0, 1, 1);
@@ -104,9 +104,9 @@ EffectManifestPointer TremoloEffect::getManifest() {
     triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplet"));
     triplet->setDescription(QObject::tr(
-        "When the Quantize parameter is enabled, divide the effect period by 3."));
+            "When the Quantize parameter is enabled, divide the effect period by 3."));
     triplet->setValueScaler(
-        EffectManifestParameter::ValueScaler::TOGGLE);
+            EffectManifestParameter::ValueScaler::TOGGLE);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     triplet->setRange(0, 0, 1);
@@ -127,7 +127,8 @@ void TremoloEffect::loadEngineEffectParameters(
 
 void TremoloEffect::processChannel(
         TremoloState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -140,14 +141,10 @@ void TremoloEffect::processChannel(
 
     const GroupFeatureState& gf = groupFeatures;
 
-    bool quantizeEnabling = !pState->quantizeEnabled
-                          && m_pQuantizeParameter->toBool();
-    bool tripletDisabling = pState->tripletEnabled
-                          && !m_pTripletParameter->toBool();
+    bool quantizeEnabling = !pState->quantizeEnabled && m_pQuantizeParameter->toBool();
+    bool tripletDisabling = pState->tripletEnabled && !m_pTripletParameter->toBool();
 
-    if (enableState == EffectEnableState::Enabling
-     || quantizeEnabling
-     || tripletDisabling) {
+    if (enableState == EffectEnableState::Enabling || quantizeEnabling || tripletDisabling) {
         if (gf.has_beat_length_sec && gf.has_beat_fraction) {
             currentFrame = static_cast<unsigned int>(gf.beat_fraction *
                     gf.beat_length_sec * bufferParameters.sampleRate());
@@ -200,9 +197,10 @@ void TremoloEffect::processChannel(
         //  This function gives the gain to apply for position in [0 1]
         //  Plot the function to get a grasp :
         //  From a sine to a square wave depending on the smooth parameter
-        double gainTarget = 1.0 - (depth / 2.0)
-                + (atan(sin(2.0 * M_PI * position) / smooth) / (2 * atan(1 / smooth)))
-                    * depth;
+        double gainTarget = 1.0 - (depth / 2.0) +
+                (atan(sin(2.0 * M_PI * position) / smooth) /
+                        (2 * atan(1 / smooth))) *
+                        depth;
 
         if (gainTarget > gain + kMaxGainIncrement) {
             gain += kMaxGainIncrement;

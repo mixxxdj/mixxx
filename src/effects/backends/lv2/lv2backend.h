@@ -1,10 +1,11 @@
 #pragma once
 
-#include "effects/defs.h"
+#include <lilv-0/lilv/lilv.h>
+
 #include "effects/backends/effectsbackend.h"
 #include "effects/backends/lv2/lv2manifest.h"
+#include "effects/defs.h"
 #include "preferences/usersettings.h"
-#include <lilv-0/lilv/lilv.h>
 
 /// Refer to EffectsBackend for documentation
 class LV2Backend : public EffectsBackend {
@@ -12,7 +13,9 @@ class LV2Backend : public EffectsBackend {
     LV2Backend();
     virtual ~LV2Backend();
 
-    EffectBackendType getType() const { return EffectBackendType::LV2; };
+    EffectBackendType getType() const {
+        return EffectBackendType::LV2;
+    };
 
     const QList<QString> getEffectIds() const;
     const QSet<QString> getDiscoveredPluginIds() const;

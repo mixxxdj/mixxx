@@ -42,7 +42,8 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
 
     void processChannel(
             GraphicEQEffectGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
@@ -55,7 +56,7 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
     EngineEffectParameterPointer m_pPotLow;
     QList<EngineEffectParameterPointer> m_pPotMid;
     EngineEffectParameterPointer m_pPotHigh;
-    
+
     mixxx::audio::SampleRate m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);

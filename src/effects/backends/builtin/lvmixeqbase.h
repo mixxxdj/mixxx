@@ -122,9 +122,12 @@ class LVMixEQEffectGroupState : public EffectState {
                 fMid == m_oldMid &&
                 fHigh == m_oldHigh) {
             SampleUtil::copy3WithGain(pOutput,
-                    m_pLowBuf, fLow,
-                    m_pBandBuf, fMid,
-                    m_pHighBuf, fHigh,
+                    m_pLowBuf,
+                    fLow,
+                    m_pBandBuf,
+                    fMid,
+                    m_pHighBuf,
+                    fHigh,
                     numSamples);
         } else {
             SINT copySamples = 0;
@@ -153,17 +156,26 @@ class LVMixEQEffectGroupState : public EffectState {
                 rampingSamples = numSamples - copySamples;
 
                 SampleUtil::copy3WithGain(pOutput,
-                        m_pLowBuf, m_oldLow,
-                        m_pBandBuf, m_oldMid,
-                        m_pHighBuf, m_oldHigh,
+                        m_pLowBuf,
+                        m_oldLow,
+                        m_pBandBuf,
+                        m_oldMid,
+                        m_pHighBuf,
+                        m_oldHigh,
                         copySamples);
             }
 
             if (rampingSamples) {
                 SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
-                        &m_pLowBuf[copySamples], m_oldLow, fLow,
-                        &m_pBandBuf[copySamples], m_oldMid, fMid,
-                        &m_pHighBuf[copySamples], m_oldHigh, fHigh,
+                        &m_pLowBuf[copySamples],
+                        m_oldLow,
+                        fLow,
+                        &m_pBandBuf[copySamples],
+                        m_oldMid,
+                        fMid,
+                        &m_pHighBuf[copySamples],
+                        m_oldHigh,
+                        fHigh,
                         rampingSamples);
 
                 m_oldLow = fLow;
@@ -194,9 +206,15 @@ class LVMixEQEffectGroupState : public EffectState {
         }
 
         SampleUtil::copy3WithRampingGain(pOutput,
-                m_pLowBuf, m_oldLow, 0.0,
-                m_pBandBuf, m_oldMid, 0.0,
-                m_pHighBuf, m_oldHigh, 1.0,
+                m_pLowBuf,
+                m_oldLow,
+                0.0,
+                m_pBandBuf,
+                m_oldMid,
+                0.0,
+                m_pHighBuf,
+                m_oldHigh,
+                1.0,
                 numSamples);
     }
 

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <QMap>
-
 #include <Reverb.h>
+
+#include <QMap>
 
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -18,8 +18,8 @@
 class ReverbGroupState : public EffectState {
   public:
     ReverbGroupState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
-          sendPrevious(0) {
+            : EffectState(bufferParameters),
+              sendPrevious(0) {
     }
 
     void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
@@ -45,7 +45,8 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
 
     void processChannel(
             ReverbGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

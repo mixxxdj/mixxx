@@ -1,9 +1,10 @@
 #include "effects/backends/lv2/lv2manifest.h"
+
 #include "effects/backends/effectmanifestparameter.h"
 #include "util/math.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
-                         QHash<QString, LilvNode*>& properties)
+        QHash<QString, LilvNode*>& properties)
         : EffectManifest(),
           m_status(AVAILABLE) {
     m_pLV2plugin = plug;
@@ -26,15 +27,14 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
     m_minimum = new float[numPorts];
     m_maximum = new float[numPorts];
     m_default = new float[numPorts];
-    lilv_plugin_get_port_ranges_float(m_pLV2plugin, m_minimum, m_maximum,
-                                      m_default);
+    lilv_plugin_get_port_ranges_float(m_pLV2plugin, m_minimum, m_maximum, m_default);
 
     // Counters to determine the type of the plug in
     int inputPorts = 0;
     int outputPorts = 0;
 
     for (int i = 0; i < numPorts; i++) {
-        const LilvPort *port = lilv_plugin_get_port_by_index(plug, i);
+        const LilvPort* port = lilv_plugin_get_port_by_index(plug, i);
 
         if (lilv_port_is_a(m_pLV2plugin, port, properties["audio_port"])) {
             if (lilv_port_is_a(m_pLV2plugin, port, properties["input_port"])) {
@@ -46,9 +46,11 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
-        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])
-                && !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])
-                && !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
+                !lilv_port_has_property(
+                        m_pLV2plugin, port, properties["enumeration_port"]) &&
+                !lilv_port_has_property(
+                        m_pLV2plugin, port, properties["button_port"])) {
             if (isnan(m_minimum[i]) || isnan(m_maximum[i])) {
                 continue;
             }
@@ -82,18 +84,18 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 param->setValueScaler(EffectManifestParameter::ValueScaler::INTEGRAL);
             } else {
-                 param->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
             }
         }
     }
 
     // Hack for putting enum parameters to the end of controlportindices
     for (int i = 0; i < numPorts; i++) {
-        const LilvPort *port = lilv_plugin_get_port_by_index(plug, i);
+        const LilvPort* port = lilv_plugin_get_port_by_index(plug, i);
 
         if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
                 (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) ||
-                 lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
+                        lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
             controlPortIndices.append(i);
             EffectManifestParameterPointer param = addParameter();
 
@@ -179,7 +181,7 @@ bool LV2Manifest::isValid() {
 }
 
 void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
-                                          EffectManifestParameterPointer param) {
+        EffectManifestParameterPointer param) {
     LilvScalePoints* options = lilv_port_get_scale_points(m_pLV2plugin, port);
     LILV_FOREACH(scale_points, iterator, options) {
         const LilvScalePoint* option = lilv_scale_points_get(options, iterator);

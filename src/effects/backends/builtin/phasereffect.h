@@ -34,11 +34,9 @@ class PhaserGroupState final : public EffectState {
     CSAMPLE leftPhase;
     CSAMPLE rightPhase;
     CSAMPLE_GAIN oldDepth;
-
 };
 
 class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
-
   public:
     PhaserEffect() = default;
     virtual ~PhaserEffect();
@@ -71,8 +69,11 @@ class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
     EngineEffectParameterPointer m_pStereoParameter;
 
     //Passing the sample through a series of allpass filters
-    inline CSAMPLE processSample(CSAMPLE input, CSAMPLE* oldIn, CSAMPLE* oldOut,
-                                 CSAMPLE mainCoef, int stages) {
+    inline CSAMPLE processSample(CSAMPLE input,
+            CSAMPLE* oldIn,
+            CSAMPLE* oldOut,
+            CSAMPLE mainCoef,
+            int stages) {
         for (int j = 0; j < stages; j++) {
             oldOut[j] = (mainCoef * input) + (mainCoef * oldOut[j]) - oldIn[j];
             oldIn[j] = input;

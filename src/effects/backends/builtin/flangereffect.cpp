@@ -4,7 +4,7 @@
 
 #include "util/math.h"
 
-namespace{
+namespace {
 
 // Gain correction was verified with replay gain and default parameters
 constexpr CSAMPLE kGainCorrection = 1.41253754f; // 3 dB
@@ -13,7 +13,7 @@ inline CSAMPLE tanh_approx(CSAMPLE input) {
     // return tanhf(input); // 142ns for process;
     return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
 }
-}
+} // namespace
 
 // static
 QString FlangerEffect::getId() {
@@ -28,17 +28,18 @@ EffectManifestPointer FlangerEffect::getManifest() {
     pManifest->setShortName(QObject::tr("Flanger"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-        "Mixes the input with a delayed, pitch modulated copy of itself to create comb filtering"));
+    pManifest->setDescription(
+            QObject::tr("Mixes the input with a delayed, pitch modulated copy "
+                        "of itself to create comb filtering"));
 
     EffectManifestParameterPointer speed = pManifest->addParameter();
     speed->setId("speed");
     speed->setName(QObject::tr("Speed"));
     speed->setShortName(QObject::tr("Speed"));
     speed->setDescription(QObject::tr(
-        "Speed of the LFO (low frequency oscillator)\n"
-        "32 - 1/4 beats rounded to 1/2 beat per LFO cycle if tempo is detected\n"
-        "1/32 - 4 Hz if no tempo is detected"));
+            "Speed of the LFO (low frequency oscillator)\n"
+            "32 - 1/4 beats rounded to 1/2 beat per LFO cycle if tempo is detected\n"
+            "1/32 - 4 Hz if no tempo is detected"));
     speed->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC_INVERSE);
     speed->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     speed->setRange(kMinLfoBeats, 8, kMaxLfoBeats);
@@ -48,7 +49,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
     width->setDescription(QObject::tr(
-        "Delay amplitude of the LFO (low frequency oscillator)"));
+            "Delay amplitude of the LFO (low frequency oscillator)"));
     width->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -59,8 +60,8 @@ EffectManifestPointer FlangerEffect::getManifest() {
     manual->setName(QObject::tr("Manual"));
     manual->setShortName(QObject::tr("Manual"));
     manual->setDescription(QObject::tr(
-        "Delay offset of the LFO (low frequency oscillator).\n"
-        "With width at zero, this allows for manually sweeping over the entire delay range."));
+            "Delay offset of the LFO (low frequency oscillator).\n"
+            "With width at zero, this allows for manually sweeping over the entire delay range."));
     manual->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -71,7 +72,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     regen->setName(QObject::tr("Regeneration"));
     regen->setShortName(QObject::tr("Regen"));
     regen->setDescription(QObject::tr(
-           "How much of the delay output is feed back into the input"));
+            "How much of the delay output is feed back into the input"));
     regen->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     regen->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     regen->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -119,11 +120,11 @@ FlangerEffect::~FlangerEffect() {
 
 void FlangerEffect::processChannel(
         FlangerGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
     if (groupFeatures.has_beat_length_sec) {
@@ -132,12 +133,12 @@ void FlangerEffect::processChannel(
         if (m_pTripletParameter->toBool()) {
             lfoPeriodParameter /= 3.0;
         }
-        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec
-                * bufferParameters.sampleRate();
+        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec *
+                bufferParameters.sampleRate();
     } else {
         // lfoPeriodParameter is a number of seconds
-        lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats)
-                * bufferParameters.sampleRate();
+        lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) *
+                bufferParameters.sampleRate();
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -147,7 +148,6 @@ void FlangerEffect::processChannel(
                 lfoPeriodFrames / pState->previousPeriodFrames);
     }
     pState->previousPeriodFrames = lfoPeriodFrames;
-
 
     // lfoPeriodSamples is used to calculate the delay for each channel
     // independently in the loop below, so do not multiply lfoPeriodSamples by
@@ -199,10 +199,14 @@ void FlangerEffect::processChannel(
         double delayMs = manual_ramped + width_ramped / 2 * sin(M_PI * 2.0f * periodFraction);
         double delayFrames = delayMs * bufferParameters.sampleRate() / 1000;
 
-        SINT framePrev = (pState->delayPos - static_cast<SINT>(floor(delayFrames))
-                + kBufferLenth) % kBufferLenth;
-        SINT frameNext = (pState->delayPos - static_cast<SINT>(ceil(delayFrames))
-                + kBufferLenth) % kBufferLenth;
+        SINT framePrev =
+                (pState->delayPos - static_cast<SINT>(floor(delayFrames)) +
+                        kBufferLenth) %
+                kBufferLenth;
+        SINT frameNext =
+                (pState->delayPos - static_cast<SINT>(ceil(delayFrames)) +
+                        kBufferLenth) %
+                kBufferLenth;
         CSAMPLE prevLeft = delayLeft[framePrev];
         CSAMPLE nextLeft = delayLeft[frameNext];
 

@@ -9,9 +9,9 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectknobparameterslot.h"
-#include "effects/backends/effectmanifest.h"
 #include "effects/effectparameter.h"
 #include "effects/presets/effectpreset.h"
 #include "engine/channelhandle.h"
@@ -130,7 +130,6 @@ class EffectSlot : public QObject {
     unsigned int numParameters(EffectParameterType parameterType) const;
 
     void setEnabled(bool enabled);
-
 
   public slots:
     void setMetaParameter(double v, bool force = false);

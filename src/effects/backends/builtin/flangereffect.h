@@ -7,9 +7,9 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/rampingvalue.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "util/rampingvalue.h"
 
 namespace {
 constexpr double kMaxDelayMs = 13.0;
@@ -17,8 +17,8 @@ constexpr double kMinDelayMs = 0.22;
 constexpr double kCenterDelayMs = (kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs;
 constexpr double kMaxLfoWidthMs = kMaxDelayMs - kMinDelayMs;
 // using + 1.0 instead of ceil() for Mac OS
-constexpr SINT kBufferLenth = static_cast<SINT>(kMaxDelayMs + 1.0)  * 96; // for 96 kHz
-constexpr double kMinLfoBeats = 1/4.0;
+constexpr SINT kBufferLenth = static_cast<SINT>(kMaxDelayMs + 1.0) * 96; // for 96 kHz
+constexpr double kMinLfoBeats = 1 / 4.0;
 constexpr double kMaxLfoBeats = 32.0;
 } // anonymous namespace
 
@@ -59,7 +59,8 @@ class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
 
     void processChannel(
             FlangerGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

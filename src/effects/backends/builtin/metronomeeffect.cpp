@@ -7,7 +7,6 @@
 #include "util/math.h"
 #include "util/sample.h"
 
-
 // static
 QString MetronomeEffect::getId() {
     return "org.mixxx.effects.metronome";
@@ -34,7 +33,6 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     period->setRange(40, 120, 208);
 
-
     // Period unit
     EffectManifestParameterPointer periodUnit = pManifest->addParameter();
     periodUnit->setId("sync");
@@ -59,7 +57,8 @@ MetronomeEffect::~MetronomeEffect() {
 
 void MetronomeEffect::processChannel(
         MetronomeGroupState* pGroupState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -109,8 +108,7 @@ void MetronomeEffect::processChannel(
         const SINT copyFrames =
                 math_min(bufferParameters.framesPerBuffer(),
                         clickSize - gs->m_framesSinceClickStart);
-        SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart],
-                copyFrames);
+        SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart], copyFrames);
     }
 
     gs->m_framesSinceClickStart += bufferParameters.framesPerBuffer();
@@ -129,7 +127,6 @@ void MetronomeEffect::processChannel(
                 bufferParameters.framesPerBuffer() - gs->m_framesSinceClickStart;
         const unsigned int copyFrames =
                 math_min(gs->m_framesSinceClickStart, clickSize);
-        SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], click,
-                copyFrames);
+        SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], click, copyFrames);
     }
 }

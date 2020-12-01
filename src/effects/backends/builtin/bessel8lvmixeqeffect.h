@@ -1,10 +1,9 @@
 #pragma once
 
-#include "effects/backends/builtin/lvmixeqbase.h"
-
 #include <QMap>
 
 #include "control/controlproxy.h"
+#include "effects/backends/builtin/lvmixeqbase.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
@@ -15,13 +14,11 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-
-class Bessel8LVMixEQEffectGroupState :
-        public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
+class Bessel8LVMixEQEffectGroupState : public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
   public:
-        Bessel8LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
+    Bessel8LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
             : LVMixEQEffectGroupState<EngineFilterBessel8Low>(bufferParameters) {
-        }
+    }
 };
 
 class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGroupState> {
@@ -37,7 +34,8 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
 
     void processChannel(
             Bessel8LVMixEQEffectGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;

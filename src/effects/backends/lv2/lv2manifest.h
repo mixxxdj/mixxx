@@ -1,10 +1,11 @@
 #pragma once
 
+#include <lilv-0/lilv/lilv.h>
+
 #include <QSharedPointer>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
-#include <lilv-0/lilv/lilv.h>
 
 /// Refer to EffectManifest for documentation
 class LV2Manifest : public EffectManifest {
@@ -26,7 +27,7 @@ class LV2Manifest : public EffectManifest {
 
   private:
     void buildEnumerationOptions(const LilvPort* port,
-                                 EffectManifestParameterPointer param);
+            EffectManifestParameterPointer param);
     const LilvPlugin* m_pLV2plugin;
 
     // This list contains:

@@ -8,7 +8,6 @@
 
 const float kPositionRampingThreshold = 0.002f;
 
-
 // static
 QString AutoPanEffect::getId() {
     return "org.mixxx.effects.autopan";
@@ -23,7 +22,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "Bounce the sound left and right across the stereo field"));
+            "Bounce the sound left and right across the stereo field"));
 
     // Period
     EffectManifestParameterPointer period = pManifest->addParameter();
@@ -31,9 +30,9 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     period->setName(QObject::tr("Period"));
     period->setShortName(QObject::tr("Period"));
     period->setDescription(QObject::tr(
-        "How fast the sound goes from one side to another\n"
-        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
-        "1/4 - 4 seconds if no tempo is detected"));
+            "How fast the sound goes from one side to another\n"
+            "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
+            "1/4 - 4 seconds if no tempo is detected"));
     period->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -46,7 +45,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(QObject::tr(
-        "How smoothly the signal goes from one side to the other"));
+            "How smoothly the signal goes from one side to the other"));
     smoothing->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -62,7 +61,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
     width->setDescription(QObject::tr(
-        "How far the signal goes to each side"));
+            "How far the signal goes to each side"));
     width->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -83,12 +82,12 @@ AutoPanEffect::~AutoPanEffect() {
 }
 
 void AutoPanEffect::processChannel(
-          AutoPanGroupState* pGroupState,
-          const CSAMPLE* pInput, CSAMPLE* pOutput,
-          const mixxx::EngineParameters& bufferParameters,
-          const EffectEnableState enableState,
-          const GroupFeatureState& groupFeatures) {
-
+        AutoPanGroupState* pGroupState,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     if (enableState == EffectEnableState::Disabled) {
         return;
     }
@@ -116,7 +115,6 @@ void AutoPanEffect::processChannel(
     if (gs.m_dPreviousPeriod != -1.0) {
         gs.time = static_cast<unsigned int>(gs.time * period / gs.m_dPreviousPeriod);
     }
-
 
     gs.m_dPreviousPeriod = period;
 
@@ -172,8 +170,10 @@ void AutoPanEffect::processChannel(
         gs.frac.setWithRampingApplied(static_cast<float>((sinusoid + 1.0f) / 2.0f));
 
         // apply the delay
-        gs.delay->process(&pInput[i], &pOutput[i],
-                -0.005 * math_clamp(((gs.frac * 2.0) - 1.0f), -1.0, 1.0) * bufferParameters.sampleRate());
+        gs.delay->process(&pInput[i],
+                &pOutput[i],
+                -0.005 * math_clamp(((gs.frac * 2.0) - 1.0f), -1.0, 1.0) *
+                        bufferParameters.sampleRate());
 
         double lawCoef = computeLawCoefficient(sinusoid);
         pOutput[i] *= static_cast<CSAMPLE>(gs.frac * lawCoef);

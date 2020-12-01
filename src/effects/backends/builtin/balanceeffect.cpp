@@ -3,8 +3,8 @@
 #include "util/defs.h"
 
 namespace {
-    const double kMaxCornerHz = 500;
-    const double kMinCornerHz = 16;
+const double kMaxCornerHz = 500;
+const double kMinCornerHz = 16;
 } // anonymous namespace
 
 // static
@@ -21,7 +21,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "Adjust the left/right balance and stereo width"));
+            "Adjust the left/right balance and stereo width"));
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.5);
 
@@ -30,7 +30,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     balance->setName(QObject::tr("Balance"));
     balance->setShortName(QObject::tr("Balance"));
     balance->setDescription(QObject::tr(
-        "Adjust balance between left and right channels"));
+            "Adjust balance between left and right channels"));
     balance->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     balance->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     balance->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -42,10 +42,10 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midSide->setName(QObject::tr("Mid/Side"));
     midSide->setShortName(QObject::tr("Mid/Side"));
     midSide->setDescription(QObject::tr(
-        "Adjust stereo width by changing balance between middle and side of the signal.\n"
-        "Fully left: mono\n"
-        "Fully right: only side ambiance\n"
-        "Center: does not change the original signal."));
+            "Adjust stereo width by changing balance between middle and side of the signal.\n"
+            "Fully left: mono\n"
+            "Fully right: only side ambiance\n"
+            "Center: does not change the original signal."));
     midSide->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -57,7 +57,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midLowPass->setName(QObject::tr("Bypass Frequency"));
     midLowPass->setShortName(QObject::tr("Bypass Fr."));
     midLowPass->setDescription(QObject::tr(
-        "Frequencies below this cutoff are not adjusted in the stereo field"));
+            "Frequencies below this cutoff are not adjusted in the stereo field"));
     midLowPass->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     midLowPass->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -76,9 +76,9 @@ BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& bufferParame
           m_oldBalance(0),
           m_oldMidSide(0) {
     m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(bufferParameters.sampleRate(),
-                                                            kMinCornerHz);
+            kMinCornerHz);
     m_high = std::make_unique<EngineFilterLinkwitzRiley4High>(bufferParameters.sampleRate(),
-                                                              kMinCornerHz);
+            kMinCornerHz);
     m_high->setStartFromDry(true);
 }
 
@@ -102,7 +102,8 @@ BalanceEffect::~BalanceEffect() {
 
 void BalanceEffect::processChannel(
         BalanceGroupState* pGroupState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -115,10 +116,10 @@ void BalanceEffect::processChannel(
         midSide = static_cast<CSAMPLE_GAIN>(m_pMidSideParameter->value());
     }
 
-    CSAMPLE_GAIN balanceDelta = (balance - pGroupState->m_oldBalance)
-                    / CSAMPLE_GAIN(bufferParameters.framesPerBuffer());
-    CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->m_oldMidSide)
-                    / CSAMPLE_GAIN(bufferParameters.framesPerBuffer());
+    CSAMPLE_GAIN balanceDelta = (balance - pGroupState->m_oldBalance) /
+            CSAMPLE_GAIN(bufferParameters.framesPerBuffer());
+    CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->m_oldMidSide) /
+            CSAMPLE_GAIN(bufferParameters.framesPerBuffer());
 
     CSAMPLE_GAIN balanceStart = pGroupState->m_oldBalance + balanceDelta;
     CSAMPLE_GAIN midSideStart = pGroupState->m_oldMidSide + midSideDelta;
@@ -141,7 +142,9 @@ void BalanceEffect::processChannel(
         }
 
         for (SINT i = 0; i < bufferParameters.samplesPerBuffer() / 2; ++i) {
-            CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2]  + pGroupState->m_pHighBuf[i * 2 + 1]) / 2.0f;
+            CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2] +
+                                  pGroupState->m_pHighBuf[i * 2 + 1]) /
+                    2.0f;
             CSAMPLE side = (pGroupState->m_pHighBuf[i * 2 + 1] - pGroupState->m_pHighBuf[i * 2]) / 2.0f;
             CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;
             if (currentMidSide > 0) {
@@ -163,21 +166,21 @@ void BalanceEffect::processChannel(
         pGroupState->m_low->pauseFilter();
 
         for (SINT i = 0; i < bufferParameters.samplesPerBuffer() / 2; ++i) {
-            CSAMPLE mid = (pInput[i * 2]  + pInput[i * 2 + 1]) / 2.0f;
+            CSAMPLE mid = (pInput[i * 2] + pInput[i * 2 + 1]) / 2.0f;
             CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
             CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;
             if (currentMidSide > 0) {
-               mid *= (1 - currentMidSide);
+                mid *= (1 - currentMidSide);
             } else {
-               side *= (1 + currentMidSide);
+                side *= (1 + currentMidSide);
             }
             CSAMPLE_GAIN currentBalance = (balanceStart + balanceDelta * i);
             if (currentBalance > 0) {
-               pOutput[i * 2] = (mid - side) * (1 - currentBalance);
-               pOutput[i * 2 + 1] = (mid + side);
+                pOutput[i * 2] = (mid - side) * (1 - currentBalance);
+                pOutput[i * 2 + 1] = (mid + side);
             } else {
-               pOutput[i * 2] = (mid - side);
-               pOutput[i * 2 + 1] = (mid + side) * (1 + currentBalance);
+                pOutput[i * 2] = (mid - side);
+                pOutput[i * 2 + 1] = (mid + side) * (1 + currentBalance);
             }
         }
     }

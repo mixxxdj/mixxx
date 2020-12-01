@@ -19,7 +19,6 @@ static const double kQKillShelve = 0.4;
 static const double kBoostGain = 12;
 static const double kKillGain = -26;
 
-
 double getCenterFrequency(double low, double high) {
     double scaleLow = log10(low);
     double scaleHigh = log10(high);
@@ -28,7 +27,7 @@ double getCenterFrequency(double low, double high) {
     return pow(10, scaleCenter);
 }
 
-double knobValueToBiquadGainDb (double value, bool kill) {
+double knobValueToBiquadGainDb(double value, bool kill) {
     if (kill) {
         return kKillGain;
     }
@@ -44,7 +43,6 @@ double knobValueToBiquadGainDb (double value, bool kill) {
 
 } // anonymous namespace
 
-
 // static
 QString ThreeBandBiquadEQEffect::getId() {
     return "org.mixxx.effects.threebandbiquadeq";
@@ -58,9 +56,10 @@ EffectManifestPointer ThreeBandBiquadEQEffect::getManifest() {
     pManifest->setShortName(QObject::tr("BQ EQ"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-        "A 3-band Equalizer with two biquad bell filters, a shelving high pass and kill switches.") +
-        " " + EqualizerUtil::adjustFrequencyShelvesTip());
+    pManifest->setDescription(
+            QObject::tr("A 3-band Equalizer with two biquad bell filters, a "
+                        "shelving high pass and kill switches.") +
+            " " + EqualizerUtil::adjustFrequencyShelvesTip());
     pManifest->setEffectRampsFromDry(true);
     pManifest->setIsMixingEQ(true);
 
@@ -69,7 +68,7 @@ EffectManifestPointer ThreeBandBiquadEQEffect::getManifest() {
 }
 
 ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
-      const mixxx::EngineParameters& bufferParameters)
+        const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
           m_tempBuf(bufferParameters.samplesPerBuffer()),
           m_oldLowBoost(0),
@@ -81,21 +80,20 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
           m_loFreqCorner(0),
           m_highFreqCorner(0),
           m_oldSampleRate(bufferParameters.sampleRate()) {
-
     // Initialize the filters with default parameters
 
     m_lowBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate() , kStartupLoFreq, kQBoost);
+            bufferParameters.sampleRate(), kStartupLoFreq, kQBoost);
     m_midBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate() , kStartupMidFreq, kQBoost);
+            bufferParameters.sampleRate(), kStartupMidFreq, kQBoost);
     m_highBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate() , kStartupHiFreq, kQBoost);
+            bufferParameters.sampleRate(), kStartupHiFreq, kQBoost);
     m_lowCut = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate() , kStartupLoFreq, kQKill);
+            bufferParameters.sampleRate(), kStartupLoFreq, kQKill);
     m_midCut = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate() , kStartupMidFreq, kQKill);
+            bufferParameters.sampleRate(), kStartupMidFreq, kQKill);
     m_highCut = std::make_unique<EngineFilterBiquad1HighShelving>(
-            bufferParameters.sampleRate() , kStartupHiFreq / 2, kQKillShelve);
+            bufferParameters.sampleRate(), kStartupHiFreq / 2, kQKillShelve);
 }
 
 ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
@@ -103,11 +101,9 @@ ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
 
 void ThreeBandBiquadEQEffectGroupState::setFilters(
         int sampleRate, double lowFreqCorner, double highFreqCorner) {
-
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
     double midCenter = getCenterFrequency(lowFreqCorner, highFreqCorner);
     double highCenter = getCenterFrequency(highFreqCorner, kMaximumFrequency);
-
 
     m_lowBoost->setFrequencyCorners(
             sampleRate, lowCenter, kQBoost, m_oldLowBoost);
@@ -121,7 +117,6 @@ void ThreeBandBiquadEQEffectGroupState::setFilters(
             sampleRate, midCenter, kQKill, m_oldMidCut);
     m_highCut->setFrequencyCorners(
             sampleRate, highCenter / 2, kQKillShelve, m_oldHighCut);
-
 }
 
 ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect() {
@@ -159,7 +154,6 @@ void ThreeBandBiquadEQEffect::processChannel(
         pState->m_oldSampleRate = bufferParameters.sampleRate();
         pState->setFilters(bufferParameters.sampleRate(), pState->m_loFreqCorner, pState->m_highFreqCorner);
     }
-
 
     // Ramp to dry, when disabling, this will ramp from dry when enabling as well
     double bqGainLow = 0;
@@ -216,9 +210,7 @@ void ThreeBandBiquadEQEffect::processChannel(
 
         inBuffer.append(pState->m_tempBuf.data());
         outBuffer.append(pOutput);
-    }
-    else
-    {
+    } else {
         inBuffer.append(pInput);
         outBuffer.append(pOutput);
 
@@ -299,7 +291,6 @@ void ThreeBandBiquadEQEffect::processChannel(
     } else {
         pState->m_midBoost->pauseFilter();
     }
-
 
     if (bqGainMid < 0.0 || pState->m_oldMidCut < 0.0) {
         if (bqGainMid != pState->m_oldMidCut) {

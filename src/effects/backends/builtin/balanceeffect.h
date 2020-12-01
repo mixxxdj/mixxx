@@ -4,8 +4,8 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterlinkwitzriley4.h"
-#include "util/samplebuffer.h"
 #include "util/memory.h"
+#include "util/samplebuffer.h"
 
 class BalanceGroupState : public EffectState {
   public:
@@ -39,13 +39,13 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
 
     void processChannel(
             BalanceGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
   private:
-
     QString debugString() const {
         return getId();
     }
