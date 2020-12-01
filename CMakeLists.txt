@@ -1451,12 +1451,12 @@ else()
 endif()
 add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
+file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
+string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
+
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
-
-  file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
-  string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
 
   # Remove anything after ~ or - in the version number and replace the dots with commas
   string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
@@ -2461,7 +2461,11 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_COMMIT_DESCRIPTION}")
+if(GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
+  set(CPACK_PACKAGE_FILE_NAME "Mixxx-${MIXXX_VERSION}")
+else()
+  set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_COMMIT_DESCRIPTION}")
+endif()
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
