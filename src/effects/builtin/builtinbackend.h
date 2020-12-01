@@ -23,54 +23,27 @@ class BuiltInBackend : public EffectsBackend {
         return "BuiltInBackend";
     }
 
-    // EffectProcessorInstantiator and RegisteredEffect associate the QString
-    // IDs of effects with EffectProcessorImpl<EffectSpecificState> subclasses
-    class EffectProcessorInstantiator {
-      public:
-            virtual ~EffectProcessorInstantiator() {};
-            virtual EffectProcessor* instantiate() = 0;
-    };
-    typedef QSharedPointer<EffectProcessorInstantiator> EffectProcessorInstantiatorPointer;
+    typedef std::unique_ptr<EffectProcessor> (*EffectProcessorInstantiator)();
 
-    template <typename T>
-    class EffectProcessorSpecificInstantiator : public EffectProcessorInstantiator {
-      public:
-        EffectProcessor* instantiate() {
-            return new T();
-        }
+    struct RegisteredEffect {
+        EffectManifestPointer pManifest;
+        EffectProcessorInstantiator instantiator;
     };
 
-    class RegisteredEffect {
-      public:
-        RegisteredEffect(EffectManifestPointer pManifest,
-                         EffectProcessorInstantiatorPointer pInitator)
-            : m_pManifest(pManifest),
-              m_pInitator(pInitator) {
-        }
-
-        RegisteredEffect() {
-        }
-
-        EffectManifestPointer manifest() const { return m_pManifest; };
-        EffectProcessorInstantiatorPointer initiator() const { return m_pInitator; };
-
-      private:
-        EffectManifestPointer m_pManifest;
-        EffectProcessorInstantiatorPointer m_pInitator;
-    };
-
-    void registerEffect(const QString& id,
+    void registerEffectInner(const QString& id,
             EffectManifestPointer pManifest,
-                        EffectProcessorInstantiatorPointer pInstantiator);
+            EffectProcessorInstantiator instantiator);
 
-    template <typename EffectProcessorImpl>
+    template<typename EffectProcessorImpl>
     void registerEffect() {
-        registerEffect(
+        registerEffectInner(
                 EffectProcessorImpl::getId(),
                 EffectProcessorImpl::getManifest(),
-                EffectProcessorInstantiatorPointer(
-                        new EffectProcessorSpecificInstantiator<EffectProcessorImpl>()));
-    }
+                []() {
+                    return static_cast<std::unique_ptr<EffectProcessor>>(
+                            std::make_unique<EffectProcessorImpl>());
+                });
+    };
 
     QMap<QString, RegisteredEffect> m_registeredEffects;
     QList<QString> m_effectIds;
