@@ -256,6 +256,17 @@ if(NOT GIT_COMMIT_DATE)
 endif()
 message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
 
+execute_process(
+  COMMAND git show --quiet --date=format-local:%Y --format=%cd
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE MIXXX_YEAR
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
+if(NOT MIXXX_YEAR)
+  string(TIMESTAMP MIXXX_YEAR "%Y")
+endif()
+
 if(MSVC)
   # clcache support
   find_program(CLCACHE_EXECUTABLE "clcache")
@@ -1456,8 +1467,6 @@ string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION 
 
 # Windows-only resource file
 if(WIN32)
-  string(TIMESTAMP MIXXX_YEAR "%Y")
-
   # Remove anything after ~ or - in the version number and replace the dots with commas
   string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
   string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
