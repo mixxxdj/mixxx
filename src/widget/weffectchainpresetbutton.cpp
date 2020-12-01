@@ -17,7 +17,7 @@ WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManag
             &QPushButton::pressed,
             this,
             &QPushButton::showMenu);
-    connect(m_pChainPresetManager.get(),
+    connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &WEffectChainPresetButton::populateMenu);
@@ -28,11 +28,11 @@ void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& co
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     for (const auto& pEffectSlot : m_pChain->getEffectSlots()) {
-        connect(pEffectSlot.get(),
+        connect(pEffectSlot.data(),
                 &EffectSlot::effectChanged,
                 this,
                 &WEffectChainPresetButton::populateMenu);
-        connect(pEffectSlot.get(),
+        connect(pEffectSlot.data(),
                 &EffectSlot::parametersChanged,
                 this,
                 &WEffectChainPresetButton::populateMenu);

@@ -44,7 +44,7 @@ EffectChain::EffectChain(const QString& group,
             ConfigKey(m_group, "num_presetsavailable"));
     m_pControlNumPresetsAvailable->set(m_pChainPresetManager->numPresets());
     m_pControlNumPresetsAvailable->setReadOnly();
-    connect(m_pChainPresetManager.get(),
+    connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &EffectChain::slotPresetListUpdated);

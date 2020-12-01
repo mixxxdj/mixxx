@@ -27,7 +27,7 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context);
 
     if (m_pEffectSlot != nullptr) {
-        connect(m_pVisibleEffectsList.get(),
+        connect(m_pVisibleEffectsList.data(),
                 &VisibleEffectsList::visibleEffectsListChanged,
                 this,
                 &WEffectSelector::populate);

@@ -28,12 +28,12 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
     }
 
     auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
-    auto pQuickEffectChain = dynamic_cast<QuickEffectChain*>(m_pChain.get());
+    auto pQuickEffectChain = dynamic_cast<QuickEffectChain*>(m_pChain.data());
     if (pQuickEffectChain) {
         chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
         m_bQuickEffectChain = true;
     }
-    connect(m_pChainPresetManager.get(),
+    connect(m_pChainPresetManager.data(),
             chainPresetListUpdateSignal,
             this,
             &WEffectChainPresetSelector::populate);

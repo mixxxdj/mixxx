@@ -113,12 +113,12 @@ QuickEffectChain::QuickEffectChain(const QString& group,
         addEffectSlot(formatEffectSlotGroup(group, i));
         m_effectSlots.at(i)->setEnabled(true);
     }
-    disconnect(m_pChainPresetManager.get(),
+    disconnect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &QuickEffectChain::slotPresetListUpdated);
     m_pControlNumPresetsAvailable->forceSet(m_pChainPresetManager->numQuickEffectPresets());
-    connect(m_pChainPresetManager.get(),
+    connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::quickEffectChainPresetListUpdated,
             this,
             &QuickEffectChain::slotPresetListUpdated);
