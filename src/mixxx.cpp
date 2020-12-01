@@ -24,6 +24,7 @@
 #endif
 #include "broadcast/broadcastmanager.h"
 #include "control/controlpushbutton.h"
+#include "control/threadlocalmacrorecorder.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
@@ -217,6 +218,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                 static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
+    ThreadLocalMacroRecorder::setGlobalInstance(
+            QSharedPointer<ThreadLocalMacroRecorder>(
+                    new ThreadLocalMacroRecorder()));
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
@@ -754,6 +758,7 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
     delete m_pEffectsManager;
 
+    ThreadLocalMacroRecorder::setGlobalInstance(QSharedPointer<ThreadLocalMacroRecorder>());
     delete m_pTouchShift;
 
     WaveformWidgetFactory::destroy();

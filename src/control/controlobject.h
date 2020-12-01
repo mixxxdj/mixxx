@@ -71,6 +71,12 @@ class ControlObject : public QObject {
         }
     }
 
+    void setMacroRecordable(bool macroRecordable) {
+        if (m_pControl) {
+            m_pControl->setMacroRecordable(macroRecordable);
+        }
+    }
+
     // Return the key of the object
     inline ConfigKey getKey() const {
         return m_key;

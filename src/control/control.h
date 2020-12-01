@@ -152,6 +152,10 @@ class ControlDoublePrivate : public QObject {
         return m_confirmRequired;
     }
 
+    void setMacroRecordable(bool macroRecordable) {
+        m_bMacroRecordable = macroRecordable;
+    }
+
   signals:
     // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
@@ -192,6 +196,7 @@ class ControlDoublePrivate : public QObject {
     int m_trackType;
     int m_trackFlags;
     bool m_confirmRequired;
+    bool m_bMacroRecordable;
 
     // User-visible, i18n name for what the control is.
     QString m_name;

@@ -1,6 +1,8 @@
 #include "control/control.h"
 
 #include "control/controlobject.h"
+#include "control/macrorecorder.h"
+#include "control/threadlocalmacrorecorder.h"
 #include "util/stat.h"
 
 //static
@@ -32,7 +34,8 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false) {
+          m_confirmRequired(false),
+          m_bMacroRecordable(false) {
     initialize(defaultValue);
 }
 
@@ -205,11 +208,19 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
     if (m_confirmRequired) {
         emit valueChangeRequest(value);
     } else {
-        setInner(value, pSender);
+        setAndConfirm(value, pSender);
     }
 }
 
 void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
+    if (m_bMacroRecordable) {
+        bool wasRecorded = ThreadLocalMacroRecorder::globalInstance()
+                                   ->get()
+                                   ->recordCOValue(m_key, value);
+        if (wasRecorded) {
+            return;
+        }
+    }
     setInner(value, pSender);
 }
 

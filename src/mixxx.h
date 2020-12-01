@@ -32,6 +32,7 @@ class RecordingManager;
 class SettingsManager;
 class SkinLoader;
 class SoundManager;
+class ThreadLocalMacroRecorder;
 class TrackCollectionManager;
 class VinylControlManager;
 class VisualsManager;
