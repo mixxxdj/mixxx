@@ -68,68 +68,70 @@ void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel
 }
 
 bool EngineEffect::processEffectsRequest(EffectsRequest& message,
-                                         EffectsResponsePipe* pResponsePipe) {
+        EffectsResponsePipe* pResponsePipe) {
     EngineEffectParameterPointer pParameter;
     EffectsResponse response(message);
 
     switch (message.type) {
-        case EffectsRequest::SET_EFFECT_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
-                         << "enabled" << message.SetEffectParameters.enabled;
-            }
+    case EffectsRequest::SET_EFFECT_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
+                     << "enabled" << message.SetEffectParameters.enabled;
+        }
 
-            for (auto& outputMap : m_effectEnableStateForChannelMatrix) {
-                for (auto& enableState : outputMap) {
-                    if (enableState != EffectEnableState::Disabled
-                        && !message.SetEffectParameters.enabled) {
-                        enableState = EffectEnableState::Disabling;
+        for (auto& outputMap : m_effectEnableStateForChannelMatrix) {
+            for (auto& enableState : outputMap) {
+                if (enableState != EffectEnableState::Disabled &&
+                        !message.SetEffectParameters.enabled) {
+                    enableState = EffectEnableState::Disabling;
                     // If an input is not routed to the chain, and the effect gets
                     // a message to disable, then the effect gets the message to enable,
                     // process() will not have executed, so the enableState will still be
                     // DISABLING instead of DISABLED.
-                    } else if ((enableState == EffectEnableState::Disabled ||
-                               enableState == EffectEnableState::Disabling)
-                               && message.SetEffectParameters.enabled) {
-                        enableState = EffectEnableState::Enabling;
-                    }
+                } else if ((enableState == EffectEnableState::Disabled ||
+                                   enableState ==
+                                           EffectEnableState::Disabling) &&
+                        message.SetEffectParameters.enabled) {
+                    enableState = EffectEnableState::Enabling;
                 }
             }
+        }
 
-            response.success = true;
-            pResponsePipe->writeMessage(response);
-            return true;
-            break;
-        case EffectsRequest::SET_PARAMETER_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
-                         << "parameter" << message.SetParameterParameters.iParameter
-                         << "value" << message.value;
-            }
-            pParameter = m_parameters.value(
+        response.success = true;
+        pResponsePipe->writeMessage(response);
+        return true;
+        break;
+    case EffectsRequest::SET_PARAMETER_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
+                     << "parameter" << message.SetParameterParameters.iParameter
+                     << "value" << message.value;
+        }
+        pParameter = m_parameters.value(
                 message.SetParameterParameters.iParameter, EngineEffectParameterPointer());
-            if (pParameter) {
-                pParameter->setValue(message.value);
-                response.success = true;
-            } else {
-                response.success = false;
-                response.status = EffectsResponse::NO_SUCH_PARAMETER;
-            }
-            pResponsePipe->writeMessage(response);
-            return true;
-        default:
-            break;
+        if (pParameter) {
+            pParameter->setValue(message.value);
+            response.success = true;
+        } else {
+            response.success = false;
+            response.status = EffectsResponse::NO_SUCH_PARAMETER;
+        }
+        pResponsePipe->writeMessage(response);
+        return true;
+    default:
+        break;
     }
     return false;
 }
 
 bool EngineEffect::process(const ChannelHandle& inputHandle,
-                           const ChannelHandle& outputHandle,
-                           const CSAMPLE* pInput, CSAMPLE* pOutput,
-                           const unsigned int numSamples,
-                           const unsigned int sampleRate,
-                           const EffectEnableState chainEnableState,
-                           const GroupFeatureState& groupFeatures) {
+        const ChannelHandle& outputHandle,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const EffectEnableState chainEnableState,
+        const GroupFeatureState& groupFeatures) {
     // Compute the effective enable state from the combination of the effect's state
     // for the channel and the state passed from the EngineEffectChain.
 
@@ -147,7 +149,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     // internal buffer for the channel when it gets the intermediate disabling signal.
 
     EffectEnableState effectiveEffectEnableState =
-        m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
+            m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
 
     // If the EngineEffect is fully disabled, do not let
     // intermediate enabling/disabing signals from the chain override
@@ -181,9 +183,13 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
                 mixxx::audio::SampleRate(sampleRate),
                 numSamples / mixxx::kEngineChannelCount);
 
-        m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
-                              bufferParameters,
-                              effectiveEffectEnableState, groupFeatures);
+        m_pProcessor->process(inputHandle,
+                outputHandle,
+                pInput,
+                pOutput,
+                bufferParameters,
+                effectiveEffectEnableState,
+                groupFeatures);
 
         processingOccured = true;
 

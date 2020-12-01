@@ -1,14 +1,14 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include <QVariant>
 #include <QString>
+#include <QVariant>
 #include <QtGlobal>
 
-#include "util/memory.h"
-#include "util/messagepipe.h"
 #include "effects/defs.h"
 #include "engine/channelhandle.h"
+#include "util/memory.h"
+#include "util/messagepipe.h"
 
 class EngineEffectChain;
 class EngineEffect;
@@ -146,7 +146,7 @@ struct EffectsResponse {
               status(NUM_STATUS_CODES) {
     }
 
-    EffectsResponse(const EffectsRequest& request, bool succeeded=false)
+    EffectsResponse(const EffectsRequest& request, bool succeeded = false)
             : request_id(request.request_id),
               success(succeeded),
               status(NUM_STATUS_CODES) {
@@ -166,8 +166,8 @@ typedef MessagePipe<EffectsResponse, EffectsRequest*> EffectsResponsePipe;
 class EffectsRequestHandler {
   public:
     virtual bool processEffectsRequest(
-        EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe) = 0;
+            EffectsRequest& message,
+            EffectsResponsePipe* pResponsePipe) = 0;
 };
 
 #endif /* MESSAGE_H */

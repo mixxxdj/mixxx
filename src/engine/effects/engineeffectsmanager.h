@@ -3,12 +3,12 @@
 
 #include <QScopedPointer>
 
+#include "engine/channelhandle.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
+#include "util/fifo.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
-#include "util/fifo.h"
-#include "engine/effects/message.h"
-#include "engine/effects/groupfeaturestate.h"
-#include "engine/channelhandle.h"
 
 class EngineEffectChain;
 class EngineEffect;
@@ -28,35 +28,36 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
     void processPreFaderInPlace(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
-        CSAMPLE* pInOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate);
+            const ChannelHandle& inputHandle,
+            const ChannelHandle& outputHandle,
+            CSAMPLE* pInOut,
+            const unsigned int numSamples,
+            const unsigned int sampleRate);
 
     void processPostFaderInPlace(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
-        CSAMPLE* pInOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-        const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            const ChannelHandle& inputHandle,
+            const ChannelHandle& outputHandle,
+            CSAMPLE* pInOut,
+            const unsigned int numSamples,
+            const unsigned int sampleRate,
+            const GroupFeatureState& groupFeatures,
+            const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     void processPostFaderAndMix(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
-        CSAMPLE* pIn, CSAMPLE* pOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-        const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            const ChannelHandle& inputHandle,
+            const ChannelHandle& outputHandle,
+            CSAMPLE* pIn,
+            CSAMPLE* pOut,
+            const unsigned int numSamples,
+            const unsigned int sampleRate,
+            const GroupFeatureState& groupFeatures,
+            const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     bool processEffectsRequest(
-        EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+            EffectsRequest& message,
+            EffectsResponsePipe* pResponsePipe);
 
   private:
     QString debugString() const {
@@ -67,14 +68,15 @@ class EngineEffectsManager : public EffectsRequestHandler {
     bool removeEffectChain(EngineEffectChain* pChain, SignalProcessingStage stage);
 
     void processInner(const SignalProcessingStage stage,
-                      const ChannelHandle& inputHandle,
-                      const ChannelHandle& outputHandle,
-                      CSAMPLE* pIn, CSAMPLE* pOut,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const GroupFeatureState& groupFeatures,
-                      const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-                      const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+            const ChannelHandle& inputHandle,
+            const ChannelHandle& outputHandle,
+            CSAMPLE* pIn,
+            CSAMPLE* pOut,
+            const unsigned int numSamples,
+            const unsigned int sampleRate,
+            const GroupFeatureState& groupFeatures,
+            const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+            const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
     QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;
@@ -83,6 +85,5 @@ class EngineEffectsManager : public EffectsRequestHandler {
     mixxx::SampleBuffer m_buffer1;
     mixxx::SampleBuffer m_buffer2;
 };
-
 
 #endif /* ENGINEEFFECTSMANAGER_H */

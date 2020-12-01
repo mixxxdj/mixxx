@@ -4,8 +4,8 @@
 #include <QString>
 #include <QVariant>
 
-#include "util/class.h"
 #include "effects/backends/effectmanifestparameter.h"
+#include "util/class.h"
 
 class EngineEffectParameter {
   public:
@@ -13,7 +13,8 @@ class EngineEffectParameter {
             : m_pParameterManifest(pParameterManifest) {
         m_value = m_pParameterManifest->getDefault();
     }
-    virtual ~EngineEffectParameter() { }
+    virtual ~EngineEffectParameter() {
+    }
 
     const QString& id() const {
         return m_pParameterManifest->id();

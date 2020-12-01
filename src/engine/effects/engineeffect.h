@@ -1,21 +1,20 @@
 #ifndef ENGINEEFFECT_H
 #define ENGINEEFFECT_H
 
-#include <QMap>
-#include <QString>
 #include <QList>
-#include <QVector>
+#include <QMap>
 #include <QSet>
+#include <QString>
+#include <QVector>
 #include <QtDebug>
 
-#include "effects/effectsmanager.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
+#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
-
+#include "engine/effects/message.h"
 #include "util/memory.h"
 
 class EngineEffect : public EffectsRequestHandler {
@@ -34,19 +33,21 @@ class EngineEffect : public EffectsRequestHandler {
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
     void loadStatesForInputChannel(const ChannelHandle* inputChannel,
-      EffectStatesMap* pStatesMap);
+            EffectStatesMap* pStatesMap);
     void deleteStatesForInputChannel(const ChannelHandle* inputChannel);
 
     bool processEffectsRequest(
-        EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+            EffectsRequest& message,
+            EffectsResponsePipe* pResponsePipe);
 
-    bool process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
-                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                 const unsigned int numSamples,
-                 const unsigned int sampleRate,
-                 const EffectEnableState chainEnableState,
-                 const GroupFeatureState& groupFeatures);
+    bool process(const ChannelHandle& inputHandle,
+            const ChannelHandle& outputHandle,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const unsigned int numSamples,
+            const unsigned int sampleRate,
+            const EffectEnableState chainEnableState,
+            const GroupFeatureState& groupFeatures);
 
     const EffectManifestPointer getManifest() const {
         return m_pManifest;

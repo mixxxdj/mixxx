@@ -1,8 +1,7 @@
 #include "engine/effects/engineeffectsmanager.h"
 
-#include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
-
+#include "engine/effects/engineeffectchain.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
@@ -23,71 +22,70 @@ void EngineEffectsManager::onCallbackStart() {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
-            case EffectsRequest::ADD_EFFECT_CHAIN:
-            case EffectsRequest::REMOVE_EFFECT_CHAIN:
-                if (processEffectsRequest(*request, m_pResponsePipe.data())) {
-                    processed = true;
+        case EffectsRequest::ADD_EFFECT_CHAIN:
+        case EffectsRequest::REMOVE_EFFECT_CHAIN:
+            if (processEffectsRequest(*request, m_pResponsePipe.data())) {
+                processed = true;
+            }
+            break;
+        case EffectsRequest::ADD_EFFECT_TO_CHAIN:
+        case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
+        case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
+        case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
+        case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL: {
+            bool chainExists = false;
+            for (const auto& chains : std::as_const(m_chainsByStage)) {
+                if (chains.contains(request->pTargetChain)) {
+                    chainExists = true;
                 }
-                break;
-            case EffectsRequest::ADD_EFFECT_TO_CHAIN:
-            case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
-            case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
-            case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
-            case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
-                {
-                    bool chainExists = false;
-                    for (const auto& chains : std::as_const(m_chainsByStage)) {
-                        if (chains.contains(request->pTargetChain)) {
-                            chainExists = true;
-                        }
-                    }
+            }
 
-                    VERIFY_OR_DEBUG_ASSERT(chainExists) {
-                        response.success = false;
-                        response.status = EffectsResponse::NO_SUCH_CHAIN;
-                        break;
-                    }
-                }
-                processed = request->pTargetChain->processEffectsRequest(
-                    *request, m_pResponsePipe.data());
-                if (processed) {
-                    // When an effect becomes active (part of a chain), keep
-                    // it in our master list so that we can respond to
-                    // requests about it.
-                    if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
-                        m_effects.append(request->AddEffectToChain.pEffect);
-                    } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-                        m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
-                    }
-                } else {
-                    // If we got here, the message was not handled for
-                    // an unknown reason.
-                    response.success = false;
-                    response.status = EffectsResponse::INVALID_REQUEST;
-                }
-                break;
-            case EffectsRequest::SET_EFFECT_PARAMETERS:
-            case EffectsRequest::SET_PARAMETER_PARAMETERS:
-                VERIFY_OR_DEBUG_ASSERT(m_effects.contains(request->pTargetEffect)) {
-                    response.success = false;
-                    response.status = EffectsResponse::NO_SUCH_EFFECT;
-                    break;
-                }
-
-                processed = request->pTargetEffect
-                        ->processEffectsRequest(*request, m_pResponsePipe.data());
-
-                if (!processed) {
-                    // If we got here, the message was not handled for an
-                    // unknown reason.
-                    response.success = false;
-                    response.status = EffectsResponse::INVALID_REQUEST;
-                }
-                break;
-            default:
+            VERIFY_OR_DEBUG_ASSERT(chainExists) {
                 response.success = false;
-                response.status = EffectsResponse::UNHANDLED_MESSAGE_TYPE;
+                response.status = EffectsResponse::NO_SUCH_CHAIN;
                 break;
+            }
+        }
+            processed = request->pTargetChain->processEffectsRequest(
+                    *request, m_pResponsePipe.data());
+            if (processed) {
+                // When an effect becomes active (part of a chain), keep
+                // it in our master list so that we can respond to
+                // requests about it.
+                if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
+                    m_effects.append(request->AddEffectToChain.pEffect);
+                } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                    m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
+                }
+            } else {
+                // If we got here, the message was not handled for
+                // an unknown reason.
+                response.success = false;
+                response.status = EffectsResponse::INVALID_REQUEST;
+            }
+            break;
+        case EffectsRequest::SET_EFFECT_PARAMETERS:
+        case EffectsRequest::SET_PARAMETER_PARAMETERS:
+            VERIFY_OR_DEBUG_ASSERT(m_effects.contains(request->pTargetEffect)) {
+                response.success = false;
+                response.status = EffectsResponse::NO_SUCH_EFFECT;
+                break;
+            }
+
+            processed = request->pTargetEffect
+                                ->processEffectsRequest(*request, m_pResponsePipe.data());
+
+            if (!processed) {
+                // If we got here, the message was not handled for an
+                // unknown reason.
+                response.success = false;
+                response.status = EffectsResponse::INVALID_REQUEST;
+            }
+            break;
+        default:
+            response.success = false;
+            response.status = EffectsResponse::UNHANDLED_MESSAGE_TYPE;
+            break;
         }
 
         if (!processed) {
@@ -97,10 +95,10 @@ void EngineEffectsManager::onCallbackStart() {
 }
 
 void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHandle,
-                                                  const ChannelHandle& outputHandle,
-                                                  CSAMPLE* pInOut,
-                                                  const unsigned int numSamples,
-                                                  const unsigned int sampleRate) {
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pInOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate) {
     // Feature state is gathered after prefader effects processing.
     // This is okay because the equalizer and filter effects do not make use of it.
     // However, if an effect is loaded into a QuickEffectChainSlot that could make use
@@ -108,54 +106,69 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
     // a StandardEffectChainSlot.
     GroupFeatureState featureState;
     processInner(SignalProcessingStage::Prefader,
-                 inputHandle, outputHandle,
-                 pInOut, pInOut,
-                 numSamples, sampleRate, featureState);
+            inputHandle,
+            outputHandle,
+            pInOut,
+            pInOut,
+            numSamples,
+            sampleRate,
+            featureState);
 }
 
 void EngineEffectsManager::processPostFaderInPlace(
-    const ChannelHandle& inputHandle,
-    const ChannelHandle& outputHandle,
-    CSAMPLE* pInOut,
-    const unsigned int numSamples,
-    const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN oldGain,
-    const CSAMPLE_GAIN newGain) {
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pInOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures,
+        const CSAMPLE_GAIN oldGain,
+        const CSAMPLE_GAIN newGain) {
     processInner(SignalProcessingStage::Postfader,
-                 inputHandle, outputHandle,
-                 pInOut, pInOut,
-                 numSamples, sampleRate, groupFeatures,
-                 oldGain, newGain);
+            inputHandle,
+            outputHandle,
+            pInOut,
+            pInOut,
+            numSamples,
+            sampleRate,
+            groupFeatures,
+            oldGain,
+            newGain);
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
-    const ChannelHandle& inputHandle,
-    const ChannelHandle& outputHandle,
-    CSAMPLE* pIn, CSAMPLE* pOut,
-    const unsigned int numSamples,
-    const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN oldGain,
-    const CSAMPLE_GAIN newGain) {
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pIn,
+        CSAMPLE* pOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures,
+        const CSAMPLE_GAIN oldGain,
+        const CSAMPLE_GAIN newGain) {
     processInner(SignalProcessingStage::Postfader,
-                 inputHandle, outputHandle,
-                 pIn, pOut,
-                 numSamples, sampleRate, groupFeatures,
-                 oldGain, newGain);
+            inputHandle,
+            outputHandle,
+            pIn,
+            pOut,
+            numSamples,
+            sampleRate,
+            groupFeatures,
+            oldGain,
+            newGain);
 }
 
 void EngineEffectsManager::processInner(
-    const SignalProcessingStage stage,
-    const ChannelHandle& inputHandle,
-    const ChannelHandle& outputHandle,
-    CSAMPLE* pIn, CSAMPLE* pOut,
-    const unsigned int numSamples,
-    const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN oldGain,
-    const CSAMPLE_GAIN newGain) {
-
+        const SignalProcessingStage stage,
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pIn,
+        CSAMPLE* pOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures,
+        const CSAMPLE_GAIN oldGain,
+        const CSAMPLE_GAIN newGain) {
     const QList<EngineEffectChain*>& chains = m_chainsByStage.value(stage);
 
     if (pIn == pOut) {
@@ -164,9 +177,13 @@ void EngineEffectsManager::processInner(
         SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
         for (EngineEffectChain* pChain : chains) {
             if (pChain) {
-                if (pChain->process(inputHandle, outputHandle,
-                                    pIn, pOut,
-                                    numSamples, sampleRate, groupFeatures)) {
+                if (pChain->process(inputHandle,
+                            outputHandle,
+                            pIn,
+                            pOut,
+                            numSamples,
+                            sampleRate,
+                            groupFeatures)) {
                 }
             }
         }
@@ -184,8 +201,7 @@ void EngineEffectsManager::processInner(
             // input buffer when its input & output buffers are different, so this is okay.
             pIntermediateInput = pIn;
         } else {
-            SampleUtil::copyWithRampingGain(pIntermediateInput, pIn,
-                                            oldGain, newGain, numSamples);
+            SampleUtil::copyWithRampingGain(pIntermediateInput, pIn, oldGain, newGain, numSamples);
         }
 
         CSAMPLE* pIntermediateOutput;
@@ -198,9 +214,13 @@ void EngineEffectsManager::processInner(
                     pIntermediateOutput = m_buffer1.data();
                 }
 
-                if (pChain->process(inputHandle, outputHandle,
-                                    pIntermediateInput, pIntermediateOutput,
-                                    numSamples, sampleRate, groupFeatures)) {
+                if (pChain->process(inputHandle,
+                            outputHandle,
+                            pIntermediateInput,
+                            pIntermediateOutput,
+                            numSamples,
+                            sampleRate,
+                            groupFeatures)) {
                     // Output of this chain becomes the input of the next chain.
                     pIntermediateInput = pIntermediateOutput;
                 }
@@ -232,27 +252,27 @@ bool EngineEffectsManager::removeEffectChain(EngineEffectChain* pChain,
 }
 
 bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
-                                                 EffectsResponsePipe* pResponsePipe) {
+        EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
-        case EffectsRequest::ADD_EFFECT_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "ADD_EFFECT_CHAIN"
-                         << message.AddEffectChain.pChain;
-            }
-            response.success = addEffectChain(message.AddEffectChain.pChain,
-                    message.AddEffectChain.signalProcessingStage);
-            break;
-        case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "REMOVE_EFFECT_CHAIN"
-                         << message.RemoveEffectChain.pChain;
-            }
-            response.success = removeEffectChain(message.RemoveEffectChain.pChain,
-                    message.RemoveEffectChain.signalProcessingStage);
-            break;
-        default:
-            return false;
+    case EffectsRequest::ADD_EFFECT_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "ADD_EFFECT_CHAIN"
+                     << message.AddEffectChain.pChain;
+        }
+        response.success = addEffectChain(message.AddEffectChain.pChain,
+                message.AddEffectChain.signalProcessingStage);
+        break;
+    case EffectsRequest::REMOVE_EFFECT_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "REMOVE_EFFECT_CHAIN"
+                     << message.RemoveEffectChain.pChain;
+        }
+        response.success = removeEffectChain(message.RemoveEffectChain.pChain,
+                message.RemoveEffectChain.signalProcessingStage);
+        break;
+    default:
+        return false;
     }
     pResponsePipe->writeMessage(response);
     return true;

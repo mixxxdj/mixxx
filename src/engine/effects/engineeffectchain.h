@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QString>
 #include <QList>
+#include <QString>
 
-#include "util/class.h"
-#include "util/types.h"
-#include "util/samplebuffer.h"
-#include "util/memory.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
+#include "util/class.h"
+#include "util/memory.h"
+#include "util/samplebuffer.h"
+#include "util/types.h"
 
 class EngineEffect;
 
@@ -21,15 +21,16 @@ class EngineEffectChain : public EffectsRequestHandler {
     virtual ~EngineEffectChain();
 
     bool processEffectsRequest(
-        EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+            EffectsRequest& message,
+            EffectsResponsePipe* pResponsePipe);
 
     bool process(const ChannelHandle& inputHandle,
-                 const ChannelHandle& outputHandle,
-                 CSAMPLE* pIn, CSAMPLE* pOut,
-                 const unsigned int numSamples,
-                 const unsigned int sampleRate,
-                 const GroupFeatureState& groupFeatures);
+            const ChannelHandle& outputHandle,
+            CSAMPLE* pIn,
+            CSAMPLE* pOut,
+            const unsigned int numSamples,
+            const unsigned int sampleRate,
+            const GroupFeatureState& groupFeatures);
 
     bool enabledForChannel(const ChannelHandle& handle) const;
 
@@ -59,7 +60,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
     // handle.
     ChannelStatus& getChannelStatus(const ChannelHandle& inputHandle,
-                                    const ChannelHandle& outputHandle);
+            const ChannelHandle& outputHandle);
 
     QString m_group;
     EffectEnableState m_enableState;
