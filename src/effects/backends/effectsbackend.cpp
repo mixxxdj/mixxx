@@ -15,11 +15,12 @@ EffectBackendType EffectsBackend::backendTypeFromString(const QString& typeName)
 }
 
 QString EffectsBackend::backendTypeToString(EffectBackendType backendType) {
-    if (backendType == EffectBackendType::BuiltIn) {
+    switch (backendType) {
+    case EffectBackendType::BuiltIn:
         return backendTypeNameBuiltIn;
-    } else if (backendType == EffectBackendType::LV2) {
+    case EffectBackendType::LV2:
         return backendTypeNameLV2;
-    } else {
+    default:
         return backendTypeNameUnknown;
     }
 }
