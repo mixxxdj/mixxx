@@ -24,7 +24,7 @@
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
-auto kUnsafeFilenameReplacement = QLatin1String("-");
+constexpr QChar kUnsafeFilenameReplacement = '-';
 }
 
 BasePlaylistFeature::BasePlaylistFeature(
