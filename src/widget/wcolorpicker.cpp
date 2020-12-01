@@ -232,14 +232,16 @@ void WColorPicker::setColorButtonChecked(mixxx::RgbColor::optional_t color, bool
 }
 
 void WColorPicker::resetSelectedColor() {
-    setColorButtonChecked(m_selectedColor, false);
+    setSelectedColor(std::nullopt);
 }
 
-void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
-    resetSelectedColor();
-
+void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
+    if (m_selectedColor == color) {
+        return;
+    }
+    setColorButtonChecked(m_selectedColor, false);
     m_selectedColor = color;
-    setColorButtonChecked(m_selectedColor, true);
+    setColorButtonChecked(m_selectedColor, static_cast<bool>(color));
 }
 
 void WColorPicker::setColorPalette(const ColorPalette& palette) {
