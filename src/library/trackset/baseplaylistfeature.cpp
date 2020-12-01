@@ -24,7 +24,7 @@
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
-const char* kUnsafeFilenameReplacement = "-";
+auto kUnsafeFilenameReplacement = QLatin1String("-");
 }
 
 BasePlaylistFeature::BasePlaylistFeature(
@@ -180,6 +180,8 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
+    // Update selection
+    emit featureSelect(this, m_lastRightClickedIndex);
 
     if (!m_pSidebarWidget) {
         return;
@@ -203,7 +205,10 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     emit enableCoverArtDisplay(true);
     // Update selection
     emit featureSelect(this, m_lastRightClickedIndex);
-    activateChild(m_lastRightClickedIndex);
+    if (!m_pSidebarWidget) {
+        return;
+    }
+    m_pSidebarWidget->selectChildIndex(m_lastRightClickedIndex);
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
