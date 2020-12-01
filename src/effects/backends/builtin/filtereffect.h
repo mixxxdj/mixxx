@@ -28,7 +28,7 @@ struct FilterGroupState : public EffectState {
 
 class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
   public:
-    FilterEffect() {};
+    FilterEffect() = default;
     virtual ~FilterEffect();
 
     static QString getId();

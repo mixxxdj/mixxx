@@ -31,7 +31,7 @@ class LoudnessContourEffectGroupState final : public EffectState {
 class LoudnessContourEffect
         : public EffectProcessorImpl<LoudnessContourEffectGroupState> {
   public:
-    LoudnessContourEffect() {};
+    LoudnessContourEffect() = default;
     ~LoudnessContourEffect() override;
 
     static QString getId();

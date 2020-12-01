@@ -38,7 +38,7 @@ class ParametricEQEffectGroupState final : public EffectState {
 
 class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupState> {
   public:
-    ParametricEQEffect() {};
+    ParametricEQEffect() = default;
     virtual ~ParametricEQEffect();
 
     static QString getId();

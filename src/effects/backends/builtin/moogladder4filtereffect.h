@@ -26,7 +26,7 @@ class MoogLadder4FilterGroupState : public EffectState {
 
 class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGroupState> {
   public:
-    MoogLadder4FilterEffect() {};
+    MoogLadder4FilterEffect() = default;
     virtual ~MoogLadder4FilterEffect();
 
     static QString getId();
