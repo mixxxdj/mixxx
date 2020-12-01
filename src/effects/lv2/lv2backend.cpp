@@ -86,10 +86,9 @@ std::unique_ptr<EffectProcessor> LV2Backend::createProcessor(
         const EffectManifestPointer pManifest) const {
     LV2EffectManifestPointer pLV2Manifest = m_registeredEffects.value(pManifest->id());
     VERIFY_OR_DEBUG_ASSERT(pLV2Manifest) {
-        return std::unique_ptr<EffectProcessor>(nullptr);
+        return nullptr;
     }
-    return std::unique_ptr<EffectProcessor>(
-        new LV2EffectProcessor(pLV2Manifest));
+    return std::make_unique<LV2EffectProcessor>(pLV2Manifest);
 }
 
 LV2EffectManifestPointer LV2Backend::getLV2Manifest(const QString& effectId) const {
