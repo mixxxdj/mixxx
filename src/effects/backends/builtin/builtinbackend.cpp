@@ -59,10 +59,9 @@ BuiltInBackend::BuiltInBackend() {
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
         const EffectManifestPointer pManifest) const {
     VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(pManifest->id())) {
-        return std::unique_ptr<EffectProcessor>(nullptr);
+        return nullptr;
     }
-    return std::unique_ptr<EffectProcessor>(
-            m_registeredEffects[pManifest->id()].initiator()->instantiate());
+    return m_registeredEffects[pManifest->id()].instantiator();
 }
 
 BuiltInBackend::~BuiltInBackend() {
@@ -71,16 +70,17 @@ BuiltInBackend::~BuiltInBackend() {
     m_effectIds.clear();
 }
 
-void BuiltInBackend::registerEffect(const QString& id,
+void BuiltInBackend::registerEffectInner(
+        const QString& id,
         EffectManifestPointer pManifest,
-        EffectProcessorInstantiatorPointer pInstantiator) {
+        EffectProcessorInstantiator instantiator) {
     VERIFY_OR_DEBUG_ASSERT(!m_registeredEffects.contains(id)) {
         return;
     }
 
     pManifest->setBackendType(getType());
 
-    m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
+    m_registeredEffects[id] = RegisteredEffect{pManifest, instantiator};
     m_effectIds.append(id);
 }
 
@@ -92,13 +92,13 @@ EffectManifestPointer BuiltInBackend::getManifest(const QString& effectId) const
     VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(effectId)) {
         return EffectManifestPointer();
     }
-    return m_registeredEffects.value(effectId).manifest();
+    return m_registeredEffects.value(effectId).pManifest;
 }
 
 const QList<EffectManifestPointer> BuiltInBackend::getManifests() const {
     QList<EffectManifestPointer> list;
     for (const auto& registeredEffect : m_registeredEffects) {
-        list.append(registeredEffect.manifest());
+        list.append(registeredEffect.pManifest);
     }
     return list;
 }
