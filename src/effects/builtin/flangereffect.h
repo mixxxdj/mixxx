@@ -48,7 +48,7 @@ struct FlangerGroupState : public EffectState {
 
 class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
   public:
-    FlangerEffect() {};
+    FlangerEffect() = default;
     virtual ~FlangerEffect();
 
     static QString getId();

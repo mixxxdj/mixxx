@@ -23,7 +23,7 @@ struct BitCrusherGroupState : public EffectState {
 
 class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
   public:
-    BitCrusherEffect() {};
+    BitCrusherEffect() = default;
     virtual ~BitCrusherEffect();
 
     static QString getId();

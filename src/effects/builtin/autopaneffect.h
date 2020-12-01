@@ -78,7 +78,7 @@ class AutoPanGroupState : public EffectState {
 
 class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
   public:
-    AutoPanEffect() {};
+    AutoPanEffect() = default;
     virtual ~AutoPanEffect();
 
     static QString getId();

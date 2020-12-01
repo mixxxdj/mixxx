@@ -24,7 +24,7 @@ class MetronomeGroupState final : public EffectState {
 
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
   public:
-    MetronomeEffect() {};
+    MetronomeEffect() = default;
     virtual ~MetronomeEffect();
 
     static QString getId();

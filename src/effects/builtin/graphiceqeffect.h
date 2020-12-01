@@ -31,7 +31,7 @@ class GraphicEQEffectGroupState : public EffectState {
 
 class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
   public:
-    GraphicEQEffect() {};
+    GraphicEQEffect() = default;
     virtual ~GraphicEQEffect();
 
     static QString getId();

@@ -21,7 +21,7 @@ class TremoloState : public EffectState {
 
 class TremoloEffect : public EffectProcessorImpl<TremoloState> {
   public:
-    TremoloEffect() {};
+    TremoloEffect() = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

@@ -40,7 +40,7 @@ class PhaserGroupState final : public EffectState {
 class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
 
   public:
-    PhaserEffect() {};
+    PhaserEffect() = default;
     virtual ~PhaserEffect();
 
     static QString getId();

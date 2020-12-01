@@ -34,7 +34,7 @@ class ReverbGroupState : public EffectState {
 
 class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
   public:
-    ReverbEffect() {};
+    ReverbEffect() = default;
     virtual ~ReverbEffect();
 
     static QString getId();

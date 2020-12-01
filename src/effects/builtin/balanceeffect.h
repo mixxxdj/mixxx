@@ -28,7 +28,7 @@ class BalanceGroupState : public EffectState {
 
 class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
   public:
-    BalanceEffect() {};
+    BalanceEffect() = default;
     virtual ~BalanceEffect();
 
     static QString getId();
