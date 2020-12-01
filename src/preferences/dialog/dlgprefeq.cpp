@@ -117,9 +117,6 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         QLabel* label = new QLabel(QObject::tr("Deck %1 EQ Effect").
                              arg(deckNo), this);
 
-        QString group = PlayerManager::groupForDeck(
-                m_deckEqEffectSelectors.size());
-
         // Create the drop down list for EQs
         QComboBox* eqComboBox = new QComboBox(this);
         m_deckEqEffectSelectors.append(eqComboBox);
