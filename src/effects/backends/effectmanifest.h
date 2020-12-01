@@ -157,11 +157,11 @@ class EffectManifest {
     QString backendName() const {
         switch (m_backendType) {
             case EffectBackendType::BuiltIn:
-                return QString("Built-in");
+                return QLatin1String("Built-in");
             case EffectBackendType::LV2:
-                return QString("LV2");
+                return QLatin1String("LV2");
             default:
-                return QString("Unknown");
+                return QLatin1String("Unknown");
         }
     }
 
@@ -172,15 +172,15 @@ class EffectManifest {
                 //: Used for effects that are built into Mixxx
                 return QObject::tr("Built-in");
             case EffectBackendType::LV2:
-                return QString("LV2");
+                return QLatin1String("LV2");
             default:
-                return QString();
+                return QLatin1String("");
         }
     }
     static EffectBackendType backendTypeFromString(const QString& name) {
-        if (name == "Built-in") {
+        if (name == QLatin1String("Built-in")) {
             return EffectBackendType::BuiltIn;
-        } else if (name == "LV2") {
+        } else if (name == QLatin1String("LV2")) {
             return EffectBackendType::LV2;
         } else {
             return EffectBackendType::Unknown;
