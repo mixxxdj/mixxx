@@ -99,7 +99,7 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
     return coScript;
 }
 
-double ControllerScriptInterfaceLegacy::getValue(QString group, QString name) {
+double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "Unknown control" << group << name
@@ -110,7 +110,7 @@ double ControllerScriptInterfaceLegacy::getValue(QString group, QString name) {
 }
 
 void ControllerScriptInterfaceLegacy::setValue(
-        QString group, QString name, double newValue) {
+        const QString& group, const QString& name, double newValue) {
     if (isnan(newValue)) {
         qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
@@ -130,7 +130,7 @@ void ControllerScriptInterfaceLegacy::setValue(
     }
 }
 
-double ControllerScriptInterfaceLegacy::getParameter(QString group, QString name) {
+double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "Unknown control" << group << name
@@ -141,7 +141,7 @@ double ControllerScriptInterfaceLegacy::getParameter(QString group, QString name
 }
 
 void ControllerScriptInterfaceLegacy::setParameter(
-        QString group, QString name, double newParameter) {
+        const QString& group, const QString& name, double newParameter) {
     if (isnan(newParameter)) {
         qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
@@ -160,7 +160,7 @@ void ControllerScriptInterfaceLegacy::setParameter(
 }
 
 double ControllerScriptInterfaceLegacy::getParameterForValue(
-        QString group, QString name, double value) {
+        const QString& group, const QString& name, double value) {
     if (isnan(value)) {
         qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
@@ -178,14 +178,14 @@ double ControllerScriptInterfaceLegacy::getParameterForValue(
     return coScript->getParameterForValue(value);
 }
 
-void ControllerScriptInterfaceLegacy::reset(QString group, QString name) {
+void ControllerScriptInterfaceLegacy::reset(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->reset();
     }
 }
 
-double ControllerScriptInterfaceLegacy::getDefaultValue(QString group, QString name) {
+double ControllerScriptInterfaceLegacy::getDefaultValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -198,7 +198,7 @@ double ControllerScriptInterfaceLegacy::getDefaultValue(QString group, QString n
 }
 
 double ControllerScriptInterfaceLegacy::getDefaultParameter(
-        QString group, QString name) {
+        const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -211,7 +211,7 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
 }
 
 QJSValue ControllerScriptInterfaceLegacy::makeConnection(
-        QString group, QString name, const QJSValue callback) {
+        const QString& group, const QString& name, const QJSValue& callback) {
     auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
@@ -254,7 +254,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
 }
 
 bool ControllerScriptInterfaceLegacy::removeScriptConnection(
-        const ScriptConnection connection) {
+        const ScriptConnection& connection) {
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
 
@@ -266,7 +266,7 @@ bool ControllerScriptInterfaceLegacy::removeScriptConnection(
 }
 
 void ControllerScriptInterfaceLegacy::triggerScriptConnection(
-        const ScriptConnection connection) {
+        const ScriptConnection& connection) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
         return;
     }
@@ -288,8 +288,10 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
 // it is disconnected.
 // WARNING: These behaviors are quirky and confusing, so if you change this function,
 // be sure to run the ControllerScriptInterfaceTest suite to make sure you do not break old scripts.
-QJSValue ControllerScriptInterfaceLegacy::connectControl(
-        QString group, QString name, QJSValue passedCallback, bool disconnect) {
+QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
+        const QString& name,
+        const QJSValue& passedCallback,
+        bool disconnect) {
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
     QJSValue actualCallbackFunction;
@@ -404,14 +406,14 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(
     return makeConnection(group, name, actualCallbackFunction);
 }
 
-void ControllerScriptInterfaceLegacy::trigger(QString group, QString name) {
+void ControllerScriptInterfaceLegacy::trigger(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->emitValueChanged();
     }
 }
 
-void ControllerScriptInterfaceLegacy::log(QString message) {
+void ControllerScriptInterfaceLegacy::log(const QString& message) {
     controllerDebug(message);
 }
 int ControllerScriptInterfaceLegacy::beginTimer(
@@ -494,7 +496,7 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
 }
 
 void ControllerScriptInterfaceLegacy::softTakeover(
-        QString group, QString name, bool set) {
+        const QString& group, const QString& name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControllerDebug::shouldAssertForInvalidControlObjects());
     if (!pControl) {
@@ -508,7 +510,7 @@ void ControllerScriptInterfaceLegacy::softTakeover(
 }
 
 void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
-        QString group, const QString name) {
+        const QString& group, const QString& name) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControllerDebug::shouldAssertForInvalidControlObjects());
     if (!pControl) {
@@ -553,7 +555,7 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
         double beta,
         bool ramp) {
     // If we're already scratching this deck, override that with this request
-    if (m_dx[deck]) {
+    if (static_cast<bool>(m_dx[deck])) {
         //qDebug() << "Already scratching deck" << deck << ". Overriding.";
         int timerId = m_scratchTimers.key(deck);
         killTimer(timerId);
@@ -603,7 +605,7 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
     }
 
     // Initialize scratch filter
-    if (alpha && beta) {
+    if (static_cast<bool>(alpha) && static_cast<bool>(beta)) {
         m_scratchFilters[deck]->init(kAlphaBetaDt, initVelocity, alpha, beta);
     } else {
         // Use filter's defaults if not specified

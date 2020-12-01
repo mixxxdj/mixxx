@@ -20,9 +20,10 @@ ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
     shutdown();
 }
 
-bool ControllerScriptEngineLegacy::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
+bool ControllerScriptEngineLegacy::callFunctionOnObjects(
+        const QList<QString>& scriptFunctionPrefixes,
         const QString& function,
-        QJSValueList args,
+        const QJSValueList& args,
         bool bFatalError) {
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine) {
         return false;
@@ -98,7 +99,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
-    for (const ControllerPreset::ScriptFileInfo& script : m_scriptFiles) {
+    for (const ControllerPreset::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
         if (!evaluateScriptFile(script.file)) {
             shutdown();
             return false;
@@ -158,7 +159,7 @@ bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
     args << m_pJSEngine->toScriptValue(data);
     args << QJSValue(data.size());
 
-    for (const QJSValue& function : m_incomingDataFunctions) {
+    for (const QJSValue& function : std::as_const(m_incomingDataFunctions)) {
         ControllerScriptEngineBase::executeFunction(function, args);
     }
 

@@ -74,7 +74,7 @@ void ControllerScriptEngineBase::reload() {
 }
 
 bool ControllerScriptEngineBase::executeFunction(
-        QJSValue functionObject, QJSValueList args) {
+        QJSValue functionObject, const QJSValueList& args) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pJSEngine) {
@@ -104,7 +104,7 @@ bool ControllerScriptEngineBase::executeFunction(
 }
 
 void ControllerScriptEngineBase::showScriptExceptionDialog(
-        QJSValue evaluationResult, bool bFatalError) {
+        const QJSValue& evaluationResult, bool bFatalError) {
     VERIFY_OR_DEBUG_ASSERT(evaluationResult.isError()) {
         return;
     }

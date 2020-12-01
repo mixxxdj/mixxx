@@ -11,7 +11,7 @@ class ControllerScriptModuleEngine : public ControllerScriptEngineBase {
 
     bool initialize() override;
 
-    void setModuleFileInfo(QFileInfo moduleFileInfo) {
+    void setModuleFileInfo(const QFileInfo& moduleFileInfo) {
         m_moduleFileInfo = moduleFileInfo;
     }
 

@@ -23,11 +23,11 @@ class ControllerScriptEngineBase : public QObject {
 
     virtual bool initialize();
 
-    bool executeFunction(QJSValue functionObject, QJSValueList arguments);
+    bool executeFunction(QJSValue functionObject, const QJSValueList& arguments);
 
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
-    void showScriptExceptionDialog(QJSValue evaluationResult, bool bFatal = false);
+    void showScriptExceptionDialog(const QJSValue& evaluationResult, bool bFatal = false);
     void throwJSError(const QString& message);
 
     inline void setTesting(bool testing) {
