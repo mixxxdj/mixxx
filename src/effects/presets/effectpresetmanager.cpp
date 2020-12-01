@@ -18,7 +18,7 @@ EffectPresetManager::EffectPresetManager(UserSettingsPointer pConfig,
 }
 
 EffectPresetManager::~EffectPresetManager() {
-    for (const auto& pEffectPreset : m_defaultPresets) {
+    for (const auto& pEffectPreset : std::as_const(m_defaultPresets)) {
         saveDefaultForEffect(pEffectPreset);
     }
 }
@@ -28,7 +28,8 @@ void EffectPresetManager::loadDefaultEffectPresets() {
     QString dirPath(m_pConfig->getSettingsPath() + kEffectDefaultsDirectory);
     QDir effectsDefaultsDir(dirPath);
     effectsDefaultsDir.setFilter(QDir::Files | QDir::Readable);
-    for (const auto& filePath : effectsDefaultsDir.entryList()) {
+    const auto& fileNames = effectsDefaultsDir.entryList();
+    for (const auto& filePath : fileNames) {
         QFile file(dirPath + "/" + filePath);
         if (!file.open(QIODevice::ReadOnly)) {
             continue;

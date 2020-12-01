@@ -8,7 +8,7 @@
 EffectParameter::EffectParameter(EngineEffect* pEngineEffect,
         EffectsMessengerPointer pEffectsMessenger,
         EffectManifestParameterPointer pParameterManifest,
-        EffectParameterPreset preset)
+        const EffectParameterPreset& preset)
         : m_pEngineEffect(pEngineEffect),
           m_pMessenger(pEffectsMessenger),
           m_pParameterManifest(pParameterManifest) {

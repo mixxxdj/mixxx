@@ -80,7 +80,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     const QList<EffectManifestPointer> getFilteredManifests(
             EffectManifestFilterFnc filterFunc) const;
     void populateDeckBoxList(
-            const QList<QComboBox*> boxList,
+            const QList<QComboBox*>& boxList,
             EffectManifestFilterFnc filterFunc);
 
     void applySelectionsToDecks();

@@ -29,7 +29,7 @@ class EffectParameter {
     EffectParameter(EngineEffect* pEngineEffect,
             EffectsMessengerPointer pEffectsMessenger,
             EffectManifestParameterPointer pParameterManifest,
-            EffectParameterPreset preset);
+            const EffectParameterPreset& preset);
     virtual ~EffectParameter();
 
     EffectManifestParameterPointer manifest() const;

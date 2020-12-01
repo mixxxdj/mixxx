@@ -108,7 +108,7 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
 #else
             data->text().split(kMimeTextDelimiter, QString::SkipEmptyParts);
 #endif
-    QList<EffectManifestPointer> manifestList;
+    QVector<EffectManifestPointer> manifestList;
     for (int lineNumber = 0; lineNumber < mimeTextLines.size(); lineNumber++) {
         QString manifestUniqueId = mimeTextLines.at(lineNumber);
         EffectManifestPointer pManifest =

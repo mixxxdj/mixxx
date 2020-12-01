@@ -45,7 +45,7 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlNumParameters.insert(EffectParameterType::BUTTON,
             QSharedPointer<ControlObject>(
                     new ControlObject(ConfigKey(m_group, "num_button_parameters"))));
-    for (const auto& pControlNumParameters : m_pControlNumParameters) {
+    for (const auto& pControlNumParameters : std::as_const(m_pControlNumParameters)) {
         pControlNumParameters->setReadOnly();
     }
 
@@ -55,7 +55,7 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlNumParameterSlots.insert(EffectParameterType::BUTTON,
             QSharedPointer<ControlObject>(
                     new ControlObject(ConfigKey(m_group, "num_button_parameterslots"))));
-    for (const auto& pControlNumParameterSlots : m_pControlNumParameterSlots) {
+    for (const auto& pControlNumParameterSlots : std::as_const(m_pControlNumParameterSlots)) {
         pControlNumParameterSlots->setReadOnly();
     }
 
@@ -179,7 +179,7 @@ void EffectSlot::updateEngineState() {
     pRequest->SetEffectParameters.enabled = m_pControlEnabled->toBool();
     m_pMessenger->writeRequest(pRequest);
 
-    for (const auto& parameterList : m_allParameters) {
+    for (const auto& parameterList : std::as_const(m_allParameters)) {
         for (auto const& pParameter : parameterList) {
             pParameter->updateEngineState();
         }
@@ -367,15 +367,15 @@ void EffectSlot::unloadEffect() {
     }
 
     m_pControlLoaded->forceSet(0.0);
-    for (const auto& pControlNumParameters : m_pControlNumParameters) {
+    for (const auto& pControlNumParameters : std::as_const(m_pControlNumParameters)) {
         pControlNumParameters->forceSet(0.0);
     }
 
-    for (auto& slotList : m_parameterSlots) {
+    for (auto& slotList : std::as_const(m_parameterSlots)) {
         // Do not delete the slots; clear the parameters from the slots
         // The parameter slots are used by the next effect, but the EffectParameters
         // are deleted below.
-        for (auto pSlot : slotList) {
+        for (auto pSlot : std::as_const(slotList)) {
             pSlot->clear();
         }
     }
@@ -515,8 +515,8 @@ void EffectSlot::slotClear(double v) {
 }
 
 void EffectSlot::syncSofttakeover() {
-    for (const auto& parameterSlotList : m_parameterSlots) {
-        for (const auto& pParameterSlot : parameterSlotList) {
+    for (const auto& parameterSlotList : std::as_const(m_parameterSlots)) {
+        for (const auto& pParameterSlot : std::as_const(parameterSlotList)) {
             if (pParameterSlot->parameterType() == EffectParameterType::KNOB) {
                 pParameterSlot->syncSofttakeover();
             }
@@ -551,7 +551,7 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
 
     // Only knobs are linked to the metaknob; not buttons
     const auto& knobParameters = m_parameterSlots.value(EffectParameterType::KNOB);
-    for (const auto& pParameterSlot : knobParameters) {
+    for (const auto& pParameterSlot : std::as_const(knobParameters)) {
         if (pParameterSlot->parameterType() == EffectParameterType::KNOB) {
             pParameterSlot->onEffectMetaParameterChanged(v, force);
         }

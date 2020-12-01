@@ -86,7 +86,7 @@ void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_gr
     // EqualizerEffectChains, QuickEffectChains, and OutputEffectChains
     // only process one input channel, so they do not need to have new input
     // channels registered.
-    for (EffectChainPointer pChainSlot : m_standardEffectChains) {
+    for (EffectChainPointer pChainSlot : std::as_const(m_standardEffectChains)) {
         pChainSlot->registerInputChannel(handle_group);
     }
 }
@@ -217,8 +217,8 @@ void EffectsManager::saveEffectsXml() {
     }
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
-    for (const auto& pChainSlot : m_standardEffectChains) {
-        auto pPreset = EffectChainPresetPointer(new EffectChainPreset(pChainSlot.get()));
+    for (const auto& pChainSlot : std::as_const(m_standardEffectChains)) {
+        auto pPreset = EffectChainPresetPointer::create(pChainSlot.get());
         standardEffectChainPresets.append(pPreset);
     }
 

@@ -80,7 +80,7 @@ void DlgPrefEffects::slotUpdate() {
     m_pVisibleEffectsModel->setList(visibleEffects);
 
     QList<EffectManifestPointer> hiddenEffects = m_pBackendManager->getManifests();
-    for (const auto& pManifest : visibleEffects) {
+    for (const auto& pManifest : std::as_const(visibleEffects)) {
         hiddenEffects.removeAll(pManifest);
     }
     m_pHiddenEffectsModel->setList(hiddenEffects);
@@ -196,7 +196,8 @@ void DlgPrefEffects::slotExportPreset() {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
-    for (const auto& index : m_pFocusedChainList->selectionModel()->selectedIndexes()) {
+    const auto& selectedIndices = m_pFocusedChainList->selectionModel()->selectedIndexes();
+    for (const auto& index : selectedIndices) {
         const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
         m_pChainPresetManager->exportPreset(selectedPresetName);
     }
@@ -207,7 +208,8 @@ void DlgPrefEffects::slotRenamePreset() {
         return;
     }
     saveChainPresetLists();
-    for (const auto& index : m_pFocusedChainList->selectionModel()->selectedIndexes()) {
+    const auto& selectedIndices = m_pFocusedChainList->selectionModel()->selectedIndexes();
+    for (const auto& index : selectedIndices) {
         const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
         m_pChainPresetManager->renamePreset(selectedPresetName);
     }
@@ -233,7 +235,8 @@ void DlgPrefEffects::slotDeletePreset() {
             pUnfocusedChainList->model());
     auto unfocusedChainStringList = pUnfocusedModel->stringList();
 
-    for (const auto& index : m_pFocusedChainList->selectionModel()->selectedIndexes()) {
+    const auto& selectedIndices = m_pFocusedChainList->selectionModel()->selectedIndexes();
+    for (const auto& index : selectedIndices) {
         QString selectedPresetName =
                 m_pFocusedChainList->model()->data(index).toString();
         focusedChainStringList.removeAll(selectedPresetName);
