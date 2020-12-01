@@ -102,18 +102,21 @@ CueControl::CueControl(const QString& group,
 
     m_pCueGotoAndPlay =
             new ControlPushButton(ConfigKey(group, "cue_gotoandplay"));
+    m_pCueGotoAndPlay->setMacroRecordable(true);
     connect(m_pCueGotoAndPlay, &ControlObject::valueChanged,
             this, &CueControl::cueGotoAndPlay,
             Qt::DirectConnection);
 
     m_pCuePlay =
             new ControlPushButton(ConfigKey(group, "cue_play"));
+    m_pCuePlay->setMacroRecordable(true);
     connect(m_pCuePlay, &ControlObject::valueChanged,
             this, &CueControl::cuePlay,
             Qt::DirectConnection);
 
     m_pCueGotoAndStop =
             new ControlPushButton(ConfigKey(group, "cue_gotoandstop"));
+    m_pCueGotoAndStop->setMacroRecordable(true);
     connect(m_pCueGotoAndStop, &ControlObject::valueChanged,
             this, &CueControl::cueGotoAndStop,
             Qt::DirectConnection);
@@ -124,11 +127,13 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pCueCDJ = new ControlPushButton(ConfigKey(group, "cue_cdj"));
+    m_pCueCDJ->setMacroRecordable(true);
     connect(m_pCueCDJ, &ControlObject::valueChanged,
             this, &CueControl::cueCDJ,
             Qt::DirectConnection);
 
     m_pCueDefault = new ControlPushButton(ConfigKey(group, "cue_default"));
+    m_pCueDefault->setMacroRecordable(true);
     connect(m_pCueDefault, &ControlObject::valueChanged,
             this, &CueControl::cueDefault,
             Qt::DirectConnection);
@@ -158,6 +163,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pIntroStartActivate = new ControlPushButton(ConfigKey(group, "intro_start_activate"));
+    m_pIntroStartActivate->setMacroRecordable(true);
     connect(m_pIntroStartActivate, &ControlObject::valueChanged,
             this, &CueControl::introStartActivate,
             Qt::DirectConnection);
@@ -179,6 +185,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pIntroEndActivate = new ControlPushButton(ConfigKey(group, "intro_end_activate"));
+    m_pIntroEndActivate->setMacroRecordable(true);
     connect(m_pIntroEndActivate, &ControlObject::valueChanged,
             this, &CueControl::introEndActivate,
             Qt::DirectConnection);
@@ -200,6 +207,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pOutroStartActivate = new ControlPushButton(ConfigKey(group, "outro_start_activate"));
+    m_pOutroStartActivate->setMacroRecordable(true);
     connect(m_pOutroStartActivate, &ControlObject::valueChanged,
             this, &CueControl::outroStartActivate,
             Qt::DirectConnection);
@@ -221,6 +229,7 @@ CueControl::CueControl(const QString& group,
             Qt::DirectConnection);
 
     m_pOutroEndActivate = new ControlPushButton(ConfigKey(group, "outro_end_activate"));
+    m_pOutroEndActivate->setMacroRecordable(true);
     connect(m_pOutroEndActivate, &ControlObject::valueChanged,
             this, &CueControl::outroEndActivate,
             Qt::DirectConnection);
@@ -2269,21 +2278,25 @@ HotcueControl::HotcueControl(const QString& group, int i)
             Qt::DirectConnection);
 
     m_hotcueGoto = new ControlPushButton(keyForControl(i, "goto"));
+    m_hotcueGoto->setMacroRecordable(true);
     connect(m_hotcueGoto, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueGoto,
             Qt::DirectConnection);
 
     m_hotcueGotoAndPlay = new ControlPushButton(keyForControl(i, "gotoandplay"));
+    m_hotcueGotoAndPlay->setMacroRecordable(true);
     connect(m_hotcueGotoAndPlay, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueGotoAndPlay,
             Qt::DirectConnection);
 
     m_hotcueGotoAndStop = new ControlPushButton(keyForControl(i, "gotoandstop"));
+    m_hotcueGotoAndStop->setMacroRecordable(true);
     connect(m_hotcueGotoAndStop, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueGotoAndStop,
             Qt::DirectConnection);
 
     m_hotcueGotoAndLoop = new ControlPushButton(keyForControl(i, "gotoandloop"));
+    m_hotcueGotoAndLoop->setMacroRecordable(true);
     connect(m_hotcueGotoAndLoop,
             &ControlObject::valueChanged,
             this,
@@ -2293,6 +2306,7 @@ HotcueControl::HotcueControl(const QString& group, int i)
     // Enable/disable the loop associated with this hotcue (either a saved loop
     // or a beatloop from the hotcue position if this is a regular hotcue).
     m_hotcueCueLoop = new ControlPushButton(keyForControl(i, "cueloop"));
+    m_hotcueCueLoop->setMacroRecordable(true);
     connect(m_hotcueCueLoop,
             &ControlObject::valueChanged,
             this,
@@ -2300,6 +2314,7 @@ HotcueControl::HotcueControl(const QString& group, int i)
             Qt::DirectConnection);
 
     m_hotcueActivate = new ControlPushButton(keyForControl(i, "activate"));
+    m_hotcueActivate->setMacroRecordable(true);
     connect(m_hotcueActivate, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueActivate,
             Qt::DirectConnection);
@@ -2312,6 +2327,7 @@ HotcueControl::HotcueControl(const QString& group, int i)
             Qt::DirectConnection);
 
     m_hotcueActivateLoop = new ControlPushButton(keyForControl(i, "activateloop"));
+    m_hotcueActivateLoop->setMacroRecordable(true);
     connect(m_hotcueActivateLoop,
             &ControlObject::valueChanged,
             this,

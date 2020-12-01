@@ -111,24 +111,28 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
+    m_playButton->setMacroRecordable(true);
     m_playButton->connectValueChangeRequest(
             this, &EngineBuffer::slotControlPlayRequest,
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
+    m_playStartButton->setMacroRecordable(true);
     connect(m_playStartButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlPlayFromStart,
             Qt::DirectConnection);
 
     // Jump to start and stop button
     m_stopStartButton = new ControlPushButton(ConfigKey(m_group, "start_stop"));
+    m_stopStartButton->setMacroRecordable(true);
     connect(m_stopStartButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlJumpToStartAndStop,
             Qt::DirectConnection);
 
     //Stop playback (for sampler)
     m_stopButton = new ControlPushButton(ConfigKey(m_group, "stop"));
+    m_stopButton->setMacroRecordable(true);
     connect(m_stopButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlStop,
             Qt::DirectConnection);
@@ -136,12 +140,14 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Start button
     m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
     m_startButton->setButtonMode(ControlPushButton::TRIGGER);
+    m_startButton->setMacroRecordable(true);
     connect(m_startButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlStart,
             Qt::DirectConnection);
 
     // End button
     m_endButton = new ControlPushButton(ConfigKey(m_group, "end"));
+    m_endButton->setMacroRecordable(true);
     connect(m_endButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlEnd,
             Qt::DirectConnection);
@@ -172,6 +178,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
+    m_pKeylock->setMacroRecordable(true);
 
     m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
     connect(m_pEject, &ControlObject::valueChanged,
