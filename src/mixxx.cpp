@@ -219,7 +219,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
     ThreadLocalMacroRecorder::setGlobalInstance(
-            QSharedPointer<ThreadLocalMacroRecorder>(
+            std::shared_ptr<ThreadLocalMacroRecorder>(
                     new ThreadLocalMacroRecorder()));
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
@@ -758,7 +758,7 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
     delete m_pEffectsManager;
 
-    ThreadLocalMacroRecorder::setGlobalInstance(QSharedPointer<ThreadLocalMacroRecorder>());
+    ThreadLocalMacroRecorder::setGlobalInstance(std::shared_ptr<ThreadLocalMacroRecorder>());
     delete m_pTouchShift;
 
     WaveformWidgetFactory::destroy();

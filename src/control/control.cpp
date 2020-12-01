@@ -35,7 +35,8 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
           m_confirmRequired(false),
-          m_bMacroRecordable(false) {
+          m_bMacroRecordable(false),
+          m_pMacroRecorder(ThreadLocalMacroRecorder::globalInstance()) {
     initialize(defaultValue);
 }
 

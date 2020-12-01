@@ -1293,6 +1293,7 @@ add_executable(mixxx-test
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
   src/test/main.cpp
+  src/test/macrorecorder_test.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp
   src/test/metaknob_link_test.cpp

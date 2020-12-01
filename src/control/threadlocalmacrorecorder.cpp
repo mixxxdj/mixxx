@@ -4,11 +4,17 @@
 #include "control/macrorecorder.h"
 
 //static
-QSharedPointer<ThreadLocalMacroRecorder> ThreadLocalMacroRecorder::s_pMacroRecorder;
+std::shared_ptr<ThreadLocalMacroRecorder> ThreadLocalMacroRecorder::s_pMacroRecorder;
 
 ThreadLocalMacroRecorder::ThreadLocalMacroRecorder(QObject* parent)
         : QObject(parent),
-          m_pCoRecording(ConfigKey("[MacroRecorder]", "recording")) {
+          m_coRecording(ConfigKey("[MacroRecorder]", "recording")),
+          m_coTrigger(ConfigKey("[MacroRecorder]", "trigger")) {
+    m_coTrigger.setButtonMode(ControlPushButton::TRIGGER);
+    connect(&m_coTrigger,
+            &ControlObject::valueChanged,
+            this,
+            &ThreadLocalMacroRecorder::slotTriggered);
 }
 
 MacroRecorder* ThreadLocalMacroRecorder::get() {
@@ -16,4 +22,8 @@ MacroRecorder* ThreadLocalMacroRecorder::get() {
         m_pMacroRecorder.setLocalData(new MacroRecorder(this));
     }
     return m_pMacroRecorder.localData();
+}
+
+void ThreadLocalMacroRecorder::slotTriggered(double) {
+    m_coRecording.set(0);
 }

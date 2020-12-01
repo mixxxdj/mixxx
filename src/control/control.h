@@ -29,6 +29,8 @@ enum class ControlFlag {
 Q_DECLARE_FLAGS(ControlFlags, ControlFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ControlFlags)
 
+class ThreadLocalMacroRecorder;
+
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
@@ -156,6 +158,11 @@ class ControlDoublePrivate : public QObject {
         m_bMacroRecordable = macroRecordable;
     }
 
+    // Injects a specific MacroRecorder. For tests only.
+    void setMacroRecorder(std::shared_ptr<ThreadLocalMacroRecorder> pMacroRecorder) {
+        m_pMacroRecorder = std::move(pMacroRecorder);
+    }
+
   signals:
     // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
@@ -210,6 +217,8 @@ class ControlDoublePrivate : public QObject {
     ControlValueAtomic<double> m_defaultValue;
 
     QSharedPointer<ControlNumericBehavior> m_pBehavior;
+
+    std::shared_ptr<ThreadLocalMacroRecorder> m_pMacroRecorder;
 
     // Hack to implement persistent controls. This is a pointer to the current
     // user configuration object (if one exists). In general, we do not want the

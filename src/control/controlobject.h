@@ -17,13 +17,14 @@
 
 #pragma once
 
-#include <QObject>
 #include <QEvent>
 #include <QMutex>
+#include <QObject>
+#include <utility>
 
-#include "preferences/usersettings.h"
-#include "controllers/midi/midimessage.h"
 #include "control/control.h"
+#include "controllers/midi/midimessage.h"
+#include "preferences/usersettings.h"
 
 class ControlObject : public QObject {
     Q_OBJECT
@@ -173,6 +174,13 @@ class ControlObject : public QObject {
 
     // Installs a value-change request handler that ignores all sets.
     void setReadOnly();
+
+    // Injects a specific MacroRecorder. For tests only.
+    void setMacroRecorder(std::shared_ptr<ThreadLocalMacroRecorder> pMacroRecorder) {
+        if (m_pControl) {
+            m_pControl->setMacroRecorder(std::move(pMacroRecorder));
+        }
+    }
 
   signals:
     void valueChanged(double);
