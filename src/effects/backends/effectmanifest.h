@@ -154,6 +154,8 @@ class EffectManifest {
         m_metaknobDefault = metaknobDefault;
     }
 
+    /// For internal use only
+    /// To display the backend name in the UI, use translatedBackendName()
     QString backendName() const {
         switch (m_backendType) {
             case EffectBackendType::BuiltIn:
