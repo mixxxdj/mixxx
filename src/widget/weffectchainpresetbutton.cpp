@@ -46,7 +46,7 @@ void WEffectChainPresetButton::populateMenu() {
 
     // Chain preset items
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
-        m_pMenu->addAction(pChainPreset->name(), [this, pChainPreset]() {
+        m_pMenu->addAction(pChainPreset->name(), this, [this, pChainPreset]() {
             m_pChain->loadChainPreset(pChainPreset);
         });
     }
@@ -118,7 +118,7 @@ void WEffectChainPresetButton::populateMenu() {
             }
             pEffectMenu->addSeparator();
         }
-        pEffectMenu->addAction(tr("Save snapshot"), [this, pEffectSlot] {
+        pEffectMenu->addAction(tr("Save snapshot"), this, [this, pEffectSlot] {
             m_pEffectsManager->getEffectPresetManager()->saveDefaultForEffect(pEffectSlot);
         });
         m_pMenu->addMenu(pEffectMenu);

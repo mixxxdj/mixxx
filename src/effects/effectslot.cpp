@@ -406,7 +406,8 @@ void EffectSlot::loadParameters() {
                 numParameters(parameterType));
 
         int slot = 0;
-        for (auto pParameter : m_loadedParameters.value(parameterType)) {
+        const auto& loadedParameters = m_loadedParameters.value(parameterType);
+        for (auto pParameter : loadedParameters) {
             // LV2 effects may have more parameters than there are slots available
             if ((unsigned)slot >= kDefaultMaxParameters) {
                 return;
@@ -428,7 +429,8 @@ void EffectSlot::loadParameters() {
         }
 
         m_hiddenParameters[parameterType].clear();
-        for (auto pParameter : m_allParameters.value(parameterType)) {
+        const auto& allParameters = m_allParameters.value(parameterType);
+        for (auto pParameter : allParameters) {
             if (!m_loadedParameters.value(parameterType).contains(pParameter)) {
                 m_hiddenParameters[parameterType].append(pParameter);
             }
