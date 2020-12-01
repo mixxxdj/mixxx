@@ -57,26 +57,26 @@ class EffectManifestParameter {
 
     static QString LinkTypeToString (LinkType type) {
         if (type == LinkType::LINKED) {
-            return "LINKED";
+            return QLatin1String("LINKED");
         } else if (type == LinkType::LINKED_LEFT) {
-            return "LINKED_LEFT";
+            return QLatin1String("LINKED_LEFT");
         } else if (type == LinkType::LINKED_RIGHT) {
-            return "LINKED_RIGHT";
+            return QLatin1String("LINKED_RIGHT");
         } else if (type == LinkType::LINKED_LEFT_RIGHT) {
-            return "LINKED_LEFT_RIGHT";
+            return QLatin1String("LINKED_LEFT_RIGHT");
         } else {
-            return "NONE";
+            return QLatin1String("NONE");
         }
     }
 
     static LinkType LinkTypeFromString (const QString& string) {
-        if (string == "LINKED") {
+        if (string == QLatin1String("LINKED")) {
             return LinkType::LINKED;
-        } else if (string == "LINKED_LEFT") {
+        } else if (string == QLatin1String("LINKED_LEFT")) {
             return LinkType::LINKED_LEFT;
-        } else if (string == "LINKED_RIGHT") {
+        } else if (string == QLatin1String("LINKED_RIGHT")) {
             return LinkType::LINKED_RIGHT;
-        } else if (string == "LINKED_LEFT_RIGHT") {
+        } else if (string == QLatin1String("LINKED_LEFT_RIGHT")) {
             return LinkType::LINKED_LEFT_RIGHT;
         } else {
             return LinkType::NONE;
