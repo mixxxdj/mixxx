@@ -61,7 +61,7 @@ void WEffectChainPresetSelector::populate() {
     } else {
         presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
     }
-    for (const auto& pChainPreset : presetList) {
+    for (const auto& pChainPreset : std::as_const(presetList)) {
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
                 width() - 2);

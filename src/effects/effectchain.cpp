@@ -310,7 +310,7 @@ EffectSlotPointer EffectChain::getEffectSlot(unsigned int slotNumber) {
 }
 
 void EffectChain::slotControlClear(double v) {
-    for (EffectSlotPointer pEffectSlot : m_effectSlots) {
+    for (EffectSlotPointer pEffectSlot : std::as_const(m_effectSlots)) {
         pEffectSlot->slotClear(v);
     }
 }
@@ -319,7 +319,7 @@ void EffectChain::slotControlChainSuperParameter(double v, bool force) {
     // qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
     m_pControlChainSuperParameter->set(v);
-    for (const auto& pEffectSlot : m_effectSlots) {
+    for (const auto& pEffectSlot : std::as_const(m_effectSlots)) {
         pEffectSlot->setMetaParameter(v, force);
     }
 }

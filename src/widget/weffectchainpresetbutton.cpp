@@ -45,8 +45,8 @@ void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
 
     // Chain preset items
-    for (const auto pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
-        m_pMenu->addAction(pChainPreset->name(), [=]() {
+    for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
+        m_pMenu->addAction(pChainPreset->name(), [this, pChainPreset]() {
             m_pChain->loadChainPreset(pChainPreset);
         });
     }
@@ -59,7 +59,7 @@ void WEffectChainPresetButton::populateMenu() {
 
     // Effect parameter hiding/showing and saving snapshots
     int effectSlotIndex = 0;
-    for (const auto pEffectSlot : m_pChain->getEffectSlots()) {
+    for (const auto& pEffectSlot : m_pChain->getEffectSlots()) {
         const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
         const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
 
@@ -77,7 +77,7 @@ void WEffectChainPresetButton::populateMenu() {
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
             const EffectManifestParameter::ParameterType parameterType =
                     static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
-            for (const auto pParameter : loadedParameters.value(parameterType)) {
+            for (const auto& pParameter : loadedParameters.value(parameterType)) {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(true);
                 pCheckbox->setText(pParameter->manifest()->name());
@@ -97,7 +97,7 @@ void WEffectChainPresetButton::populateMenu() {
                 pEffectMenu->addAction(pAction.get());
             }
 
-            for (const auto pParameter : hiddenParameters.value(parameterType)) {
+            for (const auto& pParameter : hiddenParameters.value(parameterType)) {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(false);
                 pCheckbox->setText(pParameter->manifest()->name());

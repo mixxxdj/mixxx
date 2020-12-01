@@ -59,7 +59,7 @@ EffectPreset::EffectPreset(const EffectManifestPointer pManifest) {
     m_id = pManifest->id();
     m_backendType = pManifest->backendType();
     m_dMetaParameter = pManifest->metaknobDefault();
-    for (const auto pParameterManifest : pManifest->parameters()) {
+    for (const auto& pParameterManifest : pManifest->parameters()) {
         m_effectParameterPresets.append(EffectParameterPreset(pParameterManifest));
     }
 }

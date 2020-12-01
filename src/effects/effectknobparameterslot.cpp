@@ -84,7 +84,7 @@ void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParame
                 static_cast<double>(pEffectParameter->linkInversion()));
     }
 
-    emit(updated());
+    emit updated();
 }
 
 void EffectKnobParameterSlot::clear() {
@@ -101,7 +101,7 @@ void EffectKnobParameterSlot::clear() {
         static_cast<double>(EffectManifestParameter::LinkType::NONE));
     m_pMetaknobSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
-    emit(updated());
+    emit updated();
 }
 
 void EffectKnobParameterSlot::slotParameterValueChanged(double value) {

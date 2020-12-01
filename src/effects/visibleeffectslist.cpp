@@ -71,7 +71,7 @@ void VisibleEffectsList::saveEffectsXml(QDomDocument* pDoc) {
     QDomElement root = pDoc->documentElement();
     QDomElement visibleEffectsElement = pDoc->createElement(EffectXml::VisibleEffects);
     root.appendChild(visibleEffectsElement);
-    for (const auto& pManifest : m_list) {
+    for (const auto& pManifest : std::as_const(m_list)) {
         VERIFY_OR_DEBUG_ASSERT(pManifest) {
             continue;
         }

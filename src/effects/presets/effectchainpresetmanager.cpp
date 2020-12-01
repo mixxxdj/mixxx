@@ -140,7 +140,7 @@ void EffectChainPresetManager::importPreset() {
                 }
 
                 bool effectSupported = false;
-                for (EffectManifestPointer pManifest : m_pBackendManager->getManifests()) {
+                for (const EffectManifestPointer& pManifest : m_pBackendManager->getManifests()) {
                     if (pManifest->id() == pEffectPreset->id() &&
                             pManifest->backendType() ==
                                     pEffectPreset->backendType()) {
@@ -375,7 +375,7 @@ void EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
 }
 
 EffectsXmlData EffectChainPresetManager::readEffectsXml(
-        const QDomDocument& doc, QStringList deckStrings) {
+        const QDomDocument& doc, const QStringList& deckStrings) {
     EffectManifestPointer pDefaultQuickEffectManifest = m_pBackendManager->getManifest(
             FilterEffect::getId(), EffectBackendType::BuiltIn);
     auto defaultQuickEffectChainPreset = EffectChainPresetPointer(
@@ -447,7 +447,8 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
                 m_pConfig->getResourcePath() + kEffectChainPresetDirectory);
         QDir defaultChainPresetsDir(defaultPresetsPath);
         defaultChainPresetsDir.setFilter(QDir::Files | QDir::Readable);
-        for (const auto& fileName : defaultChainPresetsDir.entryList()) {
+        const auto& fileNames = defaultChainPresetsDir.entryList();
+        for (const auto& fileName : fileNames) {
             QString copiedFileName = savedPresetsPath + kFolderDelimiter + fileName;
             QFile::copy(defaultPresetsPath + kFolderDelimiter + fileName,
                     copiedFileName);
@@ -473,14 +474,14 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     }
 
     if (quickEffectChainPresetsSorted.empty()) {
-        for (const auto& presetName : chainPresetsSorted) {
+        for (const auto& presetName : std::as_const(chainPresetsSorted)) {
             quickEffectChainPresetsSorted.append(presetName);
         }
         // On first run of Mixxx, generate QuickEffect chain presets for every
         // effect with a default metaknob linking. These are generated rather
         // than included with Mixxx in res/effects/chains so the translated
         // names are used.
-        QList<EffectManifestPointer> manifestList;
+        QVector<EffectManifestPointer> manifestList;
         for (const auto& pManifest : m_pBackendManager->getManifests()) {
             if (pManifest->hasMetaKnobLinking()) {
                 manifestList.append(pManifest);
@@ -500,7 +501,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // in either preset list, the user has placed them there since the last
     // time Mixxx was run. Prepend these presets to the lists for both the
     // regular effect units and QuickEffects.
-    for (const EffectChainPresetPointer& pPreset : m_effectChainPresets) {
+    for (const EffectChainPresetPointer& pPreset : std::as_const(m_effectChainPresets)) {
         if (!chainPresetsSorted.contains(pPreset->name()) &&
                 !quickEffectChainPresetsSorted.contains(pPreset->name())) {
             chainPresetsSorted.prepend(pPreset->name());
@@ -531,21 +532,21 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     return EffectsXmlData{quickEffectPresets, standardEffectChainPresets};
 }
 
-void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, EffectsXmlData data) {
+void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data) {
     // Save presets for current state of standard chains
     QDomElement rootElement = pDoc->documentElement();
     QDomElement rackElement = pDoc->createElement(EffectXml::Rack);
     rootElement.appendChild(rackElement);
     QDomElement chainsElement = pDoc->createElement(EffectXml::ChainsRoot);
     rackElement.appendChild(chainsElement);
-    for (const auto& pPreset : data.standardEffectChainPresets) {
+    for (const auto& pPreset : std::as_const(data.standardEffectChainPresets)) {
         chainsElement.appendChild(pPreset->toXml(pDoc));
     }
 
     // Save order of custom chain presets
     QDomElement chainPresetListElement =
             pDoc->createElement(EffectXml::ChainPresetList);
-    for (const auto& pPreset : m_effectChainPresetsSorted) {
+    for (const auto& pPreset : std::as_const(m_effectChainPresetsSorted)) {
         XmlParse::addElement(*pDoc,
                 chainPresetListElement,
                 EffectXml::ChainPresetName,
@@ -556,7 +557,7 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, EffectsXmlData
     // Save order of QuickEffect chain presets
     QDomElement quickEffectChainPresetListElement =
             pDoc->createElement(EffectXml::QuickEffectList);
-    for (const auto& pPreset : m_quickEffectChainPresetsSorted) {
+    for (const auto& pPreset : std::as_const(m_quickEffectChainPresetsSorted)) {
         XmlParse::addElement(*pDoc,
                 quickEffectChainPresetListElement,
                 EffectXml::ChainPresetName,

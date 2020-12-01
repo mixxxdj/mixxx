@@ -34,8 +34,8 @@ QString StandardEffectChain::formatEffectChainGroup(const int iChainNumber) {
 QString StandardEffectChain::formatEffectSlotGroup(const int iChainSlotNumber,
         const int iEffectSlotNumber) {
     return QString("[EffectRack1_EffectUnit%1_Effect%2]")
-            .arg(QString::number(iChainSlotNumber + 1))
-            .arg(QString::number(iEffectSlotNumber + 1));
+            .arg(QString::number(iChainSlotNumber + 1),
+                    QString::number(iEffectSlotNumber + 1));
 }
 
 OutputEffectChain::OutputEffectChain(EffectsManager* pEffectsManager,
@@ -131,8 +131,8 @@ QString QuickEffectChain::formatEffectChainGroup(const QString& group) {
 QString QuickEffectChain::formatEffectSlotGroup(
         const QString& group, const int iEffectSlotNumber) {
     return QString("[QuickEffectRack1_%1_Effect%2]")
-            .arg(group)
-            .arg(QString::number(iEffectSlotNumber + 1));
+            .arg(group,
+                    QString::number(iEffectSlotNumber + 1));
 }
 
 int QuickEffectChain::presetIndex() const {

@@ -66,23 +66,30 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSett
           m_bGainAutoReset(false) {
     setupUi(this);
     // Connection
-    connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
-    connect(SliderHiEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));
-    connect(SliderHiEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateHiEQ()));
+    connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefEQ::slotUpdateHiEQ);
+    connect(SliderHiEQ, &QSlider::sliderMoved, this, &DlgPrefEQ::slotUpdateHiEQ);
+    connect(SliderHiEQ, &QSlider::sliderReleased, this, &DlgPrefEQ::slotUpdateHiEQ);
 
-    connect(SliderLoEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateLoEQ()));
-    connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
-    connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
+    connect(SliderLoEQ, &QSlider::valueChanged, this, &DlgPrefEQ::slotUpdateLoEQ);
+    connect(SliderLoEQ, &QSlider::sliderMoved, this, &DlgPrefEQ::slotUpdateLoEQ);
+    connect(SliderLoEQ, &QSlider::sliderReleased, this, &DlgPrefEQ::slotUpdateLoEQ);
 
-    connect(CheckBoxEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdateEqAutoReset(int)));
-    connect(CheckBoxGainAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdateGainAutoReset(int)));
-    connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
+    connect(CheckBoxEqAutoReset, &QCheckBox::stateChanged, this, &DlgPrefEQ::slotUpdateEqAutoReset);
+    connect(CheckBoxGainAutoReset,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefEQ::slotUpdateGainAutoReset);
+    connect(CheckBoxBypass, &QCheckBox::stateChanged, this, &DlgPrefEQ::slotBypass);
 
-    connect(CheckBoxEqOnly, SIGNAL(stateChanged(int)),
-            this, SLOT(slotPopulateDeckEffectSelectors()));
+    connect(CheckBoxEqOnly,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefEQ::slotPopulateDeckEffectSelectors);
 
-    connect(CheckBoxSingleEqEffect, SIGNAL(stateChanged(int)),
-            this, SLOT(slotSingleEqChecked(int)));
+    connect(CheckBoxSingleEqEffect,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefEQ::slotSingleEqChecked);
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
@@ -116,8 +123,10 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // Create the drop down list for EQs
         QComboBox* eqComboBox = new QComboBox(this);
         m_deckEqEffectSelectors.append(eqComboBox);
-        connect(eqComboBox, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotEffectChangedOnDeck(int)));
+        connect(eqComboBox,
+                QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this,
+                &DlgPrefEQ::slotEffectChangedOnDeck);
 
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
@@ -178,7 +187,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
 }
 
 void DlgPrefEQ::populateDeckBoxList(
-        const QList<QComboBox*> boxList,
+        const QList<QComboBox*>& boxList,
         EffectManifestFilterFnc filterFunc) {
     const QList<EffectManifestPointer> pManifestList = getFilteredManifests(filterFunc);
     for (QComboBox* box : boxList) {
@@ -305,7 +314,7 @@ void DlgPrefEQ::setDefaultShelves() {
 void DlgPrefEQ::slotResetToDefaults() {
     slotMasterEQToDefault();
     setDefaultShelves();
-    for (QComboBox* pCombo : m_deckEqEffectSelectors) {
+    for (QComboBox* pCombo : std::as_const(m_deckEqEffectSelectors)) {
         pCombo->setCurrentIndex(
                pCombo->findData(kDefaultEqId));
     }
@@ -354,7 +363,7 @@ void DlgPrefEQ::applySelections() {
 
 void DlgPrefEQ::applySelectionsToDecks() {
     int deck = 0;
-    for (QComboBox* box : m_deckEqEffectSelectors) {
+    for (QComboBox* box : std::as_const(m_deckEqEffectSelectors)) {
         const EffectManifestPointer pManifest =
                 m_pBackendManager->getManifestFromUniqueId(
                         box->itemData(box->currentIndex()).toString());
@@ -489,7 +498,7 @@ void DlgPrefEQ::slotUpdate() {
     CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
 
     m_eqIndiciesOnUpdate.clear();
-    for (const auto& box : m_deckEqEffectSelectors) {
+    for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
         m_eqIndiciesOnUpdate.append(box->currentIndex());
     }
 }
@@ -508,7 +517,7 @@ void DlgPrefEQ::slotBypass(int state) {
         // Disable effect processing for all decks by setting the appropriate
         // controls to 0 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        for (const auto& box: m_deckEqEffectSelectors) {
+        for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 0);
             deck++;
@@ -519,7 +528,7 @@ void DlgPrefEQ::slotBypass(int state) {
         // Enable effect processing for all decks by setting the appropriate
         // controls to 1 ("[EqualizerRackX_EffectUnitDeck_Effect1],enable")
         int deck = 0;
-        for (const auto& box: m_deckEqEffectSelectors) {
+        for (const auto& box : std::as_const(m_deckEqEffectSelectors)) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 1);
             deck++;
@@ -531,11 +540,12 @@ void DlgPrefEQ::slotBypass(int state) {
 }
 
 void DlgPrefEQ::setUpMasterEQ() {
-    connect(pbResetMasterEq, SIGNAL(clicked(bool)),
-            this, SLOT(slotMasterEQToDefault()));
+    connect(pbResetMasterEq, &QPushButton::clicked, this, &DlgPrefEQ::slotMasterEQToDefault);
 
-    connect(comboBoxMasterEq, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotMasterEqEffectChanged(int)));
+    connect(comboBoxMasterEq,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefEQ::slotMasterEqEffectChanged);
 
     const QString configuredEffectId = m_pConfig->getValue(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
@@ -633,7 +643,10 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slider->setProperty("index", QVariant(i));
                     slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
                     m_masterEQSliders.append(slider);
-                    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateMasterEQParameter(int)));
+                    connect(slider,
+                            &QSlider::sliderMoved,
+                            this,
+                            &DlgPrefEQ::slotUpdateMasterEQParameter);
 
                     QLabel* valueLabel = new QLabel(this);
                     m_masterEQValues.append(valueLabel);
