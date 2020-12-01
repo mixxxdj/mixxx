@@ -115,6 +115,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo       "cmakeCommandArgs": "-DDEBUG_ASSERTIONS_FATAL=ON -DHSS1394=ON -DKEYFINDER=OFF -DLOCALECOMPARE=ON -DMAD=ON -DMEDIAFOUNDATION=ON -DSTATIC_DEPS=ON -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON",
     >>%CMakeSettings% echo       "configurationType": "Release",
     >>%CMakeSettings% echo       "ctestCommandArgs": "",
+    >>%CMakeSettings% echo       "enableClangTidyCodeAnalysis": true,
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
     >>%CMakeSettings% echo       "installRoot": "${projectDir}\\cmake_dist",
@@ -131,6 +132,11 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo           "name": "CMAKE_INTERPROCEDURAL_OPTIMIZATION",
     >>%CMakeSettings% echo           "type": "BOOL",
     >>%CMakeSettings% echo           "value": "FALSE"
+    >>%CMakeSettings% echo         },
+    >>%CMakeSettings% echo         {
+    >>%CMakeSettings% echo           "name": "CMAKE_EXPORT_COMPILE_COMMANDS",
+    >>%CMakeSettings% echo           "type": "BOOL",
+    >>%CMakeSettings% echo           "value": "TRUE"
     >>%CMakeSettings% echo         }
     >>%CMakeSettings% echo       ]
     >>%CMakeSettings% echo     }
