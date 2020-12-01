@@ -29,7 +29,7 @@ class ControlPickerMenu : public QMenu {
     void controlChosen(int controlIndex);
 
   private:
-    QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
+    QMenu* addSubmenu(QString title, QMenu* pParent = NULL);
     void addSingleControl(const QString& group,
             const QString& control,
             const QString& title,
