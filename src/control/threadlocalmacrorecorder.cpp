@@ -10,6 +10,7 @@ ThreadLocalMacroRecorder::ThreadLocalMacroRecorder(QObject* parent)
         : QObject(parent),
           m_coRecording(ConfigKey("[MacroRecorder]", "recording")),
           m_coTrigger(ConfigKey("[MacroRecorder]", "trigger")) {
+    m_coRecording.setButtonMode(ControlPushButton::TOGGLE);
     m_coTrigger.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_coTrigger,
             &ControlObject::valueChanged,
