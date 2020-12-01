@@ -24,7 +24,7 @@ void LV2Backend::enumeratePlugins() {
         if (lilv_plugin_is_replaced(plug)) {
             continue;
         }
-        LV2EffectManifestPointer lv2Manifest(new LV2Manifest(plug, m_properties));
+        auto lv2Manifest = LV2EffectManifestPointer::create(plug, m_properties);
         lv2Manifest->setBackendType(getType());
         m_registeredEffects.insert(lv2Manifest->id(), lv2Manifest);
     }
