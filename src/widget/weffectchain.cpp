@@ -1,6 +1,7 @@
+#include "widget/weffectchain.h"
+
 #include <QtDebug>
 
-#include "widget/weffectchain.h"
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 

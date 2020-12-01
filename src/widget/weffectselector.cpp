@@ -47,7 +47,6 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
     populate();
 }
 
-
 void WEffectSelector::populate() {
     blockSignals(true);
     clear();
@@ -58,22 +57,23 @@ void WEffectSelector::populate() {
     for (int i = 0; i < visibleEffectManifests.size(); ++i) {
         const EffectManifestPointer pManifest = visibleEffectManifests.at(i);
         QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
-                                                       Qt::ElideMiddle,
-                                                       width() - 2);
+                Qt::ElideMiddle,
+                width() - 2);
         addItem(elidedDisplayName, QVariant(pManifest->uniqueId()));
 
         QString name = pManifest->name();
         QString description = pManifest->description();
         // <b> makes the effect name bold. Also, like <span> it serves as hack
         // to get Qt to treat the string as rich text so it automatically wraps long lines.
-        setItemData(i, QVariant(QStringLiteral("<b>") + name + QStringLiteral("</b><br/>") +
-                description), Qt::ToolTipRole);
+        setItemData(i,
+                QVariant(QStringLiteral("<b>") + name +
+                        QStringLiteral("</b><br/>") + description),
+                Qt::ToolTipRole);
     }
 
     //: Displayed when no effect is loaded
     addItem(tr("None"), QVariant());
-    setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
-                Qt::ToolTipRole);
+    setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")), Qt::ToolTipRole);
 
     slotEffectUpdated();
     blockSignals(false);

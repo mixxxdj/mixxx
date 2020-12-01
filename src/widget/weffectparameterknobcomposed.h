@@ -1,8 +1,8 @@
 #ifndef WEFFECTKNOBCOMPOSED_H
 #define WEFFECTKNOBCOMPOSED_H
 
-#include "widget/wknobcomposed.h"
 #include "effects/effectknobparameterslot.h"
+#include "widget/wknobcomposed.h"
 
 class EffectsManager;
 
@@ -13,11 +13,11 @@ class EffectsManager;
 // WEffectParameterKnob, which displays one of e.g. 64
 // pixmaps
 class WEffectParameterKnobComposed : public WKnobComposed {
-  Q_OBJECT
+    Q_OBJECT
   public:
-    WEffectParameterKnobComposed(QWidget* pParent, EffectsManager* pEffectsManager) :
-        WKnobComposed(pParent),
-        m_pEffectsManager(pEffectsManager) {
+    WEffectParameterKnobComposed(QWidget* pParent, EffectsManager* pEffectsManager)
+            : WKnobComposed(pParent),
+              m_pEffectsManager(pEffectsManager) {
         setFocusPolicy(Qt::NoFocus);
     };
 

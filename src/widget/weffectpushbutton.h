@@ -1,16 +1,16 @@
 #ifndef WEFFECTPUSHBUTTON_H
 #define WEFFECTPUSHBUTTON_H
 
-#include <QMenu>
 #include <QAction>
-#include <QMouseEvent>
 #include <QDomNode>
+#include <QMenu>
+#include <QMouseEvent>
 #include <QWidget>
 
-#include "widget/wpushbutton.h"
-#include "effects/effectsmanager.h"
 #include "effects/defs.h"
+#include "effects/effectsmanager.h"
 #include "skin/skincontext.h"
+#include "widget/wpushbutton.h"
 
 class WEffectPushButton : public WPushButton {
     Q_OBJECT

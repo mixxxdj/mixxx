@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QDomNode>
 #include <QComboBox>
+#include <QDomNode>
+
 #include "effects/effectslot.h"
 #include "skin/skincontext.h"
 

@@ -1,8 +1,8 @@
 #ifndef WEFFECTKNOB_H
 #define WEFFECTKNOB_H
 
-#include "widget/wknob.h"
 #include "effects/effectknobparameterslot.h"
+#include "widget/wknob.h"
 
 class EffectsManager;
 
@@ -12,11 +12,11 @@ class EffectsManager;
 // If the knob value can be displayed by rotating a single
 // SVG, use WEffectParameterKnobComposed.
 class WEffectParameterKnob : public WKnob {
-  Q_OBJECT
+    Q_OBJECT
   public:
-    WEffectParameterKnob(QWidget* pParent, EffectsManager* pEffectsManager) :
-        WKnob(pParent),
-        m_pEffectsManager(pEffectsManager) {
+    WEffectParameterKnob(QWidget* pParent, EffectsManager* pEffectsManager)
+            : WKnob(pParent),
+              m_pEffectsManager(pEffectsManager) {
         setFocusPolicy(Qt::NoFocus);
     };
 

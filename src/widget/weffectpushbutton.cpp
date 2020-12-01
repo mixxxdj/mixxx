@@ -90,8 +90,8 @@ void WEffectPushButton::parameterUpdated() {
     // Set tooltip
     if (m_pEffectParameterSlot->isLoaded()) {
         setBaseTooltip(QString("%1\n%2").arg(
-                       m_pEffectParameterSlot->name(),
-                       m_pEffectParameterSlot->description()));
+                m_pEffectParameterSlot->name(),
+                m_pEffectParameterSlot->description()));
     } else {
         // The button should be hidden by the skin when the buttonparameterX_loaded
         // ControlObject indicates no parameter is loaded, so this tooltip should

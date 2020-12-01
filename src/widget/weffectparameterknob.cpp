@@ -1,5 +1,6 @@
-#include "widget/effectwidgetutils.h"
 #include "widget/weffectparameterknob.h"
+
+#include "widget/effectwidgetutils.h"
 
 void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& context) {
     WKnob::setup(node, context);
@@ -23,8 +24,8 @@ void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& contex
 void WEffectParameterKnob::parameterUpdated() {
     if (m_pEffectParameterSlot->isLoaded()) {
         setBaseTooltip(QString("%1\n%2").arg(
-                       m_pEffectParameterSlot->name(),
-                       m_pEffectParameterSlot->description()));
+                m_pEffectParameterSlot->name(),
+                m_pEffectParameterSlot->description()));
     } else {
         // The knob should be hidden by the skin when the parameterX_loaded ControlObject
         // indicates no parameter is loaded, so this tooltip should never be shown.
