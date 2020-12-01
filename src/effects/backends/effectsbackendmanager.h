@@ -12,7 +12,7 @@ class EffectsBackendManager {
     EffectsBackendManager();
     ~EffectsBackendManager() = default;
 
-    inline const QList<EffectManifestPointer>& getManifests() const {
+    const QList<EffectManifestPointer>& getManifests() const {
         return m_manifests;
     };
     const QList<EffectManifestPointer> getManifestsForBackend(EffectBackendType backendType) const;
