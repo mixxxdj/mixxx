@@ -224,19 +224,22 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
 }
 
 /// Selects a child index from a feature and ensures visibility
-void WLibrarySidebar::selectChildIndex(const QModelIndex& index) {
+void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem) {
     SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
     VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
         qDebug() << "model() is not SidebarModel";
         return;
     }
     QModelIndex translated = sidebarModel->translateChildIndex(index);
-    auto pModel = new QItemSelectionModel(sidebarModel);
-    pModel->select(translated, QItemSelectionModel::Select);
-    if (selectionModel()) {
-        selectionModel()->deleteLater();
+
+    if (selectItem) {
+        auto pModel = new QItemSelectionModel(sidebarModel);
+        pModel->select(translated, QItemSelectionModel::Select);
+        if (selectionModel()) {
+            selectionModel()->deleteLater();
+        }
+        setSelectionModel(pModel);
     }
-    setSelectionModel(pModel);
 
     QModelIndex parentIndex = translated.parent();
     while (parentIndex.isValid()) {

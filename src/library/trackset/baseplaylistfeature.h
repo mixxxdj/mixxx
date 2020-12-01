@@ -38,8 +38,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
-    void selectPlaylistInSidebar(int playlistId);
-    int selectSiblingPlaylistId(QModelIndex& start);
+    void selectPlaylistInSidebar(int playlistId, bool select = true);
+    int getSiblingPlaylistIdOf(QModelIndex& start);
 
   public slots:
     void activateChild(const QModelIndex& index) override;
@@ -50,6 +50,10 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotPlaylistTableChangedAndSelect(int playlistId) {
         slotPlaylistTableChanged(playlistId);
         selectPlaylistInSidebar(playlistId);
+    };
+    void slotPlaylistTableChangedAndScrollTo(int playlistId) {
+        slotPlaylistTableChanged(playlistId);
+        selectPlaylistInSidebar(playlistId, false);
     };
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;

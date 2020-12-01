@@ -118,7 +118,7 @@ void BasePlaylistFeature::initActions() {
     connect(&m_playlistDao,
             &PlaylistDAO::lockChanged,
             this,
-            &BasePlaylistFeature::slotPlaylistTableChangedAndSelect);
+            &BasePlaylistFeature::slotPlaylistTableChangedAndScrollTo);
     connect(&m_playlistDao,
             &PlaylistDAO::deleted,
             this,
@@ -157,7 +157,7 @@ int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
     }
 }
 
-void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId) {
+void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
     if (!m_pSidebarWidget) {
         return;
     }
@@ -166,7 +166,7 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId) {
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (index.isValid() && m_pSidebarWidget) {
-        m_pSidebarWidget->selectChildIndex(index);
+        m_pSidebarWidget->selectChildIndex(index, select);
     }
 }
 
@@ -362,7 +362,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
 /// Returns a playlist that is a sibling inside the same parent
 /// as the start index
-int BasePlaylistFeature::selectSiblingPlaylistId(QModelIndex& start) {
+int BasePlaylistFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
     for (int i = start.row() + 1; i >= (start.row() - 1); i -= 2) {
         QModelIndex nextIndex = start.sibling(i, start.column());
         if (nextIndex.isValid()) {
@@ -386,6 +386,10 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
+
+    // we will switch to the sibling if the deleted playlist is currently active
+    bool wasActive = m_pPlaylistTableModel->getPlaylist() == playlistId;
+
     VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return;
     }
@@ -396,13 +400,17 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         return;
     }
 
-    int nextId = selectSiblingPlaylistId(m_lastRightClickedIndex);
+    int siblingId = getSiblingPlaylistIdOf(m_lastRightClickedIndex);
 
     m_playlistDao.deletePlaylist(playlistId);
-    activate();
 
-    if (nextId != kInvalidPlaylistId) {
-        activatePlaylist(nextId);
+    if (siblingId == kInvalidPlaylistId) {
+        return;
+    }
+    if (wasActive) {
+        activatePlaylist(siblingId);
+    } else if (m_pSidebarWidget) {
+        m_pSidebarWidget->selectChildIndex(indexFromPlaylistId(siblingId), false);
     }
 }
 

@@ -47,7 +47,7 @@ SetlogFeature::SetlogFeature(
     m_childModel.setRootItem(TreeItem::newRoot(this));
     constructChildModel(kInvalidPlaylistId);
 
-    m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
+    m_pJoinWithPreviousAction = new QAction(tr("Join with previous (below)"), this);
     connect(m_pJoinWithPreviousAction,
             &QAction::triggered,
             this,
@@ -425,9 +425,6 @@ void SetlogFeature::reloadChildModel(int playlistId) {
             type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
-        if (m_pSidebarWidget) {
-            m_pSidebarWidget->selectChildIndex(m_lastRightClickedIndex);
-        }
     }
 }
 
@@ -451,7 +448,11 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newN
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            activatePlaylist(playlistId);
+            if (playlistId == m_pPlaylistTableModel->getPlaylist()) {
+                activatePlaylist(playlistId);
+            } else if (m_pSidebarWidget) {
+                m_pSidebarWidget->selectChildIndex(indexFromPlaylistId(playlistId), false);
+            }
         }
     }
 }
