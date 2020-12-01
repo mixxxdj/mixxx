@@ -1,6 +1,5 @@
 #include "effects/backends/lv2/lv2effectprocessor.h"
 
-#include "engine/effects/engineeffect.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
