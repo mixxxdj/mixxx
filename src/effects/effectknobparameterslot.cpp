@@ -10,8 +10,10 @@
 #include "effects/effectslot.h"
 #include "util/xml.h"
 
-EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(group, iParameterSlotNumber, EffectParameterType::KNOB) {
+EffectKnobParameterSlot::EffectKnobParameterSlot(
+        const QString& group, const unsigned int iParameterSlotNumber)
+        : EffectParameterSlotBase(
+                  group, iParameterSlotNumber, EffectParameterType::KNOB) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
 
     m_pControlValue = new ControlEffectKnob(

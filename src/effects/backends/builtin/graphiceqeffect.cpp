@@ -196,7 +196,9 @@ void GraphicEQEffect::processChannel(
 
     int bufIndex = 0;
     if (fLow != 0) {
-        pState->m_low->process(pInput, pState->m_pBufs[1 - bufIndex], bufferParameters.samplesPerBuffer());
+        pState->m_low->process(pInput,
+                pState->m_pBufs[1 - bufIndex],
+                bufferParameters.samplesPerBuffer());
         bufIndex = 1 - bufIndex;
     } else {
         pState->m_low->pauseFilter();

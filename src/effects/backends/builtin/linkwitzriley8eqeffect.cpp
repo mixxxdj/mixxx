@@ -116,7 +116,9 @@ void LinkwitzRiley8EQEffect::processChannel(
         pState->setFilters(bufferParameters.sampleRate(), pState->m_loFreq, pState->m_hiFreq);
     }
 
-    pState->m_high2->process(pInput, pState->m_pHighBuf, bufferParameters.samplesPerBuffer()); // HighPass first run
+    pState->m_high2->process(pInput,
+            pState->m_pHighBuf,
+            bufferParameters.samplesPerBuffer()); // HighPass first run
     pState->m_low2->process(pInput,
             pState->m_pLowBuf,
             bufferParameters
@@ -140,7 +142,10 @@ void LinkwitzRiley8EQEffect::processChannel(
                 bufferParameters.samplesPerBuffer());
     }
 
-    pState->m_high1->process(pState->m_pHighBuf, pState->m_pMidBuf, bufferParameters.samplesPerBuffer()); // HighPass + BandPass second run
+    pState->m_high1->process(pState->m_pHighBuf,
+            pState->m_pMidBuf,
+            bufferParameters
+                    .samplesPerBuffer()); // HighPass + BandPass second run
     pState->m_low1->process(pState->m_pLowBuf,
             pState->m_pLowBuf,
             bufferParameters.samplesPerBuffer()); // LowPass second run

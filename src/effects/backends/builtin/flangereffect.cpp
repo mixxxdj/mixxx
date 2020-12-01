@@ -219,7 +219,8 @@ void FlangerEffect::processChannel(
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
         delayLeft[pState->delayPos] = tanh_approx(pInput[i] + regen_ramped * delayedSampleLeft);
-        delayRight[pState->delayPos] = tanh_approx(pInput[i + 1] + regen_ramped * delayedSampleRight);
+        delayRight[pState->delayPos] =
+                tanh_approx(pInput[i + 1] + regen_ramped * delayedSampleRight);
 
         pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
 

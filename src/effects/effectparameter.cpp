@@ -44,7 +44,9 @@ bool EffectParameter::clampValue(double* pValue,
 }
 
 bool EffectParameter::clampValue() {
-    return clampValue(&m_value, m_pParameterManifest->getMinimum(), m_pParameterManifest->getMaximum());
+    return clampValue(&m_value,
+            m_pParameterManifest->getMinimum(),
+            m_pParameterManifest->getMaximum());
 }
 
 double EffectParameter::getValue() const {

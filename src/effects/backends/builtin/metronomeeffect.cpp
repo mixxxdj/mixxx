@@ -37,7 +37,8 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     EffectManifestParameterPointer periodUnit = pManifest->addParameter();
     periodUnit->setId("sync");
     periodUnit->setName(QObject::tr("Sync"));
-    periodUnit->setDescription(QObject::tr("Synchronizes the BPM with the track if it can be retrieved"));
+    periodUnit->setDescription(QObject::tr(
+            "Synchronizes the BPM with the track if it can be retrieved"));
     periodUnit->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
     periodUnit->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

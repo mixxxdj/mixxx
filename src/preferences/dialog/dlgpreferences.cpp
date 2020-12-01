@@ -15,20 +15,20 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "preferences/dialog/dlgpreferences.h"
+
 #include <QDialog>
 #include <QEvent>
-#include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
 #include <QMoveEvent>
 #include <QResizeEvent>
 #include <QScreen>
+#include <QScrollArea>
+#include <QTabBar>
+#include <QTabWidget>
 
-#include "preferences/dialog/dlgpreferences.h"
-
-#include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgpreflibrary.h"
 #include "controllers/dlgprefcontrollers.h"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefsound.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -36,22 +36,22 @@
 #include "preferences/dialog/dlgprefnovinyl.h"
 #endif
 
+#include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefcolors.h"
 #include "preferences/dialog/dlgprefcrossfader.h"
 #include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefwaveform.h"
-#include "preferences/dialog/dlgprefeffects.h"
-#include "preferences/dialog/dlgprefautodj.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
 #endif
 
-#include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefbeats.h"
 #include "preferences/dialog/dlgprefkey.h"
+#include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
 
 #ifdef __MODPLUG__
@@ -66,18 +66,18 @@
 #include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(
-    MixxxMainWindow* mixxx,
-    SkinLoader* pSkinLoader,
-    SoundManager* soundman,
-    PlayerManager* pPlayerManager,
-    ControllerManager* controllers,
-    VinylControlManager* pVCManager,
-    EffectsManager* pEffectsManager,
-    SettingsManager* pSettingsManager,
-    Library* pLibrary)
-    : m_allPages(),
-      m_pConfig(pSettingsManager->settings()),
-      m_pageSizeHint(QSize(0, 0)) {
+        MixxxMainWindow* mixxx,
+        SkinLoader* pSkinLoader,
+        SoundManager* soundman,
+        PlayerManager* pPlayerManager,
+        ControllerManager* controllers,
+        VinylControlManager* pVCManager,
+        EffectsManager* pEffectsManager,
+        SettingsManager* pSettingsManager,
+        Library* pLibrary)
+        : m_allPages(),
+          m_pConfig(pSettingsManager->settings()),
+          m_pageSizeHint(QSize(0, 0)) {
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
 
@@ -218,8 +218,8 @@ DlgPreferences::DlgPreferences(
 DlgPreferences::~DlgPreferences() {
     // store last geometry in mixxx.cfg
     if (m_geometry.size() == 4) {
-        m_pConfig->set(ConfigKey("[Preferences]","geometry"),
-                       m_geometry.join(","));
+        m_pConfig->set(ConfigKey("[Preferences]", "geometry"),
+                m_geometry.join(","));
     }
 
     // When DlgPrefControllers is deleted it manually deletes the controller tree items,
@@ -278,7 +278,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     }
 
     // Standard event processing
-    return QWidget::eventFilter(o,e);
+    return QWidget::eventFilter(o, e);
 }
 
 void DlgPreferences::onHide() {
@@ -291,7 +291,8 @@ void DlgPreferences::onShow() {
     if (m_geometry.length() < 4) {
         // load default values (optimum size)
         m_geometry = m_pConfig->getValue(
-                    ConfigKey("[Preferences]", "geometry")).split(",");
+                                      ConfigKey("[Preferences]", "geometry"))
+                             .split(",");
         if (m_geometry.length() < 4) {
             // Warning! geometry does NOT include the frame/title.
             QRect defaultGeometry = getDefaultGeometry();
@@ -331,10 +332,10 @@ void DlgPreferences::onShow() {
     int offsetY = geometry().top() - frameGeometry().top();
     newX += offsetX;
     newY += offsetY;
-    setGeometry(newX,  // x position
-                newY,  // y position
-                m_geometry[2].toInt(),  // width
-                m_geometry[3].toInt()); // height
+    setGeometry(newX,               // x position
+            newY,                   // y position
+            m_geometry[2].toInt(),  // width
+            m_geometry[3].toInt()); // height
 #endif
     // Move is also needed on linux.
     move(newX, newY);
@@ -347,35 +348,35 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(pButton);
     DlgPreferencePage* pCurrentPage = currentPage();
     switch (role) {
-        case QDialogButtonBox::ResetRole:
-            // Only reset to defaults on the current page.
-            if (pCurrentPage) {
-                pCurrentPage->slotResetToDefaults();
-            }
-            break;
-        case QDialogButtonBox::ApplyRole:
-            // Only apply settings on the current page.
-            if (pCurrentPage) {
-                pCurrentPage->slotApply();
-            }
-            break;
-        case QDialogButtonBox::AcceptRole:
-            emit applyPreferences();
-            accept();
-            break;
-        case QDialogButtonBox::RejectRole:
-            emit cancelPreferences();
-            reject();
-            break;
-        case QDialogButtonBox::HelpRole:
-            if (pCurrentPage) {
-                QUrl helpUrl = pCurrentPage->helpUrl();
-                DEBUG_ASSERT(helpUrl.isValid());
-                QDesktopServices::openUrl(helpUrl);
-            }
-            break;
-        default:
-            break;
+    case QDialogButtonBox::ResetRole:
+        // Only reset to defaults on the current page.
+        if (pCurrentPage) {
+            pCurrentPage->slotResetToDefaults();
+        }
+        break;
+    case QDialogButtonBox::ApplyRole:
+        // Only apply settings on the current page.
+        if (pCurrentPage) {
+            pCurrentPage->slotApply();
+        }
+        break;
+    case QDialogButtonBox::AcceptRole:
+        emit applyPreferences();
+        accept();
+        break;
+    case QDialogButtonBox::RejectRole:
+        emit cancelPreferences();
+        reject();
+        break;
+    case QDialogButtonBox::HelpRole:
+        if (pCurrentPage) {
+            QUrl helpUrl = pCurrentPage->helpUrl();
+            DEBUG_ASSERT(helpUrl.isValid());
+            QDesktopServices::openUrl(helpUrl);
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -444,7 +445,7 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
 void DlgPreferences::moveEvent(QMoveEvent* e) {
     if (m_geometry.length() == 4) {
 #ifdef __WINDOWS__
-    Q_UNUSED(e);
+        Q_UNUSED(e);
         m_geometry[0] = QString::number(frameGeometry().left());
         m_geometry[1] = QString::number(frameGeometry().top());
 #else
@@ -475,7 +476,7 @@ QRect DlgPreferences::getDefaultGeometry() {
     if (frameSize() == size()) {
         // This code is reached in Gnome 2.3
         qDebug() << "guess the size of the window decoration";
-        optimumSize -= QSize(2,30);
+        optimumSize -= QSize(2, 30);
     } else {
         optimumSize -= (frameSize() - size());
     }

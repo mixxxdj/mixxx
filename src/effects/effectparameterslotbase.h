@@ -22,7 +22,9 @@ class EffectSlot;
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber, const EffectParameterType parameterType);
+    EffectParameterSlotBase(const QString& group,
+            const unsigned int iParameterSlotNumber,
+            const EffectParameterType parameterType);
 
     virtual ~EffectParameterSlotBase();
 

@@ -92,7 +92,11 @@ void BitCrusherEffect::processChannel(
         if (pState->accumulator >= 1.0) {
             pState->accumulator -= 1.0f;
             if (bit_depth < 16) {
-                pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_l = floorf(SampleUtil::clampSample(
+                                                pInput[i] * gainCorrection) *
+                                                 scale +
+                                         0.5f) /
+                        scale / gainCorrection;
                 pState->hold_r = floorf(SampleUtil::clampSample(pInput[i + 1] *
                                                 gainCorrection) *
                                                  scale +

@@ -31,10 +31,22 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     setupChainListView(chainListView);
     setupChainListView(quickEffectListView);
 
-    connect(chainPresetImportButton, &QPushButton::clicked, this, &DlgPrefEffects::slotImportPreset);
-    connect(chainPresetExportButton, &QPushButton::clicked, this, &DlgPrefEffects::slotExportPreset);
-    connect(chainPresetRenameButton, &QPushButton::clicked, this, &DlgPrefEffects::slotRenamePreset);
-    connect(chainPresetDeleteButton, &QPushButton::clicked, this, &DlgPrefEffects::slotDeletePreset);
+    connect(chainPresetImportButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefEffects::slotImportPreset);
+    connect(chainPresetExportButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefEffects::slotExportPreset);
+    connect(chainPresetRenameButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefEffects::slotRenamePreset);
+    connect(chainPresetDeleteButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefEffects::slotDeletePreset);
 
     m_effectsLabels.append(effect1Name);
     m_effectsLabels.append(effect2Name);

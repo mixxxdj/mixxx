@@ -391,7 +391,8 @@ void BiquadFullKillEQEffect::processChannel(
     }
 
     if (enableState == EffectEnableState::Disabling) {
-        pState->m_lvMixIso->processChannelAndPause(pOutput, pOutput, bufferParameters.samplesPerBuffer());
+        pState->m_lvMixIso->processChannelAndPause(
+                pOutput, pOutput, bufferParameters.samplesPerBuffer());
     } else {
         double fLow = knobValueToBesselRatio(
                 m_pPotLow->value(), m_pKillLow->toBool());

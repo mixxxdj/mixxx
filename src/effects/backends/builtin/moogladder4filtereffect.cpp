@@ -18,8 +18,9 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     pManifest->setShortName(QObject::tr("Moog Filter"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-            "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
+    pManifest->setDescription(
+            QObject::tr("A 4-pole Moog ladder filter, based on Antti "
+                        "Houvilainen's non linear digital implementation"));
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.5);
 

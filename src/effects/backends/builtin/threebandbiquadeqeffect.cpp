@@ -152,7 +152,9 @@ void ThreeBandBiquadEQEffect::processChannel(
         pState->m_loFreqCorner = m_pLoFreqCorner->get();
         pState->m_highFreqCorner = m_pHiFreqCorner->get();
         pState->m_oldSampleRate = bufferParameters.sampleRate();
-        pState->setFilters(bufferParameters.sampleRate(), pState->m_loFreqCorner, pState->m_highFreqCorner);
+        pState->setFilters(bufferParameters.sampleRate(),
+                pState->m_loFreqCorner,
+                pState->m_highFreqCorner);
     }
 
     // Ramp to dry, when disabling, this will ramp from dry when enabling as well

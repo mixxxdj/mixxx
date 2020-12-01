@@ -625,7 +625,8 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                         EffectManifestParameter::ParameterType::KNOB, i);
 
                 if (pParameterSlot->isLoaded()) {
-                    EffectManifestParameterPointer pManifestParameter = pParameterSlot->getManifest();
+                    EffectManifestParameterPointer pManifestParameter =
+                            pParameterSlot->getManifest();
 
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
@@ -704,7 +705,8 @@ void DlgPrefEQ::slotMasterEQToDefault() {
     if (!pEffectSlot.isNull()) {
         int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::KNOB);
         for (int i = 0; i < knobNum; i++) {
-            auto pParameterSlot = pEffectSlot->getEffectParameterSlot(EffectManifestParameter::ParameterType::KNOB, i);
+            auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
+                    EffectManifestParameter::ParameterType::KNOB, i);
             if (pParameterSlot->isLoaded()) {
                 double defaultValue = pParameterSlot->getManifest()->getDefault();
                 setMasterEQParameter(i, defaultValue);

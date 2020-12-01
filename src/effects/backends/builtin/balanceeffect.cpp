@@ -134,18 +134,25 @@ void BalanceEffect::processChannel(
 
     if (pGroupState->m_freq > kMinCornerHz) {
         if (freq > kMinCornerHz && enableState != EffectEnableState::Disabling) {
-            pGroupState->m_high->process(pInput, pGroupState->m_pHighBuf.data(), bufferParameters.samplesPerBuffer());
+            pGroupState->m_high->process(pInput,
+                    pGroupState->m_pHighBuf.data(),
+                    bufferParameters.samplesPerBuffer());
             pGroupState->m_low->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
-            pGroupState->m_high->processAndPauseFilter(pInput, pGroupState->m_pHighBuf.data(), bufferParameters.samplesPerBuffer());
-            pGroupState->m_low->processAndPauseFilter(pInput, pOutput, bufferParameters.samplesPerBuffer());
+            pGroupState->m_high->processAndPauseFilter(pInput,
+                    pGroupState->m_pHighBuf.data(),
+                    bufferParameters.samplesPerBuffer());
+            pGroupState->m_low->processAndPauseFilter(
+                    pInput, pOutput, bufferParameters.samplesPerBuffer());
         }
 
         for (SINT i = 0; i < bufferParameters.samplesPerBuffer() / 2; ++i) {
             CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2] +
                                   pGroupState->m_pHighBuf[i * 2 + 1]) /
                     2.0f;
-            CSAMPLE side = (pGroupState->m_pHighBuf[i * 2 + 1] - pGroupState->m_pHighBuf[i * 2]) / 2.0f;
+            CSAMPLE side = (pGroupState->m_pHighBuf[i * 2 + 1] -
+                                   pGroupState->m_pHighBuf[i * 2]) /
+                    2.0f;
             CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;
             if (currentMidSide > 0) {
                 mid *= (1 - currentMidSide);

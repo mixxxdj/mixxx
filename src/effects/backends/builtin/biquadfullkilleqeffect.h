@@ -74,7 +74,9 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 
-    void setFilters(mixxx::audio::SampleRate sampleRate, double lowFreqCorner, double highFreqCorner);
+    void setFilters(mixxx::audio::SampleRate sampleRate,
+            double lowFreqCorner,
+            double highFreqCorner);
 
   private:
     BiquadFullKillEQEffect(const BiquadFullKillEQEffect&) = delete;
