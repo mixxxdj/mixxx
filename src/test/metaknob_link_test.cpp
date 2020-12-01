@@ -1,17 +1,17 @@
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QScopedPointer>
+#include <QtDebug>
 
+#include "control/controlproxy.h"
 #include "controllers/softtakeover.h"
-#include "effects/effectknobparameterslot.h"
 #include "effects/effectchainslot.h"
-#include "effects/specialeffectchainslots.h"
+#include "effects/effectknobparameterslot.h"
 #include "effects/effectslot.h"
+#include "effects/specialeffectchainslots.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
 #include "util/time.h"
-#include "control/controlproxy.h"
 
 class MetaLinkTest : public BaseEffectTest {
   protected:
@@ -32,7 +32,7 @@ class MetaLinkTest : public BaseEffectTest {
         m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
         QString group = StandardEffectChainSlot::formatEffectSlotGroup(
-            iChainNumber, iEffectNumber);
+                iChainNumber, iEffectNumber);
 
         EffectManifestPointer pManifest(new EffectManifest());
         pManifest->setId("org.mixxx.test.effect");
@@ -53,8 +53,10 @@ class MetaLinkTest : public BaseEffectTest {
 
         registerTestEffect(pManifest, false);
 
-        m_pEffectsManager->loadEffect(m_pChainSlot, iEffectNumber,
-                pManifest->id(), EffectBackendType::Unknown);
+        m_pEffectsManager->loadEffect(m_pChainSlot,
+                iEffectNumber,
+                pManifest->id(),
+                EffectBackendType::Unknown);
 
         QString itemPrefix = EffectKnobParameterSlot::formatItemPrefix(0);
 
@@ -93,7 +95,7 @@ TEST_F(MetaLinkTest, LinkDefault) {
 TEST_F(MetaLinkTest, LinkLinked) {
     m_pEffectSlot->syncSofttakeover();
     m_pControlLinkType->set(
-        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
+            static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     m_pEffectSlot->slotEffectMetaParameter(1.0, false);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pEffectSlot->slotEffectMetaParameter(0.5, false);
@@ -103,7 +105,7 @@ TEST_F(MetaLinkTest, LinkLinked) {
 TEST_F(MetaLinkTest, LinkLinkedInverse) {
     m_pEffectSlot->syncSofttakeover();
     m_pControlLinkType->set(
-        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
+            static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     m_pControlLinkInverse->set(1.0);
     m_pEffectSlot->slotEffectMetaParameter(0.0, false);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -113,7 +115,7 @@ TEST_F(MetaLinkTest, LinkLinkedInverse) {
 
 TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectEnabled) {
     m_pControlLinkType->set(
-        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
+            static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     // Soft takeover should only occur when the effect is enabled.
     m_pEffectSlot->setEnabled(1.0);
 
@@ -125,7 +127,7 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectEnabled) {
 
     // Let enough time pass by to exceed soft-takeover's override interval.
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-                             mixxx::Duration::fromMillis(2));
+            mixxx::Duration::fromMillis(2));
 
     // Ignored by SoftTakeover since it is too far from the current
     // parameter value of 0.0.
@@ -138,7 +140,7 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectDisabled) {
     // parameter values should always jump to match the metaknob.
     // Effects are disabled by default.
     m_pControlLinkType->set(
-        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
+            static_cast<double>(EffectManifestParameter::LinkType::LINKED));
 
     m_pEffectSlot->slotEffectMetaParameter(1.0, false);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -147,7 +149,7 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectDisabled) {
 
     // Let enough time pass by to exceed soft-takeover's override interval.
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-                             mixxx::Duration::fromMillis(2));
+            mixxx::Duration::fromMillis(2));
 
     m_pEffectSlot->slotEffectMetaParameter(1.0, false);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -165,7 +167,7 @@ TEST_F(MetaLinkTest, SuperToMeta_Softtakeover_EffectEnabled) {
 
     // Let enough time pass by to exceed soft-takeover's override interval.
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-                             mixxx::Duration::fromMillis(2));
+            mixxx::Duration::fromMillis(2));
 
     // Ignored by SoftTakeover since it is too far from the current
     // metaknob value of 1.0.
@@ -184,7 +186,7 @@ TEST_F(MetaLinkTest, SuperToMeta_Softtakeover_EffectDisabled) {
 
     // Let enough time pass by to exceed soft-takeover's override interval.
     mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
-                             mixxx::Duration::fromMillis(2));
+            mixxx::Duration::fromMillis(2));
 
     m_pChainSlot->setSuperParameter(0.0);
     EXPECT_EQ(0.0, m_pEffectSlot->getMetaParameter());
@@ -238,7 +240,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     m_pEffectSlot->slotEffectMetaParameter(0.5, false);
     m_pControlValue->set(1.0);
     m_pControlLinkType->set(
-        static_cast<double>(EffectManifestParameter::LinkType::LINKED_LEFT));
+            static_cast<double>(EffectManifestParameter::LinkType::LINKED_LEFT));
     m_pEffectSlot->syncSofttakeover();
     m_pEffectSlot->slotEffectMetaParameter(newParam, false);
     EXPECT_EQ(newParam * 2.0, m_pControlValue->get());
@@ -247,7 +249,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     m_pEffectSlot->slotEffectMetaParameter(0.5, false);
     m_pControlValue->set(1.0);
     m_pControlLinkType->set(
-        static_cast<double>(EffectManifestParameter::LinkType::LINKED_RIGHT));
+            static_cast<double>(EffectManifestParameter::LinkType::LINKED_RIGHT));
     m_pEffectSlot->syncSofttakeover();
     newParam = 0.5 + SoftTakeover::kDefaultTakeoverThreshold * 1.5;
     m_pEffectSlot->slotEffectMetaParameter(newParam, false);

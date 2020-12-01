@@ -1,11 +1,11 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
 #include "test/baseeffecttest.h"
 
-using ::testing::Return;
-using ::testing::Invoke;
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
 
 void BaseEffectTest::registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine) {
     MockEffectProcessor* pProcessor = new MockEffectProcessor();
@@ -17,6 +17,7 @@ void BaseEffectTest::registerTestEffect(EffectManifestPointer pManifest, bool wi
                 .WillOnce(Return(pProcessor));
     }
 
-    m_pTestBackend->registerEffect(pManifest->id(), pManifest,
-                                   EffectInstantiatorPointer(pInstantiator));
+    m_pTestBackend->registerEffect(pManifest->id(),
+            pManifest,
+            EffectInstantiatorPointer(pInstantiator));
 }
