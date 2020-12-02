@@ -2,9 +2,12 @@
 #define TREE_ITEM_MODEL_H
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
-#include <QVariant>
 #include <QList>
+#include <QModelIndex>
+#include <QString>
+#include <QVariant>
+#include <QtCore>
+#include <memory>
 
 #include "util/memory.h"
 

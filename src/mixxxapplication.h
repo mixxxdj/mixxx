@@ -2,8 +2,12 @@
 #define MIXXXAPPLICATION_H
 
 #include <QApplication>
+#include <QByteArrayData>
+#include <QString>
 
 class ControlProxy;
+class QEvent;
+class QObject;
 
 class MixxxApplication : public QApplication {
     Q_OBJECT

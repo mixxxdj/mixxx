@@ -1,6 +1,9 @@
 #include "library/trackmodeliterator.h"
 
+#include <memory>
+
 #include "library/trackmodel.h"
+#include "track/trackid.h"
 
 namespace mixxx {
 

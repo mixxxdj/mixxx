@@ -19,9 +19,13 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
-#include "preferences/usersettings.h"
-#include "engine/sync/syncable.h"
+#include <QString>
+
 #include "engine/sync/basesyncablelistener.h"
+#include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
+
+class EngineChannel;
 
 /// EngineSync is the heart of the Mixxx Master Sync engine.  It knows which objects
 /// (Decks, Internal Clock, etc) are participating in Sync and what their statuses

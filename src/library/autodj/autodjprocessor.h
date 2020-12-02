@@ -1,10 +1,13 @@
 #ifndef AUTODJPROCESSOR_H
 #define AUTODJPROCESSOR_H
 
+#include <QByteArrayData>
+#include <QList>
 #include <QModelIndexList>
 #include <QObject>
 #include <QString>
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/controls/cuecontrol.h"
@@ -17,6 +20,7 @@ class ControlPushButton;
 class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
+class PlaylistTableModel;
 
 class DeckAttributes : public QObject {
     Q_OBJECT

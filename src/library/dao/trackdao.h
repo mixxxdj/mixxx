@@ -1,17 +1,25 @@
 #ifndef TRACKDAO_H
 #define TRACKDAO_H
 
+#include <QByteArrayData>
+#include <QDir>
 #include <QFileInfo>
+#include <QFlags>
+#include <QList>
 #include <QObject>
 #include <QSet>
-#include <QList>
 #include <QSqlDatabase>
 #include <QString>
+#include <QStringList>
+#include <memory>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
 #include "util/class.h"
 #include "util/memory.h"
 
@@ -20,6 +28,10 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+class QSqlQuery;
+class RelocatedTrack;
+class Track;
+class TrackRef;
 
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT

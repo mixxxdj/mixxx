@@ -1,22 +1,39 @@
 #include "library/dlgtrackinfo.h"
 
-#include <QDesktopServices>
-#include <QStringBuilder>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
 
+#include <QCheckBox>
+#include <QDebug>
+#include <QDir>
+#include <QDoubleSpinBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPixmap>
+#include <QPlainTextEdit>
+#include <QPushButton>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QWidget>
+
+#include "audio/types.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
 #include "library/trackmodel.h"
-#include "preferences/colorpalettesettings.h"
+#include "proto/keys.pb.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
+#include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "track/replaygain.h"
 #include "track/track.h"
-#include "util/color/colorpalette.h"
-#include "util/compatibility.h"
+#include "track/trackid.h"
+#include "util/assert.h"
 #include "util/datetime.h"
+#include "util/db/dbid.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
 #include "widget/wcoverartlabel.h"

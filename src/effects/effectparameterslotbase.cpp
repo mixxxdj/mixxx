@@ -1,9 +1,9 @@
-#include <QtDebug>
-
-#include "control/controleffectknob.h"
 #include "effects/effectparameterslotbase.h"
+
+#include <stddef.h>
+
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
+#include "effects/effectparameter.h"
 
 EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
                                                  const unsigned int iParameterSlotNumber)

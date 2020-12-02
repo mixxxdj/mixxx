@@ -1,13 +1,17 @@
 #include "library/trackloader.h"
 
-#include <QMetaMethod>
+#include <QDebug>
+#include <QMetaObject>
 #include <QThread>
-
 #include <mutex>
+#include <utility>
 
 #include "library/trackcollectionmanager.h"
+#include "track/trackref.h"
+#include "util/assert.h"
 #include "util/logger.h"
 
+class TrackId;
 
 namespace mixxx {
 

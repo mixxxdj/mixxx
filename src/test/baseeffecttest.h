@@ -1,21 +1,32 @@
 #ifndef BASEEFFECTTEST_H
 #define BASEEFFECTTEST_H
 
-#include <gtest/gtest.h>
+#include <gmock/gmock-generated-function-mockers.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest-printers.h>
+#include <gtest/gtest.h>
+#include <stddef.h>
 
 #include <QScopedPointer>
+#include <QSet>
+#include <QString>
+#include <memory>
 
-#include "effects/effectchain.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectmanifest.h"
-#include "effects/effectsbackend.h"
+#include "effects/effectchain.h"
 #include "effects/effectinstantiator.h"
+#include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
-
-
+#include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/engine.h"
 #include "test/mixxxtest.h"
+#include "util/types.h"
+
+class EngineEffect;
 
 class TestEffectBackend : public EffectsBackend {
   public:

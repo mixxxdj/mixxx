@@ -1,13 +1,15 @@
 #include "engine/controls/keycontrol.h"
 
 #include <QPair>
-#include <QtDebug>
+#include <QtCore>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
+#include "preferences/configobject.h"
+#include "proto/keys.pb.h"
 #include "track/keyutils.h"
 
 //static const double kLockOriginalKey = 0;

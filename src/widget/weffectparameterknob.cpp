@@ -1,5 +1,15 @@
-#include "widget/effectwidgetutils.h"
 #include "widget/weffectparameterknob.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <Qt>
+
+#include "effects/effectparameterslot.h"
+#include "effects/effectparameterslotbase.h"
+#include "effects/effectsmanager.h"
+#include "preferences/configobject.h"
 
 void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectParameterSlotPointer pParameterSlot =

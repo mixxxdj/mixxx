@@ -8,14 +8,16 @@
 #ifndef DLGCONTROLLERLEARNING_H
 #define DLGCONTROLLERLEARNING_H
 
+#include <QByteArrayData>
 #include <QDialog>
 #include <QList>
 #include <QString>
 #include <QTimer>
 
-#include "controllers/ui_dlgcontrollerlearning.h"
 #include "controllers/controlpickermenu.h"
 #include "controllers/midi/midicontroller.h"
+#include "controllers/ui_dlgcontrollerlearning.h"
+#include "preferences/configobject.h"
 #ifdef __HID__
 #include "controllers/hid/hidcontroller.h"
 #endif
@@ -26,6 +28,15 @@
 #include "preferences/usersettings.h"
 
 class ControllerPreset;
+class BulkController;
+class ControlObject;
+class Controller;
+class HidController;
+class MidiController;
+class QObject;
+class QWidget;
+template<class T1, class T2>
+struct QPair;
 
 //#define CONTROLLERLESSTESTING
 

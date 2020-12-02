@@ -1,6 +1,11 @@
 #ifndef MIXXX_BPM_H
 #define MIXXX_BPM_H
 
+#include <math.h>
+
+#include <QDebug>
+#include <QString>
+#include <QtCore>
 #include <QtDebug>
 
 #include "util/math.h"

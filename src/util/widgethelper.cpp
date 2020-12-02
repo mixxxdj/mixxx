@@ -1,8 +1,13 @@
 #include "util/widgethelper.h"
 
+#include <QRect>
 #include <QScreen>
+#include <QSize>
 
+#include "util/assert.h"
 #include "util/math.h"
+
+class QWindow;
 
 namespace mixxx {
 

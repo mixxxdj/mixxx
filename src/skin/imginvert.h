@@ -18,6 +18,8 @@
 #ifndef IMGINVERT_H
 #define IMGINVERT_H
 
+#include <QColor>
+
 #include "imgsource.h"
 
 class ImgInvert : public ImgColorProcessor {
@@ -28,4 +30,3 @@ public:
 };
 
 #endif
-

@@ -1,19 +1,32 @@
-#include <QDomNode>
-#include <QPainter>
-#include <QPainterPath>
-
 #include "waveform/renderers/waveformrendermark.h"
 
-#include "control/controlproxy.h"
-#include "engine/controls/cuecontrol.h"
+#include <QColor>
+#include <QDomNode>
+#include <QFlags>
+#include <QFont>
+#include <QFontMetrics>
+#include <QImage>
+#include <QLineF>
+#include <QList>
+#include <QMap>
+#include <QPainter>
+#include <QRect>
+#include <QRectF>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <Qt>
+#include <QtGui>
+#include <memory>
+
+#include "track/cue.h"
 #include "track/track.h"
-#include "util/color/color.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "widget/wimagestore.h"
+#include "track/track_decl.h"
+#include "util/color/rgbcolor.h"
 #include "util/painterscope.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformmarklabel.h"
+#include "widget/wimagestore.h"
 
 namespace {
     const int kMaxCueLabelLength = 23;

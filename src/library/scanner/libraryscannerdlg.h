@@ -19,9 +19,12 @@
 #ifndef LIBRARYSCANNERDLG_H
 #define LIBRARYSCANNERDLG_H
 
+#include <stddef.h>
+
+#include <QString>
 #include <QThread>
 #include <QWidget>
-#include <QString>
+#include <QtCore>
 
 #include "util/performancetimer.h"
 

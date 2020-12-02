@@ -1,7 +1,8 @@
-#include <limits>
-
 #include "util/statmodel.h"
-#include "util/math.h"
+
+#include <math.h>
+
+#include <limits>
 
 StatModel::StatModel(QObject* pParent)
         : QAbstractTableModel(pParent) {

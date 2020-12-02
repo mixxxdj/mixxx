@@ -1,7 +1,16 @@
 #ifndef LIBRARYTABLEMODEL_H
 #define LIBRARYTABLEMODEL_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
+
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
+
+class QModelIndex;
+class QObject;
+class TrackCollectionManager;
 
 class LibraryTableModel : public BaseSqlTableModel {
     Q_OBJECT

@@ -17,13 +17,19 @@
 
 #pragma once
 
-#include <QObject>
+#include <stddef.h>
+
 #include <QEvent>
 #include <QMutex>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
+#include <QtCore>
 
-#include "preferences/usersettings.h"
-#include "controllers/midi/midimessage.h"
 #include "control/control.h"
+#include "controllers/midi/midimessage.h"
+#include "preferences/configobject.h"
+#include "preferences/usersettings.h"
 
 class ControlObject : public QObject {
     Q_OBJECT

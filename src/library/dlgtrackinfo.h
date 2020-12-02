@@ -2,6 +2,8 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include <QString>
+#include <QtCore>
 #include <memory>
 
 #include "library/coverart.h"
@@ -17,6 +19,9 @@ class TrackModel;
 class DlgTagFetcher;
 class WCoverArtLabel;
 class WStarRating;
+class QPixmap;
+class Track;
+class TrackId;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or

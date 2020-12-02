@@ -1,10 +1,14 @@
 #include "library/trackprocessing.h"
 
+#include <QDebug>
 #include <QThread>
+#include <optional>
 
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "util/assert.h"
 #include "util/logger.h"
+
+class QObject;
 
 namespace mixxx {
 

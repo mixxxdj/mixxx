@@ -11,8 +11,15 @@
 #ifndef MIDIENUMERATOR_H
 #define MIDIENUMERATOR_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
+
 #include "controllers/controllerenumerator.h"
 #include "controllers/midi/midicontroller.h"
+
+class Controller;
+class QObject;
 
 class MidiEnumerator : public ControllerEnumerator {
     Q_OBJECT

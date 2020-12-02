@@ -1,5 +1,7 @@
 #include "library/basetracksetfeature.h"
 
+class Library;
+
 BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,

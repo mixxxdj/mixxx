@@ -1,11 +1,15 @@
-#include <QtDebug>
-#include <QUrl>
-#include <QApplication>
-
-#include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
-#include "library/treeitem.h"
+
+#include <stddef.h>
+
+#include <QFont>
+#include <QIcon>
+#include <QTimer>
+
 #include "library/browse/browsefeature.h"
+#include "library/libraryfeature.h"
+#include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 #include "util/assert.h"
 
 namespace {

@@ -19,7 +19,18 @@
 #ifndef STARDELEGATE_H
 #define STARDELEGATE_H
 
+#include <QByteArrayData>
+#include <QPersistentModelIndex>
+#include <QSize>
+#include <QString>
+#include <QStyleOptionViewItem>
+
 #include "library/tableitemdelegate.h"
+
+class QObject;
+class QPainter;
+class QTableView;
+class QWidget;
 
 class StarDelegate : public TableItemDelegate {
     Q_OBJECT

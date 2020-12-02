@@ -1,6 +1,8 @@
 #include "util/rotary.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 
 const int kiRotaryFilterMaxLen = 50;
 

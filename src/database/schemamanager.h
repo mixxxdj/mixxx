@@ -2,9 +2,10 @@
 #define SCHEMAMANAGER_H
 
 #include <QSqlDatabase>
+#include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/dao/settingsdao.h"
+#include "preferences/usersettings.h"
 
 class SchemaManager {
   public:

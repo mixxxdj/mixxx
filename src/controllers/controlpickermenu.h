@@ -1,10 +1,18 @@
 #ifndef CONTROLPICKERMENU_H
 #define CONTROLPICKERMENU_H
 
+#include <stddef.h>
+
+#include <QList>
 #include <QMenu>
 #include <QObject>
+#include <QString>
+#include <QtCore>
 
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+
+class QWidget;
 
 class ControlPickerMenu : public QMenu {
     Q_OBJECT

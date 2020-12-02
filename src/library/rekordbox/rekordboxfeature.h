@@ -28,20 +28,38 @@
 #ifndef REKORDBOX_FEATURE_H
 #define REKORDBOX_FEATURE_H
 
+#include <QByteArrayData>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QIcon>
+#include <QList>
+#include <QSharedPointer>
+#include <QString>
 #include <QStringListModel>
+#include <QVariant>
 #include <QtConcurrentRun>
-
 #include <fstream>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class TrackCollectionManager;
 class BaseExternalPlaylistModel;
+class BaseSqlTableModel;
+class BaseTrackCache;
+class KeyboardEventFilter;
+class Library;
+class QModelIndex;
+class QObject;
+class QUrl;
+class TreeItem;
+class WLibrary;
+template<class T>
+class QSharedPointer;
 
 class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
   public:

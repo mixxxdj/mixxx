@@ -1,9 +1,14 @@
 #ifndef QTVSYNCTESTRENDERER_H
 #define QTVSYNCTESTRENDERER_H
 
+#include <QDomNode>
+
 #include "waveformrenderersignalbase.h"
 
 class ControlObject;
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class QtVSyncTestRenderer : public WaveformRendererSignalBase {
   public:

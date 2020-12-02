@@ -8,14 +8,29 @@
 
 #include "controllers/midi/midicontroller.h"
 
-#include "controllers/midi/midiutils.h"
-#include "controllers/defs_controllers.h"
-#include "controllers/controllerdebug.h"
+#include <QtCore/qglobal.h>
+#include <qscriptvalue.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QHashIterator>
+#include <QPair>
+#include <QStringList>
+#include <type_traits>
+
 #include "control/controlobject.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/controllerengine.h"
+#include "controllers/defs_controllers.h"
+#include "controllers/midi/midioutputhandler.h"
+#include "controllers/midi/midiutils.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "util/duration.h"
 #include "util/math.h"
-#include "util/screensaver.h"
+
+class HidControllerPreset;
 
 MidiController::MidiController(UserSettingsPointer pConfig)
         : Controller(pConfig) {

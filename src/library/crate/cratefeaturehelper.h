@@ -1,15 +1,17 @@
 #ifndef MIXXX_CRATEFEATUREHELPER_H
 #define MIXXX_CRATEFEATUREHELPER_H
 
-
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 
 #include "library/crate/crate.h"
+#include "library/crate/crateid.h"
 #include "preferences/usersettings.h"
 
 // forward declaration(s)
 class TrackCollection;
-
+class Crate;
 
 class CrateFeatureHelper: public QObject {
     Q_OBJECT

@@ -8,7 +8,7 @@
 
 #include "controllers/midi/midicontrollerpreset.h"
 
-#include "controllers/defs_controllers.h"
+#include "controllers/controllerpresetvisitor.h"
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 
 bool MidiControllerPreset::savePreset(const QString& fileName) const {

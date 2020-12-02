@@ -17,13 +17,18 @@
 #ifndef MIXER_PLAYERINFO_H
 #define MIXER_PLAYERINFO_H
 
+#include <QByteArrayData>
+#include <QList>
 #include <QMap>
 #include <QMutex>
 #include <QObject>
+#include <QString>
 #include <QTimerEvent>
 
 #include "control/controlproxy.h"
 #include "track/track_decl.h"
+
+class QTimerEvent;
 
 class PlayerInfo : public QObject {
     Q_OBJECT

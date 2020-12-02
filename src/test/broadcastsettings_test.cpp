@@ -1,8 +1,18 @@
-#include <QFile>
-#include <QString>
-
-#include "test/mixxxtest.h"
 #include "preferences/broadcastsettings.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QFile>
+#include <QList>
+#include <QSharedPointer>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/broadcastprofile.h"
+#include "preferences/broadcastsettingsmodel.h"
+#include "test/mixxxtest.h"
 //#include "broadcast/defs_broadcast.h"
 //#include "defs_urls.h"
 

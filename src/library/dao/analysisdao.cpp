@@ -1,11 +1,25 @@
-#include <QSqlQuery>
-#include <QSqlResult>
-#include <QSqlError>
-#include <QtDebug>
-
 #include "library/dao/analysisdao.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QSharedPointer>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QVariant>
+#include <QtGlobal>
+
 #include "library/queryutil.h"
+#include "preferences/configobject.h"
 #include "preferences/waveformsettings.h"
+#include "util/db/dbid.h"
+#include "util/duration.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
 

@@ -18,12 +18,14 @@
 #ifndef DLGPREFCONTROLS_H
 #define DLGPREFCONTROLS_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
 #include "preferences/constants.h"
 #include "preferences/dialog/ui_dlgprefinterfacedlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -31,6 +33,9 @@ class SkinLoader;
 class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
+class QObject;
+class QScreen;
+class QWidget;
 
 /**
   *@author Tue & Ken Haste Andersen

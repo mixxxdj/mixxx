@@ -3,10 +3,12 @@
 
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-#include "kaitaistruct.h"
-
 #include <stdint.h>
+#include <kaitaistream.h>
 #include <vector>
+#include <string>
+
+#include "kaitaistruct.h"
 
 #if KAITAI_STRUCT_VERSION < 7000L
 #error "Incompatible Kaitai Struct C++/STL API: version 0.7 or later is required"

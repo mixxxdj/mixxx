@@ -1,5 +1,12 @@
 #include "control/controllinpotmeter.h"
 
+#include <QSharedPointer>
+
+#include "control/control.h"
+#include "control/controlbehavior.h"
+
+class ConfigKey;
+
 ControlLinPotmeter::ControlLinPotmeter(const ConfigKey& key,
         double dMinValue,
         double dMaxValue,

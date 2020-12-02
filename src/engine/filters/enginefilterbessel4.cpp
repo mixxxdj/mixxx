@@ -1,4 +1,7 @@
 #include "engine/filters/enginefilterbessel4.h"
+
+#include <math.h>
+
 #include "util/math.h"
 
 namespace {

@@ -1,19 +1,38 @@
 #include "library/scanner/libraryscanner.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QAtomicInt>
+#include <QByteArray>
+#include <QDebug>
+#include <QRegExp>
+#include <QSharedPointer>
+#include <QSqlDatabase>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtCore>
+#include <memory>
+#include <utility>
+
 #include "library/coverartutils.h"
 #include "library/queryutil.h"
+#include "library/relocatedtrack.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/scannertask.h"
 #include "library/scanner/scannerutil.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/duration.h"
 #include "util/file.h"
 #include "util/logger.h"
 #include "util/performancetimer.h"
+#include "util/task.h"
 #include "util/timer.h"
 #include "util/trace.h"
 

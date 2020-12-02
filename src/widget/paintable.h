@@ -2,18 +2,21 @@
 #ifndef PAINTABLE_H
 #define PAINTABLE_H
 
-#include <QPixmap>
 #include <QHash>
-#include <QSharedPointer>
-#include <QSvgRenderer>
 #include <QImage>
-#include <QScopedPointer>
 #include <QPainter>
+#include <QPixmap>
 #include <QRectF>
+#include <QScopedPointer>
+#include <QSharedPointer>
+#include <QSize>
 #include <QString>
+#include <QSvgRenderer>
 
 #include "skin/imgsource.h"
 #include "skin/pixmapsource.h"
+
+class QPainter;
 
 // Wrapper around QImage and QSvgRenderer to support rendering SVG images in
 // high fidelity.

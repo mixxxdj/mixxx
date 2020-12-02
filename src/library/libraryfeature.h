@@ -12,13 +12,16 @@
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QUrl>
 #include <QVariant>
+#include <QtCore>
 #include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 #include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
 class KeyboardEventFilter;
@@ -26,6 +29,7 @@ class Library;
 class TrackModel;
 class WLibrary;
 class WLibrarySidebar;
+class TreeItemModel;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {

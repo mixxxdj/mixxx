@@ -1,6 +1,19 @@
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <memory>
+
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "engine/channels/enginedeck.h"
+#include "engine/enginebuffer.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/mockedenginebackendtest.h"
+#include "test/signalpathtest.h"
 #include "track/beatgrid.h"
-#include "util/memory.h"
+#include "track/beats.h"
+#include "track/track.h"
+#include "track/track_decl.h"
 
 class BeatsTranslateTest : public MockedEngineBackendTest {
 };

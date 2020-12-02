@@ -1,28 +1,38 @@
 // broadcastprofile.cpp
 // Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
+#include <QByteArrayData>
+#include <QDebug>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
-#include <QTextStream>
+#include <QIODevice>
+#include <QMessageBox>
 #include <QRegExp>
+#include <QStaticStringData>
 #include <QString>
-#include <QStringList>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QTextStream>
 
 #ifdef __QTKEYCHAIN__
 #include <qt5keychain/keychain.h>
+
 using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
-#include "recording/defs_recording.h"
-#include "defs_urls.h"
-#include "util/compatibility.h"
-#include "util/xml.h"
-#include "util/memory.h"
-#include "util/logger.h"
-
 #include "broadcastprofile.h"
+#include "defs_urls.h"
+#include "errordialoghandler.h"
+#include "recording/defs_recording.h"
+#include "util/compatibility.h"
+#include "util/logger.h"
+#include "util/xml.h"
 
 namespace {
 constexpr const char* kDoctype = "broadcastprofile";

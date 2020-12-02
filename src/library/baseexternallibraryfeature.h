@@ -3,13 +3,19 @@
 #include <QAction>
 #include <QModelIndex>
 #include <QPointer>
+#include <QString>
+#include <QtCore>
 
-#include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
+#include "library/libraryfeature.h"
+#include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
 class BaseSqlTableModel;
 class TrackCollection;
+class Library;
+class TrackId;
+class WLibrarySidebar;
 
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT

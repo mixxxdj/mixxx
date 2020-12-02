@@ -1,13 +1,18 @@
 #ifndef WEFFECT_H
 #define WEFFECT_H
 
+#include <QByteArrayData>
 #include <QDomNode>
+#include <QString>
 
-#include "widget/wlabel.h"
+#include "effects/defs.h"
 #include "effects/effectslot.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
 
 class EffectsManager;
+class QObject;
+class QWidget;
 
 class WEffect : public WLabel {
     Q_OBJECT

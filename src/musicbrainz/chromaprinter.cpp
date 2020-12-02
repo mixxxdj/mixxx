@@ -1,15 +1,28 @@
 #include "musicbrainz/chromaprinter.h"
 
+#include <QtCore/qglobal.h>
 #include <chromaprint.h>
+#include <stdint.h>
 
-#include <QtDebug>
+#include <QByteArray>
+#include <QDebug>
+#include <memory>
 #include <vector>
 
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "sources/audiosource.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "util/duration.h"
+#include "util/indexrange.h"
+#include "util/math.h"
 #include "util/performancetimer.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
+#include "util/types.h"
 
 namespace
 {

@@ -18,7 +18,13 @@
 #ifndef CONTROLPUSHBUTTON_H
 #define CONTROLPUSHBUTTON_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlobject.h"
+
+class ConfigKey;
+class QObject;
 
 /**
   *@author Tue and Ken Haste Andersen

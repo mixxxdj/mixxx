@@ -1,6 +1,7 @@
 #ifndef MIXER_BASEPLAYER_H
 #define MIXER_BASEPLAYER_H
 
+#include <QByteArrayData>
 #include <QObject>
 #include <QString>
 

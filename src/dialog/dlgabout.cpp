@@ -1,6 +1,19 @@
 #include "dialog/dlgabout.h"
-#include "util/version.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QByteArray>
+#include <QDebug>
+#include <QDialogButtonBox>
 #include <QFile>
+#include <QIODevice>
+#include <QLabel>
+#include <QStringList>
+#include <QTextBrowser>
+
+#include "util/version.h"
+
+class QWidget;
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);

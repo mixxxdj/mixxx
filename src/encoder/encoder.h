@@ -10,12 +10,18 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
+#include <QList>
+#include <QString>
+#include <memory>
+
+#include "encoder/encodercallback.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "encoder/encodersettings.h"
+#include "preferences/usersettings.h"
 #include "util/memory.h"
 #include "util/types.h"
-#include "preferences/usersettings.h"
-#include "encoder/encodersettings.h"
-#include "encoder/encoderrecordingsettings.h"
-#include "encoder/encodercallback.h"
+
+class EncoderCallback;
 
 class Encoder {
   public:

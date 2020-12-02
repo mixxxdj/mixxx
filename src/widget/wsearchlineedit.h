@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDomNode>
 #include <QEvent>
 #include <QLineEdit>
+#include <QString>
 #include <QTimer>
 #include <QToolButton>
 
@@ -10,6 +12,12 @@
 #include "widget/wbasewidget.h"
 
 class SkinContext;
+class QEvent;
+class QFocusEvent;
+class QFont;
+class QObject;
+class QResizeEvent;
+class QWidget;
 
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT

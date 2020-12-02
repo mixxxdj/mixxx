@@ -1,8 +1,9 @@
-#include <QtDebug>
-#include <QStackedLayout>
-#include <QResizeEvent>
-
 #include "widget/wsizeawarestack.h"
+
+#include <QEvent>
+#include <QResizeEvent>
+#include <QSize>
+#include <QStackedLayout>
 
 class SizeAwareLayout : public QStackedLayout
 {

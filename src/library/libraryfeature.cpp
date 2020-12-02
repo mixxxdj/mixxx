@@ -1,13 +1,22 @@
 // libraryfeature.cpp
 // Created 8/17/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QStandardPaths>
-
 #include "library/libraryfeature.h"
+
+#include <stddef.h>
+
+#include <QDebug>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QStandardPaths>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <Qt>
 
 #include "library/library.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
+#include "preferences/configobject.h"
 #include "util/logger.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!

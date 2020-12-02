@@ -1,7 +1,12 @@
 #ifndef UTIL_TIMER_H
 #define UTIL_TIMER_H
 
+#include <stddef.h>
+
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
+#include <new>
 
 #include "control/controlproxy.h"
 #include "util/cmdlineargs.h"

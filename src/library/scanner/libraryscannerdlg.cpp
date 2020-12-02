@@ -16,12 +16,19 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "library/scanner/libraryscannerdlg.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QFontMetrics>
+#include <QIcon>
 #include <QLabel>
 #include <QPushButton>
+#include <QStringBuilder>
 #include <QVBoxLayout>
-#include <QtDebug>
 
-#include "library/scanner/libraryscannerdlg.h"
+#include "util/duration.h"
 
 LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
         : QWidget(parent, f),

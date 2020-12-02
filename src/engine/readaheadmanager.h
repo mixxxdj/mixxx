@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <math.h>
+
 #include <QList>
 #include <QPair>
 #include <list>

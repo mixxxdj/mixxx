@@ -1,8 +1,11 @@
 #pragma once
 
 #include <QDialog>
+#include <QPixmap>
 #include <QPoint>
+#include <QString>
 #include <QTimer>
+#include <QtCore>
 
 #include "library/coverart.h"
 #include "library/ui_dlgcoverartfullsize.h"
@@ -10,6 +13,15 @@
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "widget/wcoverartmenu.h"
+
+class BaseTrackPlayer;
+class CoverInfo;
+class CoverInfoRelative;
+class QCloseEvent;
+class QMouseEvent;
+class QResizeEvent;
+class QWheelEvent;
+class QWidget;
 
 class DlgCoverArtFullSize
         : public QDialog,

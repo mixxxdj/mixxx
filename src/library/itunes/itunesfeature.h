@@ -4,21 +4,38 @@
 #ifndef ITUNESFEATURE_H
 #define ITUNESFEATURE_H
 
-#include <QStringListModel>
-#include <QtSql>
+#include <QByteArrayData>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QIcon>
 #include <QPointer>
+#include <QSharedPointer>
+#include <QSqlDatabase>
+#include <QString>
+#include <QStringList>
+#include <QStringListModel>
+#include <QVariant>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
 class WLibrarySidebar;
+class BaseSqlTableModel;
+class BaseTrackCache;
+class Library;
+class QModelIndex;
+class QObject;
+class QPoint;
+class QSqlQuery;
+class QXmlStreamReader;
+class TreeItem;
 
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT

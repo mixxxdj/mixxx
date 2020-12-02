@@ -1,12 +1,19 @@
 #include "library/colordelegate.h"
 
-#include <QColor>
+#include <QFlags>
+#include <QModelIndex>
 #include <QPainter>
+#include <QPalette>
+#include <QPen>
+#include <QRect>
 #include <QStyle>
-#include <QTableView>
+#include <Qt>
+#include <QtGui>
+#include <optional>
 
-#include "library/trackmodel.h"
 #include "util/color/rgbcolor.h"
+
+class QTableView;
 
 ColorDelegate::ColorDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView) {

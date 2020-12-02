@@ -1,5 +1,11 @@
 #include "track/replaygain.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QStringBuilder>
+#include <Qt>
+
+#include "util/assert.h"
 #include "util/math.h"
 
 namespace mixxx {

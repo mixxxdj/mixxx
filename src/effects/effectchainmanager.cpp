@@ -1,11 +1,27 @@
 #include "effects/effectchainmanager.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDir>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QFile>
+#include <QIODevice>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <type_traits>
+
+#include "effects/effectchainslot.h"
+#include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
-
-#include <QtDebug>
-#include <QDomDocument>
-#include <QFile>
-#include <QDir>
+#include "preferences/configobject.h"
+#include "qsharedpointer.h"
+#include "util/assert.h"
+#include "util/xml.h"
 
 EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)

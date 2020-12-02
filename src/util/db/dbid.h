@@ -1,16 +1,15 @@
 #pragma once
 
-
+#include <QDebug>
+#include <QString>
+#include <QVariant>
+#include <QtCore>
+#include <QtDebug>
 #include <functional>
 #include <ostream>
 #include <utility>
 
-#include <QString>
-#include <QVariant>
-#include <QtDebug>
-
 #include "util/assert.h"
-
 
 // Base class for ID values of objects that are stored in the database.
 //

@@ -1,11 +1,19 @@
 #include "musicbrainz/musicbrainzxml.h"
 
-#include <QTextStream>
+#include <QDebug>
+#include <QLatin1String>
+#include <QList>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QStringRef>
+#include <QUuid>
+#include <QXmlStreamAttributes>
 #include <QXmlStreamReader>
-#include <QTextCodec>
 
+#include "musicbrainz/musicbrainz.h"
+#include "util/assert.h"
+#include "util/duration.h"
 #include "util/logger.h"
-
 
 namespace mixxx {
 

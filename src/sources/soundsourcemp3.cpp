@@ -1,10 +1,24 @@
 #include "sources/soundsourcemp3.h"
-#include "sources/mp3decoding.h"
-
-#include "util/logger.h"
-#include "util/math.h"
 
 #include <id3tag.h>
+
+#include <QDebug>
+#include <QIODevice>
+#include <QLatin1Char>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <memory>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "sources/mp3decoding.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
+#include "util/logger.h"
+#include "util/math.h"
+#include "util/samplebuffer.h"
+
+class QUrl;
 
 namespace mixxx {
 

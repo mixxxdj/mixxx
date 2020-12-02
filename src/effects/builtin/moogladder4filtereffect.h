@@ -1,8 +1,13 @@
 #ifndef MOOGLADDER4FILTEREFFECT_H
 #define MOOGLADDER4FILTEREFFECT_H
 
+#include <QSet>
+#include <QString>
+
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefiltermoogladder4.h"
@@ -10,6 +15,15 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+class EngineFilterMoogLadder4High;
+class EngineFilterMoogLadder4Low;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 class MoogLadder4FilterGroupState : public EffectState {
   public:

@@ -1,7 +1,19 @@
 #include "engine/effects/engineeffectrack.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QtGlobal>
+#include <type_traits>
+
+#include "effects/defs.h"
 #include "engine/effects/engineeffectchain.h"
+#include "util/assert.h"
 #include "util/defs.h"
 #include "util/sample.h"
+
+struct GroupFeatureState;
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
         : m_iRackNumber(iRackNumber),

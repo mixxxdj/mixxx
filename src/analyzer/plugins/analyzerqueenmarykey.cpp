@@ -1,12 +1,15 @@
+#include <QtCore/qglobal.h>
 #include <dsp/keydetection/GetKeyMode.h>
+
+#include <QDebug>
+#include <QPair>
 
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
-#include "analyzer/plugins/analyzerqueenmarykey.h"
-
 #include "analyzer/constants.h"
+#include "analyzer/plugins/analyzerqueenmarykey.h"
+#include "audio/types.h"
 #include "util/assert.h"
-#include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;

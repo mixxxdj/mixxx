@@ -1,7 +1,13 @@
 #pragma once
+#include <QColor>
 #include <QStandardItemModel>
+#include <QString>
+#include <QVariant>
+#include <QtCore>
 
 #include "util/color/colorpalette.h"
+
+class QMimeData;
 
 // Model that is used by the QTableView of the ColorPaletteEditor.
 // Takes of displaying palette colors and provides a getter/setter for

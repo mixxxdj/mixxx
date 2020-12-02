@@ -4,10 +4,14 @@
 #ifndef ENGINEWORKER_H
 #define ENGINEWORKER_H
 
-#include <atomic>
+#include <QByteArrayData>
 #include <QObject>
 #include <QSemaphore>
+#include <QString>
 #include <QThread>
+#include <atomic>
+
+class QObject;
 
 // EngineWorker is an interface for running background processing work when the
 // audio callback is not active. While the audio callback is active, an

@@ -1,12 +1,15 @@
 #pragma once
 
+#include <QDebug>
 #include <QString>
 #include <QStringList>
 #include <QtDebug>
-
-QT_FORWARD_DECLARE_CLASS(QUrl);
+#include <QtGlobal>
+#include <memory>
 
 #include "sources/soundsource.h"
+
+QT_FORWARD_DECLARE_CLASS(QUrl);
 
 namespace mixxx {
 

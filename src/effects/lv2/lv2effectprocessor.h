@@ -1,12 +1,24 @@
 #ifndef LV2EFFECTPROCESSOR_H
 #define LV2EFFECTPROCESSOR_H
 
-#include "effects/effectprocessor.h"
-#include "effects/effectmanifest.h"
-#include "engine/effects/engineeffectparameter.h"
 #include <lilv-0/lilv/lilv.h>
+
+#include <QList>
+#include <QSet>
+
+#include "audio/types.h"
 #include "effects/defs.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
+#include "util/types.h"
+
+class EffectsManager;
+class EngineEffect;
+class EngineEffectParameter;
+struct GroupFeatureState;
 
 class LV2EffectGroupState : public EffectState {
   public:

@@ -1,14 +1,20 @@
 #ifndef WWAVEFORMVIEWER_H
 #define WWAVEFORMVIEWER_H
 
+#include <QByteArrayData>
 #include <QDateTime>
+#include <QDomNode>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QEvent>
 #include <QList>
 #include <QMutex>
+#include <QPoint>
+#include <QString>
 
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
+#include "track/cue.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
@@ -19,6 +25,15 @@
 class ControlProxy;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
+class QDragEnterEvent;
+class QDropEvent;
+class QEvent;
+class QMouseEvent;
+class QObject;
+class QResizeEvent;
+class QWheelEvent;
+class QWidget;
+class WCueMenuPopup;
 
 class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT

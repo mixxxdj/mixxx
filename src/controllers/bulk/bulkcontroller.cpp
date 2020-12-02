@@ -5,15 +5,24 @@
   * @brief USB Bulk controller backend
   *
   */
-#include <libusb.h>
-
 #include "controllers/bulk/bulkcontroller.h"
+
+#include <QtCore/qglobal.h>
+#include <libusb.h>
+#include <stddef.h>
+#include <sys/types.h>
+
+#include <QDebug>
+#include <QtCore>
+
 #include "controllers/bulk/bulksupported.h"
-#include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
 #include "util/compatibility.h"
-#include "util/trace.h"
 #include "util/time.h"
+#include "util/trace.h"
+
+class MidiControllerPreset;
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread(),

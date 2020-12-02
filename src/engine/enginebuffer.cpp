@@ -1,13 +1,22 @@
 #include "engine/enginebuffer.h"
 
-#include <QtDebug>
-#include <cfloat>
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
 
-#include "control/controlindicator.h"
+#include <QDebug>
+#include <QtCore>
+#include <cfloat>
+#include <memory>
+#include <type_traits>
+
+#include "audio/types.h"
 #include "control/controllinpotmeter.h"
+#include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/bufferscalers/enginebufferscalelinear.h"
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/bufferscalers/enginebufferscalest.h"
@@ -22,23 +31,23 @@
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginemaster.h"
-#include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
-#include "track/beatfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
+#include "util/fpclassify.h"
 #include "util/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
-#include "waveform/waveformwidgetfactory.h"
+
+struct GroupFeatureState;
 
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"

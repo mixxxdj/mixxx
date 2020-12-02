@@ -4,8 +4,12 @@
 #pragma once
 
 #include <QModelIndex>
+#include <optional>
 
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "track/trackiterator.h"
+#include "util/assert.h"
 
 class TrackCollection;
 

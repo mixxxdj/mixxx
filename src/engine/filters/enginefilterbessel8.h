@@ -1,7 +1,12 @@
 #ifndef ENGINEFILTERBESSEL8_H
 #define ENGINEFILTERBESSEL8_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "engine/filters/enginefilteriir.h"
+
+class QObject;
 
 class EngineFilterBessel8Low : public EngineFilterIIR<8, IIR_LP> {
     Q_OBJECT

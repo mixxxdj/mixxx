@@ -1,11 +1,12 @@
 #ifndef MIXXX_SQLSTRINGFORMATTER_H
 #define MIXXX_SQLSTRINGFORMATTER_H
 
-
 #include <QSet>
-#include <QStringList>
 #include <QSqlDatabase>
+#include <QString>
+#include <QStringList>
 
+class QSqlDatabase;
 
 // Utility class for formatting string values in SQL statements.
 class SqlStringFormatter final {

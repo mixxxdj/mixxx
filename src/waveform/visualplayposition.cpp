@@ -1,11 +1,14 @@
 #include "waveform/visualplayposition.h"
 
-#include <QtDebug>
+#include <QMap>
+#include <QWeakPointer>
 
 #include "control/controlproxy.h"
-#include "control/controlobject.h"
 #include "util/math.h"
 #include "waveform/vsyncthread.h"
+
+template<class T>
+class QWeakPointer;
 
 namespace {
 // The offset is limited to two callback intervals.

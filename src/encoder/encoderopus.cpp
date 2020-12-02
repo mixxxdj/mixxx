@@ -3,19 +3,30 @@
 
 #include "encoder/encoderopus.h"
 
-#include <stdlib.h>
+#include <opus.h>
+#include <opus_defines.h>
+#include <string.h>
 
 #include <QByteArray>
+#include <QDebug>
 #include <QMapIterator>
+#include <QObject>
+#include <QStringBuilder>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif
 #include <QtGlobal>
 
+#include "encoder/encodercallback.h"
 #include "encoder/encoderopussettings.h"
+#include "encoder/encodersettings.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "errordialoghandler.h"
+#include "util/assert.h"
 #include "util/logger.h"
+#include "util/math.h"
+#include "util/samplebuffer.h"
 
 namespace {
 // From libjitsi's Opus encoder:

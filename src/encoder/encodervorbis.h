@@ -11,15 +11,19 @@
 #define ENCODERVORBIS_H
 
 // this also includes vorbis/codec.h
+#include <ogg/ogg.h>
+#include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
 
 #include <QFile>
+#include <QString>
 
 #include "encoder/encoder.h"
 #include "track/track_decl.h"
 #include "util/types.h"
 
 class EncoderCallback;
+class EncoderSettings;
 
 class EncoderVorbis : public Encoder {
   public:

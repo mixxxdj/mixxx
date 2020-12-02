@@ -1,16 +1,18 @@
 #ifndef CONTROLWIDGETCONNECTION_H
 #define CONTROLWIDGETCONNECTION_H
 
-#include <QObject>
-#include <QString>
-#include <QScopedPointer>
 #include <QByteArray>
+#include <QByteArrayData>
+#include <QObject>
+#include <QScopedPointer>
+#include <QString>
 
 #include "control/controlproxy.h"
 #include "util/valuetransformer.h"
 
 class WBaseWidget;
 class ValueTransformer;
+class ConfigKey;
 
 class ControlWidgetConnection : public QObject {
     Q_OBJECT

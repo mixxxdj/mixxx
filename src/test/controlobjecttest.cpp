@@ -1,8 +1,14 @@
-#include <gtest/gtest.h>
-#include <QtDebug>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QSharedPointer>
+#include <QString>
+#include <memory>
+
+#include "control/control.h"
 #include "control/controlobject.h"
-#include "util/memory.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/configobject.h"
 #include "test/mixxxtest.h"
 
 namespace {

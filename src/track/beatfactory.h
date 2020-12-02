@@ -1,7 +1,11 @@
 #ifndef BEATFACTORY_H
 #define BEATFACTORY_H
 
+#include <QByteArray>
 #include <QHash>
+#include <QHashNode>
+#include <QString>
+#include <QVector>
 
 #include "track/beats.h"
 

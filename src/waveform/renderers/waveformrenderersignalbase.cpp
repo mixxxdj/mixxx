@@ -1,13 +1,18 @@
 #include "waveformrenderersignalbase.h"
 
-#include <QDomNode>
+#include <stddef.h>
 
+#include <QColor>
+#include <QDomNode>
+#include <QString>
+#include <Qt>
+
+#include "control/controlproxy.h"
+#include "util/types.h"
+#include "waveform/renderers/waveformrendererabstract.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)

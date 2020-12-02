@@ -6,6 +6,16 @@
 */
 
 #include "encoder/encodermp3settings.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QObject>
+#include <QSharedPointer>
+#include <QtGlobal>
+#include <type_traits>
+
+#include "preferences/configobject.h"
 #include "recording/defs_recording.h"
 
 const int EncoderMp3Settings::DEFAULT_BITRATE_INDEX = 6;

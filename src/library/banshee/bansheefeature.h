@@ -2,20 +2,33 @@
 #ifndef BANSHEEFEATURE_H
 #define BANSHEEFEATURE_H
 
-#include <QStringListModel>
-#include <QtSql>
+#include <QByteArrayData>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QIcon>
+#include <QSqlDatabase>
+#include <QString>
+#include <QStringList>
+#include <QStringListModel>
+#include <QVariant>
+#include <QtConcurrentRun>
+#include <QtSql>
 
+#include "library/banshee/bansheedbconnection.h"
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
 #include "library/treeitem.h"
-#include "library/banshee/bansheedbconnection.h"
-
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 
 class BansheePlaylistModel;
+class Library;
+class QModelIndex;
+class QObject;
+class TrackId;
+class TreeItem;
+template<class T>
+class QList;
 
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT

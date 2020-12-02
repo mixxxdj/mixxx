@@ -12,32 +12,59 @@
 
 #include "woverview.h"
 
-#include <QBrush>
-#include <QMimeData>
+#include <QtCore/qsharedpointer.h>
+#include <math.h>
+
+#include <QFlags>
+#include <QFont>
+#include <QFontMetrics>
+#include <QFontMetricsF>
+#include <QLabel>
+#include <QLineF>
 #include <QMouseEvent>
-#include <QPaintEvent>
 #include <QPainter>
-#include <QUrl>
-#include <QtDebug>
+#include <QPen>
+#include <QPoint>
+#include <QRect>
+#include <QRectF>
+#include <QSharedPointer>
+#include <QSize>
+#include <QStringBuilder>
+#include <QTransform>
+#include <QVBoxLayout>
+#include <QtGui>
+#include <algorithm>
+#include <memory>
+#include <type_traits>
 
 #include "analyzer/analyzerprogress.h"
-#include "control/controlobject.h"
+#include "audio/types.h"
+#include "control/control.h"
 #include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/cue.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
-#include "util/color/color.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/color/rgbcolor.h"
 #include "util/compatibility.h"
+#include "util/db/dbid.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "util/types.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
+#include "widget/wpixmapstore.h"
 #include "wskincolor.h"
+
+class QWidget;
 
 WOverview::WOverview(
         const QString& group,

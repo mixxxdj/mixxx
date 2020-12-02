@@ -1,7 +1,17 @@
-#include <QDomDocument>
-
-#include "test/mixxxtest.h"
 #include "skin/skincontext.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QByteArray>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomText>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "test/mixxxtest.h"
 
 class SkinContextTest : public MixxxTest {
   public:

@@ -3,6 +3,7 @@
 #include <QSqlDatabase>
 #include <QString>
 #include <QVariant>
+#include <utility>
 
 // All library-specific preferences go in the library settings table
 class SettingsDAO final {

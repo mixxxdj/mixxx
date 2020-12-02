@@ -1,9 +1,17 @@
 #ifndef LV2MANIFEST_H
 #define LV2MANIFEST_H
 
-#include "effects/effectmanifest.h"
-#include "effects/defs.h"
 #include <lilv-0/lilv/lilv.h>
+
+#include <QList>
+
+#include "effects/defs.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+
+class QString;
+template<class T1, class T2>
+class QHash;
 
 class LV2Manifest {
   public:

@@ -1,8 +1,15 @@
 #ifndef ENGINEBUFFERSCALERUBBERBAND_H
 #define ENGINEBUFFERSCALERUBBERBAND_H
 
+#include <QByteArrayData>
+#include <QString>
+#include <memory>
+
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "util/memory.h"
+#include "util/types.h"
+
+class QObject;
 
 namespace RubberBand {
 class RubberBandStretcher;

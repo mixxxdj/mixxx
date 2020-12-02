@@ -1,5 +1,7 @@
 #include "imgcolor.h"
 
+#include "skin/imgsource.h"
+
 QColor ImgHueInv::doColorCorrection(const QColor& c) const {
     int r, g, b, a;
     c.getRgb(&r, &g, &b, &a);

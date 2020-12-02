@@ -1,9 +1,15 @@
 #ifndef WSTARRATING_H
 #define WSTARRATING_H
 
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QEvent>
 #include <QMouseEvent>
+#include <QRect>
+#include <QSize>
+#include <QString>
 #include <QStylePainter>
+#include <memory>
 
 #include "control/controlpushbutton.h"
 #include "library/starrating.h"
@@ -14,6 +20,13 @@
 
 class ControlObject;
 class ControlPushButton;
+class QEvent;
+class QMouseEvent;
+class QObject;
+class QPaintEvent;
+class QStringList;
+class QWidget;
+class TrackId;
 
 class WStarRating : public WWidget {
     Q_OBJECT

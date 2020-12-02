@@ -1,19 +1,21 @@
 #include "glvsynctestwidget.h"
 
-#include <QPainter>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
 
-#include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/glwaveformrenderersimplesignal.h"
-#include "waveform/renderers/glvsynctestrenderer.h"
-#include "waveform/renderers/waveformrendererpreroll.h"
-#include "waveform/renderers/waveformrendermark.h"
-#include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include <QDebug>
+#include <QGLContext>
+#include <QPainter>
+#include <QtCore>
 
 #include "util/performancetimer.h"
+#include "waveform/renderers/glvsynctestrenderer.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+
+class QPaintEvent;
+class QWidget;
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),

@@ -3,18 +3,22 @@
 #include <Shellapi.h>
 #include <Shlobj.h>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <dirent.h>
-#include <unistd.h>
-#include <errno.h>
 #endif
 
-#include <QFileInfo>
+#include <stddef.h>
 
-#include "library/treeitem.h"
-#include "library/browse/foldertreemodel.h"
+#include <QByteArray>
+#include <QDir>
+#include <QFile>
+#include <QFileInfoList>
+#include <QHashNode>
+#include <QVariant>
+#include <string>
+
 #include "library/browse/browsefeature.h"
+#include "library/browse/foldertreemodel.h"
+#include "library/treeitem.h"
 #include "util/file.h"
 
 FolderTreeModel::FolderTreeModel(QObject *parent)

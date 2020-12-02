@@ -1,15 +1,25 @@
 #include "qtwaveformrenderersimplesignal.h"
 
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
+#include <QtCore/qglobal.h>
+#include <stddef.h>
 
-#include "widget/wwidget.h"
+#include <QColor>
+#include <QDebug>
+#include <QLinearGradient>
+#include <QPainter>
+#include <QSharedPointer>
+#include <QTransform>
+#include <QtCore>
+#include <memory>
+
 #include "track/track.h"
+#include "track/track_decl.h"
 #include "util/math.h"
 #include "util/painterscope.h"
-
-#include <QLinearGradient>
+#include "waveform/renderers/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
+#include "waveformwidgetrenderer.h"
 
 QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererSignalBase(waveformWidgetRenderer) {

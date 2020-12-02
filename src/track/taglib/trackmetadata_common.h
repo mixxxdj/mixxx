@@ -1,12 +1,16 @@
 #pragma once
 
+#include <taglib.h>
 #include <taglib/tag.h>
 #include <taglib/tstringlist.h>
+#include <tbytevector.h>
+#include <tstring.h>
 
 #include <QByteArray>
 #include <QFlags>
 #include <QImage>
 #include <QString>
+#include <QtGlobal>
 
 #if defined(__EXTRA_METADATA__)
 // UUID -> QString
@@ -21,7 +25,15 @@
 #define TAGLIB_HAS_WAV_ID3V2TAG \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
+#include "track/bpm.h"
+#include "track/replaygain.h"
+#include "track/taglib/trackmetadata_file.h"
+#include "track/trackinfo.h"
 #include "track/trackmetadata.h"
+
+namespace TagLib {
+class Tag;
+} // namespace TagLib
 
 namespace mixxx {
 

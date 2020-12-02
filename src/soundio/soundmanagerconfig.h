@@ -20,9 +20,11 @@
 #define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
 #endif
 
-#include <QString>
-#include <QMultiHash>
 #include <QFileInfo>
+#include <QHashNode>
+#include <QMultiHash>
+#include <QSet>
+#include <QString>
 
 #include "soundio/soundmanagerutil.h"
 

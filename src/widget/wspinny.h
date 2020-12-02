@@ -2,11 +2,19 @@
 #ifndef _WSPINNY_H
 #define _WSPINNY_H
 
+#include <QDomNode>
 #include <QEvent>
 #include <QGLWidget>
 #include <QHideEvent>
+#include <QImage>
+#include <QPixmap>
+#include <QSharedPointer>
 #include <QShowEvent>
+#include <QString>
+#include <QtCore>
+#include <memory>
 
+#include "library/coverart.h"
 #include "library/dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
@@ -22,6 +30,17 @@ class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
 class VSyncThread;
+class BaseTrackPlayer;
+class DlgCoverArtFullSize;
+class QDragEnterEvent;
+class QDropEvent;
+class QHideEvent;
+class QMouseEvent;
+class QPaintEvent;
+class QResizeEvent;
+class QShowEvent;
+class QWidget;
+class WCoverArtMenu;
 
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
                 public TrackDropTarget {

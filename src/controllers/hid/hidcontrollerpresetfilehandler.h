@@ -1,8 +1,15 @@
 #ifndef HIDCONTROLLERPRESETFILEHANDLER_H
 #define HIDCONTROLLERPRESETFILEHANDLER_H
 
-#include "controllers/hid/hidcontrollerpreset.h"
+#include <QDir>
+#include <QDomElement>
+#include <QString>
+
+#include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
+#include "controllers/hid/hidcontrollerpreset.h"
+
+class HidControllerPreset;
 
 class HidControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:

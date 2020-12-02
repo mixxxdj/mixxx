@@ -1,13 +1,14 @@
 #include "engine/cachingreader/cachingreaderchunk.h"
 
-#include <QtDebug>
+#include <QDebug>
+#include <memory>
+#include <utility>
 
-#include "sources/audiosourcestereoproxy.h"
+#include "audio/signalinfo.h"
 #include "engine/engine.h"
-#include "util/math.h"
-#include "util/sample.h"
+#include "sources/audiosourcestereoproxy.h"
 #include "util/logger.h"
-
+#include "util/sample.h"
 
 namespace {
 

@@ -1,6 +1,14 @@
 #include "effects/lv2/lv2manifest.h"
+
+#include <stddef.h>
+
+#include <QSharedPointer>
+#include <QString>
+#include <QtCore>
+
+#include "effects/effectmanifest.h"
 #include "effects/effectmanifestparameter.h"
-#include "util/math.h"
+#include "util/fpclassify.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)

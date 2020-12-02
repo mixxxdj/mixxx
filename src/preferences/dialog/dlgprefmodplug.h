@@ -4,9 +4,15 @@
 #ifndef DLGPREFMODPLUG_H
 #define DLGPREFMODPLUG_H
 
+#include <QByteArrayData>
 #include <QDialog>
-#include "preferences/usersettings.h"
+#include <QString>
+
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
+
+class QObject;
+class QWidget;
 
 namespace Ui {
 class DlgPrefModplug;

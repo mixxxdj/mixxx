@@ -4,26 +4,41 @@
 
 #include "library/autodj/autodjfeature.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QAction>
+#include <QDebug>
 #include <QMenu>
 #include <QMetaObject>
-#include <QtDebug>
+#include <QModelIndex>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QUrl>
+#include <QtCore>
+#include <memory>
+#include <utility>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
+#include "library/crate/crateid.h"
 #include "library/crate/cratestorage.h"
+#include "library/dao/playlistdao.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
-#include "util/dnd.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+
+class KeyboardEventFilter;
 
 namespace {
 

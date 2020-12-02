@@ -1,9 +1,14 @@
 #include "util/color/rgbcolor.h"
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include "test/mixxxtest.h"
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <memory>
+
 #include "control/convert.h"
+#include "gtest/gtest_pred_impl.h"
 
 namespace mixxx {
 

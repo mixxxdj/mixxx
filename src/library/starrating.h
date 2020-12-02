@@ -3,6 +3,7 @@
 #include <QMetaType>
 #include <QPolygonF>
 #include <QSize>
+#include <QtGlobal>
 
 QT_FORWARD_DECLARE_CLASS(QPainter);
 QT_FORWARD_DECLARE_CLASS(QRect);

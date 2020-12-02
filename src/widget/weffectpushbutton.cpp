@@ -1,8 +1,26 @@
 #include "widget/weffectpushbutton.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
 
-#include "widget/effectwidgetutils.h"
+#include <QAction>
+#include <QActionGroup>
+#include <QDebug>
+#include <QList>
+#include <QMenu>
+#include <QMouseEvent>
+#include <QPair>
+#include <QSharedPointer>
+#include <QVariant>
+#include <QtCore>
+#include <type_traits>
+
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectparameterslot.h"
+#include "effects/effectparameterslotbase.h"
+#include "effects/effectsmanager.h"
+#include "preferences/configobject.h"
+
+class QWidget;
 
 WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)
         : WPushButton(pParent),

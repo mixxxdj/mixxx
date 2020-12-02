@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QSqlDatabase>
+#include <QString>
 #include <memory>
 
 #include "control/controlobject.h"
@@ -7,8 +9,12 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "test/mixxxtest.h"
+#include "track/track_decl.h"
+#include "util/db/dbconnectionpool.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
+
+class TrackCollection;
 
 class LibraryTest : public MixxxTest {
   protected:

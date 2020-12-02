@@ -4,14 +4,22 @@
 #ifndef PREFERENCES_BROADCASTSETTINGSMODEL_H
 #define PREFERENCES_BROADCASTSETTINGSMODEL_H
 
-#include <QAbstractTableModel>
 #include <QAbstractItemDelegate>
+#include <QAbstractTableModel>
+#include <QColor>
+#include <QList>
 #include <QMap>
+#include <QModelIndex>
+#include <QSharedPointer>
+#include <QString>
 #include <QVariant>
+#include <QtCore>
 
 #include "preferences/broadcastprofile.h"
 
 class BroadcastSettings;
+class QAbstractItemDelegate;
+
 typedef QSharedPointer<BroadcastSettings> BroadcastSettingsPointer;
 
 class BroadcastSettingsModel : public QAbstractTableModel {

@@ -5,12 +5,14 @@
 #ifndef BROWSETHREAD_H
 #define BROWSETHREAD_H
 
-#include <QThread>
-#include <QMutex>
-#include <QWaitCondition>
-#include <QStandardItem>
+#include <QByteArrayData>
 #include <QList>
+#include <QMutex>
 #include <QSharedPointer>
+#include <QStandardItem>
+#include <QString>
+#include <QThread>
+#include <QWaitCondition>
 #include <QWeakPointer>
 
 #include "util/file.h"
@@ -24,6 +26,10 @@
 // other than the GUI thread.
 class BrowseTableModel;
 class BrowseThread;
+class QObject;
+class QStandardItem;
+template<class T>
+class QWeakPointer;
 
 typedef QSharedPointer<BrowseThread> BrowseThreadPointer;
 

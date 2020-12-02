@@ -15,20 +15,42 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QDialog>
-#include <QEvent>
-#include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
-#include <QMoveEvent>
-#include <QResizeEvent>
-#include <QScreen>
-
 #include "preferences/dialog/dlgpreferences.h"
 
-#include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgpreflibrary.h"
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDesktopServices>
+#include <QDialogButtonBox>
+#include <QEvent>
+#include <QFlags>
+#include <QIcon>
+#include <QList>
+#include <QMoveEvent>
+#include <QObject>
+#include <QObjectList>
+#include <QPoint>
+#include <QPushButton>
+#include <QResizeEvent>
+#include <QScreen>
+#include <QScrollArea>
+#include <QSharedPointer>
+#include <QStackedWidget>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QUrl>
+#include <QWidget>
+#include <QtCore>
+#include <algorithm>
+
 #include "controllers/dlgprefcontrollers.h"
+#include "preferences/configobject.h"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefsound.h"
+#include "preferences/dlgpreferencepage.h"
+#include "preferences/settingsmanager.h"
+#include "util/assert.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -61,12 +83,11 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
-#include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "mixxx.h"
-#include "skin/skinloader.h"
 #include "util/widgethelper.h"
+
+class QAbstractButton;
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,

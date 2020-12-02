@@ -1,9 +1,11 @@
 #ifndef MIXER_BASETRACKPLAYER_H
 #define MIXER_BASETRACKPLAYER_H
 
+#include <QByteArrayData>
 #include <QObject>
 #include <QScopedPointer>
 #include <QString>
+#include <memory>
 
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
@@ -21,6 +23,12 @@ class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
 class VisualsManager;
+class ControlPushButton;
+class EngineDeck;
+class QObject;
+namespace mixxx {
+class ReplayGain;
+} // namespace mixxx
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.

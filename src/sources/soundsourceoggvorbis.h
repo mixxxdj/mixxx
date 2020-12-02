@@ -1,10 +1,22 @@
 #pragma once
 
+#include "sources/audiosource.h"
+#include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 #include "util/memory.h"
+#include "util/types.h"
+
+class QUrl;
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
+#include <ogg/config_types.h>
+#include <stddef.h>
 #include <vorbis/vorbisfile.h>
+
+#include <QString>
+#include <QStringList>
+#include <QtGlobal>
+#include <memory>
 
 QT_FORWARD_DECLARE_CLASS(QFile);
 

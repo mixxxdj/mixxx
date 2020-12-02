@@ -1,13 +1,15 @@
 #include "database/schemamanager.h"
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
 #include <QSqlQuery>
+#include <memory>
 
 #include "database/mixxxdb.h"
+#include "gtest/gtest_pred_impl.h"
 #include "library/dao/settingsdao.h"
 #include "test/mixxxtest.h"
-#include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 

@@ -1,6 +1,9 @@
 #ifndef EFFECTSLOT_H
 #define EFFECTSLOT_H
 
+#include <QByteArrayData>
+#include <QDomElement>
+#include <QList>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
@@ -10,14 +13,19 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
-#include "effects/effectparameterslot.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "effects/effectparameterslot.h"
+#include "preferences/usersettings.h"
 #include "util/class.h"
 
 class EffectSlot;
 class ControlProxy;
-
+class ControlEncoder;
+class ControlObject;
+class ControlPotmeter;
+class SoftTakeover;
 
 class EffectSlot : public QObject {
     Q_OBJECT

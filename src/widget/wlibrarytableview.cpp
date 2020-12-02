@@ -1,15 +1,22 @@
 #include "widget/wlibrarytableview.h"
 
+#include <QAbstractItemModel>
+#include <QAbstractItemView>
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
-#include <QPalette>
+#include <QItemSelectionModel>
+#include <QList>
+#include <QModelIndex>
+#include <QModelIndexList>
 #include <QScrollBar>
+#include <Qt>
 
-#include "library/trackmodel.h"
+#include "util/assert.h"
 #include "util/math.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
+class QFont;
+class QWidget;
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig,

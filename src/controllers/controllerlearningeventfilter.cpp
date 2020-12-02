@@ -1,12 +1,19 @@
-#include <QtDebug>
-#include <QMouseEvent>
-#include <QKeyEvent>
+#include "controllers/controllerlearningeventfilter.h"
 
-#include "widget/wwidget.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QEvent>
+#include <QMouseEvent>
+#include <QStringBuilder>
+#include <QWidget>
+
+#include "control/controlobject.h"
+#include "preferences/configobject.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
 #include "widget/wslidercomposed.h"
-#include "controllers/controllerlearningeventfilter.h"
+#include "widget/wwidget.h"
 
 ControllerLearningEventFilter::ControllerLearningEventFilter(QObject* pParent)
         : QObject(pParent),

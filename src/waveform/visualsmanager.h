@@ -1,5 +1,9 @@
 #pragma once
 
+#include <QSharedPointer>
+#include <QString>
+#include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "control/controlobject.h"
@@ -8,6 +12,8 @@
 #include "util/memory.h"
 #include "util/performancetimer.h"
 #include "waveform/visualplayposition.h"
+
+class VisualPlayPosition;
 
 namespace {
 

@@ -1,8 +1,18 @@
 #include "analyzer/analyzersilence.h"
 
+#include <math.h>
+
+#include <QSharedPointer>
+#include <QtGlobal>
+#include <memory>
+
 #include "analyzer/constants.h"
-#include "engine/engine.h"
+#include "audio/types.h"
+#include "preferences/configobject.h"
+#include "track/cue.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
+#include "util/math.h"
 
 namespace {
 

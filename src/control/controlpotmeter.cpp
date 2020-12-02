@@ -15,9 +15,16 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
+
+#include <QSharedPointer>
+#include <QStringBuilder>
+
+#include "control/control.h"
+#include "control/controlbehavior.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "preferences/configobject.h"
 
 ControlPotmeter::ControlPotmeter(const ConfigKey& key,
         double dMinValue,

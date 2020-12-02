@@ -1,11 +1,18 @@
-#include <QStyle>
 #include "widget/controlwidgetconnection.h"
 
-#include "widget/wbasewidget.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QMetaObject>
+#include <QStyle>
+#include <QVariant>
+#include <QWidget>
+
+#include "control/control.h"
 #include "control/controlproxy.h"
-#include "util/debug.h"
+#include "preferences/configobject.h"
 #include "util/valuetransformer.h"
-#include "util/assert.h"
+#include "widget/wbasewidget.h"
 
 ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,

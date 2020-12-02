@@ -1,5 +1,18 @@
 #include "effects/builtin/parametriceqeffect.h"
-#include "util/math.h"
+
+#include <QObject>
+#include <QSharedPointer>
+#include <QtGlobal>
+#include <algorithm>
+
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/engine.h"
+#include "util/sample.h"
+
+struct GroupFeatureState;
 
 namespace {
     constexpr int kBandCount = 2;

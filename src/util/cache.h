@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QMetaType>
+#include <QtGlobal>
 #include <type_traits> // static_assert
 
 namespace mixxx {

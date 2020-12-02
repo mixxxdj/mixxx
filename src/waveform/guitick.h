@@ -2,6 +2,7 @@
 #define GUITICK_H
 
 #include <QObject>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "util/duration.h"

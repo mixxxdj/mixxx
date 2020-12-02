@@ -1,14 +1,28 @@
 #pragma once
 
+#include "sources/audiosource.h"
+#include "sources/metadatasource.h"
+#include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
+#include "util/types.h"
+
+class QDateTime;
+class QImage;
+class QUrl;
 
 namespace ModPlug {
 #include <libmodplug/modplug.h>
 }
 
+#include <QByteArray>
+#include <QString>
+#include <QStringList>
+#include <algorithm>
+#include <utility>
 #include <vector>
 
 namespace mixxx {
+class TrackMetadata;
 
 // Class for reading tracker files using libmodplug.
 // The whole file is decoded at once and saved

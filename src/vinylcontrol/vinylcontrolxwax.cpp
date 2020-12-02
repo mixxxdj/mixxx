@@ -19,15 +19,26 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-#include <limits.h>
-
 #include "vinylcontrol/vinylcontrolxwax.h"
-#include "util/timer.h"
-#include "control/controlproxy.h"
+
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <string.h>
+#include <timecoder.h>
+
+#include <QDebug>
+#include <QMutex>
+#include <QSharedPointer>
+
 #include "control/controlobject.h"
-#include "util/math.h"
+#include "control/controlproxy.h"
+#include "preferences/configobject.h"
 #include "util/defs.h"
+#include "util/math.h"
+#include "util/timer.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
+#include "vinylcontrol/steadypitch.h"
+#include "vinylcontrol/vinylsignalquality.h"
 
 /****** TODO *******
    Stuff to maybe implement here

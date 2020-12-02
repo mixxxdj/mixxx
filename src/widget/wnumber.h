@@ -18,10 +18,16 @@
 #ifndef WNUMBER_H
 #define WNUMBER_H
 
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QLabel>
+#include <QString>
 
-#include "widget/wlabel.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
+
+class QObject;
+class QWidget;
 
 class WNumber : public WLabel  {
     Q_OBJECT

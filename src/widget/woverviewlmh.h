@@ -1,7 +1,13 @@
 #ifndef WOVERVIEWLMH_H
 #define WOVERVIEWLMH_H
 
+#include <QString>
+
+#include "preferences/usersettings.h"
 #include "widget/woverview.h"
+
+class PlayerManager;
+class QWidget;
 
 class WOverviewLMH : public WOverview {
   public:

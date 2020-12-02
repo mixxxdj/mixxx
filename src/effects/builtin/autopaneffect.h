@@ -1,16 +1,30 @@
 #ifndef AUTOPANEFFECT_H
 #define AUTOPANEFFECT_H
 
-#include <QMap>
+#include <math.h>
 
+#include <QMap>
+#include <QSet>
+#include <QString>
+
+#include "effects/defs.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterpansingle.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/math.h"
 #include "util/sample.h"
 #include "util/types.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 // This class provides a float value that cannot be increased or decreased
 // by more than a given value to avoid clicks.

@@ -1,9 +1,14 @@
 #include "waveformsignalcolors.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 #include <QDomNode>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtCore>
 
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;

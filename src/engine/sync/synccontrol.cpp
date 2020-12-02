@@ -1,12 +1,20 @@
 #include "engine/sync/synccontrol.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QtCore>
+#include <memory>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/controls/bpmcontrol.h"
-#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
+#include "preferences/configobject.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/logger.h"

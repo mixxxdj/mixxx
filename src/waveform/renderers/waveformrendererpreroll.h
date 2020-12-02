@@ -2,10 +2,15 @@
 #define WAVEFORMRENDERPREROLL_H
 
 #include <QColor>
+#include <QDomNode>
 
 #include "skin/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
+
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRendererPreroll : public WaveformRendererAbstract {
   public:

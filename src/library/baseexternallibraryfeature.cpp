@@ -1,13 +1,25 @@
 #include "library/baseexternallibraryfeature.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QList>
 #include <QMenu>
+#include <QMessageBox>
+#include <QScopedPointer>
+#include <QStringBuilder>
+#include <QVariant>
 
 #include "library/basesqltablemodel.h"
+#include "library/columncache.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "widget/wlibrarysidebar.h"
+#include "track/trackid.h"
+#include "util/assert.h"
 #include "util/logger.h"
+#include "widget/wlibrarysidebar.h"
 
 namespace {
 

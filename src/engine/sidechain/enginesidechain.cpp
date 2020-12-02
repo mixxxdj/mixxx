@@ -24,15 +24,18 @@
 
 #include "engine/sidechain/enginesidechain.h"
 
-#include <QtDebug>
-#include <QMutexLocker>
+#include <QtCore/qglobal.h>
 
-#include "engine/sidechain/sidechainworker.h"
+#include <QDebug>
+#include <QtGlobal>
+
+#include "audio/types.h"
 #include "engine/engine.h"
+#include "engine/sidechain/sidechainworker.h"
+#include "util/assert.h"
 #include "util/counter.h"
 #include "util/event.h"
 #include "util/sample.h"
-#include "util/timer.h"
 #include "util/trace.h"
 
 #define SIDECHAIN_BUFFER_SIZE 65536

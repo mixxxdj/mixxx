@@ -1,14 +1,18 @@
 #ifndef DLGPREFWAVEFORM_H
 #define DLGPREFWAVEFORM_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class Library;
+class QObject;
+class QWidget;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
     Q_OBJECT

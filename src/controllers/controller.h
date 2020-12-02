@@ -12,13 +12,27 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include <QByteArray>
+#include <QByteArrayData>
+#include <QElapsedTimer>
+#include <QList>
+#include <QObject>
+#include <QString>
+
 #include "controllers/controllerengine.h"
-#include "controllers/controllervisitor.h"
 #include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
-#include "controllers/controllerpresetfilehandler.h"
+#include "controllers/controllervisitor.h"
+#include "preferences/usersettings.h"
 #include "util/duration.h"
+
+class ControllerEngine;
+class ControllerVisitor;
+namespace mixxx {
+class Duration;
+} // namespace mixxx
 
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT

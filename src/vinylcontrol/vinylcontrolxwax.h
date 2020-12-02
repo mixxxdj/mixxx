@@ -1,12 +1,21 @@
 #ifndef __VINYLCONTROLXWAX_H__
 #define __VINYLCONTROLXWAX_H__
 
+#include <stddef.h>
+
+#include <QString>
 #include <QTime>
 
+#include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
-#include "vinylcontrol/vinylcontrol.h"
-#include "vinylcontrol/steadypitch.h"
 #include "util/types.h"
+#include "vinylcontrol/steadypitch.h"
+#include "vinylcontrol/vinylcontrol.h"
+
+class ControlProxy;
+class QMutex;
+class SteadyPitch;
+struct VinylSignalQualityReport;
 
 #ifdef _MSC_VER
 #include "timecoder.h"

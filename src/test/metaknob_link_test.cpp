@@ -1,18 +1,29 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <QObject>
 #include <QScopedPointer>
+#include <QSharedPointer>
+#include <QString>
+#include <QStringBuilder>
+#include <memory>
 
-#include "controllers/softtakeover.h"
-#include "effects/effectparameterslot.h"
-#include "effects/effectchainslot.h"
-#include "effects/effectrack.h"
-#include "effects/effect.h"
-#include "effects/effectslot.h"
-#include "mixxxtest.h"
-#include "test/baseeffecttest.h"
-#include "util/time.h"
 #include "control/controlproxy.h"
+#include "controllers/softtakeover.h"
+#include "effects/defs.h"
+#include "effects/effectchain.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectparameterslot.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
+#include "gtest/gtest_pred_impl.h"
+#include "test/baseeffecttest.h"
+#include "util/duration.h"
+#include "util/time.h"
 
 class MetaLinkTest : public BaseEffectTest {
   protected:

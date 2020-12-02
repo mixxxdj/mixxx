@@ -9,6 +9,8 @@
 #ifndef TRACKEXPORT_H
 #define TRACKEXPORT_H
 
+#include <QByteArrayData>
+#include <QObject>
 #include <QScopedPointer>
 #include <QString>
 
@@ -16,6 +18,8 @@
 #include "library/export/trackexportworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+
+class QWidget;
 
 // A controller class for creating the export worker and UI.
 class TrackExportWizard : public QObject {

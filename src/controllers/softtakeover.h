@@ -10,6 +10,7 @@
 #define SOFTTAKEOVER_H
 
 #include <QHash>
+#include <QHashNode>
 
 #include "util/duration.h"
 

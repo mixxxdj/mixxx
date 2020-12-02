@@ -1,11 +1,17 @@
 #ifndef DLGPREFAUTODJ_H
 #define DLGPREFAUTODJ_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefautodjdlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
+
+class QObject;
+class QTime;
+class QWidget;
 
 class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     Q_OBJECT

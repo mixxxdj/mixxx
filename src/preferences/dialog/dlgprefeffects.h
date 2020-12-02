@@ -2,6 +2,8 @@
 #define DLGPREFEFFECTS_H
 
 #include <QButtonGroup>
+#include <QByteArrayData>
+#include <QString>
 
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
@@ -9,6 +11,9 @@
 #include "preferences/usersettings.h"
 
 class EffectsManager;
+class QModelIndex;
+class QObject;
+class QWidget;
 
 class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     Q_OBJECT

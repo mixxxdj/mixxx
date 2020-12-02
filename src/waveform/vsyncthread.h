@@ -1,13 +1,22 @@
 #ifndef VSYNCTHREAD_H
 #define VSYNCTHREAD_H
 
-#include <QTime>
-#include <QThread>
-#include <QSemaphore>
-#include <QPair>
+#include <QByteArrayData>
 #include <QGLWidget>
+#include <QPair>
+#include <QSemaphore>
+#include <QString>
+#include <QThread>
+#include <QTime>
 
 #include "util/performancetimer.h"
+
+class QGLWidget;
+class QObject;
+template<class T1, class T2>
+struct QPair;
+template<typename T>
+class QList;
 
 class VSyncThread : public QThread {
     Q_OBJECT

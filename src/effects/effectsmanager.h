@@ -1,18 +1,22 @@
 #ifndef EFFECTSMANAGER_H
 #define EFFECTSMANAGER_H
 
-#include <QObject>
 #include <QHash>
 #include <QList>
-#include <QSet>
-#include <QScopedPointer>
+#include <QObject>
 #include <QPair>
+#include <QScopedPointer>
+#include <QSet>
+#include <QString>
+#include <QtCore>
+#include <memory>
 
-#include "preferences/usersettings.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "effects/defs.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
+#include "preferences/usersettings.h"
 #include "util/class.h"
 #include "util/fifo.h"
 
@@ -20,6 +24,9 @@ class EngineEffectsManager;
 class EffectChainManager;
 class EffectManifest;
 class EffectsBackend;
+class ConfigKey;
+class ControlObject;
+class ControlPotmeter;
 
 class EffectsManager : public QObject {
     Q_OBJECT

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QString>
 #include <QWidget>
+#include <QtCore>
 
 QT_FORWARD_DECLARE_CLASS(QProgressBar);
+class QPaintEvent;
 
 // This is a widget that is shown in the Mixxx main window
 // until the skin is ready to use.

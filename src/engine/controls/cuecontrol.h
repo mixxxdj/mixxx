@@ -4,15 +4,27 @@
 #ifndef CUECONTROL_H
 #define CUECONTROL_H
 
+#include <QByteArrayData>
 #include <QList>
+#include <QMap>
 #include <QMutex>
+#include <QObject>
+#include <QString>
+#include <memory>
 
 #include "control/controlproxy.h"
+#include "control/controlvalue.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+#include "track/beats.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/color/rgbcolor.h"
+
+class ControlProxy;
 
 #define NUM_HOT_CUES 37
 

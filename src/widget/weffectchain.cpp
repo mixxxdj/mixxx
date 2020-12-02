@@ -1,8 +1,12 @@
-#include <QtDebug>
-
 #include "widget/weffectchain.h"
-#include "effects/effectsmanager.h"
+
+#include <QSharedPointer>
+
+#include "effects/effectchain.h"
+#include "effects/effectchainslot.h"
 #include "widget/effectwidgetutils.h"
+
+class QWidget;
 
 WEffectChain::WEffectChain(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),

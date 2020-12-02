@@ -2,15 +2,26 @@
 #define FLANGEREFFECT_H
 
 #include <QMap>
+#include <QSet>
+#include <QString>
 
+#include "effects/defs.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/rampingvalue.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "util/rampingvalue.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 namespace {
 constexpr double kMaxDelayMs = 13.0;

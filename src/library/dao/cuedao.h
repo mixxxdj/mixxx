@@ -1,10 +1,14 @@
 #pragma once
 
+#include <QList>
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
 #include "track/cue.h"
 #include "track/trackid.h"
+
+class CuePointer;
+class TrackId;
 
 #define CUE_TABLE "cues"
 

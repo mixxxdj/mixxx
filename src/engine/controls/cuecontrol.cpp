@@ -3,16 +3,33 @@
 
 #include "engine/controls/cuecontrol.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
+
+#include <QChar>
+#include <QDebug>
 #include <QMutexLocker>
+#include <QSet>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QtCore>
+#include <optional>
+#include <type_traits>
 
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
-#include "util/color/color.h"
-#include "util/color/predefinedcolorpalettes.h"
+#include "util/assert.h"
+#include "util/color/colorpalette.h"
+#include "util/math.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 

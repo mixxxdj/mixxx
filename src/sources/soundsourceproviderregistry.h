@@ -1,8 +1,14 @@
 #pragma once
 
+#include <QList>
 #include <QMap>
+#include <QString>
+#include <QStringList>
+#include <optional>
+#include <utility>
 
 #include "sources/soundsourceprovider.h"
+#include "util/assert.h"
 #include "util/optional.h"
 
 namespace mixxx {

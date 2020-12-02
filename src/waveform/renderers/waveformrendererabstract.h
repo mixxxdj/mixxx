@@ -8,6 +8,8 @@
 #include "skin/skincontext.h"
 
 class WaveformWidgetRenderer;
+class QPaintEvent;
+class QPainter;
 
 class WaveformRendererAbstract {
   public:

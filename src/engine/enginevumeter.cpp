@@ -1,7 +1,13 @@
 #include "engine/enginevumeter.h"
 
-#include "control/controlproxy.h"
+#include <limits.h>
+#include <math.h>
+
+#include <QFlags>
+
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "preferences/configobject.h"
 #include "util/math.h"
 #include "util/sample.h"
 

@@ -3,10 +3,20 @@
 
 #include "test/trackexport_test.h"
 
+#include <QtCore/qglobal.h>
+
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QIODevice>
 #include <QScopedPointer>
+#include <QtGlobal>
+#include <memory>
 
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
 
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 

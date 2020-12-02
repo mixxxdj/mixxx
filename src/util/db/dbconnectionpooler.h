@@ -1,6 +1,7 @@
 #ifndef MIXXX_DBCONNECTIONPOOLER_H
 #define MIXXX_DBCONNECTIONPOOLER_H
 
+#include <iosfwd>
 
 #include "util/db/dbconnectionpool.h"
 

@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <QVariant>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "util/db/dbid.h"
 
 namespace {

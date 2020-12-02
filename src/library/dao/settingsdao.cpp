@@ -1,5 +1,13 @@
 #include "library/dao/settingsdao.h"
 
+#include <QChar>
+#include <QDebug>
+#include <QMetaType>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtCore>
 #include <QtSql>
 
 #include "util/assert.h"

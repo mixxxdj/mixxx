@@ -1,6 +1,14 @@
-#include <QComboBox>
-
 #include "controllers/delegates/midiopcodedelegate.h"
+
+#include <stddef.h>
+
+#include <QAbstractItemModel>
+#include <QComboBox>
+#include <QList>
+#include <QModelIndex>
+#include <QWidget>
+#include <QtCore>
+
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
 

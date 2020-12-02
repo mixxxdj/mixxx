@@ -3,27 +3,51 @@
 
 #include "library/serato/seratofeature.h"
 
-#include <QMap>
-#include <QMessageBox>
-#include <QSettings>
-#include <QStandardPaths>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
 
+#include <QBuffer>
+#include <QByteArray>
+#include <QDebug>
+#include <QDir>
+#include <QException>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QIODevice>
+#include <QMap>
+#include <QModelIndex>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStandardPaths>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QTextCodec>
+#include <QThread>
+#include <QUrl>
+#include <QtConcurrentRun>
+#include <QtCore>
+#include <type_traits>
+#include <utility>
+
+#include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
+#include "library/serato/seratoplaylistmodel.h"
 #include "library/trackcollection.h"
-#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "track/beatfactory.h"
-#include "track/cue.h"
-#include "track/keyfactory.h"
 #include "util/assert.h"
-#include "util/color/color.h"
+#include "util/db/dbconnectionpool.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
+
+class BaseSqlTableModel;
+class KeyboardEventFilter;
 
 namespace {
 

@@ -1,11 +1,16 @@
 #pragma once
 
 #include <QList>
+#include <QString>
+#include <QVector>
 
 #include "track/beatsimporter.h"
 #include "track/serato/beatgrid.h"
 
 namespace mixxx {
+namespace audio {
+class StreamInfo;
+} // namespace audio
 
 class SeratoBeatsImporter : public BeatsImporter {
   public:

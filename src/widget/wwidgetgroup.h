@@ -2,18 +2,25 @@
 #define WWIDGETGROUP_H
 
 #include <QDomNode>
+#include <QEvent>
 #include <QFrame>
 #include <QPaintEvent>
 #include <QPixmap>
+#include <QRect>
 #include <QResizeEvent>
 #include <QString>
 #include <QWidget>
-#include <QEvent>
+#include <QtCore>
 
+#include "skin/pixmapsource.h"
+#include "widget/paintable.h"
 #include "widget/wbasewidget.h"
 #include "widget/wpixmapstore.h"
 
 class SkinContext;
+class QPaintEvent;
+class QResizeEvent;
+class QWidget;
 
 class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT

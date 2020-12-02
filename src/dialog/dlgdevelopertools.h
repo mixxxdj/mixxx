@@ -1,9 +1,12 @@
 #ifndef DIALOG_DLGDEVELOPERTOOLS_H
 #define DIALOG_DLGDEVELOPERTOOLS_H
 
+#include <QByteArrayData>
 #include <QDialog>
 #include <QFile>
 #include <QSortFilterProxyModel>
+#include <QString>
+#include <QTextCursor>
 #include <QTimerEvent>
 
 #include "control/controlmodel.h"
@@ -11,6 +14,10 @@
 #include "dialog/ui_dlgdevelopertoolsdlg.h"
 #include "preferences/usersettings.h"
 #include "util/statmodel.h"
+
+class QObject;
+class QTimerEvent;
+class QWidget;
 
 class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     Q_OBJECT

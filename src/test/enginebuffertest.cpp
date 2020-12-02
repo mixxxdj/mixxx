@@ -1,17 +1,21 @@
 // Tests for enginebuffer.cpp
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <QtDebug>
-#include <QTest>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include "mixer/basetrackplayer.h"
-#include "preferences/usersettings.h"
+#include <QSharedPointer>
+#include <memory>
+
 #include "control/controlobject.h"
-#include "test/mockedenginebackendtest.h"
-#include "test/mixxxtest.h"
-#include "test/signalpathtest.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "gtest/gtest_pred_impl.h"
+#include "mixer/basetrackplayer.h"
+#include "mixer/deck.h"
+#include "preferences/configobject.h"
+#include "test/mockedenginebackendtest.h"
+#include "test/signalpathtest.h"
 
 // In case any of the test in this file fail. You can use the audioplot.py tool
 // in the tools folder to visually compare the results of the enginebuffer

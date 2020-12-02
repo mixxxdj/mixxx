@@ -1,13 +1,22 @@
-#include <QtDebug>
-#include <QStringList>
-#include <QScriptValue>
-#include <QAction>
-#include <QScriptValueIterator>
-
 #include "skin/skincontext.h"
+
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <qscriptcontext.h>
+#include <qscriptvalueiterator.h>
+
+#include <QByteArray>
+#include <QDomDocument>
+#include <QDomNodeList>
+#include <QFile>
+#include <QHashNode>
+#include <QIODevice>
+#include <type_traits>
+
+#include "preferences/configobject.h"
 #include "skin/svgparser.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
-#include "util/math.h"
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
                          const QString& xmlPath)

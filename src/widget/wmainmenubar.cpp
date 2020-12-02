@@ -1,14 +1,27 @@
 #include "widget/wmainmenubar.h"
 
+#include <QAction>
 #include <QDesktopServices>
+#include <QDir>
+#include <QKeySequence>
+#include <QMenu>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
 #include <QUrl>
+#include <QtCore>
+#include <type_traits>
 
+#include "control/control.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "mixer/playermanager.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+
+class QWidget;
 
 namespace {
 

@@ -1,17 +1,47 @@
 #include "track/taglib/trackmetadata_id3v2.h"
 
+#include <id3v2frame.h>
+#include <id3v2header.h>
+#include <id3v2tag.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/commentsframe.h>
 #include <taglib/generalencapsulatedobjectframe.h>
 #include <taglib/textidentificationframe.h>
 #include <taglib/unknownframe.h>
+#include <tbytevector.h>
+#include <tlist.h>
+#include <tstring.h>
+#include <tstringlist.h>
 
+#include <QByteArray>
+#include <QDate>
+#include <QDebug>
+#include <QFlags>
+#include <QImage>
+#include <QStaticStringData>
+#include <QString>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <Qt>
 #include <array>
+#include <list>
+#include <map>
+#include <memory>
+#include <tlist.tcc>
+#include <tmap.tcc>
+#include <utility>
 #if defined(__EXTRA_METADATA__)
 #include <taglib/uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/albuminfo.h"
+#include "track/bpm.h"
+#include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_file.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 #include "track/tracknumbers.h"
+#include "util/assert.h"
 #include "util/logger.h"
 
 namespace mixxx {

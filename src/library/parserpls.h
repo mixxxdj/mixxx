@@ -12,11 +12,15 @@
 #ifndef PARSERPLS_H
 #define PARSERPLS_H
 
-#include "library/parser.h"
-
-#include <QTextStream>
+#include <QByteArrayData>
 #include <QList>
 #include <QString>
+#include <QTextStream>
+
+#include "library/parser.h"
+
+class QObject;
+class QTextStream;
 
 class ParserPls : public Parser {
     Q_OBJECT

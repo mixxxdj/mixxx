@@ -1,6 +1,19 @@
-#include <gtest/gtest.h>
+#include "track/trackmetadata.h"
 
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QString>
+#include <memory>
+
+#include "audio/types.h"
+#include "gtest/gtest_pred_impl.h"
+#include "track/albuminfo.h"
+#include "track/bpm.h"
+#include "track/replaygain.h"
+#include "track/trackinfo.h"
 #include "track/trackrecord.h"
+#include "util/duration.h"
 
 class TrackMetadataTest : public testing::Test {
 };

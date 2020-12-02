@@ -1,11 +1,12 @@
 #include "util/db/fwdsqlquery.h"
 
+#include <QDebug>
+#include <QSqlDatabase>
 #include <QSqlRecord>
 
-#include "util/performancetimer.h"
-#include "util/logger.h"
 #include "util/assert.h"
-
+#include "util/logger.h"
+#include "util/performancetimer.h"
 
 namespace {
 

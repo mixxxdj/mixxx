@@ -1,10 +1,21 @@
 #include "library/crate/cratefeaturehelper.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QList>
+#include <QMessageBox>
+#include <QStringBuilder>
+#include <utility>
 
+#include "library/crate/crate.h"
+#include "library/crate/cratestorage.h"
 #include "library/trackcollection.h"
-
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/db/dbnamedentity.h"
 
 CrateFeatureHelper::CrateFeatureHelper(
         TrackCollection* pTrackCollection,

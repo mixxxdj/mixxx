@@ -1,15 +1,21 @@
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
-
 #include "waveform/renderers/waveformrenderbeat.h"
 
-#include "control/controlobject.h"
+#include <QDomNode>
+#include <QPainter>
+#include <QPen>
+#include <QSharedPointer>
+#include <QtCore>
+#include <algorithm>
+#include <memory>
+
+#include "track/beats.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "util/painterscope.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "util/painterscope.h"
+
+class QPaintEvent;
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {

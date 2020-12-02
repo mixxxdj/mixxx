@@ -1,7 +1,11 @@
 #ifndef MIXER_SAMPLERBANK_H
 #define MIXER_SAMPLERBANK_H
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
+#include <memory>
+
 #include "util/memory.h"
 
 class ControlObject;

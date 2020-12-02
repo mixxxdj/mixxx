@@ -1,11 +1,19 @@
 #include "widget/woverviewhsv.h"
 
-#include <QPainter>
 #include <QColor>
+#include <QImage>
+#include <QPainter>
+#include <QPoint>
+#include <QSharedPointer>
+#include <QtGlobal>
 
-#include "util/timer.h"
 #include "util/math.h"
+#include "util/timer.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveform.h"
+
+class PlayerManager;
+class QWidget;
 
 WOverviewHSV::WOverviewHSV(
         const QString& group,

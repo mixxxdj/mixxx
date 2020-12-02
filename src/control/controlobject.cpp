@@ -15,15 +15,14 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-#include <QHash>
-#include <QSet>
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+
 #include "control/control.h"
-#include "util/stat.h"
-#include "util/timer.h"
+#include "util/assert.h"
 
 ControlObject::ControlObject() {
 }

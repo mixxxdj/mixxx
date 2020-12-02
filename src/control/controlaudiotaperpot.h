@@ -2,8 +2,14 @@
 #ifndef CONTROLAUDIOTAPERPOT_H
 #define CONTROLAUDIOTAPERPOT_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
+
+class ConfigKey;
+class QObject;
 
 class ControlAudioTaperPot : public ControlPotmeter {
     Q_OBJECT

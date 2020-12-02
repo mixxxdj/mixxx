@@ -1,12 +1,33 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
-#include "mixxx.h"
-#include "library/library.h"
+#include <stddef.h>
+
+#include <QAbstractButton>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QSharedPointer>
+#include <QSlider>
+#include <QSpinBox>
+#include <QSqlDatabase>
+#include <QStringBuilder>
+#include <QVector>
+#include <QtGlobal>
+
 #include "library/dao/analysisdao.h"
+#include "library/library.h"
+#include "mixxx.h"
+#include "preferences/configobject.h"
 #include "preferences/waveformsettings.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveform/widgets/waveformwidgettype.h"
+
+class QWidget;
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  UserSettingsPointer pConfig, Library* pLibrary)

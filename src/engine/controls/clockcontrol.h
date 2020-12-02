@@ -1,6 +1,9 @@
 #ifndef CLOCKCONTROL_H
 #define CLOCKCONTROL_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
@@ -8,6 +11,7 @@
 
 class ControlProxy;
 class ControlObject;
+class QObject;
 
 class ClockControl: public EngineControl {
     Q_OBJECT

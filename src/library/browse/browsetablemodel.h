@@ -1,13 +1,27 @@
 #ifndef BROWSETABLEMODEL_H
 #define BROWSETABLEMODEL_H
 
-#include <QStandardItemModel>
+#include <QList>
+#include <QMap>
 #include <QMimeData>
+#include <QModelIndexList>
+#include <QStandardItemModel>
+#include <QString>
+#include <QVariant>
+#include <QVector>
+#include <QtCore>
 
+#include "library/browse/browsethread.h"
+#include "library/coverart.h"
 #include "library/trackmodel.h"
 #include "recording/recordingmanager.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/file.h"
-#include "library/browse/browsethread.h"
+
+class QAbstractItemDelegate;
+class RecordingManager;
+class TrackRef;
 
 //constants
 const int COLUMN_PREVIEW = 0;

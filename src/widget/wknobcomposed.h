@@ -1,17 +1,29 @@
 #ifndef WKNOBCOMPOSED_H
 #define WKNOBCOMPOSED_H
 
-#include <QWidget>
-#include <QPaintEvent>
+#include <QColor>
+#include <QDomNode>
 #include <QMouseEvent>
+#include <QPaintEvent>
+#include <QString>
 #include <QWheelEvent>
+#include <QWidget>
+#include <QtCore>
 
+#include "skin/pixmapsource.h"
 #include "skin/skincontext.h"
 #include "util/widgetrendertimer.h"
-#include "widget/wwidget.h"
 #include "widget/knobeventhandler.h"
-#include "widget/wpixmapstore.h"
+#include "widget/paintable.h"
 #include "widget/wimagestore.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
+
+class QMouseEvent;
+class QPaintEvent;
+class QPainter;
+class QWheelEvent;
+class QWidget;
 
 // This is used for knobs, if the knob value can be displayed
 // by rotating a single SVG image.

@@ -1,15 +1,23 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QList>
-
+#include <QObject>
+#include <QString>
+#include <chrono>
 #include <deque>
+#include <memory>
 #include <set>
+#include <utility>
 #include <vector>
 
+#include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzerthread.h"
-
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/assert.h"
 #include "util/memory.h"
-
 
 // forward declaration(s)
 class Library;

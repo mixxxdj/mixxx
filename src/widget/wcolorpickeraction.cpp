@@ -1,5 +1,14 @@
 #include "widget/wcolorpickeraction.h"
 
+#include <QHBoxLayout>
+#include <QLayout>
+#include <QSizePolicy>
+#include <QWidget>
+
+#include "util/assert.h"
+
+class ColorPalette;
+
 WColorPickerAction::WColorPickerAction(WColorPicker::Options options, const ColorPalette& palette, QWidget* parent)
         : QWidgetAction(parent),
           m_pColorPicker(make_parented<WColorPicker>(options, palette)) {

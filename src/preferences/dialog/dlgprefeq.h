@@ -18,15 +18,30 @@
 #ifndef DLGPREFEQ_H
 #define DLGPREFEQ_H
 
-#include <QWidget>
+#include <QByteArrayData>
 #include <QComboBox>
+#include <QList>
+#include <QString>
+#include <QUrl>
+#include <QWeakPointer>
+#include <QWidget>
 
-#include "preferences/dialog/ui_dlgprefeqdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
-#include "preferences/dlgpreferencepage.h"
-#include "effects/effectsmanager.h"
+#include "effects/defs.h"
 #include "effects/effectrack.h"
+#include "effects/effectsmanager.h"
+#include "preferences/dialog/ui_dlgprefeqdlg.h"
+#include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
+
+class ControlObject;
+class Effect;
+class EffectsManager;
+class QComboBox;
+class QLabel;
+class QObject;
+class QSlider;
+class QWidget;
 
 /**
   *@author John Sully

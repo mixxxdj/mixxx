@@ -1,16 +1,22 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-generated-function-mockers.h>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
+#include <gtest/gtest-printers.h>
 
-#include <QtDebug>
+#include <QString>
+#include <QtGlobal>
+#include <memory>
 
-#include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
-#include "test/mixxxtest.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/signalpathtest.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+
+struct GroupFeatureState;
 
 using ::testing::Return;
 using ::testing::_;

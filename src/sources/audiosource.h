@@ -1,11 +1,22 @@
 #pragma once
 
+#include <QDebug>
+#include <memory>
+#include <optional>
+
+#include "audio/signalinfo.h"
 #include "audio/streaminfo.h"
+#include "audio/types.h"
 #include "engine/engine.h"
 #include "sources/urlresource.h"
+#include "util/assert.h"
+#include "util/duration.h"
 #include "util/indexrange.h"
 #include "util/memory.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
+
+class QUrl;
 
 namespace mixxx {
 

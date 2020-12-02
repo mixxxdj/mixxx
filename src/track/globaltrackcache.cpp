@@ -1,6 +1,11 @@
 #include "track/globaltrackcache.h"
 
 #include <QCoreApplication>
+#include <QDebug>
+#include <QMetaObject>
+#include <QtCore>
+#include <iosfwd>
+#include <type_traits>
 
 #include "track/track.h"
 #include "util/assert.h"

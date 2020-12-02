@@ -1,13 +1,17 @@
 #ifndef WEFFECTBUTTONPARAMETER_H
 #define WEFFECTBUTTONPARAMETER_H
 
+#include <QByteArrayData>
 #include <QDomNode>
+#include <QString>
 
-#include "widget/wlabel.h"
-#include "widget/weffectparameterbase.h"
 #include "skin/skincontext.h"
+#include "widget/weffectparameterbase.h"
+#include "widget/wlabel.h"
 
 class EffectsManager;
+class QObject;
+class QWidget;
 
 class WEffectButtonParameter : public WEffectParameterBase {
     Q_OBJECT

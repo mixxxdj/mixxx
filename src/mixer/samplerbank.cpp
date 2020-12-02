@@ -1,12 +1,28 @@
 #include "mixer/samplerbank.h"
 
-#include <QFileDialog>
-#include <QMessageBox>
+#include <QtCore/qglobal.h>
 
+#include <QByteArray>
+#include <QDebug>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QMessageBox>
+#include <QStaticStringData>
+#include <QStringLiteral>
+
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "mixer/sampler.h"
+#include "preferences/configobject.h"
 #include "track/track.h"
+#include "track/track_decl.h"
 #include "util/assert.h"
 
 SamplerBank::SamplerBank(PlayerManager* pPlayerManager)

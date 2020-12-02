@@ -1,10 +1,18 @@
 #include "analyzer/trackanalysisscheduler.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QThread>
+#include <algorithm>
+
 #include "library/library.h"
 #include "library/trackcollection.h"
-
+#include "util/db/dbid.h"
 #include "util/logger.h"
-
+#include "util/math.h"
 
 namespace {
 

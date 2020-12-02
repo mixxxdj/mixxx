@@ -1,9 +1,15 @@
 #ifndef HSVWAVEFORMWIDGET_H
 #define HSVWAVEFORMWIDGET_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
+#include "waveform/widgets/waveformwidgettype.h"
 #include "waveformwidgetabstract.h"
+
+class QObject;
+class QPaintEvent;
 
 class HSVWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     Q_OBJECT

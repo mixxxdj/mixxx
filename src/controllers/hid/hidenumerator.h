@@ -8,7 +8,12 @@
 #ifndef HIDENUMERATOR_H
 #define HIDENUMERATOR_H
 
+#include <QList>
+
 #include "controllers/controllerenumerator.h"
+#include "preferences/usersettings.h"
+
+class Controller;
 
 class HidEnumerator : public ControllerEnumerator {
   public:

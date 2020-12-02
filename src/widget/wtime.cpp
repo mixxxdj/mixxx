@@ -1,9 +1,10 @@
-#include <QtDebug>
-#include <QTime>
-#include <QLocale>
-
 #include "widget/wtime.h"
-#include "util/cmdlineargs.h"
+
+#include <QLocale>
+#include <QTime>
+#include <QTimer>
+
+class QWidget;
 
 WTime::WTime(QWidget *parent)
         : WLabel(parent),

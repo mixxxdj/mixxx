@@ -1,11 +1,14 @@
 #ifndef MIXXX_DBCONNECTION_H
 #define MIXXX_DBCONNECTION_H
 
-
+#include <QChar>
 #include <QSqlDatabase>
+#include <QString>
 #include <QtDebug>
 
 #include "util/string.h"
+
+class QDebug;
 
 namespace mixxx {
 

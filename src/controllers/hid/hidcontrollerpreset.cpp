@@ -9,7 +9,6 @@
 #include "controllers/hid/hidcontrollerpreset.h"
 
 #include "controllers/controllerpresetvisitor.h"
-#include "controllers/defs_controllers.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
 bool HidControllerPreset::savePreset(const QString& fileName) const {

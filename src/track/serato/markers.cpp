@@ -1,8 +1,21 @@
 #include "track/serato/markers.h"
 
-#include <QtEndian>
+#include <QtCore/qglobal.h>
+#include <string.h>
 
+#include <QDataStream>
+#include <QIODevice>
+#include <QMap>
+#include <QString>
+#include <QtGlobal>
+#include <QtGui>
+#include <optional>
+#include <type_traits>
+#include <utility>
+
+#include "track/cueinfo.h"
 #include "track/serato/tags.h"
+#include "util/assert.h"
 #include "util/logger.h"
 
 namespace {

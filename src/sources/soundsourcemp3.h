@@ -1,6 +1,11 @@
 #pragma once
 
+#include "sources/audiosource.h"
+#include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
+#include "util/types.h"
+
+class QUrl;
 
 #ifdef _MSC_VER
 // So mad.h doesn't try to use inline assembly which MSVC doesn't support.
@@ -11,7 +16,10 @@
 #include <mad.h>
 
 #include <QFile>
-
+#include <QString>
+#include <QStringList>
+#include <QtGlobal>
+#include <algorithm>
 #include <vector>
 
 namespace mixxx {

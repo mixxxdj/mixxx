@@ -1,7 +1,11 @@
 // sleepableqthread.h
 // Created May 21, 2012 by Bill Good <bkgood at gmail dot com>
 
+#include <stddef.h>
+
+#include <QString>
 #include <QThread>
+#include <QtCore>
 
 // Subclass of QThread exposing static sleep methods. Qt developers know
 // better than us and therefore made these methods protected but I'm a

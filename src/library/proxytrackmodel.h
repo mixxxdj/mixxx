@@ -1,9 +1,21 @@
 #pragma once
 
-#include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
+#include <QModelIndexList>
+#include <QSortFilterProxyModel>
+#include <QString>
+#include <QVariant>
+#include <QVector>
+#include <Qt>
 
+#include "library/coverart.h"
 #include "library/trackmodel.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+
+class QAbstractItemDelegate;
+class QObject;
+class TrackRef;
 
 // ProxyTrackModel composes a TrackModel inside of a QSortFilterProxyModel so
 // that the sorting and filtering of the QSortFilterProxyModel can be completely

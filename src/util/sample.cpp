@@ -1,11 +1,14 @@
-#include <cstdlib>
-#include <cstddef>
-
 #include "util/sample.h"
+
+#include <cstddef>
+#include <cstdlib>
+
+#include "util/assert.h"
 #include "util/math.h"
 
 #ifdef __WINDOWS__
 #include <QtGlobal>
+
 typedef qint64 int64_t;
 typedef qint32 int32_t;
 #endif

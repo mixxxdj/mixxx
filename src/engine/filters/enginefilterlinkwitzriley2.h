@@ -1,7 +1,12 @@
 #ifndef ENGINEFILTELINKWITZRILEY2_H
 #define ENGINEFILTELINKWITZRILEY2_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "engine/filters/enginefilteriir.h"
+
+class QObject;
 
 class EngineFilterLinkwitzRiley2Low : public EngineFilterIIR<2, IIR_LP2> {
     Q_OBJECT

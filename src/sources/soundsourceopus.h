@@ -3,8 +3,23 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
 
+#include <QString>
+#include <QStringList>
+#include <utility>
+
+#include "sources/audiosource.h"
+#include "sources/metadatasource.h"
+#include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
+
+class QDateTime;
+class QImage;
+class QUrl;
+namespace mixxx {
+class TrackMetadata;
+} // namespace mixxx
 
 namespace mixxx {
 

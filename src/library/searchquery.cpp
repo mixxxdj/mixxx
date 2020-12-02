@@ -1,13 +1,21 @@
 #include "library/searchquery.h"
 
-#include <QtDebug>
+#include <QChar>
+#include <QCharRef>
+#include <QDir>
+#include <QMetaType>
+#include <QRegExp>
+#include <QStringBuilder>
 
 #include "library/crate/crateschema.h"
+#include "library/crate/cratestorage.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "track/keyutils.h"
+#include "track/playcounter.h"
 #include "track/track.h"
 #include "util/db/dbconnection.h"
+#include "util/db/dbid.h"
 #include "util/db/sqllikewildcards.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {

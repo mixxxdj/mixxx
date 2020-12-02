@@ -1,8 +1,14 @@
 #ifndef CONTROLEFFECTKNOB_H
 #define CONTROLEFFECTKNOB_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlpotmeter.h"
 #include "effects/effectmanifestparameter.h"
+
+class ConfigKey;
+class QObject;
 
 class ControlEffectKnob : public ControlPotmeter {
     Q_OBJECT

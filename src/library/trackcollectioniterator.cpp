@@ -1,5 +1,7 @@
 #include "library/trackcollectioniterator.h"
 
+#include <memory>
+
 #include "library/trackcollection.h"
 
 namespace mixxx {

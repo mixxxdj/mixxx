@@ -3,8 +3,13 @@
 
 #include <lame/lame.h>
 
-#include "util/types.h"
+#include <QString>
+
 #include "encoder/encoder.h"
+#include "util/types.h"
+
+class EncoderCallback;
+class EncoderSettings;
 
 class EncoderMp3 final : public Encoder {
   public:

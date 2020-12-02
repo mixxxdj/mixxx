@@ -1,11 +1,21 @@
 #include "widget/wcolorpicker.h"
 
-#include <QColorDialog>
-#include <QMapIterator>
-#include <QPushButton>
-#include <QStyle>
+#include <QtCore/qglobal.h>
 
-#include "util/color/color.h"
+#include <QColor>
+#include <QColorDialog>
+#include <QDebug>
+#include <QGridLayout>
+#include <QLayout>
+#include <QPushButton>
+#include <QSizePolicy>
+#include <QStyle>
+#include <QStyleFactory>
+#include <QtCore>
+#include <optional>
+#include <utility>
+
+#include "util/assert.h"
 #include "util/parented_ptr.h"
 
 namespace {

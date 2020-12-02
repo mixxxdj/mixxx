@@ -4,15 +4,22 @@
 #ifndef WLIBRARYTABLEVIEW_H
 #define WLIBRARYTABLEVIEW_H
 
+#include <QByteArrayData>
 #include <QFont>
+#include <QMap>
 #include <QString>
 #include <QTableView>
 
 #include "library/libraryview.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
 class TrackModel;
+class QFocusEvent;
+class QFont;
+class QObject;
+class QWidget;
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT

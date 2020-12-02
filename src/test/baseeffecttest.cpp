@@ -1,7 +1,14 @@
-#include <gtest/gtest.h>
+#include "test/baseeffecttest.h"
+
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-more-actions.h>
+#include <gmock/gmock-spec-builders.h>
 #include <gmock/gmock.h>
 
-#include "test/baseeffecttest.h"
+#include <QSharedPointer>
+
+#include "effects/effectmanifest.h"
 
 using ::testing::Return;
 using ::testing::Invoke;

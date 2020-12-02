@@ -19,10 +19,16 @@
 
 #include <portmidi.h>
 
+#include <QByteArray>
+#include <QByteArrayData>
 #include <QScopedPointer>
+#include <QString>
 
 #include "controllers/midi/midicontroller.h"
 #include "controllers/midi/portmididevice.h"
+#include "preferences/usersettings.h"
+
+class QObject;
 
 // Note:
 // A standard Midi device runs at 31.25 kbps, with 10 bits / byte

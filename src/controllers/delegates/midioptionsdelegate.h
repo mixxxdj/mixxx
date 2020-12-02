@@ -1,10 +1,20 @@
 #ifndef MIDIOPTIONSDELEGATE_H
 #define MIDIOPTIONSDELEGATE_H
 
+#include <QByteArrayData>
+#include <QLocale>
+#include <QString>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 #include <QTableView>
+#include <QVariant>
 
 #include "controllers/midi/midimessage.h"
+
+class QAbstractItemModel;
+class QModelIndex;
+class QObject;
+class QWidget;
 
 class MidiOptionsDelegate : public QStyledItemDelegate {
     Q_OBJECT

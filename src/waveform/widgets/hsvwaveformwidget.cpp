@@ -1,15 +1,18 @@
 #include "hsvwaveformwidget.h"
 
 #include <QPainter>
+#include <Qt>
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/waveformrendermark.h"
-#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererhsv.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendermark.h"
+#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+
+class QPaintEvent;
 
 HSVWaveformWidget::HSVWaveformWidget(const QString& group, QWidget* parent)
         : QWidget(parent),

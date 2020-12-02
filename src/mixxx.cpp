@@ -17,26 +17,63 @@
 
 #include "mixxx.h"
 
+#include <QtCore/qglobal.h>
+#include <X11/Xproto.h>
+#include <stdlib.h>
+
+#include <QApplication>
+#include <QByteArray>
+#include <QCloseEvent>
+#include <QColor>
+#include <QCoreApplication>
+#include <QDebug>
 #include <QDesktopServices>
+#include <QDir>
+#include <QEvent>
+#include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QGLFormat>
 #include <QGLWidget>
 #include <QGuiApplication>
+#include <QIODevice>
+#include <QIcon>
 #include <QInputMethod>
+#include <QLatin1String>
+#include <QList>
 #include <QLocale>
-#include <QScreen>
+#include <QMessageBox>
+#include <QObject>
+#include <QPalette>
+#include <QPointer>
+#include <QPushButton>
+#include <QRect>
+#include <QSqlDatabase>
 #include <QStandardPaths>
+#include <QStringBuilder>
+#include <QStringList>
 #include <QUrl>
-#include <QtDebug>
+#include <QWidget>
+#include <QX11Info>
+#include <QtCore>
 
+#include "control/control.h"
+#include "control/controlobject.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
 #include "engine/enginemaster.h"
+#include "preferences/configobject.h"
 #include "preferences/constants.h"
-#include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
+#include "preferences/usersettings.h"
+#include "soundio/soundmanagerconfig.h"
+#include "util/assert.h"
+#include "util/cmdlineargs.h"
+#include "util/duration.h"
+#include "widget/wbasewidget.h"
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
@@ -48,24 +85,20 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/launchimage.h"
-#include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
-#include "util/experiment.h"
 #include "util/font.h"
 #include "util/logger.h"
-#include "util/math.h"
 #include "util/sandbox.h"
 #include "util/screensaver.h"
 #include "util/statsmanager.h"
@@ -73,12 +106,14 @@
 #include "util/timer.h"
 #include "util/translations.h"
 #include "util/version.h"
-#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wmainmenubar.h"
+
+template<class T>
+class QSharedPointer;
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -89,9 +124,9 @@
 #endif
 
 #if defined(Q_OS_LINUX)
-#include <QtX11Extras/QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
+
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max

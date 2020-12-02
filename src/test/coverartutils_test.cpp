@@ -1,12 +1,25 @@
 #include "library/coverartutils.h"
 
-#include <QFileInfo>
-#include <QTemporaryDir>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QByteArray>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QStringBuilder>
+#include <QTemporaryDir>
+#include <QtGlobal>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "library/coverart.h"
 #include "library/coverartcache.h"
 #include "sources/soundsourceproxy.h"
 #include "test/librarytest.h"
+#include "test/mixxxtest.h"
 #include "track/track.h"
+#include "track/trackfile.h"
 
 namespace {
 

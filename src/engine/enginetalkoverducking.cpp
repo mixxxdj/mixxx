@@ -1,5 +1,13 @@
-#include "control/controlproxy.h"
 #include "engine/enginetalkoverducking.h"
+
+#include <QSharedPointer>
+#include <Qt>
+
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "preferences/configobject.h"
+#include "util/assert.h"
 
 namespace {
 

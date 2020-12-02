@@ -16,13 +16,16 @@
 #ifndef SOUNDMANAGERUTIL_U
 #define SOUNDMANAGERUTIL_U
 
-#include <QString>
-#include <QMutex>
+#include <QDebug>
 #include <QDomElement>
 #include <QList>
+#include <QMutex>
+#include <QString>
+#include <QStringBuilder>
+#include <QtCore>
 
-#include "util/types.h"
 #include "util/fifo.h"
+#include "util/types.h"
 
 /**
  * @class ChannelGroup

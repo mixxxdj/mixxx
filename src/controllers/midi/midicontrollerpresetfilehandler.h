@@ -8,8 +8,17 @@
 #ifndef MIDICONTROLLERPRESETFILEHANDLER_H
 #define MIDICONTROLLERPRESETFILEHANDLER_H
 
+#include <QDir>
+#include <QDomElement>
+#include <QString>
+
+#include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/midi/midicontrollerpreset.h"
+
+class MidiControllerPreset;
+struct MidiInputMapping;
+struct MidiOutputMapping;
 
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:

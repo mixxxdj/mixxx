@@ -1,7 +1,17 @@
-#include <QString>
-
-#include "test/mixxxtest.h"
 #include "preferences/configobject.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QByteArray>
+#include <QDir>
+#include <QSharedPointer>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/usersettings.h"
+#include "test/mixxxtest.h"
 
 namespace {
 

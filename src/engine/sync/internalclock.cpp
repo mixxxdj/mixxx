@@ -1,12 +1,14 @@
 #include "engine/sync/internalclock.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QtCore>
 
 #include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/sync/enginesync.h"
-#include "preferences/usersettings.h"
+#include "preferences/configobject.h"
 #include "util/logger.h"
 
 namespace {

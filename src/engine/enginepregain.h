@@ -1,12 +1,16 @@
 #pragma once
 
-#include "engine/engineobject.h"
+#include <QString>
+
 #include "control/controlobject.h"
+#include "engine/engineobject.h"
 #include "util/performancetimer.h"
+#include "util/types.h"
 
 class ControlAudioTaperPot;
 class ControlPotmeter;
 class ControlObject;
+struct GroupFeatureState;
 
 // The pregain control alters the volume of the track based on several inputs,
 // including user pregain adjustment, ReplayGain value, and vinyl-like

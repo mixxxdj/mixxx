@@ -18,21 +18,30 @@
 #ifndef WPUSHBUTTON_H
 #define WPUSHBUTTON_H
 
+#include <QDomNode>
+#include <QFocusEvent>
+#include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QString>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QFocusEvent>
 #include <QTimer>
 #include <QVector>
+#include <QtCore>
 
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
 #include "control/controlpushbutton.h"
+#include "skin/pixmapsource.h"
 #include "skin/skincontext.h"
-#include "widget/controlwidgetconnection.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
+#include "widget/controlwidgetconnection.h"
+#include "widget/paintable.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
+
+class QFocusEvent;
+class QMouseEvent;
+class QPaintEvent;
+class QWidget;
 
 class WPushButton : public WWidget {
     Q_OBJECT

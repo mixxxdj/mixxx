@@ -1,9 +1,27 @@
 #pragma once
 
+#include <QFileInfo>
+#include <QImage>
+#include <QList>
+#include <QString>
+#include <QStringList>
+#include <QUrl>
+#include <utility>
+
+#include "sources/audiosource.h"
+#include "sources/metadatasource.h"
+#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
 #include "track/trackfile.h"
 #include "util/sandbox.h"
+
+class QRegExp;
+class Track;
+namespace mixxx {
+class TrackMetadata;
+} // namespace mixxx
 
 /// Creates sound sources for tracks. Only intended to be used
 /// in a narrow scope and not shareable between multiple threads!

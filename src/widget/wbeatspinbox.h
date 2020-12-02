@@ -1,14 +1,24 @@
 #ifndef WBEATSPINBOX_H
 #define WBEATSPINBOX_H
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "widget/wbasewidget.h"
-#include "skin/skincontext.h"
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QDoubleSpinBox>
 #include <QLineEdit>
+#include <QString>
+#include <QValidator>
+
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
 
 class ControlProxy;
+class ConfigKey;
+class QEvent;
+class QObject;
+class QRegExp;
+class QWidget;
 
 class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     Q_OBJECT

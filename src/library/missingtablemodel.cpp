@@ -1,8 +1,18 @@
 #include "library/missingtablemodel.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtSql>
+
+#include "library/columncache.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "library/dao/trackschema.h"
 
 namespace {
 

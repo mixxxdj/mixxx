@@ -1,13 +1,16 @@
 #ifndef BESSEL8LVMIXEQEFFECT_H
 #define BESSEL8LVMIXEQEFFECT_H
 
-#include "effects/builtin/lvmixeqbase.h"
-
 #include <QMap>
+#include <QSet>
+#include <QString>
 
 #include "control/controlproxy.h"
+#include "effects/builtin/lvmixeqbase.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbessel8.h"
@@ -17,6 +20,13 @@
 #include "util/sample.h"
 #include "util/types.h"
 
+class ControlProxy;
+class EngineEffect;
+class EngineEffectParameter;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 class Bessel8LVMixEQEffectGroupState :
         public LVMixEQEffectGroupState<EngineFilterBessel8Low> {

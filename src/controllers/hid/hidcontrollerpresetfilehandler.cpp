@@ -1,5 +1,9 @@
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
+#include <QDomDocument>
+
+#include "controllers/hid/hidcontrollerpreset.h"
+
 bool HidControllerPresetFileHandler::save(const HidControllerPreset& preset,
         const QString& fileName) const {
     QDomDocument doc = buildRootWithScripts(preset);

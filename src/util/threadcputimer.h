@@ -1,6 +1,8 @@
 #ifndef UTIL_THREADCPUTIMER_H
 #define UTIL_THREADCPUTIMER_H
 
+#include <QtGlobal>
+
 #include "util/duration.h"
 #include "util/performancetimer.h"
 

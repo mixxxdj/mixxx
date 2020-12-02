@@ -1,23 +1,37 @@
 #include "library/browse/browsetablemodel.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QAbstractItemModel>
+#include <QDebug>
+#include <QDir>
+#include <QFlags>
 #include <QMessageBox>
 #include <QMetaType>
+#include <QMimeData>
+#include <QModelIndex>
+#include <QSharedPointer>
+#include <QStandardItem>
+#include <QStringBuilder>
 #include <QStringList>
-#include <QTableView>
 #include <QUrl>
-#include <QtConcurrentRun>
-#include <QtSql>
+#include <memory>
 
-#include "control/controlobject.h"
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "recording/recordingmanager.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "track/trackref.h"
+#include "util/assert.h"
 #include "util/compatibility.h"
 #include "widget/wlibrarytableview.h"
+
+class QAbstractItemDelegate;
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollectionManager* pTrackCollectionManager,

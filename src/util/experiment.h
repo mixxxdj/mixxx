@@ -1,6 +1,9 @@
 #ifndef EXPERIMENT_H
 #define EXPERIMENT_H
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 #include <QtDebug>
 
 class Experiment {

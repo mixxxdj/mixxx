@@ -1,16 +1,34 @@
 #include "track/track.h"
 
-#include <QDirIterator>
-#include <QMutexLocker>
-#include <atomic>
+#include <QtCore/qsharedpointer.h>
+#include <math.h>
 
-#include "engine/engine.h"
+#include <QDebug>
+#include <QMutableListIterator>
+#include <QMutexLocker>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <atomic>
+#include <memory>
+#include <type_traits>
+#include <utility>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "track/albuminfo.h"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
-#include "track/trackref.h"
+#include "track/bpm.h"
+#include "track/keyutils.h"
+#include "track/serato/tags.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 #include "util/assert.h"
-#include "util/color/color.h"
+#include "util/db/dbid.h"
 #include "util/logger.h"
+#include "util/types.h"
 
 namespace {
 

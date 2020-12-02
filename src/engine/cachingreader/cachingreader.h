@@ -6,8 +6,11 @@
 #include <QAtomicInt>
 #include <QHash>
 #include <QList>
+#include <QObject>
+#include <QString>
 #include <QVarLengthArray>
 #include <QVector>
+#include <QtCore>
 #include <list>
 
 #include "engine/cachingreader/cachingreaderworker.h"
@@ -15,7 +18,12 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/fifo.h"
+#include "util/indexrange.h"
+#include "util/samplebuffer.h"
 #include "util/types.h"
+
+class CachingReaderChunkForOwner;
+class EngineWorkerScheduler;
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by

@@ -1,10 +1,17 @@
 #include "analyzer/analyzerebur128.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
 
+#include <QDebug>
+#include <memory>
+
+#include "track/replaygain.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "util/assert.h"
 #include "util/math.h"
-#include "util/sample.h"
 #include "util/timer.h"
 
 namespace {

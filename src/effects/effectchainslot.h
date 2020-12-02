@@ -1,18 +1,25 @@
 #ifndef EFFECTCHAINSLOT_H
 #define EFFECTCHAINSLOT_H
 
-#include <QObject>
-#include <QMap>
+#include <QByteArrayData>
+#include <QDomElement>
 #include <QList>
+#include <QMap>
+#include <QObject>
+#include <QString>
 
+#include "control/controlobject.h"
+#include "effects/defs.h"
+#include "effects/effectchain.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "effects/effectchain.h"
 
 class ControlObject;
 class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;
+class EffectRack;
+class EffectsManager;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT

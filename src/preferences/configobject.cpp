@@ -1,15 +1,23 @@
 #include "preferences/configobject.h"
 
-#include <QApplication>
+#include <QtCore/qglobal.h>
+
+#include <QCoreApplication>
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QIODevice>
+#include <QReadLocker>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
 #include <QTextStream>
-#include <QtDebug>
+#include <QWriteLocker>
+#include <optional>
 
 #include "util/cmdlineargs.h"
 #include "util/color/rgbcolor.h"
 #include "util/xml.h"
-#include "widget/wwidget.h"
 
 // TODO(rryan): Move to a utility file.
 namespace {

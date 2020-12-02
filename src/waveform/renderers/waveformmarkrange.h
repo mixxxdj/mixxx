@@ -3,13 +3,14 @@
 #include <QColor>
 #include <QImage>
 #include <QString>
+#include <QtGlobal>
+#include <memory>
 
 #include "control/controlproxy.h"
 #include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
 QT_FORWARD_DECLARE_CLASS(QDomNode);
-
 class SkinContext;
 class WaveformSignalColors;
 

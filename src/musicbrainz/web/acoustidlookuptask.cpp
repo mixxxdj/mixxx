@@ -1,12 +1,26 @@
 #include "musicbrainz/web/acoustidlookuptask.h"
 
+#include <QByteArray>
+#include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QMetaMethod>
+#include <QJsonValue>
+#include <QLatin1String>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QUrl>
+#include <QUuid>
+#include <QtCore>
+#include <utility>
 
 #include "musicbrainz/gzip.h"
+#include "network/httpstatuscode.h"
 #include "util/assert.h"
 #include "util/logger.h"
+
+class QNetworkReply;
 
 namespace mixxx {
 

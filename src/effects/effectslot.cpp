@@ -1,11 +1,30 @@
 #include "effects/effectslot.h"
-#include "effects/effectxmlelements.h"
+
+#include <QtCore/qglobal.h>
 
 #include <QDebug>
+#include <QDomDocument>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QMap>
+#include <QSharedPointer>
+#include <QtCore>
+#include <type_traits>
 
-#include "control/controlpushbutton.h"
 #include "control/controlencoder.h"
-#include "control/controlproxy.h"
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
+#include "controllers/softtakeover.h"
+#include "effects/effect.h"
+#include "effects/effectbuttonparameterslot.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectparameterslot.h"
+#include "effects/effectparameterslotbase.h"
+#include "effects/effectxmlelements.h"
+#include "preferences/configobject.h"
+#include "qsharedpointer.h"
 #include "util/math.h"
 #include "util/xml.h"
 

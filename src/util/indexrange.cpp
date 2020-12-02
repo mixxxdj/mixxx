@@ -1,8 +1,7 @@
 #include "util/indexrange.h"
 
 #include <ostream>
-#include <sstream>
-
+#include <string>
 
 namespace mixxx {
 

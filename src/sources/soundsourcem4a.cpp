@@ -1,7 +1,26 @@
 #include "sources/soundsourcem4a.h"
 
+#include <mp4v2/project.h>
+#include <mp4v2/track_prop.h>
+#include <stdlib.h>
+#include <strings.h>
+
+#include <QByteArray>
+#include <QDebug>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtGlobal>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
+#include "util/math.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
+
+class QUrl;
 
 #ifdef __WINDOWS__
 #include <fcntl.h>

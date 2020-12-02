@@ -1,15 +1,35 @@
 #pragma once
 
 #include <QHash>
+#include <QList>
+#include <QMap>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QSet>
+#include <QSharedPointer>
+#include <QSqlDatabase>
+#include <QString>
+#include <QStringList>
+#include <QVariant>
+#include <QVector>
+#include <QtCore>
 #include <QtSql>
 
 #include "library/basetrackcache.h"
-#include "library/dao/trackdao.h"
 #include "library/basetracktablemodel.h"
 #include "library/columncache.h"
+#include "library/coverart.h"
+#include "library/dao/trackdao.h"
+#include "library/trackmodel.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/class.h"
+#include "util/db/dbid.h"
 
 class TrackCollectionManager;
+class TrackRef;
+template<class T>
+class QSharedPointer;
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.

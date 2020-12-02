@@ -1,9 +1,18 @@
-#include <stdint.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QList>
+#include <QPair>
+#include <QString>
+#include <memory>
+#include <ostream>
 
 #include "control/controlobject.h"
 #include "controllers/learningutils.h"
+#include "controllers/midi/midimessage.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/configobject.h"
 #include "test/mixxxtest.h"
-#include "util/memory.h"
 
 std::ostream& operator<<(std::ostream& stream, const MidiInputMapping& mapping) {
     stream << mapping.key.key << mapping.options.all;

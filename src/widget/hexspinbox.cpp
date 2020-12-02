@@ -1,5 +1,12 @@
 #include "widget/hexspinbox.h"
 
+#include <QLatin1Char>
+#include <QRegExp>
+#include <QRegExpValidator>
+#include <QStringBuilder>
+
+class QWidget;
+
 HexSpinBox::HexSpinBox(QWidget* pParent)
         : QSpinBox(pParent) {
     setRange(0, 255);

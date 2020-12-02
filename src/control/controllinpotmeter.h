@@ -1,7 +1,13 @@
 #ifndef CONTROLLINPOTMETER_H
 #define CONTROLLINPOTMETER_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlpotmeter.h"
+
+class ConfigKey;
+class QObject;
 
 class ControlLinPotmeter : public ControlPotmeter {
     Q_OBJECT

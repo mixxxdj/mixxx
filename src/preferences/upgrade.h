@@ -18,6 +18,8 @@
 #ifndef PREFERENCES_UPGRADE_H
 #define PREFERENCES_UPGRADE_H
 
+#include <QString>
+
 #include "preferences/usersettings.h"
 
 class Upgrade {

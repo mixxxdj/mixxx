@@ -18,7 +18,11 @@
 #ifndef DLGPREFVINYL_H
 #define DLGPREFVINYL_H
 
+#include <QByteArrayData>
+#include <QList>
 #include <QSpinBox>
+#include <QString>
+#include <QUrl>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
@@ -28,6 +32,10 @@
 
 class ControlProxy;
 class VinylControlManager;
+class QObject;
+class QSpinBox;
+class QWidget;
+class VinylControlSignalWidget;
 
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     Q_OBJECT

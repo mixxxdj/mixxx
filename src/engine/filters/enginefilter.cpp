@@ -16,8 +16,13 @@
 ***************************************************************************/
 
 #include "engine/filters/enginefilter.h"
-#include <QtDebug>
 
+#include <QtCore/qglobal.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <QDebug>
+#include <cstdio>
 
 EngineFilter::EngineFilter(char * conf, int predefinedType)
         : iir(0),

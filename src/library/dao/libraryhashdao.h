@@ -1,10 +1,12 @@
 #ifndef LIBRARYHASHDAO_H
 #define LIBRARYHASHDAO_H
 
-#include <QObject>
 #include <QHash>
-#include <QString>
+#include <QHashNode>
+#include <QObject>
 #include <QSqlDatabase>
+#include <QString>
+#include <QStringList>
 
 #include "library/dao/dao.h"
 #include "util/cache.h"

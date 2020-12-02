@@ -1,6 +1,13 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <memory>
 
 #include "engine/filters/enginefilterbiquad1.h"
+#include "engine/filters/enginefilteriir.h"
+#include "gtest/gtest_pred_impl.h"
 
 namespace {
 

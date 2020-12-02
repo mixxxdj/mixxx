@@ -1,13 +1,21 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QList>
 #include <QMap>
+#include <QPointer>
 #include <QSet>
+#include <QString>
+#include <QUrl>
 #include <QUrlQuery>
 #include <QUuid>
 
 #include "musicbrainz/musicbrainz.h"
 #include "network/webtask.h"
+
+class QNetworkAccessManager;
+class QNetworkReply;
+class QObject;
 
 namespace mixxx {
 

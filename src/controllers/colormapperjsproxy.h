@@ -1,9 +1,19 @@
 #pragma once
 
+#include <qscriptvalue.h>
+
+#include <QMap>
+#include <QObject>
+#include <QRgb>
 #include <QScriptContext>
 #include <QScriptEngine>
+#include <QString>
+#include <QtCore>
 
 #include "controllers/colormapper.h"
+
+class QScriptContext;
+class QScriptEngine;
 
 // This is a wrapper class that exposes ColorMapper via the QScriptEngine and
 // makes it possible to create and use ColorMapper object from JavaScript

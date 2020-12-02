@@ -1,9 +1,21 @@
 
-#include <QtDebug>
-
 #include "preferences/dialog/dlgprefmodplug.h"
-#include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 
+#include <libmodplug/modplug.h>
+
+#include <QAbstractButton>
+#include <QAbstractSlider>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QSharedPointer>
+#include <QSlider>
+#include <QSpinBox>
+#include <QWidget>
+#include <QtGlobal>
+
+#include "preferences/configobject.h"
+#include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 #include "preferences/usersettings.h"
 #include "sources/soundsourcemodplug.h"
 

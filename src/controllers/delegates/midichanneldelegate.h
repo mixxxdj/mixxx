@@ -1,7 +1,16 @@
 #ifndef MIDICHANNELDELEGATE_H
 #define MIDICHANNELDELEGATE_H
 
+#include <QLocale>
+#include <QString>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
+#include <QVariant>
+
+class QAbstractItemModel;
+class QModelIndex;
+class QObject;
+class QWidget;
 
 class MidiChannelDelegate : public QStyledItemDelegate {
   public:

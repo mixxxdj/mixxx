@@ -1,5 +1,24 @@
 #include "track/taglib/trackmetadata_ape.h"
 
+#include <apeitem.h>
+#include <apetag.h>
+#include <tbytevector.h>
+#include <tmap.h>
+#include <tstring.h>
+#include <tstringlist.h>
+
+#include <QDebug>
+#include <QImage>
+#include <QString>
+#include <map>
+#include <tlist.tcc>
+#include <tmap.tcc>
+#include <utility>
+
+#include "track/albuminfo.h"
+#include "track/taglib/trackmetadata_common.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 

@@ -1,8 +1,25 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+
+#include <QDebug>
+#include <QList>
+#include <QListIterator>
+#include <QSharedPointer>
+#include <Qt>
+#include <memory>
+
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "preferences/configobject.h"
+#include "track/cue.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
-#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 VinylControlControl::VinylControlControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),

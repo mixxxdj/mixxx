@@ -1,15 +1,13 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include "test/mixxxtest.h"
+#include <memory>
+#include <utility>
 
 #include "database/mixxxdb.h"
+#include "gtest/gtest_pred_impl.h"
+#include "test/mixxxtest.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/db/dbconnectionpooled.h"
-
-#include "library/dao/settingsdao.h"
-
-#include "util/assert.h"
-
 
 class DbConnectionPoolTest : public MixxxTest {
   protected:

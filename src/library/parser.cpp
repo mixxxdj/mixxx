@@ -11,13 +11,16 @@
 //
 //
 
-#include <QtDebug>
+#include "library/parser.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QIODevice>
 #include <QUrl>
-
-#include "library/parser.h"
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)

@@ -1,10 +1,19 @@
-#include <QtDebug>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include "test/mixxxtest.h"
+#include <QDir>
+#include <QString>
+#include <QStringBuilder>
+#include <memory>
 
-#include "track/track.h"
+#include "gtest/gtest_pred_impl.h"
 #include "library/coverart.h"
 #include "sources/soundsourceproxy.h"
+#include "test/mixxxtest.h"
+#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "track/trackmetadata.h"
 
 namespace {
 

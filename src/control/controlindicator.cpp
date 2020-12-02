@@ -1,6 +1,10 @@
 #include "control/controlindicator.h"
+
+#include <math.h>
+
 #include "control/controlproxy.h"
-#include "util/math.h"
+
+class ConfigKey;
 
 ControlIndicator::ControlIndicator(const ConfigKey& key)
         : ControlObject(key, false),

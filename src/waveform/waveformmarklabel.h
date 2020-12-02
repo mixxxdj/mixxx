@@ -5,8 +5,11 @@
 #include <QFontMetrics>
 #include <QPainter>
 #include <QPixmap>
-#include <QString>
+#include <QPointF>
 #include <QRectF>
+#include <QString>
+
+class QPainter;
 
 // WaveformMarkLabel renders the label for a WaveformMark to an offscreen buffer
 // and calculates its area. This allows the areas of all WaveformMarkLabels

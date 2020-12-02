@@ -1,10 +1,17 @@
 #ifndef WKEY_H
 #define WKEY_H
 
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QLabel>
+#include <QString>
 
-#include "widget/wlabel.h"
 #include "control/controlproxy.h"
+#include "skin/skincontext.h"
+#include "widget/wlabel.h"
+
+class QObject;
+class QWidget;
 
 class WKey : public WLabel  {
     Q_OBJECT

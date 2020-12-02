@@ -1,13 +1,22 @@
 #ifndef PREFERENCES_EFFECTSETTINGSMODEL_H
 #define PREFERENCES_EFFECTSETTINGSMODEL_H
 
-#include <QAbstractTableModel>
 #include <QAbstractItemDelegate>
+#include <QAbstractTableModel>
+#include <QList>
 #include <QMap>
+#include <QModelIndex>
+#include <QSharedPointer>
+#include <QString>
 #include <QVariant>
+#include <QtCore>
 
+#include "effects/defs.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectsmanager.h"
+
+class EffectsManager;
+class QAbstractItemDelegate;
 
 struct EffectProfile {
     EffectManifestPointer pManifest;

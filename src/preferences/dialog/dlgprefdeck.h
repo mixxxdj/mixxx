@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
 #include <QWidget>
 #include <memory>
 
@@ -17,6 +20,9 @@ class SkinLoader;
 class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
+class QAbstractButton;
+class QObject;
+class QWidget;
 
 namespace {
 constexpr bool kDefaultCloneDeckOnLoad = true;

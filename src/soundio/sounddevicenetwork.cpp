@@ -1,20 +1,28 @@
 #include "soundio/sounddevicenetwork.h"
 
-#include <QtDebug>
+#include <emmintrin.h>
+#include <stddef.h>
+#include <xmmintrin.h>
 
-#include "waveform/visualplayposition.h"
-#include "util/timer.h"
-#include "util/trace.h"
-#include "control/controlproxy.h"
+#include <QObject>
+#include <QVector>
+#include <QtGlobal>
+
 #include "control/controlobject.h"
-#include "util/denormalsarezero.h"
+#include "control/controlproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
+#include "preferences/configobject.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/assert.h"
 #include "util/logger.h"
+#include "util/math.h"
 #include "util/sample.h"
+#include "util/timer.h"
+#include "util/trace.h"
+#include "waveform/visualplayposition.h"
 
 namespace {
 const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz

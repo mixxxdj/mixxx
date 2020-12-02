@@ -3,17 +3,22 @@
 #if QT_VERSION < QT_VERSION_CHECK(5, 8, 0)
 #include <QBuffer>
 #endif
-#include <QMetaMethod>
+#include <QByteArray>
+#include <QJsonParseError>
 #include <QMimeDatabase>
+#include <QMimeType>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QTimerEvent>
+#include <QPair>
+#include <QVariant>
 #include <mutex> // std::once_flag
 
+#include "network/httpstatuscode.h"
 #include "util/assert.h"
 #if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
 #include "util/compatibility.h"
 #endif
-#include "util/counter.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 

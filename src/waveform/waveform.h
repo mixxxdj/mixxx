@@ -1,14 +1,14 @@
 #ifndef WAVEFORM_H
 #define WAVEFORM_H
 
-#include <vector>
-
-#include <QMutex>
-#include <QByteArray>
-#include <QString>
 #include <QAtomicInt>
-#include <QSharedPointer>
+#include <QByteArray>
+#include <QMutex>
 #include <QMutexLocker>
+#include <QSharedPointer>
+#include <QString>
+#include <memory>
+#include <vector>
 
 #include "util/class.h"
 #include "util/compatibility.h"

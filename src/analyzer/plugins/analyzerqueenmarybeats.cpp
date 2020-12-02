@@ -1,11 +1,18 @@
+#include <QtCore/qglobal.h>
 #include <dsp/onsets/DetectionFunction.h>
 #include <dsp/tempotracking/TempoTrackV2.h>
+#include <maths/MathUtilities.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <algorithm>
 
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
-#include "analyzer/plugins/analyzerqueenmarybeats.h"
-
 #include "analyzer/constants.h"
+#include "analyzer/plugins/analyzerqueenmarybeats.h"
+#include "audio/types.h"
+#include "util/assert.h"
 
 namespace mixxx {
 namespace {

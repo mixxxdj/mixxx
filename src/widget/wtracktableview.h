@@ -1,7 +1,11 @@
 #pragma once
 
 #include <QAbstractItemModel>
+#include <QColor>
+#include <QList>
 #include <QSortFilterProxyModel>
+#include <QString>
+#include <QtCore>
 
 #include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
@@ -17,6 +21,8 @@ class DlgTrackInfo;
 class TrackCollectionManager;
 class ExternalTrackCollection;
 class WTrackMenu;
+class QWidget;
+class TrackId;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */

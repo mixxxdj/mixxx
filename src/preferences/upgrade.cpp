@@ -17,23 +17,34 @@
 
 #include "preferences/upgrade.h"
 
-#include <QPixmap>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QTranslator>
-#include <QScopedPointer>
+#include <QtCore/qglobal.h>
 
-#include "preferences/usersettings.h"
-#include "preferences/beatdetectionsettings.h"
-#include "database/mixxxdb.h"
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QPixmap>
+#include <QPushButton>
+#include <QSharedPointer>
+#include <QSqlDatabase>
+#include <QStringList>
+#include <QStringListIterator>
+
+#include "_version.h"
 #include "controllers/defs_controllers.h"
-#include "defs_version.h"
+#include "database/mixxxdb.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
-#include "util/cmdlineargs.h"
-#include "util/math.h"
-#include "util/db/dbconnectionpooler.h"
+#include "preferences/beatdetectionsettings.h"
+#include "preferences/configobject.h"
+#include "preferences/usersettings.h"
+#include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/math.h"
+
+class QAbstractButton;
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),

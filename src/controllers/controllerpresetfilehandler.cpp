@@ -4,10 +4,22 @@
 /// @brief Handles loading and saving of Controller presets.
 
 #include "controllers/controllerpresetfilehandler.h"
-#include "controllers/controllermanager.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDomText>
+#include <QFile>
+#include <QIODevice>
+#include <QList>
+#include <QSharedPointer>
+#include <QTextStream>
+#include <Qt>
+
 #include "controllers/defs_controllers.h"
-#include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "util/xml.h"
 
 namespace {
 

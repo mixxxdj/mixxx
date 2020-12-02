@@ -8,8 +8,12 @@
 #ifndef ENCODERVORBISSETTINGS_H
 #define ENCODERVORBISSETTINGS_H
 
-#include "encoder/encoderrecordingsettings.h"
+#include <QList>
+#include <QString>
+
 #include "encoder/encoder.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 
 class EncoderVorbisSettings : public EncoderRecordingSettings {

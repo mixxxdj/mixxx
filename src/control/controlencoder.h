@@ -1,8 +1,14 @@
 #ifndef CONTROLENCODER_H
 #define CONTROLENCODER_H
 
-#include "preferences/usersettings.h"
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlobject.h"
+#include "preferences/usersettings.h"
+
+class ConfigKey;
+class QObject;
 
 class ControlEncoder : public ControlObject {
     Q_OBJECT

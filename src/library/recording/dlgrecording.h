@@ -1,5 +1,9 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QString>
+#include <QWidget>
+
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/library.h"
@@ -14,6 +18,10 @@
 class PlaylistTableModel;
 class WLibrary;
 class WTrackTableView;
+class KeyboardEventFilter;
+class Library;
+class QObject;
+class RecordingManager;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT

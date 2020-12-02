@@ -1,15 +1,23 @@
 
 #include "util/desktophelper.h"
 
-#include <QtDebug>
-#include <QString>
+#include <QByteArray>
+#include <QChar>
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
-#include <QUrl>
+#include <QList>
 #include <QProcess>
+#include <QSet>
+#include <QString>
+#include <QStringList>
+#include <QUrl>
+
+#include "qglobal.h"
 
 #ifdef Q_OS_LINUX
-#include <QtDBus/QtDBus>
 #include <QFileInfo>
 #endif
 
@@ -173,4 +181,3 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 }
 
 } // namespace mixxx
-

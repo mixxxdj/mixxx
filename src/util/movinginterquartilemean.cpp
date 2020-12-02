@@ -1,5 +1,9 @@
 #include "movinginterquartilemean.h"
 
+#include <QtGlobal>
+#include <iosfwd>
+#include <iterator>
+
 MovingInterquartileMean::MovingInterquartileMean(const unsigned int listMaxSize)
         : m_dMean(0.0),
           m_iListMaxSize(listMaxSize),

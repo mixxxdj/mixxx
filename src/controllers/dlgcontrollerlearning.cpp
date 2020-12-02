@@ -6,13 +6,38 @@
 *
 */
 
+#include "controllers/dlgcontrollerlearning.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QAbstractButton>
+#include <QCheckBox>
+#include <QComboBox>
 #include <QCompleter>
+#include <QDebug>
+#include <QLabel>
+#include <QMessageBox>
+#include <QPair>
+#include <QPoint>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QStackedWidget>
+#include <QStringBuilder>
+#include <QVariant>
+#include <QtCore>
+#include <algorithm>
 
 #include "control/controlobject.h"
-#include "controllers/dlgcontrollerlearning.h"
+#include "controllers/controller.h"
 #include "controllers/learningutils.h"
+#include "controllers/midi/midicontroller.h"
 #include "controllers/midi/midiutils.h"
 #include "util/version.h"
+
+class BulkController;
+class HidController;
+class QWidget;
 
 namespace {
 typedef QPair<QString, ConfigKey> NamedControl;

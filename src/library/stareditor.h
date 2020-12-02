@@ -27,17 +27,26 @@
 #ifndef STAREDITOR_H
 #define STAREDITOR_H
 
-#include <QWidget>
-#include <QMouseEvent>
+#include <QByteArrayData>
 #include <QEvent>
-#include <QStyle>
-#include <QSize>
+#include <QModelIndex>
+#include <QMouseEvent>
 #include <QPaintEvent>
+#include <QSize>
+#include <QString>
+#include <QStyle>
 #include <QStyleOptionViewItem>
 #include <QTableView>
-#include <QModelIndex>
+#include <QWidget>
 
 #include "library/starrating.h"
+
+class QEvent;
+class QMouseEvent;
+class QObject;
+class QPaintEvent;
+class QPainter;
+class QTableView;
 
 class StarEditor : public QWidget {
     Q_OBJECT

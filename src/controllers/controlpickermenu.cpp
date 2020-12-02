@@ -1,14 +1,21 @@
 #include "controllers/controlpickermenu.h"
 
-#include "effects/effectchainslot.h"
+#include <QAction>
+#include <QMap>
+#include <QStringBuilder>
+
+#include "control/controlobject.h"
+#include "effects/effectbuttonparameterslot.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectrack.h"
-#include "effects/effectslot.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
 #include "recording/defs_recording.h"
+#include "util/parented_ptr.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+
+class QWidget;
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {

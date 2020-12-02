@@ -1,10 +1,14 @@
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QStaticStringData>
+#include <QString>
+#include <QStringLiteral>
 #include <limits>
+#include <memory>
 
-#include <gtest/gtest.h>
-
+#include "gtest/gtest_pred_impl.h"
 #include "util/duration.h"
-
-#include <QtDebug>
 
 namespace {
 

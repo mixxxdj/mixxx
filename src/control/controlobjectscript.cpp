@@ -1,6 +1,17 @@
-#include <QtDebug>
-
 #include "control/controlobjectscript.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QUuid>
+#include <QtCore>
+#include <type_traits>
+
+#include "control/control.h"
+#include "controllers/controllerdebug.h"
+#include "preferences/configobject.h"
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
         : ControlProxy(key, pParent, ControlFlag::NoAssertIfMissing) {

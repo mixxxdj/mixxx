@@ -1,10 +1,17 @@
 #include "util/taskmonitor.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+
 #include <QCoreApplication>
-#include <QThread>
+#include <QDebug>
+#include <QList>
+#include <QMetaObject>
+#include <QProgressDialog>
+#include <QtCore>
+#include <utility>
 
 #include "util/assert.h"
-#include "util/math.h"
 #include "util/thread_affinity.h"
 
 namespace mixxx {

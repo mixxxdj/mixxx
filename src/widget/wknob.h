@@ -1,15 +1,21 @@
 #ifndef WKNOB_H
 #define WKNOB_H
 
+#include <QByteArrayData>
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include <QPixmap>
 #include <QString>
-#include <QPaintEvent>
-#include <QMouseEvent>
 #include <QWheelEvent>
 
 #include "util/widgetrendertimer.h"
-#include "widget/wdisplay.h"
 #include "widget/knobeventhandler.h"
+#include "widget/wdisplay.h"
+
+class QMouseEvent;
+class QObject;
+class QWheelEvent;
+class QWidget;
 
 // This is used for knobs if the knob value is displayed by
 // one of e.g. 64 pixmaps.

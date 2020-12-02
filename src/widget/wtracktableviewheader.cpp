@@ -1,11 +1,24 @@
 // wtracktableviewheader.cpp
 // Created 1/2/2010 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
-
 #include "widget/wtracktableviewheader.h"
+
+#include <QtCore/qglobal.h>
+#include <google/protobuf/stubs/common.h>
+#include <stddef.h>
+
+#include <QAbstractItemModel>
+#include <QAction>
+#include <QByteArray>
+#include <QContextMenuEvent>
+#include <QDebug>
+#include <QVariant>
+#include <type_traits>
+
 #include "library/trackmodel.h"
 #include "util/math.h"
+
+class QWidget;
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 

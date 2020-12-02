@@ -5,11 +5,18 @@
  * @brief USB Bulk controller backend
  */
 
+#include "controllers/bulk/bulkenumerator.h"
+
+#include <QtCore/qglobal.h>
 #include <libusb.h>
+#include <stddef.h>
+#include <sys/types.h>
+
+#include <QDebug>
 
 #include "controllers/bulk/bulkcontroller.h"
-#include "controllers/bulk/bulkenumerator.h"
 #include "controllers/bulk/bulksupported.h"
+#include "controllers/controller.h"
 
 BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
         : ControllerEnumerator(),

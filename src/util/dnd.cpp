@@ -1,14 +1,32 @@
 #include "util/dnd.h"
 
-#include <QRegExp>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDrag>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
+#include <QPixmap>
+#include <QScopedPointer>
+#include <QSharedPointer>
+#include <QUrl>
+#include <QWidget>
+#include <QtCore>
+#include <memory>
+#include <utility>
 
 #include "control/controlobject.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "track/trackfile.h"
 #include "util/sandbox.h"
+#include "widget/trackdroptarget.h"
 
 namespace {
 

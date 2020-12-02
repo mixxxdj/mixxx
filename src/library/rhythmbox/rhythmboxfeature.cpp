@@ -1,17 +1,40 @@
-#include <QMessageBox>
-#include <QtDebug>
-#include <QStringList>
-#include <QUrl>
-
 #include "library/rhythmbox/rhythmboxfeature.h"
 
-#include "library/baseexternaltrackmodel.h"
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDir>
+#include <QException>
+#include <QFile>
+#include <QIODevice>
+#include <QModelIndex>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringRef>
+#include <QThread>
+#include <QUrl>
+#include <QXmlStreamAttributes>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
+#include <QtCore>
+#include <QtSql>
+#include <memory>
+#include <utility>
+
 #include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
+#include "library/basetrackcache.h"
 #include "library/library.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "library/queryutil.h"
+#include "track/trackfile.h"
+
+class BaseSqlTableModel;
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),

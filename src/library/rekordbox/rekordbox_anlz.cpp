@@ -2,7 +2,9 @@
 
 #include "rekordbox_anlz.h"
 
+#include <kaitaistruct.h>
 
+#include <cstdint>
 
 rekordbox_anlz_t::rekordbox_anlz_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;

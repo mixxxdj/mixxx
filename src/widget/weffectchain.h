@@ -1,15 +1,20 @@
 #ifndef WEFFECTCHAIN_H
 #define WEFFECTCHAIN_H
 
-#include <QWidget>
-#include <QLabel>
+#include <QByteArrayData>
 #include <QDomNode>
+#include <QLabel>
+#include <QString>
+#include <QWidget>
 
+#include "effects/defs.h"
 #include "effects/effectchainslot.h"
-#include "widget/wlabel.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
 
 class EffectsManager;
+class QObject;
+class QWidget;
 
 class WEffectChain : public WLabel {
     Q_OBJECT

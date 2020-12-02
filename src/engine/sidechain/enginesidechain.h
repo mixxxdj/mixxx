@@ -17,17 +17,23 @@
 #ifndef ENGINESIDECHAIN_H
 #define ENGINESIDECHAIN_H
 
-#include <QThread>
-#include <QMutex>
-#include <QWaitCondition>
+#include <QByteArrayData>
 #include <QList>
+#include <QMutex>
+#include <QString>
+#include <QThread>
+#include <QWaitCondition>
 
-#include "preferences/usersettings.h"
 #include "engine/sidechain/sidechainworker.h"
+#include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/fifo.h"
 #include "util/mutex.h"
+#include "util/thread_annotations.h"
 #include "util/types.h"
+
+class QObject;
+class SideChainWorker;
 
 class EngineSideChain : public QThread, public AudioDestination {
     Q_OBJECT

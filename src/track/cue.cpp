@@ -4,11 +4,12 @@
 #include "track/cue.h"
 
 #include <QMutexLocker>
-#include <QtDebug>
+#include <optional>
+#include <type_traits>
 
+#include "audio/types.h"
 #include "engine/engine.h"
 #include "util/assert.h"
-#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {

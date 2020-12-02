@@ -1,6 +1,10 @@
 #ifndef MIXXX_REPLAYGAIN_H
 #define MIXXX_REPLAYGAIN_H
 
+#include <QDebug>
+#include <QString>
+#include <QtCore>
+
 #include "util/types.h"
 
 namespace mixxx {

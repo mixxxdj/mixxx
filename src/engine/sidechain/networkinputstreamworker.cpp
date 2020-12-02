@@ -3,6 +3,9 @@
 
 #include <engine/sidechain/networkinputstreamworker.h>
 
+template<class DataType>
+class FIFO;
+
 NetworkInputStreamWorker::NetworkInputStreamWorker() {
 }
 

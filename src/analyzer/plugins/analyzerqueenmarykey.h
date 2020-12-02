@@ -1,12 +1,17 @@
 #ifndef ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H
 #define ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H
 
-#include <vector>
+#include <stddef.h>
 
 #include <QObject>
+#include <QString>
+#include <memory>
+#include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
+#include "proto/keys.pb.h"
+#include "track/keys.h"
 #include "util/memory.h"
 #include "util/types.h"
 

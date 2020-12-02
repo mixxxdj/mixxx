@@ -1,9 +1,23 @@
 #include "library/dao/directorydao.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QChar>
+#include <QDebug>
 #include <QDir>
-#include <QtDebug>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStringBuilder>
+#include <QVariant>
+#include <QtGlobal>
+#include <utility>
 
 #include "library/queryutil.h"
+#include "library/relocatedtrack.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
+#include "track/trackref.h"
+#include "util/db/dbid.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
 

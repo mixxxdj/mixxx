@@ -16,28 +16,32 @@
 
 #include "soundio/soundmanager.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
-
-#include <QLibrary>
 #include <portaudio.h>
+#include <unistd.h>
+
+#include <QByteArray>
+#include <QLibrary>
+#include <QSet>
+#include <QStringBuilder>
+#include <QVector>
+#include <cstring> // for memcpy and strcmp
+#include <type_traits>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "engine/sidechain/enginesidechain.h"
+#include "preferences/configobject.h"
+#include "qsharedpointer.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
+#include "util/compatibility.h"
 #include "util/defs.h"
 #include "util/sample.h"
-#include "util/sleep.h"
 #include "util/version.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 

@@ -2,14 +2,17 @@
 #define RECORDINGMANAGER_H
 
 #include <QDateTime>
+#include <QList>
 #include <QObject>
 #include <QString>
-#include <QList>
+#include <QtCore>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "recording/defs_recording.h"
 #include "encoder/encoder.h"
+#include "preferences/usersettings.h"
+#include "recording/defs_recording.h"
+
+class ControlObject;
 //
 // The RecordingManager is a central class and manages
 // the recording feature of Mixxx.

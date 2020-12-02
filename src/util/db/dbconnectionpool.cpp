@@ -1,7 +1,9 @@
 #include "util/db/dbconnectionpool.h"
 
-#include "util/logger.h"
+#include <QDebug>
 
+#include "util/assert.h"
+#include "util/logger.h"
 
 namespace mixxx {
 

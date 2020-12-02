@@ -1,12 +1,40 @@
-#include <QTemporaryFile>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QList>
+#include <QString>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QUrl>
+#include <QtGlobal>
+#include <algorithm>
+#include <memory>
+#include <type_traits>
+#include <vector>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "gtest/gtest_pred_impl.h"
+#include "sources/audiosource.h"
 #include "sources/audiosourcestereoproxy.h"
+#include "sources/metadatasource.h"
+#include "sources/soundsourceprovider.h"
+#include "sources/soundsourceproviderregistry.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
+#include "track/albuminfo.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "track/trackinfo.h"
 #include "track/trackmetadata.h"
+#include "util/indexrange.h"
+#include "util/math.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
 
 namespace {
 

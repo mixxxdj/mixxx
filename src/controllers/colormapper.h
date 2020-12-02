@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QMap>
 #include <QObject>
+#include <QRgb>
 #include <QVariant>
 
 #include "util/assert.h"

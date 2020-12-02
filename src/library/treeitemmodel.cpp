@@ -1,6 +1,10 @@
 #include "library/treeitemmodel.h"
 
+#include <QList>
+#include <utility>
+
 #include "library/treeitem.h"
+#include "util/assert.h"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:

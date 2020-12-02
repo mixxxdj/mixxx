@@ -1,11 +1,13 @@
 #ifndef BEATS_H
 #define BEATS_H
 
-#include <QObject>
-#include <QString>
-#include <QList>
 #include <QByteArray>
+#include <QByteArrayData>
+#include <QList>
+#include <QObject>
 #include <QSharedPointer>
+#include <QString>
+#include <memory>
 
 #include "util/memory.h"
 #include "util/types.h"
@@ -17,6 +19,7 @@ namespace {
 namespace mixxx {
 
 class Beats;
+
 typedef QSharedPointer<Beats> BeatsPointer;
 
 class BeatIterator {

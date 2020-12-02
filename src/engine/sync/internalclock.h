@@ -1,18 +1,20 @@
 #ifndef INTERNALCLOCK_H
 #define INTERNALCLOCK_H
 
+#include <QByteArrayData>
 #include <QObject>
-#include <QString>
 #include <QScopedPointer>
+#include <QString>
 
+#include "engine/channels/enginechannel.h"
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
-#include "engine/channels/enginechannel.h"
 
 class ControlObject;
 class ControlLinPotmeter;
 class ControlPushButton;
 class EngineSync;
+class EngineChannel;
 
 /// Internal Clock is a Master Sync object that provides a source of constant
 /// tempo when needed.  The EngineSync will decide when to make the Internal

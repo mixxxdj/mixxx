@@ -1,13 +1,29 @@
 #include "library/baseplaylistfeature.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QAction>
+#include <QDebug>
+#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QScopedPointer>
 #include <QStandardPaths>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QUrl>
+#include <QVariant>
+#include <QtCore>
+#include <memory>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/columncache.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
+#include "library/libraryfeature.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
 #include "library/parserm3u.h"
@@ -16,7 +32,9 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "preferences/configobject.h"
 #include "track/track.h"
+#include "track/trackid.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"

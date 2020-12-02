@@ -1,9 +1,20 @@
+#include "widget/wcoverartmenu.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QAction>
+#include <QDebug>
+#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QImage>
+#include <QStringList>
+#include <QtCore>
 
-#include "widget/wcoverartmenu.h"
 #include "library/coverartutils.h"
 #include "util/sandbox.h"
+
+class QWidget;
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {

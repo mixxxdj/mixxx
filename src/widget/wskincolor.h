@@ -18,8 +18,14 @@
 #ifndef WSKINCOLOR_H
 #define WSKINCOLOR_H
 
+#include <QColor>
 #include <QSharedPointer>
+
 #include "skin/imgsource.h"
+
+class ImgSource;
+template<class T>
+class QSharedPointer;
 
 class WSkinColor {
   public:
@@ -30,4 +36,3 @@ class WSkinColor {
 };
 
 #endif
-

@@ -1,11 +1,14 @@
 #pragma once
 
 #include <QDomElement>
+#include <QDomNode>
 #include <QList>
 #include <QMutex>
 #include <QObject>
 #include <QSet>
 #include <QString>
+#include <QtCore>
+#include <memory>
 
 #include "preferences/usersettings.h"
 #include "proto/skin.pb.h"
@@ -26,6 +29,9 @@ class WLabel;
 class ControlObject;
 class LaunchImage;
 class WWidgetGroup;
+class ConfigKey;
+class QWidget;
+class VinylControlManager;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT

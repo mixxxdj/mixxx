@@ -1,6 +1,10 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
+#include <QString>
 #include <QVector>
 #include <vector>
 
@@ -17,6 +21,10 @@ class WaveformWidgetAbstract;
 class VSyncThread;
 class GuiTick;
 class VisualsManager;
+template<class T1, class T2>
+struct QPair;
+template<typename T>
+class QList;
 
 class WaveformWidgetAbstractHandle {
   public:

@@ -1,11 +1,27 @@
 #include "controllers/controllerinputmappingtablemodel.h"
-#include "controllers/midi/midimessage.h"
-#include "controllers/midi/midiutils.h"
+
+#include <stddef.h>
+#include <stdint.h>
+
+#include <QSet>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QWidget>
+#include <algorithm>
+#include <type_traits>
+
 #include "controllers/delegates/controldelegate.h"
+#include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
-#include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midioptionsdelegate.h"
+#include "controllers/midi/midicontrollerpreset.h"
+#include "controllers/midi/midimessage.h"
+#include "controllers/midi/midiutils.h"
+#include "preferences/configobject.h"
+
+class QAbstractItemDelegate;
 
 ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
         : ControllerMappingTableModel(pParent) {

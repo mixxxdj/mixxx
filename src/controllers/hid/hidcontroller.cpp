@@ -8,14 +8,25 @@
 
 #include "controllers/hid/hidcontroller.h"
 
+#include <QtCore/qglobal.h>
+#include <limits.h>
+
+#include <QChar>
+#include <QDebug>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QtCore>
 #include <cstring>
 #include <cwchar>
 
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
-#include "util/path.h" // for PATH_MAX on Windows
+#include "util/assert.h"
 #include "util/time.h"
 #include "util/trace.h"
+
+class MidiControllerPreset;
 
 namespace {
 constexpr size_t kHidPathBufferSize = PATH_MAX + 1;

@@ -1,10 +1,14 @@
+#include <emmintrin.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <xmmintrin.h>
+
 #include <limits>
+#include <memory>
 
-#include <gtest/gtest.h>
-#include <QtDebug>
-
+#include "gtest/gtest_pred_impl.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
-#include "util/denormalsarezero.h"
 
 namespace {
 

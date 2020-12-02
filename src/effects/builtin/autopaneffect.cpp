@@ -1,10 +1,20 @@
 #include "effects/builtin/autopaneffect.h"
 
-#include <QtDebug>
+#include <stdlib.h>
 
-#include "util/experiment.h"
+#include <QObject>
+#include <QSharedPointer>
+#include <QtGlobal>
+#include <algorithm>
+
+#include "audio/types.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/engine.h"
 #include "util/math.h"
-#include "util/sample.h"
 
 const float kPositionRampingThreshold = 0.002f;
 

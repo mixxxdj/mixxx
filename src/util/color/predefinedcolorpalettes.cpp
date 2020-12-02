@@ -1,5 +1,12 @@
 #include "predefinedcolorpalettes.h"
 
+#include <QList>
+#include <QStaticStringData>
+#include <QStringLiteral>
+
+#include "util/color/colorpalette.h"
+#include "util/color/rgbcolor.h"
+
 namespace {
 
 // Default Mixxx Hotcue Color Palette

@@ -1,15 +1,23 @@
-#include <QSqlTableModel>
+#include "library/dlganalysis.h"
 
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wanalysislibrarytableview.h"
+#include <QBoxLayout>
+#include <QItemSelectionModel>
+#include <QLabel>
+#include <QLayout>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QTableView>
+#include <QtCore>
+
 #include "analyzer/analyzerprogress.h"
 #include "library/dao/trackschema.h"
-#include "library/trackcollectionmanager.h"
-#include "library/dlganalysis.h"
 #include "library/library.h"
-#include "widget/wlibrary.h"
+#include "track/trackid.h"
 #include "util/assert.h"
+#include "widget/wanalysislibrarytableview.h"
+#include "widget/wlibrary.h"
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
                        UserSettingsPointer pConfig,

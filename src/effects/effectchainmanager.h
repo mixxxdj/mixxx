@@ -1,14 +1,18 @@
 #ifndef EFFECTCHAINMANAGER_H
 #define EFFECTCHAINMANAGER_H
 
-#include <QObject>
-#include <QList>
 #include <QHash>
+#include <QList>
+#include <QObject>
+#include <QSet>
+#include <QString>
+#include <QtCore>
 
-#include "preferences/usersettings.h"
+#include "effects/defs.h"
 #include "effects/effectchain.h"
 #include "effects/effectrack.h"
 #include "engine/channelhandle.h"
+#include "preferences/usersettings.h"
 #include "util/class.h"
 #include "util/xml.h"
 

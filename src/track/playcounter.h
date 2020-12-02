@@ -1,6 +1,8 @@
 #ifndef MIXXX_PLAYCOUNTER_H
 #define MIXXX_PLAYCOUNTER_H
 
+#include <QDebug>
+
 #include "util/assert.h"
 
 

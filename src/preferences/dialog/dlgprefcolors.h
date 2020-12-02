@@ -1,5 +1,9 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QIcon>
+#include <QPixmap>
+#include <QString>
 #include <QWidget>
 
 #include "control/controlproxy.h"
@@ -12,6 +16,8 @@
 
 class DlgReplaceCueColor;
 class Library;
+class QObject;
+class QWidget;
 
 class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     Q_OBJECT

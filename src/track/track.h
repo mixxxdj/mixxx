@@ -1,20 +1,45 @@
 #pragma once
 
+#include <QDateTime>
+#include <QImage>
 #include <QList>
 #include <QMutex>
 #include <QObject>
+#include <QString>
 #include <QUrl>
+#include <QtCore>
+#include <optional>
 
 #include "audio/streaminfo.h"
+#include "library/coverart.h"
+#include "proto/keys.pb.h"
 #include "sources/metadatasource.h"
 #include "track/beats.h"
+#include "track/beatsimporter.h"
 #include "track/cue.h"
+#include "track/cueinfo.h"
 #include "track/cueinfoimporter.h"
+#include "track/keys.h"
+#include "track/playcounter.h"
+#include "track/replaygain.h"
 #include "track/track_decl.h"
 #include "track/trackfile.h"
+#include "track/trackid.h"
 #include "track/trackrecord.h"
+#include "util/color/rgbcolor.h"
+#include "util/duration.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
+
+class DbId;
+namespace mixxx {
+class TrackMetadata;
+namespace audio {
+class Bitrate;
+class ChannelCount;
+class SampleRate;
+} // namespace audio
+} // namespace mixxx
 
 class Track : public QObject {
     Q_OBJECT

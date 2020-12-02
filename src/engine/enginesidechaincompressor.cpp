@@ -1,6 +1,11 @@
-#include <QtDebug>
-
 #include "engine/enginesidechaincompressor.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QtGlobal>
+
+#include "util/assert.h"
 
 EngineSideChainCompressor::EngineSideChainCompressor(const QString& group)
         : m_compressRatio(1.0),

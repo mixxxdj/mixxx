@@ -1,6 +1,12 @@
-#include <gtest/gtest.h>
-#include "util/db/dbconnection.h"
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QChar>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "util/db/dbconnection.h"
 
 class SqliteLikeTest : public testing::Test {};
 

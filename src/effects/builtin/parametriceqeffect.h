@@ -1,20 +1,34 @@
 #ifndef PARAMERICEQEFFECT_H
 #define PARAMERICEQEFFECT_H
 
-#include <vector>
+#include <QList>
 #include <QMap>
+#include <QSet>
+#include <QString>
+#include <memory>
+#include <vector>
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "util/memory.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 // The ParametricEQEffect models the mid bands from a SSL Black EQ (242)
 // with a gentle parameter range, as requested here:

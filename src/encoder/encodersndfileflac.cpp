@@ -5,11 +5,15 @@
 * @brief encoder for flac using libsndfile
 */
 
-#include <QtDebug>
-
 #include "encoder/encodersndfileflac.h"
-#include "encoder/encodercallback.h"
 
+#include <QtCore/qglobal.h>
+#include <sndfile.h>
+
+#include <QDebug>
+
+#include "encoder/encoderflacsettings.h"
+#include "encoder/encodersettings.h"
 
 EncoderSndfileFlac::EncoderSndfileFlac(EncoderCallback* pCallback)
     :EncoderWave(pCallback) {

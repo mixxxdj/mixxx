@@ -8,15 +8,28 @@
 #ifndef CONTROLLERENGINE_H
 #define CONTROLLERENGINE_H
 
-#include <QTimerEvent>
+#include <qscriptvalue.h>
+
+#include <QByteArray>
+#include <QFileInfo>
 #include <QFileSystemWatcher>
+#include <QList>
+#include <QMap>
 #include <QMessageBox>
+#include <QObject>
+#include <QString>
+#include <QStringList>
+#include <QTimerEvent>
+#include <QUuid>
+#include <QVarLengthArray>
+#include <QtCore>
 #include <QtScript>
 
 #include "bytearrayclass.h"
-#include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/softtakeover.h"
+#include "preferences/configobject.h"
+#include "preferences/usersettings.h"
 #include "util/alphabetafilter.h"
 #include "util/duration.h"
 #include "util/memory.h"
@@ -25,6 +38,9 @@
 class Controller;
 class ControlObjectScript;
 class ControllerEngine;
+class AlphaBetaFilter;
+class ByteArrayClass;
+class QScriptEngine;
 
 // ScriptConnection represents a connection between
 // a ControlObject and a script callback function that gets executed when

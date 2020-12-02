@@ -7,6 +7,14 @@
  ***************************************************************************/
 
 #include "controllers/softtakeover.h"
+
+#include <math.h>
+#include <stddef.h>
+
+#include <QHashIterator>
+#include <QObjectList>
+
+#include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "util/math.h"
 #include "util/time.h"

@@ -1,9 +1,10 @@
 #ifndef TRACKNUMBERS_H
 #define TRACKNUMBERS_H
 
-#include <QString>
-#include <QMetaType>
+#include <QtCore/qglobal.h>
 
+#include <QMetaType>
+#include <QString>
 
 // DTO for storing the actual and total number of tracks for an album.
 // Both numbers are 1-based and 0 indicates an undefined value.

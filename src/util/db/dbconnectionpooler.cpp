@@ -1,5 +1,8 @@
 #include "util/db/dbconnectionpooler.h"
 
+#include <memory>
+#include <utility>
+
 #include "util/logger.h"
 
 

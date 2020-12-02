@@ -18,7 +18,11 @@
 #ifndef IMGLOADER_H
 #define IMGLOADER_H
 
+#include <QString>
+
 #include "imgsource.h"
+
+class QImage;
 
 class ImgLoader : public ImgSource {
 
@@ -28,4 +32,3 @@ public:
 };
 
 #endif
-

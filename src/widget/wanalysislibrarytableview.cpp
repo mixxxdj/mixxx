@@ -1,5 +1,10 @@
-#include "library/trackcollection.h"
 #include "widget/wanalysislibrarytableview.h"
+
+#include <QAbstractItemView>
+#include <QtGlobal>
+
+class QWidget;
+class TrackCollectionManager;
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         QWidget* parent,

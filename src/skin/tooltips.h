@@ -2,8 +2,10 @@
 #define TOOLTIPS_H
 
 #include <QHash>
-#include <QStringList>
 #include <QObject>
+#include <QString>
+#include <QStringList>
+#include <QtCore>
 
 class Tooltips : public QObject {
     Q_OBJECT

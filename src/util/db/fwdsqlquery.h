@@ -1,19 +1,19 @@
 #pragma once
 
-
+#include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QSqlError>
-
-#include "util/db/dbid.h"
-#include "util/db/dbfieldindex.h"
+#include <QString>
+#include <QVariant>
 
 #include "util/assert.h"
+#include "util/db/dbfieldindex.h"
+#include "util/db/dbid.h"
 
 // forward declarations
 class SqlQueryFinisher;
 class FwdSqlQuerySelectResult;
-
+class QSqlDatabase;
 
 // A forward-only QSqlQuery that is prepared immediately
 // during initialization. It offers a limited set of functions

@@ -1,10 +1,23 @@
 #include "library/playlistfeature.h"
 
-#include <QFile>
+#include <QAction>
+#include <QDebug>
 #include <QMenu>
-#include <QtDebug>
+#include <QModelIndex>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlTableModel>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QUrl>
+#include <QtGlobal>
+#include <memory>
+#include <type_traits>
+#include <utility>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/dao/playlistdao.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/playlisttablemodel.h"
@@ -12,13 +25,16 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 #include "sources/soundsourceproxy.h"
+#include "util/assert.h"
 #include "util/db/dbconnection.h"
-#include "util/dnd.h"
 #include "util/duration.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextbrowser.h"
+
+class QObject;
+class QPoint;
+class TrackId;
 
 namespace {
 

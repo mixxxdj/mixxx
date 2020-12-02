@@ -1,10 +1,16 @@
-#include <set>
-#include <QtDebug>
-
 #include "waveformmarkset.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <set>
+#include <utility>
+
 #include "engine/controls/cuecontrol.h"
-#include "control/controlobject.h"
-#include "util/memory.h"
+#include "waveform/renderers/waveformmark.h"
+
+class WaveformSignalColors;
 
 WaveformMarkSet::WaveformMarkSet() {
 }

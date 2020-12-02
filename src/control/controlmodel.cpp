@@ -1,5 +1,11 @@
 #include "control/controlmodel.h"
 
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+
+#include "control/controlproxy.h"
+
 ControlModel::ControlModel(QObject* pParent)
         : QAbstractTableModel(pParent) {
 

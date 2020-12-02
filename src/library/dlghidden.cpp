@@ -1,10 +1,20 @@
 #include "library/dlghidden.h"
 
+#include <QBoxLayout>
+#include <QItemSelection>
+#include <QItemSelectionModel>
+#include <QLayout>
+#include <QModelIndexList>
+#include <QPushButton>
+#include <QTableView>
+#include <QtCore>
+
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/hiddentablemodel.h"
-#include "library/trackcollectionmanager.h"
+#include "library/library.h"
+#include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
-#include "util/assert.h"
 
 DlgHidden::DlgHidden(
         WLibrary* parent,

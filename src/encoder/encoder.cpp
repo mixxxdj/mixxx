@@ -7,8 +7,13 @@
  ***************************************************************************/
 
 #include "encoder/encoder.h"
+
+#include <QtCore/qglobal.h>
+
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
+#include "util/assert.h"
 // TODO(XXX): __FFMPEGFILE_ENCODERS__ is currently undefined because
 // FFMPEG encoders provide less features than the other encoders and currently
 // we don't have a good fallback for using them. That's why it's a bad idea
@@ -22,7 +27,6 @@
 #endif
 #include "encoder/encoderwave.h"
 #include "encoder/encodersndfileflac.h"
-
 #include "encoder/encodermp3settings.h"
 #include "encoder/encodervorbissettings.h"
 #include "encoder/encoderwavesettings.h"
@@ -31,9 +35,13 @@
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
+#include <QDebug>
+#include <QList>
+#include <QSharedPointer>
+
 #include "encoder/encoderopussettings.h"
 
-#include <QList>
+class EncoderCallback;
 
 EncoderFactory EncoderFactory::factory;
 

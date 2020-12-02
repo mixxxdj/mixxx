@@ -1,14 +1,31 @@
-#include <QWidget>
-#include <QString>
-#include <QPair>
-#include <QLabel>
-#include <QCheckBox>
-#include <QPushButton>
-
 #include "dlgpreflv2.h"
-#include "control/controlobject.h"
-#include "util/math.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QAbstractButton>
+#include <QCheckBox>
+#include <QDebug>
+#include <QLabel>
+#include <QLayoutItem>
+#include <QObject>
+#include <QPushButton>
+#include <QSet>
+#include <QSharedPointer>
+#include <QString>
+#include <QVBoxLayout>
+#include <QVariant>
+#include <QtCore>
+#include <algorithm>
+
+#include "effects/defs.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
 #include "effects/effectsmanager.h"
+#include "effects/lv2/lv2backend.h"
+#include "effects/lv2/lv2manifest.h"
+#include "util/assert.h"
+
+class QWidget;
 
 DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
                        UserSettingsPointer pConfig,

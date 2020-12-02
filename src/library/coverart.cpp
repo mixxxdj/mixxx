@@ -1,10 +1,13 @@
 #include "library/coverart.h"
 
 #include <QDebugStateSaver>
+#include <QFileInfo>
+#include <QStringBuilder>
+#include <QtCore>
 
 #include "library/coverartutils.h"
-#include "track/track.h"
-#include "util/debug.h"
+#include "track/trackfile.h"
+#include "util/assert.h"
 #include "util/logger.h"
 
 namespace {

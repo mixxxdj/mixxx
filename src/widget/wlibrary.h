@@ -1,16 +1,22 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QDomNode>
+#include <QEvent>
 #include <QMap>
 #include <QMutex>
 #include <QStackedWidget>
 #include <QString>
-#include <QEvent>
 
 #include "library/libraryview.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class KeyboardEventFilter;
+class LibraryView;
+class QEvent;
+class QObject;
+class QWidget;
 
 class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT

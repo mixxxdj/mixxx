@@ -1,12 +1,20 @@
 #ifndef BPMDELEGATE_H
 #define BPMDELEGATE_H
 
+#include <QByteArrayData>
 #include <QCheckBox>
 #include <QModelIndex>
+#include <QString>
 #include <QStyleOptionViewItem>
 
 #include "library/tableitemdelegate.h"
 
+class QCheckBox;
+class QItemEditorFactory;
+class QModelIndex;
+class QObject;
+class QPainter;
+class QTableView;
 
 class BPMDelegate : public TableItemDelegate {
     Q_OBJECT

@@ -1,11 +1,19 @@
 #ifndef ENGINEWORKERSCHEDULER_H
 #define ENGINEWORKERSCHEDULER_H
 
+#include <stddef.h>
+
+#include <QByteArrayData>
 #include <QMutex>
+#include <QString>
+#include <QThread>
 #include <QThreadPool>
 #include <QWaitCondition>
+#include <vector>
 
 #include "util/fifo.h"
+
+class QObject;
 
 // The max engine workers that can be expected to run within a callback
 // (e.g. the max that we will schedule). Must be a power of 2.

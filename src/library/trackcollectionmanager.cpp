@@ -1,13 +1,31 @@
 #include "library/trackcollectionmanager.h"
 
+#include <QDateTime>
+#include <QDebug>
+#include <QSharedPointer>
+#include <QSqlDatabase>
+#include <QStaticStringData>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QWeakPointer>
+#include <QtCore>
+#include <type_traits>
+
+#include "library/dao/trackdao.h"
 #include "library/externaltrackcollection.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "track/trackref.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbid.h"
 #include "util/logger.h"
+
+class RelocatedTrack;
 
 namespace {
 

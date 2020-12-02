@@ -1,13 +1,19 @@
-#include <QItemEditorFactory>
-#include <QItemEditorCreatorBase>
-#include <QDoubleSpinBox>
-#include <QRect>
-#include <QPalette>
-#include <QTableView>
-#include <QPainter>
-
 #include "library/bpmdelegate.h"
-#include "library/trackmodel.h"
+
+#include <stddef.h>
+
+#include <QByteArray>
+#include <QCheckBox>
+#include <QDoubleSpinBox>
+#include <QItemEditorCreatorBase>
+#include <QItemEditorFactory>
+#include <QStyle>
+#include <QTableView>
+#include <QVariant>
+
+class QModelIndex;
+class QPainter;
+class QWidget;
 
 // We override the typical QDoubleSpinBox editor by registering this class with
 // a QItemEditorFactory for the BPMDelegate.

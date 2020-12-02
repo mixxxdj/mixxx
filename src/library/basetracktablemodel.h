@@ -2,14 +2,25 @@
 
 #include <QAbstractTableModel>
 #include <QList>
+#include <QModelIndex>
+#include <QModelIndexList>
 #include <QPointer>
+#include <QString>
+#include <QStringList>
 #include <QTableView>
+#include <QVariant>
+#include <QVector>
+#include <QtCore>
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/class.h"
 
 class TrackCollectionManager;
+class QAbstractItemDelegate;
+class TrackRef;
 
 class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT

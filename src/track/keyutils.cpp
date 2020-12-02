@@ -1,11 +1,16 @@
-#include <QtDebug>
+#include "track/keyutils.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QChar>
+#include <QDebug>
 #include <QMap>
+#include <QMutex>
 #include <QMutexLocker>
 #include <QPair>
 #include <QRegExp>
-
-#include "track/keyutils.h"
-#include "util/math.h"
+#include <QStringBuilder>
+#include <Qt>
 
 #define MUSIC_FLAT_UTF8  "\xe299ad"
 #define MUSIC_SHARP_UTF8 "\xe299af"

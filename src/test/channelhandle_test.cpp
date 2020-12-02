@@ -1,7 +1,13 @@
-#include <gtest/gtest.h>
-#include <QtDebug>
-
 #include "engine/channelhandle.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QByteArray>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 #include "test/mixxxtest.h"
 
 namespace {

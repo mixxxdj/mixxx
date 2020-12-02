@@ -11,9 +11,15 @@
 //      https://github.com/Holzhaus/serato-tags
 //      https://github.com/Holzhaus/serato-tags/blob/master/scripts/database_v2.py
 
+#include <QByteArrayData>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QIcon>
+#include <QList>
+#include <QSharedPointer>
+#include <QString>
 #include <QStringListModel>
+#include <QVariant>
 #include <QtConcurrentRun>
 #include <fstream>
 
@@ -21,6 +27,18 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/serato/seratoplaylistmodel.h"
 #include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
+
+class BaseSqlTableModel;
+class BaseTrackCache;
+class KeyboardEventFilter;
+class Library;
+class QModelIndex;
+class QObject;
+class QUrl;
+class SeratoPlaylistModel;
+class TreeItem;
+class WLibrary;
 
 class SeratoFeature : public BaseExternalLibraryFeature {
     Q_OBJECT

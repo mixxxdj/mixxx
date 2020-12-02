@@ -1,10 +1,19 @@
-#include <QtDebug>
+#include "waveformmark.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QFlags>
+#include <QPoint>
+#include <QRectF>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtCore>
 
 #include "skin/skincontext.h"
+#include "util/color/color.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "widget/wskincolor.h"
-
-#include "waveformmark.h"
 
 namespace {
 Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {

@@ -1,14 +1,17 @@
 #ifndef MIXXX_UTIL_LOGGER_H
 #define MIXXX_UTIL_LOGGER_H
 
+#include <QtCore/qglobal.h>
 
 #include <QByteArray>
+#include <QDebug>
 #include <QLatin1String>
+#include <QString>
 #include <QtDebug>
 
+#include "util/duration.h"
 #include "util/logging.h"
 #include "util/performancetimer.h"
-
 
 namespace mixxx {
 

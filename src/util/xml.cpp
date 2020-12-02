@@ -1,7 +1,13 @@
-#include <QFile>
-#include <QtDebug>
-
 #include "util/xml.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDomDocument>
+#include <QDomText>
+#include <QFile>
+#include <QIODevice>
+
 #include "errordialoghandler.h"
 
 int XmlParse::selectNodeInt(const QDomNode& nodeHeader,

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDir>
 #include <QList>
+#include <QObject>
 #include <QString>
 
 #include "library/relocatedtrack.h"
@@ -10,6 +12,8 @@
 class Library;
 class LibraryFeature;
 class Track;
+class RelocatedTrack;
+class TrackRef;
 
 // This interface and base class enable to synchronize external
 // track collections with Mixxx. It provides methods that will

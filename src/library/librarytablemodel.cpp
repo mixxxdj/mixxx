@@ -1,11 +1,19 @@
 #include "library/librarytablemodel.h"
 
+#include <QDebug>
+#include <QSqlQuery>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtCore>
+
+#include "library/columncache.h"
 #include "library/dao/trackschema.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "library/queryutil.h"
-
 #include "mixer/playermanager.h"
+
+class TrackId;
 
 namespace {
 

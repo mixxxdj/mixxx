@@ -1,10 +1,14 @@
 #ifndef BEATGRID_H
 #define BEATGRID_H
 
+#include <QByteArray>
 #include <QMutex>
+#include <QString>
+#include <memory>
 
 #include "proto/beats.pb.h"
 #include "track/beats.h"
+#include "util/types.h"
 
 #define BEAT_GRID_1_VERSION "BeatGrid-1.0"
 #define BEAT_GRID_2_VERSION "BeatGrid-2.0"

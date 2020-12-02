@@ -15,18 +15,20 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QThread>
-#include <QDir>
-#include <QtDebug>
-#include <QApplication>
-#include <QStringList>
-#include <QString>
-#include <QTextCodec>
+#include <QtCore/qglobal.h>
 
+#include <QApplication>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QObject>
+#include <QThread>
+#include <QtCore>
+
+#include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
 #include "sources/soundsourceproxy.h"
-#include "errordialoghandler.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"

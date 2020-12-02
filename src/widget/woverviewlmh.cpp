@@ -1,12 +1,20 @@
 #include "widget/woverviewlmh.h"
 
-#include <QPen>
-#include <QPainter>
 #include <QColor>
+#include <QImage>
+#include <QPainter>
+#include <QPen>
+#include <QPoint>
+#include <QSharedPointer>
+#include <QtGui>
 
-#include "util/timer.h"
 #include "util/math.h"
+#include "util/timer.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveform.h"
+
+class PlayerManager;
+class QWidget;
 
 WOverviewLMH::WOverviewLMH(
         const QString& group,

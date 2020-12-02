@@ -1,8 +1,34 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include "library/dao/trackdao.h"
 
+#include <gmock/gmock-generated-matchers.h>
+#include <gmock/gmock-matchers.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QDir>
+#include <QList>
+#include <QSet>
+#include <QSqlQuery>
+#include <QStaticStringData>
+#include <QString>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QVariant>
+#include <QtGlobal>
+#include <memory>
+#include <type_traits>
+
+#include "gtest/gtest_pred_impl.h"
+#include "library/relocatedtrack.h"
+#include "library/trackcollection.h"
 #include "test/librarytest.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
+#include "track/trackref.h"
+#include "util/db/dbid.h"
 
 using ::testing::UnorderedElementsAre;
 

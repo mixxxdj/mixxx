@@ -1,13 +1,15 @@
 #ifndef MIXXXDB_H
 #define MIXXXDB_H
 
-
+#include <QByteArrayData>
+#include <QObject>
 #include <QSqlDatabase>
+#include <QString>
 
 #include "preferences/usersettings.h"
-
 #include "util/db/dbconnectionpool.h"
 
+class QSqlDatabase;
 
 class MixxxDb : public QObject {
     Q_OBJECT

@@ -1,6 +1,8 @@
 #ifndef ENGINECOMPRESSOR_H
 #define ENGINECOMPRESSOR_H
 
+#include <QString>
+
 #include "util/types.h"
 
 class EngineSideChainCompressor {

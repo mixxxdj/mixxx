@@ -1,7 +1,12 @@
 #pragma once
 
+#include <QDebug>
+#include <QMetaType>
+
 #include "audio/signalinfo.h"
+#include "audio/types.h"
 #include "util/duration.h"
+#include "util/macros.h"
 
 namespace mixxx {
 

@@ -1,13 +1,17 @@
 #ifndef VINYLCONTROL_H
 #define VINYLCONTROL_H
 
+#include <stddef.h>
+
+#include <QObject>
 #include <QString>
 
-#include "util/types.h"
 #include "preferences/usersettings.h"
+#include "util/types.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlProxy;
+struct VinylSignalQualityReport;
 
 class VinylControl : public QObject {
   public:

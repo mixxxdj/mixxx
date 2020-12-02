@@ -1,15 +1,18 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
-#include <QScopedPointer>
+#include <memory>
 
-#include "mixxxtest.h"
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "engine/channels/enginedeck.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/controls/loopingcontrol.h"
+#include "engine/enginebuffer.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/mockedenginebackendtest.h"
-#include "util/memory.h"
+#include "test/signalpathtest.h"
+#include "track/track.h"
+#include "track/track_decl.h"
 
 // Due to rounding errors loop positions should be compared with EXPECT_NEAR instead of EXPECT_EQ.
 // NOTE(uklotzde, 2017-12-10): The rounding errors currently only appeared with GCC 7.2.1.

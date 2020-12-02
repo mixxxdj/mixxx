@@ -3,17 +3,33 @@
 
 #include "library/dao/cuedao.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QChar>
+#include <QDebug>
+#include <QLatin1String>
+#include <QMap>
+#include <QObjectList>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStaticStringData>
+#include <QString>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QThread>
 #include <QVariant>
-#include <QtDebug>
-#include <QtSql>
+#include <memory>
 
 #include "library/queryutil.h"
-#include "track/track.h"
+#include "track/cue.h"
+#include "track/cueinfo.h"
+#include "track/trackid.h"
 #include "util/assert.h"
 #include "util/color/rgbcolor.h"
+#include "util/db/dbid.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
-#include "util/performancetimer.h"
 
 namespace {
 

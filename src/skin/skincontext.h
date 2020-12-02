@@ -1,22 +1,32 @@
 #pragma once
 
-#include <memory>
+#include <qscriptengine.h>
+#include <qscriptenginedebugger.h>
+#include <qscriptvalue.h>
 
-#include <QHash>
-#include <QString>
-#include <QDomNode>
-#include <QDomElement>
-#include <QScriptEngine>
+#include <QColor>
+#include <QDebug>
 #include <QDir>
-#include <QScriptEngineDebugger>
-#include <QtDebug>
+#include <QDomElement>
+#include <QDomNode>
+#include <QHash>
 #include <QRegExp>
+#include <QScriptEngine>
+#include <QScriptEngineDebugger>
+#include <QString>
+#include <QStringList>
+#include <QtCore>
+#include <QtDebug>
+#include <memory>
 
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
-#include "widget/wsingletoncontainer.h"
+#include "widget/paintable.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wsingletoncontainer.h"
+
+class QWidget;
 
 #define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
 

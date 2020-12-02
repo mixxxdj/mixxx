@@ -4,14 +4,15 @@
 
 #include "engine/controls/quantizecontrol.h"
 
-#include <QtDebug>
+#include <QSharedPointer>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/assert.h"
 
 QuantizeControl::QuantizeControl(const QString& group,
         UserSettingsPointer pConfig)

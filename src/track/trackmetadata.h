@@ -1,10 +1,17 @@
 #pragma once
 
+#include <QDate>
 #include <QDateTime>
+#include <QDebug>
+#include <QString>
+#include <QtCore>
 
 #include "audio/types.h"
 #include "track/albuminfo.h"
+#include "track/bpm.h"
 #include "track/trackinfo.h"
+#include "util/duration.h"
+#include "util/macros.h"
 
 namespace mixxx {
 

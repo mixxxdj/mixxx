@@ -17,14 +17,25 @@
 
 #include "engine/channels/enginedeck.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QtCore>
+
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
+#include "preferences/configobject.h"
 #include "util/sample.h"
-#include "waveform/waveformwidgetfactory.h"
+
+struct GroupFeatureState;
 
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
         UserSettingsPointer pConfig,

@@ -1,6 +1,12 @@
 #include "widget/wkey.h"
-#include "track/keys.h"
+
+#include <QtGlobal>
+
+#include "control/control.h"
+#include "proto/keys.pb.h"
 #include "track/keyutils.h"
+
+class QWidget;
 
 WKey::WKey(const QString& group, QWidget* pParent)
         : WLabel(pParent),

@@ -1,13 +1,20 @@
+#include "preferences/broadcastsettings.h"
+
+#include <QChar>
+#include <QDebug>
 #include <QDir>
-#include <QStringList>
-#include <QFileInfoList>
+#include <QFile>
 #include <QFileInfo>
+#include <QFileInfoList>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtCore>
+#include <type_traits>
 
 #include "broadcast/defs_broadcast.h"
-#include "defs_urls.h"
-#include "preferences/broadcastsettings.h"
+#include "preferences/broadcastsettingsmodel.h"
+#include "preferences/configobject.h"
 #include "util/logger.h"
-#include "util/memory.h"
 
 namespace {
 const char* kProfilesSubfolder = "broadcast_profiles";

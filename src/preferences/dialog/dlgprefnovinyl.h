@@ -18,13 +18,17 @@
 #ifndef DLGPREFNOVINYL_H
 #define DLGPREFNOVINYL_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefnovinyldlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class SoundManager;
+class QObject;
+class QWidget;
 
 /**
   *@author Stefan Langhammer

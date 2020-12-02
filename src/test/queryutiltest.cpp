@@ -1,13 +1,19 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include "test/mixxxtest.h"
+#include <QByteArray>
+#include <QSqlDatabase>
+#include <QString>
+#include <QtGlobal>
+#include <memory>
 
 #include "database/mixxxdb.h"
-
+#include "gtest/gtest_pred_impl.h"
 #include "library/queryutil.h"
-#include "util/db/sqllikewildcardescaper.h"
-#include "util/db/dbconnectionpooler.h"
+#include "test/mixxxtest.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/db/sqllikewildcardescaper.h"
 
 class QueryUtilTest : public MixxxTest {
   protected:

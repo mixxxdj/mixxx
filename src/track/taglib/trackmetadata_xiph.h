@@ -2,9 +2,21 @@
 
 #include <taglib/xiphcomment.h>
 
+#include <QImage>
+
 #include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_file.h"
+
+namespace TagLib {
+namespace FLAC {
+class Picture;
+} // namespace FLAC
+template<class T>
+class List;
+} // namespace TagLib
 
 namespace mixxx {
+class TrackMetadata;
 
 namespace taglib {
 

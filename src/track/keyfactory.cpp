@@ -1,9 +1,19 @@
-#include <QtDebug>
-#include <QStringList>
-
 #include "track/keyfactory.h"
+
+#include <QtCore/qglobal.h>
+#include <math.h>
+
+#include <QDebug>
+#include <QHashIterator>
+#include <QPair>
+#include <QStringList>
+#include <QtGlobal>
+#include <algorithm>
+
 #include "track/keys.h"
 #include "track/keyutils.h"
+
+class QByteArray;
 
 using mixxx::track::io::key::KeyMap;
 

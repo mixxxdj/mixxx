@@ -1,7 +1,8 @@
 #include "engine/bufferscalers/enginebufferscale.h"
 
+#include "audio/types.h"
 #include "engine/engine.h"
-#include "util/defs.h"
+#include "util/assert.h"
 
 EngineBufferScale::EngineBufferScale()
         : m_outputSignal(

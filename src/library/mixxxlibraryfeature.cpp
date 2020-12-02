@@ -3,24 +3,35 @@
 
 #include "library/mixxxlibraryfeature.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QList>
+#include <QModelIndex>
+#include <QSqlQuery>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QUrl>
+#include <memory>
+#include <utility>
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
 #include "library/dlghidden.h"
 #include "library/dlgmissing.h"
-#include "library/hiddentablemodel.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
 #include "library/parser.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "widget/wlibrary.h"
+
+class KeyboardEventFilter;
+class QObject;
+class TrackId;
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          UserSettingsPointer pConfig)

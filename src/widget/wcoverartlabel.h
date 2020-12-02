@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPixmap>
+#include <QString>
 #include <QWidget>
 
 #include "track/track_decl.h"
@@ -12,6 +14,11 @@ class WCoverArtMenu;
 class DlgCoverArtFullSize;
 class CoverInfo;
 class CoverInfoRelative;
+class QContextMenuEvent;
+class QMouseEvent;
+class QObject;
+class QPoint;
+class QWidget;
 
 class WCoverArtLabel : public QLabel {
     Q_OBJECT

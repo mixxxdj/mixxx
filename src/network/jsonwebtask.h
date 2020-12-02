@@ -1,10 +1,19 @@
 #pragma once
 
+#include <QDebug>
 #include <QJsonDocument>
+#include <QPointer>
+#include <QString>
+#include <QUrl>
 #include <QUrlQuery>
+#include <QtCore>
+#include <utility>
 
 #include "network/httprequestmethod.h"
 #include "network/webtask.h"
+
+class QNetworkAccessManager;
+class QNetworkReply;
 
 namespace mixxx {
 

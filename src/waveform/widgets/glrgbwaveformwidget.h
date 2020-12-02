@@ -1,9 +1,17 @@
 #ifndef GLRGBWAVEFORMWIDGET_H
 #define GLRGBWAVEFORMWIDGET_H
 
+#include <QByteArrayData>
 #include <QGLWidget>
+#include <QString>
 
+#include "util/duration.h"
+#include "waveform/widgets/waveformwidgettype.h"
 #include "waveformwidgetabstract.h"
+
+class QObject;
+class QPaintEvent;
+class QWidget;
 
 class GLRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT

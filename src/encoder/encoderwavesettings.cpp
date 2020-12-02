@@ -5,8 +5,21 @@
 * @brief storage of setting for wave/aiff encoder
 */
 
- #include "encoder/encoderwavesettings.h"
- #include "recording/defs_recording.h"
+#include "encoder/encoderwavesettings.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QObject>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QtGlobal>
+#include <type_traits>
+#include <utility>
+
+#include "preferences/configobject.h"
+#include "recording/defs_recording.h"
+#include "util/assert.h"
 
 const QString EncoderWaveSettings::BITS_GROUP = "BITS";
 

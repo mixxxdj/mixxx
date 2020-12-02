@@ -1,7 +1,9 @@
 #pragma once
 
-#include <vector>
+#include <stddef.h>
+
 #include <functional>
+#include <vector>
 
 #include "util/types.h"
 

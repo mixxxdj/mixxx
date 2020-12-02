@@ -1,7 +1,16 @@
 #include "control/controleffectknob.h"
 
-#include "util/math.h"
+#include <stddef.h>
+
+#include <QSharedPointer>
+
+#include "control/control.h"
+#include "control/controlbehavior.h"
 #include "effects/effectmanifestparameter.h"
+#include "qsharedpointer.h"
+#include "util/math.h"
+
+class ConfigKey;
 
 ControlEffectKnob::ControlEffectKnob(const ConfigKey& key, double dMinValue, double dMaxValue)
         : ControlPotmeter(key, dMinValue, dMaxValue) {

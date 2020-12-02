@@ -1,12 +1,18 @@
 #ifndef ENGINENETWORKSTREAM_H_
 #define ENGINENETWORKSTREAM_H_
 
-#include <engine/sidechain/networkoutputstreamworker.h>
 #include <engine/sidechain/networkinputstreamworker.h>
-#include <QVector>
+#include <engine/sidechain/networkoutputstreamworker.h>
 
-#include "util/types.h"
+#include <QVector>
+#include <QtGlobal>
+
 #include "util/fifo.h"
+#include "util/types.h"
+
+class NetworkInputStreamWorker;
+template<class DataType>
+class FIFO;
 
 class EngineNetworkStream {
   public:

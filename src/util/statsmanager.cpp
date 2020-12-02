@@ -1,12 +1,19 @@
-#include <QtDebug>
+#include "util/statsmanager.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QFile>
+#include <QIODevice>
+#include <QMetaType>
 #include <QMutexLocker>
 #include <QTextStream>
-#include <QFile>
-#include <QMetaType>
+#include <QtCore>
+#include <algorithm>
 
-#include "util/statsmanager.h"
 #include "util/cmdlineargs.h"
 #include "util/compatibility.h"
+#include "util/duration.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
 const int kStatsPipeSize = 1 << 10;

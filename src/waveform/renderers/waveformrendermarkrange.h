@@ -6,7 +6,6 @@
 #include <QDomNode>
 #include <QPainter>
 #include <QPaintEvent>
-
 #include <vector>
 
 #include "preferences/usersettings.h"
@@ -16,6 +15,9 @@
 
 class ConfigKey;
 class ControlObject;
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRenderMarkRange : public WaveformRendererAbstract {
   public:

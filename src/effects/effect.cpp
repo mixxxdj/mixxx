@@ -1,12 +1,26 @@
-#include <QtDebug>
-
 #include "effects/effect.h"
-#include "effects/effectprocessor.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QtCore>
+#include <type_traits>
+
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectparameter.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
-#include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
+#include "engine/effects/message.h"
+#include "util/assert.h"
 #include "util/xml.h"
+
+class ChannelHandleAndGroup;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
 
 Effect::Effect(EffectsManager* pEffectsManager,
                EffectManifestPointer pManifest,

@@ -3,8 +3,11 @@
 #include <QByteArray>
 #include <QColor>
 #include <QDataStream>
+#include <QDebug>
 #include <QList>
+#include <QtCore>
 #include <memory>
+#include <utility>
 
 #include "track/cueinfo.h"
 #include "track/taglib/trackmetadata_file.h"

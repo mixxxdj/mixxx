@@ -17,17 +17,35 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-
 #include "preferences/dialog/dlgprefvinyl.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDebug>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLayout>
+#include <QSharedPointer>
+#include <QSlider>
+#include <QSpinBox>
+#include <QtCore>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "util/defs.h"
+#include "util/math.h"
+#include "util/platform.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "defs_urls.h"
-#include "util/platform.h"
+#include "vinylcontrol/vinylcontrolsignalwidget.h"
+
+class QWidget;
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)

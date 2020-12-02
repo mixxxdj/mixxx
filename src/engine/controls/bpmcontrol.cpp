@@ -1,20 +1,26 @@
 #include "engine/controls/bpmcontrol.h"
 
-#include <QStringList>
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QtCore>
+#include <memory>
 
 #include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/channels/enginechannel.h"
+#include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "preferences/configobject.h"
 #include "track/track.h"
-#include "util/assert.h"
 #include "util/duration.h"
 #include "util/logger.h"
 #include "util/math.h"
-#include "waveform/visualplayposition.h"
+#include "util/types.h"
 
 namespace {
 const mixxx::Logger kLogger("BpmControl");

@@ -4,7 +4,15 @@
 
 #include "track/taglib/trackmetadata_common.h"
 
+class QImage;
+namespace TagLib {
+namespace MP4 {
+class Tag;
+} // namespace MP4
+} // namespace TagLib
+
 namespace mixxx {
+class TrackMetadata;
 
 namespace taglib {
 

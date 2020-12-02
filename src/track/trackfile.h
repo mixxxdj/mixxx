@@ -1,10 +1,16 @@
 #pragma once
 
 #include <QDateTime>
+#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
+#include <QString>
 #include <QUrl>
 #include <QtDebug>
+#include <QtGlobal>
+#include <utility>
+
+class QDir;
 
 // Wrapper class for dealing with track files and their
 // path/location, URL, and URI representations.

@@ -1,16 +1,23 @@
 #ifndef ANALYZER_ANALYZERWAVEFORM_H
 #define ANALYZER_ANALYZERWAVEFORM_H
 
+#include <math.h>
+
 #include <QImage>
 #include <QSqlDatabase>
-
 #include <limits>
+#include <vector>
 
 #include "analyzer/analyzer.h"
 #include "library/dao/analysisdao.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
+#include "util/types.h"
 #include "waveform/waveform.h"
+
+class QSqlDatabase;
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP

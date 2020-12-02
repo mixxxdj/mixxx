@@ -1,15 +1,22 @@
 #ifndef DLGPREFLV2_H
 #define DLGPREFLV2_H
 
-#include <QWidget>
+#include <QByteArrayData>
 #include <QCheckBox>
+#include <QList>
+#include <QString>
+#include <QWidget>
 
-#include "preferences/dialog/ui_dlgpreflv2dlg.h"
-#include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 #include "effects/lv2/lv2backend.h"
+#include "preferences/dialog/ui_dlgpreflv2dlg.h"
+#include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class EffectsManager;
+class LV2Backend;
+class QCheckBox;
+class QObject;
+class QWidget;
 
 class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     Q_OBJECT

@@ -1,10 +1,18 @@
 #include "engine/controls/clockcontrol.h"
 
+#include <math.h>
+
+#include <QSharedPointer>
+#include <QtGlobal>
+#include <memory>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/math.h"
 
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {

@@ -1,7 +1,12 @@
 #ifndef ENGINE_CACHINGREADERCHUNK_H
 #define ENGINE_CACHINGREADERCHUNK_H
 
+#include "audio/types.h"
 #include "sources/audiosource.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
+#include "util/samplebuffer.h"
+#include "util/types.h"
 
 // A Chunk is a memory-resident section of audio that has been cached.
 // Each chunk holds a fixed number kFrames of frames with samples for

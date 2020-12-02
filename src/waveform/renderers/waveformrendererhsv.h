@@ -1,8 +1,14 @@
 #ifndef WAVEFORMRENDERERHSV_H
 #define WAVEFORMRENDERERHSV_H
 
+#include <QDomNode>
+
 #include "util/class.h"
 #include "waveformrenderersignalbase.h"
+
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRendererHSV : public WaveformRendererSignalBase {
   public:

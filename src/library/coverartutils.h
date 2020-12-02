@@ -13,6 +13,7 @@
 class CoverInfo;
 class CoverInfoRelative;
 class TrackFile;
+class Track;
 
 class CoverArtUtils {
   public:

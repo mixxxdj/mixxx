@@ -4,18 +4,31 @@
 #include <QColor>
 #include <QDomNode>
 #include <QMouseEvent>
-#include <QWidget>
+#include <QPixmap>
+#include <QString>
 #include <QTimer>
+#include <QWidget>
+#include <QtCore>
 
+#include "library/coverart.h"
+#include "library/coverartcache.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "library/coverartcache.h"
 #include "skin/skincontext.h"
+#include "track/track_decl.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 
 class DlgCoverArtFullSize;
+class BaseTrackPlayer;
+class QContextMenuEvent;
+class QDragEnterEvent;
+class QDropEvent;
+class QMouseEvent;
+class QPaintEvent;
+class QResizeEvent;
+class WCoverArtMenu;
 
 class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     Q_OBJECT

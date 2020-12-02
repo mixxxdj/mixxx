@@ -1,5 +1,8 @@
 #include "test/signalpathtest.h"
 
+#include <QStaticStringData>
+#include <QStringLiteral>
+
 const QString BaseSignalPathTest::m_sMasterGroup = QStringLiteral("[Master]");
 const QString BaseSignalPathTest::m_sInternalClockGroup = QStringLiteral("[InternalClock]");
 // these names need to match PlayerManager::groupForDeck and friends

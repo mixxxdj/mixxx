@@ -1,17 +1,28 @@
 #pragma once
 
 #include <QAtomicPointer>
+#include <QFlags>
 #include <QHash>
+#include <QList>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <QtCore>
 
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
+#include "controllers/midi/midimessage.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "util/mutex.h"
 
 class ControlObject;
+class ControlNumericBehavior;
+class MMutex;
+template<class T>
+class QSharedPointer;
+template<class T>
+class QWeakPointer;
 
 enum class ControlFlag {
     None = 0,

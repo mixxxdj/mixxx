@@ -13,26 +13,41 @@
 #define WOVERVIEW_H
 
 #include <QColor>
+#include <QDomNode>
+#include <QImage>
 #include <QList>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPixmap>
+#include <QPointF>
+#include <QString>
+#include <QtCore>
+#include <vector>
 
 #include "analyzer/analyzerprogress.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "track/track_decl.h"
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
+#include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveform.h"
+#include "waveform/waveformmarklabel.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wwidget.h"
 
 class PlayerManager;
 class PainterScope;
+class ControlProxy;
+class CuePointer;
+class QLabel;
+class QPainter;
+class QWidget;
+class TrackId;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT

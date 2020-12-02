@@ -2,9 +2,13 @@
 #define MIXXX_LIBRARYSCANNER_H
 
 #include <gtest/gtest.h>
+#include <gtest/gtest_prod.h>
 
+#include <QByteArrayData>
+#include <QList>
 #include <QScopedPointer>
 #include <QSemaphore>
+#include <QSet>
 #include <QString>
 #include <QStringList>
 #include <QThread>
@@ -17,12 +21,17 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/scanner/scannerglobal.h"
+#include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
+#include "util/cache.h"
 #include "util/db/dbconnectionpool.h"
 
 class ScannerTask;
 class LibraryScannerDlg;
+class QObject;
+class RelocatedTrack;
+class TrackId;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);

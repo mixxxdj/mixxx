@@ -5,13 +5,15 @@
 // * Flinging tracks with the waveform should work.
 // * vinyl??
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <memory>
 
+#include "engine/channels/enginedeck.h"
+#include "engine/enginebuffer.h"
 #include "engine/sync/synccontrol.h"
-#include "test/mixxxtest.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/mockedenginebackendtest.h"
 
 class SyncControlTest : public MockedEngineBackendTest {

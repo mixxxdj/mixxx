@@ -1,13 +1,18 @@
 #ifndef PREFERENCES_CONFIGOBJECT_H
 #define PREFERENCES_CONFIGOBJECT_H
 
-#include <QString>
-#include <QKeySequence>
+#include <QDebug>
 #include <QDomNode>
-#include <QMap>
 #include <QHash>
+#include <QKeySequence>
+#include <QList>
+#include <QMap>
 #include <QMetaType>
 #include <QReadWriteLock>
+#include <QSet>
+#include <QString>
+#include <QtCore>
+#include <utility>
 
 #include "util/assert.h"
 #include "util/debug.h"

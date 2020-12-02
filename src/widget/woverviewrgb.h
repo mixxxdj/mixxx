@@ -1,7 +1,13 @@
 #ifndef WOVERVIEWRGB_H
 #define WOVERVIEWRGB_H
 
+#include <QString>
+
+#include "preferences/usersettings.h"
 #include "widget/woverview.h"
+
+class PlayerManager;
+class QWidget;
 
 class WOverviewRGB : public WOverview {
   public:

@@ -1,7 +1,9 @@
 #ifndef QUANTIZECONTROL_H
 #define QUANTIZECONTROL_H
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
@@ -10,6 +12,7 @@
 
 class ControlObject;
 class ControlPushButton;
+class QObject;
 
 class QuantizeControl : public EngineControl {
     Q_OBJECT

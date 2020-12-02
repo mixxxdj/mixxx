@@ -1,10 +1,19 @@
 #include "widget/woverviewrgb.h"
 
+#include <QColor>
+#include <QImage>
 #include <QPainter>
+#include <QPointF>
+#include <QSharedPointer>
+#include <QtGlobal>
 
-#include "util/timer.h"
 #include "util/math.h"
+#include "util/timer.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveform.h"
+
+class PlayerManager;
+class QWidget;
 
 WOverviewRGB::WOverviewRGB(
         const QString& group,

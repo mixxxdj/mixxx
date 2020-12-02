@@ -5,10 +5,17 @@
 #ifndef WTIME_H
 #define WTIME_H
 
+#include <QByteArrayData>
+#include <QDomNode>
+#include <QString>
 #include <QTimer>
 
-#include "widget/wlabel.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
+
+class QObject;
+class QTimer;
+class QWidget;
 
 class WTime: public WLabel {
     Q_OBJECT

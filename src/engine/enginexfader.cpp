@@ -1,6 +1,7 @@
 #include "engine/enginexfader.h"
 
-#include "util/math.h"
+#include <math.h>
+#include <stddef.h>
 
 //static
 const char* EngineXfader::kXfaderConfigKey = "[Mixer Profile]";

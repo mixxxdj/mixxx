@@ -1,20 +1,26 @@
 #ifndef EFFECTCHAIN_H
 #define EFFECTCHAIN_H
 
-#include <QObject>
-#include <QMap>
-#include <QList>
+#include <QByteArrayData>
 #include <QDomDocument>
+#include <QDomElement>
+#include <QList>
+#include <QMap>
+#include <QObject>
+#include <QSet>
+#include <QSharedPointer>
+#include <QString>
 
 #include "effects/defs.h"
-#include "engine/channelhandle.h"
 #include "effects/effect.h"
+#include "engine/channelhandle.h"
 #include "util/class.h"
 
 class EffectsManager;
 class EngineEffectRack;
 class EngineEffectChain;
 class EffectChain;
+
 typedef QSharedPointer<EffectChain> EffectChainPointer;
 
 // The main-thread representation of an effect chain. This class is NOT

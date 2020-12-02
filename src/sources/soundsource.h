@@ -1,11 +1,14 @@
 #pragma once
 
 #include <QDebug>
+#include <QString>
+#include <memory>
 
 #include "sources/audiosource.h"
 #include "sources/metadatasourcetaglib.h"
-
 #include "util/assert.h"
+
+class QUrl;
 
 namespace mixxx {
 

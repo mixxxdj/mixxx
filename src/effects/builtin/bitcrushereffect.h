@@ -2,13 +2,24 @@
 #define BITCRUSHEREFFECT_H
 
 #include <QMap>
+#include <QSet>
+#include <QString>
 
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/types.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 struct BitCrusherGroupState : public EffectState {
     // Default accumulator to 1 so we immediately pick an input value.

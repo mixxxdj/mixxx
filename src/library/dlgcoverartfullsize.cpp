@@ -1,14 +1,29 @@
 #include "library/dlgcoverartfullsize.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QCloseEvent>
+#include <QDebug>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QPointF>
 #include <QRect>
 #include <QScreen>
+#include <QSize>
 #include <QStyle>
 #include <QWheelEvent>
+#include <memory>
 
+#include "library/coverart.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "mixer/basetrackplayer.h"
 #include "track/track.h"
+#include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/widgethelper.h"
+
+class QWidget;
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),

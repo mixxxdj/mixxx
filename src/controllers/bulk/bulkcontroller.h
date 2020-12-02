@@ -8,16 +8,32 @@
 #ifndef BULKCONTROLLER_H
 #define BULKCONTROLLER_H
 
+#include <libusb.h>
+
 #include <QAtomicInt>
+#include <QByteArray>
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
+#include <QThread>
 
 #include "controllers/controller.h"
+#include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetinfo.h"
+#include "controllers/controllervisitor.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "preferences/usersettings.h"
 #include "util/duration.h"
 
 struct libusb_device_handle;
 struct libusb_context;
 struct libusb_device_descriptor;
+class MidiControllerPreset;
+class QObject;
+namespace mixxx {
+class Duration;
+} // namespace mixxx
 
 class BulkReader : public QThread {
     Q_OBJECT

@@ -4,8 +4,11 @@
 #include <QLabel>
 #include <QPainter>
 #include <QProgressBar>
+#include <QStyle>
 #include <QStyleOption>
 #include <QVBoxLayout>
+
+class QPaintEvent;
 
 LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         : QWidget(pParent) {
@@ -65,4 +68,3 @@ void LaunchImage::paintEvent(QPaintEvent *)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
-

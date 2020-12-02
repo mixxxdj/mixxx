@@ -1,11 +1,22 @@
-#include <gtest/gtest.h>
-
-#include "track/taglib/trackmetadata.h"
-#include "util/memory.h"
-
-#include <taglib/tstring.h>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <id3v2header.h>
+#include <id3v2tag.h>
+#include <stddef.h>
 #include <taglib/textidentificationframe.h>
-#include <QtDebug>
+#include <taglib/tstring.h>
+
+#include <QDate>
+#include <QDebug>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "track/bpm.h"
+#include "track/taglib/trackmetadata_id3v2.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 
 namespace {
 

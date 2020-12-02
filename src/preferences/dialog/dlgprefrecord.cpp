@@ -1,13 +1,38 @@
-#include <QFileDialog>
-#include <QStandardPaths>
-
 #include "preferences/dialog/dlgprefrecord.h"
-#include "recording/defs_recording.h"
-#include "control/controlobject.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QAbstractButton>
+#include <QAbstractSlider>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDebug>
+#include <QDir>
+#include <QFileDialog>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QObject>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSharedPointer>
+#include <QSize>
+#include <QSlider>
+#include <QStandardPaths>
+#include <QStringBuilder>
+#include <QtCore>
+#include <memory>
+#include <type_traits>
+
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
-#include "control/controlproxy.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "encoder/encodersettings.h"
+#include "preferences/configobject.h"
+#include "recording/defs_recording.h"
 #include "util/sandbox.h"
+
+class QWidget;
 
 namespace {
 constexpr bool kDefaultCueEnabled = true;

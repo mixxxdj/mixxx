@@ -17,6 +17,17 @@
 
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
+#include <string.h>
+
+#include <QColor>
+#include <QLineF>
+#include <QPainter>
+#include <QSizePolicy>
+#include <QtGlobal>
+#include <QtGui>
+
+#include "vinylcontrol/defs_vinylcontrol.h"
+
 VinylControlSignalWidget::VinylControlSignalWidget()
     : QWidget(),
       m_iVinylInput(-1),

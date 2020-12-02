@@ -1,5 +1,16 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
+#include <QCheckBox>
+#include <QSharedPointer>
+#include <QSpinBox>
+#include <QTime>
+#include <QTimeEdit>
+#include <QtCore>
+
+#include "preferences/configobject.h"
+
+class QWidget;
+
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
                              UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),

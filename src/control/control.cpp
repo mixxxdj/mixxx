@@ -1,7 +1,20 @@
 #include "control/control.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QStringBuilder>
+#include <QWeakPointer>
+#include <utility>
+
+#include "control/controlbehavior.h"
 #include "control/controlobject.h"
+#include "qsharedpointer.h"
+#include "util/assert.h"
+#include "util/mutex.h"
 #include "util/stat.h"
+#include "util/thread_annotations.h"
 
 //static
 UserSettingsPointer ControlDoublePrivate::s_pUserConfig;

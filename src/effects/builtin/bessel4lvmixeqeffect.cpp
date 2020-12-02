@@ -1,7 +1,18 @@
 #include "effects/builtin/bessel4lvmixeqeffect.h"
 
+#include <QObject>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QtGlobal>
+
+#include "control/controlproxy.h"
 #include "effects/builtin/equalizer_util.h"
-#include "util/math.h"
+#include "effects/effectmanifest.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/engine.h"
+
+struct GroupFeatureState;
 
 // static
 QString Bessel4LVMixEQEffect::getId() {

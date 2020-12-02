@@ -1,13 +1,18 @@
 #ifndef DLGPREFCROSSFADER_H
 #define DLGPREFCROSSFADER_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
-#include "preferences/dialog/ui_dlgprefcrossfaderdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
+#include "preferences/dialog/ui_dlgprefcrossfaderdlg.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
+class QGraphicsScene;
+class QObject;
+class QWidget;
 
 class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfaderDlg  {
     Q_OBJECT

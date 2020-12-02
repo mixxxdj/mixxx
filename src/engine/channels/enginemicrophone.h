@@ -5,17 +5,23 @@
 #define ENGINEMICROPHONE_H
 
 #include <QScopedPointer>
+#include <QString>
+#include <QtCore>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginevumeter.h"
-#include "util/circularbuffer.h"
-
 #include "soundio/soundmanagerutil.h"
+#include "util/circularbuffer.h"
+#include "util/types.h"
 
 class EngineEffectsManager;
 class ControlAudioTaperPot;
+class ChannelHandleAndGroup;
+class ControlObject;
+class EffectsManager;
+struct GroupFeatureState;
 
 // EngineMicrophone is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager

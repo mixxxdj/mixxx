@@ -1,14 +1,30 @@
 #include "effects/effectchainslot.h"
 
-#include "effects/effectrack.h"
-#include "effects/effectxmlelements.h"
-#include "effects/effectslot.h"
+#include <QtCore/qglobal.h>
+#include <QtCore/qsharedpointer.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDomDocument>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QSharedPointer>
+#include <QtCore>
+#include <type_traits>
+
+#include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "control/controlencoder.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
+#include "effects/effectxmlelements.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "util/assert.h"
 #include "util/math.h"
 #include "util/xml.h"
+
+class EffectsManager;
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                  unsigned int iChainNumber)

@@ -1,14 +1,22 @@
 #ifndef EFFECT_H
 #define EFFECT_H
 
-#include <QSharedPointer>
+#include <QByteArrayData>
 #include <QDomDocument>
+#include <QDomElement>
+#include <QList>
+#include <QMap>
+#include <QObject>
+#include <QSet>
+#include <QSharedPointer>
+#include <QString>
 
-#include "engine/channelhandle.h"
-#include "engine/engine.h"
+#include "effects/defs.h"
+#include "effects/effectinstantiator.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
-#include "effects/effectinstantiator.h"
+#include "engine/channelhandle.h"
+#include "engine/engine.h"
 #include "util/class.h"
 
 class EffectState;
@@ -16,6 +24,11 @@ class EffectProcessor;
 class EngineEffectChain;
 class EngineEffect;
 class EffectsManager;
+class ChannelHandleAndGroup;
+class EffectParameter;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
 
 // The Effect class is the main-thread representation of an instantiation of an
 // effect. This class is NOT thread safe and must only be used by the main

@@ -1,7 +1,17 @@
 #include "library/locationdelegate.h"
 
+#include <QFlags>
+#include <QFontMetrics>
+#include <QModelIndex>
 #include <QPainter>
+#include <QPalette>
+#include <QPen>
+#include <QStyle>
+#include <QVariant>
+#include <Qt>
+#include <QtGui>
 
+class QTableView;
 
 LocationDelegate::LocationDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView) {

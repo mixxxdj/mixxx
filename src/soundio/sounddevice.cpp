@@ -17,10 +17,8 @@
 
 #include "soundio/sounddevice.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
+#include <QtGlobal>
 
-#include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/debug.h"
 #include "util/defs.h"

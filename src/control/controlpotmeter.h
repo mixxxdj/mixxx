@@ -18,8 +18,14 @@
 #ifndef CONTROLPOTMETER_H
 #define CONTROLPOTMETER_H
 
-#include "preferences/usersettings.h"
+#include <QByteArrayData>
+#include <QObject>
+#include <QString>
+
 #include "control/controlobject.h"
+#include "preferences/usersettings.h"
+
+class ConfigKey;
 
 /**
   *@author Tue and Ken Haste Andersen

@@ -1,11 +1,17 @@
 // engineworkerscheduler.cpp
 // Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
+#include "engine/engineworkerscheduler.h"
+
+#include <QMutexLocker>
+#include <QtGlobal>
+#include <algorithm>
 
 #include "engine/engineworker.h"
-#include "engine/engineworkerscheduler.h"
+#include "util/assert.h"
 #include "util/event.h"
+
+class QObject;
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : m_bWakeScheduler(false),

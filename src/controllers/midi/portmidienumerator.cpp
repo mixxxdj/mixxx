@@ -5,12 +5,23 @@
 * @brief This class handles discovery and enumeration of DJ controller devices that appear under the PortMIDI cross-platform API.
 */
 
-#include <portmidi.h>
-#include <QRegExp>
-
 #include "controllers/midi/portmidienumerator.h"
 
+#include <QtCore/qglobal.h>
+#include <portmidi.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QLatin1String>
+#include <QListIterator>
+#include <QMap>
+#include <QMapIterator>
+#include <QRegExp>
+#include <QtCore>
+
+#include "controllers/controller.h"
 #include "controllers/midi/portmidicontroller.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 
 namespace {

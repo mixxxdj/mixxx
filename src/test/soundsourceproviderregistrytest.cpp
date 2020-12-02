@@ -1,8 +1,18 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <QList>
+#include <QString>
+#include <QStringList>
+#include <QtGlobal>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
+#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 #include "sources/soundsourceproviderregistry.h"
+
+class QUrl;
 
 namespace mixxx {
 

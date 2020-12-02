@@ -1,13 +1,18 @@
 #ifndef WAVEFORMMARKSET_H
 #define WAVEFORMMARKSET_H
 
+#include <QDomNode>
 #include <QList>
+#include <QMap>
+#include <QString>
 
-#include "waveformmark.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
 #include "util/memory.h"
+#include "waveformmark.h"
 
 class WaveformWidgetRenderer;
+class WaveformSignalColors;
 
 // This class helps share code between the WaveformRenderMark and WOverview
 // constructors.

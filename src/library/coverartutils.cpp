@@ -1,15 +1,26 @@
 #include "library/coverartutils.h"
 
+#include <stddef.h>
+
+#include <QDebug>
 #include <QDir>
 #include <QDirIterator>
+#include <QFile>
+#include <QFlags>
+#include <QLatin1String>
+#include <QRegExp>
 #include <QtConcurrentRun>
+#include <QtCore>
+#include <memory>
+#include <utility>
 
+#include "library/coverart.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "track/trackfile.h"
+#include "util/assert.h"
 #include "util/logger.h"
 #include "util/regex.h"
-
 
 namespace {
 

@@ -1,5 +1,8 @@
 #include "util/db/fwdsqlqueryselectresult.h"
 
+#include <utility>
+
+#include "util/assert.h"
 
 FwdSqlQuerySelectResult::FwdSqlQuerySelectResult()
     : m_queryFinisher(m_query) {

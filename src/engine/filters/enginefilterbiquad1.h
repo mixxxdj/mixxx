@@ -1,7 +1,14 @@
 #ifndef ENGINEFILTERBIQUAD1_H
 #define ENGINEFILTERBIQUAD1_H
 
+#include <stdio.h>
+
+#include <QByteArrayData>
+#include <QString>
+
 #include "engine/filters/enginefilteriir.h"
+
+class QObject;
 
 #ifdef _MSC_VER
     // Visual Studio doesn't have snprintf

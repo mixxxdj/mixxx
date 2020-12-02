@@ -1,9 +1,15 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDir>
+#include <QString>
 
+#include "library/scanner/scannerglobal.h"
 #include "library/scanner/scannertask.h"
 #include "util/sandbox.h"
+
+class LibraryScanner;
+class QObject;
 
 /// Recursively scan a music library. Doesn't import tracks for any directories
 /// that have already been scanned and have not changed. Changes are tracked by

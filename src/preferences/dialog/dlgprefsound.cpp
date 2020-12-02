@@ -13,17 +13,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QtDebug>
-#include <QMessageBox>
 #include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgprefsounditem.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QAbstractButton>
+#include <QApplication>
+#include <QComboBox>
+#include <QDebug>
+#include <QDoubleSpinBox>
+#include <QEvent>
+#include <QLabel>
+#include <QLayoutItem>
+#include <QMessageBox>
+#include <QObject>
+#include <QObjectList>
+#include <QPushButton>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QVBoxLayout>
+#include <QVariant>
+#include <QWidget>
+#include <QtCore>
+
+#include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "preferences/dialog/dlgprefsounditem.h"
+#include "soundio/sounddeviceerror.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
-#include "control/controlproxy.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the

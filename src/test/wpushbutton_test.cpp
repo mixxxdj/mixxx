@@ -1,13 +1,20 @@
-#include <gtest/gtest.h>
-
-#include <QTestEventList>
-#include <QScopedPointer>
-
-#include "mixxxtest.h"
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "control/controlpushbutton.h"
 #include "widget/wpushbutton.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <stddef.h>
+
+#include <QPoint>
+#include <QScopedPointer>
+#include <QString>
+#include <QTestEventList>
+#include <Qt>
+#include <memory>
+
+#include "control/controlpushbutton.h"
+#include "gtest/gtest_pred_impl.h"
+#include "mixxxtest.h"
+#include "preferences/configobject.h"
 #include "widget/controlwidgetconnection.h"
 
 class WPushButtonTest : public MixxxTest {

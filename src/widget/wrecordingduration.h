@@ -5,9 +5,17 @@
 #ifndef WRECORDINGDURATION_H
 #define WRECORDINGDURATION_H
 
-#include "widget/wlabel.h"
-#include "skin/skincontext.h"
+#include <QByteArrayData>
+#include <QDomNode>
+#include <QString>
+
 #include "recording/recordingmanager.h"
+#include "skin/skincontext.h"
+#include "widget/wlabel.h"
+
+class QObject;
+class QWidget;
+class RecordingManager;
 
 class WRecordingDuration: public WLabel {
     Q_OBJECT

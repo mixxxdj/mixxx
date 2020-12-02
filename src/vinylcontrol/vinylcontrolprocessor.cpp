@@ -1,10 +1,15 @@
-#include <QMutexLocker>
-
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QMutexLocker>
+#include <QtCore>
+
 #include "control/controlpushbutton.h"
+#include "preferences/configobject.h"
 #include "util/defs.h"
-#include "util/event.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"

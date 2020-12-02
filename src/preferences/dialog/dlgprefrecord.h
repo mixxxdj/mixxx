@@ -2,16 +2,23 @@
 #define DLGPREFRECORD_H
 
 #include <QButtonGroup>
+#include <QByteArrayData>
+#include <QList>
 #include <QRadioButton>
+#include <QString>
 #include <QWidget>
 
-#include "preferences/dialog/ui_dlgprefrecorddlg.h"
-#include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 #include "encoder/encoder.h"
+#include "preferences/dialog/ui_dlgprefrecorddlg.h"
+#include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class ControlObject;
 class ControlProxy;
+class QAbstractButton;
+class QObject;
+class QRadioButton;
+class QWidget;
 
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT

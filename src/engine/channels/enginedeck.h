@@ -18,16 +18,18 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
+#include <QByteArrayData>
 #include <QScopedPointer>
+#include <QString>
 
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/engineobject.h"
 #include "engine/channels/enginechannel.h"
-#include "util/circularbuffer.h"
-
+#include "engine/engineobject.h"
+#include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/circularbuffer.h"
+#include "util/types.h"
 
 class EngineBuffer;
 class EnginePregain;
@@ -36,6 +38,11 @@ class EngineMaster;
 class EngineVuMeter;
 class EngineEffectsManager;
 class ControlPushButton;
+class ChannelHandleAndGroup;
+class ControlObject;
+class EffectsManager;
+class QObject;
+struct GroupFeatureState;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT

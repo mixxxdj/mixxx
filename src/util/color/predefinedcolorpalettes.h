@@ -1,7 +1,12 @@
 #pragma once
 #include "util/color/colorpalette.h"
 
+class ColorPalette;
+template<class T>
+class QList;
+
 namespace mixxx {
+class RgbColor;
 
 class PredefinedColorPalettes {
   public:

@@ -17,13 +17,22 @@
 
 #include "preferences/dialog/dlgprefkey.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDebug>
 #include <QLineEdit>
-#include <QMessageBox>
+#include <QRadioButton>
+#include <QtGlobal>
+#include <type_traits>
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
-#include "util/compatibility.h"
-#include "util/xml.h"
+#include "defs_urls.h"
+#include "preferences/configobject.h"
+
+class QWidget;
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),

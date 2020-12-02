@@ -1,17 +1,33 @@
 #ifndef LOUDNESSCONTOUREFFECT_H
 #define LOUDNESSCONTOUREFFECT_H
 
+#include <QSet>
+#include <QString>
+#include <memory>
+
+#include "audio/types.h"
 #include "control/controlproxy.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "util/memory.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+class EngineFilterBiquad1HighShelving;
+class EngineFilterBiquad1Peaking;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 class LoudnessContourEffectGroupState final : public EffectState {
   public:

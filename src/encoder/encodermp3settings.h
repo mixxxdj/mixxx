@@ -8,8 +8,13 @@
 #ifndef ENCODERMP3SETTINGS_H
 #define ENCODERMP3SETTINGS_H
 
-#include "encoder/encoderrecordingsettings.h"
+#include <QList>
+#include <QString>
+
 #include "encoder/encoder.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "encoder/encodersettings.h"
+#include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 
 class EncoderMp3Settings : public EncoderRecordingSettings {

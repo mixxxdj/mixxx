@@ -18,14 +18,22 @@
 #ifndef WDISPLAY_H
 #define WDISPLAY_H
 
-#include <QVector>
-#include <QPixmap>
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QPaintEvent>
+#include <QPixmap>
 #include <QString>
+#include <QVector>
 
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
+#include "skin/pixmapsource.h"
 #include "skin/skincontext.h"
+#include "widget/paintable.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
+
+class QObject;
+class QPaintEvent;
+class QWidget;
 
 class WDisplay : public WWidget {
    Q_OBJECT

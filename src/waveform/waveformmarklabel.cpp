@@ -1,4 +1,10 @@
 #include "waveform/waveformmarklabel.h"
+
+#include <QFontMetrics>
+#include <QPainter>
+#include <Qt>
+#include <QtGui>
+
 #include "util/math.h"
 
 void WaveformMarkLabel::prerender(QPointF bottomLeft,

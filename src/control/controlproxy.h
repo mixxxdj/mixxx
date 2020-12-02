@@ -1,12 +1,17 @@
 #ifndef CONTROLPROXY_H
 #define CONTROLPROXY_H
 
+#include <QtCore/qsharedpointer.h>
+
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <QtCore>
 
 #include "control/control.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+#include "util/assert.h"
 #include "util/platform.h"
 
 // This class is the successor of ControlObjectThread. It should be used for

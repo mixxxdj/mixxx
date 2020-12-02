@@ -24,11 +24,23 @@
  * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
  ***************************************************************************/
 
-#include <QStylePainter>
-
 #include "library/stareditor.h"
+
+#include <stddef.h>
+
+#include <QFlags>
+#include <QItemSelectionModel>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPalette>
+#include <QRect>
+#include <QStyle>
+#include <QTableView>
+
 #include "library/starrating.h"
 #include "util/painterscope.h"
+
+class QEvent;
 
 /*
  * We enable mouse tracking on the widget so we can follow the cursor even

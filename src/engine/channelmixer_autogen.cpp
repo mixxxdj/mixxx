@@ -1,6 +1,11 @@
+#include <QVarLengthArray>
+
+#include "engine/channelhandle.h"
 #include "engine/channelmixer.h"
+#include "engine/effects/engineeffectsmanager.h"
+#include "engine/enginemaster.h"
 #include "util/sample.h"
-#include "util/timer.h"
+#include "util/types.h"
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
 // SEE tools/generate_sample_functions.py             //

@@ -11,6 +11,10 @@
 #ifndef MIDIOUTPUTHANDLER_H
 #define MIDIOUTPUTHANDLER_H
 
+#include <QByteArrayData>
+#include <QObject>
+#include <QString>
+
 #include "control/controlproxy.h"
 #include "controllers/midi/midimessage.h"
 

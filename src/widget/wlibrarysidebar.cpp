@@ -1,13 +1,35 @@
 #include "widget/wlibrarysidebar.h"
 
-#include <QFileInfo>
+#include <QtCore/qglobal.h>
+
+#include <QAbstractItemModel>
+#include <QAbstractItemView>
+#include <QContextMenuEvent>
+#include <QCursor>
+#include <QDebug>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QEvent>
+#include <QFlags>
 #include <QHeaderView>
-#include <QUrl>
-#include <QtDebug>
+#include <QItemSelectionModel>
+#include <QKeyEvent>
+#include <QList>
 #include <QMimeData>
+#include <QModelIndexList>
+#include <QPoint>
+#include <QRect>
+#include <QStringList>
+#include <QTimerEvent>
+#include <QWidget>
+#include <QtCore>
 
 #include "library/sidebarmodel.h"
 #include "util/dnd.h"
+
+class QFont;
+class TrackFile;
 
 const int expand_time = 250;
 

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QDialog>
 #include <QMainWindow>
+#include <QSet>
 #include <QSharedPointer>
 #include <QString>
 #include <memory>
@@ -36,6 +39,16 @@ class SkinLoader;
 class SoundManager;
 class VinylControlManager;
 class WMainMenuBar;
+class CmdlineArgs;
+class ConfigValueKbd;
+class ControlObject;
+class QApplication;
+class QCloseEvent;
+class QEvent;
+class QObject;
+class QWidget;
+template<class ValueType>
+class ConfigObject;
 
 typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
 

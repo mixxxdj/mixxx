@@ -1,13 +1,18 @@
 #ifndef PREFERENCES_BROADCASTSETTINGS_H
 #define PREFERENCES_BROADCASTSETTINGS_H
 
+#include <QByteArrayData>
+#include <QList>
 #include <QMap>
+#include <QObject>
 #include <QSharedPointer>
 #include <QString>
 
-#include "preferences/usersettings.h"
-#include "preferences/broadcastsettingsmodel.h"
 #include "preferences/broadcastprofile.h"
+#include "preferences/broadcastsettingsmodel.h"
+#include "preferences/usersettings.h"
+
+class BroadcastSettingsModel;
 
 class BroadcastSettings : public QObject {
   Q_OBJECT

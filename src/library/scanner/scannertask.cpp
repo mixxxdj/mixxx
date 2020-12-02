@@ -1,5 +1,6 @@
 #include "library/scanner/scannertask.h"
-#include "library/scanner/libraryscanner.h"
+
+#include "util/task.h"
 
 ScannerTask::ScannerTask(LibraryScanner* pScanner,
                          const ScannerGlobalPointer scannerGlobal)

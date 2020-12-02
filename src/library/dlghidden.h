@@ -1,16 +1,24 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QItemSelection>
+#include <QString>
+#include <QWidget>
 
-#include "library/ui_dlghidden.h"
-#include "preferences/usersettings.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/libraryview.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/ui_dlghidden.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class WLibrary;
 class WTrackTableView;
 class HiddenTableModel;
+class KeyboardEventFilter;
+class Library;
+class QItemSelection;
+class QObject;
 
 class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT

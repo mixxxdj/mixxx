@@ -1,8 +1,11 @@
 #ifndef DLGPREFKEY_H
 #define DLGPREFKEY_H
 
+#include <QByteArrayData>
 #include <QList>
 #include <QMap>
+#include <QString>
+#include <QUrl>
 #include <QWidget>
 
 #include "analyzer/plugins/analyzerplugin.h"
@@ -12,7 +15,13 @@
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
+#include "proto/keys.pb.h"
 #include "track/keyutils.h"
+
+class ControlProxy;
+class QLineEdit;
+class QObject;
+class QWidget;
 
 class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     Q_OBJECT

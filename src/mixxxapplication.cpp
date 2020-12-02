@@ -1,23 +1,38 @@
-#include <QtDebug>
-#include <QTouchEvent>
-#include <QThreadPool>
-
 #include "mixxxapplication.h"
+
+#include <QEvent>
+#include <QList>
+#include <QMetaType>
+#include <QMouseEvent>
+#include <QPair>
+#include <QSet>
+#include <QThreadPool>
+#include <Qt>
+#include <optional>
 
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "library/crate/crateid.h"
 #include "soundio/soundmanagerutil.h"
-#include "track/track.h"
+#include "track/bpm.h"
+#include "track/replaygain.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "track/trackref.h"
+#include "util/assert.h"
 #include "util/cache.h"
 #include "util/color/rgbcolor.h"
+#include "util/db/dbid.h"
+#include "util/duration.h"
 #include "util/math.h"
+
+class QObject;
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
 #ifdef QT_NODLL
 #include <QtPlugin>
+
 // sqldrivers plugins
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 // platform plugins

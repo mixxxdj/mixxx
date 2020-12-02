@@ -1,13 +1,16 @@
 #ifndef STATMODEL_H
 #define STATMODEL_H
 
+#include <stddef.h>
+
 #include <QAbstractTableModel>
-#include <QVariant>
-#include <QVector>
 #include <QHash>
 #include <QList>
 #include <QModelIndex>
 #include <QString>
+#include <QVariant>
+#include <QVector>
+#include <QtCore>
 
 #include "util/stat.h"
 

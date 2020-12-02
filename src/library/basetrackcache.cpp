@@ -3,13 +3,32 @@
 
 #include "library/basetrackcache.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+
+#include <QDebug>
+#include <QDir>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <type_traits>
+#include <utility>
+
+#include "library/coverart.h"
 #include "library/queryutil.h"
+#include "library/searchquery.h"
 #include "library/searchqueryparser.h"
 #include "library/trackcollection.h"
 #include "track/globaltrackcache.h"
 #include "track/keyutils.h"
+#include "track/playcounter.h"
+#include "track/replaygain.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "track/trackfile.h"
+#include "util/assert.h"
+#include "util/color/rgbcolor.h"
+#include "util/db/dbid.h"
+#include "util/duration.h"
+#include "util/math.h"
 #include "util/performancetimer.h"
 
 namespace {

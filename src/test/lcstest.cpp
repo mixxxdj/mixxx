@@ -1,6 +1,12 @@
-#include <gtest/gtest.h>
-#include <QtDebug>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QByteArray>
+#include <QString>
+#include <QtGlobal>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 #include "util/lcs.h"
 
 TEST(LCS, BasicLCS) {

@@ -1,23 +1,34 @@
 #include "soundio/sounddeviceportaudio.h"
 
+#include <QtCore/qglobal.h>
+#include <emmintrin.h>
 #include <float.h>
+#include <math.h>
+#include <pa_ringbuffer.h>
+#include <string.h>
+#include <xmmintrin.h>
 
+#include <QDebug>
+#include <QList>
 #include <QRegularExpression>
+#include <QStaticStringData>
+#include <QStringLiteral>
 #include <QThread>
-#include <QtDebug>
+#include <QtGlobal>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "preferences/configobject.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/denormalsarezero.h"
+#include "util/assert.h"
+#include "util/cmdlineargs.h"
 #include "util/fifo.h"
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
 #ifdef __LINUX__

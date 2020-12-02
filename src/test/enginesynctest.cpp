@@ -1,18 +1,34 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <stddef.h>
 
-#include <string>
+#include <QDebug>
+#include <QSharedPointer>
+#include <QString>
+#include <QVector>
+#include <memory>
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlvalue.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/controls/bpmcontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/sync/enginesync.h"
+#include "engine/sync/syncable.h"
 #include "engine/sync/synccontrol.h"
+#include "gtest/gtest_pred_impl.h"
 #include "mixer/basetrackplayer.h"
-#include "preferences/usersettings.h"
-#include "test/mixxxtest.h"
+#include "mixer/deck.h"
+#include "preferences/configobject.h"
 #include "test/mockedenginebackendtest.h"
+#include "test/signalpathtest.h"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
-#include "util/memory.h"
+#include "track/beats.h"
+#include "track/track.h"
+#include "track/track_decl.h"
 
 namespace {
 constexpr double kMaxFloatingPointErrorLowPrecision = 0.005;

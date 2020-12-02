@@ -10,6 +10,9 @@
 
 #include <QDataStream>
 #include <QFile>
+#include <QObject>
+#include <QString>
+#include <QtCore>
 
 #include "audio/types.h"
 #include "encoder/encoder.h"
@@ -17,6 +20,7 @@
 #include "engine/sidechain/sidechainworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/types.h"
 
 class ConfigKey;
 class ControlProxy;

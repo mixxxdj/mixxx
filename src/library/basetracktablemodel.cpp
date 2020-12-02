@@ -1,9 +1,32 @@
 #include "library/basetracktablemodel.h"
 
+#include <QAbstractItemModel>
+#include <QBuffer>
+#include <QByteArray>
+#include <QChar>
+#include <QColor>
+#include <QDebug>
+#include <QFlags>
+#include <QMetaType>
+#include <QMimeData>
+#include <QPixmap>
+#include <QRect>
+#include <QScreen>
+#include <QSet>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QUrl>
+#include <QUuid>
+#include <QtGui>
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
 #include "library/coverartcache.h"
 #include "library/coverartdelegate.h"
+#include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
 #include "library/previewbuttondelegate.h"
@@ -13,13 +36,25 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "proto/keys.pb.h"
+#include "track/keyutils.h"
+#include "track/replaygain.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "track/trackmetadata.h"
 #include "util/assert.h"
+#include "util/color/rgbcolor.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
+#include "util/duration.h"
 #include "util/logger.h"
+#include "util/platform.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarytableview.h"
 #include "widget/wtracktableview.h"
+
+class QAbstractItemDelegate;
+class TrackRef;
 
 namespace {
 

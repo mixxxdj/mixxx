@@ -1,11 +1,20 @@
 #include "library/songdownloader.h"
 
-#include <QApplication>
-#include <QFileInfo>
-#include <QString>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
 
-#include "util/compatibility.h"
+#include <QApplication>
+#include <QByteArray>
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QString>
+#include <QStringBuilder>
+#include <QUrl>
+
 #include "util/version.h"
 
 #define TEMP_EXTENSION ".tmp"

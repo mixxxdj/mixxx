@@ -1,19 +1,19 @@
-#include <QtDebug>
-#include <QColor>
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
-#include <QObject>
-#include <QVector>
-
 #include "waveform/renderers/waveformrendermarkrange.h"
 
-#include "preferences/usersettings.h"
-#include "track/track.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include <stddef.h>
+
+#include <QDomNode>
+#include <QPainter>
+#include <QRectF>
+#include <QString>
+#include <Qt>
+#include <algorithm>
+
 #include "util/painterscope.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+
+class QImage;
+class QPaintEvent;
 
 WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {

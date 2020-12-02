@@ -3,7 +3,7 @@
 
 #include "util/indexrange.h"
 #include "util/samplebuffer.h"
-
+#include "util/types.h"
 
 namespace mixxx {
 

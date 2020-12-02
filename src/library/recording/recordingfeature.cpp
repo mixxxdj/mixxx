@@ -1,14 +1,17 @@
 // recordingfeature.cpp
 // Created 03/26/2010 by Tobias Rafreider
 
-#include "library/recording/dlgrecording.h"
-#include "track/track.h"
-#include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
-#include "library/library.h"
-#include "widget/wlibrary.h"
+
+#include <QStaticStringData>
+#include <QStringLiteral>
+
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "recording/recordingmanager.h"
+#include "library/recording/dlgrecording.h"
+#include "widget/wlibrary.h"
+
+class Library;
+class TreeItemModel;
 
 namespace {
 

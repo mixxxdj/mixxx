@@ -1,4 +1,17 @@
 #include "glwaveformrendererfilteredsignal.h"
+
+#include <QtGui/qopengl.h>
+#include <stddef.h>
+
+#include <QPainter>
+#include <QSharedPointer>
+#include <Qt>
+#include <memory>
+
+#include "track/track_decl.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
+
+class QPaintEvent;
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QDomNode>
@@ -6,7 +19,6 @@
 #include "track/track.h"
 #include "waveform/waveform.h"
 #include "waveformwidgetrenderer.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "util/math.h"
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(

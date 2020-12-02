@@ -1,22 +1,41 @@
 #include "preferences/dialog/dlgprefinterface.h"
 
+#include <QAbstractItemModel>
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDir>
 #include <QDoubleSpinBox>
+#include <QFile>
+#include <QFileInfo>
+#include <QLabel>
 #include <QList>
 #include <QLocale>
+#include <QMessageBox>
+#include <QRadioButton>
+#include <QRegExp>
 #include <QScreen>
-#include <QToolTip>
-#include <QWidget>
+#include <QSharedPointer>
+#include <QSize>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QTextStream>
+#include <QVariant>
+#include <QtCore>
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "defs_urls.h"
 #include "mixxx.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+#include "proto/skin.pb.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
-#include "util/screensaver.h"
+#include "util/assert.h"
 #include "util/widgethelper.h"
+
+class QAbstractButton;
+class QWidget;
 
 using mixxx::skin::SkinManifest;
 

@@ -1,17 +1,22 @@
 #ifndef CONTROLLERMAPPINGTABLEMODEL_H
 #define CONTROLLERMAPPINGTABLEMODEL_H
 
+#include <QAbstractItemDelegate>
 #include <QAbstractTableModel>
-#include <QVariant>
-#include <QVector>
 #include <QHash>
 #include <QModelIndex>
-#include <QAbstractItemDelegate>
+#include <QString>
+#include <QVariant>
+#include <QVector>
+#include <QtCore>
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
-#include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/midi/midicontrollerpreset.h"
+
+class HidControllerPreset;
+class MidiControllerPreset;
 
 class ControllerMappingTableModel : public QAbstractTableModel,
                                     public ControllerPresetVisitor {

@@ -6,7 +6,10 @@
 */
 
 #include "encoder/encoderbroadcastsettings.h"
-#include "broadcast/defs_broadcast.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 
 #define DEFAULT_BITRATE 128
 
@@ -59,4 +62,3 @@ EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
 QString EncoderBroadcastSettings::getFormat() const {
     return m_pProfile->getFormat();
 }
-

@@ -1,16 +1,21 @@
 #ifndef EFFECTPARAMETERSLOTBASE_H
 #define EFFECTPARAMETERSLOTBASE_H
 
+#include <QByteArrayData>
+#include <QDomElement>
 #include <QObject>
-#include <QVariant>
 #include <QString>
+#include <QVariant>
 
 #include "control/controlobject.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
+#include "effects/effectmanifestparameter.h"
 #include "util/class.h"
 
 class ControlObject;
 class ControlPushButton;
+class EffectParameter;
 
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT

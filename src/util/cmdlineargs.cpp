@@ -1,12 +1,13 @@
+#include "util/cmdlineargs.h"
+
 #include <stdio.h>
 
-#include <QStandardPaths>
+#include <QByteArray>
+#include <QDir>
+#include <QLatin1String>
+#include <Qt>
 
-#include "util/cmdlineargs.h"
 #include "util/version.h"
-
-#include "sources/soundsourceproxy.h"
-
 
 CmdlineArgs::CmdlineArgs()
     : m_startInFullscreen(false), // Initialize vars

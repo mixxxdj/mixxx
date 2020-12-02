@@ -1,15 +1,27 @@
 #include "qtwaveformrendererfilteredsignal.h"
 
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QColor>
+#include <QDebug>
+#include <QLinearGradient>
+#include <QPainter>
+#include <QPen>
+#include <QSharedPointer>
+#include <QTransform>
+#include <QtCore>
+#include <memory>
+
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "track/track_decl.h"
 #include "util/math.h"
 #include "util/painterscope.h"
-
-#include <QLineF>
-#include <QLinearGradient>
+#include "waveform/renderers/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
+#include "waveformwidgetrenderer.h"
 
 QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)

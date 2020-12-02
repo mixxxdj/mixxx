@@ -1,7 +1,14 @@
 #pragma once
 
+#include <QPersistentModelIndex>
 #include <QPushButton>
+#include <QSize>
+#include <QString>
+#include <QStyle>
 #include <QStyleOptionButton>
+#include <QStyleOptionViewItem>
+#include <QTableView>
+#include <QtCore>
 
 #include "library/tableitemdelegate.h"
 #include "track/track_decl.h"
@@ -9,6 +16,8 @@
 
 class ControlProxy;
 class WLibraryTableView;
+class QPainter;
+class QWidget;
 
 // A QPushButton for rendering the library preview button within the
 // PreviewButtonDelegate.

@@ -8,13 +8,18 @@
 #ifndef VINYLCONTROLSIGNALWIDGET_H
 #define VINYLCONTROLSIGNALWIDGET_H
 
+#include <QByteArrayData>
 #include <QImage>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QString>
 #include <QTimerEvent>
 #include <QWidget>
 
 #include "vinylcontrol/vinylsignalquality.h"
+
+class QObject;
+class QPaintEvent;
 
 class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListener {
     Q_OBJECT

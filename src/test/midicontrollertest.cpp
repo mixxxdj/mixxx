@@ -1,13 +1,22 @@
+#include <gmock/gmock-generated-function-mockers.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-printers.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QByteArray>
 #include <QScopedPointer>
+#include <QString>
+#include <memory>
 
-#include <gmock/gmock.h>
-
-#include "test/mixxxtest.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/midi/midimessage.h"
-#include "control/controlpushbutton.h"
-#include "control/controlpotmeter.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/configobject.h"
+#include "preferences/usersettings.h"
+#include "test/mixxxtest.h"
 #include "util/time.h"
 
 class MockMidiController : public MidiController {

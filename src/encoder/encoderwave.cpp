@@ -5,14 +5,20 @@
 * @brief wave/aiff "encoder" for mixxx
 */
 
-#include <QtDebug>
-
 #include "encoder/encoderwave.h"
 
-#include "encoder/encodercallback.h"
-#include "errordialoghandler.h"
-#include "recording/defs_recording.h"
+#include <QtCore/qglobal.h>
+#include <stdio.h>
 
+#include <QByteArray>
+#include <QDebug>
+#include <QStringBuilder>
+#include <QtGlobal>
+
+#include "encoder/encodercallback.h"
+#include "encoder/encodersettings.h"
+#include "encoder/encoderwavesettings.h"
+#include "recording/defs_recording.h"
 
 // The virtual file context must return the length of the virtual file in bytes.
 static sf_count_t  sf_f_get_filelen (void *user_data)

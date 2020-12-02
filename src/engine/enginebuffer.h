@@ -21,7 +21,13 @@
 #include <gtest/gtest_prod.h>
 
 #include <QAtomicInt>
+#include <QAtomicPointer>
+#include <QByteArrayData>
+#include <QFlags>
+#include <QList>
 #include <QMutex>
+#include <QSharedPointer>
+#include <QString>
 
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
@@ -31,6 +37,9 @@
 #include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
+
+class QObject;
+struct GroupFeatureState;
 
 //for the writer
 #ifdef __SCALER_DEBUG__

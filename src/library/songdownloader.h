@@ -7,7 +7,12 @@
 #include <QNetworkRequest>
 #include <QObject>
 #include <QQueue>
+#include <QString>
 #include <QUrl>
+#include <QtCore>
+
+class QNetworkAccessManager;
+class QNetworkRequest;
 
 class SongDownloader : public QObject {
     Q_OBJECT

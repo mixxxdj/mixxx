@@ -1,10 +1,14 @@
 #ifndef WANALYSISLIBRARYTABLEVIEW_H
 #define WANALYSISLIBRARYTABLEVIEW_H
 
+#include <QString>
 #include <QWidget>
 
 #include "preferences/usersettings.h"
 #include "widget/wtracktableview.h"
+
+class QWidget;
+class TrackCollectionManager;
 
 class WAnalysisLibraryTableView : public WTrackTableView {
   public:

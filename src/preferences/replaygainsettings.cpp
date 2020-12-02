@@ -1,5 +1,11 @@
 #include "preferences/replaygainsettings.h"
 
+#include <QSharedPointer>
+#include <QString>
+#include <memory>
+
+#include "preferences/configobject.h"
+#include "track/replaygain.h"
 #include "track/track.h"
 
 namespace {

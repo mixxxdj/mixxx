@@ -1,14 +1,20 @@
 #ifndef KEYUTILS_H
 #define KEYUTILS_H
 
-#include <QMutex>
-#include <QString>
+#include <math.h>
+
 #include <QList>
+#include <QMap>
+#include <QMutex>
+#include <QPair>
+#include <QString>
 
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
 #include "util/math.h"
+
+class QMutex;
 
 class KeyUtils {
   public:

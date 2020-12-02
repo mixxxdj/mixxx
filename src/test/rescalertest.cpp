@@ -1,6 +1,10 @@
-#include <gtest/gtest.h>
-#include <QDebug>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <math.h>
 
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 #include "util/math.h"
 #include "util/rescaler.h"
 

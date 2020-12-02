@@ -1,11 +1,29 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-#include <QScopedPointer>
-
 #include "controllers/midi/portmidicontroller.h"
+
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-generated-actions.h>
+#include <gmock/gmock-generated-function-mockers.h>
+#include <gmock/gmock-generated-matchers.h>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-more-actions.h>
+#include <gmock/gmock-spec-builders.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-printers.h>
+#include <gtest/gtest-test-part.h>
+#include <portmidi.h>
+
+#include <QByteArray>
+#include <QList>
+#include <QScopedPointer>
+#include <algorithm>
+#include <cstdint>
+#include <vector>
+
 #include "controllers/midi/portmididevice.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "util/duration.h"
 
 using ::testing::_;
 using ::testing::NotNull;

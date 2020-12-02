@@ -1,9 +1,14 @@
 #pragma once
 
+#include <QDebug>
+#include <QMetaType>
+#include <optional>
+
 #include "audio/types.h"
 #include "util/assert.h"
 #include "util/macros.h"
 #include "util/optional.h"
+#include "util/types.h"
 
 namespace mixxx {
 

@@ -1,6 +1,8 @@
 #include "track/trackref.h"
 
 #include <QDebugStateSaver>
+#include <ostream>
+#include <string>
 
 bool TrackRef::verifyConsistency() const {
     // Class invariant: The location can only be set together with

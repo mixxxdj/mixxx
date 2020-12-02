@@ -1,7 +1,16 @@
 #ifndef MIDIBYTEDELEGATE_H
 #define MIDIBYTEDELEGATE_H
 
+#include <QLocale>
+#include <QString>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
+#include <QVariant>
+
+class QAbstractItemModel;
+class QModelIndex;
+class QObject;
+class QWidget;
 
 class MidiByteDelegate : public QStyledItemDelegate {
   public:

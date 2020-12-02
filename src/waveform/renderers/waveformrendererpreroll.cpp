@@ -1,15 +1,19 @@
-#include <QBrush>
-#include <QPen>
-#include <QPainter>
-#include <QPolygonF>
-
 #include "waveform/renderers/waveformrendererpreroll.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include <QPainter>
+#include <QPen>
+#include <QPointF>
+#include <QPolygonF>
+#include <QTransform>
+#include <QVector>
+#include <QtCore>
+#include <QtGui>
+#include <algorithm>
+
+#include "track/track_decl.h"
 #include "util/painterscope.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
   : WaveformRendererAbstract(waveformWidgetRenderer) {

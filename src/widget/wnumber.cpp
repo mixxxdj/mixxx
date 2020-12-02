@@ -17,6 +17,11 @@
 
 #include "widget/wnumber.h"
 
+#include <QStringBuilder>
+#include <QtGlobal>
+
+class QWidget;
+
 WNumber::WNumber(QWidget* pParent)
         : WLabel(pParent),
           m_iNoDigits(2) {

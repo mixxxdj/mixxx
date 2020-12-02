@@ -1,11 +1,20 @@
 #ifndef LV2BACKEND_H
 #define LV2BACKEND_H
 
+#include <lilv-0/lilv/lilv.h>
+
+#include <QList>
+#include <QSet>
+#include <QString>
+#include <QtCore>
+
 #include "effects/defs.h"
 #include "effects/effectsbackend.h"
 #include "effects/lv2/lv2manifest.h"
 #include "preferences/usersettings.h"
-#include <lilv-0/lilv/lilv.h>
+
+class EffectsManager;
+class LV2Manifest;
 
 class LV2Backend : public EffectsBackend {
     Q_OBJECT

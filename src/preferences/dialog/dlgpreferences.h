@@ -18,16 +18,19 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
+#include <QByteArrayData>
 #include <QDialog>
 #include <QEvent>
 #include <QRect>
+#include <QSize>
+#include <QString>
 #include <QStringList>
 
-#include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
+#include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class SoundManager;
@@ -50,6 +53,14 @@ class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
 class DlgPrefReplayGain;
+class DlgPreferencePage;
+class QAbstractButton;
+class QEvent;
+class QMoveEvent;
+class QObject;
+class QResizeEvent;
+class QTreeWidgetItem;
+class SettingsManager;
 #ifdef __LILV__
 class DlgPrefLV2;
 #endif /* __LILV__ */

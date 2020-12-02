@@ -1,8 +1,12 @@
 #include "util/cache.h"
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <QStaticByteArrayData>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 
 namespace {
 

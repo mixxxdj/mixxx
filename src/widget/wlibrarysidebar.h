@@ -2,17 +2,31 @@
 #define WLIBRARYSIDEBAR_H
 
 #include <QBasicTimer>
+#include <QByteArrayData>
 #include <QContextMenuEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QEvent>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QPoint>
+#include <QString>
 #include <QTimerEvent>
 #include <QTreeView>
-#include <QEvent>
 
 #include "widget/wbasewidget.h"
+
+class QContextMenuEvent;
+class QDragEnterEvent;
+class QDragMoveEvent;
+class QDropEvent;
+class QEvent;
+class QFont;
+class QKeyEvent;
+class QObject;
+class QPoint;
+class QTimerEvent;
+class QWidget;
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT

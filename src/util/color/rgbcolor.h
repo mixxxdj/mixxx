@@ -1,9 +1,17 @@
 #pragma once
 
+#include <QtCore/qglobal.h>
+
+#include <QByteArray>
 #include <QColor>
+#include <QDebug>
+#include <QMetaType>
+#include <QRgb>
+#include <QString>
 #include <QVariant>
 #include <QtDebug>
 #include <QtGlobal>
+#include <optional>
 
 #include "util/assert.h"
 #include "util/optional.h"

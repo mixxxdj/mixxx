@@ -1,7 +1,9 @@
 #ifndef EFFECTPARAMETER_H
 #define EFFECTPARAMETER_H
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 #include <QVariant>
 
 #include "effects/effectmanifestparameter.h"

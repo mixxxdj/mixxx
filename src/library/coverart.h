@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QDebug>
 #include <QImage>
 #include <QString>
 #include <QtDebug>
+#include <QtGlobal>
+#include <utility>
 
 #include "util/sandbox.h"
 

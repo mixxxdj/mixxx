@@ -2,28 +2,46 @@
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 #include "mixer/playermanager.h"
 
-#include <QMutexLocker>
+#include <QtCore/qglobal.h>
 
+#include <QAtomicPointer>
+#include <QDebug>
+#include <QMutexLocker>
+#include <QSharedPointer>
+#include <QStringRef>
+#include <QThread>
+#include <QtCore>
+#include <memory>
+
+#include "analyzer/analyzerthread.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "effects/defs.h"
 #include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
 #include "mixer/auxiliary.h"
+#include "mixer/basetrackplayer.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
 #include "mixer/samplerbank.h"
+#include "preferences/configobject.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "track/track.h"
+#include "track/trackid.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/defs.h"
+#include "util/duration.h"
 #include "util/logger.h"
-#include "util/sleepableqthread.h"
-#include "util/stat.h"
+#include "util/math.h"
 
 namespace {
 

@@ -4,18 +4,19 @@
 #ifndef MIXXXLIBRARYFEATURE_H
 #define MIXXXLIBRARYFEATURE_H
 
+#include <QByteArrayData>
+#include <QIcon>
+#include <QList>
+#include <QModelIndex>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
 #include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QList>
-#include <QString>
-#include <QSharedPointer>
-#include <QObject>
 
-#include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
+#include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 
@@ -24,6 +25,14 @@ class DlgMissing;
 class BaseTrackCache;
 class LibraryTableModel;
 class TrackCollection;
+class KeyboardEventFilter;
+class Library;
+class QModelIndex;
+class QObject;
+class QUrl;
+class WLibrary;
+template<typename T>
+class QList;
 
 class MixxxLibraryFeature final : public LibraryFeature {
     Q_OBJECT

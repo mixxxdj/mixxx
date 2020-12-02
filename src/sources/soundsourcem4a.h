@@ -1,11 +1,13 @@
 #pragma once
 
+#include "sources/audiosource.h"
+#include "sources/libfaadloader.h"
 #include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
-
-#include "sources/libfaadloader.h"
-
 #include "util/readaheadsamplebuffer.h"
+#include "util/types.h"
+
+class QUrl;
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -13,6 +15,11 @@
 #include <mp4.h>
 #endif
 
+#include <sys/types.h>
+
+#include <QString>
+#include <QStringList>
+#include <algorithm>
 #include <vector>
 
 namespace mixxx {

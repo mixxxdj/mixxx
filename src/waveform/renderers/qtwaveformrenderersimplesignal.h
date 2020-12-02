@@ -1,14 +1,17 @@
 #ifndef QTWAVEFORMRENDERERSIMPLESIGNAL_H
 #define QTWAVEFORMRENDERERSIMPLESIGNAL_H
 
+#include <QBrush>
+#include <QDomNode>
+#include <QPen>
+#include <QPointF>
+#include <QVector>
+#include <QtGui>
+
 #include "waveformrenderersignalbase.h"
 
-#include <QBrush>
-#include <QPen>
-
-#include <QVector>
-
 class ControlObject;
+class WaveformWidgetRenderer;
 
 class QtWaveformRendererSimpleSignal : public WaveformRendererSignalBase {
 public:

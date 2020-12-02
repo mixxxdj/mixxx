@@ -1,15 +1,20 @@
 #pragma once
 
 #include <QAction>
+#include <QByteArrayData>
 #include <QIcon>
 #include <QList>
 #include <QModelIndex>
 #include <QPoint>
 #include <QPointer>
+#include <QSet>
+#include <QString>
 #include <QUrl>
 #include <QVariant>
+#include <memory>
 
 #include "library/basetracksetfeature.h"
+#include "library/crate/crateid.h"
 #include "library/crate/cratestorage.h"
 #include "library/crate/cratetablemodel.h"
 #include "library/treeitemmodel.h"
@@ -20,6 +25,17 @@
 // forward declaration(s)
 class Library;
 class WLibrarySidebar;
+class Crate;
+class CrateSummary;
+class KeyboardEventFilter;
+class QObject;
+class QPoint;
+class QUrl;
+class TrackCollection;
+class TreeItem;
+class WLibrary;
+template<typename T>
+class QList;
 
 class CrateFeature : public BaseTrackSetFeature {
     Q_OBJECT

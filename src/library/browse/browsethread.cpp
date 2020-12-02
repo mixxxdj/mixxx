@@ -2,15 +2,37 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
-#include <QDateTime>
+#include "library/browse/browsethread.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDir>
 #include <QDirIterator>
+#include <QList>
+#include <QMutex>
+#include <QSharedPointer>
+#include <QStandardItem>
+#include <QString>
 #include <QStringList>
-#include <QtDebug>
+#include <QThread>
+#include <QVariant>
+#include <QWaitCondition>
+#include <QWeakPointer>
+#include <QtCore>
+#include <memory>
 
 #include "library/browse/browsetablemodel.h"
 #include "sources/soundsourceproxy.h"
+#include "track/replaygain.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "track/trackmetadata.h"
 #include "util/datetime.h"
+#include "util/duration.h"
+#include "util/file.h"
 #include "util/trace.h"
 
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;

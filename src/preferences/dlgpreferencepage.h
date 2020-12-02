@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QString>
 #include <QUrl>
 #include <QWidget>
+
+class QObject;
 
 /// Interface that all preference pages have to implement.
 class DlgPreferencePage : public QWidget {

@@ -16,6 +16,11 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
+#include <QUrl>
+
 #include "defs_urls.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
 #include "preferences/dlgpreferencepage.h"
@@ -30,6 +35,12 @@ class ControlObject;
 class SoundDevice;
 class DlgPrefSoundItem;
 class ControlProxy;
+class AudioInput;
+class AudioOutput;
+class QEvent;
+class QObject;
+class QVBoxLayout;
+class QWidget;
 
 /*
  * TODO(bkgood) (n-decks) establish a signal/slot connection with a signal

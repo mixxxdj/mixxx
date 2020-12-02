@@ -6,16 +6,26 @@
 
 #include "vinylcontrol/vinylcontrolmanager.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QRegExp>
+#include <QSharedPointer>
+#include <QtCore>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
 #include "soundio/soundmanager.h"
-#include "util/compatibility.h"
-#include "util/timer.h"
+#include "soundio/soundmanagerutil.h"
+#include "util/assert.h"
+#include "util/defs.h"
+#include "util/fifo.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
-#include "vinylcontrol/vinylcontrolxwax.h"
+#include "vinylcontrol/vinylsignalquality.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,

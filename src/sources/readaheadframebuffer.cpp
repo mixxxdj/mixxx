@@ -1,7 +1,13 @@
 #include "sources/readaheadframebuffer.h"
 
+#include <QDebug>
+#include <QtGlobal>
+#include <optional>
+
 #include "util/logger.h"
+#include "util/math.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
 
 #if !defined(VERBOSE_DEBUG_LOG)
 #define VERBOSE_DEBUG_LOG false

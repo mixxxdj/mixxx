@@ -1,25 +1,47 @@
-#include <QMessageBox>
-#include <QtDebug>
-#include <QXmlStreamReader>
-#include <QStandardPaths>
-#include <QFileDialog>
-#include <QMenu>
-#include <QAction>
-#include <QUrl>
-#include <QFileInfo>
-
 #include "library/itunes/itunesfeature.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QAction>
+#include <QDebug>
+#include <QDir>
+#include <QException>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QMenu>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStringBuilder>
+#include <QStringRef>
+#include <QThread>
+#include <QUrl>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
+#include <QtSql>
+#include <memory>
+#include <utility>
+
+#include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
 #include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
-#include "library/baseexternaltrackmodel.h"
-#include "library/baseexternalplaylistmodel.h"
-#include "library/queryutil.h"
 #include "library/library.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "track/trackfile.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
 #include "widget/wlibrarysidebar.h"
+
+class BaseSqlTableModel;
+class QPoint;
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>

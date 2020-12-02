@@ -4,8 +4,13 @@
 #include <QSize>
 #include <QWidget>
 #include <QWindow>
+#include <QtGlobal>
 
 #include "util/assert.h"
+
+class QScreen;
+class QSize;
+class QWindow;
 
 namespace mixxx {
 

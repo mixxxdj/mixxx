@@ -1,22 +1,30 @@
 // Created 03/26/2011 by Tobias Rafreider
 
-#include <QMutex>
-#include <QDir>
-#include <QtDebug>
-#include <QDebug>
-#include <QMessageBox>
-#include <QStorageInfo>
+#include "recording/recordingmanager.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDateTime>
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStorageInfo>
+#include <QStringBuilder>
+#include <QStringLiteral>
 #include <climits>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
+#include "preferences/configobject.h"
 #include "recording/defs_recording.h"
-#include "recording/recordingmanager.h"
 
 // one gibibyte
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll

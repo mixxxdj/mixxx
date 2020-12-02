@@ -2,7 +2,10 @@
 
 #include "rekordbox_pdb.h"
 
+#include <kaitaistruct.h>
 
+#include <cstdint>
+#include <iosfwd>
 
 rekordbox_pdb_t::rekordbox_pdb_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent, rekordbox_pdb_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;

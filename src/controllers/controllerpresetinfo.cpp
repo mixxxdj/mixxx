@@ -11,7 +11,12 @@
 
 #include "controllers/controllerpresetinfo.h"
 
-#include "controllers/defs_controllers.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+
 #include "util/xml.h"
 
 PresetInfo::PresetInfo()

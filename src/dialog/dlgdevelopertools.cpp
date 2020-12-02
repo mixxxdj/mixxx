@@ -1,11 +1,33 @@
 #include "dialog/dlgdevelopertools.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QByteArray>
 #include <QDateTime>
+#include <QDebug>
+#include <QDir>
+#include <QIODevice>
+#include <QLineEdit>
+#include <QList>
+#include <QPushButton>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QTabWidget>
+#include <QTableView>
+#include <QTextDocument>
+#include <QTextEdit>
+#include <QtCore>
 
 #include "control/control.h"
-#include "util/cmdlineargs.h"
-#include "util/statsmanager.h"
+#include "preferences/configobject.h"
 #include "util/logging.h"
+#include "util/statsmanager.h"
+#include "widget/wsearchlineedit.h"
+
+class QWidget;
+template<class T>
+class QSharedPointer;
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)

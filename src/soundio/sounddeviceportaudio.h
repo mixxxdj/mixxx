@@ -1,15 +1,20 @@
 #pragma once
 
-
 #include <portaudio.h>
+
 #include <QString>
 
+#include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceerror.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
+#include "util/types.h"
 
 class SoundManager;
 class ControlProxy;
+template<class DataType>
+class FIFO;
 
 class SoundDevicePortAudio : public SoundDevice {
   public:

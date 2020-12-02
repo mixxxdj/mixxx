@@ -1,11 +1,14 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtGlobal>
-#include <QDebug>
-#include <QUrl>
+#include <QFileInfo>
+#include <QList>
+#include <QString>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "library/parser.h"
-
+#include "track/trackfile.h"
 
 class DummyParser : public Parser {
   public:

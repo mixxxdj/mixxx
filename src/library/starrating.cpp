@@ -1,9 +1,12 @@
 #include "library/starrating.h"
 
-#include <QPainter>
-#include <QRect>
+#include <math.h>
 
-#include "util/math.h"
+#include <QPainter>
+#include <QPointF>
+#include <QRect>
+#include <QVector>
+#include <Qt>
 
 // Magic number? Explain what this factor affects and how
 const int PaintingScaleFactor = 15;

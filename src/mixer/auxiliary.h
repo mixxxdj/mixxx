@@ -1,6 +1,7 @@
 #ifndef MIXER_AUXILIARY_H
 #define MIXER_AUXILIARY_H
 
+#include <QByteArrayData>
 #include <QObject>
 #include <QString>
 
@@ -11,6 +12,7 @@ class ControlProxy;
 class EffectsManager;
 class EngineMaster;
 class SoundManager;
+class QObject;
 
 class Auxiliary : public BasePlayer {
     Q_OBJECT

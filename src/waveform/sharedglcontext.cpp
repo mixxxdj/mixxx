@@ -1,9 +1,12 @@
 #include "waveform/sharedglcontext.h"
 
-#include <QtDebug>
+#include <QDebug>
 #include <QGLContext>
 #include <QGLFormat>
 #include <QGLWidget>
+#include <QWidget>
+
+#include "qglobal.h"
 
 QGLWidget* SharedGLContext::s_pSharedGLWidget = nullptr;
 

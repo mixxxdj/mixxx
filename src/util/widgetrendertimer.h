@@ -1,6 +1,8 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 
 #include "util/duration.h"
 #include "util/timer.h"

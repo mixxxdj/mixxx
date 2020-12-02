@@ -16,13 +16,17 @@
 
 #include "mixer/playerinfo.h"
 
+#include <QMapIterator>
 #include <QMutexLocker>
+#include <QtCore>
+#include <memory>
 
-#include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
+#include "util/assert.h"
+#include "util/types.h"
 
 namespace {
 

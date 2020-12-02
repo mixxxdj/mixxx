@@ -1,14 +1,24 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPoint>
 #include <QPushButton>
+#include <QString>
+#include <QWidget>
 
 #include "preferences/colorpalettesettings.h"
+#include "preferences/usersettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/color/rgbcolor.h"
 #include "util/widgethelper.h"
 #include "widget/wcolorpicker.h"
+
+class ColorPalette;
+class QCloseEvent;
+class QObject;
 
 class WCueMenuPopup : public QWidget {
     Q_OBJECT

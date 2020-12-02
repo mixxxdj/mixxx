@@ -9,6 +9,7 @@
 #include "util/duration.h"
 
 class VSyncThread;
+class QWidget;
 
 // NOTE(vRince) This class represent objects the waveformwidgetfactory can
 // holds, IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!  we

@@ -1,8 +1,12 @@
 #include <engine/sidechain/networkoutputstreamworker.h>
+
+#include <QDebug>
+
 #include "engine/sidechain/enginenetworkstream.h"
 #include "util/logger.h"
-#include "util/sample.h"
 
+template<class DataType>
+class FIFO;
 
 namespace {
 const mixxx::Logger kLogger("NetworkStreamWorker");

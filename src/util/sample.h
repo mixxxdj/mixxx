@@ -1,13 +1,14 @@
 #ifndef MIXXX_UTIL_SAMPLE_H
 #define MIXXX_UTIL_SAMPLE_H
 
+#include <math.h>
+
+#include <QFlags>
 #include <algorithm>
 #include <cstring> // memset
 
-#include <QFlags>
-
-#include "util/types.h"
 #include "util/platform.h"
+#include "util/types.h"
 
 // A group of utilities for working with samples.
 class SampleUtil {

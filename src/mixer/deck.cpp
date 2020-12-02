@@ -1,5 +1,10 @@
 #include "mixer/deck.h"
 
+class EffectsManager;
+class EngineMaster;
+class QObject;
+class VisualsManager;
+
 Deck::Deck(QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,

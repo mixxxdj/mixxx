@@ -2,9 +2,15 @@
 #define NETWORKOUTPUTSTREAMWORKER_H
 
 #include <QSharedPointer>
+#include <QtGlobal>
 
-#include "util/types.h"
 #include "util/fifo.h"
+#include "util/types.h"
+
+template<class DataType>
+class FIFO;
+template<class T>
+class QSharedPointer;
 
 /*
  * States:

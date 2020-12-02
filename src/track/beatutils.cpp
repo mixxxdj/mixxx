@@ -5,13 +5,17 @@
  *      Author: vittorio
  */
 
-#include <algorithm>
-#include <QtDebug>
-#include <QString>
+#include "track/beatutils.h"
+
+#include <QtCore/qglobal.h>
+#include <math.h>
+
+#include <QDebug>
 #include <QList>
 #include <QMap>
+#include <QMapIterator>
+#include <algorithm>
 
-#include "track/beatutils.h"
 #include "util/math.h"
 
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away

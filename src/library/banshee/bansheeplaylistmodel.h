@@ -2,14 +2,22 @@
 #define BANSHEEPLAYLISTMODEL_H
 
 #include <QHash>
+#include <QString>
+#include <QVariant>
+#include <QtCore>
 #include <QtSql>
 
-#include "library/trackmodel.h"
-#include "library/trackcollection.h"
-#include "library/dao/trackdao.h"
 #include "library/banshee/bansheedbconnection.h"
-#include "library/stardelegate.h"
 #include "library/basesqltablemodel.h"
+#include "library/dao/trackdao.h"
+#include "library/stardelegate.h"
+#include "library/trackcollection.h"
+#include "library/trackmodel.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+
+class BansheeDbConnection;
+class TrackCollectionManager;
 
 class BansheePlaylistModel final : public BaseSqlTableModel {
     Q_OBJECT

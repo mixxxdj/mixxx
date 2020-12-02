@@ -1,8 +1,11 @@
 #ifndef DLGPREFLIBRARY_H
 #define DLGPREFLIBRARY_H
 
+#include <QByteArrayData>
 #include <QFont>
 #include <QStandardItemModel>
+#include <QString>
+#include <QUrl>
 #include <QWidget>
 
 #include "defs_urls.h"
@@ -11,6 +14,9 @@
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
+
+class QObject;
+class QWidget;
 
 /**
   *@author Tue & Ken Haste Andersen

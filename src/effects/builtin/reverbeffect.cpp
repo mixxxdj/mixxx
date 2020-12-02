@@ -1,8 +1,18 @@
 #include "effects/builtin/reverbeffect.h"
 
-#include <QtDebug>
+#include <basics.h>
 
+#include <QObject>
+#include <QSharedPointer>
+#include <QtGlobal>
+
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
+
+struct GroupFeatureState;
 
 // static
 QString ReverbEffect::getId() {

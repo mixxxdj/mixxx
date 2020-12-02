@@ -1,12 +1,15 @@
-#include <limits>
-
-#include <QStringList>
-#include <QtDebug>
-
 #include "util/stat.h"
-#include "util/time.h"
-#include "util/math.h"
+
+#include <math.h>
+
+#include <QStringBuilder>
+#include <QStringList>
+#include <limits>
+#include <utility>
+
+#include "util/duration.h"
 #include "util/statsmanager.h"
+#include "util/time.h"
 
 Stat::Stat()
         : m_type(UNSPECIFIED),

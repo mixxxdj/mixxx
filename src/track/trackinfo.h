@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QDebug>
+#include <QMetaType>
 #include <QString>
 #include <QUuid>
 

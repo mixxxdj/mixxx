@@ -1,5 +1,7 @@
 #include "util/battery/battery.h"
 
+#include <math.h>
+
 // Do not include platform-specific battery implementation unless we are built
 // with battery support (__BATTERY__).
 #ifdef __BATTERY__
@@ -11,6 +13,7 @@
 #include "util/battery/batterylinux.h"
 #endif
 #endif
+#include "util/duration.h"
 #include "util/math.h"
 
 // interval (in ms) of the timer which calls update()

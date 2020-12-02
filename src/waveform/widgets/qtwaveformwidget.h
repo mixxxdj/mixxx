@@ -1,9 +1,18 @@
 #ifndef QTWAVEFORMWIDGET_H
 #define QTWAVEFORMWIDGET_H
 
+#include <QByteArrayData>
 #include <QGLWidget>
+#include <QString>
+#include <QStringBuilder>
 
+#include "util/duration.h"
+#include "waveform/widgets/waveformwidgettype.h"
 #include "waveformwidgetabstract.h"
+
+class QObject;
+class QPaintEvent;
+class QWidget;
 
 class QtWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT

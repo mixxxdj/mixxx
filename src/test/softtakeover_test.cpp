@@ -1,13 +1,16 @@
-#include <gtest/gtest.h>
-#include <QtDebug>
-#include <QScopedPointer>
+#include "controllers/softtakeover.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <memory>
 
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "preferences/usersettings.h"
-#include "controllers/softtakeover.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/configobject.h"
 #include "test/mixxxtest.h"
-#include "util/memory.h"
+#include "util/duration.h"
 #include "util/time.h"
 
 namespace {

@@ -1,9 +1,13 @@
 // Tests for tableview-related things
 // Right now it's just testing the serialize-unserialize of the header state code.
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <QString>
+#include <Qt>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 #include "proto/headers.pb.h"
 #include "widget/wtracktableviewheader.h"
 

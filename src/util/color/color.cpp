@@ -1,6 +1,6 @@
 #include "util/color/color.h"
 
-#include "util/math.h"
+#include <math.h>
 
 namespace Color {
 

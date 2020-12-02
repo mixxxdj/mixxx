@@ -1,16 +1,24 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QItemSelection>
+#include <QString>
+#include <QWidget>
 
-#include "library/ui_dlgmissing.h"
-#include "preferences/usersettings.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/libraryview.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/ui_dlgmissing.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class WLibrary;
 class WTrackTableView;
 class MissingTableModel;
+class KeyboardEventFilter;
+class Library;
+class QItemSelection;
+class QObject;
 
 class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT

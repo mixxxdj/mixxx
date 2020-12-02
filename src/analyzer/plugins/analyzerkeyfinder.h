@@ -1,9 +1,12 @@
 #pragma once
+#include <keyfinder/audiodata.h>
 #include <keyfinder/keyfinder.h>
+#include <keyfinder/workspace.h>
 
 #include <QObject>
 
 #include "analyzer/plugins/analyzerplugin.h"
+#include "track/keys.h"
 #include "util/types.h"
 
 namespace mixxx {

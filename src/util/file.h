@@ -1,8 +1,9 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include <QFile>
 #include <QDir>
+#include <QFile>
+#include <QString>
 
 #include "util/sandbox.h"
 

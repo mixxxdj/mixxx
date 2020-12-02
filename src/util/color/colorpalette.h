@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QList>
+#include <QString>
 
+#include "util/assert.h"
 #include "util/color/rgbcolor.h"
 
 // An ordered list of colors that can be picked by the user from WColorPicker,

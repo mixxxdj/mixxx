@@ -1,3 +1,5 @@
+#include "controllers/midi/midimessage.h"
+
 #include "controllers/midi/midiutils.h"
 
 MidiKey::MidiKey()

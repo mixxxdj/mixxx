@@ -1,8 +1,8 @@
 #include "waveform/visualsmanager.h"
 
-#include "waveform/waveformwidgetfactory.h"
 #include "control/controlobject.h"
-
+#include "preferences/configobject.h"
+#include "waveform/visualplayposition.h"
 
 DeckVisuals::DeckVisuals(const QString& group)
         : m_group(group),

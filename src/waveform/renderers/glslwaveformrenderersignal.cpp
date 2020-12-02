@@ -1,4 +1,19 @@
 #include "waveform/renderers/glslwaveformrenderersignal.h"
+
+#include <QtCore/qglobal.h>
+#include <QtCore/qsharedpointer.h>
+
+#include <QDebug>
+#include <QGLShader>
+#include <QGLShaderProgram>
+#include <QImage>
+#include <QPainter>
+#include <QSharedPointer>
+#include <QVector2D>
+#include <QVector4D>
+#include <QtCore>
+
+class QPaintEvent;
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>
@@ -6,7 +21,6 @@
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
                                                        bool rgbShader)

@@ -1,12 +1,17 @@
 #ifndef WAVEFORMRENDERERSIGNALBASE_H
 #define WAVEFORMRENDERERSIGNALBASE_H
 
+#include <QDomNode>
+#include <QtCore>
+
+#include "skin/skincontext.h"
 #include "waveformrendererabstract.h"
 #include "waveformsignalcolors.h"
-#include "skin/skincontext.h"
 
 class ControlObject;
 class ControlProxy;
+class WaveformSignalColors;
+class WaveformWidgetRenderer;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
 public:

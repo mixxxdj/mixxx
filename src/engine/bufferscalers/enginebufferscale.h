@@ -1,9 +1,18 @@
 #ifndef ENGINEBUFFERSCALE_H
 #define ENGINEBUFFERSCALE_H
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 
 #include "audio/signalinfo.h"
+#include "util/types.h"
+
+namespace mixxx {
+namespace audio {
+class SampleRate;
+} // namespace audio
+} // namespace mixxx
 
 // MAX_SEEK_SPEED needs to be good and high to allow room for the very high
 //  instantaneous velocities of advanced scratching (Uzi) and spin-backs.

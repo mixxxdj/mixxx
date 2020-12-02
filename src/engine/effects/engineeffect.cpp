@@ -1,8 +1,22 @@
 #include "engine/effects/engineeffect.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QList>
+#include <QSharedPointer>
+
+#include "audio/types.h"
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectprocessor.h"
+#include "effects/effectsmanager.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
+#include "util/assert.h"
 #include "util/defs.h"
 #include "util/sample.h"
+
+struct GroupFeatureState;
 
 EngineEffect::EngineEffect(EffectManifestPointer pManifest,
                            const QSet<ChannelHandleAndGroup>& activeInputChannels,

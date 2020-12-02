@@ -1,20 +1,27 @@
 #include "widget/wwaveformviewer.h"
 
-#include <QDomNode>
-#include <QDragEnterEvent>
-#include <QEvent>
-#include <QMimeData>
-#include <QPainter>
-#include <QUrl>
-#include <QtDebug>
+#include <QtCore/qsharedpointer.h>
 
-#include "control/controlobject.h"
+#include <QColor>
+#include <QDomNode>
+#include <QList>
+#include <QMouseEvent>
+#include <QSharedPointer>
+#include <QWheelEvent>
+#include <QWidget>
+#include <QtCore>
+#include <memory>
+
+#include "control/control.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "util/color/color.h"
+#include "util/color/rgbcolor.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wcuemenupopup.h"
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,

@@ -1,18 +1,32 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <gmock/gmock-generated-matchers.h>
+#include <gmock/gmock-matchers.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QByteArray>
 #include <QDir>
-#include <QFileInfo>
+#include <QList>
+#include <QSqlQuery>
+#include <QStaticStringData>
 #include <QString>
-#include <QtDebug>
-#include <QtSql>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QTemporaryDir>
+#include <QVariant>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "library/dao/directorydao.h"
-#include "library/dao/trackdao.h"
-#include "preferences/usersettings.h"
+#include "library/trackcollection.h"
 #include "sources/soundsourceproxy.h"
 #include "test/librarytest.h"
+#include "test/mixxxtest.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
+
+class RelocatedTrack;
 
 using ::testing::UnorderedElementsAre;
 

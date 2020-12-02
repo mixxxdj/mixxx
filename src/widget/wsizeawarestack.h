@@ -1,12 +1,17 @@
 #ifndef WSIZEAWARESTACK_H
 #define WSIZEAWARESTACK_H
 
-#include <QWidget>
+#include <QByteArrayData>
 #include <QEvent>
+#include <QString>
+#include <QWidget>
 
 #include "widget/wbasewidget.h"
 
 class SizeAwareLayout;
+class QEvent;
+class QObject;
+class QResizeEvent;
 
 class WSizeAwareStack : public QWidget, public WBaseWidget {
     Q_OBJECT

@@ -1,11 +1,13 @@
 #include "widget/wpixmapstore.h"
 
-#include <QDir>
+#include <QImage>
+#include <QPixmap>
 #include <QString>
-#include <QtDebug>
+#include <QStringBuilder>
+#include <QtCore>
 
-#include "util/math.h"
 #include "skin/imgloader.h"
+#include "skin/imgsource.h"
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;

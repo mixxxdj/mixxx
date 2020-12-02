@@ -8,8 +8,13 @@
 #ifndef ENCODERFLACSETTINGS_H
 #define ENCODERFLACSETTINGS_H
 
-#include "encoder/encoderrecordingsettings.h"
+#include <QList>
+#include <QString>
+
 #include "encoder/encoder.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "encoder/encodersettings.h"
+#include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 
 class EncoderFlacSettings : public EncoderRecordingSettings {

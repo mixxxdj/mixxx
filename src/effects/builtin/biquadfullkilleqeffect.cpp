@@ -1,7 +1,22 @@
 #include "effects/builtin/biquadfullkilleqeffect.h"
 
+#include <math.h>
+
+#include <QObject>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QVarLengthArray>
+#include <QtGlobal>
+
 #include "effects/builtin/equalizer_util.h"
+#include "effects/effectmanifest.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/engine.h"
 #include "util/math.h"
+#include "util/sample.h"
+
+struct GroupFeatureState;
 
 namespace {
 constexpr mixxx::audio::SampleRate kStartupSamplerate(44100);

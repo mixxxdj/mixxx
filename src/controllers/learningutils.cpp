@@ -1,10 +1,19 @@
-#include <QSet>
-#include <QMap>
-#include <QtDebug>
-
 #include "controllers/learningutils.h"
-#include "controllers/midi/midiutils.h"
+
+#include <QtCore/qglobal.h>
+#include <stdlib.h>
+
+#include <QDebug>
+#include <QMap>
+#include <QPair>
+#include <QSet>
+#include <QString>
+#include <QtGlobal>
+
+#include "control/control.h"
 #include "control/controlobject.h"
+#include "controllers/midi/midiutils.h"
+#include "preferences/configobject.h"
 
 typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
 

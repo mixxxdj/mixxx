@@ -9,13 +9,25 @@
 #define HIDCONTROLLER_H
 
 #include <hidapi.h>
+#include <stddef.h>
 
 #include <QAtomicInt>
+#include <QByteArray>
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
 
 #include "controllers/controller.h"
+#include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetinfo.h"
+#include "controllers/controllervisitor.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "preferences/usersettings.h"
 #include "util/duration.h"
+
+class MidiControllerPreset;
+class QObject;
 
 class HidController final : public Controller {
     Q_OBJECT

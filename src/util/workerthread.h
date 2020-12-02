@@ -1,13 +1,15 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QString>
+#include <QThread>
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
 
-#include <QThread>
-
 #include "util/logger.h"
 
+class QObject;
 
 /// A worker thread without an event loop.
 ///

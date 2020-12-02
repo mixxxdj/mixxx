@@ -6,6 +6,10 @@
 
 #include "controllers/midi/midimessage.h"
 
+class ConfigKey;
+template<class T1, class T2>
+struct QPair;
+
 class LearningUtils {
   public:
     static MidiInputMappings guessMidiInputMappings(

@@ -8,7 +8,13 @@
 #ifndef CONTROLLERMANAGER_H
 #define CONTROLLERMANAGER_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QMutex>
+#include <QObject>
 #include <QSharedPointer>
+#include <QString>
+#include <QTimer>
 
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
@@ -19,6 +25,12 @@
 //Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
+class ControllerEnumerator;
+class PresetInfoEnumerator;
+class QThread;
+namespace mixxx {
+class Duration;
+} // namespace mixxx
 
 // Function to sort controllers by name
 bool controllerCompare(Controller *a, Controller *b);

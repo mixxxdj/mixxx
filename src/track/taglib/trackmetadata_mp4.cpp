@@ -1,5 +1,29 @@
 #include "track/taglib/trackmetadata_mp4.h"
 
+#include <mp4coverart.h>
+#include <mp4item.h>
+#include <mp4tag.h>
+#include <taglib.h>
+#include <tlist.h>
+#include <tmap.h>
+#include <tstring.h>
+#include <tstringlist.h>
+
+#include <QDebug>
+#include <QImage>
+#include <QString>
+#include <list>
+#include <map>
+#include <tlist.tcc>
+#include <tmap.tcc>
+#include <utility>
+
+#include "track/albuminfo.h"
+#include "track/bpm.h"
+#include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_file.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 

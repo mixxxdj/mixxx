@@ -1,16 +1,36 @@
 #include "preferences/colorpaletteeditor.h"
 
+#include <QAbstractItemView>
+#include <QChar>
+#include <QColor>
 #include <QColorDialog>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QIcon>
+#include <QItemSelection>
+#include <QItemSelectionModel>
 #include <QLabel>
-#include <QMenu>
+#include <QList>
 #include <QMessageBox>
-#include <QStandardItemModel>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QPushButton>
+#include <QSet>
+#include <QSharedPointer>
+#include <QSizePolicy>
+#include <QStandardItem>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
 #include <QTableView>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QtCore>
 
 #include "preferences/colorpalettesettings.h"
+#include "util/assert.h"
+#include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {

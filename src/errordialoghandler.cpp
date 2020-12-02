@@ -15,13 +15,18 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "errordialoghandler.h"
+
+#include <QtCore/qglobal.h>
+#include <stdlib.h>
+
 #include <QCoreApplication>
+#include <QDebug>
 #include <QMutexLocker>
 #include <QScopedPointer>
 #include <QThread>
-#include <QtDebug>
+#include <QtCore>
 
-#include "errordialoghandler.h"
 #include "util/assert.h"
 #include "util/version.h"
 

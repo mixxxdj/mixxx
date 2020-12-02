@@ -1,6 +1,13 @@
 #include "track/serato/beatsimporter.h"
 
+#include <QtGlobal>
+#include <memory>
+
+#include "audio/signalinfo.h"
+#include "audio/streaminfo.h"
 #include "track/serato/tags.h"
+#include "util/assert.h"
+#include "util/duration.h"
 
 namespace mixxx {
 

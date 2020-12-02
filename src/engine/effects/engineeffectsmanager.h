@@ -1,18 +1,23 @@
 #ifndef ENGINEEFFECTSMANAGER_H
 #define ENGINEEFFECTSMANAGER_H
 
+#include <QHashNode>
+#include <QList>
 #include <QScopedPointer>
+#include <QString>
 
+#include "effects/defs.h"
+#include "engine/channelhandle.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
+#include "util/fifo.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
-#include "util/fifo.h"
-#include "engine/effects/message.h"
-#include "engine/effects/groupfeaturestate.h"
-#include "engine/channelhandle.h"
 
 class EngineEffectRack;
 class EngineEffectChain;
 class EngineEffect;
+struct GroupFeatureState;
 
 class EngineEffectsManager : public EffectsRequestHandler {
   public:

@@ -1,14 +1,17 @@
 #include "analyzer/analyzerkey.h"
 
-#include <QVector>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 
 #include "analyzer/constants.h"
+#include "audio/types.h"
+#include "track/keys.h"
+#include "util/assert.h"
 #if defined __KEYFINDER__
 #include "analyzer/plugins/analyzerkeyfinder.h"
 #endif
 #include "analyzer/plugins/analyzerqueenmarykey.h"
-#include "proto/keys.pb.h"
 #include "track/keyfactory.h"
 #include "track/track.h"
 

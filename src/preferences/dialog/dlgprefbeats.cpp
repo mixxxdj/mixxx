@@ -1,8 +1,15 @@
 #include "preferences/dialog/dlgprefbeats.h"
 
+#include <QCheckBox>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QtGlobal>
+#include <type_traits>
+
 #include "analyzer/analyzerbeats.h"
-#include "control/controlobject.h"
 #include "defs_urls.h"
+
+class QWidget;
 
 DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),

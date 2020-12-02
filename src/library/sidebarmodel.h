@@ -7,8 +7,11 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
+#include <QObject>
+#include <QString>
 #include <QTimer>
 #include <QVariant>
+#include <QtCore>
 
 class LibraryFeature;
 

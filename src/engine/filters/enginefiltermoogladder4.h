@@ -11,15 +11,23 @@
 // Based on C Source from R. Lindner published at public domain
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=196
 
+#include <math.h>
 #include <memory.h>
 #include <stdio.h>
+#include <string.h>
 
+#include <QByteArrayData>
 #include <QDebug>
+#include <QString>
 
 #include "engine/engineobject.h"
 #include "util/math.h"
+#include "util/platform.h"
 #include "util/sample.h"
 #include "util/timer.h"
+#include "util/types.h"
+
+class QObject;
 
 namespace {
 

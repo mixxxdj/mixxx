@@ -1,6 +1,11 @@
 #include "track/taglib/trackmetadata_riff.h"
 
+#include <infotag.h>
+
+#include "track/taglib/trackmetadata_common.h"
+
 namespace mixxx {
+class TrackMetadata;
 
 namespace taglib {
 

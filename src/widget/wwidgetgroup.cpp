@@ -1,14 +1,27 @@
 #include "widget/wwidgetgroup.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDomElement>
+#include <QEvent>
+#include <QHBoxLayout>
 #include <QLayout>
-#include <QMap>
-#include <QStylePainter>
+#include <QMargins>
+#include <QSharedPointer>
 #include <QStackedLayout>
+#include <QStringList>
+#include <QStyle>
+#include <QStylePainter>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #include "skin/skincontext.h"
-#include "widget/wwidget.h"
 #include "util/debug.h"
 #include "widget/wpixmapstore.h"
+
+class QPaintEvent;
+class QResizeEvent;
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),

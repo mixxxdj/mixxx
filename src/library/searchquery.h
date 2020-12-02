@@ -6,14 +6,21 @@
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
+#include <QVariant>
+#include <QtGlobal>
+#include <algorithm>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "library/crate/cratestorage.h"
 #include "proto/keys.pb.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/assert.h"
 #include "util/memory.h"
+
+class CrateStorage;
 
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
 

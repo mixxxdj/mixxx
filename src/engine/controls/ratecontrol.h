@@ -4,11 +4,14 @@
 #ifndef RATECONTROL_H
 #define RATECONTROL_H
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 
-#include "preferences/usersettings.h"
+#include "control/controlvalue.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
 
 class BpmControl;
 class Rotary;
@@ -19,6 +22,7 @@ class ControlPushButton;
 class ControlProxy;
 class EngineChannel;
 class PositionScratchController;
+class QObject;
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from

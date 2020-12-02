@@ -1,17 +1,23 @@
 
 #include "skin/colorschemeparser.h"
 
-#include "widget/wpixmapstore.h"
-#include "widget/wimagestore.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "util/xml.h"
-#include "skin/imgsource.h"
-#include "skin/imgloader.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QString>
+
+#include "preferences/configobject.h"
 #include "skin/imgcolor.h"
 #include "skin/imginvert.h"
+#include "skin/imgloader.h"
+#include "skin/imgsource.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skincontext.h"
+#include "util/xml.h"
+#include "widget/wimagestore.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wskincolor.h"
 
 void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
         UserSettingsPointer pConfig,

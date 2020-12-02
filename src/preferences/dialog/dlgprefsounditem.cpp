@@ -13,12 +13,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QPoint>
-
 #include "preferences/dialog/dlgprefsounditem.h"
+
+#include <QApplication>
+#include <QComboBox>
+#include <QEvent>
+#include <QHashIterator>
+#include <QLabel>
+#include <QObject>
+#include <QPoint>
+#include <QSharedPointer>
+#include <QVariant>
+#include <QtCore>
+#include <type_traits>
+
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
-#include "util/compatibility.h"
 
 /**
  * Constructs a new preferences sound item, representing an AudioPath and SoundDevice

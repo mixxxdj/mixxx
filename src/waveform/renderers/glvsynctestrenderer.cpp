@@ -1,11 +1,24 @@
 #include "waveform/renderers/glvsynctestrenderer.h"
+
+#include <QtGui/qopengl.h>
+#include <stddef.h>
+
+#include <QPainter>
+#include <QPointF>
+#include <QSharedPointer>
+#include <QtCore>
+#include <memory>
+
+#include "track/track_decl.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
+
+class QPaintEvent;
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "track/track.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)

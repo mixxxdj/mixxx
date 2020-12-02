@@ -1,6 +1,9 @@
 #ifndef BASESYNCABLELISTENER_H
 #define BASESYNCABLELISTENER_H
 
+#include <QList>
+#include <QString>
+
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 

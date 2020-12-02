@@ -1,8 +1,14 @@
 #include "engine/bufferscalers/enginebufferscalelinear.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <math.h>
 
-#include "track/keyutils.h"
+#include <QDebug>
+#include <QtGlobal>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "engine/readaheadmanager.h"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/sample.h"

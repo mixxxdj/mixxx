@@ -1,5 +1,10 @@
 #include "mixer/previewdeck.h"
 
+class EffectsManager;
+class EngineMaster;
+class QObject;
+class VisualsManager;
+
 PreviewDeck::PreviewDeck(QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,

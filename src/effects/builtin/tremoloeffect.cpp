@@ -1,5 +1,19 @@
 #include "effects/builtin/tremoloeffect.h"
 
+#include <math.h>
+
+#include <QObject>
+#include <QSharedPointer>
+#include <QtGlobal>
+
+#include "audio/types.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/engine.h"
+
 namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast
 constexpr double kMaxGainIncrement = 0.001;

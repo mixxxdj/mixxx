@@ -18,19 +18,30 @@
 #ifndef WSLIDERCOMPOSED_H
 #define WSLIDERCOMPOSED_H
 
-#include <QString>
-#include <QWidget>
+#include <QColor>
 #include <QDomNode>
-#include <QWheelEvent>
-#include <QPaintEvent>
 #include <QMouseEvent>
+#include <QPaintEvent>
 #include <QResizeEvent>
+#include <QString>
+#include <QWheelEvent>
+#include <QWidget>
+#include <QtCore>
 
+#include "skin/pixmapsource.h"
 #include "skin/skincontext.h"
 #include "util/widgetrendertimer.h"
+#include "widget/paintable.h"
 #include "widget/slidereventhandler.h"
-#include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
+
+class QMouseEvent;
+class QPaintEvent;
+class QPainter;
+class QResizeEvent;
+class QWheelEvent;
+class QWidget;
 
 /**
   * A widget for a slider composed of a background pixmap and a handle.

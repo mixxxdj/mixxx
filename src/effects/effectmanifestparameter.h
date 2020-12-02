@@ -1,12 +1,16 @@
 #ifndef EFFECTMANIFESTPARAMETER_H
 #define EFFECTMANIFESTPARAMETER_H
 
-#include <QVariant>
-#include <QString>
-#include <QtDebug>
+#include <QDebug>
+#include <QList>
+#include <QPair>
 #include <QSharedPointer>
+#include <QString>
+#include <QVariant>
+#include <QtDebug>
 
 class EffectManifestParameter;
+
 typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
 
 class EffectManifestParameter {

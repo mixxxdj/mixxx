@@ -1,10 +1,12 @@
 #include "library/columncache.h"
 
-#include "library/dao/trackschema.h"
+#include <QList>
+
 #include "library/dao/playlistdao.h"
+#include "library/dao/trackschema.h"
+#include "proto/keys.pb.h"
 
-
- ColumnCache::ColumnCache(const QStringList& columns) {
+ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 

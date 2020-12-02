@@ -1,18 +1,34 @@
 #ifndef SOUNDDEVICENETWORK_H
 #define SOUNDDEVICENETWORK_H
 
-#include <QString>
+#include <QtCore/qglobal.h>
+#include <bits/types/struct_sched_param.h>
+#include <pa_ringbuffer.h>
+#include <sched.h>
+
+#include <QDebug>
 #include <QSharedPointer>
+#include <QString>
 #include <QThread>
+#include <QtCore>
+#include <memory>
 
 #ifdef __LINUX__
 #include <pthread.h>
 #endif
 
-#include "util/performancetimer.h"
-#include "util/memory.h"
-#include "soundio/sounddevice.h"
 #include "engine/sidechain/networkoutputstreamworker.h"
+#include "preferences/usersettings.h"
+#include "soundio/sounddevice.h"
+#include "soundio/sounddeviceerror.h"
+#include "util/duration.h"
+#include "util/fifo.h"
+#include "util/memory.h"
+#include "util/performancetimer.h"
+#include "util/types.h"
+
+template<class T>
+class QSharedPointer;
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define CPU_OVERLOAD_DURATION 500 // in ms

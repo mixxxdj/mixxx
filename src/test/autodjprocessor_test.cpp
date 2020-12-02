@@ -1,21 +1,45 @@
 #include "library/autodj/autodjprocessor.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-generated-function-mockers.h>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-printers.h>
+#include <gtest/gtest-test-part.h>
+#include <stddef.h>
 
+#include <QChar>
+#include <QDir>
 #include <QScopedPointer>
+#include <QSharedPointer>
 #include <QString>
+#include <QStringBuilder>
+#include <QtCore>
+#include <memory>
 
 #include "control/controllinpotmeter.h"
+#include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "engine/engine.h"
+#include "gtest/gtest_pred_impl.h"
+#include "library/dao/playlistdao.h"
+#include "library/playlisttablemodel.h"
+#include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
 #include "test/librarytest.h"
+#include "track/cue.h"
 #include "track/track.h"
+#include "track/trackid.h"
+
+class Deck;
+class PreviewDeck;
+class Sampler;
 
 using ::testing::_;
 using ::testing::Return;

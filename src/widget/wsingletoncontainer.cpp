@@ -1,11 +1,17 @@
 #include "widget/wsingletoncontainer.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDomElement>
 #include <QLayout>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QtGlobal>
 
-#include "util/assert.h"
 #include "skin/skincontext.h"
-#include "widget/wlibrary.h"
 
+class QShowEvent;
 
 WSingletonContainer::WSingletonContainer(QWidget* pParent)
         : WWidgetGroup(pParent), m_pWidget(nullptr), m_pLayout(nullptr) { }

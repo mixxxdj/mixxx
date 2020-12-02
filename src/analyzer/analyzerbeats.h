@@ -9,13 +9,18 @@
 #define ANALYZER_ANALYZERBEATS_H
 
 #include <QHash>
+#include <QHashNode>
 #include <QList>
+#include <QString>
+#include <memory>
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
+#include "track/track_decl.h"
 #include "util/memory.h"
+#include "util/types.h"
 
 class AnalyzerBeats : public Analyzer {
   public:

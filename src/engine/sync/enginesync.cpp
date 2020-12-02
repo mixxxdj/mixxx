@@ -18,13 +18,17 @@
 
 #include "engine/sync/enginesync.h"
 
-#include <QStringList>
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QList>
+#include <QtGlobal>
+#include <type_traits>
 
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
-#include "util/defs.h"
 #include "util/logger.h"
 
 namespace {

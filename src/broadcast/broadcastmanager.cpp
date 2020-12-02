@@ -3,18 +3,27 @@
 #define WIN32
 #endif
 #include <shout/shout.h>
+
+#include <QDebug>
+#include <QList>
+#include <QMessageBox>
+#include <QVector>
+#include <QtCore>
 #ifdef WIN64
 #undef WIN32
 #endif
 
+#include "broadcast/broadcastmanager.h"
 #include "broadcast/defs_broadcast.h"
-#include "engine/enginemaster.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "engine/sidechain/enginesidechain.h"
+#include "engine/sidechain/networkoutputstreamworker.h"
+#include "preferences/configobject.h"
+#include "preferences/settingsmanager.h"
+#include "qsharedpointer.h"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
-
-#include "broadcast/broadcastmanager.h"
 
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");

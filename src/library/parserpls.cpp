@@ -12,11 +12,19 @@
 //
 #include "library/parserpls.h"
 
-#include <QtDebug>
-#include <QMessageBox>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QByteArray>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
-#include <QUrl>
+#include <QIODevice>
+#include <QMessageBox>
+#include <QStringBuilder>
+#include <QTextStream>
+
+#include "track/trackfile.h"
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)

@@ -1,12 +1,25 @@
 #include "analyzer/analyzerwaveform.h"
 
-#include "engine/engineobject.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QList>
+#include <QListIterator>
+#include <QSharedPointer>
+#include <algorithm>
+#include <memory>
+
 #include "engine/filters/enginefilterbessel4.h"
-#include "engine/filters/enginefilterbutterworth8.h"
-#include "library/trackcollection.h"
+#include "engine/filters/enginefilteriir.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
+#include "util/duration.h"
 #include "util/logger.h"
 #include "waveform/waveformfactory.h"
+
+class QSqlDatabase;
 
 namespace {
 

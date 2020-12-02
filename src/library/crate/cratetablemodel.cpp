@@ -1,13 +1,29 @@
 
 #include "library/crate/cratetablemodel.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
 
+#include <QDebug>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtCore>
+#include <memory>
+
+#include "library/columncache.h"
+#include "library/crate/crate.h"
+#include "library/crate/cratestorage.h"
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
+#include "track/trackref.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
+#include "util/db/dbnamedentity.h"
 #include "util/db/fwdsqlquery.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent,

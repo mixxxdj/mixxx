@@ -47,9 +47,19 @@
 #ifndef WSINGLETONCONTAINER_H
 #define WSINGLETONCONTAINER_H
 
+#include <QByteArrayData>
+#include <QDomNode>
+#include <QMap>
 #include <QPointer>
+#include <QString>
 
 #include "widget/wwidgetgroup.h"
+
+class QLayout;
+class QObject;
+class QShowEvent;
+class QWidget;
+class SkinContext;
 
 class WSingletonContainer : public WWidgetGroup {
     Q_OBJECT

@@ -1,7 +1,7 @@
 #include "util/workerthreadscheduler.h"
 
+#include "util/assert.h"
 #include "util/workerthread.h"
-
 
 WorkerThreadScheduler::WorkerThreadScheduler(
         int maxWorkers,

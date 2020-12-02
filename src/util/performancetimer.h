@@ -51,6 +51,8 @@
 
 #include <QtCore/qglobal.h>
 
+#include <QtGlobal>
+
 #include "util/duration.h"
 
 class PerformanceTimer

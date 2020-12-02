@@ -1,10 +1,14 @@
 #ifndef CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H
 #define CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H
 
-#include <QObject>
 #include <QEvent>
 #include <QKeyEvent>
+#include <QKeySequence>
+#include <QList>
 #include <QMultiHash>
+#include <QObject>
+#include <QString>
+#include <QtCore>
 
 #include "preferences/configobject.h"
 

@@ -8,7 +8,15 @@
 #ifndef PORTMIDIENUMERATOR_H
 #define PORTMIDIENUMERATOR_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
+
 #include "controllers/midi/midienumerator.h"
+#include "preferences/usersettings.h"
+
+class Controller;
+class QObject;
 
 class PortMidiEnumerator : public MidiEnumerator {
     Q_OBJECT

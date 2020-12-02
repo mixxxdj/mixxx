@@ -1,5 +1,17 @@
 #include "library/serato/seratoplaylistmodel.h"
 
+#include <QDebug>
+#include <QMap>
+
+#include "library/basesqltablemodel.h"
+#include "library/columncache.h"
+#include "library/trackmodel.h"
+#include "qglobal.h"
+
+class BaseTrackCache;
+class QModelIndex;
+class QObject;
+
 SeratoPlaylistModel::SeratoPlaylistModel(QObject* parent,
         TrackCollectionManager* trackCollectionManager,
         QSharedPointer<BaseTrackCache> trackSource)

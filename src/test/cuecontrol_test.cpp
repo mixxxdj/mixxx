@@ -1,5 +1,23 @@
 #include "engine/controls/cuecontrol.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QDir>
+#include <QSharedPointer>
+#include <QStringBuilder>
+
+#include "audio/types.h"
+#include "control/controlproxy.h"
+#include "engine/channels/enginedeck.h"
+#include "engine/enginebuffer.h"
+#include "gtest/gtest_pred_impl.h"
+#include "mixer/deck.h"
 #include "test/signalpathtest.h"
+#include "track/cueinfo.h"
+#include "track/track.h"
+#include "util/duration.h"
+#include "util/sandbox.h"
 
 class CueControlTest : public BaseSignalPathTest {
   protected:

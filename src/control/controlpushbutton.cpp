@@ -17,6 +17,13 @@
 
 #include "control/controlpushbutton.h"
 
+#include <QSharedPointer>
+
+#include "control/control.h"
+#include "control/controlbehavior.h"
+
+class ConfigKey;
+
 /* -------- ------------------------------------------------------
    Purpose: Creates a new simulated latching push-button.
    Input:   key - Key for the configuration file

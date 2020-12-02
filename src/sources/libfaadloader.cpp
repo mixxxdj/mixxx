@@ -1,5 +1,10 @@
 #include "sources/libfaadloader.h"
 
+#include <QStringList>
+#include <QtCore>
+#include <QtDebug>
+#include <type_traits>
+
 #include "util/logger.h"
 
 namespace {

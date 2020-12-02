@@ -1,12 +1,18 @@
 #include "widget/wcoverartlabel.h"
 
-#include <QtDebug>
+#include <QContextMenuEvent>
+#include <QFrame>
+#include <QMouseEvent>
+#include <QSize>
+#include <QSizePolicy>
+#include <QtCore>
 
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
-#include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wcoverartmenu.h"
+
+class QWidget;
 
 namespace {
 

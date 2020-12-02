@@ -6,8 +6,34 @@
 #include <taglib/mpegfile.h>
 #include <taglib/wavfile.h>
 #include <taglib/wavpackfile.h>
+#include <tfile.h>
 
+#include <QDebug>
 #include <QFile>
+#include <QString>
+
+namespace TagLib {
+namespace FLAC {
+class File;
+} // namespace FLAC
+namespace MP4 {
+class File;
+} // namespace MP4
+namespace MPEG {
+class File;
+} // namespace MPEG
+namespace RIFF {
+namespace AIFF {
+class File;
+} // namespace AIFF
+namespace WAV {
+class File;
+} // namespace WAV
+} // namespace RIFF
+namespace WavPack {
+class File;
+} // namespace WavPack
+} // namespace TagLib
 
 namespace mixxx {
 

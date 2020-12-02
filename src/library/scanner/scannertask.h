@@ -1,10 +1,13 @@
 #ifndef SCANNERTASK_H
 #define SCANNERTASK_H
 
+#include <QByteArrayData>
 #include <QObject>
 #include <QRunnable>
+#include <QString>
 
 #include "library/scanner/scannerglobal.h"
+#include "util/cache.h"
 
 class LibraryScanner;
 

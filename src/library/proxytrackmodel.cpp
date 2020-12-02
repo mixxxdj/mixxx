@@ -1,10 +1,23 @@
 // proxytrackmodel.cpp
 // Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QVariant>
-
 #include "library/proxytrackmodel.h"
+
+#include <stddef.h>
+
+#include <QAbstractItemModel>
+#include <QListIterator>
+#include <QMetaType>
+#include <QModelIndex>
+#include <QRegExp>
+#include <QSqlDatabase>
+#include <QVariant>
+#include <QtCore>
+
 #include "util/assert.h"
+
+class QAbstractItemDelegate;
+class TrackRef;
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
                                  bool bHandleSearches)

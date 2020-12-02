@@ -1,17 +1,31 @@
-#include <gtest/gtest.h>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QByteArray>
+#include <QDebug>
 #include <QDir>
-#include <QUrl>
+#include <QList>
 #include <QScopedPointer>
-#include <QtDebug>
+#include <QSharedPointer>
+#include <QString>
+#include <QUrl>
+#include <QtCore>
+#include <memory>
 
 #include "controllers/controller.h"
+#include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
+#include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetinfoenumerator.h"
-#include "controllers/midi/midicontrollerpreset.h"
-#include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/midi/midicontrollerpreset.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+
+class ControllerVisitor;
 
 class FakeController : public Controller {
   public:

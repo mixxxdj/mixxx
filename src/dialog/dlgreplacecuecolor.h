@@ -1,11 +1,14 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDialog>
+#include <QFlags>
 #include <QMap>
 #include <QMenu>
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QSet>
+#include <QString>
 
 #include "dialog/ui_dlgreplacecuecolordlg.h"
 #include "library/dao/trackdao.h"
@@ -13,9 +16,20 @@
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
+#include "util/db/dbconnectionpool.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
+#include "util/parented_ptr.h"
 #include "widget/wcolorpickeraction.h"
+
+class ColorPalette;
+class QMenu;
+class QObject;
+class QStyle;
+class QWidget;
+class TrackCollectionManager;
+class TrackId;
+class WColorPickerAction;
 
 /// Dialog for bulk replacing colors of cues in the Database.
 class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {

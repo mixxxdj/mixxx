@@ -6,21 +6,42 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-#include "controllers/colormapperjsproxy.h"
-#include "controllers/controllerengine.h"
-#include "controllers/controller.h"
-#include "controllers/controllerdebug.h"
+#include <QtCore/qglobal.h>
+#include <bytearrayclass.h>
+#include <math.h>
+#include <qscriptcontext.h>
+#include <qscriptengine.h>
+#include <string.h>
+// Used for id's inside controlConnection objects
+// (closure compatible version of connectControl)
+#include <QDebug>
+#include <QFile>
+#include <QHashIterator>
+#include <QIODevice>
+#include <QMetaObject>
+#include <QMutableHashIterator>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QTimerEvent>
+#include <QUuid>
+#include <QVariant>
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
+#include "controllers/colormapperjsproxy.h"
+#include "controllers/controller.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/controllerengine.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 // to tell the msvs compiler about `isnan`
+#include "control/control.h"
+#include "util/alphabetafilter.h"
+#include "util/assert.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
 #include "util/time.h"
-
-// Used for id's inside controlConnection objects
-// (closure compatible version of connectControl)
-#include <QUuid>
 
 namespace {
 constexpr int kDecks = 16;

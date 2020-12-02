@@ -1,11 +1,18 @@
 #ifndef CONTROLOBJECTSCRIPT_H
 #define CONTROLOBJECTSCRIPT_H
 
+#include <qscriptvalue.h>
+
+#include <QByteArrayData>
+#include <QString>
 #include <QVector>
 
-#include "controllers/controllerengine.h"
-#include "controllers/controllerdebug.h"
 #include "control/controlproxy.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/controllerengine.h"
+
+class ConfigKey;
+class QObject;
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {

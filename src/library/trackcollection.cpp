@@ -1,13 +1,29 @@
-#include <QApplication>
-
 #include "library/trackcollection.h"
 
+#include <QDebug>
+#include <QFlags>
+#include <QMessageBox>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtCore>
+#include <type_traits>
+#include <utility>
+
 #include "library/basetrackcache.h"
+#include "library/crate/crate.h"
+#include "library/crate/crateid.h"
 #include "track/globaltrackcache.h"
+#include "track/trackfile.h"
+#include "track/trackref.h"
 #include "util/assert.h"
+#include "util/db/dbid.h"
 #include "util/db/sqltransaction.h"
 #include "util/dnd.h"
 #include "util/logger.h"
+#include "util/sandbox.h"
+
+class RelocatedTrack;
+class Track;
 
 namespace {
 

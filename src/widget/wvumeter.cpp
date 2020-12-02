@@ -17,15 +17,25 @@
 
 #include "widget/wvumeter.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QPaintEvent>
-#include <QtDebug>
-#include <QPixmap>
+#include <QtCore/qglobal.h>
 
+#include <QDebug>
+#include <QDomElement>
+#include <QMetaObject>
+#include <QRectF>
+#include <QSharedPointer>
+#include <QStyle>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QtCore>
+
+#include "util/duration.h"
+#include "util/math.h"
 #include "util/timer.h"
 #include "widget/wpixmapstore.h"
-#include "util/math.h"
+
+class QPaintEvent;
+class QWidget;
 
 #define DEFAULT_FALLTIME 20
 #define DEFAULT_FALLSTEP 1

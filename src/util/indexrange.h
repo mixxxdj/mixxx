@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QDebug>
 #include <QtDebug>
+#include <algorithm>
 #include <iosfwd>
+#include <optional>
 #include <utility>
 
 #include "util/assert.h"

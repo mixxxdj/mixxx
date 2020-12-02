@@ -8,10 +8,17 @@
 #ifndef BEATMAP_H_
 #define BEATMAP_H_
 
+#include <QByteArray>
+#include <QList>
 #include <QMutex>
+#include <QSet>
+#include <QString>
+#include <QVector>
+#include <memory>
 
 #include "proto/beats.pb.h"
 #include "track/beats.h"
+#include "util/types.h"
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
 

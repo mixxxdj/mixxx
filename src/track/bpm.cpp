@@ -1,5 +1,9 @@
 #include "track/bpm.h"
 
+#include <QtCore/qglobal.h>
+
+#include "util/assert.h"
+
 namespace mixxx {
 
 /*static*/ constexpr double Bpm::kValueUndefined;

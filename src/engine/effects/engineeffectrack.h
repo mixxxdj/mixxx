@@ -2,13 +2,17 @@
 #define ENGINEEFFECTRACK_H
 
 #include <QList>
+#include <QString>
 
 #include "engine/channelhandle.h"
-#include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
+#include "util/class.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
 
 class EngineEffectChain;
+struct GroupFeatureState;
 
 //TODO(Be): Remove this superfluous class.
 class EngineEffectRack : public EffectsRequestHandler {

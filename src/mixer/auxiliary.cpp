@@ -1,10 +1,13 @@
 #include "mixer/auxiliary.h"
 
 #include "control/controlproxy.h"
-#include "engine/enginemaster.h"
+#include "engine/channelhandle.h"
 #include "engine/channels/engineaux.h"
+#include "engine/enginemaster.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+
+class QObject;
 
 Auxiliary::Auxiliary(QObject* pParent, const QString& group, int index,
                      SoundManager* pSoundManager, EngineMaster* pEngine,

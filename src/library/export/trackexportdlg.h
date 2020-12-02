@@ -1,6 +1,7 @@
 #ifndef DLGTRACKEXPORT_H
 #define DLGTRACKEXPORT_H
 
+#include <QByteArrayData>
 #include <QDialog>
 #include <QScopedPointer>
 #include <QString>
@@ -10,6 +11,10 @@
 #include "library/export/ui_dlgtrackexport.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+
+class QObject;
+class QShowEvent;
+class QWidget;
 
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.

@@ -6,22 +6,38 @@
 #ifndef DLGPREFCONTROLLER_H
 #define DLGPREFCONTROLLER_H
 
+#include <QByteArrayData>
 #include <QHash>
+#include <QIcon>
+#include <QMap>
+#include <QSharedPointer>
 #include <QSortFilterProxyModel>
+#include <QString>
+#include <QUrl>
 
 #include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controlleroutputmappingtablemodel.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
+#include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 // Forward declarations
 class Controller;
 class ControllerManager;
 class PresetInfoEnumerator;
+class ControllerInputMappingTableModel;
+class ControllerOutputMappingTableModel;
+class DlgControllerLearning;
+class QObject;
+class QSortFilterProxyModel;
+class QTableView;
+class QWidget;
+template<class T>
+class QSharedPointer;
 
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT

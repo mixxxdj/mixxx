@@ -1,18 +1,37 @@
-#include <QDesktopServices>
-#include <QStandardPaths>
+#include "preferences/dialog/dlgpreflibrary.h"
+
+#include <QAbstractButton>
+#include <QApplication>
+#include <QCheckBox>
 #include <QDir>
 #include <QFileDialog>
-#include <QStringList>
-#include <QUrl>
-#include <QApplication>
 #include <QFontDialog>
 #include <QFontMetrics>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListView>
 #include <QMessageBox>
+#include <QModelIndex>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSharedPointer>
+#include <QSpinBox>
+#include <QStandardItem>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QToolButton>
+#include <QUrl>
+#include <QVariant>
+#include <QtCore>
 
-#include "preferences/dialog/dlgpreflibrary.h"
+#include "defs_urls.h"
 #include "library/dlgtrackmetadataexport.h"
-#include "sources/soundsourceproxy.h"
+#include "library/library_preferences.h"
+#include "preferences/configobject.h"
+#include "util/assert.h"
 #include "widget/wsearchlineedit.h"
+
+class QWidget;
 
 namespace {
     const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");

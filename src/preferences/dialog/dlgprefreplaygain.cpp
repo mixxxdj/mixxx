@@ -1,7 +1,16 @@
 #include "preferences/dialog/dlgprefreplaygain.h"
 
-#include "control/controlobject.h"
+#include <QAbstractSlider>
+#include <QCheckBox>
+#include <QLabel>
+#include <QRadioButton>
+#include <QSlider>
+#include <QStringBuilder>
+#include <QtGlobal>
+
 #include "util/math.h"
+
+class QWidget;
 
 namespace {
 const char* kConfigKey = "[ReplayGain]";

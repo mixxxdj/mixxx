@@ -1,11 +1,15 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QMap>
 #include <QObject>
 #include <QProgressDialog>
+#include <QString>
 #include <memory>
 
 #include "util/duration.h"
+
+class QProgressDialog;
 
 namespace mixxx {
 

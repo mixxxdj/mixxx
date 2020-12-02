@@ -4,14 +4,24 @@
 
 #include "engine/channels/engineaux.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QtGlobal>
 
 #include "control/control.h"
-#include "preferences/usersettings.h"
 #include "control/controlaudiotaperpot.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "engine/enginevumeter.h"
+#include "preferences/configobject.h"
 #include "util/sample.h"
+
+struct GroupFeatureState;
 
 EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
         : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager,

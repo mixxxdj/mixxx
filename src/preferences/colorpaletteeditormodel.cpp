@@ -1,5 +1,17 @@
 #include "preferences/colorpaletteeditormodel.h"
 
+#include <QIcon>
+#include <QList>
+#include <QMap>
+#include <QModelIndex>
+#include <QPixmap>
+#include <QStandardItem>
+#include <utility>
+
+#include "util/color/rgbcolor.h"
+
+class QMimeData;
+
 namespace {
 
 QIcon toQIcon(const QColor& color) {

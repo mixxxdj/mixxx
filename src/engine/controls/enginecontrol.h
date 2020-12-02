@@ -8,6 +8,8 @@
 
 #include <QList>
 #include <QObject>
+#include <QString>
+#include <QtCore>
 
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
@@ -19,6 +21,7 @@
 
 class EngineMaster;
 class EngineBuffer;
+struct GroupFeatureState;
 
 const int kNoTrigger = -1;
 

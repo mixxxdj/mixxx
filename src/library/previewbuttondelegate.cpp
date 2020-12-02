@@ -1,14 +1,22 @@
 #include "library/previewbuttondelegate.h"
 
+#include <QAbstractItemModel>
+#include <QModelIndex>
 #include <QPainter>
 #include <QPushButton>
+#include <QRect>
+#include <QStaticStringData>
+#include <QStringLiteral>
 #include <QTableView>
+#include <QVariant>
+#include <QWidget>
+#include <memory>
 
 #include "control/controlproxy.h"
 #include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "track/track.h"
+#include "util/assert.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {

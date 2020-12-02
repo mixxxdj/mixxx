@@ -1,5 +1,8 @@
 #include "library/analysislibrarytablemodel.h"
 
+class QObject;
+class TrackCollectionManager;
+
 namespace {
 
 const QString RECENT_FILTER = "datetime_added > datetime('now', '-7 days')";

@@ -1,11 +1,30 @@
 #pragma once
 
 #include <QAction>
+#include <QByteArrayData>
+#include <QIcon>
+#include <QList>
 #include <QPointer>
+#include <QSet>
 #include <QSqlTableModel>
+#include <QString>
+#include <QVariant>
+#include <list>
 
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+
+class KeyboardEventFilter;
+class Library;
+class QAction;
+class QModelIndex;
+class QObject;
+class QPoint;
+class TreeItem;
+class WLibrary;
+class WLibrarySidebar;
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT

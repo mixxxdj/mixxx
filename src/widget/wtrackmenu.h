@@ -1,14 +1,23 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QFlags>
+#include <QList>
 #include <QMenu>
 #include <QModelIndex>
+#include <QModelIndexList>
 #include <QPointer>
+#include <QString>
 #include <memory>
+#include <optional>
 
 #include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "track/trackiterator.h"
 #include "track/trackref.h"
 #include "util/color/rgbcolor.h"
 
@@ -20,6 +29,11 @@ class TrackCollectionManager;
 class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
+class QAction;
+class QObject;
+class QPoint;
+class QWidget;
+class TrackRef;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer

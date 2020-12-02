@@ -6,6 +6,13 @@
 */
 
 #include "encoder/encodervorbissettings.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+
+#include "preferences/configobject.h"
 #include "recording/defs_recording.h"
 
 #define DEFAULT_BITRATE_INDEX 6

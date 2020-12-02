@@ -13,12 +13,16 @@
 #ifndef PARSERM3U_H
 #define PARSERM3U_H
 
+#include <QByteArrayData>
 #include <QDir>
-#include <QTextStream>
 #include <QList>
 #include <QString>
+#include <QTextStream>
 
 #include "library/parser.h"
+
+class QObject;
+class QTextStream;
 
 class ParserM3u : public Parser
 {

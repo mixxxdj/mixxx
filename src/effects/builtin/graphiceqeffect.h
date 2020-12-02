@@ -1,11 +1,17 @@
 #ifndef GRAPHICEQEFFECT_H
 #define GRAPHICEQEFFECT_H
 
+#include <QList>
 #include <QMap>
+#include <QSet>
+#include <QString>
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
@@ -13,6 +19,16 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+class EngineFilterBiquad1HighShelving;
+class EngineFilterBiquad1LowShelving;
+class EngineFilterBiquad1Peaking;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 class GraphicEQEffectGroupState : public EffectState {
   public:

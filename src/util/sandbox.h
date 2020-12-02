@@ -1,14 +1,22 @@
 #ifndef SANDBOX_H
 #define SANDBOX_H
 
-#include <QFile>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
-#include <QSharedPointer>
 #include <QHash>
 #include <QMutex>
+#include <QSharedPointer>
+#include <QString>
+#include <QWeakPointer>
 
 #include "preferences/configobject.h"
+
+class QMutex;
+template<class Key, class T>
+class QHash;
+template<class T>
+class QSharedPointer;
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CFURL.h>

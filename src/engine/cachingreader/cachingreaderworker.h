@@ -1,6 +1,8 @@
 #ifndef ENGINE_CACHINGREADERWORKER_H
 #define ENGINE_CACHINGREADERWORKER_H
 
+#include <QAtomicInt>
+#include <QByteArrayData>
 #include <QMutex>
 #include <QSemaphore>
 #include <QString>
@@ -11,7 +13,15 @@
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "track/track_decl.h"
+#include "util/assert.h"
 #include "util/fifo.h"
+#include "util/indexrange.h"
+#include "util/samplebuffer.h"
+#include "util/types.h"
+
+class QObject;
+template<class DataType>
+class FIFO;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {

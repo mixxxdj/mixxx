@@ -18,13 +18,14 @@
 #ifndef SOUNDDEVICE_H
 #define SOUNDDEVICE_H
 
-#include <QString>
 #include <QList>
+#include <QSharedPointer>
+#include <QString>
 
-#include "util/types.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/types.h"
 
 class SoundDevice;
 class SoundManager;

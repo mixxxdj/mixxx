@@ -1,8 +1,16 @@
 #include "analyzer/plugins/analyzerkeyfinder.h"
 
+#include <keyfinder/constants.h>
+
+#include <QPair>
+#include <QStaticStringData>
+#include <QString>
+#include <QStringLiteral>
+
 #include "analyzer/constants.h"
+#include "audio/types.h"
+#include "proto/keys.pb.h"
 #include "util/assert.h"
-#include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;

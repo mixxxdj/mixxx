@@ -1,7 +1,17 @@
 #include "controllers/dlgprefcontrollers.h"
 
 #include <QDesktopServices>
+#include <QFlags>
+#include <QFont>
+#include <QIcon>
+#include <QLabel>
+#include <QPushButton>
+#include <QTreeWidgetItem>
+#include <QtCore>
+#include <algorithm>
+#include <type_traits>
 
+#include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"

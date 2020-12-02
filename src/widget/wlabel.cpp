@@ -17,9 +17,20 @@
 
 #include "widget/wlabel.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDomElement>
+#include <QEvent>
 #include <QFont>
+#include <QFontMetrics>
+#include <QPalette>
+#include <QStringList>
 
 #include "widget/wskincolor.h"
+
+class QResizeEvent;
+class QWidget;
 
 WLabel::WLabel(QWidget* pParent)
         : QLabel(pParent),

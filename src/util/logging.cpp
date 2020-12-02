@@ -1,21 +1,23 @@
 #include "util/logging.h"
 
+#include <QtCore/qglobal.h>
 #include <signal.h>
 #include <stdio.h>
 
 #include <QByteArray>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLatin1String>
 #include <QLoggingCategory>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
 #include <QThread>
-#include <QtDebug>
-#include <QtGlobal>
 #include <cstring>
+#include <iosfwd>
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"

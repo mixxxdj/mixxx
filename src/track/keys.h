@@ -3,9 +3,13 @@
 
 #include <QByteArray>
 #include <QPair>
+#include <QString>
 #include <QVector>
 
 #include "proto/keys.pb.h"
+
+template<class T1, class T2>
+struct QPair;
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 

@@ -18,13 +18,18 @@ A lot of stuff has been stolen from:
 http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 */
 
-#include <stdlib.h> // needed for random num gen
-#include <time.h> // needed for random num gen
-#include <QtDebug>
-
 #include "encoder/encodervorbis.h"
+
+#include <QtCore/qglobal.h>
+#include <stdlib.h> // needed for random num gen
+#include <time.h>   // needed for random num gen
+#include <vorbis/vorbisenc.h>
+
+#include <QByteArray>
+#include <QDebug>
+
 #include "encoder/encodercallback.h"
-#include "errordialoghandler.h"
+#include "encoder/encodersettings.h"
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number

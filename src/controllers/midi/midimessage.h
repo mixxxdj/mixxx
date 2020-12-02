@@ -2,9 +2,11 @@
 #define MIDIMESSAGE_H
 
 #include <QList>
-#include <QPair>
 #include <QMetaType>
+#include <QPair>
+#include <QString>
 
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
 // The second value of each OpCode will be the channel number the message

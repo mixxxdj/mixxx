@@ -1,6 +1,11 @@
 #include "util/compatibility.h"
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 
 class CompatibilityTest : public testing::Test {
 };

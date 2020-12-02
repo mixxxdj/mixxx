@@ -1,16 +1,27 @@
 #include "library/banshee/bansheefeature.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QFile>
 #include <QList>
 #include <QMessageBox>
-#include <QtDebug>
+#include <QModelIndex>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QtCore>
+#include <memory>
+#include <utility>
 
 #include "library/banshee/bansheedbconnection.h"
 #include "library/banshee/bansheeplaylistmodel.h"
-#include "library/baseexternalplaylistmodel.h"
-#include "library/dao/settingsdao.h"
 #include "library/library.h"
-#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "preferences/configobject.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;

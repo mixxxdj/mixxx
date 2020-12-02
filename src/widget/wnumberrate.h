@@ -12,9 +12,16 @@
 #ifndef WNUMBERRATE_H
 #define WNUMBERRATE_H
 
+#include <QByteArrayData>
+#include <QDomNode>
+#include <QString>
+
+#include "skin/skincontext.h"
 #include "widget/wnumber.h"
 
 class ControlProxy;
+class QObject;
+class QWidget;
 
 class WNumberRate final : public WNumber {
     Q_OBJECT

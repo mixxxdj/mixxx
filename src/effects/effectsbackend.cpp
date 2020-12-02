@@ -1,7 +1,11 @@
-#include <QtDebug>
-
 #include "effects/effectsbackend.h"
-#include "effects/effectsmanager.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+
+#include "effects/effect.h"
+#include "effects/effectmanifest.h"
 
 EffectsBackend::EffectsBackend(QObject* pParent,
                                EffectBackendType type)

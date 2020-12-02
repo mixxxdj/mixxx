@@ -1,12 +1,30 @@
 #include "library/autodj/autodjprocessor.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QModelIndex>
+#include <QSharedPointer>
+#include <QtCore>
+#include <memory>
+#include <type_traits>
+
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/engine.h"
-#include "library/trackcollection.h"
+#include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "track/cue.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
 #include "util/math.h"
 
 #define kConfigKey "[Auto DJ]"

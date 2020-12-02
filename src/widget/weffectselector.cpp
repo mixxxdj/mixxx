@@ -1,9 +1,27 @@
-#include <QtDebug>
-
 #include "widget/weffectselector.h"
 
+#include <QtCore/qsharedpointer.h>
+
+#include <QEvent>
+#include <QFont>
+#include <QFontMetrics>
+#include <QList>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QVariant>
+#include <QtCore>
+
+#include "effects/effect.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
+
+class QWidget;
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),

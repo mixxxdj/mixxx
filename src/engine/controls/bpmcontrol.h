@@ -3,11 +3,19 @@
 
 #include <gtest/gtest_prod.h>
 
+#include <QAtomicInt>
+#include <QByteArrayData>
+#include <QScopedPointer>
+#include <QString>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/controlvalue.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
 #include "track/beats.h"
+#include "track/track_decl.h"
 #include "util/tapfilter.h"
 
 class ControlObject;
@@ -15,6 +23,8 @@ class ControlLinPotmeter;
 class ControlPushButton;
 class EngineBuffer;
 class SyncControl;
+class QObject;
+struct GroupFeatureState;
 
 /// BpmControl is an EngineControl that manages the bpm and beat distance of
 /// tracks.  It understands the tempo of the underlying track and the musical

@@ -2,11 +2,16 @@
 
 #include <QItemDelegate>
 #include <QModelIndex>
+#include <QModelIndexList>
 #include <QObject>
+#include <QString>
+#include <QtCore>
 #include <QtSql>
 
 #include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
+
+class TrackCollectionManager;
 
 class MissingTableModel final : public BaseSqlTableModel {
     Q_OBJECT

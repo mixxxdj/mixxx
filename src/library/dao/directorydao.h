@@ -1,9 +1,13 @@
 #pragma once
 
 #include <QList>
+#include <QString>
+#include <QStringList>
 
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
+
+class RelocatedTrack;
 
 const QString DIRECTORYDAO_DIR = "directory";
 const QString DIRECTORYDAO_TABLE = "directories";

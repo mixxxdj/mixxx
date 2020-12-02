@@ -1,23 +1,38 @@
 #include "mixer/basetrackplayer.h"
 
-#include <QMessageBox>
+#include <QtCore/qglobal.h>
 
+#include <QDebug>
+#include <QList>
+#include <QListIterator>
+#include <QMessageBox>
+#include <QSharedPointer>
+#include <QtCore>
+#include <optional>
+#include <utility>
+
+#include "audio/types.h"
 #include "control/controlobject.h"
-#include "control/controlpotmeter.h"
-#include "effects/effectsmanager.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "engine/channelhandle.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/engine.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
+#include "engine/sync/syncable.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "sources/soundsourceproxy.h"
-#include "track/beatgrid.h"
+#include "preferences/configobject.h"
+#include "track/cue.h"
+#include "track/cueinfo.h"
+#include "track/replaygain.h"
 #include "track/track.h"
-#include "util/compatibility.h"
-#include "util/platform.h"
+#include "track/trackfile.h"
+#include "util/assert.h"
+#include "util/duration.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"

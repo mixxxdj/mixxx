@@ -1,15 +1,24 @@
 #include "effects/effectchain.h"
 
-#include "engine/engine.h"
-#include "effects/effectchainmanager.h"
-#include "effects/effectsmanager.h"
+#include <QtCore/qglobal.h>
+#include <QtCore/qsharedpointer.h>
+
+#include <QDebug>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <array>
+
+#include "audio/types.h"
+#include "effects/effect.h"
+#include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
+#include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
-#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/message.h"
+#include "engine/engine.h"
+#include "util/assert.h"
 #include "util/defs.h"
-#include "util/sample.h"
 #include "util/xml.h"
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,

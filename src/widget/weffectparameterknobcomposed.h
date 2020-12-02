@@ -1,8 +1,17 @@
 #ifndef WEFFECTKNOBCOMPOSED_H
 #define WEFFECTKNOBCOMPOSED_H
 
-#include "widget/wknobcomposed.h"
+#include <QByteArrayData>
+#include <QString>
+
+#include "effects/defs.h"
 #include "effects/effectparameterslot.h"
+#include "widget/wknobcomposed.h"
+
+class ConfigKey;
+class EffectsManager;
+class QObject;
+class QWidget;
 
 // This is used for effect parameter knobs with dynamic
 // tooltips, if the knob value is displayed by rotating a

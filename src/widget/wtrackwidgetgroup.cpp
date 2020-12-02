@@ -1,14 +1,23 @@
 
 #include "widget/wtrackwidgetgroup.h"
 
-#include <QDebug>
+#include <QContextMenuEvent>
+#include <QFlags>
+#include <QMouseEvent>
+#include <QStaticStringData>
+#include <QStringLiteral>
 #include <QStylePainter>
-#include <QUrl>
+#include <QtCore>
+#include <QtGui>
+#include <memory>
 
-#include "control/controlobject.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "util/color/rgbcolor.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
+
+class QWidget;
 
 namespace {
 

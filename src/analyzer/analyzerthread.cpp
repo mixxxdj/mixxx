@@ -1,6 +1,13 @@
 #include "analyzer/analyzerthread.h"
 
+#include <rigtorp/SPSCQueue.h>
+
+#include <QDebug>
+#include <QSqlDatabase>
+#include <QThread>
+#include <algorithm>
 #include <mutex>
+#include <utility>
 
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerebur128.h"
@@ -9,15 +16,23 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
-#include "engine/engine.h"
+#include "audio/signalinfo.h"
+#include "audio/types.h"
 #include "library/dao/analysisdao.h"
+#include "preferences/replaygainsettings.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
+#include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
+#include "util/db/dbid.h"
+#include "util/duration.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
-#include "util/timer.h"
+#include "util/math.h"
 
 namespace {
 

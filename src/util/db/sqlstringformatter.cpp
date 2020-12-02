@@ -1,10 +1,11 @@
 #include "util/db/sqlstringformatter.h"
 
+#include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlField>
+#include <QVariant>
 
 #include "util/assert.h"
-
 
 QString SqlStringFormatter::format(
         const QSqlDatabase& database,

@@ -1,13 +1,21 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDomNode>
 #include <QMouseEvent>
+#include <QString>
 #include <QWidget>
 
+#include "control/controlproxy.h"
+#include "preferences/configobject.h"
 #include "skin/skincontext.h"
 #include "util/parented_ptr.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wpushbutton.h"
+
+class QMouseEvent;
+class QObject;
+class QWidget;
 
 class WHotcueButton : public WPushButton {
     Q_OBJECT

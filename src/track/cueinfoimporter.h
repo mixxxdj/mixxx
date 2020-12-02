@@ -1,10 +1,15 @@
 #pragma once
 
+#include <QList>
+#include <QString>
 #include <memory>
 
 #include "track/cueinfo.h"
 
 namespace mixxx {
+namespace audio {
+class SignalInfo;
+} // namespace audio
 
 /// Importer class for CueInfo objects that can correct timing offsets when the
 /// signal info (channel number, sample rate, bitrate) is known.

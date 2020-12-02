@@ -8,6 +8,7 @@
 
 class VelocityController;
 class RateIIFilter;
+class ControlObject;
 
 class PositionScratchController : public QObject {
   public:

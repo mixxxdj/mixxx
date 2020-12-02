@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDialog>
+#include <QString>
 
+class QObject;
 
 namespace mixxx {
 

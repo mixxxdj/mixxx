@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
+#include <QString>
 
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -13,6 +15,13 @@
 
 class TrackCollectionManager;
 class WTrackMenu;
+class QContextMenuEvent;
+class QDragEnterEvent;
+class QDropEvent;
+class QMouseEvent;
+class QObject;
+class QWidget;
+class TrackId;
 
 class WTrackText : public WLabel, public TrackDropTarget {
     Q_OBJECT

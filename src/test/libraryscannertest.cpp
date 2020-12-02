@@ -1,9 +1,11 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include "test/librarytest.h"
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "library/scanner/libraryscanner.h"
+#include "test/librarytest.h"
 
 class LibraryScannerTest : public LibraryTest {
   protected:

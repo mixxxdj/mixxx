@@ -1,10 +1,17 @@
 #pragma once
 
-#include "sources/metadatasource.h"
+#include <QString>
+#include <utility>
 
+#include "sources/metadatasource.h"
 #include "track/taglib/trackmetadata.h"
+#include "track/taglib/trackmetadata_file.h"
+
+class QDateTime;
+class QImage;
 
 namespace mixxx {
+class TrackMetadata;
 
 // Universal default implementation of IMetadataSource using TagLib.
 class MetadataSourceTagLib : public MetadataSource {

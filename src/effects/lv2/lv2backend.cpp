@@ -1,5 +1,17 @@
 #include "effects/lv2/lv2backend.h"
+
+#include <QtCore/qglobal.h>
+#include <lv2/core/lv2.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+
+#include "effects/effect.h"
+#include "effects/effectinstantiator.h"
+#include "effects/effectmanifest.h"
 #include "effects/lv2/lv2manifest.h"
+
+class EffectsManager;
 
 LV2Backend::LV2Backend(QObject* pParent)
         : EffectsBackend(pParent, EffectBackendType::LV2) {

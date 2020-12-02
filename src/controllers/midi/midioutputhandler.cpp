@@ -6,12 +6,16 @@
  *
  */
 
-#include <QtDebug>
-
 #include "controllers/midi/midioutputhandler.h"
-#include "controllers/midi/midicontroller.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+
+#include "control/control.h"
 #include "controllers/controllerdebug.h"
-#include "control/controlobject.h"
+#include "controllers/midi/midicontroller.h"
+#include "preferences/configobject.h"
 
 MidiOutputHandler::MidiOutputHandler(MidiController* controller,
         const MidiOutputMapping& mapping)

@@ -1,9 +1,16 @@
-#include <QtDebug>
-
 #include "effects/effectparameter.h"
-#include "effects/effectsmanager.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+
 #include "effects/effect.h"
+#include "effects/effectsmanager.h"
+#include "engine/effects/message.h"
 #include "util/assert.h"
+
+class EngineEffect;
 
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
                                  int iParameterNumber,

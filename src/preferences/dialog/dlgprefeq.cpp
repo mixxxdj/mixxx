@@ -17,19 +17,46 @@
 
 #include "preferences/dialog/dlgprefeq.h"
 
-#include <QHBoxLayout>
+#include <math.h>
+#include <stddef.h>
+
+#include <QAbstractButton>
+#include <QAbstractSlider>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QLayoutItem>
+#include <QObject>
+#include <QPushButton>
+#include <QSharedPointer>
+#include <QSizePolicy>
+#include <QSlider>
+#include <QSpacerItem>
 #include <QString>
+#include <QStringBuilder>
+#include <QVariant>
 #include <QWidget>
+#include <QtCore>
+#include <type_traits>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "effects/builtin/biquadfullkilleqeffect.h"
 #include "effects/builtin/filtereffect.h"
+#include "effects/effect.h"
+#include "effects/effectchain.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectparameter.h"
 #include "effects/effectrack.h"
 #include "effects/effectslot.h"
-#include "engine/filters/enginefilterbessel4.h"
+#include "effects/effectsmanager.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "util/assert.h"
 #include "util/math.h"
 
 const QString kConfigKey = "[Mixer Profile]";

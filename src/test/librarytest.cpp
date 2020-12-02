@@ -1,6 +1,11 @@
 #include "test/librarytest.h"
 
+#include <utility>
+
+#include "preferences/configobject.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
+#include "track/trackref.h"
 
 namespace {
 

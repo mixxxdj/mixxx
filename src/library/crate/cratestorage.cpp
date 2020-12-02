@@ -1,16 +1,20 @@
 #include "library/crate/cratestorage.h"
 
+#include <QChar>
+#include <QDebug>
+#include <QStringBuilder>
+
+#include "library/crate/crate.h"
 #include "library/crate/crateschema.h"
+#include "library/crate/cratesummary.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
-
+#include "util/assert.h"
 #include "util/db/dbconnection.h"
-
-#include "util/db/sqllikewildcards.h"
+#include "util/db/dbid.h"
 #include "util/db/fwdsqlquery.h"
-
+#include "util/db/sqllikewildcards.h"
 #include "util/logger.h"
-
 
 namespace {
 

@@ -1,10 +1,27 @@
 #include "effects/effectrack.h"
 
-#include "effects/effectsmanager.h"
-#include "effects/effectchainmanager.h"
-#include "effects/effectslot.h"
-#include "engine/effects/engineeffectrack.h"
+#include <QtCore/qglobal.h>
+#include <stddef.h>
 
+#include <QDebug>
+#include <QDomDocument>
+#include <QDomText>
+#include <QSet>
+#include <QSharedPointer>
+#include <type_traits>
+
+#include "control/control.h"
+#include "effects/effect.h"
+#include "effects/effectchainmanager.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/message.h"
+#include "preferences/configobject.h"
+#include "qsharedpointer.h"
 #include "util/assert.h"
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,

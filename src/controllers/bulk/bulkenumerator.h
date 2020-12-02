@@ -8,9 +8,15 @@
 #ifndef BULKENUMERATOR_H
 #define BULKENUMERATOR_H
 
+#include <libusb.h>
+
+#include <QList>
+
 #include "controllers/controllerenumerator.h"
+#include "preferences/usersettings.h"
 
 struct libusb_context;
+class Controller;
 
 class BulkEnumerator : public ControllerEnumerator {
   public:

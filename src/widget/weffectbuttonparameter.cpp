@@ -1,8 +1,10 @@
-#include <QtDebug>
-
 #include "widget/weffectbuttonparameter.h"
-#include "effects/effectsmanager.h"
+
+#include "effects/defs.h"
 #include "widget/effectwidgetutils.h"
+#include "widget/wlabel.h"
+
+class QWidget;
 
 WEffectButtonParameter::WEffectButtonParameter(QWidget* pParent, EffectsManager* pEffectsManager)
         : WEffectParameterBase(pParent, pEffectsManager) {

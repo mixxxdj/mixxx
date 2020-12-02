@@ -1,6 +1,12 @@
-#include <QtDebug>
-
 #include "waveform/waveform.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QStringBuilder>
+#include <algorithm>
+#include <string>
+
 #include "proto/waveform.pb.h"
 
 using namespace mixxx::track;

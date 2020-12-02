@@ -1,6 +1,8 @@
 #include <benchmark/benchmark.h>
+#include <string.h>
 
 #include "errordialoghandler.h"
+#include "gtest/gtest_pred_impl.h"
 #include "mixxxtest.h"
 #include "util/logging.h"
 

@@ -21,9 +21,10 @@ from it and overwrite the parse function and add class specific functions to
 it afterwards for proper functioning
 **/
 
+#include <QList>
 #include <QObject>
 #include <QString>
-#include <QList>
+#include <Qt>
 
 #include "track/trackfile.h"
 

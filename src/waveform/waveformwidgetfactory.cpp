@@ -1,21 +1,42 @@
 #include "waveform/waveformwidgetfactory.h"
 
+#include <QtCore/qglobal.h>
+#include <QtGui/qopengl.h>
+
+#include <QDebug>
+#include <QFlags>
+#include <QGLContext>
 #include <QGLFormat>
 #include <QGLShaderProgram>
-#include <QGuiApplication>
+#include <QGLWidget>
+#include <QLatin1String>
+#include <QOpenGLContext>
 #include <QOpenGLFunctions>
-#include <QStringList>
-#include <QTime>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QThread>
+#include <QVarLengthArray>
 #include <QWidget>
 #include <QWindow>
-#include <QtDebug>
+#include <QtCore>
+#include <algorithm>
+#include <cstddef>
+#include <ext/alloc_traits.h>
+#include <memory>
+#include <utility>
 
-#include "control/controlpotmeter.h"
+#include "preferences/configobject.h"
+#include "track/track_decl.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
+#include "util/duration.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
 #include "waveform/guitick.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"

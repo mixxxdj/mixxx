@@ -3,7 +3,7 @@
 
 
 #include <QSqlQuery>
-
+#include <utility>
 
 // Ensures that reusable queries are properly finished when
 // leaving the corresponding execution scope. This will free

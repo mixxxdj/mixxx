@@ -1,8 +1,20 @@
-#include <QtDebug>
-#include <QStringList>
-#include <QScriptValue>
-
 #include "skin/svgparser.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDomAttr>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNamedNodeMap>
+#include <QDomNodeList>
+#include <QDomText>
+#include <QFile>
+#include <QIODevice>
+#include <QRegExp>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QTextStream>
 
 SvgParser::SvgParser(const SkinContext* pParentContext)
         : m_pParentContext(pParentContext),

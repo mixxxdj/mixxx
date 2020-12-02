@@ -1,5 +1,9 @@
 #include "sources/soundsource.h"
 
+#include <QDebug>
+#include <QUrl>
+
+#include "util/assert.h"
 #include "util/logger.h"
 
 namespace mixxx {

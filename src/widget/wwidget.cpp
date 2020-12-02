@@ -15,10 +15,16 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-#include <QTouchEvent>
-
 #include "widget/wwidget.h"
+
+#include <QEvent>
+#include <QFont>
+#include <QList>
+#include <QMouseEvent>
+#include <QTouchDevice>
+#include <QTouchEvent>
+#include <Qt>
+
 #include "control/controlproxy.h"
 #include "util/assert.h"
 

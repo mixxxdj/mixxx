@@ -1,18 +1,19 @@
 #ifndef MIXXX_DBCONNECTIONPOOL_H
 #define MIXXX_DBCONNECTIONPOOL_H
 
-
 #include <QAtomicInt>
+#include <QString>
 #include <QThreadStorage>
+#include <memory>
 
+#include "util/assert.h"
 #include "util/db/dbconnection.h"
 #include "util/memory.h"
-#include "util/assert.h"
-
 
 namespace mixxx {
 
 class DbConnectionPool;
+
 typedef std::shared_ptr<DbConnectionPool> DbConnectionPoolPtr;
 
 class DbConnectionPool final {

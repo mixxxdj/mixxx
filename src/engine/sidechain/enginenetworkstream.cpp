@@ -1,11 +1,18 @@
 #include "engine/sidechain/enginenetworkstream.h"
 
+#include <time.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QString>
+#include <type_traits>
+
 #ifdef __WINDOWS__
 #include <windows.h>
+
 #include "util/performancetimer.h"
 #else
 #include <sys/time.h>
-#include <unistd.h>
 #endif
 
 #ifdef __WINDOWS__
@@ -15,7 +22,11 @@ static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
 #endif
 
 #include "broadcast/defs_broadcast.h"
+#include "engine/sidechain/networkinputstreamworker.h"
+#include "engine/sidechain/networkoutputstreamworker.h"
+#include "util/fifo.h"
 #include "util/logger.h"
+#include "util/math.h"
 #include "util/sample.h"
 
 namespace {

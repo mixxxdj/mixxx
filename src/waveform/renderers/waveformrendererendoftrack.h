@@ -2,7 +2,11 @@
 #define WAVEFORMRENDERERENDOFTRACK_H
 
 #include <QColor>
+#include <QDomNode>
+#include <QPen>
+#include <QRect>
 #include <QTime>
+#include <QVector>
 //#include <QLinearGradient>
 
 #include "skin/skincontext.h"
@@ -13,6 +17,9 @@
 
 class ControlObject;
 class ControlProxy;
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
   public:

@@ -10,6 +10,9 @@
 
 #include "analyzer/analyzer.h"
 #include "preferences/replaygainsettings.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "util/types.h"
 
 class ReplayGain;
 

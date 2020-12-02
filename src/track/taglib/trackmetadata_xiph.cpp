@@ -1,10 +1,32 @@
 #include "track/taglib/trackmetadata_xiph.h"
 
+#include <taglib.h>
 #include <taglib/flacpicture.h>
+#include <tbytevector.h>
+#include <tlist.h>
+#include <tmap.h>
+#include <tstring.h>
+#include <tstringlist.h>
+#include <xiphcomment.h>
 
+#include <QByteArray>
+#include <QDebug>
+#include <QFlags>
+#include <QString>
+#include <QtGlobal>
 #include <array>
+#include <list>
+#include <map>
+#include <tlist.tcc>
+#include <tmap.tcc>
+#include <utility>
 
+#include "track/albuminfo.h"
+#include "track/taglib/trackmetadata_common.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 #include "track/tracknumbers.h"
+#include "util/assert.h"
 #include "util/logger.h"
 
 // TagLib has support for XiphComment::pictureList() since version 1.11

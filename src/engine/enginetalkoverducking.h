@@ -1,9 +1,16 @@
-#include "engine/enginesidechaincompressor.h"
+#include <QByteArrayData>
+#include <QObject>
+#include <QString>
+
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "engine/enginesidechaincompressor.h"
+#include "preferences/usersettings.h"
+#include "util/types.h"
 
 class ConfigValue;
 class ControlProxy;
+class ControlPotmeter;
 
 class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
   Q_OBJECT

@@ -1,9 +1,18 @@
 #include "waveformmarkrange.h"
 
-#include <QPainter>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
 
+#include <QDebug>
+#include <QDomNode>
+#include <QPainter>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <Qt>
+#include <QtGui>
+
+#include "preferences/configobject.h"
 #include "skin/skincontext.h"
+#include "util/assert.h"
 #include "waveformsignalcolors.h"
 #include "widget/wskincolor.h"
 

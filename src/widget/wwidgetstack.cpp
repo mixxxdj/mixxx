@@ -1,7 +1,14 @@
-#include <QtDebug>
-#include <QApplication>
-
 #include "widget/wwidgetstack.h"
+
+#include <QApplication>
+#include <QEvent>
+#include <QWidget>
+
+#include "control/control.h"
+#include "control/controlobject.h"
+#include "preferences/configobject.h"
+
+class QShowEvent;
 
 WidgetStackControlListener::WidgetStackControlListener(
         QObject* pParent, ControlObject* pControl, int index)

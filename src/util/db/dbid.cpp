@@ -1,5 +1,6 @@
 #include "util/db/dbid.h"
 
+#include <QtCore/qglobal.h>
 
 //static
 const QVariant::Type DbId::kVariantType = DbId().toVariant().type();

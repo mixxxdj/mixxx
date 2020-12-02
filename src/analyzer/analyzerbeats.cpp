@@ -1,18 +1,22 @@
 #include "analyzer/analyzerbeats.h"
 
-#include <QHash>
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
 #include <QString>
 #include <QVector>
-#include <QtDebug>
 
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
+#include "audio/types.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
-#include "track/beatmap.h"
-#include "track/beatutils.h"
+#include "track/beats.h"
+#include "track/bpm.h"
 #include "track/track.h"
+#include "util/assert.h"
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {

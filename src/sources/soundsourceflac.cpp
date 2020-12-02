@@ -1,8 +1,23 @@
 #include "sources/soundsourceflac.h"
 
+#include <QDebug>
+#include <QIODevice>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtGlobal>
+#include <algorithm>
+#include <limits>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
+
+class QUrl;
 
 namespace mixxx {
 

@@ -1,17 +1,25 @@
 #include "library/dao/playlistdao.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QVariant>
+#include <algorithm>
+#include <functional>
+#include <type_traits>
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif
-#include <QtDebug>
-#include <QtSql>
-
 #include "library/autodj/autodjprocessor.h"
 #include "library/queryutil.h"
-#include "library/trackcollection.h"
-#include "track/track.h"
-#include "util/compatibility.h"
+#include "util/db/dbid.h"
 #include "util/math.h"
+
+class QSqlDatabase;
 
 PlaylistDAO::PlaylistDAO()
         : m_pAutoDJProcessor(nullptr) {

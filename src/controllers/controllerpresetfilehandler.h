@@ -4,8 +4,14 @@
 /// @date Mon 9 Apr 2012
 /// @brief Handles loading and saving of Controller presets.
 
-#include "util/xml.h"
+#include <QDir>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QFileInfo>
+#include <QString>
+
 #include "controllers/controllerpreset.h"
+#include "util/xml.h"
 
 /// The ControllerPresetFileHandler is used for serializing/deserializing the
 /// ControllerPreset objects to/from XML files and is also responsible

@@ -1,9 +1,11 @@
-#include <QPainter>
-
 #include "waveform/widgets/emptywaveformwidget.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
+#include <QPainter>
+#include <Qt>
+
 #include "waveform/renderers/waveformrenderbackground.h"
+
+class QPaintEvent;
 
 EmptyWaveformWidget::EmptyWaveformWidget(const QString& group, QWidget* parent)
         : QWidget(parent),

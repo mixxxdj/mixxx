@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QList>
 #include <QObject>
 #include <QSqlDatabase>
+#include <QString>
 
 #include "library/crate/crateid.h"
 #include "preferences/usersettings.h"
@@ -10,6 +13,7 @@
 #include "util/class.h"
 
 class TrackCollection;
+class CrateId;
 
 class AutoDJCratesDAO : public QObject {
     Q_OBJECT

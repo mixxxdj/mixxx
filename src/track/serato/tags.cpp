@@ -1,8 +1,23 @@
 #include "track/serato/tags.h"
 
-#include <mp3guessenc.h>
+#include <QtCore/qglobal.h>
 
+#include <QMap>
+#include <QSet>
+#include <QUrl>
+#include <QtGlobal>
+#include <memory>
+#include <optional>
+#include <type_traits>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 #include "sources/soundsourceproxy.h"
+#include "track/cueinfo.h"
+#include "util/assert.h"
+#include "util/color/colorpalette.h"
 #if defined(__COREAUDIO__)
 #include "sources/soundsourcecoreaudio.h"
 #endif

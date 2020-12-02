@@ -1,8 +1,16 @@
 #include "library/tableitemdelegate.h"
 
+#include <QFlags>
+#include <QModelIndex>
 #include <QPainter>
+#include <QPalette>
+#include <QStyle>
 #include <QTableView>
+#include <QVariant>
+#include <QtCore>
+#include <QtGui>
 
+#include "util/assert.h"
 #include "util/painterscope.h"
 #include "widget/wtracktableview.h"
 

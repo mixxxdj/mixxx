@@ -6,7 +6,13 @@
 */
 #include "controllers/controllerpresetinfoenumerator.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 #include <QDirIterator>
+#include <QtCore>
+#include <algorithm>
+#include <type_traits>
 
 #include "controllers/defs_controllers.h"
 

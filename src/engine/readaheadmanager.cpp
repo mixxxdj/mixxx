@@ -3,9 +3,17 @@
 
 #include "engine/readaheadmanager.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+
 #include "engine/cachingreader/cachingreader.h"
+#include "engine/cachingreader/cachingreaderchunk.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/ratecontrol.h"
+#include "util/assert.h"
 #include "util/defs.h"
 #include "util/math.h"
 #include "util/sample.h"

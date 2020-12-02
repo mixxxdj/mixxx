@@ -1,33 +1,58 @@
 #pragma once
 
+#include <QtCore/qglobal.h>
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-matchers.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 #include <gtest/gtest.h>
+#include <math.h>
+#include <stddef.h>
 
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QList>
+#include <QString>
+#include <QStringBuilder>
+#include <QStringList>
 #include <QTest>
+#include <QTextStream>
+#include <QtCore>
 #include <QtDebug>
+#include <QtTest>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/bufferscalers/enginebufferscale.h"
+#include "engine/channelhandle.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
+#include "gtest/gtest_pred_impl.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
+#include "track/track_decl.h"
 #include "util/defs.h"
+#include "util/math.h"
 #include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
 #include "waveform/guitick.h"
 #include "waveform/visualsmanager.h"
+
+class EngineSync;
 
 using ::testing::Return;
 using ::testing::_;

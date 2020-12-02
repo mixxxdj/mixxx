@@ -1,11 +1,18 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QHBoxLayout>
+#include <QString>
 #include <QWidget>
 #include <QWidgetAction>
 
+#include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
 #include "widget/wcolorpicker.h"
+
+class ColorPalette;
+class QObject;
+class QWidget;
 
 class WColorPickerAction : public QWidgetAction {
     Q_OBJECT

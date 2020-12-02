@@ -2,13 +2,15 @@
 #define FOLDER_TREE_MODEL
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
-#include <QVariant>
-#include <QList>
 #include <QHash>
+#include <QList>
+#include <QModelIndex>
+#include <QString>
+#include <QVariant>
+#include <QtCore>
 
-#include "library/treeitemmodel.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 
 class TreeItem;
 // This class represents a folder item within the Browse Feature

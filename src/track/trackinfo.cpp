@@ -1,5 +1,8 @@
 #include "track/trackinfo.h"
 
+#include <QChar>
+#include <QStaticStringData>
+#include <QStringLiteral>
 
 namespace mixxx {
 

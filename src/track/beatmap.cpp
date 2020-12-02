@@ -7,14 +7,21 @@
 
 #include "track/beatmap.h"
 
+#include <QtCore/qglobal.h>
+#include <google/protobuf/stubs/port.h>
+#include <math.h>
+#include <stdlib.h>
+
+#include <QDebug>
 #include <QMutexLocker>
-#include <QtDebug>
+#include <QtCore>
 #include <QtGlobal>
 #include <algorithm>
+#include <string>
 
 #include "track/beatutils.h"
 #include "track/track.h"
-#include "util/math.h"
+#include "util/assert.h"
 
 using mixxx::track::io::Beat;
 

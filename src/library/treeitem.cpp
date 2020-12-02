@@ -1,5 +1,10 @@
 #include "library/treeitem.h"
 
+#include <QtCore>
+#include <type_traits>
+
+class LibraryFeature;
+
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
  * TreeItems are used by the TreeItemModel class to display tree

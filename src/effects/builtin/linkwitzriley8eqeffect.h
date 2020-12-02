@@ -2,10 +2,15 @@
 #define LINKWITZRILEYEQEFFECT_H
 
 #include <QMap>
+#include <QSet>
+#include <QString>
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterlinkwitzriley8.h"
@@ -13,6 +18,16 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+
+class ControlProxy;
+class EngineEffect;
+class EngineEffectParameter;
+class EngineFilterLinkwitzRiley8High;
+class EngineFilterLinkwitzRiley8Low;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 class LinkwitzRiley8EQEffectGroupState : public EffectState {
   public:

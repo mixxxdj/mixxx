@@ -1,9 +1,14 @@
 #pragma once
 
 #include <limits>
+#include <utility>
 
+#include "audio/signalinfo.h"
 #include "sources/audiosource.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
 #include "util/readaheadsamplebuffer.h"
+#include "util/types.h"
 
 namespace mixxx {
 

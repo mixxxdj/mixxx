@@ -1,9 +1,20 @@
-#include <QtDebug>
-#include <QLineEdit>
-#include <QStringList>
-
 #include "controllers/delegates/controldelegate.h"
+
+#include <stddef.h>
+
+#include <QAbstractItemModel>
+#include <QLineEdit>
+#include <QModelIndex>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QWidget>
+#include <QtCore>
+
+#include "controllers/controlpickermenu.h"
 #include "controllers/midi/midimessage.h"
+#include "preferences/configobject.h"
+
+class QPainter;
 
 ControlDelegate::ControlDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent),

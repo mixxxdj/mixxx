@@ -13,13 +13,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QRegularExpression>
-
 #include "soundio/soundmanagerconfig.h"
 
-#include "soundio/soundmanagerutil.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDir>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QFile>
+#include <QIODevice>
+#include <QList>
+#include <QRegularExpression>
+#include <QSharedPointer>
+#include <QtCore>
+#include <type_traits>
+
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 

@@ -4,11 +4,20 @@
 #include <QHash>
 #include <QImage>
 #include <QSharedPointer>
+#include <QString>
+#include <memory>
 #include <unordered_map>
 
 #include "skin/imgsource.h"
 #include "skin/pixmapsource.h"
 #include "util/memory.h"
+
+class ImgSource;
+class QImage;
+template<class Key, class T>
+class QHash;
+template<class T>
+class QSharedPointer;
 
 class WImageStore {
   public:

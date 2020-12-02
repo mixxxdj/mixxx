@@ -1,9 +1,18 @@
 #include "sources/soundsourceproxy.h"
 
-#include <QApplication>
-#include <QStandardPaths>
+#include <QDateTime>
+#include <QDebug>
+#include <QRegExp>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtCore>
+#include <memory>
 
+#include "library/coverart.h"
 #include "sources/audiosourcetrackproxy.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
+#include "util/assert.h"
 
 #ifdef __MAD__
 #include "sources/soundsourcemp3.h"
@@ -35,11 +44,9 @@
 #include "sources/soundsourcemediafoundation.h"
 #endif
 
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "track/globaltrackcache.h"
 #include "track/track.h"
-#include "util/cmdlineargs.h"
 #include "util/logger.h"
 #include "util/regex.h"
 

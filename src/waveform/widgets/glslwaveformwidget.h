@@ -1,10 +1,18 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QGLWidget>
+#include <QString>
 
+#include "util/duration.h"
+#include "waveform/widgets/waveformwidgettype.h"
 #include "waveformwidgetabstract.h"
 
 class GLSLWaveformRendererSignal;
+class QMouseEvent;
+class QObject;
+class QPaintEvent;
+class QWidget;
 
 class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT

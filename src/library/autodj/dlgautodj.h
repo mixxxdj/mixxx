@@ -1,6 +1,7 @@
 #ifndef DLGAUTODJ_H
 #define DLGAUTODJ_H
 
+#include <QByteArrayData>
 #include <QLineEdit>
 #include <QString>
 #include <QWidget>
@@ -17,6 +18,10 @@
 class PlaylistTableModel;
 class WLibrary;
 class WTrackTableView;
+class KeyboardEventFilter;
+class Library;
+class QObject;
+class QPushButton;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT

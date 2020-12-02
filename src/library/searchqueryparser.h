@@ -1,13 +1,20 @@
 #ifndef SEARCHQUERYPARSER_H
 #define SEARCHQUERYPARSER_H
 
+#include <QHashNode>
 #include <QRegExp>
 #include <QString>
+#include <QStringList>
 #include <QtSql>
+#include <memory>
 
 #include "library/searchquery.h"
 #include "library/trackcollection.h"
 #include "util/class.h"
+
+class AndNode;
+class QueryNode;
+class TrackCollection;
 
 class SearchQueryParser {
   public:

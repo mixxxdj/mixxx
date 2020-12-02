@@ -18,20 +18,28 @@
 #ifndef WPIXMAPSTORE_H
 #define WPIXMAPSTORE_H
 
-#include <QPixmap>
 #include <QHash>
-#include <QSharedPointer>
-#include <QSvgRenderer>
 #include <QImage>
-#include <QScopedPointer>
 #include <QPainter>
+#include <QPixmap>
 #include <QRectF>
+#include <QScopedPointer>
+#include <QSharedPointer>
 #include <QString>
+#include <QSvgRenderer>
+#include <QWeakPointer>
 
 #include "skin/imgsource.h"
 #include "skin/pixmapsource.h"
 #include "widget/paintable.h"
 
+class ImgSource;
+class QImage;
+class QPixmap;
+template<class Key, class T>
+class QHash;
+template<class T>
+class QSharedPointer;
 
 typedef QSharedPointer<Paintable> PaintablePointer;
 typedef QWeakPointer<Paintable> WeakPaintablePointer;

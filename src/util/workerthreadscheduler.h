@@ -1,8 +1,9 @@
 #pragma once
 
-#include "util/workerthread.h"
-#include "util/fifo.h"
+#include <QString>
 
+#include "util/fifo.h"
+#include "util/workerthread.h"
 
 class WorkerThread;
 

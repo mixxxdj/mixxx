@@ -1,10 +1,19 @@
 #include "musicbrainz/tagfetcher.h"
 
-#include <QFuture>
+#include <QException>
+#include <QJsonDocument>
 #include <QtConcurrentRun>
+#include <QtCore>
+#include <memory>
+#include <utility>
 
 #include "musicbrainz/chromaprinter.h"
+#include "musicbrainz/musicbrainz.h"
+#include "network/httpstatuscode.h"
+#include "network/jsonwebtask.h"
+#include "network/webtask.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/thread_affinity.h"
 
 namespace {

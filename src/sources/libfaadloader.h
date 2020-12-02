@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QDebug>
 #include <QLibrary>
 #include <QtDebug>
+#include <memory>
 
 #include "util/memory.h"
 

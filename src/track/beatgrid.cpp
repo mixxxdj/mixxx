@@ -1,9 +1,14 @@
 #include "track/beatgrid.h"
 
+#include <google/protobuf/stubs/port.h>
+#include <math.h>
+
 #include <QMutexLocker>
-#include <QtDebug>
+#include <QtCore>
+#include <string>
 
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/math.h"
 
 static const int kFrameSize = 2;

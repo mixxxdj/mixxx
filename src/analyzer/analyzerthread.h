@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QString>
+#include <QtCore>
+#include <memory>
 #include <vector>
 
 #include "analyzer/analyzer.h"
@@ -14,6 +17,8 @@
 #include "util/performancetimer.h"
 #include "util/samplebuffer.h"
 #include "util/workerthread.h"
+
+class TrackId;
 
 enum AnalyzerModeFlags {
     None = 0x00,

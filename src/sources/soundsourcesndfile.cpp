@@ -1,8 +1,22 @@
 #include "sources/soundsourcesndfile.h"
 
-#include <QDir>
+#include <stdio.h>
+#include <string.h>
 
+#include <QByteArray>
+#include <QDebug>
+#include <QFile>
+#include <QLatin1String>
+#include <QStaticStringData>
+#include <QStringLiteral>
+
+#include "audio/signalinfo.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
+#include "util/samplebuffer.h"
+
+class QUrl;
 
 namespace mixxx {
 

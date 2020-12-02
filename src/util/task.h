@@ -1,8 +1,12 @@
 #ifndef TASK_H
 #define TASK_H
 
+#include <stddef.h>
+
 #include <QAtomicInt>
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 
 // Waits for a number of tasks to complete and emits allTasksDone() once all are
 // complete.

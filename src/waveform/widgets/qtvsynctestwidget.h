@@ -1,9 +1,18 @@
 #ifndef QTVSYNCTESTWIDGET_H
 #define QTVSYNCTESTWIDGET_H
 
+#include <QByteArrayData>
 #include <QGLWidget>
+#include <QString>
+#include <QStringBuilder>
 
+#include "util/duration.h"
+#include "waveform/widgets/waveformwidgettype.h"
 #include "waveformwidgetabstract.h"
+
+class QObject;
+class QPaintEvent;
+class QWidget;
 
 class QtVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT

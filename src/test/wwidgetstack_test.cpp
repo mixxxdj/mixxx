@@ -2,13 +2,19 @@
 // ways to control its state.
 #include "widget/wwidgetstack.h"
 
-#include <gtest/gtest.h>
-#include <QScopedPointer>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <stddef.h>
 
-#include "mixxxtest.h"
+#include <QScopedPointer>
+#include <QWidget>
+#include <memory>
+
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "control/controlproxy.h"
+#include "gtest/gtest_pred_impl.h"
+#include "mixxxtest.h"
+#include "preferences/configobject.h"
 
 class WWidgetStackTest : public MixxxTest {
   public:

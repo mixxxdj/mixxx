@@ -1,6 +1,12 @@
 #include "sources/audiosource.h"
 
+#include <QtCore/qglobal.h>
+#include <bits/exception.h>
+
 #include "util/logger.h"
+#include "util/math.h"
+
+class QUrl;
 
 namespace mixxx {
 

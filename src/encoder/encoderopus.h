@@ -4,12 +4,14 @@
 #ifndef ENCODER_ENCODEROPUS_H
 #define ENCODER_ENCODEROPUS_H
 
+#include <ogg/config_types.h>
+#include <ogg/ogg.h>
+#include <opus/opus.h>
+
 #include <QMap>
 #include <QString>
 #include <QVector>
-
-#include <ogg/ogg.h>
-#include <opus/opus.h>
+#include <memory>
 
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
@@ -17,6 +19,13 @@
 #include "util/memory.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
+
+class EncoderCallback;
+class EncoderSettings;
+namespace mixxx {
+class SampleBuffer;
+} // namespace mixxx
 
 class EncoderOpus: public Encoder {
   public:

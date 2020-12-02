@@ -1,12 +1,17 @@
 #include <benchmark/benchmark.h>
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <string.h>
 
-#include <QtDebug>
 #include <QList>
-#include <QPair>
+#include <QtGlobal>
+#include <algorithm>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "util/sample.h"
-#include "util/timer.h"
+#include "util/sample_autogen.h"
+#include "util/types.h"
 
 namespace {
 

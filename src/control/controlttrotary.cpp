@@ -16,6 +16,13 @@
 
 #include "control/controlttrotary.h"
 
+#include <QSharedPointer>
+
+#include "control/control.h"
+#include "control/controlbehavior.h"
+
+class ConfigKey;
+
 /* -------- ------------------------------------------------------
    Purpose: Creates a new rotary encoder
    Input:   key

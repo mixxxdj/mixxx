@@ -1,8 +1,18 @@
 #include "engine/sync/basesyncablelistener.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
 #include <QMetaType>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtGlobal>
+#include <type_traits>
 
 #include "engine/sync/internalclock.h"
+#include "preferences/configobject.h"
 
 namespace {
 

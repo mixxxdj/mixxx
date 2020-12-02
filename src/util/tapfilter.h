@@ -1,8 +1,10 @@
 #ifndef TAPFILTER_H
 #define TAPFILTER_H
 
-#include <QObject>
+#include <QByteArrayData>
 #include <QMutex>
+#include <QObject>
+#include <QString>
 
 #include "util/duration.h"
 #include "util/movinginterquartilemean.h"

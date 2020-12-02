@@ -15,6 +15,11 @@
 
 #include "soundio/soundmanagerutil.h"
 
+#include <QObject>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtGlobal>
+
 #include "engine/channels/enginechannel.h"
 
 /**

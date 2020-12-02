@@ -19,9 +19,13 @@
 #define ENGINEOBJECT_H
 
 #include <QObject>
+#include <QString>
+#include <QtCore>
 
-#include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "util/types.h"
+
+struct GroupFeatureState;
 
 /**
   *@author Tue and Ken Haste Andersen

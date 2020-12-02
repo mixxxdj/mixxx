@@ -16,11 +16,17 @@
 
 #include "enginedelay.h"
 
-#include "control/controlproxy.h"
+#include <Qt>
+
+#include "audio/types.h"
+#include "control/controlobject.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "util/assert.h"
 #include "util/sample.h"
+
+class ConfigKey;
 
 namespace {
 constexpr double kdMaxDelayPot = 500;

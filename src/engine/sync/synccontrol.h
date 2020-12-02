@@ -1,11 +1,18 @@
 #ifndef SYNCCONTROL_H
 #define SYNCCONTROL_H
 
-#include <QScopedPointer>
 #include <gtest/gtest_prod.h>
 
+#include <QByteArrayData>
+#include <QScopedPointer>
+#include <QString>
+
+#include "control/controlvalue.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
+#include "track/beats.h"
+#include "track/track_decl.h"
 
 class EngineChannel;
 class BpmControl;
@@ -13,6 +20,7 @@ class RateControl;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
+class QObject;
 
 /// SyncControl is the Master Sync object for playback decks.
 class SyncControl : public EngineControl, public Syncable {

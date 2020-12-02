@@ -17,16 +17,29 @@
 
 #include "widget/wslidercomposed.h"
 
-#include <QtDebug>
-#include <QStylePainter>
-#include <QStyleOption>
+#include <QtCore/qglobal.h>
+#include <math.h>
 
+#include <QDebug>
+#include <QDomElement>
+#include <QLineF>
+#include <QList>
+#include <QPainter>
+#include <QPen>
+#include <QRectF>
+#include <QSharedPointer>
+#include <QStringList>
+#include <QStringRef>
+#include <QStyle>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QWidget>
+
+#include "util/debug.h"
+#include "util/duration.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wskincolor.h"
-#include "util/debug.h"
-#include "util/duration.h"
-#include "util/math.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),

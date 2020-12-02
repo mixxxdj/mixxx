@@ -1,11 +1,27 @@
 #include "library/baseexternalplaylistmodel.h"
 
+#include <QDebug>
+#include <QDir>
+#include <QList>
+#include <QModelIndex>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QVariant>
+#include <Qt>
+#include <memory>
+
+#include "library/columncache.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "qglobal.h"
 #include "track/track.h"
+#include "track/trackref.h"
+
+class BaseTrackCache;
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
                                                      TrackCollectionManager* pTrackCollectionManager,

@@ -1,14 +1,23 @@
 #include "library/coverartcache.h"
 
+#include <QCoreApplication>
+#include <QException>
+#include <QFuture>
 #include <QFutureWatcher>
+#include <QImage>
 #include <QPixmapCache>
 #include <QtConcurrentRun>
-#include <QtDebug>
+#include <memory>
+#include <optional>
+#include <type_traits>
+#include <utility>
 
-#include "library/coverartutils.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/assert.h"
+#include "util/color/rgbcolor.h"
 #include "util/logger.h"
+#include "util/math.h"
+#include "util/sandbox.h"
 #include "util/thread_affinity.h"
 
 namespace {

@@ -2,25 +2,33 @@
 
 #include "library/basesqltablemodel.h"
 
-#include <QUrl>
-#include <QtDebug>
-#include <algorithm>
+#include <QtCore/qglobal.h>
 
-#include "library/dao/trackschema.h"
+#include <QDebug>
+#include <QDir>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QTextStream>
+#include <algorithm>
+#include <memory>
+#include <type_traits>
+#include <utility>
+
 #include "library/queryutil.h"
 #include "library/starrating.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "mixer/playermanager.h"
-#include "track/keyutils.h"
+#include "proto/keys.pb.h"
+#include "track/playcounter.h"
 #include "track/track.h"
-#include "track/trackmetadata.h"
+#include "track/trackfile.h"
+#include "track/trackref.h"
 #include "util/assert.h"
-#include "util/datetime.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
-#include "util/platform.h"
 
 namespace {
 

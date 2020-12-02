@@ -17,8 +17,13 @@
 
 #include "engine/channels/enginechannel.h"
 
+#include <Qt>
+
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "effects/effectsmanager.h"
+#include "preferences/configobject.h"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
         EngineChannel::ChannelOrientation defaultOrientation,

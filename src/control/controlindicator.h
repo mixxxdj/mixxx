@@ -1,9 +1,14 @@
 #ifndef CONTROLINDICATOR_H
 #define CONTROLINDICATOR_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlobject.h"
 
 class ControlProxy;
+class ConfigKey;
+class QObject;
 
 class ControlIndicator : public ControlObject {
     Q_OBJECT

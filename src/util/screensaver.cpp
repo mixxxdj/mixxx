@@ -1,4 +1,3 @@
-#include <QtDebug>
 
 /**
 Documentation:
@@ -18,14 +17,20 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 **/
 
 #include "util/screensaver.h"
-#include "util/assert.h"
+
+#include <stdlib.h>
+
+#include <QDBusConnection>
+#include <QDBusError>
+#include <QDBusInterface>
+#include <QDBusReply>
+#include <QDebug>
 
 #if defined(Q_OS_MAC)
 #  include "util/mac.h"
 #elif defined(Q_OS_WIN)
 #  include <windows.h>
 #elif defined(Q_OS_LINUX)
-#  include <QtDBus>
 #elif HAVE_XSCREENSAVER_SUSPEND
 #  include <X11/extensions/scrnsaver.h>
 #endif // Q_OS_WIN
@@ -34,6 +39,7 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #  define None XNone
 #  define Window XWindow
 #  include <X11/Xlib.h>
+
 #  undef None
 #  undef Window
 #endif
@@ -336,4 +342,3 @@ void ScreenSaverHelper::uninhibitInternal()
 
 
 } // namespace mixxx
-

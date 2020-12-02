@@ -1,6 +1,11 @@
 #pragma once
 
+#include <memory>
+
+#include "sources/audiosource.h"
 #include "sources/audiosourceproxy.h"
+#include "util/samplebuffer.h"
+#include "util/types.h"
 
 namespace mixxx {
 

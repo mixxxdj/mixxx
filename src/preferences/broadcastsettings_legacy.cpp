@@ -1,5 +1,10 @@
-#include "preferences/broadcastsettings.h"
+#include <QSharedPointer>
+#include <QString>
+
 #include "broadcast/defs_broadcast.h"
+#include "preferences/broadcastprofile.h"
+#include "preferences/broadcastsettings.h"
+#include "preferences/configobject.h"
 #include "recording/defs_recording.h"
 
 namespace {

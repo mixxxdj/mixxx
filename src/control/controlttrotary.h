@@ -17,8 +17,14 @@
 #ifndef CONTROLTTROTARY_H
 #define CONTROLTTROTARY_H
 
-#include "preferences/usersettings.h"
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlobject.h"
+#include "preferences/usersettings.h"
+
+class ConfigKey;
+class QObject;
 
 class ControlTTRotary : public ControlObject {
     Q_OBJECT

@@ -6,6 +6,10 @@
 
 #include "util/fifo.h"
 #include "util/sample.h"
+#include "util/types.h"
+
+template<class DataType>
+class FIFO;
 
 class NetworkInputStreamWorker {
   public:

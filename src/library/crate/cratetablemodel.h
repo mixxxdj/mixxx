@@ -1,10 +1,17 @@
 #ifndef MIXXX_CRATETABLEMODEL_H
 #define MIXXX_CRATETABLEMODEL_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QModelIndexList>
+#include <QString>
 
 #include "library/basesqltablemodel.h"
-
 #include "library/crate/crateid.h"
+#include "library/trackmodel.h"
+
+class QObject;
+class TrackCollectionManager;
 
 class CrateTableModel final : public BaseSqlTableModel {
     Q_OBJECT

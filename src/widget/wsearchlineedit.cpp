@@ -1,15 +1,28 @@
-#include <QFont>
-#include <QShortcut>
-#include <QStyle>
-
 #include "wsearchlineedit.h"
-#include "wskincolor.h"
-#include "wwidget.h"
+
+#include <QAbstractButton>
+#include <QColor>
+#include <QDebug>
+#include <QEvent>
+#include <QKeySequence>
+#include <QPalette>
+#include <QRect>
+#include <QShortcut>
+#include <QSize>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QtCore>
 
 #include "skin/skincontext.h"
-
 #include "util/assert.h"
 #include "util/logger.h"
+#include "wskincolor.h"
+
+class QFocusEvent;
+class QFont;
+class QResizeEvent;
+class QWidget;
 
 #define ENABLE_TRACE_LOG false
 

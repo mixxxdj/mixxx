@@ -1,9 +1,16 @@
 #ifndef EMPTYWAVEFORM_H
 #define EMPTYWAVEFORM_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
+#include "util/duration.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
+#include "waveform/widgets/waveformwidgettype.h"
+
+class QObject;
+class QPaintEvent;
 
 // This class can be used as a template file to create new WaveformWidgets it
 // contain minimal set of method to re-implement

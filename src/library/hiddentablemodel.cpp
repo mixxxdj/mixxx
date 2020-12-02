@@ -1,9 +1,20 @@
 #include "library/hiddentablemodel.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QList>
+#include <QModelIndex>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStringBuilder>
+#include <QStringList>
+
+#include "library/columncache.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "library/dao/trackschema.h"
-
+#include "track/trackid.h"
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
                                    TrackCollectionManager* pTrackCollectionManager)

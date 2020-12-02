@@ -1,9 +1,8 @@
 #ifndef MIXXX_SQLLIKEWILDCARDESCAPER_H
 #define MIXXX_SQLLIKEWILDCARDESCAPER_H
 
-
+#include <QChar>
 #include <QString>
-
 
 // Utility class for escaping like statements.
 class SqlLikeWildcardEscaper final {

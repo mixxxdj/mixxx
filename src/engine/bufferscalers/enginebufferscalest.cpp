@@ -1,12 +1,13 @@
 #include "engine/bufferscalers/enginebufferscalest.h"
 
 // Fixes redefinition warnings from SoundTouch.
+#include <math.h>
 #include <soundtouch/SoundTouch.h>
 
-#include "control/controlobject.h"
-#include "engine/engineobject.h"
+#include "audio/signalinfo.h"
+#include "audio/types.h"
 #include "engine/readaheadmanager.h"
-#include "track/keyutils.h"
+#include "util/assert.h"
 #include "util/math.h"
 #include "util/sample.h"
 

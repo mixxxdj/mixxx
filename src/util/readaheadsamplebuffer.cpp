@@ -1,7 +1,10 @@
 #include "util/readaheadsamplebuffer.h"
 
-#include "util/sample.h"
+#include <utility>
 
+#include "util/assert.h"
+#include "util/math.h"
+#include "util/sample.h"
 
 #define DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer \
     DEBUG_ASSERT(m_readableRange.orientation() != IndexRange::Orientation::Backward); \

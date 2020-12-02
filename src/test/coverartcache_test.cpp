@@ -1,11 +1,22 @@
-#include <gtest/gtest.h>
-#include <QFileInfo>
-
 #include "library/coverartcache.h"
-#include "library/coverartutils.h"
-#include "library/trackcollection.h"
-#include "test/librarytest.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QByteArray>
+#include <QDir>
+#include <QImage>
+#include <QString>
+#include <QStringBuilder>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "library/coverart.h"
 #include "sources/soundsourceproxy.h"
+#include "test/librarytest.h"
+#include "test/mixxxtest.h"
+#include "track/track_decl.h"
+#include "util/sandbox.h"
 
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache

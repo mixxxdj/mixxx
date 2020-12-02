@@ -1,12 +1,19 @@
 #include "widget/wcuemenupopup.h"
 
 #include <QHBoxLayout>
-#include <QInputDialog>
+#include <QLayout>
 #include <QVBoxLayout>
+#include <QtCore>
+#include <memory>
+#include <optional>
 
+#include "audio/types.h"
 #include "engine/engine.h"
 #include "track/track.h"
-#include "util/color/color.h"
+#include "util/assert.h"
+#include "util/duration.h"
+
+class QCloseEvent;
 
 WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
         : QWidget(parent),

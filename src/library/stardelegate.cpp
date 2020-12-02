@@ -17,12 +17,18 @@
 
 #include "library/stardelegate.h"
 
-#include <QPainter>
-#include <QtDebug>
+#include <QAbstractItemModel>
+#include <QModelIndex>
+#include <QTableView>
+#include <QVariant>
+#include <QWidget>
+#include <QtCore>
 
 #include "library/stareditor.h"
 #include "library/starrating.h"
 #include "library/tableitemdelegate.h"
+
+class QPainter;
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),

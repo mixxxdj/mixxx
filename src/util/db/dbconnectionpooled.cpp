@@ -1,7 +1,11 @@
 #include "util/db/dbconnectionpooled.h"
 
-#include "util/logger.h"
+#include <QDebug>
+#include <memory>
 
+#include "util/assert.h"
+#include "util/db/dbconnection.h"
+#include "util/logger.h"
 
 namespace mixxx {
 

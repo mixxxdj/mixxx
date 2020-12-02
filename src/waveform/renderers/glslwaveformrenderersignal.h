@@ -1,6 +1,19 @@
 #pragma once
 
+#include <QtGui/qopengl.h>
+
+#include <QByteArrayData>
+#include <QDomNode>
+#include <QObject>
 #include <QOpenGLFunctions_2_1>
+#include <QString>
+#include <memory>
+
+class QGLFramebufferObject;
+class QGLShaderProgram;
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>

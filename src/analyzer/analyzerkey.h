@@ -2,8 +2,10 @@
 #define ANALYZER_ANALYZERKEY_H
 
 #include <QHash>
+#include <QHashNode>
 #include <QList>
 #include <QString>
+#include <memory>
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
@@ -11,6 +13,7 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/memory.h"
+#include "util/types.h"
 
 class AnalyzerKey : public Analyzer {
   public:

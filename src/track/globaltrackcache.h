@@ -1,15 +1,26 @@
 #pragma once
 
-
+#include <QByteArrayData>
+#include <QMutex>
+#include <QObject>
+#include <QSet>
+#include <QString>
 #include <map>
+#include <memory>
 #include <unordered_map>
+#include <utility>
 
 #include "track/track_decl.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
 #include "track/trackref.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
 #include "util/sandbox.h"
 
 // forward declaration(s)
 class GlobalTrackCache;
+class Track;
 
 enum class GlobalTrackCacheLookupResult {
     None,

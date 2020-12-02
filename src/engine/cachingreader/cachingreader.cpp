@@ -1,16 +1,17 @@
-#include <QtDebug>
-#include <QFileInfo>
-
 #include "engine/cachingreader/cachingreader.h"
-#include "control/controlobject.h"
-#include "track/track.h"
-#include "util/assert.h"
-#include "util/counter.h"
-#include "util/math.h"
-#include "util/sample.h"
-#include "util/logger.h"
-#include "util/compatibility.h"
 
+#include <QDebug>
+#include <QThread>
+#include <type_traits>
+#include <utility>
+
+#include "audio/types.h"
+#include "engine/cachingreader/cachingreaderchunk.h"
+#include "util/assert.h"
+#include "util/compatibility.h"
+#include "util/counter.h"
+#include "util/logger.h"
+#include "util/sample.h"
 
 namespace {
 

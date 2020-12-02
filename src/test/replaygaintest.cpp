@@ -1,8 +1,15 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <stddef.h>
 
+#include <QString>
+#include <QStringBuilder>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 #include "track/replaygain.h"
-
-#include <QtDebug>
+#include "util/math.h"
+#include "util/types.h"
 
 namespace {
 

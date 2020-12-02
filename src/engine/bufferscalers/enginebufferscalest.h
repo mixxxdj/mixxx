@@ -1,10 +1,16 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QString>
+#include <memory>
+
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "util/memory.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
 
 class ReadAheadManager;
+class QObject;
 
 namespace soundtouch {
 class SoundTouch;

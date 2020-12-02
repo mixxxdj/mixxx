@@ -1,5 +1,13 @@
+#include <QtCore/qsharedpointer.h>
 #include <preferences/effectsettingsmodel.h>
 
+#include <QAbstractItemModel>
+#include <QFlags>
+
+#include "effects/effectmanifest.h"
+#include "effects/effectsmanager.h"
+
+class QAbstractItemDelegate;
 
 namespace {
 const int kColumnEnabled = 0;

@@ -1,10 +1,29 @@
-#include <QStylePainter>
+#include "widget/wknobcomposed.h"
+
+#include <QtCore/qglobal.h>
+#include <math.h>
+
+#include <QDebug>
+#include <QDomElement>
+#include <QMetaObject>
+#include <QPainter>
+#include <QPen>
+#include <QPointF>
+#include <QRectF>
+#include <QSharedPointer>
+#include <QStyle>
 #include <QStyleOption>
+#include <QStylePainter>
 #include <QTransform>
+#include <QWidget>
 
 #include "util/duration.h"
-#include "widget/wknobcomposed.h"
+#include "util/math.h"
 #include "widget/wskincolor.h"
+
+class QMouseEvent;
+class QPaintEvent;
+class QWheelEvent;
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),

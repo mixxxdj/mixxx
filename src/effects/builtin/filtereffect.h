@@ -1,8 +1,13 @@
 #ifndef FILTEREFFECT_H
 #define FILTEREFFECT_H
 
+#include <QSet>
+#include <QString>
+
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
@@ -11,6 +16,15 @@
 #include "util/sample.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+class EngineFilterBiquad1High;
+class EngineFilterBiquad1Low;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 struct FilterGroupState : public EffectState {
     FilterGroupState(const mixxx::EngineParameters& bufferParameters);

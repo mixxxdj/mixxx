@@ -1,12 +1,17 @@
 #pragma once
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 #include <QMetaType>
 #include <QString>
+#include <QTextStreamFunction>
 #include <QtDebug>
 #include <QtGlobal>
-#include <QTextStreamFunction>
 
 #include "util/assert.h"
+
+class QChar;
 
 namespace mixxx {
 

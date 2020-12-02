@@ -1,7 +1,12 @@
 #ifndef ENGINEFILTERBUTTERWORTH8_H
 #define ENGINEFILTERBUTTERWORTH8_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "engine/filters/enginefilteriir.h"
+
+class QObject;
 
 class EngineFilterButterworth8Low : public EngineFilterIIR<8, IIR_LP> {
     Q_OBJECT

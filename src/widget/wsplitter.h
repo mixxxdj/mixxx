@@ -1,13 +1,20 @@
 #ifndef WSPLITTER_H
 #define WSPLITTER_H
 
+#include <QByteArrayData>
 #include <QDomNode>
 #include <QEvent>
 #include <QSplitter>
+#include <QString>
 
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
+
+class QEvent;
+class QObject;
+class QWidget;
 
 class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT

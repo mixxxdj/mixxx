@@ -1,9 +1,15 @@
 #ifndef RGBWAVEFORMWIDGET_H
 #define RGBWAVEFORMWIDGET_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
+#include "waveform/widgets/waveformwidgettype.h"
 #include "waveformwidgetabstract.h"
+
+class QObject;
+class QPaintEvent;
 
 class RGBWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     Q_OBJECT

@@ -1,12 +1,23 @@
-#include <gtest/gtest.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/tstring.h>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QByteArray>
+#include <QDebug>
 #include <QDir>
-#include <QtDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QIODevice>
+#include <QList>
+#include <QStringList>
+#include <QtGlobal>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "track/serato/markers.h"
-#include "util/memory.h"
+#include "track/taglib/trackmetadata_file.h"
+#include "util/color/rgbcolor.h"
 
 namespace {
 

@@ -1,5 +1,12 @@
 #include "sources/audiosourcestereoproxy.h"
 
+#include <QDebug>
+#include <utility>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
 #include "util/sample.h"
 

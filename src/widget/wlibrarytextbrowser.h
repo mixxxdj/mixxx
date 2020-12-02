@@ -4,9 +4,14 @@
 #ifndef WLIBRARYTEXTBROWSER_H
 #define WLIBRARYTEXTBROWSER_H
 
+#include <QByteArrayData>
+#include <QString>
 #include <QTextBrowser>
 
 #include "library/libraryview.h"
+
+class QObject;
+class QWidget;
 
 class WLibraryTextBrowser : public QTextBrowser, public LibraryView {
     Q_OBJECT

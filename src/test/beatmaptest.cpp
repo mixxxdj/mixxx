@@ -1,10 +1,17 @@
-#include <gtest/gtest.h>
-#include <memory.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <QVector>
+#include <memory>
 
+#include "audio/types.h"
+#include "gtest/gtest_pred_impl.h"
+#include "proto/beats.pb.h"
 #include "track/beatmap.h"
+#include "track/beats.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "util/duration.h"
 
 using namespace mixxx;
 

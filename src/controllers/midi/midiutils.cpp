@@ -1,5 +1,9 @@
 #include "controllers/midi/midiutils.h"
 
+#include <QChar>
+#include <QLatin1Char>
+#include <QObject>
+
 // static
 QString MidiUtils::opCodeToTranslatedString(MidiOpCode code) {
     if (code < 0x00 || code > 0xFF) {

@@ -4,8 +4,13 @@
 #ifndef ENCODER_ENCODEROPUSSETTINGS_H
 #define ENCODER_ENCODEROPUSSETTINGS_H
 
-#include "encoder/encoderrecordingsettings.h"
+#include <QList>
+#include <QString>
+
 #include "encoder/encoder.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "encoder/encodersettings.h"
+#include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 
 #define OPUS_BITRATE_MODES_COUNT 3

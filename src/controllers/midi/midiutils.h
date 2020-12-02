@@ -1,6 +1,9 @@
 #ifndef MIDIUTILS_H
 #define MIDIUTILS_H
 
+#include <QByteArray>
+#include <QString>
+
 #include "controllers/midi/midimessage.h"
 #include "util/duration.h"
 

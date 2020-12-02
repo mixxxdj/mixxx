@@ -1,7 +1,14 @@
 #ifndef HIDDENTABLEMODEL_H
 #define HIDDENTABLEMODEL_H
 
+#include <QModelIndexList>
+#include <QString>
+#include <QtCore>
+
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
+
+class TrackCollectionManager;
 
 class HiddenTableModel final : public BaseSqlTableModel {
     Q_OBJECT

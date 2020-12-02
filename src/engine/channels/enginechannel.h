@@ -18,17 +18,27 @@
 #ifndef ENGINECHANNEL_H
 #define ENGINECHANNEL_H
 
+#include <stddef.h>
+
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlproxy.h"
 #include "effects/effectsmanager.h"
-#include "engine/engineobject.h"
 #include "engine/channelhandle.h"
+#include "engine/engineobject.h"
 #include "engine/enginevumeter.h"
 #include "preferences/usersettings.h"
+#include "util/types.h"
 
 class ControlObject;
 class EngineBuffer;
 class EngineFilterBlock;
 class ControlPushButton;
+class ControlProxy;
+class EffectsManager;
+class QObject;
+struct GroupFeatureState;
 
 class EngineChannel : public EngineObject {
     Q_OBJECT

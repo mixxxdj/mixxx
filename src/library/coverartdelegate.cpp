@@ -1,14 +1,28 @@
 #include "library/coverartdelegate.h"
 
+#include <QAbstractItemModel>
+#include <QDebug>
+#include <QFlags>
+#include <QModelIndex>
 #include <QPainter>
+#include <QPen>
+#include <QPixmap>
+#include <QRect>
+#include <QStyle>
+#include <QTableView>
+#include <QWidget>
+#include <QtGui>
 #include <algorithm>
+#include <memory>
+#include <utility>
 
 #include "library/coverartcache.h"
-#include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
 #include "track/track.h"
+#include "track/trackref.h"
+#include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
-#include "widget/wlibrarytableview.h"
 
 namespace {
 

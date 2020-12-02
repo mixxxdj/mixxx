@@ -1,18 +1,21 @@
 #pragma once
 
-#include <QString>
 #include <QList>
+#include <QSet>
+#include <QString>
 
-#include "util/class.h"
-#include "util/types.h"
-#include "util/samplebuffer.h"
-#include "util/memory.h"
-#include "engine/channelhandle.h"
-#include "engine/effects/message.h"
-#include "engine/effects/groupfeaturestate.h"
+#include "effects/defs.h"
 #include "effects/effectchain.h"
+#include "engine/channelhandle.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
+#include "util/class.h"
+#include "util/memory.h"
+#include "util/samplebuffer.h"
+#include "util/types.h"
 
 class EngineEffect;
+struct GroupFeatureState;
 
 class EngineEffectChain : public EffectsRequestHandler {
   public:

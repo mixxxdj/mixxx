@@ -1,10 +1,19 @@
 #include "test/mixxxtest.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QFile>
+#include <QIODevice>
+#include <QList>
+#include <QSharedPointer>
 #include <QTemporaryFile>
 
 #include "control/control.h"
 #include "library/coverartutils.h"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/logging.h"
 

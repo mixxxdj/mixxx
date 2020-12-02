@@ -1,8 +1,23 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include "effects/effectsmanager.h"
+#include <QHeaderView>
+#include <QItemSelectionModel>
+#include <QLabel>
+#include <QList>
+#include <QRadioButton>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QTableView>
+#include <QVariant>
+#include <Qt>
+
+#include "effects/defs.h"
 #include "effects/effectmanifest.h"
-#include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
+#include "preferences/configobject.h"
+
+class QModelIndex;
+class QWidget;
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
                                UserSettingsPointer pConfig,

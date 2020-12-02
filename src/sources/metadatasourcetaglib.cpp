@@ -1,14 +1,54 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include "track/taglib/trackmetadata.h"
+#include <aifffile.h>
+#include <flacfile.h>
+#include <infotag.h>
+#include <mp4file.h>
+#include <mpegfile.h>
+#include <taglib.h>
+#include <taglib/vorbisfile.h>
+#include <tbytevector.h>
+#include <tiostream.h>
+#include <wavfile.h>
+#include <wavpackfile.h>
 
-#include "util/logger.h"
-#include "util/memory.h"
-
+#include <QDateTime>
+#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
+#include <QImage>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QtGlobal>
+#include <memory>
 
-#include <taglib/vorbisfile.h>
+#include "track/taglib/trackmetadata_ape.h"
+#include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_id3v2.h"
+#include "track/taglib/trackmetadata_mp4.h"
+#include "track/taglib/trackmetadata_riff.h"
+#include "track/taglib/trackmetadata_xiph.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
+#include "util/assert.h"
+#include "util/logger.h"
+
+namespace TagLib {
+class Tag;
+namespace APE {
+class Tag;
+} // namespace APE
+namespace ID3v2 {
+class Tag;
+} // namespace ID3v2
+namespace MP4 {
+class Tag;
+} // namespace MP4
+namespace Ogg {
+class XiphComment;
+} // namespace Ogg
+} // namespace TagLib
 #if (TAGLIB_HAS_OPUSFILE)
 #include <taglib/opusfile.h>
 #endif

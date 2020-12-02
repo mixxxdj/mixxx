@@ -3,6 +3,8 @@
 
 #include "util/battery/battery.h"
 
+class QObject;
+
 class BatteryLinux : public Battery {
   public:
     explicit BatteryLinux(QObject* pParent=nullptr);

@@ -1,6 +1,17 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QList>
+#include <QSet>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QString>
+#include <QStringLiteral>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/configobject.h"
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"

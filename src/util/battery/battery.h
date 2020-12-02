@@ -1,6 +1,10 @@
 #ifndef UTIL_BATTERY_BATTERY_H
 #define UTIL_BATTERY_BATTERY_H
 
+#include <QByteArrayData>
+#include <QObject>
+#include <QString>
+
 #include "util/timer.h"
 
 class Battery : public QObject {

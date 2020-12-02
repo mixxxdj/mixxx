@@ -1,13 +1,18 @@
 
 #include "widget/wtracktext.h"
 
-#include <QDebug>
-#include <QUrl>
+#include <QContextMenuEvent>
+#include <QFlags>
+#include <QMouseEvent>
+#include <QtCore>
+#include <memory>
 
-#include "control/controlobject.h"
 #include "track/track.h"
+#include "track/trackid.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
+
+class QWidget;
 
 namespace {
 const WTrackMenu::Features trackMenuFeatures =

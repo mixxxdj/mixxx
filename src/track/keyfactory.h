@@ -2,11 +2,14 @@
 #define KEYFACTORY_H
 
 #include <QHash>
+#include <QHashNode>
 #include <QString>
 #include <QVector>
 
 #include "proto/keys.pb.h"
 #include "track/keys.h"
+
+class QByteArray;
 
 class KeyFactory {
   public:

@@ -1,5 +1,12 @@
 #include "controllers/delegates/midibytedelegate.h"
-#include "controllers/midi/midimessage.h"
+
+#include <stddef.h>
+
+#include <QAbstractItemModel>
+#include <QModelIndex>
+#include <QWidget>
+#include <QtCore>
+
 #include "controllers/midi/midiutils.h"
 #include "widget/hexspinbox.h"
 

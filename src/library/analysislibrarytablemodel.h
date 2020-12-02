@@ -1,6 +1,12 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "library/librarytablemodel.h"
+
+class QObject;
+class TrackCollectionManager;
 
 class AnalysisLibraryTableModel : public LibraryTableModel
 {

@@ -1,10 +1,20 @@
 #pragma once
 
-#include <QString>
+#include <QByteArrayData>
+#include <QJsonDocument>
 #include <QList>
+#include <QString>
+#include <QUrlQuery>
 #include <QUuid>
 
+#include "network/httprequestmethod.h"
 #include "network/jsonwebtask.h"
+
+class QNetworkAccessManager;
+class QNetworkReply;
+class QObject;
+class QUrl;
+class QUuid;
 
 namespace mixxx {
 

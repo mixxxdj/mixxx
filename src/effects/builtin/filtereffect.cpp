@@ -1,5 +1,20 @@
 #include "effects/builtin/filtereffect.h"
+
+#include <QObject>
+#include <QSharedPointer>
+#include <QtGlobal>
+
+#include "audio/types.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/engine.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
+#include "util/sample.h"
+
+struct GroupFeatureState;
 
 namespace {
 const double kMinCorner = 13; // Hz

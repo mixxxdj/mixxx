@@ -18,11 +18,18 @@
 #ifndef WLABEL_H
 #define WLABEL_H
 
-#include <QLabel>
+#include <QColor>
+#include <QDomNode>
 #include <QEvent>
+#include <QLabel>
+#include <QString>
+#include <QtCore>
 
-#include "widget/wbasewidget.h"
 #include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
+
+class QResizeEvent;
+class QWidget;
 
 class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT

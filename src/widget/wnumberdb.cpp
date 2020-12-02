@@ -1,10 +1,12 @@
 
 #include "widget/wnumberdb.h"
 
-#include "util/math.h"
-#include <QVBoxLayout>
+#include <QChar>
+#include <QStringBuilder>
 
-#include "widget/wskincolor.h"
+#include "util/math.h"
+
+class QWidget;
 
 WNumberDb::WNumberDb(QWidget* pParent)
         : WNumber(pParent) {

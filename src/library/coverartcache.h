@@ -1,9 +1,12 @@
 #pragma once
 
+#include <QDebug>
 #include <QObject>
 #include <QPair>
 #include <QPixmap>
 #include <QSet>
+#include <QString>
+#include <QtCore>
 #include <QtDebug>
 
 #include "library/coverart.h"

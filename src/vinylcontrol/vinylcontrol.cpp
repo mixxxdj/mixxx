@@ -1,6 +1,10 @@
 #include "vinylcontrol/vinylcontrol.h"
+
+#include <QSharedPointer>
+
 #include "control/controlproxy.h"
-#include "control/controlobject.h"
+#include "preferences/configobject.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
         : m_pConfig(pConfig),

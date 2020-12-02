@@ -1,9 +1,24 @@
+#include "widget/wbattery.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QChar>
+#include <QDebug>
+#include <QDomElement>
+#include <QObject>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QStyle>
 #include <QStyleOption>
 #include <QStylePainter>
+#include <QWidget>
 
-#include "widget/wbattery.h"
 #include "util/battery/battery.h"
 #include "util/math.h"
+
+class QPaintEvent;
 
 WBattery::WBattery(QWidget* parent)
         : WWidget(parent),

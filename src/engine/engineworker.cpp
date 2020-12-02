@@ -2,7 +2,9 @@
 // Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
 
 #include "engine/engineworker.h"
+
 #include "engine/engineworkerscheduler.h"
+#include "util/assert.h"
 
 EngineWorker::EngineWorker()
     : m_pScheduler(nullptr) {

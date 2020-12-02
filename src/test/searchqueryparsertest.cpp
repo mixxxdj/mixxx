@@ -1,12 +1,29 @@
-#include <gtest/gtest.h>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QByteArray>
+#include <QDebug>
 #include <QDir>
-#include <QtDebug>
+#include <QList>
+#include <QString>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtGlobal>
+#include <memory>
 
+#include "audio/types.h"
+#include "gtest/gtest_pred_impl.h"
+#include "library/crate/crate.h"
+#include "library/crate/crateid.h"
+#include "library/searchquery.h"
 #include "library/searchqueryparser.h"
+#include "library/trackcollection.h"
 #include "test/librarytest.h"
 #include "track/track.h"
-#include "util/assert.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/duration.h"
 
 TrackPointer newTestTrack(int sampleRate) {
     TrackPointer pTrack(Track::newTemporary());

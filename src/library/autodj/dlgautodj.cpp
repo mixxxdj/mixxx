@@ -1,12 +1,30 @@
 #include "library/autodj/dlgautodj.h"
 
-#include <QMessageBox>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
 
+#include <QBoxLayout>
+#include <QComboBox>
+#include <QDebug>
+#include <QItemSelectionModel>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QModelIndexList>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QTableView>
+#include <QVariant>
+#include <QtCore>
+#include <memory>
+
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 #include "library/playlisttablemodel.h"
-#include "library/trackcollectionmanager.h"
+#include "preferences/configobject.h"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/duration.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"

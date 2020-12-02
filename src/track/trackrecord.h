@@ -1,17 +1,18 @@
 #pragma once
 
-#include "proto/keys.pb.h"
+#include <QDateTime>
+#include <QString>
 
-#include "track/trackid.h"
+#include "library/coverart.h"
+#include "proto/keys.pb.h"
 #include "track/cue.h"
 #include "track/keys.h"
 #include "track/keyutils.h"
-#include "track/trackmetadata.h"
 #include "track/playcounter.h"
-
-#include "library/coverart.h"
+#include "track/trackid.h"
+#include "track/trackmetadata.h"
 #include "util/color/rgbcolor.h"
-
+#include "util/macros.h"
 
 namespace mixxx {
 

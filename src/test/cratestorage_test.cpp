@@ -1,7 +1,16 @@
-#include "test/librarytest.h"
-
 #include "library/crate/cratestorage.h"
 
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QString>
+#include <QtGlobal>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "library/crate/crate.h"
+#include "library/crate/crateid.h"
+#include "test/librarytest.h"
 
 class CrateStorageTest : public LibraryTest {
   protected:

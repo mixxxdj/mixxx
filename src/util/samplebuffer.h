@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include <algorithm> // std::swap
+#include <utility>
 
+#include "util/assert.h"
 #include "util/types.h"
-
 
 namespace mixxx {
 

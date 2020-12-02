@@ -1,6 +1,6 @@
 #include "track/cueinfo.h"
 
-#include "util/assert.h"
+#include "util/optional.h"
 
 namespace mixxx {
 

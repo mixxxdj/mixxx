@@ -2,7 +2,9 @@
 
 #include <QDir>
 #include <QList>
+#include <QPixmap>
 #include <QSet>
+#include <QString>
 #include <QWidget>
 
 #include "preferences/usersettings.h"
@@ -16,6 +18,10 @@ class VinylControlManager;
 class EffectsManager;
 class RecordingManager;
 class LaunchImage;
+class QDir;
+class QWidget;
+template<typename T>
+class QSet;
 
 class SkinLoader {
   public:

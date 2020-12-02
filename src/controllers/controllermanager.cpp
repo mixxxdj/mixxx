@@ -5,16 +5,32 @@
   * @brief Manages creation/enumeration/deletion of hardware controllers.
   */
 
-#include <QSet>
-
-#include "util/trace.h"
 #include "controllers/controllermanager.h"
-#include "controllers/defs_controllers.h"
-#include "controllers/controllerlearningeventfilter.h"
-#include "util/cmdlineargs.h"
-#include "util/time.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QMutexLocker>
+#include <QSet>
+#include <QStringList>
+#include <QThread>
+#include <QtCore>
+#include <type_traits>
+
+#include "controllers/controller.h"
+#include "controllers/controllerenumerator.h"
+#include "controllers/controllerlearningeventfilter.h"
+#include "controllers/controllerpresetfilehandler.h"
+#include "controllers/controllerpresetinfoenumerator.h"
+#include "controllers/defs_controllers.h"
 #include "controllers/midi/portmidienumerator.h"
+#include "preferences/configobject.h"
+#include "util/assert.h"
+#include "util/cmdlineargs.h"
+#include "util/duration.h"
+#include "util/time.h"
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
 #endif

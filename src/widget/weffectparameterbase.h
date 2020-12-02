@@ -1,13 +1,18 @@
 #ifndef WEFFECTPARAMETERBASE_H
 #define WEFFECTPARAMETERBASE_H
 
+#include <QByteArrayData>
 #include <QDomNode>
+#include <QString>
 
-#include "widget/wlabel.h"
+#include "effects/defs.h"
 #include "effects/effectparameterslotbase.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
 
 class EffectsManager;
+class QObject;
+class QWidget;
 
 class WEffectParameterBase : public WLabel {
     Q_OBJECT

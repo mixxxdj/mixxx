@@ -1,18 +1,20 @@
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
-
 #include "waveformrendererendoftrack.h"
-#include "waveformwidgetrenderer.h"
 
-#include "control/controlobject.h"
+#include <math.h>
+#include <stdlib.h>
+
+#include <QDomNode>
+#include <QPainter>
+#include <QString>
+#include <Qt>
+#include <QtGui>
+
 #include "control/controlproxy.h"
-
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-
+#include "util/duration.h"
 #include "util/painterscope.h"
-#include "util/timer.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
 
 namespace {
 

@@ -1,9 +1,14 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
 #include <QDir>
+#include <QString>
 #include <QTemporaryFile>
-#include <QtDebug>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
+#include "track/trackfile.h"
+#include "track/trackid.h"
 #include "track/trackref.h"
 
 namespace {

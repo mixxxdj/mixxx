@@ -1,9 +1,10 @@
 #ifndef XML_H
 #define XML_H
 
-#include <QDomNode>
-#include <QDomElement>
 #include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QString>
 
 class XmlParse {
   public:

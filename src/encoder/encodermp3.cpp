@@ -1,10 +1,16 @@
-#include <QtDebug>
-#include <QObject>
-#include <limits.h>
-
 #include "encoder/encodermp3.h"
-#include "encoder/encodermp3settings.h"
+
+#include <QtCore/qglobal.h>
+#include <limits.h>
+#include <stdlib.h>
+
+#include <QByteArray>
+#include <QDebug>
+#include <QList>
+
 #include "encoder/encodercallback.h"
+#include "encoder/encodermp3settings.h"
+#include "encoder/encodersettings.h"
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number

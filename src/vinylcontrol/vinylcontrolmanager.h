@@ -7,7 +7,10 @@
 #ifndef VINYLCONTROLMANAGER_H
 #define VINYLCONTROLMANAGER_H
 
+#include <QByteArrayData>
+#include <QList>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QTimerEvent>
 
@@ -21,7 +24,8 @@ class ControlPushButton;
 class SoundManager;
 class VinylControl;
 class VinylControlProcessor;
-
+class QTimerEvent;
+class VinylSignalQualityListener;
 
 // VinylControlManager is the main-thread interface that other parts of Mixxx
 // use to interact with the vinyl control subsystem (other than controls exposed

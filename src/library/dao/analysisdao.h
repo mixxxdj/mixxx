@@ -1,14 +1,22 @@
 #ifndef ANALYSISDAO_H
 #define ANALYSISDAO_H
 
-#include <QObject>
-#include <QDir>
-#include <QSqlDatabase>
+#include <stddef.h>
 
-#include "preferences/usersettings.h"
+#include <QByteArray>
+#include <QDir>
+#include <QList>
+#include <QObject>
+#include <QSqlDatabase>
+#include <QString>
+
 #include "library/dao/dao.h"
+#include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "waveform/waveform.h"
+
+class QSqlDatabase;
+class QSqlQuery;
 
 class AnalysisDao : public DAO {
   public:

@@ -1,9 +1,13 @@
-#include <QtDebug>
-
 #include "widget/weffect.h"
 
-#include "effects/effectsmanager.h"
+#include <QSharedPointer>
+
+#include "effects/effect.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectslot.h"
 #include "widget/effectwidgetutils.h"
+
+class QWidget;
 
 WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),

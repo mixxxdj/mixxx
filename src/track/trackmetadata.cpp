@@ -1,5 +1,6 @@
 #include "track/trackmetadata.h"
 
+#include "audio/signalinfo.h"
 #include "audio/streaminfo.h"
 #include "util/logger.h"
 

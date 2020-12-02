@@ -1,10 +1,20 @@
 #include "library/export/trackexportworker.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QChar>
 #include <QDebug>
+#include <QDir>
+#include <QFile>
 #include <QFileInfo>
-#include <QMessageBox>
+#include <QList>
+#include <QMap>
+#include <QScopedPointer>
+#include <memory>
 
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "util/compatibility.h"
 
 namespace {
 

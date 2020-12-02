@@ -16,12 +16,20 @@
 #ifndef DLGPREFSOUNDITEM_H
 #define DLGPREFSOUNDITEM_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QPoint>
+#include <QString>
+#include <QWidget>
+
 #include "preferences/dialog/ui_dlgprefsounditem.h"
-#include "soundio/soundmanagerutil.h"
 #include "soundio/sounddevice.h"
+#include "soundio/soundmanagerutil.h"
 
 class SoundDevice;
 class SoundManagerConfig;
+class QEvent;
+class QObject;
 
 /**
  * Class representing an input or output selection widget in DlgPrefSound.

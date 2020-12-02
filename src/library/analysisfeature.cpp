@@ -2,21 +2,29 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
-#include <QtDebug>
-
-#include "library/library.h"
 #include "library/analysisfeature.h"
 
-#include "library/library.h"
-#include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
-#include "library/dlganalysis.h"
-#include "widget/wlibrary.h"
+#include <QDebug>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QThread>
+#include <memory>
+
+#include "analyzer/analyzerthread.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/dlganalysis.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
-#include "util/debug.h"
+#include "track/track_decl.h"
 #include "util/logger.h"
+#include "util/math.h"
+#include "widget/wlibrary.h"
+
+class QObject;
+class QUrl;
+class TrackId;
 
 namespace {
 

@@ -1,20 +1,24 @@
 #ifndef EFFECTRACK_H
 #define EFFECTRACK_H
 
-#include <QObject>
-#include <QString>
-#include <QSharedPointer>
+#include <QDomElement>
 #include <QHash>
+#include <QList>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
+#include <QtCore>
 
 #include "control/controlobject.h"
-#include "engine/channelhandle.h"
 #include "effects/defs.h"
+#include "effects/effectchain.h"
+#include "effects/effectchainslot.h"
+#include "engine/channelhandle.h"
 
 class EngineEffectRack;
 class EffectsManager;
 class EffectChainManager;
-
-#include "effects/effectchainslot.h"
+class ChannelHandleAndGroup;
 
 //TODO(Be): Remove these superfluous classes.
 class EffectRack : public QObject {

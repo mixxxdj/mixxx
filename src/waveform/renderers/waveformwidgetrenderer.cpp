@@ -1,16 +1,20 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
-#include <QPainter>
-#include <QPainterPath>
+#include <math.h>
+#include <stddef.h>
 
-#include "control/controlobject.h"
+#include <QPainter>
+#include <QPoint>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <memory>
+
 #include "control/controlproxy.h"
 #include "track/track.h"
 #include "util/math.h"
-#include "util/performancetimer.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/visualplayposition.h"
 #include "waveform/waveform.h"
-#include "widget/wwidget.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
 const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;

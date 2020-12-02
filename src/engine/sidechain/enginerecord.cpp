@@ -8,13 +8,24 @@
 
 #include "engine/sidechain/enginerecord.h"
 
-#include "control/controlobject.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QSharedPointer>
+#include <memory>
+#include <type_traits>
+
 #include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "mixer/playerinfo.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "util/db/dbid.h"
 #include "util/event.h"
 
 const int kMetaDataLifeTimeout = 16;

@@ -3,6 +3,9 @@
 
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/readaheadmanager.h"
+#include "util/types.h"
+
+class ReadAheadManager;
 
 /** Number of samples to read ahead */
 const int kiLinearScaleReadAheadLength = 10240;

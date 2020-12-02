@@ -2,10 +2,17 @@
 #define WAVEFORMRENDERBEAT_H
 
 #include <QColor>
+#include <QDomNode>
+#include <QLineF>
+#include <QVector>
 
 #include "skin/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
+
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRenderBeat : public WaveformRendererAbstract {
   public:

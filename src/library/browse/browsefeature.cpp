@@ -1,26 +1,45 @@
 // browsefeature.cpp
 // Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
 
+#include "library/browse/browsefeature.h"
+
+#include <QtCore/qglobal.h>
+
 #include <QAction>
-#include <QDirModel>
+#include <QByteArray>
+#include <QDebug>
+#include <QDir>
 #include <QFileInfo>
+#include <QFileInfoList>
+#include <QList>
 #include <QMenu>
+#include <QMessageBox>
+#include <QModelIndex>
 #include <QPushButton>
 #include <QStandardPaths>
+#include <QStaticStringData>
+#include <QStringBuilder>
 #include <QStringList>
-#include <QTreeView>
+#include <QStringLiteral>
+#include <QtCore>
+#include <memory>
+#include <utility>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/browse/browsefeature.h"
+#include "library/dao/directorydao.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "track/track.h"
-#include "util/memory.h"
+#include "preferences/configobject.h"
+#include "util/file.h"
+#include "util/sandbox.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
+
+class KeyboardEventFilter;
+class RecordingManager;
+class TreeItemModel;
 
 namespace {
 

@@ -1,11 +1,23 @@
-#include <QtDebug>
+#include "effects/effectparameterslot.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDomDocument>
+#include <QSharedPointer>
+#include <QStringBuilder>
+#include <QtCore>
 
 #include "control/controleffectknob.h"
-#include "effects/effectparameterslot.h"
-#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
+#include "effects/effect.h"
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectparameter.h"
+#include "effects/effectxmlelements.h"
+#include "preferences/configobject.h"
 #include "util/xml.h"
 
 EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)

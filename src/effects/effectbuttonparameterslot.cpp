@@ -1,10 +1,21 @@
-#include <QtDebug>
-
-#include "control/controleffectknob.h"
 #include "effects/effectbuttonparameterslot.h"
-#include "effects/effectxmlelements.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDomDocument>
+#include <QList>
+#include <QSharedPointer>
+#include <QStringBuilder>
+
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "effects/effect.h"
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectparameter.h"
+#include "effects/effectxmlelements.h"
+#include "preferences/configobject.h"
 #include "util/math.h"
 #include "util/xml.h"
 

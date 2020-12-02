@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QColor>
+#include <QDebug>
 #include <QMutex>
 #include <QObject>
+#include <QString>
 #include <memory>
 
 #include "audio/types.h"
@@ -13,6 +16,11 @@
 
 class CueDAO;
 class Track;
+namespace mixxx {
+namespace audio {
+class SampleRate;
+} // namespace audio
+} // namespace mixxx
 
 class Cue : public QObject {
     Q_OBJECT

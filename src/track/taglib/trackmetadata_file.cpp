@@ -1,8 +1,25 @@
 #include "track/taglib/trackmetadata_file.h"
 
+#include <aifffile.h>
+#include <audioproperties.h>
+#include <flacfile.h>
+#include <mp4file.h>
+#include <mpegfile.h>
+#include <taglib.h>
 #include <taglib/tfile.h>
+#include <wavfile.h>
+#include <wavpackfile.h>
 
+#include <QChar>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <type_traits>
+
+#include "audio/types.h"
 #include "track/taglib/trackmetadata_common.h"
+#include "track/trackmetadata.h"
+#include "util/assert.h"
+#include "util/duration.h"
 #include "util/logger.h"
 
 // TagLib has support for has<TagType>() style functions since version 1.9

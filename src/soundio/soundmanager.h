@@ -1,17 +1,24 @@
 #pragma once
 
+#include <QtCore/qglobal.h>
+
+#include <QAtomicInt>
+#include <QDebug>
 #include <QHash>
 #include <QList>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <QtCore>
 #include <memory>
 
 #include "audio/types.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceerror.h"
 #include "soundio/soundmanagerconfig.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
@@ -23,6 +30,7 @@ class AudioDestination;
 class ControlObject;
 class ControlProxy;
 class SoundDeviceNotFound;
+class EngineNetworkStream;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"

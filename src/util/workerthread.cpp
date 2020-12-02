@@ -1,5 +1,9 @@
 #include "util/workerthread.h"
 
+#include <QByteArray>
+#include <QDebug>
+
+#include "util/assert.h"
 
 namespace {
 

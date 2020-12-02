@@ -1,10 +1,12 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <math.h>
 
-#include <QTestEventList>
-#include <QScopedPointer>
+#include <memory>
 
+#include "control/controlbehavior.h"
+#include "gtest/gtest_pred_impl.h"
 #include "mixxxtest.h"
-#include "control/controlobject.h"
 #include "util/math.h"
 
 class AudioTaperPotTest : public MixxxTest {};

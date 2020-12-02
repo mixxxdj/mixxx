@@ -1,14 +1,24 @@
 #ifndef WWIDGETSTACK_H
 #define WWIDGETSTACK_H
 
-#include <QWidget>
-#include <QObject>
-#include <QStackedWidget>
+#include <QByteArrayData>
 #include <QEvent>
+#include <QMap>
+#include <QObject>
+#include <QSize>
+#include <QStackedWidget>
+#include <QString>
+#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "widget/wbasewidget.h"
+
+class ConfigKey;
+class ControlObject;
+class QEvent;
+class QShowEvent;
+class QWidget;
 
 class WidgetStackControlListener : public QObject {
     Q_OBJECT

@@ -1,4 +1,12 @@
 #include "control/controlbehavior.h"
+
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QtGlobal>
+
 #include "control/control.h"
 #include "util/math.h"
 

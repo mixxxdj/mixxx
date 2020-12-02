@@ -1,23 +1,50 @@
 // traktorfeature.cpp
 // Created 9/26/2010 by Tobias Rafreider
 
-#include <QtDebug>
-#include <QMessageBox>
-#include <QXmlStreamReader>
-#include <QMap>
-#include <QSettings>
-#include <QStandardPaths>
-
 #include "library/traktor/traktorfeature.h"
 
-#include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
-#include "library/queryutil.h"
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDir>
+#include <QException>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QFlags>
+#include <QIODevice>
+#include <QList>
+#include <QMap>
+#include <QMessageBox>
+#include <QMetaType>
+#include <QModelIndex>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStandardPaths>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringRef>
+#include <QThread>
+#include <QXmlStreamAttributes>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
+#include <QtSql>
+#include <algorithm>
+#include <memory>
+#include <utility>
+
+#include "library/basesqltablemodel.h"
+#include "library/basetrackcache.h"
+#include "library/columncache.h"
 #include "library/library.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "util/sandbox.h"
+
+class QObject;
 
 namespace {
 

@@ -11,7 +11,14 @@
 #ifndef CONTROLLERENUMERATOR_H
 #define CONTROLLERENUMERATOR_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QObject>
+#include <QString>
+
 #include "controllers/controller.h"
+
+class Controller;
 
 class ControllerEnumerator : public QObject {
     Q_OBJECT

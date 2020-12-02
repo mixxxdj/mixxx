@@ -1,12 +1,18 @@
 #include "widget/wimagestore.h"
 
-#include <QtDebug>
-#include <QSvgRenderer>
+#include <QtCore/qglobal.h>
+
+#include <QByteArray>
+#include <QDebug>
+#include <QImage>
+#include <QMutableHashIterator>
 #include <QPainter>
+#include <QSize>
+#include <QStringBuilder>
+#include <QSvgRenderer>
 
 #include "skin/imgloader.h"
-#include "util/assert.h"
-
+#include "skin/imgsource.h"
 
 // static
 QHash<QString, std::weak_ptr<QImage> > WImageStore::m_dictionary;

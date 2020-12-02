@@ -5,8 +5,9 @@
 #include <QtGlobal>
 
 #ifdef Q_OS_MAC
-#include <QString>
 #include <CoreFoundation/CFString.h>
+
+#include <QString>
 
 QString CFStringToQString(CFStringRef str);
 CFStringRef QStringToCFString(const QString& str);

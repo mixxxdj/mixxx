@@ -1,9 +1,14 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "engine/engineobject.h"
+#include "util/types.h"
 
 class ControlPotmeter;
 class ControlProxy;
+class QObject;
 
 class EngineVuMeter : public EngineObject {
     Q_OBJECT

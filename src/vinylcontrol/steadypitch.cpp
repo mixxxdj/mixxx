@@ -15,11 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-
-#include "vinylcontrolxwax.h"
 #include "steadypitch.h"
+
+#include <math.h>
+
 #include "util/math.h"
+#include "vinylcontrol/steadypitch.h"
 
 SteadyPitch::SteadyPitch(double threshold, bool assumeSteady)
     : m_bAssumeSteady(assumeSteady),

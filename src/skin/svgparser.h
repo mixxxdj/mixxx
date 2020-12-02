@@ -1,11 +1,13 @@
 #pragma once
 
-#include <QString>
-#include <QDomNode>
+#include <qscriptvalue.h>
+
+#include <QByteArray>
 #include <QDomElement>
+#include <QDomNode>
+#include <QString>
 
 #include "skin/skincontext.h"
-
 
 // A class for managing the svg files
 class SvgParser {

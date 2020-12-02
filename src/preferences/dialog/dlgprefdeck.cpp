@@ -1,24 +1,35 @@
-#include <QList>
-#include <QDir>
-#include <QToolTip>
+#include "preferences/dialog/dlgprefdeck.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QAbstractSlider>
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDebug>
 #include <QDoubleSpinBox>
+#include <QLabel>
+#include <QList>
+#include <QRadioButton>
+#include <QSlider>
+#include <QSpinBox>
+#include <QStringBuilder>
+#include <QVariant>
 #include <QWidget>
-#include <QLocale>
+#include <QtCore>
+#include <type_traits>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/enginebuffer.h"
 #include "mixer/basetrackplayer.h"
-#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "mixxx.h"
-#include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
-#include "util/compatibility.h"
 #include "util/duration.h"
-#include "widget/wnumberpos.h"
+
+class QAbstractButton;
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;

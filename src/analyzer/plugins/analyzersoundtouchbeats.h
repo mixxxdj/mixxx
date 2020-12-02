@@ -2,10 +2,13 @@
 #define ANALYZER_PLUGINS_ANALYZERSOUNDTOUCHBEATS
 
 #include <QObject>
+#include <QString>
+#include <memory>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "util/memory.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
 
 namespace soundtouch {
 class BPMDetect;

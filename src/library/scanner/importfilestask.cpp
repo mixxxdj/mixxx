@@ -1,8 +1,13 @@
 #include "library/scanner/importfilestask.h"
 
-#include "library/scanner/libraryscanner.h"
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+
 #include "track/trackfile.h"
 #include "util/timer.h"
+
+class LibraryScanner;
 
 ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
         const ScannerGlobalPointer scannerGlobal,

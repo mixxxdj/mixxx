@@ -1,12 +1,14 @@
 #include "engine/enginepregain.h"
 
-#include <QtDebug>
+#include <math.h>
+#include <stddef.h>
 
-#include "preferences/usersettings.h"
 #include "control/controlaudiotaperpot.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "control/controlpushbutton.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "preferences/configobject.h"
+#include "util/duration.h"
 #include "util/math.h"
 #include "util/sample.h"
 

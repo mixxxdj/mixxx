@@ -1,6 +1,8 @@
 #ifndef MIXXX_SCREENSAVER_H
 #define MIXXX_SCREENSAVER_H
 
+#include <QtCore/qglobal.h>
+#include <stdint.h>
 #ifdef Q_OS_MAC
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #endif // Q_OS_MAC

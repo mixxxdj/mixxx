@@ -1,6 +1,12 @@
 #include "track/cueinfoimporter.h"
 
+#include <QtGlobal>
+#include <optional>
+
 namespace mixxx {
+namespace audio {
+class SignalInfo;
+} // namespace audio
 
 CueInfoImporter::CueInfoImporter(const QList<CueInfo>& cueInfos)
         : m_cueInfos(cueInfos) {

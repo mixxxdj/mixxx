@@ -1,10 +1,26 @@
-#include <QtDebug>
-#include <QInputDialog>
-#include <QMetaMethod>
-#include <QMetaProperty>
-#include <QAbstractItemDelegate>
-#include <QMessageBox>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDebug>
+#include <QDoubleSpinBox>
+#include <QGroupBox>
 #include <QHeaderView>
+#include <QInputDialog>
+#include <QItemSelectionModel>
+#include <QLineEdit>
+#include <QList>
+#include <QMap>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QObject>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSharedPointer>
+#include <QSpinBox>
+#include <QTableView>
+#include <QTextEdit>
+#include <QVariant>
+#include <QWidget>
+#include <QtCore>
 
 // shout.h checks for WIN32 to see if we are on Windows
 #ifdef WIN64
@@ -17,11 +33,12 @@
 #endif
 
 #include "broadcast/defs_broadcast.h"
-#include "recording/defs_recording.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
+#include "preferences/broadcastsettingsmodel.h"
+#include "preferences/dialog/dlgprefbroadcast.h"
+#include "recording/defs_recording.h"
 #include "util/logger.h"
 
 namespace {

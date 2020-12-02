@@ -1,7 +1,10 @@
 #ifndef BANSHEEDBCONNECTION_H
 #define BANSHEEDBCONNECTION_H
 
+#include <QList>
+#include <QMap>
 #include <QSqlDatabase>
+#include <QString>
 #include <QUrl>
 
 class BansheeDbConnection

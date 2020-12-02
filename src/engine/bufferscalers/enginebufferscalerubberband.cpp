@@ -1,12 +1,15 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
 #include <rubberband/RubberBandStretcher.h>
+#include <stddef.h>
 
-#include <QtDebug>
+#include <QDebug>
 
-#include "control/controlobject.h"
+#include "audio/signalinfo.h"
 #include "engine/readaheadmanager.h"
-#include "track/keyutils.h"
+#include "util/assert.h"
 #include "util/counter.h"
 #include "util/defs.h"
 #include "util/math.h"

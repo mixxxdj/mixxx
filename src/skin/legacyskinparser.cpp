@@ -3,34 +3,56 @@
 
 #include "skin/legacyskinparser.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QByteArray>
+#include <QColor>
+#include <QDebug>
 #include <QDir>
+#include <QDomDocument>
+#include <QDomNodeList>
+#include <QFile>
+#include <QFileInfo>
 #include <QGridLayout>
+#include <QHBoxLayout>
+#include <QIODevice>
+#include <QKeySequence>
 #include <QLabel>
-#include <QMutexLocker>
+#include <QLayout>
+#include <QPalette>
+#include <QPixmap>
+#include <QSet>
+#include <QSharedPointer>
+#include <QSizePolicy>
 #include <QSplitter>
 #include <QStackedWidget>
+#include <QStringBuilder>
+#include <QStringList>
 #include <QVBoxLayout>
-#include <QtDebug>
+#include <QWidget>
 #include <QtGlobal>
+#include <utility>
 
+#include "control/control.h"
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "effects/effectsmanager.h"
 #include "library/library.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
-#include "recording/recordingmanager.h"
+#include "preferences/configobject.h"
 #include "skin/colorschemeparser.h"
 #include "skin/launchimage.h"
 #include "skin/skincontext.h"
+#include "track/track_decl.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
-#include "waveform/vsyncthread.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -59,6 +81,7 @@
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
+#include "widget/woverview.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewrgb.h"
@@ -80,9 +103,10 @@
 #include "widget/wtrackwidgetgroup.h"
 #include "widget/wvumeter.h"
 #include "widget/wwaveformviewer.h"
-#include "widget/wwidget.h"
 #include "widget/wwidgetgroup.h"
 #include "widget/wwidgetstack.h"
+
+class VinylControlManager;
 
 using mixxx::skin::SkinManifest;
 

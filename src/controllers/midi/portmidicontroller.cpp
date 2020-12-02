@@ -7,9 +7,17 @@
  *
  */
 
-#include "controllers/midi/midiutils.h"
 #include "controllers/midi/portmidicontroller.h"
+
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midimessage.h"
+#include "controllers/midi/midiutils.h"
+#include "util/duration.h"
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,

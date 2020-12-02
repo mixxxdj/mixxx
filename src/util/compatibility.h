@@ -1,14 +1,21 @@
 #pragma once
 
+#include <QtCore/qglobal.h>
+
 #include <QCoreApplication>
+#include <QDebug>
 #include <QGuiApplication>
 #include <QList>
 #include <QScreen>
+#include <QString>
 #include <QUuid>
 #include <QWidget>
 #include <QWindow>
+#include <QtCore>
 
 #include "util/assert.h"
+
+class QScreen;
 #if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
 #include "util/widgethelper.h"
 #endif

@@ -1,5 +1,3 @@
-#include <QtDebug>
-
 #include "waveform/waveformfactory.h"
 #include "waveform/waveform.h"
 

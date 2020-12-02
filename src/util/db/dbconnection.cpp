@@ -1,14 +1,20 @@
+#include <string.h>
+
+#include <QCharRef>
+#include <QDebug>
 #include <QSqlDriver>
 #include <QSqlError>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QVariant>
+#include <QtDebug>
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>
 #endif // __SQLITE3__
 
 #include "util/db/dbconnection.h"
-
 #include "util/db/sqllikewildcards.h"
-#include "util/memory.h"
 #include "util/logger.h"
 #include "util/assert.h"
 

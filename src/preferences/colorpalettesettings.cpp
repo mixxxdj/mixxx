@@ -1,6 +1,21 @@
 #include "preferences/colorpalettesettings.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QList>
+#include <QRegExp>
+#include <QSharedPointer>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QtCore>
+
+#include "preferences/configobject.h"
+#include "util/assert.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/color/rgbcolor.h"
 
 namespace {
 const mixxx::RgbColor kColorBlack(0x000000);

@@ -1,19 +1,25 @@
 #ifndef WAVEFORMMARK_H
 #define WAVEFORMMARK_H
 
+#include <QColor>
 #include <QDomNode>
 #include <QImage>
+#include <QSharedPointer>
+#include <QString>
+#include <Qt>
+#include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "preferences/configobject.h"
 #include "track/cue.h"
 #include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
 class SkinContext;
 class WaveformSignalColors;
-
 class WOverview;
+class QPoint;
 
 class WaveformMark {
   public:

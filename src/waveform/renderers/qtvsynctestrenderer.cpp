@@ -1,11 +1,22 @@
 #include "waveform/renderers/qtvsynctestrenderer.h"
 
+#include <stddef.h>
+
+#include <QColor>
+#include <QPainter>
+#include <QPointF>
+#include <QSharedPointer>
+#include <QtCore>
+#include <QtGui>
+#include <memory>
+
 #include "track/track.h"
+#include "track/track_decl.h"
 #include "util/painterscope.h"
 #include "util/performancetimer.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 
 QtVSyncTestRenderer::QtVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)

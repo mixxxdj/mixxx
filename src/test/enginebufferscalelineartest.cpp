@@ -1,11 +1,22 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-generated-function-mockers.h>
+#include <gmock/gmock-generated-nice-strict.h>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-more-actions.h>
+#include <gmock/gmock-spec-builders.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-printers.h>
+#include <gtest/gtest-test-part.h>
+#include <stddef.h>
 
-#include <QtDebug>
 #include <QVector>
+#include <QtGlobal>
+#include <memory>
 
+#include "audio/types.h"
 #include "engine/bufferscalers/enginebufferscalelinear.h"
 #include "engine/readaheadmanager.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/mixxxtest.h"
 #include "util/math.h"
 #include "util/sample.h"

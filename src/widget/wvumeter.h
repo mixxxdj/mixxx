@@ -18,16 +18,26 @@
 #ifndef WVUMETER_H
 #define WVUMETER_H
 
+#include <QByteArrayData>
+#include <QDomNode>
+#include <QPaintEvent>
 #include <QPixmap>
 #include <QString>
-#include <QPaintEvent>
 #include <QWidget>
-#include <QDomNode>
 
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
+#include "skin/pixmapsource.h"
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
+#include "widget/paintable.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
+
+class QObject;
+class QPaintEvent;
+class QWidget;
+namespace mixxx {
+class Duration;
+} // namespace mixxx
 
 class WVuMeter : public WWidget  {
    Q_OBJECT

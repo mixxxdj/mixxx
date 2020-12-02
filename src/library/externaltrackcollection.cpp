@@ -1,5 +1,8 @@
 #include "library/externaltrackcollection.h"
 
+#include "library/relocatedtrack.h"
+#include "track/trackref.h"
+#include "util/assert.h"
 
 void ExternalTrackCollection::relocateTracks(
         const QList<RelocatedTrack>& relocatedTracks) {

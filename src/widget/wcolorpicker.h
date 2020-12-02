@@ -1,15 +1,24 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QFlags>
 #include <QGridLayout>
+#include <QList>
 #include <QMap>
 #include <QPushButton>
+#include <QString>
 #include <QStyle>
 #include <QStyleFactory>
 #include <QWidget>
 
 #include "util/color/color.h"
 #include "util/color/colorpalette.h"
+#include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
+
+class QGridLayout;
+class QObject;
+class QPushButton;
 
 class WColorPicker : public QWidget {
     Q_OBJECT

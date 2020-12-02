@@ -1,22 +1,41 @@
 #include "library/setlogfeature.h"
 
-#include <QDateTime>
-#include <QMenu>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
 
-#include "control/controlobject.h"
+#include <QAction>
+#include <QDate>
+#include <QDebug>
+#include <QMenu>
+#include <QModelIndex>
+#include <QSqlRecord>
+#include <QSqlTableModel>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QtCore>
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <type_traits>
+
+#include "library/dao/playlistdao.h"
 #include "library/library.h"
+#include "library/libraryview.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 #include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
+#include "track/playcounter.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
+
+class KeyboardEventFilter;
 
 SetlogFeature::SetlogFeature(
         Library* pLibrary,

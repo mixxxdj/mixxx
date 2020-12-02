@@ -2,14 +2,19 @@
 #define WIDGET_WMAINMENUBAR
 
 #include <QAction>
+#include <QByteArrayData>
 #include <QList>
 #include <QMenuBar>
 #include <QObject>
 #include <QScopedPointer>
+#include <QString>
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+
+class QAction;
+class QWidget;
 
 class VisibilityControlConnection : public QObject {
     Q_OBJECT

@@ -13,14 +13,30 @@
 #ifndef MIDICONTROLLER_H
 #define MIDICONTROLLER_H
 
+#include <stdint.h>
+
+#include <QByteArray>
+#include <QList>
+#include <QString>
+#include <QtCore>
+
 #include "controllers/controller.h"
+#include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetinfo.h"
+#include "controllers/controllervisitor.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
+#include "preferences/usersettings.h"
 
 class DlgControllerLearning;
+class HidControllerPreset;
+class MidiOutputHandler;
+namespace mixxx {
+class Duration;
+} // namespace mixxx
 
 class MidiController : public Controller {
     Q_OBJECT

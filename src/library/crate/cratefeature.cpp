@@ -1,16 +1,34 @@
 #include "library/crate/cratefeature.h"
 
-#include <QDesktopServices>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QDir>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QList>
 #include <QMenu>
+#include <QMessageBox>
+#include <QScopedPointer>
+#include <QStandardPaths>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QUrl>
+#include <QtCore>
 #include <algorithm>
+#include <utility>
 #include <vector>
 
+#include "library/crate/crate.h"
 #include "library/crate/cratefeaturehelper.h"
+#include "library/crate/cratestorage.h"
+#include "library/crate/cratesummary.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
+#include "library/libraryfeature.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
 #include "library/parserm3u.h"
@@ -18,12 +36,18 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "preferences/configobject.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/dnd.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
+#include "util/db/dbnamedentity.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
+
+class KeyboardEventFilter;
 
 namespace {
 

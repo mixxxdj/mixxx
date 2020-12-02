@@ -1,5 +1,14 @@
 #include "controllers/controllermappingtablemodel.h"
 
+#include <stddef.h>
+
+#include <QFlags>
+#include <QModelIndex>
+#include <QSharedPointer>
+
+class HidControllerPreset;
+class MidiControllerPreset;
+
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
         : QAbstractTableModel(pParent),
           m_pMidiPreset(NULL),

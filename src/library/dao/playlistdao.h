@@ -2,13 +2,18 @@
 #define PLAYLISTDAO_H
 
 #include <QHash>
+#include <QList>
 #include <QObject>
-#include <QSqlDatabase>
 #include <QSet>
+#include <QSqlDatabase>
+#include <QString>
+#include <QtCore>
 
 #include "library/dao/dao.h"
 #include "track/trackid.h"
 #include "util/class.h"
+
+class QSqlDatabase;
 
 #define PLAYLIST_TABLE "Playlists"
 #define PLAYLIST_TRACKS_TABLE "PlaylistTracks"

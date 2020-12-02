@@ -1,14 +1,17 @@
 #ifndef ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H
 #define ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H
 
-#include <vector>
-
 #include <QObject>
+#include <QString>
+#include <QVector>
+#include <memory>
+#include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
 #include "util/memory.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
 
 class DetectionFunction;
 

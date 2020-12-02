@@ -5,15 +5,20 @@
 #ifndef DLGPREFBEATS_H
 #define DLGPREFBEATS_H
 
-#include <QWidget>
-#include <QString>
+#include <QByteArrayData>
 #include <QList>
+#include <QString>
+#include <QUrl>
+#include <QWidget>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
-#include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"
+#include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
+
+class QObject;
+class QWidget;
 
 class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT

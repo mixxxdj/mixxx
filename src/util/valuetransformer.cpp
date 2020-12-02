@@ -1,6 +1,11 @@
-#include <QtDebug>
-
 #include "util/valuetransformer.h"
+
+#include <stddef.h>
+
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QString>
+#include <QtGlobal>
 
 ValueTransformer::ValueTransformer() {
 }

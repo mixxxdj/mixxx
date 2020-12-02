@@ -3,6 +3,7 @@
 
 
 #include <QSqlDatabase>
+#include <utility>
 
 #include "util/db/dbconnectionpool.h"
 

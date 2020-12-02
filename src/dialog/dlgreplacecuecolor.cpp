@@ -1,18 +1,62 @@
 #include "dialog/dlgreplacecuecolor.h"
 
-#include <QAbstractButton>
+#include <QtCore/qglobal.h>
+
+#include <QApplication>
+#include <QCheckBox>
 #include <QColor>
+#include <QComboBox>
+#include <QCoreApplication>
+#include <QDebug>
 #include <QDialogButtonBox>
+#include <QFrame>
+#include <QIcon>
+#include <QLabel>
+#include <QList>
+#include <QMap>
+#include <QMenu>
 #include <QMessageBox>
+#include <QMultiMap>
+#include <QProgressDialog>
+#include <QPushButton>
 #include <QResizeEvent>
-#include <QtConcurrent>
+#include <QSize>
+#include <QSpinBox>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStaticStringData>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QStyleFactory>
+#include <QVariant>
+#include <QtCore>
+#include <memory>
+#include <optional>
+#include <type_traits>
 
 #include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
+#include "library/trackcollectionmanager.h"
 #include "preferences/colorpalettesettings.h"
+#include "track/cue.h"
+#include "track/globaltrackcache.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/color/color.h"
+#include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/db/dbid.h"
+#include "widget/wcolorpicker.h"
+#include "widget/wcolorpickeraction.h"
+
+class QAbstractButton;
+class QWidget;
 
 namespace {
 

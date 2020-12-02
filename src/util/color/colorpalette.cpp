@@ -1,5 +1,7 @@
 #include "colorpalette.h"
 
+#include <optional>
+
 mixxx::RgbColor ColorPalette::nextColor(mixxx::RgbColor color) const {
     //  Return first color if color not in palette ((-1 + 1) % size)
     return at((indexOf(color) + 1) % size());

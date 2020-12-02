@@ -17,13 +17,21 @@
 
 #include "widget/wdisplay.h"
 
-#include <QStylePainter>
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QDomElement>
+#include <QMetaObject>
+#include <QSharedPointer>
+#include <QStyle>
 #include <QStyleOption>
-#include <QPaintEvent>
-#include <QtDebug>
-#include <QPixmap>
+#include <QStylePainter>
+#include <QtGlobal>
 
 #include "widget/wpixmapstore.h"
+
+class QPaintEvent;
+class QWidget;
 
 WDisplay::WDisplay(QWidget * parent)
         : WWidget(parent),

@@ -1,12 +1,14 @@
 #ifndef WBASEWIDGET_H
 #define WBASEWIDGET_H
 
+#include <QList>
 #include <QString>
 #include <QWidget>
-#include <QList>
+#include <QtGlobal>
 
 class ControlWidgetPropertyConnection;
 class ControlParameterWidgetConnection;
+class QStringList;
 
 class WBaseWidget {
   public:

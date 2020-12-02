@@ -17,6 +17,13 @@
 
 #include "control/controllogpotmeter.h"
 
+#include <QSharedPointer>
+
+#include "control/control.h"
+#include "control/controlbehavior.h"
+
+class ConfigKey;
+
 ControlLogpotmeter::ControlLogpotmeter(const ConfigKey& key, double dMaxValue, double minDB)
         : ControlPotmeter(key, 0, dMaxValue) {
     // Override ControlPotmeters default value of 0.5

@@ -8,9 +8,13 @@
 #ifndef ENCODERWAVESETTINGS_H
 #define ENCODERWAVESETTINGS_H
 
-#include "encoder/encoderrecordingsettings.h"
-#include "encoder/encoder.h"
 #include <QList>
+#include <QString>
+
+#include "encoder/encoder.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "encoder/encodersettings.h"
+#include "preferences/usersettings.h"
 
 class EncoderWaveSettings : public EncoderRecordingSettings {
   public:

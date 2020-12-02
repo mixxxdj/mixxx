@@ -1,7 +1,10 @@
 #include "track/serato/beatgrid.h"
 
-#include <QtEndian>
+#include <QDataStream>
+#include <QIODevice>
+#include <QtGlobal>
 
+#include "util/assert.h"
 #include "util/logger.h"
 
 namespace {

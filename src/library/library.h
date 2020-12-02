@@ -1,10 +1,14 @@
 #pragma once
 
 #include <QAbstractItemModel>
+#include <QByteArrayData>
 #include <QFont>
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <QScopedPointer>
+#include <QString>
+#include <QStringList>
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
@@ -32,6 +36,8 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+class QAbstractItemModel;
+class TrackId;
 
 // A Library class is a container for all the model-side aspects of the library.
 // A library widget can be attached to the Library object by calling bindLibraryWidget.

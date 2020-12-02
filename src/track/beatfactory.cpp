@@ -1,9 +1,14 @@
-#include <QtDebug>
+#include "track/beatfactory.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QHashIterator>
 #include <QStringList>
+#include <algorithm>
 
 #include "track/beatgrid.h"
 #include "track/beatmap.h"
-#include "track/beatfactory.h"
 #include "track/beatutils.h"
 
 mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,

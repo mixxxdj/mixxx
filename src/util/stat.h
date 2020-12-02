@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QDebug>
 #include <QMap>
-#include <QVector>
 #include <QString>
+#include <QVector>
+#include <QtGlobal>
 
 #include "util/experiment.h"
 

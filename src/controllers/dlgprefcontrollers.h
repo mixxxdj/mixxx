@@ -1,14 +1,20 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QList>
+#include <QString>
 #include <QTreeWidgetItem>
+#include <QUrl>
 
-#include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
+class QObject;
+class QTreeWidgetItem;
 
 /// Controllers Overview in the preferences
 ///

@@ -7,22 +7,53 @@
 
 #include "controllers/dlgprefcontroller.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QAbstractButton>
+#include <QAbstractItemDelegate>
+#include <QAbstractItemView>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDebug>
 #include <QDesktopServices>
-#include <QFileDialog>
+#include <QDir>
+#include <QFile>
 #include <QFileInfo>
+#include <QHeaderView>
 #include <QInputDialog>
-#include <QStandardPaths>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QtDebug>
+#include <QItemSelection>
+#include <QItemSelectionModel>
+#include <QLabel>
+#include <QLineEdit>
+#include <QList>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QPushButton>
+#include <QRegExp>
+#include <QSortFilterProxyModel>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QTableView>
+#include <QVariant>
+#include <QWidget>
+#include <QtCore>
 
 #include "controllers/controller.h"
+#include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
+#include "controllers/controlleroutputmappingtablemodel.h"
+#include "controllers/controllerpresetfilehandler.h"
+#include "controllers/controllerpresetinfoenumerator.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/dlgcontrollerlearning.h"
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
-#include "util/version.h"
+#include "util/assert.h"
 
 namespace {
 const QString kPresetExt(".midi.xml");

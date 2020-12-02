@@ -1,8 +1,22 @@
 #include "engine/effects/engineeffectchain.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QtGlobal>
+#include <array>
+#include <type_traits>
+
+#include "effects/effectmanifest.h"
+#include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
+#include "util/assert.h"
 #include "util/defs.h"
 #include "util/sample.h"
+#include "util/sample_autogen.h"
+
+struct GroupFeatureState;
 
 EngineEffectChain::EngineEffectChain(const QString& id,
                                      const QSet<ChannelHandleAndGroup>& registeredInputChannels,

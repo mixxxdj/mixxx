@@ -2,11 +2,17 @@
 #define WCOVERARTMENU_H
 
 #include <QAction>
+#include <QByteArrayData>
 #include <QMenu>
-#include <QWidget>
 #include <QPixmap>
+#include <QString>
+#include <QWidget>
 
 #include "library/coverart.h"
+
+class QAction;
+class QObject;
+class QWidget;
 
 // This class implements a context-menu with all CoverArt user actions. Callers
 // must call setCoverArt before calling exec or popup. This class does

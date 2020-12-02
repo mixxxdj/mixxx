@@ -1,10 +1,19 @@
 #include "analyzer/analyzersilence.h"
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <math.h>
 
+#include <memory>
+
+#include "audio/types.h"
 #include "engine/engine.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/mixxxtest.h"
+#include "track/cue.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
+#include "util/duration.h"
 
 namespace {
 

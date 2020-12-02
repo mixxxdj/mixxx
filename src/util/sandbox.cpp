@@ -1,12 +1,19 @@
 #include "util/sandbox.h"
 
-#include <QtDebug>
-#include <QFileInfo>
-#include <QFileDialog>
-#include <QObject>
-#include <QMutexLocker>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
 
-#include "util/mac.h"
+#include <QByteArray>
+#include <QDebug>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QObject>
+#include <QtCore>
+
+#include "qsharedpointer.h"
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CoreFoundation.h>

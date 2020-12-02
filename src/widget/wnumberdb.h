@@ -2,10 +2,15 @@
 #ifndef WNUMBERDB_H
 #define WNUMBERDB_H
 
+#include <QByteArrayData>
 #include <QLabel>
+#include <QString>
 
-#include "widget/wnumber.h"
 #include "skin/skincontext.h"
+#include "widget/wnumber.h"
+
+class QObject;
+class QWidget;
 
 class WNumberDb : public WNumber {
     Q_OBJECT

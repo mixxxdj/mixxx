@@ -1,12 +1,16 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <iomanip>
+#include <memory>
 
-#include "test/signalpathtest.h"
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
+#include "engine/channelhandle.h"
 #include "engine/channels/enginemicrophone.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/configobject.h"
 #include "soundio/soundmanagerutil.h"
+#include "test/signalpathtest.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"

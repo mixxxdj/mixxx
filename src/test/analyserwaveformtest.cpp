@@ -1,12 +1,17 @@
-#include <gtest/gtest.h>
-#include <QDir>
-#include <QtDebug>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include "test/mixxxtest.h"
+#include <QSqlDatabase>
+#include <memory>
 
 #include "analyzer/analyzerwaveform.h"
-#include "library/dao/analysisdao.h"
+#include "audio/types.h"
+#include "gtest/gtest_pred_impl.h"
+#include "test/mixxxtest.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "util/duration.h"
+#include "util/types.h"
 
 #define BIGBUF_SIZE (1024 * 1024) //Megabyte
 #define CANARY_SIZE (1024 * 4)

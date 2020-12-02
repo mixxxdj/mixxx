@@ -20,16 +20,23 @@
 #ifndef WSTATUSLIGHT_H
 #define WSTATUSLIGHT_H
 
-#include <QPaintEvent>
-#include <QWidget>
-#include <QString>
+#include <QByteArrayData>
 #include <QDomNode>
+#include <QPaintEvent>
 #include <QPixmap>
+#include <QString>
 #include <QVector>
+#include <QWidget>
 
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
+#include "skin/pixmapsource.h"
 #include "skin/skincontext.h"
+#include "widget/paintable.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
+
+class QObject;
+class QPaintEvent;
+class QWidget;
 
 class WStatusLight : public WWidget  {
    Q_OBJECT

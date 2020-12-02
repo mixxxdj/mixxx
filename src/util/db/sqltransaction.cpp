@@ -1,8 +1,10 @@
 #include "util/db/sqltransaction.h"
 
-#include "util/logger.h"
-#include "util/assert.h"
+#include <QDebug>
+#include <utility>
 
+#include "util/assert.h"
+#include "util/logger.h"
 
 namespace {
 

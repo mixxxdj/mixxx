@@ -14,12 +14,16 @@
 #ifndef PARSERCSV_H
 #define PARSERCSV_H
 
+#include <QByteArray>
+#include <QByteArrayData>
 #include <QList>
 #include <QString>
-#include <QByteArray>
 
-#include "library/parser.h"
 #include "library/basesqltablemodel.h"
+#include "library/parser.h"
+
+class BaseSqlTableModel;
+class QObject;
 
 class ParserCsv : public Parser
 {

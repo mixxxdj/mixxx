@@ -1,13 +1,17 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDir>
 #include <QList>
+#include <QObject>
 #include <QSet>
+#include <QString>
 #include <memory>
 
 #include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
+#include "track/track_decl.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 #include "util/thread_affinity.h"
@@ -15,6 +19,10 @@
 class LibraryScanner;
 class TrackCollection;
 class ExternalTrackCollection;
+class RelocatedTrack;
+class Track;
+class TrackId;
+class TrackRef;
 
 // Manages Mixxx's internal database of tracks as well as external track collections.
 //

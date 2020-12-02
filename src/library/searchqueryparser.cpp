@@ -1,7 +1,15 @@
 #include "library/searchqueryparser.h"
 
-#include "util/compatibility.h"
+#include <QtCore/qglobal.h>
 
+#include <QDebug>
+#include <QtCore>
+#include <type_traits>
+#include <utility>
+
+#include "library/searchquery.h"
+#include "library/trackcollection.h"
+#include "proto/keys.pb.h"
 #include "track/keyutils.h"
 
 constexpr char kNegatePrefix[] = "-";

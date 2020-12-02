@@ -1,10 +1,18 @@
-#include <QFile>
-#include <QString>
-
-#include "test/mixxxtest.h"
 #include "preferences/broadcastprofile.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QFile>
+#include <QSharedPointer>
+#include <QString>
+#include <QStringBuilder>
+#include <QTemporaryDir>
+#include <memory>
+
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "gtest/gtest_pred_impl.h"
 
 namespace {
 

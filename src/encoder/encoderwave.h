@@ -14,15 +14,19 @@
 //Enable unicode in libsndfile on Windows
 //(sf_open uses UTF-8 otherwise)
 #include <windows.h>
+
 #define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
 #endif
 #include <sndfile.h>
+
+#include <QString>
 
 #include "encoder/encoder.h"
 #include "track/track_decl.h"
 #include "util/types.h"
 
 class EncoderCallback;
+class EncoderSettings;
 
 class EncoderWave : public Encoder {
   public:

@@ -1,7 +1,16 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QColor>
+#include <QString>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 #include <QTableView>
+
+class QModelIndex;
+class QObject;
+class QPainter;
+class QTableView;
 
 class TableItemDelegate : public QStyledItemDelegate {
     Q_OBJECT

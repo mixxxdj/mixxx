@@ -1,11 +1,21 @@
 #include "database/schemamanager.h"
 
+#include <QDebug>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QMap>
+#include <QSqlError>
+#include <QStaticStringData>
+#include <QStringList>
+#include <QStringListIterator>
+#include <QStringLiteral>
+
+#include "util/assert.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"
-#include "util/xml.h"
 #include "util/logger.h"
-#include "util/assert.h"
-
+#include "util/xml.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";

@@ -5,12 +5,17 @@
 #define ENGINE_SIDECHAIN_SHOUTCONNECTION_H
 
 #include <engine/sidechain/networkoutputstreamworker.h>
+#include <stddef.h>
 
+#include <QAtomicInt>
+#include <QByteArray>
+#include <QByteArrayData>
 #include <QMessageBox>
 #include <QMutex>
 #include <QObject>
 #include <QSemaphore>
 #include <QSharedPointer>
+#include <QString>
 #include <QTextCodec>
 #include <QThread>
 #include <QVector>
@@ -25,12 +30,22 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/fifo.h"
+#include "util/types.h"
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
 struct shout;
+class ControlProxy;
+class QObject;
+class QTextCodec;
+template<class DataType>
+class FIFO;
+template<class T>
+class QSharedPointer;
+
 typedef struct shout shout_t;
 struct _util_dict;
+
 typedef struct _util_dict shout_metadata_t;
 
 class ShoutConnection

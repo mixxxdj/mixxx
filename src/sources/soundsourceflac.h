@@ -1,11 +1,21 @@
 #pragma once
 
+#include <FLAC/format.h>
+#include <FLAC/ordinals.h>
 #include <FLAC/stream_decoder.h>
+#include <stddef.h>
 
 #include <QFile>
+#include <QString>
+#include <QStringList>
 
+#include "sources/audiosource.h"
+#include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 #include "util/readaheadsamplebuffer.h"
+#include "util/types.h"
+
+class QUrl;
 
 namespace mixxx {
 

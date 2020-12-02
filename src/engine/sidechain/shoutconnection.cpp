@@ -1,7 +1,15 @@
 // shoutconnection.cpp
 // Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
+#include <QDebug>
+#include <QLatin1String>
+#include <QMessageBox>
+#include <QRegExp>
+#include <QStringBuilder>
+#include <QTextCodec>
 #include <QUrl>
+#include <QtCore>
+#include <memory>
 
 // These includes are only required by ignoreSigpipe, which is unix-only
 #ifndef __WINDOWS__
@@ -13,25 +21,36 @@
 #ifdef WIN64
 #define WIN32
 #endif
+#include <QtCore/qglobal.h>
+#include <pa_ringbuffer.h>
 #include <shout/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
 
+#include "audio/types.h"
 #include "broadcast/defs_broadcast.h"
-#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
+#include "encoder/encodersettings.h"
+#include "engine/sidechain/networkoutputstreamworker.h"
+#include "errordialoghandler.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/compatibility.h"
+#include "util/db/dbid.h"
+#include "util/fifo.h"
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
+#include <engine/sidechain/shoutconnection.h>
+
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
 #include "util/logger.h"
-
-#include <engine/sidechain/shoutconnection.h>
 
 namespace {
 

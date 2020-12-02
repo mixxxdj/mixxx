@@ -1,6 +1,7 @@
 #ifndef MIXER_MICROPHONE_H
 #define MIXER_MICROPHONE_H
 
+#include <QByteArrayData>
 #include <QObject>
 #include <QString>
 
@@ -11,6 +12,7 @@ class ControlProxy;
 class EffectsManager;
 class EngineMaster;
 class SoundManager;
+class QObject;
 
 class Microphone : public BasePlayer {
     Q_OBJECT

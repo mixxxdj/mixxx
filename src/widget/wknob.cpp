@@ -15,12 +15,15 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-#include <QMouseEvent>
-#include <QWheelEvent>
+#include "widget/wknob.h"
+
+#include <QWidget>
+#include <QtCore>
 
 #include "util/duration.h"
-#include "widget/wknob.h"
+
+class QMouseEvent;
+class QWheelEvent;
 
 WKnob::WKnob(QWidget* pParent)
         : WDisplay(pParent),

@@ -1,5 +1,8 @@
 #include "sources/soundsourceproviderregistry.h"
 
+#include <QDebug>
+#include <memory>
+
 #include "util/logger.h"
 
 namespace mixxx {

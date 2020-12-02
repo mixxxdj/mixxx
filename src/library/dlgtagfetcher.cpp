@@ -1,10 +1,32 @@
 #include "library/dlgtagfetcher.h"
 
+#include <QAbstractItemModel>
+#include <QDateTime>
+#include <QFont>
+#include <QLabel>
+#include <QPalette>
+#include <QPushButton>
+#include <QSet>
+#include <QStackedWidget>
+#include <QStringBuilder>
+#include <QStringList>
 #include <QTreeWidget>
-#include <QtDebug>
+#include <QTreeWidgetItem>
+#include <QVariant>
+#include <QtCore>
+#include <memory>
+#include <type_traits>
+#include <utility>
 
+#include "library/trackmodel.h"
+#include "track/albuminfo.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 #include "track/tracknumbers.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
 
 namespace {
 

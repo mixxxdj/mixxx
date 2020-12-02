@@ -5,15 +5,20 @@
 #define WTRACKTABLEVIEWHEADER_H
 
 #include <QAction>
+#include <QContextMenuEvent>
 #include <QHeaderView>
 #include <QMap>
 #include <QMenu>
+#include <QString>
 #include <QWidget>
-#include <QContextMenuEvent>
+#include <QtCore>
 
 #include "proto/headers.pb.h"
 
 class TrackModel;
+class QAction;
+class QContextMenuEvent;
+class QWidget;
 
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
 // answer with this code snippet: http://codepad.org/2gPIMPYU

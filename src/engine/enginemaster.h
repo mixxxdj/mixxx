@@ -18,18 +18,27 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
-#include <QObject>
-#include <QVarLengthArray>
+#include <stddef.h>
 
-#include "preferences/usersettings.h"
+#include <QObject>
+#include <QString>
+#include <QTypeInfo>
+#include <QVarLengthArray>
+#include <QtCore>
+#include <memory>
+#include <new>
+
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/engineobject.h"
-#include "engine/channels/enginechannel.h"
 #include "engine/channelhandle.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/engineobject.h"
+#include "preferences/usersettings.h"
+#include "recording/recordingmanager.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
-#include "recording/recordingmanager.h"
+#include "util/types.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -47,6 +56,7 @@ class GuiTick;
 class EngineSync;
 class EngineTalkoverDucking;
 class EngineDelay;
+class SoundManager;
 
 // The number of channels to pre-allocate in various structures in the
 // engine. Prevents memory allocation in EngineMaster::addChannel.

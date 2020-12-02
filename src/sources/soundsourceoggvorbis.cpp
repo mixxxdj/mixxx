@@ -1,8 +1,23 @@
 #include "sources/soundsourceoggvorbis.h"
 
-#include <QFile>
+#include <stdio.h>
+#include <string.h>
+#include <vorbis/codec.h>
 
+#include <QDebug>
+#include <QFile>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtCore>
+#include <algorithm>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "util/assert.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
+#include "util/math.h"
+#include "util/samplebuffer.h"
 
 namespace mixxx {
 

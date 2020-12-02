@@ -1,10 +1,21 @@
-#include <QLineEdit>
-
 #include "widget/wbeatspinbox.h"
 
-#include "control/controlobject.h"
+#include <math.h>
+
+#include <QEvent>
+#include <QFont>
+#include <QLineEdit>
+#include <QLocale>
+#include <QRegExp>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QtCore>
+
+#include "control/control.h"
 #include "control/controlproxy.h"
-#include "util/math.h"
+
+class ConfigKey;
+class QWidget;
 
 QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9.,/ ]");
 

@@ -1,6 +1,11 @@
 #include "track/trackrecord.h"
 
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <utility>
+
 #include "track/keyfactory.h"
+#include "track/trackinfo.h"
 
 namespace mixxx {
 

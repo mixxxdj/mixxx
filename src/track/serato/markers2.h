@@ -3,14 +3,21 @@
 #include <QByteArray>
 #include <QColor>
 #include <QDataStream>
+#include <QDebug>
 #include <QList>
+#include <QString>
+#include <QtCore>
 #include <memory>
+#include <utility>
 
 #include "track/cueinfo.h"
 #include "track/taglib/trackmetadata_file.h"
+#include "util/assert.h"
+#include "util/color/rgbcolor.h"
 #include "util/types.h"
 
 namespace mixxx {
+class CueInfo;
 
 /// Enum values need to appear in the same order as the corresponding entries
 /// are written to the tag by Serato.

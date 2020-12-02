@@ -18,11 +18,12 @@
 #ifndef ERRORDIALOGHANDLER_H
 #define ERRORDIALOGHANDLER_H
 
-#include <QObject>
+#include <QByteArrayData>
+#include <QList>
 #include <QMessageBox>
 #include <QMutex>
+#include <QObject>
 #include <QString>
-#include <QList>
 
 #include "util/class.h"
 

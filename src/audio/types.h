@@ -1,6 +1,9 @@
 #pragma once
 
+#include <QDebug>
+#include <QtCore>
 #include <QtDebug>
+#include <optional>
 
 #include "util/assert.h"
 #include "util/optional.h"

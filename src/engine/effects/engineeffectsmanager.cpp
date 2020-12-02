@@ -1,10 +1,17 @@
 #include "engine/effects/engineeffectsmanager.h"
 
-#include "engine/effects/engineeffectrack.h"
-#include "engine/effects/engineeffectchain.h"
-#include "engine/effects/engineeffect.h"
+#include <QtCore/qglobal.h>
+#include <stddef.h>
 
+#include <QDebug>
+
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectchain.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "util/assert.h"
 #include "util/defs.h"
+#include "util/messagepipe.h"
 #include "util/sample.h"
 
 EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)

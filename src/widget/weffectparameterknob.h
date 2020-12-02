@@ -1,8 +1,17 @@
 #ifndef WEFFECTKNOB_H
 #define WEFFECTKNOB_H
 
-#include "widget/wknob.h"
+#include <QByteArrayData>
+#include <QString>
+
+#include "effects/defs.h"
 #include "effects/effectparameterslot.h"
+#include "widget/wknob.h"
+
+class ConfigKey;
+class EffectsManager;
+class QObject;
+class QWidget;
 
 // This is used for effect parameter knobs with dynamic
 // tooltips, if the knob value is displayed by one of e.g.

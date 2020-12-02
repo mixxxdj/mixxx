@@ -1,13 +1,25 @@
 #pragma once
 
+#include <QByteArray>
+#include <QDebug>
+#include <QList>
+#include <QString>
+#include <QtCore>
+
 #include "audio/signalinfo.h"
 #include "track/beatsimporter.h"
 #include "track/cueinfoimporter.h"
 #include "track/serato/beatgrid.h"
 #include "track/serato/markers.h"
 #include "track/serato/markers2.h"
+#include "track/taglib/trackmetadata_file.h"
+#include "util/color/rgbcolor.h"
 
 namespace mixxx {
+class CueInfo;
+namespace audio {
+class SignalInfo;
+} // namespace audio
 
 /// DTO for storing information from the SeratoMarkers_/2 tags used by the
 /// Serato DJ Pro software.

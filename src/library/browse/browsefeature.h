@@ -4,20 +4,33 @@
 #ifndef BROWSEFEATURE_H
 #define BROWSEFEATURE_H
 
-#include <QStringListModel>
-#include <QSortFilterProxyModel>
-#include <QObject>
-#include <QVariant>
+#include <QByteArrayData>
 #include <QIcon>
 #include <QModelIndex>
+#include <QObject>
 #include <QPoint>
+#include <QPointer>
+#include <QSortFilterProxyModel>
 #include <QString>
+#include <QStringList>
+#include <QStringListModel>
+#include <QVariant>
 
-#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
+#include "preferences/usersettings.h"
+
+class KeyboardEventFilter;
+class QAction;
+class QModelIndex;
+class QObject;
+class QPoint;
+class RecordingManager;
+class TreeItem;
+class TreeItemModel;
+class WLibrary;
 
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"

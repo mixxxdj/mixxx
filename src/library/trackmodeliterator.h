@@ -4,10 +4,16 @@
 #pragma once
 
 #include <QModelIndex>
+#include <QModelIndexList>
+#include <optional>
 
+#include "track/track_decl.h"
 #include "track/trackiterator.h"
+#include "util/assert.h"
+#include "util/itemiterator.h"
 
 class TrackModel;
+class TrackId;
 
 namespace mixxx {
 

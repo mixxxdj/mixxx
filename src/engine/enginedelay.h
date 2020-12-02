@@ -17,11 +17,17 @@
 #ifndef ENGINEDELAY_H
 #define ENGINEDELAY_H
 
+#include <QByteArrayData>
+#include <QString>
+
 #include "engine/engineobject.h"
 #include "preferences/usersettings.h"
+#include "util/types.h"
 
 class ControlPotmeter;
 class ControlProxy;
+class ConfigKey;
+class QObject;
 
 class EngineDelay : public EngineObject {
     Q_OBJECT

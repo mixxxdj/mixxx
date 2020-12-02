@@ -2,6 +2,7 @@
 #define VERSION_H
 
 #include <QString>
+#include <QStringList>
 
 class Version {
   public:

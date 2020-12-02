@@ -7,7 +7,9 @@
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
+#include <QVariant>
 #include <QVector>
+#include <QtCore>
 #include <memory>
 
 #include "library/columncache.h"
@@ -18,6 +20,7 @@
 
 class SearchQueryParser;
 class TrackCollection;
+class ControlProxy;
 
 class SortColumn {
   public:

@@ -1,7 +1,16 @@
 #ifndef MIDIOPCODEDELEGATE_H
 #define MIDIOPCODEDELEGATE_H
 
+#include <QLocale>
+#include <QString>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
+#include <QVariant>
+
+class QAbstractItemModel;
+class QModelIndex;
+class QObject;
+class QWidget;
 
 class MidiOpCodeDelegate : public QStyledItemDelegate {
   public:

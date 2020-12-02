@@ -1,8 +1,12 @@
-#include <QSpinBox>
-
 #include "controllers/delegates/midichanneldelegate.h"
-#include "controllers/midi/midimessage.h"
-#include "controllers/midi/midiutils.h"
+
+#include <stddef.h>
+
+#include <QAbstractItemModel>
+#include <QModelIndex>
+#include <QSpinBox>
+#include <QWidget>
+#include <QtCore>
 
 MidiChannelDelegate::MidiChannelDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {

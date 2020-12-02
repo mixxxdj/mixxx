@@ -2,12 +2,18 @@
 #define DLGPREFREPLAYGAIN_H
 
 #include <QButtonGroup>
+#include <QByteArrayData>
+#include <QString>
 #include <QWidget>
 
-#include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
-#include "preferences/replaygainsettings.h"
 #include "control/controlproxy.h"
+#include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/replaygainsettings.h"
+#include "preferences/usersettings.h"
+
+class QObject;
+class QWidget;
 
 class DlgPrefReplayGain: public DlgPreferencePage,
                          public Ui::DlgPrefReplayGainDlg {

@@ -1,19 +1,24 @@
 #ifndef VINYLCONTROLPROCESSOR_H
 #define VINYLCONTROLPROCESSOR_H
 
+#include <QByteArrayData>
+#include <QMutex>
 #include <QObject>
+#include <QString>
 #include <QThread>
 #include <QVector>
-#include <QMutex>
 #include <QWaitCondition>
 
 #include "preferences/usersettings.h"
-#include "util/fifo.h"
-#include "vinylcontrol/vinylsignalquality.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/fifo.h"
+#include "util/types.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
+#include "vinylcontrol/vinylsignalquality.h"
 
 class VinylControl;
 class ControlPushButton;
+class QObject;
 
 // VinylControlProcessor is a thread that is in charge of receiving samples from
 // the engine callback and feeding those samples to the VinylControl

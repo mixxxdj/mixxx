@@ -1,12 +1,12 @@
 #pragma once
 
+#include <QDebug>
+#include <QMetaType>
 #include <QString>
 #include <QUuid>
 
 #include "track/replaygain.h"
-
 #include "util/macros.h"
-
 
 namespace mixxx {
 

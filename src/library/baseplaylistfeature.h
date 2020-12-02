@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAction>
+#include <QByteArrayData>
 #include <QList>
 #include <QModelIndex>
 #include <QObject>
@@ -11,6 +12,8 @@
 
 #include "library/basetracksetfeature.h"
 #include "library/dao/playlistdao.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
 class WLibrary;
@@ -18,6 +21,10 @@ class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollectionManager;
 class TreeItem;
+class Library;
+class QAction;
+class QObject;
+class QUrl;
 
 class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT

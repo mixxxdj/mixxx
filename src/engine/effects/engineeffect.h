@@ -1,21 +1,35 @@
 #ifndef ENGINEEFFECT_H
 #define ENGINEEFFECT_H
 
-#include <QMap>
-#include <QString>
+#include <stddef.h>
+
 #include <QList>
-#include <QVector>
+#include <QMap>
 #include <QSet>
+#include <QString>
+#include <QVector>
 #include <QtDebug>
 
-#include "effects/effectsmanager.h"
+#include "effects/defs.h"
+#include "effects/effectinstantiator.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
-#include "effects/effectinstantiator.h"
+#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
+#include "util/class.h"
+#include "util/types.h"
+
+class EffectProcessor;
+class EffectState;
+class EffectsManager;
+class EngineEffectParameter;
+namespace mixxx {
+class EngineParameters;
+} // namespace mixxx
+struct GroupFeatureState;
 
 class EngineEffect : public EffectsRequestHandler {
   public:

@@ -3,16 +3,21 @@
 #include <QByteArray>
 #include <QColor>
 #include <QDataStream>
+#include <QDebug>
 #include <QList>
+#include <QtCore>
 #include <memory>
 
 #include "track/cueinfo.h"
 #include "track/taglib/trackmetadata_file.h"
+#include "util/color/rgbcolor.h"
 #include "util/types.h"
 
 namespace mixxx {
 
 class SeratoMarkersEntry;
+class CueInfo;
+
 typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {

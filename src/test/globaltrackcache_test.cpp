@@ -1,9 +1,16 @@
 #include "track/globaltrackcache.h"
 
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDir>
 #include <QThread>
-#include <QtDebug>
 #include <atomic>
 
+#include "gtest/gtest_pred_impl.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
 

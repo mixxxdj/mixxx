@@ -1,16 +1,20 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-matchers.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
-#include <QtDebug>
+#include <QByteArray>
 #include <QScopedPointer>
+#include <QSharedPointer>
+#include <QString>
+#include <memory>
 
-#include "test/mixxxtest.h"
-#include "effects/effectchain.h"
-#include "effects/effectchainslot.h"
-#include "effects/effectsmanager.h"
+#include "effects/defs.h"
 #include "effects/effectmanifest.h"
-
+#include "effects/effectsmanager.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/baseeffecttest.h"
+#include "test/mixxxtest.h"
 
 using ::testing::Return;
 using ::testing::_;

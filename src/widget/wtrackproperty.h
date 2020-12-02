@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
+#include <QString>
 
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
@@ -14,6 +17,13 @@
 
 class TrackCollectionManager;
 class WTrackMenu;
+class QContextMenuEvent;
+class QDragEnterEvent;
+class QDropEvent;
+class QMouseEvent;
+class QObject;
+class QWidget;
+class TrackId;
 
 class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT

@@ -1,7 +1,14 @@
-#include <gtest/gtest.h>
-
-#include "test/mixxxtest.h"
 #include "util/duration.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QByteArray>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
+#include "test/mixxxtest.h"
 
 namespace mixxx {
 

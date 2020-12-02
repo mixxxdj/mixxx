@@ -1,7 +1,14 @@
-#include <gtest/gtest.h>
-#include <ctime>
-
 #include "util/performancetimer.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <ctime>
+#include <memory>
+#include <ostream>
+
+#include "gtest/gtest_pred_impl.h"
+#include "util/duration.h"
 
 // This test was added because of an signed/unsigned underflow bug that
 // affected Windows and (presumably) Symbian.

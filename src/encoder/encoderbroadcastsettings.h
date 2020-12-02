@@ -9,8 +9,12 @@
 #ifndef ENCODERBROADCASTSETTINGS_H
 #define ENCODERBROADCASTSETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include <QList>
+#include <QString>
+
 #include "encoder/encoder.h"
+#include "encoder/encodersettings.h"
+#include "preferences/broadcastprofile.h"
 #include "preferences/broadcastsettings.h"
 
 class EncoderBroadcastSettings : public EncoderSettings {

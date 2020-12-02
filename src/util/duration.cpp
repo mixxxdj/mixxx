@@ -1,11 +1,16 @@
 #include "util/duration.h"
 
-#include <QtGlobal>
+#include <QChar>
+#include <QLatin1Char>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
 #include <QTime>
+#include <QtGlobal>
+#include <cmath>
+#include <limits>
 
 #include "util/assert.h"
-#include "util/fpclassify.h"
-#include "util/math.h"
 
 namespace mixxx {
 

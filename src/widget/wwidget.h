@@ -18,9 +18,10 @@
 #ifndef WWIDGET_H
 #define WWIDGET_H
 
-#include <QWidget>
 #include <QEvent>
 #include <QString>
+#include <QWidget>
+#include <QtCore>
 
 #include "preferences/usersettings.h"
 #include "util/color/color.h"

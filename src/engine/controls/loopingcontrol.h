@@ -5,21 +5,27 @@
 #ifndef LOOPINGCONTROL_H
 #define LOOPINGCONTROL_H
 
+#include <QAtomicPointer>
+#include <QByteArrayData>
+#include <QList>
 #include <QObject>
 #include <QStack>
+#include <QString>
 
 #include "control/controlvalue.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
 
+class RateControl;
+
 #define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 
 class ControlPushButton;
 class ControlObject;
-
 class LoopMoveControl;
 class BeatJumpControl;
 class BeatLoopingControl;

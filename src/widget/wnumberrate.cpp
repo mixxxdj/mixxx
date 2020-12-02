@@ -12,9 +12,13 @@
 
 #include "widget/wnumberrate.h"
 
-#include "control/controlobject.h"
+#include <math.h>
+
+#include "control/control.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
+
+class QWidget;
 
 WNumberRate::WNumberRate(const QString& group, QWidget* parent)
         : WNumber(parent) {

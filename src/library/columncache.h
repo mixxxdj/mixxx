@@ -1,13 +1,15 @@
 #ifndef COLUMNCACHE_H
 #define COLUMNCACHE_H
 
-#include <QObject>
+#include <QByteArrayData>
 #include <QMap>
+#include <QObject>
+#include <QString>
 #include <QStringList>
 
-#include "track/keyutils.h"
 #include "control/controlproxy.h"
 #include "preferences/usersettings.h"
+#include "track/keyutils.h"
 
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.

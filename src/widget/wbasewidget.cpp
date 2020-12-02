@@ -1,10 +1,14 @@
-#include <QtDebug>
-
 #include "widget/wbasewidget.h"
 
-#include "widget/controlwidgetconnection.h"
+#include <QMetaObject>
+#include <QSizePolicy>
+#include <QStringList>
+#include <QtCore>
+#include <type_traits>
+
 #include "util/cmdlineargs.h"
 #include "util/debug.h"
+#include "widget/controlwidgetconnection.h"
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
         : m_pDisplayConnection(nullptr),

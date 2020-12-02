@@ -1,11 +1,16 @@
 #ifndef WAVEFORMRENDERERFILTEREDSIGNAL_H
 #define WAVEFORMRENDERERFILTEREDSIGNAL_H
 
-#include <vector>
+#include <QDomNode>
 #include <QLineF>
+#include <vector>
 
 #include "util/class.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
+
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   public:

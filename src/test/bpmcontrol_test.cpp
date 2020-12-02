@@ -1,16 +1,18 @@
-#include <gtest/gtest.h>
-
-#include <QtDebug>
-#include <QScopedPointer>
-
-#include "mixxxtest.h"
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <memory>
+
+#include "audio/types.h"
+#include "gtest/gtest_pred_impl.h"
+#include "mixxxtest.h"
 #include "track/beatfactory.h"
-#include "track/beatgrid.h"
-#include "track/beatmap.h"
+#include "track/beats.h"
 #include "track/track.h"
+#include "track/track_decl.h"
+#include "util/duration.h"
 
 class BpmControlTest : public MixxxTest {
 };

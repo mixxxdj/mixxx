@@ -1,7 +1,7 @@
-#include <QStringList>
-
 #include "track/tracknumbers.h"
-#include "util/assert.h"
+
+#include <QChar>
+#include <QStringBuilder>
 
 /*static*/ constexpr int TrackNumbers::kValueUndefined;
 /*static*/ constexpr int TrackNumbers::kValueMin;

@@ -1,18 +1,27 @@
 #ifndef MIXXX_CRATESTORAGE_H
 #define MIXXX_CRATESTORAGE_H
 
-
-#include <QObject>
 #include <QList>
+#include <QObject>
 #include <QSet>
+#include <QSqlDatabase>
+#include <QString>
+#include <QVariant>
+#include <QtGlobal>
+#include <type_traits>
+#include <utility>
 
+#include "library/crate/crateid.h"
 #include "library/crate/cratesummary.h"
 #include "track/trackid.h"
-
+#include "util/db/dbfieldindex.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/db/fwdsqlqueryselectresult.h"
-#include "util/db/sqlsubselectmode.h"
 #include "util/db/sqlstorage.h"
+#include "util/db/sqlsubselectmode.h"
 
+class Crate;
+class CrateSummary;
 
 class CrateQueryFields {
   public:

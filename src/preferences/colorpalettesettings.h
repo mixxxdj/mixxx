@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QSet>
+#include <QString>
+
 #include "preferences/usersettings.h"
 #include "util/color/colorpalette.h"
 

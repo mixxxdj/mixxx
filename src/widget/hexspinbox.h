@@ -1,8 +1,13 @@
 #ifndef HEXSPINBOX_H
 #define HEXSPINBOX_H
 
+#include <QByteArrayData>
 #include <QSpinBox>
+#include <QString>
 #include <QValidator>
+
+class QObject;
+class QWidget;
 
 class HexSpinBox : public QSpinBox {
     Q_OBJECT

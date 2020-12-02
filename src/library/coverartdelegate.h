@@ -2,7 +2,10 @@
 
 #include <QHash>
 #include <QList>
+#include <QString>
+#include <QStyleOptionViewItem>
 #include <QTableView>
+#include <QtCore>
 
 #include "library/coverart.h"
 #include "library/tableitemdelegate.h"
@@ -11,6 +14,9 @@
 
 class CoverArtCache;
 class TrackModel;
+class QPainter;
+class QPixmap;
+class QTableView;
 
 class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT

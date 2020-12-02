@@ -1,9 +1,21 @@
 #ifndef CONTROLDELEGATE_H
 #define CONTROLDELEGATE_H
 
+#include <QByteArrayData>
+#include <QLocale>
+#include <QString>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
+#include <QVariant>
 
 #include "controllers/controlpickermenu.h"
+
+class ControlPickerMenu;
+class QAbstractItemModel;
+class QModelIndex;
+class QObject;
+class QPainter;
+class QWidget;
 
 class ControlDelegate : public QStyledItemDelegate {
     Q_OBJECT

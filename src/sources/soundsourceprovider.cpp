@@ -1,5 +1,7 @@
 #include "sources/soundsourceprovider.h"
 
+#include "util/assert.h"
+
 namespace mixxx {
 
 QDebug operator<<(QDebug dbg, SoundSourceProviderPriority arg) {

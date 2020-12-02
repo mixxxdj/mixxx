@@ -1,10 +1,14 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QIcon>
+#include <QList>
 #include <QModelIndex>
 #include <QObject>
 #include <QPoint>
 #include <QPointer>
+#include <QSet>
+#include <QString>
 #include <QUrl>
 #include <QVariant>
 
@@ -14,6 +18,11 @@
 class TrackCollection;
 class TreeItem;
 class WLibrarySidebar;
+class Library;
+class QModelIndex;
+class QObject;
+class QPoint;
+class QUrl;
 
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT

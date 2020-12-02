@@ -1,7 +1,7 @@
-#include <QTimer>
-
 #include "waveform/guitick.h"
+
 #include "control/controlobject.h"
+#include "preferences/configobject.h"
 
 GuiTick::GuiTick() {
     m_pCOGuiTickTime = std::make_unique<ControlObject>(ConfigKey("[Master]", "guiTickTime"));

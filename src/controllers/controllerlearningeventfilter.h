@@ -1,11 +1,18 @@
 #ifndef CONTROLLERLEARNINGEVENTFILTER_H
 #define CONTROLLERLEARNINGEVENTFILTER_H
 
-#include <QObject>
+#include <stddef.h>
+
 #include <QEvent>
+#include <QObject>
+#include <QString>
+#include <QtCore>
 
 #include "control/controlobject.h"
 #include "widget/controlwidgetconnection.h"
+
+class ControlObject;
+class QWidget;
 
 struct ControlInfo {
     ControlInfo()

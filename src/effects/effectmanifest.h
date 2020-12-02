@@ -2,12 +2,13 @@
 #define EFFECTMANIFEST_H
 
 #include <QList>
+#include <QObject>
+#include <QSharedPointer>
 #include <QString>
 #include <QtDebug>
-#include <QSharedPointer>
 
-#include "effects/effectmanifestparameter.h"
 #include "effects/defs.h"
+#include "effects/effectmanifestparameter.h"
 
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of

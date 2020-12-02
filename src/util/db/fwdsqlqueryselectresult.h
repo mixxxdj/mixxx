@@ -4,7 +4,6 @@
 
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqlqueryfinisher.h"
-
 #include "util/assert.h"
 
 

@@ -19,11 +19,16 @@
 #define ENGINEFILTER_H
 
 #define MIXXX
-#include <cstdio>
 #include <fidlib.h>
+
+#include <QByteArrayData>
+#include <QString>
+#include <cstdio>
 
 #include "engine/engineobject.h"
 #include "util/types.h"
+
+class QObject;
 
 #define PREDEF_HP 1
 #define PREDEF_BP 2

@@ -1,26 +1,43 @@
 #include "widget/wspinny.h"
 
-#include <QApplication>
-#include <QMimeData>
-#include <QStylePainter>
-#include <QUrl>
-#include <QWindow>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <math.h>
 
-#include "control/controlobject.h"
+#include <QApplication>
+#include <QColor>
+#include <QCursor>
+#include <QDebug>
+#include <QDomElement>
+#include <QEvent>
+#include <QFlags>
+#include <QGLContext>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPointF>
+#include <QRgb>
+#include <QSize>
+#include <QSizePolicy>
+#include <QWindow>
+
+#include "control/control.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgcoverartfullsize.h"
+#include "mixer/basetrackplayer.h"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
-#include "util/math.h"
-#include "vinylcontrol/vinylcontrol.h"
+#include "util/fpclassify.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
+#include "widget/paintable.h"
+#include "widget/wcoverartmenu.h"
 #include "wimagestore.h"
+
+class QWidget;
 
 // The SampleBuffers format enables antialiasing.
 WSpinny::WSpinny(

@@ -1,6 +1,8 @@
 #ifndef WAVEFORMFACTORY_H
 #define WAVEFORMFACTORY_H
 
+#include <QString>
+
 #include "library/dao/analysisdao.h"
 
 class Waveform;

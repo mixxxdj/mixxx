@@ -1,7 +1,11 @@
 #ifndef LIBRARYMIDICONTROL_H
 #define LIBRARYMIDICONTROL_H
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
+#include <map>
+#include <memory>
 
 #include "control/controlencoder.h"
 #include "control/controlproxy.h"
@@ -15,6 +19,8 @@ class WLibrary;
 class WLibrarySidebar;
 class WSearchLineEdit;
 class KeyboardEventFilter;
+class ControlEncoder;
+class QKeyEvent;
 
 class LoadToGroupController : public QObject {
     Q_OBJECT

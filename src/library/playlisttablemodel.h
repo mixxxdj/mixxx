@@ -1,7 +1,18 @@
 #ifndef PLAYLISTTABLEMODEL_H
 #define PLAYLISTTABLEMODEL_H
 
+#include <QByteArrayData>
+#include <QList>
+#include <QModelIndexList>
+#include <QSet>
+#include <QString>
+
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
+
+class QObject;
+class TrackCollectionManager;
+class TrackId;
 
 class PlaylistTableModel final : public BaseSqlTableModel {
     Q_OBJECT

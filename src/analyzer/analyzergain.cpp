@@ -1,7 +1,13 @@
-#include <replaygain.h>
-#include <QtDebug>
-
 #include "analyzer/analyzergain.h"
+
+#include <QtCore/qglobal.h>
+#include <replaygain.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <memory>
+
+#include "track/replaygain.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"

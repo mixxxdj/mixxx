@@ -4,11 +4,19 @@
 /// @date Mon 9 Apr 2012
 /// @brief MIDI Controller preset
 
+#include <stdint.h>
+
+#include <QHashNode>
 #include <QMultiHash>
+#include <QString>
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/midi/midimessage.h"
+#include "preferences/configobject.h"
+
+class ConstControllerPresetVisitor;
+class ControllerPresetVisitor;
 
 /// This class represents a MIDI controller preset, containing the data elements
 ///   that make it up.

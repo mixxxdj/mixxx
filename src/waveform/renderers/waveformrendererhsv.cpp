@@ -1,13 +1,26 @@
 #include "waveformrendererhsv.h"
 
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wskincolor.h"
+#include <stddef.h>
+
+#include <QColor>
+#include <QLineF>
+#include <QPainter>
+#include <QPen>
+#include <QSharedPointer>
+#include <QTransform>
+#include <QtCore>
+#include <memory>
+
 #include "track/track.h"
-#include "widget/wwidget.h"
+#include "track/track_decl.h"
 #include "util/math.h"
 #include "util/painterscope.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
+#include "waveformwidgetrenderer.h"
+
+class QPaintEvent;
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)

@@ -1,5 +1,10 @@
 #include "skin/tooltips.h"
 
+#include <QHashNode>
+#include <QList>
+#include <QStringBuilder>
+#include <initializer_list>
+
 Tooltips::Tooltips() {
     addStandardTooltips();
 }

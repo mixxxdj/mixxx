@@ -3,21 +3,24 @@
 
 #include "skin/skinloader.h"
 
-#include <QApplication>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
 #include <QDir>
 #include <QString>
-#include <QtDebug>
+#include <QStringBuilder>
+#include <Qt>
 
-#include "vinylcontrol/vinylcontrolmanager.h"
-#include "skin/legacyskinparser.h"
-#include "controllers/controllermanager.h"
-#include "library/library.h"
-#include "effects/effectsmanager.h"
-#include "mixer/playermanager.h"
-#include "util/debug.h"
+#include "preferences/configobject.h"
 #include "skin/launchimage.h"
+#include "skin/legacyskinparser.h"
+#include "util/debug.h"
 #include "util/timer.h"
-#include "recording/recordingmanager.h"
+
+class QWidget;
+template<typename T>
+class QSet;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {

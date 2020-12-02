@@ -1,18 +1,35 @@
 #include "preferences/dialog/dlgprefcolors.h"
 
-#include <QColorDialog>
-#include <QPainter>
-#include <QStandardItemModel>
-#include <QtDebug>
+#include <math.h>
 
-#include "control/controlobject.h"
+#include <QColor>
+#include <QComboBox>
+#include <QList>
+#include <QPainter>
+#include <QPushButton>
+#include <QSet>
+#include <QSize>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <QtCore>
+#include <memory>
+#include <type_traits>
+
 #include "dialog/dlgreplacecuecolor.h"
+#include "library/dao/trackdao.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "preferences/colorpaletteeditor.h"
+#include "preferences/configobject.h"
+#include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
-#include "util/compatibility.h"
+#include "util/color/rgbcolor.h"
+#include "util/db/dbid.h"
 #include "util/math.h"
-#include "util/memory.h"
+
+class QWidget;
 
 namespace {
 

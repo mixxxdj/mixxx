@@ -1,14 +1,21 @@
 #ifndef KEYCONTROL_H
 #define KEYCONTROL_H
 
-#include "engine/controls/enginecontrol.h"
+#include <QAtomicInt>
+#include <QByteArrayData>
+#include <QString>
+
 #include "control/controlvalue.h"
+#include "engine/controls/enginecontrol.h"
+#include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
 class ControlObject;
 class ControlProxy;
 class ControlPotmeter;
 class ControlPushButton;
+class EngineBuffer;
+class QObject;
 
 class KeyControl : public EngineControl {
     Q_OBJECT

@@ -1,8 +1,13 @@
-#include <gtest/gtest.h>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QDebug>
+#include <QString>
+#include <memory>
+
+#include "gtest/gtest_pred_impl.h"
 #include "track/tracknumbers.h"
-
-#include <QtDebug>
 
 namespace {
 

@@ -5,20 +5,30 @@
 #ifndef ANALYSISFEATURE_H
 #define ANALYSISFEATURE_H
 
-#include <QStringListModel>
-#include <QUrl>
-#include <QObject>
-#include <QVariant>
+#include <QByteArrayData>
 #include <QIcon>
 #include <QList>
+#include <QObject>
+#include <QString>
+#include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/libraryfeature.h"
-#include "library/dlganalysis.h"
-#include "library/treeitemmodel.h"
+#include "analyzer/analyzerprogress.h"
 #include "analyzer/trackanalysisscheduler.h"
+#include "library/dlganalysis.h"
+#include "library/libraryfeature.h"
+#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;
+class DlgAnalysis;
+class KeyboardEventFilter;
+class Library;
+class QObject;
+class QUrl;
+class TrackId;
+class WLibrary;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT

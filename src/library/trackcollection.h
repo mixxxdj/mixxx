@@ -1,9 +1,14 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDir>
 #include <QList>
+#include <QObject>
+#include <QSet>
 #include <QSharedPointer>
 #include <QSqlDatabase>
+#include <QString>
+#include <QWeakPointer>
 
 #include "library/crate/cratestorage.h"
 #include "library/dao/analysisdao.h"
@@ -13,10 +18,23 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/db/sqlstorage.h"
 #include "util/thread_affinity.h"
 
 // forward declaration(s)
 class BaseTrackCache;
+class Crate;
+class CrateId;
+class QUrl;
+class Track;
+class TrackFile;
+class TrackRef;
+template<class T>
+class QSharedPointer;
+template<class T>
+class QWeakPointer;
 
 // Manages the internal database.
 class TrackCollection : public QObject,

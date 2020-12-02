@@ -1,13 +1,21 @@
-#include "library/export/trackexportworker.h"
-
-#include <future>
-
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 #include <gtest/gtest.h>
 
 #include <QDateTime>
 #include <QDebug>
+#include <QDir>
+#include <QMap>
+#include <QObject>
 #include <QPair>
+#include <QScopedPointer>
+#include <QString>
 #include <QTemporaryDir>
+#include <QtCore>
+#include <future>
+
+#include "gtest/gtest_pred_impl.h"
+#include "library/export/trackexportworker.h"
 
 class FakeOverwriteAnswerer : public QObject {
     Q_OBJECT

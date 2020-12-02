@@ -1,17 +1,30 @@
 #ifndef WAVEFORMWIDGETRENDERER_H
 #define WAVEFORMWIDGETRENDERER_H
 
+#include <QDomNode>
+#include <QList>
+#include <QMap>
 #include <QPainter>
+#include <QPointF>
+#include <QSharedPointer>
+#include <QString>
 #include <QTime>
 #include <QVector>
+#include <Qt>
 #include <QtDebug>
+#include <QtGui>
 
+#include "skin/skincontext.h"
 #include "track/track_decl.h"
+#include "util/assert.h"
 #include "util/class.h"
+#include "util/math.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+
+class WaveformRendererAbstract;
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 

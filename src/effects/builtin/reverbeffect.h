@@ -4,17 +4,27 @@
 #ifndef REVERBEFFECT_H
 #define REVERBEFFECT_H
 
-#include <QMap>
-
 #include <Reverb.h>
 
+#include <QMap>
+#include <QSet>
+#include <QString>
+
+#include "audio/types.h"
+#include "effects/defs.h"
 #include "effects/effectprocessor.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "engine/engine.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+
+class EngineEffect;
+class EngineEffectParameter;
+struct GroupFeatureState;
 
 class ReverbGroupState : public EffectState {
   public:

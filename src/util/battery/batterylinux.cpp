@@ -2,9 +2,14 @@
 
 // Contains 'signals' so we undefine Qt's 'signals'.
 #undef signals
+#include <glib-object.h>
+#include <glib.h>
+#include <stddef.h>
 #include <upower.h>
 
-#include <QtDebug>
+#include "util/assert.h"
+
+class QObject;
 
 BatteryLinux::BatteryLinux(QObject* pParent)
     : Battery(pParent),

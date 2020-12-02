@@ -1,8 +1,15 @@
 #pragma once
 
-#include "track/trackid.h"
-#include "track/trackfile.h"
+#include <QDebug>
+#include <QMetaType>
+#include <QString>
+#include <iosfwd>
+#include <utility>
 
+#include "track/trackfile.h"
+#include "track/trackid.h"
+#include "util/assert.h"
+#include "util/db/dbid.h"
 
 // A track in the library is identified by a location and an id.
 // The location is mandatory to identify the file, whereas the id

@@ -1,5 +1,3 @@
-#include <QtDebug>
-
 #include "control/controlproxy.h"
 #include "control/control.h"
 

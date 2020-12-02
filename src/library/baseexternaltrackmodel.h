@@ -3,12 +3,20 @@
 
 #include <QModelIndex>
 #include <QObject>
+#include <QSharedPointer>
 #include <QString>
+#include <QtCore>
 
-#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 
 class TrackCollection;
+class BaseTrackCache;
+class TrackCollectionManager;
+template<class T>
+class QSharedPointer;
 
 class BaseExternalTrackModel : public BaseSqlTableModel {
     Q_OBJECT

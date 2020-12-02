@@ -14,10 +14,24 @@
 
 #include "library/parsercsv.h"
 
-#include <QTextStream>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QLatin1Char>
 #include <QMessageBox>
+#include <QStringBuilder>
+#include <QTextStream>
+#include <QTime>
+#include <QVariant>
+#include <Qt>
+
+#include "library/basesqltablemodel.h"
+#include "library/columncache.h"
 
 ParserCsv::ParserCsv() : Parser() {
 }

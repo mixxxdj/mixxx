@@ -1,6 +1,13 @@
 
 #include "control/controlaudiotaperpot.h"
 
+#include <QSharedPointer>
+
+#include "control/control.h"
+#include "control/controlbehavior.h"
+
+class ConfigKey;
+
 ControlAudioTaperPot::ControlAudioTaperPot(const ConfigKey& key,
         double minDB,
         double maxDB,

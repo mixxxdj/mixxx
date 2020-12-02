@@ -4,10 +4,13 @@
 #ifndef BEATUTILS_H_
 #define BEATUTILS_H_
 
-// to tell the msvs compiler about `isnan`
-#include "util/math.h"
-
+#include <QList>
+#include <QMap>
 #include <QVector>
+
+// to tell the msvs compiler about `isnan`
+#include "util/fpclassify.h"
+#include "util/math.h"
 
 class BeatUtils {
   public:

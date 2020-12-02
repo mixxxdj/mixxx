@@ -1,10 +1,13 @@
 #include "mixer/microphone.h"
 
 #include "control/controlproxy.h"
-#include "engine/enginemaster.h"
+#include "engine/channelhandle.h"
 #include "engine/channels/enginemicrophone.h"
+#include "engine/enginemaster.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+
+class QObject;
 
 Microphone::Microphone(QObject* pParent, const QString& group, int index,
                        SoundManager* pSoundManager, EngineMaster* pEngine,

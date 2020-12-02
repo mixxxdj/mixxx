@@ -1,16 +1,26 @@
 #ifndef VISUALPLAYPOSITION_H
 #define VISUALPLAYPOSITION_H
 
-#include <QMutex>
-#include <QTime>
-#include <QMap>
 #include <QAtomicPointer>
+#include <QByteArrayData>
+#include <QMap>
+#include <QMutex>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
+#include <QTime>
 
-#include "util/performancetimer.h"
 #include "control/controlvalue.h"
+#include "util/performancetimer.h"
 
 class ControlProxy;
 class VSyncThread;
+template<class Key, class T>
+class QMap;
+template<class T>
+class QSharedPointer;
+template<class T>
+class QWeakPointer;
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time

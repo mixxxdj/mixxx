@@ -1,7 +1,14 @@
 #include "network/webtask.h"
 
+#include <QMetaObject>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QStaticStringData>
+#include <QStringLiteral>
 #include <QTimerEvent>
+#include <QVariant>
 #include <mutex> // std::once_flag
+#include <type_traits>
 
 #include "util/assert.h"
 #include "util/counter.h"

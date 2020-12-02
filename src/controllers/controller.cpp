@@ -5,12 +5,20 @@
 * @brief Base class representing a physical (or software) controller.
 */
 
-#include <QApplication>
-#include <QScriptValue>
-
 #include "controllers/controller.h"
+
+#include <QtCore/qglobal.h>
+#include <qscriptvalue.h>
+#include <stddef.h>
+
+#include <QByteRef>
+#include <QChar>
+#include <QDebug>
+#include <QtGlobal>
+
 #include "controllers/controllerdebug.h"
-#include "controllers/defs_controllers.h"
+#include "controllers/controllerengine.h"
+#include "util/duration.h"
 #include "util/screensaver.h"
 
 Controller::Controller(UserSettingsPointer pConfig)

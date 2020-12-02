@@ -1,15 +1,23 @@
 #ifndef WAVEFORMRENDERMARK_H
 #define WAVEFORMRENDERMARK_H
 
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QObject>
+#include <QString>
 
+#include "preferences/configobject.h"
 #include "skin/skincontext.h"
+#include "track/cue.h"
 #include "util/class.h"
 #include "util/color/color.h"
+#include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformrendererabstract.h"
-#include "track/cue.h"
-#include "preferences/configobject.h"
+
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     Q_OBJECT

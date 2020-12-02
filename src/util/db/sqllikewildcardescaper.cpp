@@ -1,5 +1,7 @@
 #include "util/db/sqllikewildcardescaper.h"
 
+#include <QStringBuilder>
+
 #include "util/db/sqllikewildcards.h"
 
 

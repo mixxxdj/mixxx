@@ -1,17 +1,23 @@
 #ifndef CONTROLMODEL_H
 #define CONTROLMODEL_H
 
+#include <stddef.h>
+
 #include <QAbstractTableModel>
-#include <QVariant>
-#include <QVector>
 #include <QHash>
 #include <QList>
 #include <QModelIndex>
 #include <QString>
+#include <QVariant>
+#include <QVector>
+#include <QtCore>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "preferences/configobject.h"
+#include "preferences/usersettings.h"
+
+class ControlProxy;
 
 class ControlModel final : public QAbstractTableModel {
     Q_OBJECT

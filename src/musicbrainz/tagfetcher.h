@@ -1,12 +1,30 @@
 #pragma once
 
+#include <QByteArray>
+#include <QByteArrayData>
 #include <QFutureWatcher>
+#include <QList>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QObject>
+#include <QString>
 
 #include "musicbrainz/web/acoustidlookuptask.h"
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
+
+class QUrl;
+class QUuid;
+namespace mixxx {
+namespace musicbrainz {
+struct TrackRelease;
+} // namespace musicbrainz
+namespace network {
+struct JsonWebResponse;
+struct WebResponse;
+} // namespace network
+} // namespace mixxx
 
 class TagFetcher : public QObject {
     Q_OBJECT

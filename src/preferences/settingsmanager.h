@@ -1,6 +1,10 @@
 #pragma once
 
+#include <QSharedPointer>
+#include <QString>
+
 #include "preferences/broadcastsettings.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
 class SettingsManager {

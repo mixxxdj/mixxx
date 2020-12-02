@@ -7,7 +7,21 @@
 */
 
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
+
+#include <QtCore/qglobal.h>
+#include <stdint.h>
+
+#include <QDebug>
+#include <QDomDocument>
+#include <QDomText>
+#include <QHashNode>
+#include <QList>
+#include <algorithm>
+
+#include "controllers/midi/midicontrollerpreset.h"
+#include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "preferences/configobject.h"
 
 #define DEFAULT_OUTPUT_MAX  1.0
 #define DEFAULT_OUTPUT_MIN  0.0    // Anything above 0 is "on"

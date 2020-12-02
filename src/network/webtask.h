@@ -1,13 +1,21 @@
 #pragma once
 
+#include <QByteArray>
+#include <QDebug>
 #include <QMetaMethod>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QObject>
 #include <QPair>
 #include <QPointer>
+#include <QString>
 #include <QUrl>
+#include <QtCore>
+#include <utility>
 
 #include "network/httpstatuscode.h"
+
+class QNetworkAccessManager;
 
 namespace mixxx {
 

@@ -12,6 +12,13 @@
 #include "track/trackfile.h"
 #include "widget/trackdroptarget.h"
 
+class QDrag;
+class QMimeData;
+class QUrl;
+class QWidget;
+class TrackDropTarget;
+class TrackFile;
+
 class DragAndDropHelper final {
   public:
     DragAndDropHelper() = delete;

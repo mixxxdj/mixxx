@@ -1,19 +1,22 @@
 #include "controllers/controllerengine.h"
 
-#include <QScopedPointer>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QApplication>
 #include <QTemporaryFile>
 #include <QThread>
-#include <QtDebug>
 #include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/softtakeover.h"
-#include "preferences/usersettings.h"
+#include "gtest/gtest_pred_impl.h"
 #include "test/mixxxtest.h"
-#include "util/color/colorpalette.h"
 #include "util/time.h"
+
+class QScriptEngine;
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 

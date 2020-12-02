@@ -4,16 +4,26 @@
 #ifndef RECORDING_FEATURE_H
 #define RECORDING_FEATURE_H
 
-#include <QStringListModel>
+#include <QByteArrayData>
+#include <QIcon>
 #include <QSortFilterProxyModel>
+#include <QString>
+#include <QStringListModel>
+#include <QVariant>
 
-#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
+#include "preferences/usersettings.h"
 
 class RecordingManager;
+class KeyboardEventFilter;
+class Library;
+class QModelIndex;
+class QObject;
+class TreeItemModel;
+class WLibrary;
 
 class RecordingFeature final : public LibraryFeature {
     Q_OBJECT

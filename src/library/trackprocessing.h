@@ -3,13 +3,17 @@
 
 #pragma once
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QString>
 
+#include "track/track_decl.h"
 #include "track/trackiterator.h"
 #include "util/duration.h"
 #include "util/taskmonitor.h"
 
 class TrackCollectionManager;
+class QObject;
 
 namespace mixxx {
 

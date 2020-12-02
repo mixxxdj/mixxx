@@ -3,6 +3,8 @@
 
 #include "widget/wlibrarytextbrowser.h"
 
+#include <QWidget>
+
 WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
         : QTextBrowser(parent) {
 }

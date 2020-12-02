@@ -1,12 +1,20 @@
 #include "widget/wtrackproperty.h"
 
-#include <QDebug>
-#include <QUrl>
+#include <QByteArray>
+#include <QContextMenuEvent>
+#include <QFlags>
+#include <QMetaType>
+#include <QMouseEvent>
+#include <QVariant>
+#include <QtCore>
+#include <memory>
 
-#include "control/controlobject.h"
 #include "track/track.h"
+#include "track/trackid.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
+
+class QWidget;
 
 namespace {
 const WTrackMenu::Features kTrackMenuFeatures =

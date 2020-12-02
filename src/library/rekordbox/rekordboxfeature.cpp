@@ -3,15 +3,50 @@
 
 #include "library/rekordbox/rekordboxfeature.h"
 
+#include <QtCore/qglobal.h>
+#include <kaitaistream.h>
+#include <kaitaistruct.h>
 #include <mp3guessenc.h>
+#include <stdint.h>
 
+#include <QByteArray>
+#include <QChar>
+#include <QDebug>
+#include <QDir>
+#include <QException>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileInfoList>
 #include <QMap>
-#include <QMessageBox>
-#include <QSettings>
-#include <QStandardPaths>
-#include <QtDebug>
+#include <QModelIndex>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QStringLiteral>
+#include <QTextCodec>
+#include <QThread>
+#include <QUrl>
+#include <QVector>
+#include <QtConcurrentRun>
+#include <QtCore>
+#include <QtGui>
+#include <algorithm>
+#include <fstream>
+#include <memory>
+#include <optional>
+#include <string>
+#include <type_traits>
+#include <vector>
 
+#include "audio/types.h"
 #include "engine/engine.h"
+#include "library/basesqltablemodel.h"
+#include "library/basetrackcache.h"
+#include "library/columncache.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
@@ -19,20 +54,25 @@
 #include "library/rekordbox/rekordbox_pdb.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
-#include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
 #include "library/treeitem.h"
+#include "proto/keys.pb.h"
 #include "track/beatmap.h"
+#include "track/beats.h"
 #include "track/cue.h"
+#include "track/cueinfo.h"
 #include "track/keyfactory.h"
 #include "track/track.h"
-#include "util/color/color.h"
+#include "util/assert.h"
+#include "util/color/rgbcolor.h"
+#include "util/db/dbconnectionpool.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/file.h"
-#include "util/sandbox.h"
-#include "waveform/waveform.h"
+#include "util/types.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
+
+class KeyboardEventFilter;
 
 #define IS_RECORDBOX_DEVICE "::isRecordboxDevice::"
 #define IS_NOT_RECORDBOX_DEVICE "::isNotRecordboxDevice::"

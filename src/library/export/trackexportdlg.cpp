@@ -1,10 +1,19 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QFileInfo>
-#include <QDesktopServices>
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QFlags>
+#include <QLabel>
 #include <QMessageBox>
+#include <QProgressBar>
+#include <QPushButton>
 
 #include "util/assert.h"
+
+class QShowEvent;
+class QWidget;
 
 TrackExportDlg::TrackExportDlg(QWidget *parent,
                                UserSettingsPointer pConfig,

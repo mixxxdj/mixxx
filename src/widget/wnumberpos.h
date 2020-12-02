@@ -3,12 +3,17 @@
 #ifndef WNUMBERPOS_H
 #define WNUMBERPOS_H
 
+#include <QByteArrayData>
 #include <QMouseEvent>
+#include <QString>
 
-#include "wnumber.h"
 #include "preferences/dialog/dlgprefdeck.h"
+#include "wnumber.h"
 
 class ControlProxy;
+class QMouseEvent;
+class QObject;
+class QWidget;
 
 class WNumberPos : public WNumber {
     Q_OBJECT

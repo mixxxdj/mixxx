@@ -1,16 +1,25 @@
 #ifndef WBATTERY_H
 #define WBATTERY_H
 
+#include <QByteArrayData>
+#include <QDomNode>
 #include <QList>
 #include <QPixmap>
 #include <QScopedPointer>
+#include <QString>
 #include <QVector>
 
+#include "skin/pixmapsource.h"
 #include "skin/skincontext.h"
+#include "util/battery/battery.h"
+#include "widget/paintable.h"
 #include "widget/wlabel.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
-#include "util/battery/battery.h"
+
+class QObject;
+class QPaintEvent;
+class QWidget;
 
 class WBattery : public WWidget {
     Q_OBJECT

@@ -1,13 +1,22 @@
 #pragma once
 
+#include <QByteArrayData>
 #include <QDialog>
 #include <QList>
+#include <QModelIndex>
+#include <QString>
 #include <QTreeWidget>
 
 #include "library/trackmodel.h"
 #include "library/ui_dlgtagfetcher.h"
+#include "musicbrainz/musicbrainz.h"
 #include "musicbrainz/tagfetcher.h"
 #include "track/track_decl.h"
+
+class QObject;
+class QTreeWidget;
+class TrackId;
+class TrackModel;
 
 /// A dialog box to fetch track metadata from MusicBrainz.
 /// Use TrackPointer to load a track into the dialog or

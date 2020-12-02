@@ -1,16 +1,27 @@
-#include <gtest/gtest.h>
-
-#include <QtDebug>
-#include <QScopedPointer>
-
-#include "engine/cachingreader/cachingreader.h"
-#include "control/controlobject.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+
+#include <QList>
+#include <QScopedPointer>
+#include <QString>
+#include <QtGlobal>
+#include <memory>
+
+#include "control/controlobject.h"
+#include "engine/cachingreader/cachingreader.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "gtest/gtest_pred_impl.h"
+#include "preferences/configobject.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "track/track_decl.h"
 #include "util/assert.h"
 #include "util/defs.h"
 #include "util/sample.h"
+#include "util/types.h"
 
 namespace {
 const QString kGroup = "[test]";

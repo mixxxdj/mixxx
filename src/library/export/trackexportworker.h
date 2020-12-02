@@ -1,6 +1,8 @@
 #ifndef TRACKEXPORTWORKER_H
 #define TRACKEXPORTWORKER_H
 
+#include <QAtomicInt>
+#include <QByteArrayData>
 #include <QObject>
 #include <QScopedPointer>
 #include <QString>
@@ -10,6 +12,7 @@
 #include "track/track_decl.h"
 
 class QFileInfo;
+class QObject;
 
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs

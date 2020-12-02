@@ -1,20 +1,34 @@
 #include "library/dao/autodjcratesdao.h"
 
+#include <QtCore/qglobal.h>
+#include <stddef.h>
+
+#include <QDateTime>
+#include <QDebug>
+#include <QSharedPointer>
+#include <QSqlQuery>
+#include <QTime>
+#include <QVariant>
+#include <QtGlobal>
+#include <memory>
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif
-#include <QtDebug>
-#include <QtSql>
-
+#include "library/crate/crate.h"
+#include "library/crate/crateid.h"
 #include "library/crate/crateschema.h"
-#include "library/dao/settingsdao.h"
-#include "library/dao/trackdao.h"
+#include "library/crate/cratestorage.h"
+#include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "track/playcounter.h"
 #include "track/track.h"
+#include "util/assert.h"
 
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"

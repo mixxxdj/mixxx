@@ -1,15 +1,34 @@
 
-#include "widget/wpixmapstore.h"
+#include "widget/paintable.h"
 
-#include <QDir>
+#include <QtCore/qglobal.h>
+
+#include <QByteArray>
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QImage>
+#include <QLatin1String>
+#include <QList>
+#include <QPainter>
+#include <QPixmap>
+#include <QPoint>
+#include <QPointF>
+#include <QRectF>
+#include <QScopedPointer>
+#include <QSize>
+#include <QSizeF>
 #include <QString>
-#include <QtDebug>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QSvgRenderer>
+#include <QtCore>
+#include <memory>
 
-#include "skin/imgloader.h"
-
+#include "skin/pixmapsource.h"
 #include "util/math.h"
-#include "util/memory.h"
 #include "util/painterscope.h"
+#include "widget/wpixmapstore.h"
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {

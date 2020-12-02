@@ -2,11 +2,14 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QString>
+#include <QtCore>
 
 #include "track/track_decl.h"
 #include "track/trackref.h"
 
 class TrackCollectionManager;
+class TrackRef;
 
 namespace mixxx {
 

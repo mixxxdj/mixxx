@@ -1,15 +1,23 @@
 #ifndef BROADCAST_BROADCASTMANAGER_H
 #define BROADCAST_BROADCASTMANAGER_H
 
+#include <QByteArrayData>
 #include <QObject>
+#include <QSharedPointer>
+#include <QString>
 
-#include "preferences/settingsmanager.h"
-#include "preferences/usersettings.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/shoutconnection.h"
+#include "preferences/broadcastprofile.h"
+#include "preferences/broadcastsettings.h"
+#include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class SoundManager;
 class ControlPushButton;
+class ControlObject;
+class EngineNetworkStream;
+class SettingsManager;
 
 class BroadcastManager : public QObject {
     Q_OBJECT

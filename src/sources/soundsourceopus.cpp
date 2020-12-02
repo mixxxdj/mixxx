@@ -1,7 +1,30 @@
 #include "sources/soundsourceopus.h"
 
-#include "audio/streaminfo.h"
+#include <ogg/config_types.h>
+#include <opus_types.h>
+#include <opusfile.h>
+
+#include <QByteArray>
+#include <QDateTime>
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <QtGlobal>
+#include <algorithm>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "track/taglib/trackmetadata_common.h"
+#include "track/trackmetadata.h"
+#include "util/assert.h"
+#include "util/duration.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
+
+class QImage;
+class QUrl;
 
 namespace mixxx {
 

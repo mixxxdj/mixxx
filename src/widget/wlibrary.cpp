@@ -1,14 +1,19 @@
 // wlibrary.cpp
 // Created 8/28/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
-#include <QMutexLocker>
-
 #include "widget/wlibrary.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QEvent>
+#include <QMutexLocker>
+#include <QObjectList>
+#include <QWidget>
+
 #include "library/libraryview.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "widget/wtracktableview.h"
 #include "util/math.h"
+#include "widget/wtracktableview.h"
 
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),

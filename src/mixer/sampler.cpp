@@ -1,6 +1,9 @@
 #include "mixer/sampler.h"
 
-#include "control/controlobject.h"
+class EffectsManager;
+class EngineMaster;
+class QObject;
+class VisualsManager;
 
 Sampler::Sampler(QObject* pParent,
         UserSettingsPointer pConfig,

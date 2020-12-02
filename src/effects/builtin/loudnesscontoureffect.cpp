@@ -1,5 +1,18 @@
 #include "effects/builtin/loudnesscontoureffect.h"
+
+#include <QObject>
+#include <QSharedPointer>
+#include <QtGlobal>
+
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/engine.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
+#include "util/sample.h"
 
 namespace {
 

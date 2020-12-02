@@ -18,6 +18,8 @@
 #ifndef IMGCOLOR_H
 #define IMGCOLOR_H
 
+#include <QColor>
+
 #include "imgsource.h"
 
 class ImgAdd : public ImgColorProcessor {
@@ -89,4 +91,3 @@ class ImgHSVTweak : public ImgColorProcessor {
     float m_hfact, m_sfact, m_vfact;
 };
 #endif
-

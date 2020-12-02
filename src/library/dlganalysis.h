@@ -2,18 +2,26 @@
 #define DLGANALYSIS_H
 
 #include <QButtonGroup>
+#include <QByteArrayData>
 #include <QItemSelection>
+#include <QList>
+#include <QString>
+#include <QWidget>
 
-#include "preferences/usersettings.h"
+#include "analyzer/analyzerprogress.h"
 #include "library/analysislibrarytablemodel.h"
 #include "library/libraryview.h"
 #include "library/ui_dlganalysis.h"
-#include "analyzer/analyzerprogress.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 class Library;
 class WLibrary;
+class QItemSelection;
+class QObject;
+class TrackId;
 
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT

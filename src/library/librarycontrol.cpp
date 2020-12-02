@@ -1,20 +1,31 @@
 #include "library/librarycontrol.h"
 
-#include <QApplication>
-#include <QItemSelectionModel>
-#include <QModelIndex>
-#include <QModelIndexList>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <stdlib.h>
 
+#include <QApplication>
+#include <QDebug>
+#include <QEvent>
+#include <QFlags>
+#include <QFont>
+#include <QKeyEvent>
+#include <QWidget>
+#include <QWindow>
+#include <QtCore>
+
+#include "control/control.h"
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "library/library.h"
+#include "library/libraryview.h"
+#include "library/trackmodel.h"
 #include "mixer/playermanager.h"
+#include "preferences/configobject.h"
+#include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
-#include "widget/wtracktableview.h"
-#include "library/library.h"
-#include "library/libraryview.h"
 
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),

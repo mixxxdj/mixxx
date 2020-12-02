@@ -1,10 +1,14 @@
-#include <gmock/gmock.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <stddef.h>
 
-#include <QtDebug>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "test/mixxxtest.h"
 #include "util/readaheadsamplebuffer.h"
-
+#include "util/samplebuffer.h"
+#include "util/types.h"
 
 class ReadAheadSampleBufferTest: public MixxxTest {
 public:

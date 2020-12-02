@@ -15,6 +15,7 @@
 //Enable unicode in libsndfile on Windows
 //(sf_open uses UTF-8 otherwise)
 #include <windows.h>
+
 #define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
 #endif
 #include <sndfile.h>
@@ -23,6 +24,7 @@
 #include "encoder/encoderwave.h"
 
 class EncoderCallback;
+class EncoderSettings;
 
 class EncoderSndfileFlac : public EncoderWave {
   public:

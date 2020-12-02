@@ -1,8 +1,22 @@
-#include <QDir>
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpegfile.h>
 
+#include <QDateTime>
+#include <QDebug>
+#include <QDir>
+#include <QString>
+#include <memory>
+#include <utility>
+
+#include "gtest/gtest_pred_impl.h"
+#include "sources/metadatasource.h"
 #include "sources/metadatasourcetaglib.h"
 #include "test/mixxxtest.h"
+#include "track/taglib/trackmetadata_file.h"
+#include "track/trackinfo.h"
+#include "track/trackmetadata.h"
 
 namespace {
 

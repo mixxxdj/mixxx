@@ -1,7 +1,9 @@
 #include "controllers/colormapper.h"
 
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
 #include <cmath>
-#include <cstdint>
 
 #include "util/logger.h"
 

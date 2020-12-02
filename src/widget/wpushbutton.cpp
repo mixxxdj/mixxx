@@ -17,20 +17,32 @@
 
 #include "widget/wpushbutton.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QPixmap>
-#include <QtDebug>
-#include <QMouseEvent>
-#include <QTouchEvent>
-#include <QPaintEvent>
+#include <QtCore/qglobal.h>
+
 #include <QApplication>
+#include <QDebug>
+#include <QDomElement>
+#include <QEvent>
+#include <QFlags>
+#include <QFocusEvent>
+#include <QFontMetrics>
+#include <QList>
+#include <QMouseEvent>
+#include <QPointF>
+#include <QScopedPointer>
+#include <QSharedPointer>
+#include <QStringList>
+#include <QStyle>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QWidget>
 
 #include "control/controlbehavior.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "preferences/configobject.h"
 #include "util/debug.h"
-#include "util/math.h"
+#include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 
 WPushButton::WPushButton(QWidget* pParent)

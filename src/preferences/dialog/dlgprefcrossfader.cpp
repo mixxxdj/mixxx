@@ -1,11 +1,26 @@
-#include <QButtonGroup>
-#include <QtDebug>
-
 #include "preferences/dialog/dlgprefcrossfader.h"
-#include "control/controlobject.h"
+
+#include <math.h>
+#include <stddef.h>
+
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QLineF>
+#include <QPen>
+#include <QPointF>
+#include <QRadioButton>
+#include <QSharedPointer>
+#include <QSlider>
+#include <QtCore>
+
 #include "engine/enginexfader.h"
-#include "util/math.h"
+#include "preferences/configobject.h"
 #include "util/rescaler.h"
+#include "util/types.h"
+
+class QWidget;
 
 DlgPrefCrossfader::DlgPrefCrossfader(
         QWidget* parent, UserSettingsPointer config)

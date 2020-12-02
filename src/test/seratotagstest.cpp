@@ -1,6 +1,17 @@
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
 
+#include <QList>
+#include <QStaticStringData>
+#include <QString>
+#include <QStringLiteral>
+#include <memory>
+#include <optional>
+
+#include "gtest/gtest_pred_impl.h"
+#include "track/cueinfo.h"
 #include "track/serato/tags.h"
+#include "util/color/rgbcolor.h"
 
 class SeratoTagsTest : public testing::Test {
   protected:

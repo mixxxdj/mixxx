@@ -1,8 +1,21 @@
 #include "effects/lv2/lv2effectprocessor.h"
+
+#include <QtCore/qglobal.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QtGlobal>
+
+#include "effects/effectmanifest.h"
+#include "effects/effectmanifestparameter.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffect.h"
-#include "control/controlobject.h"
-#include "util/sample.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "util/assert.h"
 #include "util/defs.h"
+#include "util/sample.h"
+
+struct GroupFeatureState;
 
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
         EffectManifestPointer pManifest,

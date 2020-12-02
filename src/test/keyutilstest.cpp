@@ -1,8 +1,15 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <gmock/gmock-generated-matchers.h>
+#include <gmock/gmock-matchers.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <math.h>
+#include <stdlib.h>
 
-#include <QDebug>
+#include <QList>
+#include <QString>
+#include <memory>
 
+#include "gtest/gtest_pred_impl.h"
 #include "proto/keys.pb.h"
 #include "track/keyutils.h"
 

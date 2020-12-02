@@ -4,10 +4,15 @@
 
 #include <QDir>
 #include <QScopedPointer>
+#include <QString>
 #include <QTemporaryDir>
+#include <QtGlobal>
 
+#include "gtest/gtest_pred_impl.h"
 #include "mixxxapplication.h"
 #include "preferences/usersettings.h"
+
+class QApplication;
 
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))

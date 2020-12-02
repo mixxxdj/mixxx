@@ -2,19 +2,31 @@
 // Created on Sep 23, 2008
 // Author: asantoni, rryan
 
-#include <QtDebug>
+#include "engine/controls/loopingcontrol.h"
 
+#include <QtCore/qglobal.h>
+#include <math.h>
+#include <stddef.h>
+
+#include <QDebug>
+#include <QSharedPointer>
+#include <QtCore>
+#include <memory>
+#include <type_traits>
+
+#include "control/control.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
-#include "engine/controls/loopingcontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
-#include "util/compatibility.h"
-#include "util/math.h"
-#include "util/sample.h"
 #include "track/track.h"
+#include "util/assert.h"
+#include "util/compatibility.h"
+#include "util/sample.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };

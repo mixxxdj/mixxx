@@ -1,13 +1,24 @@
 #include "waveform/renderers/glwaveformrendererrgb.h"
+
+#include <QtGui/qopengl.h>
+#include <math.h>
+#include <stddef.h>
+
+#include <QPainter>
+#include <QSharedPointer>
+#include <Qt>
+#include <memory>
+
+#include "track/track_decl.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
+
+class QPaintEvent;
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);

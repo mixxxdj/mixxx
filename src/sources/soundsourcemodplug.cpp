@@ -1,15 +1,30 @@
 #include "sources/soundsourcemodplug.h"
 
-#include "audio/streaminfo.h"
+#include <QDateTime>
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QStaticStringData>
+#include <QStringLiteral>
+#include <ext/alloc_traits.h>
+
+#include "audio/signalinfo.h"
+#include "audio/types.h"
+#include "sources/metadatasourcetaglib.h"
+#include "track/trackinfo.h"
 #include "track/trackmetadata.h"
+#include "util/assert.h"
+#include "util/duration.h"
+#include "util/indexrange.h"
 #include "util/logger.h"
+#include "util/math.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
 #include "util/timer.h"
 
-#include <QFile>
-
-#include <stdlib.h>
-#include <unistd.h>
+class QImage;
+class QUrl;
 
 namespace mixxx {
 

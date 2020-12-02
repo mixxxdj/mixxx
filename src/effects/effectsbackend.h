@@ -1,9 +1,12 @@
 #ifndef EFFECTSBACKEND_H
 #define EFFECTSBACKEND_H
 
-#include <QObject>
+#include <QByteArrayData>
 #include <QList>
+#include <QMap>
+#include <QObject>
 #include <QSet>
+#include <QSharedPointer>
 #include <QString>
 
 #include "effects/defs.h"

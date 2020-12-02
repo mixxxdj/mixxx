@@ -4,17 +4,36 @@
 #ifndef TRAKTOR_FEATURE_H
 #define TRAKTOR_FEATURE_H
 
-#include <QStringListModel>
-#include <QtSql>
-#include <QXmlStreamReader>
+#include <QByteArrayData>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QIcon>
+#include <QSharedPointer>
+#include <QSqlDatabase>
+#include <QString>
+#include <QStringListModel>
+#include <QVariant>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
+
+class BaseSqlTableModel;
+class BaseTrackCache;
+class Library;
+class QModelIndex;
+class QObject;
+class QSqlQuery;
+class QXmlStreamReader;
+class TrackCollectionManager;
+class TreeItem;
+template<class T>
+class QSharedPointer;
 
 class TraktorTrackModel : public BaseExternalTrackModel {
   public:

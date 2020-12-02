@@ -1,10 +1,20 @@
 #include "database/mixxxdb.h"
 
-#include "database/schemamanager.h"
+#include <QChar>
+#include <QDir>
+#include <QMessageBox>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
+#include <memory>
 
+#include "database/schemamanager.h"
+#include "preferences/configobject.h"
 #include "util/assert.h"
+#include "util/db/dbconnection.h"
 #include "util/logger.h"
 
+class QSqlDatabase;
 
 // The schema XML is baked into the binary via Qt resources.
 //static

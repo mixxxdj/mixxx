@@ -7,8 +7,13 @@
 
 #include "controllers/hid/hidenumerator.h"
 
+#include <QtCore/qglobal.h>
 #include <hidapi.h>
 
+#include <QDebug>
+#include <QString>
+
+#include "controllers/controller.h"
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
 

@@ -1,16 +1,32 @@
 #include "library/banshee/bansheeplaylistmodel.h"
 
-#include <QtDebug>
+#include <QtCore/qglobal.h>
+
+#include <QAtomicInt>
+#include <QDateTime>
+#include <QDebug>
+#include <QDir>
+#include <QList>
+#include <QModelIndex>
+#include <QSharedPointer>
+#include <QSqlQuery>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QUrl>
+#include <memory>
 
 #include "library/banshee/bansheedbconnection.h"
-#include "library/previewbuttondelegate.h"
+#include "library/basetrackcache.h"
+#include "library/columncache.h"
+#include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
-#include "library/starrating.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/track.h"
+#include "track/trackfile.h"
+#include "track/trackref.h"
 
 #define BANSHEE_TABLE "banshee"
 #define CLM_TRACK_ID "track_id"

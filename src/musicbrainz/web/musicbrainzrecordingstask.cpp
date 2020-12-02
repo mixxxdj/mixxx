@@ -1,10 +1,19 @@
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 
-#include <QMetaMethod>
+#include <QByteArray>
+#include <QDebug>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QPair>
+#include <QStaticStringData>
+#include <QStringBuilder>
+#include <QStringLiteral>
 #include <QXmlStreamReader>
+#include <QtCore>
+#include <utility>
 
 #include "defs_urls.h"
-#include "musicbrainz/gzip.h"
 #include "musicbrainz/musicbrainzxml.h"
 #include "network/httpstatuscode.h"
 #include "util/assert.h"

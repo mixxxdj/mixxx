@@ -3,6 +3,9 @@
 #include "track/serato/tags.h"
 
 namespace mixxx {
+namespace audio {
+class SignalInfo;
+} // namespace audio
 
 /// This method simply calls SeratoTags::guessTimingOffsetMillis() and returns
 /// its result. We also need the timing offset for exporting our cues to
