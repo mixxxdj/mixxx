@@ -215,8 +215,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
-    // Don't synchronize zoom by default.
-    synchronizeZoomCheckBox->setChecked(false);
+    synchronizeZoomCheckBox->setChecked(true);
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(2);
