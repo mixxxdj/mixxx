@@ -364,8 +364,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlproxy.cpp
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
-        src/control/quickaction.cpp
-        src/control/threadlocalquickaction.cpp
+  src/control/quickaction.cpp
+  src/control/threadlocalquickaction.cpp
   src/controllers/controller.cpp
   src/controllers/controllerdebug.cpp
   src/controllers/controllerenumerator.cpp
