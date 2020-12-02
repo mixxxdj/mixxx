@@ -92,8 +92,13 @@ void WNotificationMenuPopup::slotUpdateNotifications() {
     }
 
     // Clear items from layout
-    for (int i = 0; i < m_pNotificationLayout->count(); i++) {
-        m_pNotificationLayout->removeItem(m_pNotificationLayout->itemAt(i));
+    for (int i = m_pNotificationLayout->count() - 1; i >= 0; i--) {
+        QLayoutItem* item = m_pNotificationLayout->itemAt(i);
+        if (item->widget()) {
+            item->widget()->hide();
+        }
+        m_pNotificationLayout->removeItem(item);
+        delete item;
     }
 
     // Add items from layout
