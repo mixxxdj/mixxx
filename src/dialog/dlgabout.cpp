@@ -9,14 +9,17 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     QString buildCommitDescription = Version::gitCommitDescription();
     QString buildCommitDate = Version::gitCommitDate();
 
-    QString version(QStringLiteral("Mixxx version: ") + mixxxVersion);
+    QString versionInfo(QStringLiteral("Mixxx version:\n"));
     if (!buildCommitDescription.isEmpty()) {
-        version.append(QStringLiteral("\nGit commit: ") + buildCommitDescription);
+        // The Git commit description string is long, so put it on its own line
+        versionInfo.append(buildCommitDescription + QStringLiteral("\n"));
+    } else {
+        versionInfo.append(mixxxVersion);
     }
     if (!buildCommitDate.isEmpty()) {
-        version.append(QStringLiteral("\nGit commit date: ") + buildCommitDate);
+        versionInfo.append(QStringLiteral("\nGit commit date:\n") + buildCommitDate);
     }
-    version_label->setText(version);
+    version_label->setText(versionInfo);
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {
